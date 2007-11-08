@@ -28,6 +28,9 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.CriteriaIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
+import edu.ku.brc.specify.datamodel.Accession;
+import edu.ku.brc.specify.datamodel.AccessionAgent;
+import edu.ku.brc.specify.datamodel.AccessionAuthorization;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Collector;
@@ -845,7 +848,7 @@ public class UploadTable implements Comparable<UploadTable>
         {
             for (ParentTableEntry pte : ptes)
             {
-                if (pte.getImportTable().needToMatchChildren())
+                if (pte.getImportTable().needToMatchChild(tblClass))
                 {
                     pte.getImportTable().addChild(this);
                 }
@@ -1216,10 +1219,12 @@ public class UploadTable implements Comparable<UploadTable>
                             {
                                 //maybe this doesn't really need to be checked?
                                 result = false;
+                                break;
                             }
                             else if (!coll1.getAgent().getId().equals(coll2.getAgent().getId()))
                             {
                                 result = false;
+                                break;
                             }
                             child.skipRow = true;
                         }
@@ -1229,39 +1234,160 @@ public class UploadTable implements Comparable<UploadTable>
                         matchSession.close();
                     }
                 }
-            }
-            if (!result)
-            {
-                for (UploadTable child : matchChildren)
+                if (!result)
                 {
-                    child.skipRow = false;
+                    break;
                 }
             }
-            return result; 
         }
-        // else: Oh no!!
-        log.error("Unable to check matching children for " + tblClass.getName());
-        throw new UploaderException("Unable to check matching children for " + tblClass.getName(),
+        else if(tblClass.equals(Accession.class))
+        {
+            for (UploadTable child : matchChildren)
+            {
+                log.debug(child.getTable().getName());
+                boolean processedChild = false;
+                if (child.getTblClass().equals(AccessionAgent.class))
+                {
+                    processedChild = true;
+                    DataProviderSessionIFace matchSession = DataProviderFactory.getInstance()
+                            .createSession();
+                    try
+                    {
+                        QueryIFace matchesQ = matchSession.createQuery("from AccessionAgent where accessionid = " + match.getId());
+                        List<?> matches = matchesQ.list();
+                        child.loadFromDataSet();
+                        if (matches.size() != child.getUploadFields().size())
+                        {
+                            result = false;
+                            break;
+                        }
+                        for (int rec = 0; rec < matches.size(); rec++)
+                        {
+                            AccessionAgent ag1 = (AccessionAgent)matches.get(rec);
+                            int c = 0;
+                            boolean matched = false;
+                            while (c < child.getUploadFields().size() && !matched) 
+                            {
+                                AccessionAgent ag2 = (AccessionAgent)child.getCurrentRecord(c++);
+                                matched = ag1.getAgent().getId().equals(ag2.getAgent().getId());
+                            }
+                            if (!matched)
+                            {
+                                result = false;
+                                break;
+                            }
+                        }
+                    }
+                    finally
+                    {
+                        matchSession.close();
+                    }
+                    
+                }
+                else if (child.getTblClass().equals(AccessionAuthorization.class))
+                {
+                    processedChild = true;
+                    DataProviderSessionIFace matchSession = DataProviderFactory.getInstance()
+                            .createSession();
+                    try
+                    {
+                        QueryIFace matchesQ = matchSession
+                                .createQuery("from AccessionAuthorization where accessionid = "
+                                        + match.getId());
+                        List<?> matches = matchesQ.list();
+                        child.loadFromDataSet();
+                        if (matches.size() != child.getUploadFields().size())
+                        {
+                            result = false;
+                            break;
+                        }
+                        for (int rec = 0; rec < matches.size(); rec++)
+                        {
+                            AccessionAuthorization au1 = (AccessionAuthorization) matches.get(rec);
+                            int c = 0;
+                            boolean matched = false;
+                            while (c < child.getUploadFields().size() && !matched)
+                            {
+                                AccessionAuthorization au2 = (AccessionAuthorization) child.getCurrentRecord(c++);
+                                matched = au1.getPermit().getId().equals(au2.getPermit().getId());
+                            }
+                            if (!matched)
+                            {
+                                result = false;
+                                break;
+                            }
+                        }
+                    }
+                    finally
+                    {
+                        matchSession.close();
+                    }
+
+                }
+                if (result && processedChild)
+                {
+                    child.skipRow = true;
+                }
+                else if (!result)
+                {
+                    break;
+                }
+            }
+        }
+        else // Oh no!!
+        {
+            log.error("Unable to check matching children for " + tblClass.getName());
+            throw new UploaderException("Unable to check matching children for " + tblClass.getName(),
                 UploaderException.ABORT_IMPORT);
+        }
+        if (!result)
+        {
+            for (UploadTable child : matchChildren)
+            {
+                child.skipRow = false;
+            }
+        }
+        return result; 
     }
     
     protected boolean needToMatchChildren()
     {
         //temporary fix. Should determine based on cascade rules and the fields in the dataset.
         //Currently, I think, CollectingEvent is the only class that applies.
-        return tblClass.equals(CollectingEvent.class);
+        return tblClass.equals(CollectingEvent.class)
+          || tblClass.equals(Accession.class)
+          || tblClass.equals(CollectionObject.class);  
     }
+    
+    protected boolean needToMatchChild(Class<?> childClass)
+    {
+        if (tblClass.equals(Accession.class)) 
+        { 
+            return childClass.equals(AccessionAgent.class)
+                || childClass.equals(AccessionAuthorization.class); 
+        }
+        if (tblClass.equals(CollectingEvent.class)) 
+        { 
+            return childClass.equals(Collector.class); 
+        }
+        if (tblClass.equals(CollectionObject.class)) 
+        { 
+            return false; //should be good enough for now 
+        }
+        return false;
+    }
+    
    /**
      * @param recNum
      * @return
      * @throws UploaderException
      * 
-     * Searches the database for matches to values in current row of uploading dataset.
-     * If one match is found it is set to the current value for this table.
-     * If no matches are created a new record is created and saved for the current value.
-     * If more than one match an Uploader exception is thrown. (NOTE: validation SHOULD
-     * have already been performed to prevent more than one match from occurring, or to specify
-     * which object to choose when multiple matches are found. 
+     * Searches the database for matches to values in current row of uploading dataset. If one match
+     * is found it is set to the current value for this table. If no matches are created a new
+     * record is created and saved for the current value. If more than one match an Uploader
+     * exception is thrown. (NOTE: validation SHOULD have already been performed to prevent more
+     * than one match from occurring, or to specify which object to choose when multiple matches are
+     * found.
      */
     @SuppressWarnings("unchecked")
   protected boolean findMatch(int recNum) throws UploaderException, InvocationTargetException,
@@ -1897,5 +2023,13 @@ public class UploadTable implements Comparable<UploadTable>
             result.addItem(((Integer)key).intValue());
         }
         return result;
+    }
+
+    /**
+     * @return the matchChildren
+     */
+    public Vector<UploadTable> getMatchChildren()
+    {
+        return matchChildren;
     }
 }

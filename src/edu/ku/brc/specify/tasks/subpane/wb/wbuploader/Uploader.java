@@ -13,7 +13,7 @@ import java.awt.event.WindowStateListener;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Calendar;
-import java.util.Date;
+import java.util.Comparator;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -64,6 +64,7 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.util.Pair;
 
 
 /**
@@ -460,8 +461,73 @@ public class Uploader implements ActionListener, WindowStateListener
 		processTreeMaps();
 		orderUploadTables();
         buildUploadTableParents();
+        reOrderUploadTables();
  	}
 
+    
+    
+    /**
+     * Imposes additional ordering constraints created by the matchChildren property of UploadTable.
+     * I.e. if A precedes B and B is in C.matchChildren, then A must precede C.
+     */
+    protected void reOrderUploadTables()
+    {
+        SortedSet<Pair<UploadTable, UploadTable>> moves = new TreeSet<Pair<UploadTable, UploadTable>>(new Comparator<Pair<UploadTable,UploadTable>>(){
+            private boolean isAncestorOf(UploadTable t1, UploadTable t2)
+            {
+                if (t1.equals(t2))
+                {
+                    return true;
+                }
+                for (Vector<ParentTableEntry> ptes : t2.getParentTables())
+                {
+                    for (ParentTableEntry pte : ptes)
+                    {
+                        if (isAncestorOf(pte.getImportTable(), t2))
+                        {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+            public int compare(Pair<UploadTable, UploadTable> p1, Pair<UploadTable, UploadTable> p2)
+            {
+                if (isAncestorOf(p1.getSecond(), p2.getSecond()))
+                {
+                    return -1;
+                }
+                if (isAncestorOf(p2.getSecond(), p1.getSecond()))
+                {
+                    return 1;
+                }
+                return 0;
+            }
+        });
+        for (UploadTable ut : uploadTables)
+        {
+            for (UploadTable mc : ut.getMatchChildren())
+            {
+                for (Vector<ParentTableEntry> ptes : mc.getParentTables())
+                {
+                    for (ParentTableEntry pte : ptes)
+                    {
+                        if (uploadTables.indexOf(ut) < uploadTables.indexOf(pte.getImportTable()))
+                        {
+                            moves.add(new Pair<UploadTable, UploadTable>(ut, pte.getImportTable()));
+                        }
+                    }
+                }
+            }
+        }
+        for (Pair<UploadTable, UploadTable> move : moves)
+        {
+            int fromIdx = uploadTables.indexOf(move.getSecond());
+            int toIdx = uploadTables.indexOf(move.getFirst());
+            uploadTables.remove(fromIdx);
+            uploadTables.insertElementAt(move.getSecond(), toIdx);
+        }
+    }
 	/**
 	 * @throws UploaderException
      * builds the uploadGraph.
@@ -1219,7 +1285,10 @@ public class Uploader implements ActionListener, WindowStateListener
         }
         else if (e.getActionCommand().equals(UploadMainForm.CLOSE_UI))
         {
-            saveRecordSets();
+            if (currentUpload != null)
+            {
+                saveRecordSets();
+            }
             closeMainForm();
             wbSS.uploadDone();
         }
@@ -1407,6 +1476,7 @@ public class Uploader implements ActionListener, WindowStateListener
             
             for (String tblName : tblNames)
             {
+                //NOTE: Using the constructor below, TableInfoRenderable.getTitle() returns ShortClassName not TableInfo.title.
                 tbls.addElement(new TableInfoRenderable(DBTableIdMgr.getInstance().getByShortClassName(tblName)));
             }
         }
@@ -1824,7 +1894,8 @@ public class Uploader implements ActionListener, WindowStateListener
                             Vector<Vector<String>> vals = ut.printUpload();
                             if (vals.size() > 0)
                             {
-                                String title = DBTableIdMgr.getInstance().getByShortClassName(ut.getWriteTable().getName()).getTitle();
+                                //String title = DBTableIdMgr.getInstance().getByShortClassName(ut.getWriteTable().getName()).getTitle();
+                                String title = ut.getWriteTable().getName();
                                 if (!bogusStorages.containsKey(title))
                                 {
                                     bogusStorages.put(title, vals);
