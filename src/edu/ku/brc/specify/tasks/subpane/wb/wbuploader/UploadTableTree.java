@@ -237,6 +237,7 @@ public class UploadTableTree extends UploadTable
         //assign treedef and treedefitem to rec
         DataModelObjBase parentRec = parent == null ? null : parent.getCurrentRecord(recNum);
         Treeable tRec = (Treeable)rec;
+        tRec.setFullName(null);
         tRec.setDefinition(getTreeDef());
         tRec.setDefinitionItem(getTreeDefItem());
         if (parentRec == null)

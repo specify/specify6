@@ -185,7 +185,7 @@ public class Uploader implements ActionListener, WindowStateListener
     {
         Calendar now = new GregorianCalendar();
         identifier =  uploadData.getWbRow(0).getWorkbench().getName() + "_"+ now.get(Calendar.YEAR) + "-" + now.get(Calendar.MONTH) + "-"
-            + now.get(Calendar.DAY_OF_MONTH) + "_" + now.get(Calendar.MILLISECOND);
+            + now.get(Calendar.DAY_OF_MONTH) + "_" + now.get(Calendar.HOUR) + ":" + now.get(Calendar.SECOND);
     }
     
     /**
@@ -519,7 +519,7 @@ public class Uploader implements ActionListener, WindowStateListener
             int toIdx = uploadTables.indexOf(move.getFirst());
             if (toIdx > fromIdx)
             {
-                log.error("Can't meet ordering constraits: " + move.getFirst().getTable().getName() + "," + move.getSecond().getTable().getName());
+                log.error("Can't meet ordering constraints: " + move.getSecond().getTable().getName() + "," + move.getFirst().getTable().getName());
                 throw new UploaderException("The Dataset is not uploadable.", UploaderException.ABORT_IMPORT);
             }
             uploadTables.remove(fromIdx);
