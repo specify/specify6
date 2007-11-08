@@ -726,7 +726,10 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         } else
         {
-            formPane.copyDataFromForm();
+            if (formPane != null)
+            {
+                formPane.copyDataFromForm();
+            }
         }
         return isOK;
     }
@@ -2789,7 +2792,10 @@ public class WorkbenchPaneSS extends BaseSubPane
                 dataSetUploader.closing();
                 dataSetUploader = null;
             }
-            spreadSheet.getSelectionModel().removeListSelectionListener(workbenchRowChangeListener);
+            if (spreadSheet != null)
+            {
+                spreadSheet.getSelectionModel().removeListSelectionListener(workbenchRowChangeListener);
+            }
             workbenchRowChangeListener = null;
         }
         
@@ -2820,8 +2826,14 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
         
         removeAll();
-        mainPanel.removeAll();
-        controllerPane.removeAll();
+        if (mainPanel != null)
+        {
+            mainPanel.removeAll();
+        }
+        if (controllerPane != null)
+        {
+            controllerPane.removeAll();
+        }
         
         if (spreadSheet != null)
         {

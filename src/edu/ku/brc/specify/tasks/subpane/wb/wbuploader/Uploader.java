@@ -448,14 +448,7 @@ public class Uploader implements ActionListener, WindowStateListener
 		this.uploadFields = new Vector<UploadField>(importData.getCols());
         this.missingRequiredClasses = new Vector<UploadTable.RelatedClassEntry>();
         this.missingRequiredFields = new Vector<UploadTable.DefaultFieldEntry>();
-		try
-		{
-			buildUploadFields();
-		}
-		catch (UploaderException ex)
-		{
-			throw ex;
-		}
+		buildUploadFields();
 		buildUploadTables();
 		buildUploadGraph();
 		processTreeMaps();
@@ -470,7 +463,7 @@ public class Uploader implements ActionListener, WindowStateListener
      * Imposes additional ordering constraints created by the matchChildren property of UploadTable.
      * I.e. if A precedes B and B is in C.matchChildren, then A must precede C.
      */
-    protected void reOrderUploadTables()
+    protected void reOrderUploadTables() throws UploaderException
     {
         SortedSet<Pair<UploadTable, UploadTable>> moves = new TreeSet<Pair<UploadTable, UploadTable>>(new Comparator<Pair<UploadTable,UploadTable>>(){
             private boolean isAncestorOf(UploadTable t1, UploadTable t2)
@@ -524,6 +517,11 @@ public class Uploader implements ActionListener, WindowStateListener
         {
             int fromIdx = uploadTables.indexOf(move.getSecond());
             int toIdx = uploadTables.indexOf(move.getFirst());
+            if (toIdx > fromIdx)
+            {
+                log.error("Can't meet ordering constraits: " + move.getFirst().getTable().getName() + "," + move.getSecond().getTable().getName());
+                throw new UploaderException("The Dataset is not uploadable.", UploaderException.ABORT_IMPORT);
+            }
             uploadTables.remove(fromIdx);
             uploadTables.insertElementAt(move.getSecond(), toIdx);
         }
