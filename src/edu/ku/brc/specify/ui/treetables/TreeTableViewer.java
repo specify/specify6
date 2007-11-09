@@ -15,6 +15,7 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.dnd.DnDConstants;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -44,6 +45,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JViewport;
 import javax.swing.KeyStroke;
 import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
@@ -1032,8 +1034,11 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         {
             TreeNode parentNode = listModel.getNodeById(parentId);
             // I doubled this call b/c Swing wasn't doing this unless I put it in here twice
-            list.setSelectedValue(parentNode,true);
-            list.setSelectedValue(parentNode,true);
+            list.setSelectedValue(parentNode,false);
+            list.setSelectedValue(parentNode,false);
+            
+            int listIndex = (list == lists[0]) ? 0 : 1;
+            scrollToShowNode(parentNode, listIndex);
         }
 	}
 			
@@ -1072,8 +1077,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		if((where & DualViewSearchable.TOPVIEW) != 0)
 		{
             // I doubled this call b/c Swing wasn't doing this unless I put it in here twice
-			lists[0].setSelectedValue(firstMatchNode,true);
-            lists[0].setSelectedValue(firstMatchNode,true);
+			lists[0].setSelectedValue(firstMatchNode,false);
+            lists[0].setSelectedValue(firstMatchNode,false);
+            
+            scrollToShowNode(firstMatchNode, 0);
 		}
 		if((where & DualViewSearchable.BOTTOMVIEW) != 0)
 		{
@@ -1082,10 +1089,32 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 toggleViewMode();
             }
             // I doubled this call b/c Swing wasn't doing this unless I put it in here twice
-            lists[1].setSelectedValue(firstMatchNode,true);
-            lists[1].setSelectedValue(firstMatchNode,true);
-		}
+            lists[1].setSelectedValue(firstMatchNode,false);
+            lists[1].setSelectedValue(firstMatchNode,false);
+            
+            scrollToShowNode(firstMatchNode, 1);
+        }
 	}
+    
+    protected void scrollToShowNode(TreeNode node, int listIndex)
+    {
+        int nodeIndex = listModel.indexOf(node);
+        if (nodeIndex != -1)
+        {
+            Rectangle listCellBounds = lists[listIndex].getUI().getCellBounds(lists[listIndex], nodeIndex, nodeIndex);
+            Pair<Integer, Integer> textBounds = listCellRenderer.getTextBoundsForRank(node.getRank());
+            if (textBounds != null)
+            {
+                Rectangle textRectangle = new Rectangle();
+                textRectangle.x = textBounds.first;
+                textRectangle.y = listCellBounds.y;
+                textRectangle.width = textBounds.second - textBounds.first;
+                textRectangle.height = listCellBounds.height;
+                
+                scrollers[listIndex].getViewport().scrollRectToVisible(textRectangle);
+            }
+        }
+    }
 	
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.tasks.DualViewSearchable#findNext(java.lang.String, int, boolean)

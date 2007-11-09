@@ -334,4 +334,16 @@ public class TreeViewerListModel extends AbstractListModel
     {
         fireContentsChanged(this,0,visibleSize-1);
     }
+    
+    public synchronized int indexOf(TreeNode node)
+    {
+        int i = nodes.indexOf(node);
+        int visRootIndex = nodes.indexOf(visibleRoot);
+        
+        if (i >= visRootIndex)
+        {
+            return i - visRootIndex;
+        }
+        return -1;
+    }
 }
