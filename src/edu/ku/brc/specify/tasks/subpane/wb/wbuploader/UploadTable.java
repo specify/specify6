@@ -1452,8 +1452,21 @@ public class UploadTable implements Comparable<UploadTable>
                         .getDefaultValueArg()[0]));
             }
 
-            int tableId = -1;
-            List<DataModelObjBase> matches = (List<DataModelObjBase>) critter.list();
+            List<DataModelObjBase> matches;
+            List<DataModelObjBase> matchList = (List<DataModelObjBase>) critter.list();
+            if (matchList.size() > 1)
+            {
+                //filter out duplicates. This seems very weird, but docs i found say it is normal for
+                //list() to return duplicate objects, and they did not mention any sort of 'select distinct' property.
+                //It is more efficent code-wise and possibly more efficient performance-wise to do it this way than to call uniqueResult() and catch 
+                // NonUniqueResult execption and then call list()...
+                Set<DataModelObjBase> matchSet = new HashSet<DataModelObjBase>(matchList);
+                matches = new ArrayList<DataModelObjBase>(matchSet);
+            }
+            else
+            {
+                matches = matchList;
+            }
             if (needToMatchChildren())
             {
                 matches = matchChildren(matches, recNum);
@@ -1464,27 +1477,7 @@ public class UploadTable implements Comparable<UploadTable>
             }
             else if (matches.size() > 1)
             {
-                String title = null;
-                if (tableId != -1)
-                {
-                    DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(tableId);
-                    if (ti != null)
-                    {
-                        title = ti.getTitle();
-                    }
-                }
-
-                String msg = title != null ? String.format("Choose the a %s", title)
-                        : "Choose the best Match";
-
-                ChooseFromListDlg<DataModelObjBase> dlg = new ChooseFromListDlg<DataModelObjBase>(
-                        null, msg, matches);
-                dlg.setModal(true);
-                dlg.setVisible(true);
-                if (!dlg.isCancelled())
-                {
-                    match = dlg.getSelectedObject();
-                }
+                match = dealWithMultipleMatches(matches);
             }
         }
         finally
@@ -1502,6 +1495,30 @@ public class UploadTable implements Comparable<UploadTable>
             return true;
         }
         return false;
+    }
+    
+    /**
+     * @param matches
+     * @return 
+     */
+    protected DataModelObjBase dealWithMultipleMatches(List<DataModelObjBase> matches)
+    {
+        String title = null;
+        DBTableInfo ti = DBTableIdMgr.getInstance().getInfoByTableName(getWriteTable().getName());        
+        if (ti != null)
+        {
+            title = ti.getTitle();
+        }
+
+        String msg = title != null ? String.format("Choose the a %s", title)
+                : "Choose the best Match"; //i18n
+
+        ChooseFromListDlg<DataModelObjBase> dlg = new ChooseFromListDlg<DataModelObjBase>(null,
+                msg, matches);
+        dlg.setModal(true);
+        dlg.setVisible(true);
+        if (!dlg.isCancelled()) { return dlg.getSelectedObject(); }
+        return null; 
     }
     
     /**
