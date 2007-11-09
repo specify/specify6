@@ -51,6 +51,7 @@ import edu.ku.brc.specify.ui.HelpMgr;
 public class CustomDialog extends JDialog
 {
     // Static Data Members
+    public static final int NONE_BTN           = 0;
     public static final int OK_BTN             = 1;
     public static final int CANCEL_BTN         = 2;
     public static final int HELP_BTN           = 4;
@@ -76,7 +77,7 @@ public class CustomDialog extends JDialog
 
     protected ImageIcon         icon             = null;
     protected boolean           isCancelled      = true;
-    protected int               btnPressed       = CANCEL_BTN;
+    protected int               btnPressed       = NONE_BTN;
     
     protected JPanel            mainPanel;
 
@@ -475,5 +476,13 @@ public class CustomDialog extends JDialog
     public JButton getOkBtn()
     {
         return okBtn;
+    }
+    
+    /**
+     * Method for derived classes to override.
+     */
+    public void cleanUp()
+    {
+        // no op
     }
 }

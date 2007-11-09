@@ -112,7 +112,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
     // Related Tables
     protected JList                          rtTableList;
     protected JList                          relatedTablesList;
-    protected DefaultListModel               relatedTablesModel = new DefaultListModel();
+    protected DefaultListModel               relatedTablesModel  = new DefaultListModel();
     protected JTextArea                      relatedTableDescTA;
     
     protected SearchConfigService            searchConfigService = SearchConfigService.getInstance();
@@ -691,6 +691,9 @@ public class ExpressSearchConfigDlg extends CustomDialog
         super.cancelButtonPressed();
     }
     
+    /**
+     * 
+     */
     protected void pruneTree()
     {
         // Now Prune out anything that is not being used
@@ -979,6 +982,18 @@ public class ExpressSearchConfigDlg extends CustomDialog
         }
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CustomDialog#cleanUp()
+     */
+    @Override
+    public void cleanUp()
+    {
+        if (btnPressed == NONE_BTN)
+        {
+            pruneTree();
+        }
+    }
+
     //------------------------------------------------------------------------------
     //-- Renderer for the Combobox in the table
     //------------------------------------------------------------------------------
