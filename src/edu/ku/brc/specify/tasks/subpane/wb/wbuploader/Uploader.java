@@ -1678,6 +1678,7 @@ public class Uploader implements ActionListener, WindowStateListener
                 {
                     for (int r = 0; r < uploadData.getRows();)
                     {
+                        log.debug("uploading row " + String.valueOf(r));
                         if (!holdIt)
                         {
                             setCurrentOpProgress(r + 1);

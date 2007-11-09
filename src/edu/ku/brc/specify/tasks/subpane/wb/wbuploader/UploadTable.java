@@ -9,6 +9,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.math.BigDecimal;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -18,7 +19,6 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.hibernate.NonUniqueResultException;
 import org.hibernate.criterion.Restrictions;
 
 import edu.ku.brc.dbsupport.DBFieldInfo;
@@ -1189,10 +1189,11 @@ public class UploadTable implements Comparable<UploadTable>
     }
     
     
-    protected boolean checkChildrenMatch(DataModelObjBase match) throws UploaderException
+    protected boolean checkChildrenMatch(int recNum) throws UploaderException
     {
-        log.debug("Checking to see if children match:" + match);
         boolean result = true;
+        DataModelObjBase match = getCurrentRecord(recNum);
+        log.debug("Checking to see if children match:" + tblClass.toString() + "=" + match.getId());
         if (tblClass.equals(CollectingEvent.class)) 
         { 
             for (UploadTable child : matchChildren)
@@ -1226,7 +1227,6 @@ public class UploadTable implements Comparable<UploadTable>
                                 result = false;
                                 break;
                             }
-                            child.skipRow = true;
                         }
                     }
                     finally
@@ -1245,10 +1245,8 @@ public class UploadTable implements Comparable<UploadTable>
             for (UploadTable child : matchChildren)
             {
                 log.debug(child.getTable().getName());
-                boolean processedChild = false;
                 if (child.getTblClass().equals(AccessionAgent.class))
                 {
-                    processedChild = true;
                     DataProviderSessionIFace matchSession = DataProviderFactory.getInstance()
                             .createSession();
                     try
@@ -1286,7 +1284,6 @@ public class UploadTable implements Comparable<UploadTable>
                 }
                 else if (child.getTblClass().equals(AccessionAuthorization.class))
                 {
-                    processedChild = true;
                     DataProviderSessionIFace matchSession = DataProviderFactory.getInstance()
                             .createSession();
                     try
@@ -1324,10 +1321,6 @@ public class UploadTable implements Comparable<UploadTable>
                     }
 
                 }
-                if (result && processedChild)
-                {
-                    child.skipRow = true;
-                }
                 else if (!result)
                 {
                     break;
@@ -1340,20 +1333,12 @@ public class UploadTable implements Comparable<UploadTable>
             throw new UploaderException("Unable to check matching children for " + tblClass.getName(),
                 UploaderException.ABORT_IMPORT);
         }
-        if (!result)
-        {
-            for (UploadTable child : matchChildren)
-            {
-                child.skipRow = false;
-            }
-        }
         return result; 
     }
     
     protected boolean needToMatchChildren()
     {
-        //temporary fix. Should determine based on cascade rules and the fields in the dataset.
-        //Currently, I think, CollectingEvent is the only class that applies.
+        //temporary fix. Really should determine based on cascade rules and the fields in the dataset.
         return tblClass.equals(CollectingEvent.class)
           || tblClass.equals(Accession.class)
           || tblClass.equals(CollectionObject.class);  
@@ -1361,6 +1346,7 @@ public class UploadTable implements Comparable<UploadTable>
     
     protected boolean needToMatchChild(Class<?> childClass)
     {
+        //temporary fix. Really should determine based on cascade rules and the fields in the dataset.
         if (tblClass.equals(Accession.class)) 
         { 
             return childClass.equals(AccessionAgent.class)
@@ -1377,6 +1363,48 @@ public class UploadTable implements Comparable<UploadTable>
         return false;
     }
     
+    /**
+     * @param critter
+     * @param propName
+     * @param arg
+     * 
+     * Adds a restriction to critter for propName.
+     */
+    protected void addRestriction(CriteriaIFace critter, String propName, Object arg)
+    {
+        if (arg != null)
+        {
+            critter.add(Restrictions.eq(propName, arg));
+        }
+        else
+        {
+            critter.add(Restrictions.isNull(propName));
+        }
+    }
+    
+    protected List<DataModelObjBase> matchChildren(List<DataModelObjBase> matches, int recNum) throws UploaderException
+    {
+        List<DataModelObjBase> result = new ArrayList<DataModelObjBase>();
+        for (DataModelObjBase currMatch : matches)
+        {
+            DataModelObjBase saveRec = getCurrentRecord(recNum);
+            try
+            {
+                // set current record so children access the current id when matching.
+                setCurrentRecord(currMatch, recNum);
+                if (checkChildrenMatch(recNum))
+                {
+                    result.add(currMatch);
+                }
+            }
+            finally
+            {
+                setCurrentRecord(saveRec, recNum);
+            }
+        }
+        return result;
+    }
+    
    /**
      * @param recNum
      * @return
@@ -1390,13 +1418,11 @@ public class UploadTable implements Comparable<UploadTable>
      * found.
      */
     @SuppressWarnings("unchecked")
-  protected boolean findMatch(int recNum) throws UploaderException, InvocationTargetException,
-            IllegalAccessException, ParseException, NoSuchMethodException
+  protected boolean findMatch(int recNum, boolean forceMatch) throws UploaderException,
+            InvocationTargetException, IllegalAccessException, ParseException,
+            NoSuchMethodException
     {
-        if (!hasChildren || tblClass == CollectionObject.class)
-        {
-            return false;
-        }
+        if (!forceMatch && (!hasChildren || tblClass == CollectionObject.class)) { return false; }
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         DataModelObjBase match = null;
         try
@@ -1406,30 +1432,14 @@ public class UploadTable implements Comparable<UploadTable>
             {
                 if (uf.getSetter() != null)
                 {
-                    Object arg = getArgForSetter(uf)[0];
-                    if (arg != null)
-                    {
-                        critter.add(Restrictions.eq(deCapitalize(uf.getField().getName()), arg));
-                    }
-                    else
-                    {
-                        critter.add(Restrictions.isNull(deCapitalize(uf.getField().getName())));
-                    }
+                    addRestriction(critter, deCapitalize(uf.getField().getName()), getArgForSetter(uf)[0]);
                 }
             }
             for (Vector<ParentTableEntry> ptes : parentTables)
             {
                 for (ParentTableEntry pte : ptes)
                 {
-                    Object arg = pte.getImportTable().getCurrentRecord(recNum);
-                    if (arg != null)
-                    {
-                        critter.add(Restrictions.eq(pte.getPropertyName(), arg));
-                    }
-                    else
-                    {
-                        critter.add(Restrictions.isNull(pte.getPropertyName()));
-                   }
+                    addRestriction(critter, pte.getPropertyName(), pte.getImportTable().getCurrentRecord(recNum));
                 }
             }
             for (RelatedClassEntry rce : relatedClassDefaults)
@@ -1438,48 +1448,42 @@ public class UploadTable implements Comparable<UploadTable>
             }
             for (DefaultFieldEntry dfe : missingRequiredFlds)
             {
-                critter.add(Restrictions.eq(deCapitalize(dfe.getFldName()), dfe.getDefaultValueArg()[0]));
+                critter.add(Restrictions.eq(deCapitalize(dfe.getFldName()), dfe
+                        .getDefaultValueArg()[0]));
             }
-            
+
             int tableId = -1;
-            try
+            List<DataModelObjBase> matches = (List<DataModelObjBase>) critter.list();
+            if (needToMatchChildren())
             {
-                match   = (DataModelObjBase)critter.uniqueResult();
-                if (match != null)
-                {
-                    tableId = match.getTableId();
-                }
-                if (match != null && needToMatchChildren() && !checkChildrenMatch(match))
-                {
-                    match = null;
-                }
+                matches = matchChildren(matches, recNum);
             }
-            catch (NonUniqueResultException hex)
+            if (matches.size() == 1)
             {
-                match = null;
-                List<?> matches = critter.list();
-                if (matches.size() != 0)
+                match = matches.get(0);
+            }
+            else if (matches.size() > 1)
+            {
+                String title = null;
+                if (tableId != -1)
                 {
-                    String title = null;
-                    if (tableId != -1)
+                    DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(tableId);
+                    if (ti != null)
                     {
-                        DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(tableId);
-                        if (ti != null)
-                        {
-                            title = ti.getTitle();
-                        }
+                        title = ti.getTitle();
                     }
-                    
-                    String msg = title != null ? String.format("Choose the a %s", title) : "Choose the best Match";
-                    
-                    ChooseFromListDlg<DataModelObjBase> dlg = new ChooseFromListDlg<DataModelObjBase>(
-                                                                     null, msg, (List<DataModelObjBase>) matches);
-                    dlg.setModal(true);
-                    dlg.setVisible(true);
-                    if (!dlg.isCancelled())
-                    {
-                        match = dlg.getSelectedObject();
-                    }
+                }
+
+                String msg = title != null ? String.format("Choose the a %s", title)
+                        : "Choose the best Match";
+
+                ChooseFromListDlg<DataModelObjBase> dlg = new ChooseFromListDlg<DataModelObjBase>(
+                        null, msg, matches);
+                dlg.setModal(true);
+                dlg.setVisible(true);
+                if (!dlg.isCancelled())
+                {
+                    match = dlg.getSelectedObject();
                 }
             }
         }
@@ -1490,6 +1494,11 @@ public class UploadTable implements Comparable<UploadTable>
         if (match != null)
         {
             setCurrentRecord(match, recNum);
+            // if a match was found matchChildren don't need to do anything.
+            for (UploadTable child : matchChildren)
+            {
+                child.skipRow = true;
+            }
             return true;
         }
         return false;
@@ -1634,14 +1643,14 @@ public class UploadTable implements Comparable<UploadTable>
      */
     protected void loadFromDataSet() throws UploaderException
     {
-        writeRowOrNot(true);
+        writeRowOrNot(true, true);
     }
     
     protected void writeRow() throws UploaderException
     {
         if (!skipRow)
         {
-            writeRowOrNot(false);
+            writeRowOrNot(false, false);
         }
         else
         {
@@ -1654,7 +1663,7 @@ public class UploadTable implements Comparable<UploadTable>
      * 
      * @throws UploaderException
      */
-    protected void writeRowOrNot(final boolean doNotWrite) throws UploaderException
+    protected void writeRowOrNot(boolean doNotWrite, boolean forceMatch) throws UploaderException
     {
         int recNum = 0;
         log.debug("writeRowOrNot: " + this.table.getName());
@@ -1662,7 +1671,7 @@ public class UploadTable implements Comparable<UploadTable>
         {
            try
             {
-                if (!findMatch(recNum))
+                if (!findMatch(recNum, forceMatch))
                 {
                     DataModelObjBase rec = getCurrentRecordForSave(recNum);
                     rec.initialize();
