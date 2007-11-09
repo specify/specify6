@@ -21,7 +21,6 @@ import static org.apache.commons.lang.StringUtils.split;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.Font;
 import java.awt.Insets;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -89,6 +88,7 @@ import edu.ku.brc.ui.forms.validation.FormValidator;
 import edu.ku.brc.ui.forms.validation.TypeSearchForQueryFactory;
 import edu.ku.brc.ui.forms.validation.UIValidatable;
 import edu.ku.brc.ui.forms.validation.UIValidator;
+import edu.ku.brc.ui.forms.validation.ValBrowseBtnPanel;
 import edu.ku.brc.ui.forms.validation.ValCheckBox;
 import edu.ku.brc.ui.forms.validation.ValComboBox;
 import edu.ku.brc.ui.forms.validation.ValComboBoxFromQuery;
@@ -1052,11 +1052,24 @@ public class ViewFactory
                 }
                 
                 case browse:
-                    BrowseBtnPanel bbp = new BrowseBtnPanel(createTextField(validator, cellField, null), 
-                                                            cellField.getPropertyAsBoolean("dirsonly", false), 
-                                                            cellField.getPropertyAsBoolean("forinput", true));
-                    bi.compToAdd = bbp;
+                {
+                    JTextField textField = createTextField(validator, cellField, null);
+                    if (textField instanceof ValTextField)
+                    {
+                        ValBrowseBtnPanel bbp = new ValBrowseBtnPanel((ValTextField)textField, 
+                                                                      cellField.getPropertyAsBoolean("dirsonly", false), 
+                                                                      cellField.getPropertyAsBoolean("forinput", true));
+                        bi.compToAdd = bbp;
+                        
+                    } else
+                    {
+                        BrowseBtnPanel bbp = new BrowseBtnPanel(textField, 
+                                cellField.getPropertyAsBoolean("dirsonly", false), 
+                                cellField.getPropertyAsBoolean("forinput", true));
+                        bi.compToAdd = bbp;
+                    }
                     break;
+                }
                     
                 case querycbx:
                 {

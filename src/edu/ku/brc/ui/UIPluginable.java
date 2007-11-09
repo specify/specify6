@@ -30,7 +30,7 @@ public interface UIPluginable
     /**
      * Sets the property list into the plugin control
      * @param properties the map of properties
-     * @param isViewMode indicates whether the plugin is being created to be vewed or is in edit mode.
+     * @param isViewMode indicates whether the plugin is being created to be viewed or is in edit mode.
      */
     public void initialize(Properties properties, boolean isViewMode);
     
@@ -40,13 +40,7 @@ public interface UIPluginable
      */
     public void setCellName(String cellName);
     
-    /**
-     * Indicates this is for display and NOT editting, or it is for editting.
-     * @param isDisplayOnly true - display, false - editting
-     */
-    public void setIsDisplayOnly(boolean isDisplayOnly);
-    
-    /**
+     /**
      * Sets a single ChangeListener.
      * @param listener the listener
      */

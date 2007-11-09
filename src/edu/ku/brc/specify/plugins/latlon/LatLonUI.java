@@ -90,6 +90,7 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
     protected JPanel             rightPanel;
     protected Border             panelBorder = BorderFactory.createEtchedBorder();
     protected JLabel             typeLabel   = null;
+    protected boolean            isViewMode  = false;
     
     protected Locality           locality;
     protected LatLonUIIFace[]    panels;
@@ -97,7 +98,6 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
     
     // UIPluginable
     protected String             cellName       = null;
-    protected boolean            isDisplayOnly  = true;
     protected ChangeListener     changeListener = null;
     
     // UIValidatable && UIPluginable
@@ -169,7 +169,7 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
             {
                 LatLonUIIFace latLon1 = Class.forName("edu.ku.brc.specify.plugins.latlon."+formatClass[i]).asSubclass(LatLonUIIFace.class).newInstance();
                 latLon1.setIsRequired(isRequired);
-                latLon1.setViewMode(isDisplayOnly);
+                latLon1.setViewMode(isViewMode);
                 latLon1.init();
                 latLon1.setChangeListener(this);
                 
@@ -180,7 +180,7 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
 
                 LatLonUIIFace latlon2 = Class.forName("edu.ku.brc.specify.plugins.latlon."+formatClass[i]).asSubclass(LatLonUIIFace.class).newInstance();
                 latlon2.setIsRequired(isRequired);
-                latlon2.setViewMode(isDisplayOnly);
+                latlon2.setViewMode(isViewMode);
                 latlon2.init();
                 latlon2.setChangeListener(this);
 
@@ -244,14 +244,14 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
         }
         botBtns[0].setSelected(true);
         
-        if (isDisplayOnly)
+        if (isViewMode)
         {
             typeLabel   = new JLabel();
         }
         
         PanelBuilder    topPane    = new PanelBuilder(new FormLayout("l:p, c:p:g", "p"));
         topPane.add(formatSelector,       cc.xy(1, 1));
-        topPane.add(isDisplayOnly ? typeLabel : botBtnBar.getPanel(), cc.xy(2, 1));
+        topPane.add(isViewMode ? typeLabel : botBtnBar.getPanel(), cc.xy(2, 1));
         
         builder.add(topPane.getPanel(), cc.xy(1, 1));
         builder.add(cardPanel,          cc.xy(1, 3));
@@ -419,7 +419,7 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
      */
     public void initialize(final Properties properties, final boolean isViewMode)
     {
-        this.isDisplayOnly = isViewMode;
+        this.isViewMode = isViewMode;
         createEditUI();
     }
     
@@ -432,14 +432,6 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
     }
     
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIPluginable#setIsDisplayOnly(boolean)
-     */
-    public void setIsDisplayOnly(boolean isDisplayOnly)
-    {
-        this.isDisplayOnly = isDisplayOnly;
-    }
-    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.UIPluginable#setChangeListener(javax.swing.event.ChangeListener)
      */

@@ -81,11 +81,6 @@ public class SubformLauncherButton extends JButton implements GetSetValueIFace, 
         // do nothing
     }
 
-    public void setIsDisplayOnly(boolean isDisplayOnly)
-    {
-        // do nothing
-    }
-
     public void actionPerformed(ActionEvent e)
     {
         Object dataToSend = null;

@@ -39,7 +39,6 @@ public class UIPluginBase extends JPanel implements GetSetValueIFace, UIPluginab
     protected Object         data          = null;
     protected ChangeListener listener      = null;
     protected String         cellName      = null;
-    protected boolean        isDisplayOnly = true;
     protected boolean        isViewMode    = true;
     protected Properties     properties    = null;
     
@@ -103,14 +102,6 @@ public class UIPluginBase extends JPanel implements GetSetValueIFace, UIPluginab
     public void setChangeListener(final ChangeListener listener)
     {
         this.listener = listener;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIPluginable#setIsDisplayOnly(boolean)
-     */
-    public void setIsDisplayOnly(boolean isDisplayOnly)
-    {
-        this.isDisplayOnly = isDisplayOnly;
     }
 
 }

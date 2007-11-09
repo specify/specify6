@@ -160,11 +160,6 @@ public class WebLinkLauncherButton extends JButton implements UIPluginable, GetS
         // ignore
     }
 
-    public void setIsDisplayOnly(boolean isDisplayOnly)
-    {
-        // ignore
-    }
-    
     //--------------------------------------------------------
     //-- GetSetValueIFace
     //--------------------------------------------------------

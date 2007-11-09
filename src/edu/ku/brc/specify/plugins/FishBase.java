@@ -244,16 +244,6 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
         
     }
 
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIPluginable#setIsDisplayOnly(boolean)
-     */
-    public void setIsDisplayOnly(boolean isDisplayOnly)
-    {
-        // TODO Auto-generated method stub
-        
-    }
-    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.UIPluginable#getUIComponent()
      */

@@ -150,13 +150,10 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
         
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.UIPluginable#setIsDisplayOnly(boolean)
-     */
-    public void setIsDisplayOnly(boolean isDisplayOnly)
-    {
-        // no op
-    }
+    
+    //---------------------------------------------------------------------------------
+    //-- Inner Classes
+    //---------------------------------------------------------------------------------
     
     class CEPlacemark implements GoogleEarthPlacemarkIFace 
     {
