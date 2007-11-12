@@ -451,7 +451,8 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         
         T mergedParent = session.merge(parent);
         session.refresh(mergedParent);
-
+        parentNN = mergedParent.getNodeNumber();
+        
         String className = mergedParent.getClass().getName();
         TreeDefIface<T,D,I> def = mergedParent.getDefinition();
 
