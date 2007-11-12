@@ -36,6 +36,7 @@ import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.Determination;
+import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
@@ -1068,7 +1069,14 @@ public class UploadTable implements Comparable<UploadTable>
         if (fldClass == java.util.Calendar.class || fldClass == java.util.Date.class)
         {
             //There are problems with DateConverter (see DateConverter)
-            arg[0] = dateConverter.convert(fld.getValue());
+            if (fld.getValue() == null || fld.getValue().equals(""))
+            {
+                arg[0] = null;
+            }
+            else
+            {
+                arg[0] = dateConverter.convert(fld.getValue());
+            }
         }
         else if (fldClass == BigDecimal.class)
         {
@@ -1477,7 +1485,15 @@ public class UploadTable implements Comparable<UploadTable>
             }
             else if (matches.size() > 1)
             {
-                match = dealWithMultipleMatches(matches);
+                //don't bother anybody with DeterminationStatus, for now.
+                if (tblClass.equals(DeterminationStatus.class))
+                {
+                    match = matches.get(0);
+                }
+                else
+                {
+                    match = dealWithMultipleMatches(matches);
+                }
             }
         }
         finally
