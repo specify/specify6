@@ -1430,7 +1430,7 @@ public class UploadTable implements Comparable<UploadTable>
             InvocationTargetException, IllegalAccessException, ParseException,
             NoSuchMethodException
     {
-        if (!forceMatch && (!hasChildren || tblClass == CollectionObject.class)) { return false; }
+        //if (!forceMatch && (!hasChildren || tblClass == CollectionObject.class)) { return false; }
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         DataModelObjBase match = null;
         try
