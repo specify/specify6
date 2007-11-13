@@ -51,7 +51,6 @@
 		<plugin name="FishBase" class="edu.ku.brc.specify.plugins.FishBase"/>
 		<plugin name="LatLonUI" class="edu.ku.brc.specify.plugins.latlon.LatLonUI"/>
 		<plugin name="TaxonLabelFormatting" class="edu.ku.brc.specify.plugins.TaxonLabelFormatting"/>
-		<plugin name="SubformLauncherButton" class="edu.ku.brc.specify.plugins.SubformLauncherButton"/>
 		
 	</uiplugins>
 	
