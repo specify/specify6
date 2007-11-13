@@ -1732,24 +1732,50 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			return false;
 		}
 
+		String dropActionText = null;
+		switch (dropAction)
+		{
+		case DnDConstants.ACTION_COPY:
+			dropActionText = "COPY";
+			break;
+		case DnDConstants.ACTION_LINK:
+			dropActionText = "LINK";
+			break;
+		case DnDConstants.ACTION_MOVE:
+			dropActionText = "MOVE";
+			break;
+		case DnDConstants.ACTION_NONE:
+			dropActionText = "NONE";
+			break;
+		}
+		log.debug(dragged + " is being dragged over " + droppedOn + " with action " + dropActionText);
+		
 		if(dropAction == DnDConstants.ACTION_COPY  || dropAction == DnDConstants.ACTION_NONE)
 		{
+			//log.debug("determining if request to synonymize node " + dragged + " to node " + droppedOn + " is acceptable");
             // this is a request to make a node relationship (e.g. synonym on a Taxon record)
-			if(dragged instanceof TreeNode && droppedOn instanceof TreeNode)
+			if( !(dragged instanceof TreeNode && droppedOn instanceof TreeNode))
 			{
-                TreeNode droppedOnNode = (TreeNode)droppedOn;
-                if (droppedOnNode.getAcceptedParentId() == null && droppedOnNode != dragged)
-                {
-                    return true;
-                }
+				//log.debug("Synonymization request IS NOT acceptable.  One or both objects are not TreeNodes.");
 				return false;
 			}
+			
+			TreeNode droppedOnNode = (TreeNode)droppedOn;
+			if (droppedOnNode.getAcceptedParentId() == null)
+			{
+				//log.debug("Synonymization request IS acceptable.");
+				return true;
+			}
+			//log.debug("Synonymization request IS NOT acceptable.  Drop target is not an accepted name.");
+			return false;
 		}
 		else if(dropAction == DnDConstants.ACTION_MOVE)
 		{
             // this is a request to reparent a node
+			//log.debug("determining if request to reparent node " + dragged + " to node " + droppedOn + " is acceptable");
 			if( !(dragged instanceof TreeNode && droppedOn instanceof TreeNode) )
 			{
+            	//log.debug("Reparent request IS NOT acceptable.  One or both objects are not TreeNodes.");
 				return false;
 			}
 			
@@ -1760,11 +1786,14 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 
 			if( !TreeHelper.canChildBeReparentedToNode(draggedRecord,droppedOnRecord) )
 			{
+            	//log.debug("Reparent request IS NOT acceptable.");
 				return false;
 			}
+        	//log.debug("Reparent request IS acceptable.");
 			return true;
 		}
 		
+    	log.debug("DnD action (" + dropActionText + ") is not handled.");
 		return false;
 	}
 
