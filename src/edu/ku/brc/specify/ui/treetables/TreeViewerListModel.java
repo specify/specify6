@@ -31,6 +31,8 @@ public class TreeViewerListModel extends AbstractListModel
     protected TreeNode visibleRoot;
     protected int visibleSize;
     
+    protected TreeNode dropLocationNode;
+    
     protected Set<Integer> idsShowingChildren = new HashSet<Integer>();
     
     public TreeViewerListModel(TreeNode rootNode)
@@ -61,7 +63,24 @@ public class TreeViewerListModel extends AbstractListModel
         return visibleSize;
     }
     
-    public synchronized TreeNode getVisibleRoot()
+    public TreeNode getDropLocationNode()
+	{
+		return dropLocationNode;
+	}
+
+	public void setDropLocationNode(Object dropLocationNode)
+	{
+		if (dropLocationNode instanceof TreeNode)
+		{
+			this.dropLocationNode = (TreeNode)dropLocationNode;
+		}
+		else
+		{
+			this.dropLocationNode = null;
+		}
+	}
+
+	public synchronized TreeNode getVisibleRoot()
     {
         return visibleRoot;
     }

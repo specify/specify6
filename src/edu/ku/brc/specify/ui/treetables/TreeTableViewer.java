@@ -1628,6 +1628,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		{
 			return false;
 		}
+		
+		listModel.setDropLocationNode(null);
+		repaint();
 
 		if( !(dragged instanceof TreeNode && droppedOn instanceof TreeNode) )
 		{
@@ -1732,6 +1735,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			return false;
 		}
 
+		listModel.setDropLocationNode(droppedOn);
+		repaint();
+		
 		String dropActionText = null;
 		switch (dropAction)
 		{
@@ -1761,6 +1767,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			}
 			
 			TreeNode droppedOnNode = (TreeNode)droppedOn;
+			
 			if (droppedOnNode.getAcceptedParentId() == null)
 			{
 				//log.debug("Synonymization request IS acceptable.");

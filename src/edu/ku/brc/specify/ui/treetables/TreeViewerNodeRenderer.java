@@ -60,6 +60,7 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
     protected boolean widthsValid;
 
     protected Color bgs[];
+    protected Color secondarySelectionColor;
     
     protected int leadTextOffset;
     protected int tailTextOffset;
@@ -84,6 +85,8 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         bgs = new Color[2];
         bgs[0] = bgColors[0];
         bgs[1] = bgColors[1];
+    
+        secondarySelectionColor = Color.YELLOW;
         
         open   = IconManager.getIcon("Down",    IconManager.IconSize.NonStd);
         closed = IconManager.getIcon("Forward", IconManager.IconSize.NonStd);
@@ -588,6 +591,12 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
             if( selected )
             {
                 g2d.setColor(list.getSelectionBackground());
+                g2d.fillRoundRect(stringStartX-2, 1, stringLength+4, cellHeight-2, 8, 8);
+                g2d.setColor(list.getSelectionForeground());
+            }
+            if (treeNode == model.getDropLocationNode())
+            {
+                g2d.setColor(secondarySelectionColor);
                 g2d.fillRoundRect(stringStartX-2, 1, stringLength+4, cellHeight-2, 8, 8);
                 g2d.setColor(list.getSelectionForeground());
             }
