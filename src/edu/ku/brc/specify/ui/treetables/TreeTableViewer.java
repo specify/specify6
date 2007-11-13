@@ -45,7 +45,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.JViewport;
 import javax.swing.KeyStroke;
 import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
@@ -1724,7 +1723,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		return false;
 	}
 	
-	/* (non-Javadoc)
+    /* (non-Javadoc)
 	 * @see edu.ku.brc.ui.DragDropCallback#dropAcceptable(java.lang.Object, java.lang.Object, int)
 	 */
 	@SuppressWarnings("unchecked")
