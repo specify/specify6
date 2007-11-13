@@ -36,9 +36,12 @@ public class ToolBarDropDownBtn extends DropDownButton
      * @param icon the icon
      * @param textPosition the position of the text as related to the icon
      */
-    public ToolBarDropDownBtn(final String label, final ImageIcon icon, final int textPosition)
+    public ToolBarDropDownBtn(final String label, 
+                              final ImageIcon icon, 
+                              final int textPosition, 
+                              final boolean addArrowBtn)
     {
-        super(label, icon, null, textPosition);
+        super(label, icon, null, textPosition, addArrowBtn);
     }
 
     /**
@@ -48,9 +51,13 @@ public class ToolBarDropDownBtn extends DropDownButton
      * @param toolTip the toolTip
      * @param textPosition the position of the text as related to the icon
      */
-    public ToolBarDropDownBtn(final String label, final ImageIcon icon, final String toolTip, final int textPosition)
+    public ToolBarDropDownBtn(final String label, 
+                              final ImageIcon icon, 
+                              final String toolTip, 
+                              final int textPosition, 
+                              final boolean addArrowBtn)
     {
-        super(label, icon, toolTip, textPosition);
+        super(label, icon, toolTip, textPosition, addArrowBtn);
     }
 
     /**
@@ -61,7 +68,10 @@ public class ToolBarDropDownBtn extends DropDownButton
      * @param vertTextPosition the position of the text as related to the icon
      * @param menus the list of menu items and separators
      */
-    public ToolBarDropDownBtn(final String label, final ImageIcon icon, final int vertTextPosition, final List<JComponent> menus)
+    public ToolBarDropDownBtn(final String           label, 
+                              final ImageIcon        icon, 
+                              final int              vertTextPosition, 
+                              final List<JComponent> menus)
     {
         super(label, icon, vertTextPosition, menus);      
      }
@@ -72,7 +82,7 @@ public class ToolBarDropDownBtn extends DropDownButton
      */
     public ToolBarDropDownBtn(final ImageIcon icon)
     {
-        super(icon);
+        super(icon, false);
 
     }
  }

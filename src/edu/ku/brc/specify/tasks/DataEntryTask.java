@@ -64,6 +64,7 @@ import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.DataFlavorTableExt;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UIRegistry;
@@ -204,14 +205,19 @@ public class DataEntryTask extends BaseTask
     {
         ViewIFace view = viewSetName == null ? SpecifyAppContextMgr.getInstance().getView(viewName, CollectionType.getCurrentCollectionType()) : 
                                           AppContextMgr.getInstance().getView(viewSetName, viewName);
-        FormDataObjIFace  dataObj = data;
-        if (dataObj == null)
+        Object           dataObj     = data;
+        FormDataObjIFace formDataObj = data;
+        if (formDataObj == null)
         {
             if (isNewForm)
             {
                 try
                 {
-                    dataObj = FormHelper.createAndNewDataObj(Class.forName(view.getClassName()));
+                    Vector<Object> dataObjList = new Vector<Object>();
+                    formDataObj = FormHelper.createAndNewDataObj(Class.forName(view.getClassName()));
+                    dataObjList.add((Object)formDataObj);
+                    dataObj = dataObjList;
+                    //dataObj = formDataObj;
                     
                 } catch (Exception ex)
                 {
@@ -307,7 +313,11 @@ public class DataEntryTask extends BaseTask
      * @param recordSet the record to create a form for
      * @return the FormPane
      */
-    protected static FormPane createFormFor(final Taskable task, final String name, final RecordSetIFace recordSet)
+    protected static FormPane createFormFor(final Taskable task, 
+                                            final String name, 
+                                            final String viewSetName,
+                                            final String viewName,
+                                            final RecordSetIFace recordSet)
     {
         FormPane formPane = null;
         
@@ -316,15 +326,31 @@ public class DataEntryTask extends BaseTask
         SubPaneIFace subPane = SubPaneMgr.getSubPaneWithRecordSet(recordSet);
         if (subPane == null)
         {
-            String defaultFormName = DBTableIdMgr.getInstance().getDefaultFormNameById(recordSet.getDbTableId());
-
-            if (StringUtils.isNotEmpty(defaultFormName))
+            ViewIFace view = null;
+            
+            if (StringUtils.isNotEmpty(viewSetName) && StringUtils.isNotEmpty(viewName))
             {
-                SpecifyAppContextMgr appContextMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
+                view = viewSetName == null ? SpecifyAppContextMgr.getInstance().getView(viewName, CollectionType.getCurrentCollectionType()) : 
+                                             AppContextMgr.getInstance().getView(viewSetName, viewName);
+            } else
+            {
+                String defaultFormName = DBTableIdMgr.getInstance().getDefaultFormNameById(recordSet.getDbTableId());
     
-                
-                ViewIFace view = appContextMgr.getView(defaultFormName, CollectionType.getCurrentCollectionType());
-                
+                if (StringUtils.isNotEmpty(defaultFormName))
+                {
+                    SpecifyAppContextMgr appContextMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
+                    
+                    view = appContextMgr.getView(defaultFormName, CollectionType.getCurrentCollectionType());
+                     
+                } else
+                {
+                    log.error("No Default View for Table Id["+recordSet.getDbTableId()+"] from recordset");
+                    // XXX Need Error Dialog ??
+                }
+            }
+            
+            if (view != null)
+            {
                 formPane = new FormPane(name, task, view, null, null, MultiView.VIEW_SWITCHER | MultiView.RESULTSET_CONTROLLER);
                 formPane.setIcon(getIconForView(view));
                 formPane.setRecordSet(recordSet);
@@ -333,10 +359,9 @@ public class DataEntryTask extends BaseTask
                 
             } else
             {
-                log.error("No Default View for Table Id["+recordSet.getDbTableId()+"] from recordset");
-                // XXX Need Error Dialog ??
+                throw new RuntimeException("The view was null and shouldn't be!");
             }
-
+            
         } else
         {
             // formPane = subPane instanceof FormPane ? (FormPane) subPane : null;
@@ -398,15 +423,15 @@ public class DataEntryTask extends BaseTask
                         ViewIFace view = appContextMgr.getView(viewsetName, viewName);
                         if (view != null)
                         {
-                            DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
+                            DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
                             //System.out.println(view.getClassName()+" "+ti);
-                            if (ti != null)
+                            if (tableInfo != null)
                             {
                                 CommandAction cmdAction = new CommandAction(DATA_ENTRY, EDIT_DATA);
                                 cmdAction.setProperty("viewset", viewsetName);
                                 cmdAction.setProperty("view",    viewName);
                                 
-                                ContextMgr.registerService(nameStr, ti.getTableId(), cmdAction, this, DATA_ENTRY, toolTip);
+                                ContextMgr.registerService(nameStr, tableInfo.getTableId(), cmdAction, this, DATA_ENTRY, toolTip);
                                 
                                 if (sidebar)
                                 {
@@ -427,10 +452,13 @@ public class DataEntryTask extends BaseTask
                                         
                                         // When Being Dragged
                                         roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
-                                        roc.addDragDataFlavor(DATAENTRY_FLAVOR);
+                                        //roc.addDragDataFlavor(DATAENTRY_FLAVOR);
+                                        roc.addDragDataFlavor(new DataFlavorTableExt(DataEntryTask.class, "Data_Entry", tableInfo.getTableId()));
                                 
                                         // When something is dropped on it
-                                        roc.addDropDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
+                                        //roc.addDropDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
+                                        roc.addDropDataFlavor(new DataFlavorTableExt(RecordSetTask.class, "RECORD_SET", tableInfo.getTableId()));//RecordSetTask.RECORDSET_FLAVOR);
+
                                     }
                 
                                     viewsNavBox.add(nbi);
@@ -501,7 +529,7 @@ public class DataEntryTask extends BaseTask
         String label = getResourceString(DATA_ENTRY);
         String iconName = name;
         String hint = getResourceString("dataentry_hint");
-        ToolBarDropDownBtn btn = createToolbarButton(label,iconName,hint);
+        ToolBarDropDownBtn btn = createToolbarButton(label, iconName, hint);
 
         list.add(new ToolBarItemDesc(btn));
 
@@ -610,6 +638,41 @@ public class DataEntryTask extends BaseTask
     }
     
     /**
+     * Handles creating a form for viewing/editing and that will have data placed into it. The ViewSetName and View name are optional.
+     * @param data the data to be placed into the form
+     * @param viewSetName the optional viewset name (can be null)
+     * @param viewName the optional view name (can be null)
+     */
+    protected void editData(final Object data, 
+                            final String viewSetName,
+                            final String viewName)
+    {
+        if (data instanceof RecordSet)
+        {
+            addSubPaneToMgr(createFormFor(this, name, viewSetName, viewName, (RecordSetIFace)data));
+            
+        } else if (data instanceof Object[])
+        {
+            Object[] dataList = (Object[])data;
+            if (dataList.length == 3)
+            {
+                ViewIFace   view = (ViewIFace)dataList[0];
+                String mode = (String)dataList[1];
+                String idStr = (String)dataList[2];
+                
+                openView(this, view, mode, idStr);
+                
+            } else
+            {
+                log.error("The Edit Command was sent with an object Array that was not 3 components!");
+            }
+        } else
+        {
+            log.error("The Edit Command was sent that didn't have data that was a RecordSet or an Object Array");
+        }
+    }
+    
+    /**
      * Processes all Commands of type DATA_ENTRY.
      * @param cmdAction the command to be processed
      */
@@ -619,34 +682,21 @@ public class DataEntryTask extends BaseTask
         if (cmdAction.isAction(OPEN_NEW_VIEW))
         {
             String viewSetName = cmdAction.getPropertyAsString("viewset");
-            String viewName   = cmdAction.getPropertyAsString("view");
-            openView(this, viewSetName, viewName, "edit", null, true);
+            String viewName    = cmdAction.getPropertyAsString("view");
+            Object data        = cmdAction.getData();
+            
+            if (data instanceof RecordSetIFace)
+            {
+                editData(data, viewSetName, viewName);
+                
+            } else
+            {
+                openView(this, viewSetName, viewName, "edit", null, true);
+            }
             
         } else if (cmdAction.isAction(EDIT_DATA))
         {
-            if (cmdAction.getData() instanceof RecordSet)
-            {
-                addSubPaneToMgr(createFormFor(this, name, (RecordSetIFace)cmdAction.getData()));
-                
-            } else if (cmdAction.getData() instanceof Object[])
-            {
-                Object[] dataList = (Object[])cmdAction.getData();
-                if (dataList.length == 3)
-                {
-                    ViewIFace   view = (ViewIFace)dataList[0];
-                    String mode = (String)dataList[1];
-                    String idStr = (String)dataList[2];
-                    openView(this, view, mode, idStr);
-                    
-                } else
-                {
-                    log.error("The Edit Command was sent with an object Array that was not 3 components!");
-                }
-            } else
-            {
-                log.error("The Edit Command was sent that didn't have data that was a RecordSet or an Object Array");
-            }
-            
+            editData(cmdAction.getData(), null, null);
         }
 //        else if (cmdAction.isAction(EDIT_IN_DIALOG))
 //        {
@@ -677,9 +727,9 @@ public class DataEntryTask extends BaseTask
             if (cmdAction.getData() instanceof Object[])
             {
                 Object[] dataList = (Object[])cmdAction.getData();
-                ViewIFace   view = (ViewIFace)dataList[0];
-                String mode = (String)dataList[1];
-                String idStr = (String)dataList[2];
+                ViewIFace view  = (ViewIFace)dataList[0];
+                String    mode  = (String)dataList[1];
+                String    idStr = (String)dataList[2];
                 openView(this, view, mode, idStr);
             }
         }
@@ -735,7 +785,7 @@ public class DataEntryTask extends BaseTask
             Object srcData = src.getData();
             if (srcData instanceof RecordSet)
             {
-                addSubPaneToMgr(createFormFor(task, "XXXX", (RecordSetIFace)srcData));
+                addSubPaneToMgr(createFormFor(task, "XXXX", null, null, (RecordSetIFace)srcData));
             }
         }
         

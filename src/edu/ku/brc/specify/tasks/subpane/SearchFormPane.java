@@ -5,6 +5,9 @@ import java.awt.event.ActionListener;
 import java.util.Enumeration;
 import java.util.Hashtable;
 
+import javax.swing.JButton;
+import javax.swing.JComponent;
+
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.Taskable;
@@ -53,13 +56,21 @@ public class SearchFormPane extends FormPane
         }
         walkMultiViewsSetHash(multiView);
 
-        formViewObj.getSaveBtn().setEnabled(true);
-        formViewObj.getSaveBtn().addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae)
-            {
-                doSearch();
-            }
-        });
+        JComponent saveComp = formViewObj.getSaveComponent();
+        if (saveComp instanceof JButton)
+        {
+            JButton saveBtn = (JButton)saveComp;
+            saveBtn.setEnabled(true);
+            saveBtn.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent ae)
+                {
+                    doSearch();
+                }
+            });
+        } else
+        {
+            throw new RuntimeException("The Save Component MUST be a button for this form!");
+        }
     }
 
     protected void walkMultiViewsSetHash(final MultiView multiViewArg)

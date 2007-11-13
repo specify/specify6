@@ -16,7 +16,6 @@ import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.image.BufferedImage;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,7 +53,7 @@ public class DraggableRecordIdentifier extends JComponent implements GhostAction
 
 
     protected GhostMouseInputAdapter  mouseInputAdapter   = null;
-    protected RenderingHints          hints               = null;
+    protected RenderingHints          hints               = UIHelper.createTextRenderingHints();;
     protected BufferedImage           shadowBuffer        = null;
     protected BufferedImage           buffer              = null;
     protected boolean                 generateImgBuf      = true;    
@@ -78,7 +77,7 @@ public class DraggableRecordIdentifier extends JComponent implements GhostAction
     public DraggableRecordIdentifier(final ImageIcon icon, final String label)
     {
         
-        imgIcon = icon;
+        imgIcon    = icon;
         this.label = label;
         
         createMouseInputAdapter(); // this makes it draggable
@@ -115,11 +114,17 @@ public class DraggableRecordIdentifier extends JComponent implements GhostAction
        return new Dimension(preferredSize);
    }
     
+    /**
+     * @return
+     */
     public String getLabel()
     {
         return label;
     }
 
+    /**
+     * @param label
+     */
     public void setLabel(String label)
     {
         if (label == null || this.label == null || !this.label.equals(label))
@@ -181,12 +186,20 @@ public class DraggableRecordIdentifier extends JComponent implements GhostAction
      * Sets the the FormDataObjIFace.
      * @param formDataObj thee new 
      */
-    public void setFormDataObj(FormDataObjIFace formDataObj)
+    public void setFormDataObj(final FormDataObjIFace formDataObj)
     {
         if (this.formDataObj != formDataObj)
         {
             this.formDataObj = formDataObj;
         }
+    }
+    
+    /* (non-Javadoc)
+     * @see java.awt.Component#isEnabled()
+     */
+    public boolean isEnabled()
+    {
+        return formDataObj != null && super.isEnabled();
     }
     
     //-----------------------------------------------
@@ -198,7 +211,7 @@ public class DraggableRecordIdentifier extends JComponent implements GhostAction
      */
     public void doAction(GhostActionable src)
     {
-
+        // no op
     }
     
     /* (non-Javadoc)
@@ -247,7 +260,7 @@ public class DraggableRecordIdentifier extends JComponent implements GhostAction
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.dnd.GhostActionable#setActive(boolean)
      */
-    public void setActive(boolean isActive)
+    public void setActive(final boolean isActive)
     {
         // Auto-generated method stub
     }
@@ -271,32 +284,10 @@ public class DraggableRecordIdentifier extends JComponent implements GhostAction
     }
 
     /**
-     * Initialize rendering hints
-     *
-     */
-    private void createRenderingHints()
-    {
-        if (hints == null)
-        {
-            hints = new RenderingHints(RenderingHints.KEY_INTERPOLATION,
-                                       RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-            Object value = RenderingHints.VALUE_TEXT_ANTIALIAS_ON;
-            try {
-                Field declaredField = RenderingHints.class.getDeclaredField("VALUE_TEXT_ANTIALIAS_LCD_HRGB");
-                value = declaredField.get(null);
-            } catch (Exception e) {
-            }
-            hints.put(RenderingHints.KEY_TEXT_ANTIALIASING, value);
-        }
-    }
-
-    /**
      * Render the control to a buffer
      */
     private void renderOffscreen()
     {
-        
-        createRenderingHints();
         BufferedImage bgBufImg = getBackgroundImageBuffer();
 
         buffer = new BufferedImage(bgBufImg.getWidth(),bgBufImg.getHeight(), BufferedImage.TYPE_INT_ARGB);
@@ -342,14 +333,13 @@ public class DraggableRecordIdentifier extends JComponent implements GhostAction
     }
 
     /**
-     * Returns the BufferedImage of a background shadow. I creates a large rectangle than the orignal image.
-     * @return Returns the BufferedImage of a background shadow. I creates a large rectangle than the orignal image.
+     * Returns the BufferedImage of a background shadow. I creates a large rectangle than the original image.
+     * @return Returns the BufferedImage of a background shadow. I creates a large rectangle than the original image.
      */
     private BufferedImage getBackgroundImageBuffer()
     {
         if (shadowBuffer == null || generateImgBuf)
         {
-            createRenderingHints();
             ShadowFactory factory = new ShadowFactory(SHADOW_SIZE, 0.17f, Color.BLACK);
 
             BufferedImage image = new BufferedImage(getItemWidth(), getItemHeight(), BufferedImage.TYPE_INT_ARGB);

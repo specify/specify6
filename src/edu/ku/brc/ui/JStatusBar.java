@@ -238,6 +238,21 @@ public class JStatusBar extends JPanel
      */
     public void setIndeterminate(final boolean isIndeterminate)
     {
+        setIndeterminate(isIndeterminate, false);
+    }
+    
+    /**
+     * Sets the progressbar as being indeterminate and sets the visibility to true
+     * @param isIndeterminate whether it should be shown and set to be Indeterminate
+     * @param usePlatformLnF some platforms have special UI for Indeterminate progress bars (Mac)
+     */
+    public void setIndeterminate(final boolean isIndeterminate, final boolean usePlatformLnF)
+    {
+        if (UIHelper.isMacOS())
+        {
+            progressBar.putClientProperty("JProgressBar.style", isIndeterminate ? "circular" : null);
+        }
+        
         progressBar.setIndeterminate(isIndeterminate);
         progressBar.setVisible(isIndeterminate);
         validate();

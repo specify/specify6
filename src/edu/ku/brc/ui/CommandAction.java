@@ -27,12 +27,12 @@ import java.util.Properties;
  * @author rods
  *
  */
-public class CommandAction
+public class CommandAction implements Cloneable
 {
 
-    protected final String type;
-    protected final String action;
-    protected final int    tableId;
+    protected String type;
+    protected String action;
+    protected int    tableId;
     
     protected Object       data;
     protected Object       srcObj;
@@ -40,7 +40,6 @@ public class CommandAction
     
     protected boolean      isConsumed = false;
     
-//    protected Hashtable<String, Object> properties = null;
     protected Properties properties = null;
     
     /**
@@ -279,4 +278,23 @@ public class CommandAction
         }
         return this.properties;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        CommandAction obj = (CommandAction)super.clone();
+        
+        obj.type    = type;
+        obj.action  = action;
+        obj.tableId = tableId;
+        obj.data    = data;
+        obj.srcObj  = srcObj;
+        obj.dstObj  = dstObj;
+        
+        return obj;
+    }
+
 }

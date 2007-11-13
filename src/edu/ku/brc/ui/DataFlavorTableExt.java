@@ -181,6 +181,7 @@ public class DataFlavorTableExt extends DataFlavor
         } else if (tableIds == null)
         {
             return getHumanPresentableName().equals(that.getHumanPresentableName());
+            
         } else
         {
             for (Integer id :tableIds)

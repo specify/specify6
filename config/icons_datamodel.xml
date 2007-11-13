@@ -11,6 +11,7 @@
     <icon name="address"        file="address.png" sizes="all"/>
     <icon name="agent"          file="agent.png" sizes="all"/>
     <icon name="author"         file="authors.png" sizes="all"/>
+    <icon name="attachment"     file="attachment.png" sizes="all"/>
     <icon name="attribute"      file="attribute.png" sizes="all"/>
     <icon name="borrow"         file="borrow.png" sizes="all"/>
     <icon name="borrowmaterial" file="borrow_material.png" sizes="all"/>
@@ -55,7 +56,6 @@
     <icon name="taxon"          file="taxon.png" sizes="all"/>
 
     <!-- Aliases -->
-    <icon name="attachment"             alias="unknown"/>
     <icon name="determinationcitation"  alias="citation"/>
     <icon name="localitycitation"       alias="citation"/>
     <icon name="taxoncitation"          alias="citation"/>

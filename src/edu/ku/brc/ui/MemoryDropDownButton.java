@@ -60,7 +60,7 @@ public class MemoryDropDownButton extends DropDownButton
     			fixMainButtonState();
     		}
         };
-         if(overRideButtonBorder)mainBtn.setBorder(hoverBorder);
+         if(overrideButtonBorder)mainBtn.setBorder(hoverBorder);
         lastChosen.addPropertyChangeListener(changeListener);
     }
 

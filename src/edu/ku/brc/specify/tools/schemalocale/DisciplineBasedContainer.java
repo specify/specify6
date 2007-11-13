@@ -20,6 +20,7 @@ package edu.ku.brc.specify.tools.schemalocale;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
+import java.util.Vector;
 
 import org.apache.log4j.Logger;
 
@@ -135,6 +136,25 @@ public class DisciplineBasedContainer extends SpLocaleContainer implements Clone
         }
     }
     
+    /**
+     * @param discipline
+     */
+    public void merge(final String discipline)
+    {
+        Set<SpLocaleContainerItem> dispSet = disciplineHashItems.get(discipline);
+        for (SpLocaleContainerItem item : new Vector<SpLocaleContainerItem>(items))
+        {
+            for (SpLocaleContainerItem dispItem : dispSet)
+            {
+                if (item.getName().equalsIgnoreCase(dispItem.getName()))
+                {
+                    items.remove(item);
+                    items.add(dispItem);
+                }
+            }
+        }
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#clone()
      */
@@ -144,6 +164,8 @@ public class DisciplineBasedContainer extends SpLocaleContainer implements Clone
         dbc.initialize();
         dbc.schemaType     = schemaType;
         dbc.collectionType = collectionType;
+        dbc.name           = name;
+        dbc.type           = type;
         
         return dbc;
     }

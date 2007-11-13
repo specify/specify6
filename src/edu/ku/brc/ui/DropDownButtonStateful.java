@@ -15,17 +15,31 @@
 
 package edu.ku.brc.ui;
 
+import java.awt.CardLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.awt.SystemColor;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
+import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.event.MouseInputAdapter;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 /**
  *  
@@ -45,6 +59,12 @@ public class DropDownButtonStateful extends DropDownButton
     protected String                   currLabel     = null;
     protected int                      currInx       = 0;
     protected Dimension                preferredSize = null;
+    protected boolean                  doAdvance     = true;
+    
+    protected List<JButton>            btns          = new Vector<JButton>();
+    protected CardLayout               cardLayout    = new CardLayout();
+    protected JPanel                   cardPanel;
+
 
     /**
      * Constructs a UI component with a label and an icon which can be clicked to execute an action.
@@ -53,11 +73,23 @@ public class DropDownButtonStateful extends DropDownButton
      */
     public DropDownButtonStateful(final List<DropDownMenuInfo> items)
     {
-        super(items.get(0).getLabel(), items.get(0).getImageIcon(), items.get(0).getTooltip(), SwingConstants.RIGHT);
+        this(items, true);
+    }
+    
+    /**
+     * Constructs a UI component with a label and an icon which can be clicked to execute an action.
+     * @param labels the text labels for the UI
+     * @param imgIcons the icons for the UI
+     */
+    public DropDownButtonStateful(final List<DropDownMenuInfo> items, final boolean doAdvance)
+    {
+        super(items.get(0).getLabel(), items.get(0).getImageIcon(), items.get(0).getTooltip(), SwingConstants.RIGHT, items.size() > 0);
         
         menuInfoItems = items;
         
-        init();
+        overrideButtonBorder = true;
+        
+        init(doAdvance);
     }
     
     /**
@@ -81,10 +113,7 @@ public class DropDownButtonStateful extends DropDownButton
                                   final List<ImageIcon> imgIcons, 
                                   final List<String>    toolTips)
     {
-        super(labels != null && labels.size() > 0 ? labels.get(0) : null,
-              imgIcons != null && imgIcons.size() > 0 ? imgIcons.get(0) : null, 
-              toolTips != null && toolTips.size() > 0 ? toolTips.get(0) : null, SwingConstants.CENTER);
-
+        super();
         
         int length = 0;
         if (imgIcons != null)
@@ -96,65 +125,139 @@ public class DropDownButtonStateful extends DropDownButton
             length = labels.size();
         }
         
-
+        init(labels != null && labels.size() > 0 ? labels.get(0) : null, 
+             imgIcons != null && imgIcons.size() > 0 ? imgIcons.get(0) : null, 
+             toolTips != null && toolTips.size() > 0 ? toolTips.get(0) : null, length > 0);
+        
+        mainBtn.setHorizontalTextPosition(SwingConstants.CENTER);
+        mainBtn.setVerticalTextPosition(SwingConstants.CENTER);
         
         menuInfoItems = new Vector<DropDownMenuInfo>();
         for (int i=0;i<length;i++)
         {
-            menuInfoItems.add(new DropDownMenuInfo(labels != null && labels.size() > 0 ? labels.get(0) : null,
-                                                   imgIcons != null && imgIcons.size() > 0 ? imgIcons.get(0) : null, 
-                                                   toolTips != null && toolTips.size() > 0 ? toolTips.get(0) : null));
+            menuInfoItems.add(new DropDownMenuInfo(labels != null && i < labels.size()? labels.get(i) : null,
+                                                   imgIcons != null && i < imgIcons.size() ? imgIcons.get(i) : null, 
+                                                   toolTips != null && i < toolTips.size() ? toolTips.get(i) : null));
         }
 
-        init();
-
+        init(true);
     }
-    
-    protected void init()
+
+    /**
+     * @param doAdvance
+     */
+    protected void init(final boolean doAdvance)
     {
-        //setBorder(null);
-        //setLayout(new BorderLayout());
+        this.doAdvance = doAdvance;
         
-        ActionListener actionListener = new ActionListener() {
-            public void actionPerformed(ActionEvent actionEvent) {
+        ActionListener menuAL = new ActionListener() {
+            public void actionPerformed(ActionEvent actionEvent) 
+            {
+                int prevInx = currInx;
                 itemSelected(actionEvent.getSource());
-                for (ActionListener al : listeners)
+                
+                cardLayout.show(cardPanel, Integer.toString(currInx));
+                
+                if (currInx != prevInx)
                 {
-                    al.actionPerformed(actionEvent);
+                    for (ActionListener al : listeners)
+                    {
+                        al.actionPerformed(actionEvent);
+                    }
                 }
             }
         };
-        // menus need to be set up before the the init
-        menus = new ArrayList<JComponent>();
-        for (DropDownMenuInfo mi : menuInfoItems)
-        {
-            
-            JMenuItem menuItem = new JMenuItem(mi.getLabel(), mi.getImageIcon());
-            menuItem.addActionListener(actionListener);
-            menus.add(menuItem);
-        }
         
-        //DropDownMenuInfo mi = menuInfoItems.get(0);
-        //super.init(mi.getLabel(), mi.getImageIcon(), mi.getTooltip());
-        
-        mainBtn.addActionListener(new ActionListener() {
+        ActionListener btnAL = new ActionListener() {
             public void actionPerformed(ActionEvent ae)
             {
-                currInx++;
-                if (currInx >= menuInfoItems.size())
+                if (doAdvance)
                 {
-                    currInx = 0;
+                    currInx++;
+                    if (currInx >= menuInfoItems.size())
+                    {
+                        currInx = 0;
+                    }
                 }
+                System.out.println("New Index: "+currInx);
                 setCurrentIndex(currInx);
+                cardLayout.show(cardPanel, Integer.toString(currInx));
+                
+                for (ActionListener al : listeners)
+                {
+                    al.actionPerformed(ae);
+                }
             }
-        });
+        };
         
+        cardPanel = new JPanel(cardLayout);
+
+        FocusListener     focusListener     = createFocusListener();
+        MouseInputAdapter mouseInputAdapter = createMouseInputAdapter();
+        
+        CellConstraints cc = new CellConstraints();
+        
+        // menus need to be set up before the the init
+        menus = new ArrayList<JComponent>();
+        int i = 0;
+        for (DropDownMenuInfo mi : menuInfoItems)
+        {
+            JMenuItem menuItem = new JMenuItem(mi.getLabel(), mi.getImageIcon());
+            menuItem.addActionListener(menuAL);
+            menus.add(menuItem);
+            
+            PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g,p", "p"));
+
+            JButton btn = createLabelBtn(mi.getLabel(), mi.getImageIcon(), mi.getTooltip(), this, focusListener, 
+                                         mouseInputAdapter, btnAL, this, false);
+            btns.add(btn);
+            pb.add(btn, cc.xy(2,1));
+            cardPanel.add(pb.getPanel(), Integer.toString(i));
+            i++;
+        }
+        
+        setLayout(null);
+        removeAll();
+        
+        PanelBuilder pb = new PanelBuilder(new FormLayout("p,p", "f:p:g"), this);
+        
+        pb.add(cardPanel, cc.xy(1, 1));
+        pb.add(arrowBtn, cc.xy(2, 1));
+        
+        popupAnchorComponent = cardPanel;
+        
+
         arrowBtn.setVisible(getPopMenuSize() > 0);
 
         setCurrentIndex(0);
     }
-
     
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
+     */
+    @Override
+    public void paint(Graphics g)
+    {
+        super.paint(g);
+        
+        if (isHovering)
+        {
+            JButton   btn = btns.get(currInx);
+            Rectangle r   = btn.getBounds();
+            Rectangle pr  = getBounds();
+            
+            pr.x = r.x;
+            g.setColor(SystemColor.controlLtHighlight);
+            g.drawLine(pr.x, pr.y, pr.width-1, pr.y);
+            g.drawLine(pr.x, pr.y, pr.x, pr.height-1);
+            
+            g.setColor(SystemColor.controlShadow);
+            g.drawLine(pr.x, pr.height-1, pr.width-1, pr.height-1);
+            g.drawLine(pr.width-1, pr.y, pr.width-1, pr.height-1);
+        }
+        
+    }
+
     /**
      * Returns the next index in the stateful button which means we wrap around to zero
      * @return he next index in the stateful button which means we wrap around to zero
@@ -171,15 +274,10 @@ public class DropDownButtonStateful extends DropDownButton
     public void setCurrentIndex(final int index)
     {
         currInx = index;
-        int nxtInx = getNextIndex();
-        DropDownMenuInfo mi = menuInfoItems.get(nxtInx);
-        mainBtn.setIcon(mi.getImageIcon());
-        mainBtn.setText(mi.getLabel());
-        
-        if (mi.getTooltip() != null)
-        {
-            mainBtn.setToolTipText(mi.getTooltip());
-        }
+        int nxtInx = doAdvance ? getNextIndex() : index;
+        System.err.println(hashCode()+"  "+nxtInx);
+        cardLayout.show(cardPanel, Integer.toString(nxtInx));
+
     }
     
     /**
@@ -199,14 +297,13 @@ public class DropDownButtonStateful extends DropDownButton
     {
         if (obj instanceof JMenuItem)
         {
-            JMenuItem item = (JMenuItem)obj;
             int i = 0;
-            for (DropDownMenuInfo mi : menuInfoItems)
+            for (JComponent mi : menus)
             {
-                if (mi.getLabel() != null && mi.getLabel().equals(item.getText()))
+                if (mi == obj)
                 {
                     setCurrentIndex(i);
-                    return;
+                    return;                    
                 }
                 i++;
             }
@@ -221,6 +318,37 @@ public class DropDownButtonStateful extends DropDownButton
     {
         menuInfoItems.clear();
         super.finalize();
+    }
+
+    /**
+     * @return the doAdvance
+     */
+    public boolean isDoAdvance()
+    {
+        return doAdvance;
+    }
+
+    /**
+     * @param doAdvance the doAdvance to set
+     */
+    public void setDoAdvance(boolean doAdvance)
+    {
+        this.doAdvance = doAdvance;
+    }
+    
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#setEnabled(boolean)
+     */
+    @Override
+    public void setEnabled(boolean value)
+    {
+        super.setEnabled(value);
+        
+        for (JButton btn : btns)
+        {
+            btn.setEnabled(value);
+        }
+        repaint();
     }
     
 }

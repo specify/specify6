@@ -133,7 +133,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         tblSpellChkBtn               = new JButton("Spell Check");
         JPanel      tpbbp            = ButtonBarFactory.buildCenteredBar(new JButton[] {tblSpellChkBtn});
         JScrollPane sp               = new JScrollPane(tblDescText, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        tblDescText.setRows(8);
+        tblDescText.setRows(4);
         tblDescText.setLineWrap(true);
         tblDescText.setWrapStyleWord(true);
         tblDescText.addKeyListener(new LengthWatcher(255));

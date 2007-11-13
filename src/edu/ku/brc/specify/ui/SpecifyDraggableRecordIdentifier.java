@@ -56,7 +56,7 @@ public class SpecifyDraggableRecordIdentifier extends DraggableRecordIdentifier
     @Override
     public void setData(final Object data)
     {
-        
+        this.data = data;
     }
 
     /* (non-Javadoc)
@@ -93,7 +93,7 @@ public class SpecifyDraggableRecordIdentifier extends DraggableRecordIdentifier
                 recordSet.setDbTableId(formDataObj.getTableId());
             }
             
-            recordSet.addItem(formDataObj.getId());
+            recordSetItem = (RecordSetItem)recordSet.addItem(formDataObj.getId());
             setLabel(formDataObj.getIdentityTitle());
         }
 

@@ -161,10 +161,26 @@ public class NavBoxAction implements ActionListener
      */
     public void actionPerformed(ActionEvent e)
     {
+        boolean isDataActionEvent = e instanceof DataActionEvent;
         
         if (cmdAction != null)
         {
-            CommandDispatcher.dispatch(cmdAction);
+            if (isDataActionEvent)
+            {
+                try
+                {
+                    CommandAction ca = (CommandAction)cmdAction.clone();
+                    ca.setData(((DataActionEvent)e).getData());
+                    CommandDispatcher.dispatch(ca);
+                    
+                } catch (CloneNotSupportedException ex)
+                {
+                    ex.printStackTrace();
+                }
+            } else
+            {
+                CommandDispatcher.dispatch(cmdAction);
+            }
             
         } else
         {

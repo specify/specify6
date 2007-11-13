@@ -69,6 +69,6 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         session.close();
         */
         
-        return false;
+        return true;
     }
 }

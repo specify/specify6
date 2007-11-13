@@ -43,7 +43,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumnModel;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -124,6 +123,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         table = new JTable();
         table.setShowVerticalLines(false);
         table.setRowSelectionAllowed(true);
+        table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         setBackground(table.getBackground());
 
         topTitleBar = new GradiantLabel(results.getTitle(), SwingConstants.LEFT);
@@ -276,7 +276,6 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         doLayout();
         UIRegistry.forceTopFrameRepaint();
         
-        table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.getSelectionModel().addListSelectionListener(new ListSelectionListener() 
         {
             public void valueChanged(ListSelectionEvent e)

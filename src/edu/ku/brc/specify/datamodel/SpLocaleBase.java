@@ -37,6 +37,7 @@ public abstract class SpLocaleBase extends DataModelObjBase
     protected String  name;
     protected String  type;
     protected Boolean isHidden;
+    
     /**
      * 
      */

@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -231,7 +232,7 @@ public interface Viewable
     /**
      * @return the save btn if it has one.
      */
-    public JButton getSaveBtn();
+    public JComponent getSaveComponent();
     
     /**
      * Focus the appropriate UI element.

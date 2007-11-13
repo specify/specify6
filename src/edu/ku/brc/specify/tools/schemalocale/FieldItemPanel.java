@@ -179,7 +179,7 @@ public class FieldItemPanel extends LocalizerBasePanel
         JScrollPane sp = new JScrollPane(fieldDescText, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         pb.add(sp,   cc.xy(5, y));   y += 2;
         fieldDescText.setLineWrap(true);
-        fieldDescText.setRows(8);
+        fieldDescText.setRows(4);
         fieldDescText.setWrapStyleWord(true);
         
         if (isDBSchema)

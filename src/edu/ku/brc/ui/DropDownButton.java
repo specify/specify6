@@ -15,7 +15,6 @@
 package edu.ku.brc.ui;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Insets;
@@ -30,8 +29,6 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -50,6 +47,10 @@ import javax.swing.event.MouseInputAdapter;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+
 
 /**
  * 
@@ -66,7 +67,6 @@ import javax.swing.event.PopupMenuListener;
 public class DropDownButton extends JPanel implements ChangeListener, PopupMenuListener,
                                                       ActionListener, PropertyChangeListener
 {
-    
     protected EmptyBorder          emptyBorder;
     protected Border               hoverBorder;
 
@@ -74,15 +74,18 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
     protected JButton              arrowBtn             = null;
     protected boolean              popupVisible         = false;
     protected String               statusBarHintText    = null;
-    protected boolean              overRideButtonBorder = false;
+    protected boolean              overrideButtonBorder = false;
     protected List<JComponent>     menus                = null;
     protected List<ActionListener> listeners            = new ArrayList<ActionListener>();
     
+    protected boolean              isHovering           = false;
     protected boolean              hasFocus             = false; 
+    protected JComponent           popupAnchorComponent = null;
     
-    protected static ImageIcon dropDownArrow;
+    protected static ImageIcon     dropDownArrow;
     
-    static {
+    static 
+    {
         dropDownArrow = IconManager.getIcon("DropDownArrow");
     }
     
@@ -94,16 +97,24 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
     public DropDownButton()
     {
         super();
-        init(null, null, null);
+        
+        init(null, null, null, false);
+    }
+
+    public DropDownButton(final boolean addArrow)
+    {
+        super();
+        
+        init(null, null, null, addArrow);
     }
 
     /**
      * Constructor with only an icon.
      * @param icon the icon
      */
-    public DropDownButton(ImageIcon icon)
+    public DropDownButton(final ImageIcon icon, final boolean addArrow)
     {
-        init(null, icon, null);
+        init(null, icon, null, false);
     }
     
     public void setFont(final Font font)
@@ -120,10 +131,11 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
      * @param icon the icon
      * @param toolTip the tooltip text that has already been localized
      * @param textPosition the position of the text as related to the icon
+     * @param indicates whether an arrow btn should be added
      */
-    public DropDownButton(String label, ImageIcon icon, String toolTip, int horzTextPosition)
+    public DropDownButton(String label, ImageIcon icon, String toolTip, int horzTextPosition, final boolean addArrow)
     {
-        this(label, icon, toolTip, horzTextPosition, SwingConstants.CENTER);
+        this(label, icon, toolTip, horzTextPosition, SwingConstants.CENTER, addArrow);
     }
 
     /**
@@ -133,10 +145,15 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
      * @param toolTip the tooltip text that has already been localized
      * @param horzTextPosition the horizontal position of the text as related to the icon
      * @param vertTextPosition the vertical position of the text as related to the icon
+     * @param indicates whether an arrow btn should be added
      */
-    public DropDownButton(String label, ImageIcon icon, String toolTip, int horzTextPosition, int vertTextPosition)
+    public DropDownButton(final String label, ImageIcon icon, 
+                          final String toolTip, 
+                          final int horzTextPosition, 
+                          final int vertTextPosition, 
+                          final boolean addArrow)
     {
-        init(label, icon, toolTip);
+        init(label, icon, toolTip, addArrow);
         
         mainBtn.setHorizontalTextPosition(horzTextPosition);
         mainBtn.setVerticalTextPosition(vertTextPosition);
@@ -150,11 +167,14 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
      * @param vertTextPosition the position of the text as related to the icon
      * @param menus the list of menu items and separators
      */
-    public DropDownButton(final String label, final ImageIcon icon, final int vertTextPosition, final List<JComponent> menus)
+    public DropDownButton(final String label, 
+                          final ImageIcon icon, 
+                          final int vertTextPosition, 
+                          final List<JComponent> menus)
     {
         this.menus = menus;
         
-        init(label, icon, null);
+        init(label, icon, null, menus != null && menus.size() > 0);
         
         mainBtn.setVerticalTextPosition(vertTextPosition);
         
@@ -172,13 +192,47 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
      * @param icon
      * @param toolTip
      */
-    protected void init(final String label, final ImageIcon icon, String toolTip)
+    protected void init(final String label, 
+                        final ImageIcon icon, 
+                        final String toolTip,
+                        final boolean addArrowBtn)
     {
         setOpaque(false);
         
-        mainBtn   = new JButton(label, icon);
-        mainBtn.setOpaque(false);
-        mainBtn.addFocusListener(new FocusListener() {
+        FocusListener     focusListener     = createFocusListener();
+        MouseInputAdapter mouseInputAdapter = createMouseInputAdapter();
+
+        mainBtn  = createLabelBtn(label, icon, toolTip, this, focusListener, mouseInputAdapter, this, this, overrideButtonBorder);
+        arrowBtn = createArrowBtn(mouseInputAdapter);
+        
+        popupAnchorComponent = mainBtn;
+
+        PanelBuilder pb = new PanelBuilder(new FormLayout("p" + (addArrowBtn ? ",p" : ""), "f:p:g"), this);
+        CellConstraints cc = new CellConstraints();
+        
+        pb.add(mainBtn, cc.xy(1, 1));
+        if (addArrowBtn)
+        {
+            pb.add(arrowBtn, cc.xy(2, 1));
+        }
+        
+        hoverBorder = new SoftBevelBorder(BevelBorder.RAISED);
+        emptyBorder = new EmptyBorder(hoverBorder.getBorderInsets(this));
+        if (!overrideButtonBorder)
+        {
+            setBorder(emptyBorder);
+        }
+        
+        addMouseListener(mouseInputAdapter);
+        addMouseMotionListener(mouseInputAdapter);
+    }
+    
+    /**
+     * @return
+     */
+    public FocusListener createFocusListener()
+    {
+        return new FocusListener() {
             public void focusGained(FocusEvent arg0)
             {
                 hasFocus = true;
@@ -190,90 +244,128 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
                 repaint();
             }
             
-        });
+        };
+    }
+
+    /**
+     * @return
+     */
+    public MouseInputAdapter createMouseInputAdapter()
+    {
+        return new MouseInputAdapter() 
+        {
+            @Override
+            public void mouseEntered(MouseEvent e) 
+            {
+                if (DropDownButton.this.isEnabled())
+                {
+                    isHovering = true;
+                    if (!overrideButtonBorder)
+                    {
+                        setBorder(hoverBorder);
+                    }
+                    if (statusBarHintText != null)
+                    {
+                        UIRegistry.displayStatusBarText(statusBarHintText);
+                    }
+                    
+                    arrowBtn.setEnabled(getPopMenuSize() > 0 && isEnabled());
+                    repaint();
+                }
+            }
+            @Override
+            public void mouseExited(MouseEvent e) 
+            {
+                isHovering = false;
+                if (DropDownButton.this.isEnabled())
+                {
+                    if (!overrideButtonBorder)
+                    {
+                        setBorder(emptyBorder);
+                    }
+                    UIRegistry.displayStatusBarText(null);
+                     
+                    if (popupVisible)
+                    {
+                        popupVisible = false;
+
+                        mainBtn.getModel().setRollover(false);
+                        arrowBtn.getModel().setSelected(false);
+                    }
+                }
+                repaint();
+            }
+          };
+    }
+    
+    /**
+     * @param label
+     * @param icon
+     * @param toolTip
+     * @param changeListener
+     * @param focusListener
+     * @param mouseInputAdapter
+     * @param al
+     * @param pcl
+     * @param overRideButtonBorder
+     * @return
+     */
+    public static JButton createLabelBtn(final String            label, 
+                                         final ImageIcon         icon, 
+                                         final String            toolTip,
+                                         final ChangeListener    changeListener,
+                                         final FocusListener     focusListener,
+                                         final MouseInputAdapter mouseInputAdapter,
+                                         final ActionListener    al,
+                                         final PropertyChangeListener pcl,
+                                         final boolean           overRideButtonBorder)
+    {
+        JButton btn   = new JButton(label, icon);
+        btn.setOpaque(false);
+        btn.addFocusListener(focusListener);
         
         if (!overRideButtonBorder)
         {
-            mainBtn.setBorder(new EmptyBorder(1,4,1,4));
+            btn.setBorder(new EmptyBorder(3,6,3,4));
         }
-        mainBtn.setIconTextGap(1); 
-        mainBtn.setMargin(new Insets(0,0,0,0));
-        mainBtn.getModel().addChangeListener(this);
-        mainBtn.setHorizontalTextPosition(SwingConstants.RIGHT);
-        mainBtn.setVerticalTextPosition(SwingConstants.CENTER);
-        mainBtn.addPropertyChangeListener("enabled", this);
+        
+        btn.setIconTextGap(1); 
+        btn.setMargin(new Insets(0,0,0,0));
+        btn.getModel().addChangeListener(changeListener);
+        btn.setHorizontalTextPosition(SwingConstants.RIGHT);
+        btn.setVerticalTextPosition(SwingConstants.CENTER);
+        btn.addPropertyChangeListener("enabled", pcl);
+        
         if (toolTip != null)
         {
-            mainBtn.setToolTipText(toolTip);
+            btn.setToolTipText(toolTip);
         }
+        
+        btn.addMouseListener(mouseInputAdapter);
+        btn.addMouseMotionListener(mouseInputAdapter);
+        btn.addActionListener(al);
 
-        arrowBtn = new JButton(dropDownArrow);
+        return btn;
+    }
+    
+    /**
+     * @param mouseInputAdapter
+     * @return
+     */
+    public JButton createArrowBtn(final MouseInputAdapter mouseInputAdapter)
+    {
+        JButton arrowBtn = new JButton(dropDownArrow);
         arrowBtn.setOpaque(false);
-        arrowBtn.setBorder(new EmptyBorder(6,4,6,4));
+        arrowBtn.setBorder(new EmptyBorder(4,4,4,4)); // T,L,B,R
         arrowBtn.getModel().addChangeListener(this);
         arrowBtn.addActionListener(this);
         arrowBtn.setMargin(new Insets(3, 3, 3, 3));
         arrowBtn.setFocusPainted(false); 
         arrowBtn.setFocusable(false);            
         arrowBtn.setVisible(getPopMenuSize() > 0);
-
-        this.setLayout(new BoxLayout(this,BoxLayout.X_AXIS));
-        this.add(mainBtn);
-        this.add(Box.createRigidArea(new Dimension(2,2)));
-        this.add(arrowBtn);
-
-        
-        hoverBorder = new SoftBevelBorder(BevelBorder.RAISED);
-        emptyBorder = new EmptyBorder(hoverBorder.getBorderInsets(this));
-        if (!overRideButtonBorder)
-        {
-            setBorder(emptyBorder);
-        }
-        
-        MouseInputAdapter mouseInputAdapter = new MouseInputAdapter() 
-        {
-            @Override
-            public void mouseEntered(MouseEvent e) 
-            {
-                setBorder(hoverBorder);
-                if (statusBarHintText != null)
-                {
-                    UIRegistry.displayStatusBarText(statusBarHintText);
-                }
-                
-                arrowBtn.setEnabled(getPopMenuSize() > 0);
-                repaint();
-            }
-            @Override
-            public void mouseExited(MouseEvent e) 
-            {
-               if (!overRideButtonBorder)
-               {
-                   setBorder(emptyBorder);
-               }
-                UIRegistry.displayStatusBarText(null);
-                repaint();
-                
-                if (popupVisible)
-                {
-                    popupVisible = false;
-
-                    mainBtn.getModel().setRollover(false);
-                    arrowBtn.getModel().setSelected(false);
-                }
-
-                
-            }
-          };
-          addMouseListener(mouseInputAdapter);
-          addMouseMotionListener(mouseInputAdapter);
-          
-          mainBtn.addMouseListener(mouseInputAdapter);
-          mainBtn.addMouseMotionListener(mouseInputAdapter);
-          arrowBtn.addMouseListener(mouseInputAdapter);
-          arrowBtn.addMouseMotionListener(mouseInputAdapter);
-
-          mainBtn.addActionListener(this);
+        arrowBtn.addMouseListener(mouseInputAdapter);
+        arrowBtn.addMouseMotionListener(mouseInputAdapter);
+        return arrowBtn;
     }
     
     /**
@@ -285,9 +377,13 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
         this.hoverBorder = raisedBorder;
     }
 
+    /**
+     * @param val
+     * @param border
+     */
     public void setOverrideBorder(boolean val, Border border)
     {
-        overRideButtonBorder = val;
+        overrideButtonBorder = val;
         if (val)
         {
             setBorder(border);
@@ -359,6 +455,7 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
             }
             arrowBtn.getModel().setRollover(mainBtn.getModel().isRollover());
             arrowBtn.setSelected(mainBtn.getModel().isArmed() && mainBtn.getModel().isPressed());
+            
         } else
         {
             if (popupVisible && !arrowBtn.getModel().isSelected())
@@ -382,7 +479,7 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
         {
             JPopupMenu popup = getPopupMenu();
             popup.addPopupMenuListener(this);
-            popup.show(mainBtn, 0, mainBtn.getHeight());
+            popup.show(popupAnchorComponent, 0, popupAnchorComponent.getHeight());
             
         } else
         {
@@ -558,8 +655,15 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
     @Override
     public void setEnabled(boolean value)
     {
+        super.setEnabled(value);
+        
     	mainBtn.setEnabled(value);
     	arrowBtn.setEnabled(value);
+    	if (!value && isHovering)
+    	{
+        	isHovering = false;
+        	repaint();
+    	}
     }
 
     /* (non-Javadoc)

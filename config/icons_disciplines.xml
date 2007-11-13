@@ -10,5 +10,6 @@
     <icon name="Mammal"      file="mammal.png" sizes="all"/>    
     <icon name="Snake"       file="snake.png" sizes="all"/>    
     <icon name="Spider"      file="spider.png" sizes="all"/>    
+    <icon name="Lizard"      file="lizard.png" sizes="all"/>    
     
 </icons>

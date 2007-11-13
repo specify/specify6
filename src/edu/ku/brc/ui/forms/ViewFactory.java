@@ -102,7 +102,7 @@ import edu.ku.brc.ui.forms.validation.ValTextField;
 import edu.ku.brc.ui.forms.validation.ValidatedJPanel;
 
 /**
- * Creates FormViewObj object that implment the Viewable interface.
+ * Creates FormViewObj object that implement the Viewable interface.
  
  * @code_status Complete
  **

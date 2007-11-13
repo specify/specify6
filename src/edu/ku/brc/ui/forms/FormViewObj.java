@@ -83,6 +83,8 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.DateWrapper;
+import edu.ku.brc.ui.DropDownButtonStateful;
+import edu.ku.brc.ui.DropDownMenuInfo;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
@@ -177,7 +179,7 @@ public class FormViewObj implements Viewable,
     protected ResultSetController           rsController    = null;
     protected Vector<Object>                list            = null;
     protected boolean                       ignoreSelection = false;
-    protected JButton                       saveBtn         = null;
+    protected JComponent                    saveControl     = null;
     protected JButton                       newRecBtn       = null;
     protected JButton                       delRecBtn       = null;
     protected boolean                       wasNull         = false;
@@ -372,7 +374,7 @@ public class FormViewObj implements Viewable,
                             comps.add(valInfoBtn);
                         }
                         addSaveBtn();
-                        comps.add(saveBtn);
+                        comps.add(saveControl);
                         saveWasAdded = true;
     
                     }
@@ -388,7 +390,7 @@ public class FormViewObj implements Viewable,
                 if (mvParent != null && mvParent.isTopLevel() && !hideSaveBtn)
                 {
                     addSaveBtn();
-                    comps.add(saveBtn);
+                    comps.add(saveControl);
                 }
                 
                 JComponent valInfoBtn = createValidationIndicator(this);
@@ -404,9 +406,9 @@ public class FormViewObj implements Viewable,
         {
             if (!hideSaveBtn)
             {
-                saveBtn = new JButton(UIRegistry.getResourceString("Search"), IconManager.getImage("Search", IconManager.IconSize.Std16));
-                saveBtn.setOpaque(false);
-                comps.add(saveBtn);
+                saveControl = new JButton(UIRegistry.getResourceString("Search"), IconManager.getImage("Search", IconManager.IconSize.Std16));
+                saveControl.setOpaque(false);
+                comps.add(saveControl);
             }
 
         }
@@ -500,17 +502,35 @@ public class FormViewObj implements Viewable,
      */
     protected void addSaveBtn()
     {
-        saveBtn = new JButton(UIRegistry.getResourceString("Save"), IconManager.getIcon("Save", IconManager.IconSize.Std16));
-        saveBtn.setOpaque(false);
-        saveBtn.setToolTipText(ResultSetController.createTooltip("SaveRecordTT", view.getObjTitle()));
-        saveBtn.setMargin(new Insets(1,1,1,1));
-        saveBtn.setEnabled(false);
-        saveBtn.addActionListener(new ActionListener() {
+        Vector<DropDownMenuInfo>  items = new Vector<DropDownMenuInfo>();
+        items.add(new DropDownMenuInfo(UIRegistry.getResourceString("Save"), 
+                                       IconManager.getIcon("Save", IconManager.IconSize.Std16), 
+                                       ResultSetController.createTooltip("SaveRecordTT", view.getObjTitle())));
+        items.add(new DropDownMenuInfo(UIRegistry.getResourceString("SavwAndNew"), 
+        		                       IconManager.getIcon("Save", IconManager.IconSize.Std16), 
+        		                       ResultSetController.createTooltip("SaveNewRecordTT", view.getObjTitle())));
+
+        DropDownButtonStateful saveComp = new DropDownButtonStateful(items, false);
+        saveComp.setEnabled(false);
+        System.err.println(saveComp.hashCode());
+        
+        class SaveSwitcherAL implements ActionListener
+        {
+            protected DropDownButtonStateful switcherComp;
+            public SaveSwitcherAL(final DropDownButtonStateful switcherComp)
+            {
+                this.switcherComp = switcherComp;
+            }
             public void actionPerformed(ActionEvent ae)
             {
-                saveObject();
+                if (saveObject() && switcherComp.getCurrentIndex() == 1)
+                {
+                   createNewDataObject(true);
+                }
             }
-        });
+        }
+        saveComp.addActionListener(new SaveSwitcherAL(saveComp));
+        saveControl = saveComp;
     }
 
     /**
@@ -1389,7 +1409,7 @@ public class FormViewObj implements Viewable,
      * Save any changes to the current object
      */
     @SuppressWarnings("unchecked")
-    public void saveObject()
+    public boolean saveObject()
     {
         if (session != null && (mvParent == null || mvParent.isTopLevel()))
         {
@@ -1442,9 +1462,9 @@ public class FormViewObj implements Viewable,
 
             CommandDispatcher.dispatch(new CommandAction("Data_Entry", "Save", dataObj));
 
-            if (saveBtn != null)
+            if (saveControl != null)
             {
-                saveBtn.setEnabled(false);
+                saveControl.setEnabled(false);
             }
             
             if (session != null && (mvParent == null || mvParent.isTopLevel()))
@@ -1456,9 +1476,16 @@ public class FormViewObj implements Viewable,
             log.debug("After save");
             log.debug("Form     Val: "+(formValidator != null && formValidator.hasChanged()));
             log.debug("mvParent Val: "+(mvParent != null && mvParent.isTopLevel() && mvParent.hasChanged()));
+            return true;
         }
+        
+        return false;
     }
     
+    /**
+     * @param oldDO
+     * @param newDO
+     */
     protected void replaceDataObjInList(final Object oldDO, final Object newDO)
     {
         if (oldDO != null && newDO != null)
@@ -1939,13 +1966,12 @@ public class FormViewObj implements Viewable,
         }
     }
 
-    /**
-     * Returns the "Save" Button.
-     * @return the Save Button
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#getSaveComponent()
      */
-    public JButton getSaveBtn()
+    public JComponent getSaveComponent()
     {
-        return saveBtn;
+        return saveControl;
     }
 
     //-------------------------------------------------
@@ -2193,8 +2219,6 @@ public class FormViewObj implements Viewable,
     {
         log.debug("Setting DataObj["+dataObj+"]");
         
-        boolean isDataValueNew = dataObj instanceof FormDataObjIFace && ((FormDataObjIFace)dataObj).getId() == null;
-        
         // Convert the Set over to a List so the RecordController can be used
         Object data = dataObj;
         if (!alreadyInTheList)
@@ -2221,7 +2245,37 @@ public class FormViewObj implements Viewable,
         {
             formValidator.addRuleObjectMapping("dataObj", dataObj);
         }
+
+        boolean isList;
+        boolean isVector;
+        // if we do have a list then get the first object or null
+        if (data instanceof Vector)
+        {
+            isList   = true;
+            isVector = true;
+            
+        } else if (data instanceof List)
+        {
+            isList   = true;
+            isVector = false;
+        } else
+        {
+            isList   = false;
+            isVector = false;
+        }
         
+        Object objToCheck = data;
+        if (isList)
+        {
+            List<?> tmpList = (List<?>)data;
+            if (tmpList.size() > 0)
+            {
+                objToCheck = tmpList.get(0);
+            }
+        }
+        
+        boolean isDataValueNew = objToCheck instanceof FormDataObjIFace && ((FormDataObjIFace)objToCheck).getId() == null;
+
         for (FieldInfo fieldInfo : controlsById.values())
         {
             if (fieldInfo.isOfType(FormCellIFace.CellType.subview) ||
@@ -2245,20 +2299,21 @@ public class FormViewObj implements Viewable,
         }
 
         // if we do have a list then get the first object or null
-        if (data instanceof List)
+        if (isList)
         {
-            if (!(data instanceof Vector))
-            {
-                list = new Vector<Object>((List)data);
-            } else
+            if (isVector)
             {
                 list = (Vector)data;
+            } else
+            {
+                list = new Vector<Object>((List<?>)data);
             }
             
             if (list.size() > 0)
             {
                 this.dataObj = list.get(0);
                 log.debug("Getting DO from list "+this.dataObj.getClass().getSimpleName()+" "+this.dataObj.hashCode());
+                
             } else
             {
                 this.dataObj = null;
@@ -2268,7 +2323,7 @@ public class FormViewObj implements Viewable,
             if (rsController != null)
             {
                 rsController.setLength(list.size());
-                updateControllerUI();
+                //updateControllerUI();
             }
 
             // Set the data from the into the form
@@ -2478,12 +2533,6 @@ public class FormViewObj implements Viewable,
                     String        formatName   = cellField.getFormatName();
                     String        defaultValue = cellField.getDefaultValue();
                     
-                    if (cellField.getName().equals("collectingEvent.locality"))
-                    {
-                        int x = 0;
-                        x++;
-                    }
-
                     boolean isTextFieldPerMode = cellField.isTextFieldForMode(altView.getMode());
 
                     boolean useFormatName = isTextFieldPerMode && isNotEmpty(formatName);
@@ -2617,9 +2666,9 @@ public class FormViewObj implements Viewable,
         }
 
 
-        if (mvParent != null && mvParent.isTopLevel() && saveBtn != null && isEditting)
+        if (mvParent != null && mvParent.isTopLevel() && saveControl != null && isEditting)
         {
-            saveBtn.setEnabled(false);
+            saveControl.setEnabled(false);
         }
         
         // Now set all the controls with default values as having been changed
@@ -3030,9 +3079,9 @@ public class FormViewObj implements Viewable,
      */
     public void validationWasOK(boolean wasOK)
     {
-       if (saveBtn != null && (mvParent == null || mvParent.hasChanged()))
+       if (saveControl != null && (mvParent == null || mvParent.hasChanged()))
        {
-           saveBtn.setEnabled(wasOK);
+           saveControl.setEnabled(wasOK);
        }
     }
     
@@ -3058,8 +3107,8 @@ public class FormViewObj implements Viewable,
      */
     public void registerSaveBtn(JButton saveBtnArg)
     {
-        this.saveBtn = saveBtnArg;
-        this.saveBtn.setOpaque(false);
+        this.saveControl = saveBtnArg;
+        this.saveControl.setOpaque(false);
     }
     
     /* (non-Javadoc)
@@ -3067,7 +3116,7 @@ public class FormViewObj implements Viewable,
      */
     public void updateSaveBtn()
     {
-        if (saveBtn != null && formValidator != null)
+        if (saveControl != null && formValidator != null)
         {
             if (mvParent == null || mvParent.isAllValidationOK())
             {
@@ -3447,16 +3496,16 @@ public class FormViewObj implements Viewable,
         log.debug("mvParent Val: "+(mvParent != null && mvParent.isTopLevel() && mvParent.hasChanged()));
 
 
-        if (saveBtn != null)
+        if (saveControl != null)
         {
-            saveBtn.setEnabled(false);
+            saveControl.setEnabled(false);
             
         } else if (mvParent != null && mvParent.hasChanged())
         {
             Viewable currView = mvParent.getTopLevel().getCurrentView();
-            if (currView != null && currView.getSaveBtn() != null)
+            if (currView != null && currView.getSaveComponent() != null)
             {
-                currView.getSaveBtn().setEnabled(false); 
+                currView.getSaveComponent().setEnabled(false); 
             }
         }
     }
