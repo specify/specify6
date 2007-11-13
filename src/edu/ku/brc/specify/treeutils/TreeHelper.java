@@ -406,6 +406,33 @@ public class TreeHelper
         return false;
     }
     
+    public static <T extends Treeable<T,D,I>,
+                   D extends TreeDefIface<T,D,I>,
+                   I extends TreeDefItemIface<T,D,I>>
+                        boolean canChildBeReparentedToNode(int childRankID, int newParentRankID, D treeDef)
+    {
+        if (newParentRankID >= childRankID)
+        {
+            return false;
+        }
+        
+        Integer nextEnforcedRank = getRankOfNextHighestEnforcedLevel(treeDef.getDefItemByRank(childRankID));
+        if( nextEnforcedRank == null )
+        {
+            // no higher ranks are being enforced
+            // the node can be reparented all the way up to the root
+            return true;
+        }
+        
+        if( nextEnforcedRank.intValue() <= newParentRankID )
+        {
+            // the next enforced rank is equal to or above the new parent rank
+            return true;
+        }
+        
+        return false;
+    }
+    
     /**
      * Returns the next highest rank in the tree that is enforced by the
      * tree definition.
@@ -431,12 +458,37 @@ public class TreeHelper
         return null;
     }
     
+    /**
+     * Returns the next highest rank in the tree that is enforced by the
+     * tree definition.
+     * 
+     * @param node the node to find the next highest enforced rank for
+     * @return the next highest rank
+     */
+    public static <T extends Treeable<T,D,I>,
+                   D extends TreeDefIface<T,D,I>,
+                   I extends TreeDefItemIface<T,D,I>>
+                       Integer getRankOfNextHighestEnforcedLevel( I definitionItem )
+    {
+        I defItem = definitionItem;
+        while( defItem.getParent() != null )
+        {
+            defItem = defItem.getParent();
+            if( defItem.getIsEnforced() != null && defItem.getIsEnforced().booleanValue() == true )
+            {
+                return defItem.getRankId();
+            }
+        }
+        
+        return null;
+    }
+    
     public static <T extends Treeable<?,D,I>,
                    D extends TreeDefIface<?,D,I>,
                    I extends TreeDefItemIface<?,D,I>>
                         boolean nodeCanHaveChildren(T node)
     {
-        I defItem = (I)node.getDefinitionItem();
+        I defItem = node.getDefinitionItem();
         return (defItem.getChild() != null);
     }
 }

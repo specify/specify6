@@ -1787,10 +1787,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			
             TreeNode draggedNode = (TreeNode)dragged;
             TreeNode droppedOnNode = (TreeNode)droppedOn;
-            T draggedRecord = getRecordForNode(draggedNode);
-            T droppedOnRecord = getRecordForNode(droppedOnNode);
 
-			if( !TreeHelper.canChildBeReparentedToNode(draggedRecord,droppedOnRecord) )
+			if( !TreeHelper.canChildBeReparentedToNode(draggedNode.getRank(),droppedOnNode.getRank(),treeDef) )
 			{
             	//log.debug("Reparent request IS NOT acceptable.");
 				return false;
