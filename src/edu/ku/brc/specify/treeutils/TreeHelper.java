@@ -430,4 +430,13 @@ public class TreeHelper
         
         return null;
     }
+    
+    public static <T extends Treeable<?,D,I>,
+                   D extends TreeDefIface<?,D,I>,
+                   I extends TreeDefItemIface<?,D,I>>
+                        boolean nodeCanHaveChildren(T node)
+    {
+        I defItem = (I)node.getDefinitionItem();
+        return (defItem.getChild() != null);
+    }
 }
