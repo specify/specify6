@@ -715,44 +715,45 @@ public class ViewFactory
         
         // We should refactor the plugin manager.
         Class<?> pluginClass = TaskMgr.getUIPluginClassForName(pluginName);
-        if (pluginClass != null)
+        if (pluginClass != null && UIPluginable.class.isAssignableFrom(pluginClass))
         {
             try
             {
-                JComponent uiObj = pluginClass.asSubclass(JComponent.class).newInstance();
-                
-                if (!(uiObj instanceof GetSetValueIFace))
-                {
-                    throw new RuntimeException("Plugin of class["+pluginClass.getName()+"] doesn't implement the GetSetValueIFace!");
-                }
-                
+                // instantiate the plugin object
+                UIPluginable uip = pluginClass.asSubclass(UIPluginable.class).newInstance();
+
                 // This needs to be done before the initialize.
-                if (uiObj instanceof UIValidatable)
+                if (uip instanceof UIValidatable)
                 {
-                    ((UIValidatable)uiObj).setRequired(cellField.isRequired());
-                }
-                
-                if (uiObj instanceof UIPluginable)
-                {
-                    UIPluginable uip = (UIPluginable)uiObj;
-                    uip.initialize(cellField.getProperties(), isViewMode);
-                    
-                    if (validator != null && (cellField.isChangeListenerOnly() || 
-                                              cellField.isRequired() || 
-                                              isNotEmpty(cellField.getValidationRule())))
-                    {
-                        DataChangeNotifier dcn = validator.hookupComponent(uiObj, 
-                                                                           cellField.getIdent(),
-                                                                           parseValidationType(cellField.getValidationType()), 
-                                                                           cellField.getValidationRule(), 
-                                                                           cellField.isChangeListenerOnly());
-                        uip.setChangeListener(dcn);
-                    }
+                    ((UIValidatable)uip).setRequired(cellField.isRequired());
                 }
 
-                return uiObj;
-            
-            
+                // initialize the plugin object
+                uip.initialize(cellField.getProperties(), isViewMode);
+                
+                // get the UI component provided by the plugin object
+                JComponent pluginUI = uip.getUIComponent();
+                
+                // check for another required interface (GetSetValueIFace)
+                if (!(uip instanceof GetSetValueIFace))
+                {
+                    throw new RuntimeException("Plugin of class ["+pluginClass.getName()+"] doesn't implement the GetSetValueIFace!");
+                }
+                
+                if (validator != null && (cellField.isChangeListenerOnly() || 
+                        cellField.isRequired() || 
+                        isNotEmpty(cellField.getValidationRule())))
+                {
+                    DataChangeNotifier dcn = validator.hookupComponent(pluginUI, 
+                                                                       cellField.getIdent(),
+                                                                       parseValidationType(cellField.getValidationType()), 
+                                                                       cellField.getValidationRule(), 
+                                                                       cellField.isChangeListenerOnly());
+                    uip.setChangeListener(dcn);
+                }
+
+                return pluginUI;
+                
             } catch (Exception ex)
             {
                log.error(ex);
@@ -1935,5 +1936,4 @@ public class ViewFactory
         }
         return null;
     }
-    
 }
