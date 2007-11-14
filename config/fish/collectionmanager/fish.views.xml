@@ -730,10 +730,6 @@
                     <cell type="field" id="8" name="abbreviation" uitype="text" cols="20" valtype="Changed"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="url" label="URL"/>
-                    <cell type="field" id="url" name="url" initialize="title=Homepage" uitype="url"/>
-                </row>
-                <row>
                     <cell type="subview" viewname="Address" id="9" name="addresses" colspan="7" valtype="Changed"/>
                 </row>
 				                
