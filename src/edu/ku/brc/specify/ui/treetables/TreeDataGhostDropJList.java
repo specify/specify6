@@ -58,9 +58,8 @@ public class TreeDataGhostDropJList extends DragDropJList
 	{
 		if( clickOnText )
 		{
-			return;
+            super.setSelectedIndices(indices);
 		}
-		clickOnText = true;
 	}
 
 	/**
@@ -77,7 +76,6 @@ public class TreeDataGhostDropJList extends DragDropJList
 		{
 			super.setSelectedValue(anObject,shouldScroll);
 		}
-		clickOnText = true;
 	}
 
 	/**
@@ -94,7 +92,6 @@ public class TreeDataGhostDropJList extends DragDropJList
 		{
 			super.setSelectionInterval(anchor,lead);
 		}
-		clickOnText = true;
 	}
 
 	/**
@@ -110,6 +107,5 @@ public class TreeDataGhostDropJList extends DragDropJList
 		{
 			super.setSelectedIndex(index);
 		}
-		clickOnText = true;
 	}
 }
