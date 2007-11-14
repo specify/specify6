@@ -35,7 +35,7 @@ public class EditViewCompSwitcherPanel extends JPanel implements GetSetValueIFac
     protected FormCellIFace formCell;
     protected String        currentCard;
     
-    protected CardLayout        cardLayout  = new CardLayout();
+    protected CardLayout    cardLayout  = new CardLayout();
     
     public EditViewCompSwitcherPanel(final FormCellIFace formCell)
     {
@@ -149,13 +149,15 @@ public class EditViewCompSwitcherPanel extends JPanel implements GetSetValueIFac
      */
     public Object getValue()
     {
+        // Note this always passes back the value from the "edit" component and never from the read only component
+        // this SHOULD be ok, because we also always set the edit component. so the validation system validates it ok.
         boolean isSingleValueFromSet = false;
         if (formCell instanceof FormCellSubViewIFace)
         {
             isSingleValueFromSet = ((FormCellSubViewIFace)formCell).isSingleValueFromSet();
         }
         
-        return FormViewObj.getValueFromComponent(currentComp, isSingleValueFromSet,
+        return FormViewObj.getValueFromComponent(editComp, isSingleValueFromSet,
                                                  formCell.getType() == FormCellIFace.CellType.command, 
                                                  currentCard);
     }
@@ -165,7 +167,8 @@ public class EditViewCompSwitcherPanel extends JPanel implements GetSetValueIFac
      */
     public void setValue(Object value, String defaultValue)
     {
-        FormViewObj.setDataIntoUIComp(currentComp, value, defaultValue);
+        FormViewObj.setDataIntoUIComp(editComp, value, defaultValue);
+        FormViewObj.setDataIntoUIComp(viewComp, value, defaultValue);
     }
     
 }
