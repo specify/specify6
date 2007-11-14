@@ -326,7 +326,7 @@ public class TaxonLabelFormatting extends UIPluginBase
         }
         
         String format = fmtObj.toString();
-        System.out.println("["+format+"]");
+        //System.out.println("["+format+"]");
         if (StringUtils.isNotEmpty(format) && format.length() > 0)
         {
             DefaultListModel model = (DefaultListModel)authorsList.getModel();
@@ -457,7 +457,7 @@ public class TaxonLabelFormatting extends UIPluginBase
                 FontMetrics fm = g.getFontMetrics();
                 y = size.height - fm.getDescent() - insets.bottom - fm.getLeading() - 1;
                 g.drawString(tdi.getText(), x, y);
-                System.out.println(tdi.getType()+" ["+tdi.getText()+"] "+x+", "+y);
+                //System.out.println(tdi.getType()+" ["+tdi.getText()+"] "+x+", "+y);
                 x += fm.stringWidth(tdi.getText());
             }
         }

@@ -37,7 +37,11 @@ import edu.ku.brc.af.core.NavBoxLayoutManager;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
+import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.ui.HelpMgr;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -57,7 +61,7 @@ import edu.ku.brc.ui.UIRegistry;
  *
  */
 @SuppressWarnings("serial")
-public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResultsPaneIFace
+public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResultsPaneIFace, CommandListener
 {
     private static final Logger log = Logger.getLogger(ESResultsSubPane.class);
 
@@ -100,6 +104,8 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
         scrollPane = new JScrollPane(contentPanel);
         add(scrollPane, BorderLayout.CENTER);
         
+        scrollPane.getVerticalScrollBar().setUnitIncrement(10);
+        
         sorter = new Comparator<ESResultsTablePanelIFace>()
         {
             public int compare(ESResultsTablePanelIFace left, ESResultsTablePanelIFace right)
@@ -121,6 +127,8 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
             explainPanel.add(btn, BorderLayout.WEST);
             HelpMgr.registerComponent(btn, "ExpressSearchTellMeMore");
         }
+        
+        CommandDispatcher.register(ExpressSearchTask.EXPRESSSEARCH, this);
     }
 
     /**
@@ -207,7 +215,17 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
                 expTblRes.getUIComponent().repaint();
             }
         });
-        
+    }
+    
+    /**
+     * 
+     */
+    protected void adjustDisplay()
+    {
+        if (expTblResults.size() == 1)
+        {
+            expTblResults.get(0).expandView();
+        }
     }
 
     /* (non-Javadoc)
@@ -267,6 +285,22 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
         expTblResults.clear();
         
         return true;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CommandListener#doCommand(edu.ku.brc.ui.CommandAction)
+     */
+    @Override
+    public void doCommand(CommandAction cmdAction)
+    {
+        if (cmdAction.isType(ExpressSearchTask.EXPRESSSEARCH))
+        {
+            if (cmdAction.isAction("SearchComplete"))
+            {
+                adjustDisplay();
+                CommandDispatcher.unregister(ExpressSearchTask.EXPRESSSEARCH, this);
+            }
+        }
     }
 
     /*

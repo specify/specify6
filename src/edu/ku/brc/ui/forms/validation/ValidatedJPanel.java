@@ -31,8 +31,7 @@ import javax.swing.JPanel;
 @SuppressWarnings("serial")
 public class ValidatedJPanel extends JPanel
 {
-    
-    protected FormValidator formValidator = new FormValidator();
+    protected FormValidator formValidator = new FormValidator(null);
 
     /**
      * Constructor of the EMail setting panel

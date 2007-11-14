@@ -149,7 +149,7 @@ public class JAutoCompTextField extends JTextField
     
     protected void keyReleasedInternal(KeyEvent ev)
     {
-        System.out.println(ev);
+        //System.out.println(ev);
         if (dbAdapter != null)
         {
             if (ev.getKeyCode() == JAutoCompComboBox.SEARCH_KEY)

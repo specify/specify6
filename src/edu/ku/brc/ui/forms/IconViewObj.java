@@ -35,11 +35,11 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.dbsupport.DBRelationshipInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
-import edu.ku.brc.dbsupport.DBTableInfo;
-import edu.ku.brc.dbsupport.DBRelationshipInfo;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DefaultClassActionHandler;
@@ -53,7 +53,6 @@ import edu.ku.brc.ui.forms.persist.FormViewDef;
 import edu.ku.brc.ui.forms.persist.ViewDef;
 import edu.ku.brc.ui.forms.persist.ViewDefIFace;
 import edu.ku.brc.ui.forms.persist.ViewIFace;
-import edu.ku.brc.ui.forms.persist.AltViewIFace.CreationMode;
 import edu.ku.brc.ui.forms.validation.FormValidator;
 import edu.ku.brc.util.Orderable;
 
@@ -84,18 +83,18 @@ public class IconViewObj implements Viewable
     protected String                        dataSetFieldName;
 
     // UI stuff
+    protected boolean                       dataTypeError;
     protected IconTray                      iconTray;
     protected JPanel                        mainComp;
     protected JPanel                        southPanel;
-    protected JButton                       editButton;
-    protected JButton                       newButton;
-    protected JButton                       deleteButton;
+    protected JButton                       viewBtn           = null;
+    protected JButton                       editBtn           = null;
+    protected JButton                       newBtn            = null;
+    protected JButton                       delBtn            = null;
     protected MenuSwitcherPanel             switcherUI;
-    protected JButton                       validationInfoBtn;
-    
-    protected boolean                       dataTypeError;
-    
-    protected FormValidator                 validator;
+    protected JButton                       validationInfoBtn = null;
+    protected FormValidator                 validator         = null;
+    protected boolean                       isEditing; 
     
     protected BusinessRulesIFace            businessRules;
     
@@ -109,31 +108,33 @@ public class IconViewObj implements Viewable
      * @param mvParent the parent MultiView
      * @param options the view options
      */
-    public IconViewObj(final ViewIFace view, final AltViewIFace altView, final MultiView mvParent, final int options)
+    public IconViewObj(final ViewIFace     view, 
+                       final AltViewIFace altView, 
+                       final MultiView    mvParent, 
+                       final int          options)
     {
-        this.view = view;
-        this.altView = altView;
-        this.mvParent = mvParent;
-        this.viewOptions = options;
-        this.viewDef = altView.getViewDef();
+        this.view          = view;
+        this.altView       = altView;
+        this.mvParent      = mvParent;
+        this.viewOptions   = options;
+        this.viewDef       = altView.getViewDef();
         this.dataTypeError = false;
         this.businessRules = view.getBusinessRule();
         
-        // we need a form validator that always says it's valid
-        validator = new FormValidator(){
-            @Override
-            public boolean isFormValid()
-            {
-                return true;
-            }
-        };
-        MultiView root = mvParent;
-        while (root.getMultiViewParent() != null)
+        isEditing  = MultiView.isOptionOn(options, MultiView.IS_EDITTING) || MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT);
+        
+        if (isEditing)
         {
-            root = root.getMultiViewParent();
+            // We need a form validator that always says it's valid
+            validator = new FormValidator(null)
+            {
+                @Override
+                public boolean isFormValid()
+                {
+                    return true;
+                }
+            };
         }
-        validator.setName("IconViewObj validator");
-        root.addFormValidator(validator);
         
         try
         {
@@ -151,23 +152,40 @@ public class IconViewObj implements Viewable
         }
     }
     
+    /**
+     * @return
+     */
     public String getDataClassName()
     {
         return this.dataClassName;
     }
     
+    /**
+     * 
+     */
     protected void initMainComp()
     {
-        editButton   = UIHelper.createButton("EditForm", getResourceString("EditRecord"), IconManager.IconSize.Std16, true);
-        newButton    = UIHelper.createButton("CreateObj", getResourceString("NewRecord"), IconManager.IconSize.Std16, true);
-        deleteButton = UIHelper.createButton("DeleteRecord", getResourceString("DeleteRecord"), IconManager.IconSize.Std16, true);
+        if (isEditing)
+        {
+            editBtn = UIHelper.createButton("EditForm", getResourceString("EditRecord"), IconManager.IconSize.Std16, true);
+            newBtn  = UIHelper.createButton("CreateObj", getResourceString("NewRecord"), IconManager.IconSize.Std16, true);
+            delBtn  = UIHelper.createButton("DeleteRecord", getResourceString("DeleteRecord"), IconManager.IconSize.Std16, true);
+            validationInfoBtn = FormViewObj.createValidationIndicator(this);
+            
+            editBtn.setEnabled(false);
+            delBtn.setEnabled(false);
 
+        } else
+        {
+            viewBtn = UIHelper.createButton("InfoIcon", getResourceString("ShowRecordInfoTT"), IconManager.IconSize.Std16, true);
+            viewBtn.setEnabled(false);
+
+        }
+        
         altViewsList = new Vector<AltViewIFace>();
         switcherUI   = FormViewObj.createMenuSwitcherPanel(mvParent, view, altView, altViewsList);
         
-        validationInfoBtn = FormViewObj.createValidationIndicator(this);
-
-        if (orderableDataClass && (viewOptions & MultiView.IS_EDITTING) == MultiView.IS_EDITTING)
+        if (orderableDataClass && isEditing)
         {
             iconTray = new OrderedIconTray(IconTray.SINGLE_ROW);
             iconTray.addPropertyChangeListener(new PropertyChangeListener()
@@ -177,17 +195,7 @@ public class IconViewObj implements Viewable
                     if (evt.getPropertyName().equalsIgnoreCase("item order"))
                     {
                         // TODO: figure out how to enable the save button in the parent form
-                        if (mvParent != null)
-                        {
-                            MultiView root = mvParent;
-                            while (root.getMultiViewParent() != null)
-                            {
-                                root = root.getMultiViewParent();
-                            }
-                            FormHelper.updateLastEdittedInfo(dataSet);
-                            validator.setHasChanged(true);
-                            root.dataChanged(null, null, null);
-                        }
+                        rootHasChanged();
                     }
                 }
             });
@@ -202,27 +210,37 @@ public class IconViewObj implements Viewable
             @Override
             public void mouseClicked(MouseEvent e)
             {
-                if (e.getClickCount()>1)
+                if (e.getClickCount() == 1)
+                {
+                    boolean enabled = iconTray.getSelectedValue() != null;
+                    if (editBtn != null)
+                    {
+                        editBtn.setEnabled(enabled);
+                    }
+                    if (viewBtn != null)
+                    {
+                        viewBtn.setEnabled(enabled);
+                    }
+                } else if (e.getClickCount() > 1)
                 {
                     doDoubleClick(e);
                 }
             }
         });
         
-        addActionListenerToEditButton();
-        
-        if (altView.getMode() == CreationMode.VIEW)
+         
+        if (isEditing)
         {
-            newButton.setEnabled(false);
-            deleteButton.setEnabled(false);
-        }
-        else
-        {
+            addActionListenerToEditButton();
             addActionListenerToNewButton();
             addActionListenerToDeleteButton();
             
             IconViewTransferHandler ivth = new IconViewTransferHandler(this);
             iconTray.setTransferHandler(ivth);
+            
+        } else
+        {
+            addActionListenerToViewButton();
         }
 
         mainComp = new JPanel();
@@ -232,16 +250,33 @@ public class IconViewObj implements Viewable
             mainComp.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
         }
         
-        PanelBuilder builder = new PanelBuilder(new FormLayout("f:1px:g,p,1px,p,1px,p,1px,p,1px,p", "p"));
-        CellConstraints cc  = new CellConstraints();
+        int             defCnt  = (isEditing ? 3 : 1) + (switcherUI != null ? 1 : 0) + (validationInfoBtn != null ? 1 : 0);
+        String          colDef  = "f:1px:g," + UIHelper.createDuplicateJGoodiesDef("p", "1px", defCnt);
+        PanelBuilder    builder = new PanelBuilder(new FormLayout(colDef, "p"));
+        CellConstraints cc      = new CellConstraints();
         
-        builder.add(editButton, cc.xy(2,1));
-        builder.add(newButton, cc.xy(4,1));
-        builder.add(deleteButton, cc.xy(6,1));
-        builder.add(validationInfoBtn, cc.xy(8,1));
+        int x = 2;
+        if (isEditing)
+        {
+            builder.add(editBtn, cc.xy(x, 1)); 
+            x += 2;
+            builder.add(newBtn, cc.xy(x, 1));
+            x += 2;
+            builder.add(delBtn, cc.xy(x, 1));
+            x += 2;
+            builder.add(validationInfoBtn, cc.xy(x, 1));
+            x += 2;
+
+        } else
+        {
+            builder.add(viewBtn, cc.xy(x, 1));
+            x += 2;
+        }
+        
         if (switcherUI != null)
         {
-            builder.add(switcherUI, cc.xy(10,1));
+            builder.add(switcherUI, cc.xy(x, 1));
+            x += 2;
         }
         southPanel = builder.getPanel();
 
@@ -249,6 +284,9 @@ public class IconViewObj implements Viewable
         mainComp.add(southPanel,BorderLayout.SOUTH);
     }
 
+    /**
+     * @param e mouse event
+     */
     protected void doDoubleClick(@SuppressWarnings("unused") MouseEvent e)
     {
         FormDataObjIFace selection = iconTray.getSelectedValue();
@@ -265,10 +303,21 @@ public class IconViewObj implements Viewable
             dialog.dispose();
         }
     }
+    
+    /**
+     * 
+     */
+    protected void addActionListenerToViewButton()
+    {
         
+    }
+    
+    /**
+     * 
+     */
     protected void addActionListenerToEditButton()
     {
-        editButton.addActionListener(new ActionListener()
+        editBtn.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -284,24 +333,18 @@ public class IconViewObj implements Viewable
                 if (dialog.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
                 {
                     dialog.getMultiView().getDataFromUI();
-                    if (mvParent != null)
-                    {
-                        MultiView root = mvParent;
-                        while (root.getMultiViewParent() != null)
-                        {
-                            root = root.getMultiViewParent();
-                        }
-                        FormHelper.updateLastEdittedInfo(selection);
-                        validator.setHasChanged(true);
-                        root.dataChanged(null, null, null);
-                    }
+                    rootHasChanged();
                 }
                 dialog.dispose();
             }
         });
     }
     
-    public boolean addRecord(File f)
+    /**
+     * @param f
+     * @return
+     */
+    public boolean addRecord(final File f)
     {
         final FormDataObjIFace newObject = FormHelper.createAndNewDataObj(dataClassName);
 
@@ -313,22 +356,29 @@ public class IconViewObj implements Viewable
         
         parentDataObj.addReference(newObject, dataSetFieldName);
         iconTray.addItem(newObject);
-        if (mvParent != null)
-        {
-            MultiView root = mvParent;
-            while (root.getMultiViewParent() != null)
-            {
-                root = root.getMultiViewParent();
-            }
-            validator.setHasChanged(true);
-            root.dataChanged(null, null, null);
-        }
+        
+        rootHasChanged();
+        
         return true;
     }
     
+    /**
+     * Notifies the MultiView Parent that the Icon Tray has changed. 
+     */
+    protected void rootHasChanged()
+    {
+        if (validator != null)
+        {
+            validator.setHasChanged(true);
+        }
+    }
+    
+    /**
+     * 
+     */
     protected void addActionListenerToNewButton()
     {
-        newButton.addActionListener(new ActionListener()
+        newBtn.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -345,34 +395,44 @@ public class IconViewObj implements Viewable
                 {
                     mvParent.registerDisplayFrame(dialog);
                 }
+                
+                // Now we need to get the MultiView and add it into the MV tree
+                MultiView multiView = dialog.getMultiView();
+                
+                // Note: The 'real' parent is the parent of the current MultiView
+                // this is because the table's MultiView doesn;t have a validator.
+                MultiView realParent = mvParent.getMultiViewParent();
+                
+                realParent.addChildMV(multiView);
+                
+                multiView.addCurrentValidator();
+
                 dialog.setData(newObject);
                 dialog.showDisplay(true);
+                
+                // OK, now unhook everything (MVs and the validators)
+                multiView.removeCurrentValidator();
+                realParent.removeChildMV(multiView);
+                
                 if (dialog.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
                 {
                     dialog.getMultiView().getDataFromUI();
                     log.warn("User clicked OK.  Adding " + newObject.getIdentityTitle() + " into " + dataSetFieldName + ".");
                     parentDataObj.addReference(newObject, dataSetFieldName);
                     iconTray.addItem(newObject);
-                    if (mvParent != null)
-                    {
-                        MultiView root = mvParent;
-                        while (root.getMultiViewParent() != null)
-                        {
-                            root = root.getMultiViewParent();
-                        }
-                        FormHelper.updateLastEdittedInfo(newObject);
-                        validator.setHasChanged(true);
-                        root.dataChanged(null, null, null);
-                    }
+                    rootHasChanged();
                 }
                 dialog.dispose();
             }
         });
     }
     
+    /**
+     * 
+     */
     protected void addActionListenerToDeleteButton()
     {
-        deleteButton.addActionListener(new ActionListener()
+        delBtn.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -388,8 +448,7 @@ public class IconViewObj implements Viewable
                 {
                     MultiView topLvl = mvParent.getTopLevel();
                     topLvl.addDeletedItem(selection);
-                    validator.setHasChanged(true);
-                    topLvl.dataChanged(null, null, null);
+                    rootHasChanged();
                 }
             }
         });
@@ -538,11 +597,11 @@ public class IconViewObj implements Viewable
      */
     public void setParentDataObj(Object parentDataObj)
     {
-//        if (!(parentDataObj instanceof FormDataObjIFace))
-//        {
-//            dataTypeError = true;
-//            return;
-//        }
+        if (parentDataObj != null && !(parentDataObj instanceof FormDataObjIFace))
+        {
+            dataTypeError = true;
+            return;
+        }
         this.parentDataObj = (FormDataObjIFace)parentDataObj;
     }
 

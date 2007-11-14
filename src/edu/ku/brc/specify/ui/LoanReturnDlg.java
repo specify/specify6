@@ -111,7 +111,7 @@ public class LoanReturnDlg extends JDialog
     protected List<ColObjPanel>      colObjPanels = new Vector<ColObjPanel>();
     protected JButton                okBtn;
     protected JLabel                 summaryLabel;
-    protected FormValidator          validator = new FormValidator();
+    protected FormValidator          validator = new FormValidator(null);
     protected ValComboBoxFromQuery   agentCBX;
     protected boolean                isCancelled = true;
     

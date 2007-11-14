@@ -17,9 +17,7 @@
  */
 package edu.ku.brc.specify.tasks.subpane;
 
-import edu.ku.brc.af.core.expresssearch.ExpressSearchSQLAdjuster;
 import edu.ku.brc.af.core.expresssearch.QueryForIdResultsSQL;
-import edu.ku.brc.dbsupport.SQLExecutionProcessor;
 
 /**
  * @author rods
@@ -38,7 +36,7 @@ public class ExpressTableResultsFromQuery extends ESResultsTablePanel
     {
         super(esrPane, results, installServices, true);
         
-        String adjustedSQL = ExpressSearchSQLAdjuster.getInstance().adjustSQL(results.getTableInfo().getViewSql());
+        //String adjustedSQL = ExpressSearchSQLAdjuster.getInstance().adjustSQL(results.getTableInfo().getViewSql());
         
         throw new RuntimeException("Who called this???");
         /*

@@ -62,6 +62,10 @@ public class SearchBox extends JPanel implements ActionListener, PropertyChangeL
     protected MenuCreator        menuCreator = null;
     
     
+    /**
+     * @param textField
+     * @param menuCreator
+     */
     public SearchBox(final JAutoCompTextField textField, final MenuCreator menuCreator) 
     {
         super(null);
@@ -69,7 +73,6 @@ public class SearchBox extends JPanel implements ActionListener, PropertyChangeL
         this.menuCreator = menuCreator;
         
         SearchConfigService.getInstance().addPropertyChangeListener(this);
-
         
         // We must be non-opaque since we won't fill all pixels.
         // This will also stop the UI from filling our background.
@@ -125,6 +128,9 @@ public class SearchBox extends JPanel implements ActionListener, PropertyChangeL
         }
     }
     
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#setEnabled(boolean)
+     */
     public void setEnabled(final boolean enabled)
     {
         searchText.setEditable(false);

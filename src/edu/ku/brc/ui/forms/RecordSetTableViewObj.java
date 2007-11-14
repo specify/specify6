@@ -84,7 +84,7 @@ public class RecordSetTableViewObj extends TableViewObj
         super(view, altView, mvParent, formValidator, options, bgColor);
         
         // we need a form validator that always says it's valid
-        validator = new FormValidator()
+        validator = new FormValidator(null)
         {
             @Override
             public boolean isFormValid()
@@ -92,13 +92,6 @@ public class RecordSetTableViewObj extends TableViewObj
                 return true;
             }
         };
-        MultiView root = mvParent;
-        while (root.getMultiViewParent() != null)
-        {
-            root = root.getMultiViewParent();
-        }
-        validator.setName("RecordSetTableViewObj validator");
-        root.addFormValidator(validator);
     }
     
     /**

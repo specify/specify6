@@ -21,7 +21,7 @@ public interface FormCellSubViewIFace extends FormCellIFace
     public enum Modes {viewOnly, editAll, newOnly, search}
     
     /**
-     * @return
+     * @return the class of the subview
      */
     public abstract String getClassDesc();
 

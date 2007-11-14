@@ -28,7 +28,7 @@ hibernate-annotations                   3.2.1 GA                       LGPL v2.1
 ant										1.7.0
 	ant-launcher						dist w/ ant
 
-derby									10.2.2.0
+derby									10.3.1.4
 commons-httpclient						3.0.1
 commons-lang							2.2
 commons-jexl							1.1
@@ -36,20 +36,20 @@ commons-beanutils (all-in-one JAR)		1.7.0
 commons-betwixt							0.8
 commons-io								1.3.1
 jaxen									1.1
-forms (JGoodies)						1.0.7
-looks (JGoodies)						2.1.1
-log4j									1.2.14
+forms (JGoodies)						1.1.1
+looks (JGoodies)						2.1.4
+log4j									1.2.15
 poi										2.5.1 final 20040804
 
-jfreechart								1.0.3
-	jcommon								dist w/ jfreechart
+jfreechart								1.0.6
+	jcommon								1.0.12 dist w/ jfreechart
 
 mail (JavaMail from Sun)				1.4
-jasper reports							1.3.0
+jasper reports							2.0.2
 TimingFramework							0.55
 junit									4.1
 mysql-connector-java					5.0.4
-itext									1.4.8
+itext									2.0.2
 javacsv									2.0
 jh										2.0_02
 swingx									0.8.0

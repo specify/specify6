@@ -19,7 +19,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -41,11 +40,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.forms.persist.AltViewIFace;
 import edu.ku.brc.ui.forms.persist.ViewIFace;
-import edu.ku.brc.ui.forms.validation.DataChangeListener;
-import edu.ku.brc.ui.forms.validation.DataChangeNotifier;
 import edu.ku.brc.ui.forms.validation.FormValidator;
-import edu.ku.brc.ui.forms.validation.UIValidator;
-import edu.ku.brc.ui.forms.validation.ValidationListener;
 
 /**
  * A MulitView is a "view" that contains multiple Viewable object that can display the current data object in any of the given views.
@@ -61,50 +56,54 @@ import edu.ku.brc.ui.forms.validation.ValidationListener;
  *
  */
 @SuppressWarnings("serial")
-public class MultiView extends JPanel implements ValidationListener, DataChangeListener
+public class MultiView extends JPanel
 {
     // These are the configuration Options for a View
-    public static final int NO_OPTIONS           = 0;  // Indicates there are no options
-    public static final int RESULTSET_CONTROLLER = 1;  // Add the ResultSet Controller with First,Previous,Next, Last
-    public static final int VIEW_SWITCHER        = 2;  // Add a View Switch in the bottom right
-    public static final int IS_NEW_OBJECT        = 4;  // Indicates the form will contain a brand new data object
-    public static final int HIDE_SAVE_BTN        = 8;  // Hide the Save Button
-    public static final int IS_EDITTING          = 16; // Whether the MultiView is in Edit mode.
-    public static final int IS_SINGLE_OBJ        = 32; // Whether the data being passed into the MultiView is a Collection of Object or a single Object
-    public static final int NO_SCROLLBARS        = 64; // Whether the form should be scrollable
-    public static final int ADD_SEARCH_BTN       = 128; // Whether a special search btn should be added
+    public static final int NO_OPTIONS             =   0; // Indicates there are no options
+    public static final int RESULTSET_CONTROLLER   =   1; // Add the ResultSet Controller with First,Previous,Next, Last
+    public static final int VIEW_SWITCHER          =   2; // Add a View Switch in the bottom right
+    public static final int IS_NEW_OBJECT          =   4; // Indicates the form will contain a brand new data object
+    public static final int HIDE_SAVE_BTN          =   8; // Hide the Save Button
+    public static final int IS_EDITTING            =  16; // Whether the MultiView is in Edit mode.
+    public static final int IS_SINGLE_OBJ          =  32; // Whether the data being passed into the MultiView is a Collection of Object or a single Object
+    public static final int NO_SCROLLBARS          =  64; // Whether the form should be scrollable
+    public static final int ADD_SEARCH_BTN         = 128; // Whether a special search btn should be added
+    public static final int DONT_ADD_ALL_ALTVIEWS  = 256; // Whether it is OK to add all the AltView to the Switcher
+    public static final int USE_ONLY_CREATION_MODE = 512; // Crate only the AltViews that have the same creation mode
 
     // Statics
     private static final Logger log = Logger.getLogger(MultiView.class);
 
-    protected MultiView                    mvParent          = null;
-    protected String                       cellName          = null;
+    protected MultiView                    mvParent             = null;
+    protected String                       cellName             = null;
     protected ViewIFace                    view;
-    protected Hashtable<String, Viewable>  viewMapByName   = new Hashtable<String, Viewable>();
-    protected Object                       data            = null;
-    protected Object                       parentDataObj   = null;
-    protected CardLayout                   cardLayout      = new CardLayout();
-    protected Viewable                     currentViewable = null;
+    protected Hashtable<String, Viewable>  viewMapByName        = new Hashtable<String, Viewable>();
+    protected Object                       data                 = null;
+    protected Object                       parentDataObj        = null;
+    protected CardLayout                   cardLayout           = new CardLayout();
+    protected Viewable                     currentViewable      = null;
+    protected FormValidator                currentValidator     = null;
     
-    protected boolean                      editable        = false;
-    protected AltViewIFace.CreationMode    createWithMode  = AltViewIFace.CreationMode.NONE;
-    protected Vector<FormValidator>        formValidators  = new Vector<FormValidator>();
-    protected boolean                      ignoreDataChanges = false;
+    protected boolean                      editable             = false;
+    protected AltViewIFace.CreationMode    createWithMode       = AltViewIFace.CreationMode.NONE;
+    //protected Vector<FormValidator>        formValidators       = new Vector<FormValidator>();
+    protected boolean                      ignoreDataChanges    = false;
 
-    protected int                          createOptions   = 0;
+    protected int                          createOptions        = 0;
 
-    protected List<MultiView>              kids            = new ArrayList<MultiView>();
+    protected List<MultiView>              kids                 = new ArrayList<MultiView>();
 
-    protected List<ViewBasedDisplayIFace>  displayFrames   = null;
+    protected List<ViewBasedDisplayIFace>  displayFrames        = null;
     
     protected boolean                      isSelectorForm;
-    protected String                       selectorValue   = null;
+    protected String                       selectorValue        = null;
+    protected boolean                      doingSelector        = false; // This keeps us from recursing into the selector forever
     
-    protected Vector<Object>               deletedItems    = null;
+    protected Vector<Object>               deletedItems         = null;
 
     // Temp
-    protected MultiView                    thisObj           = null;
-    protected CarryForwardSetUp            carryForwardSetup = null;
+    protected MultiView                    thisObj              = null;
+    protected CarryForwardSetUp            carryForwardSetup    = null;
 
     /**
      * Constructor - Note that createWithMode can be null and is passed in from parent ALWAYS.
@@ -134,7 +133,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      */
     public MultiView(final MultiView mvParent,
                      final String    cellName,
-                     final ViewIFace      view,
+                     final ViewIFace view,
                      final AltViewIFace.CreationMode createWithMode,
                      final int       options,
                      final Color     bgColor)
@@ -153,7 +152,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      */
     public MultiView(final MultiView mvParent,
                      final String    cellName,
-                     final ViewIFace      view,
+                     final ViewIFace view,
                      final AltViewIFace.CreationMode createWithMode,
                      final String    defaultAltViewType,
                      final int       options)
@@ -193,26 +192,45 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         {
             setBackground(bgColor);
         }
-
-        AltViewIFace defaultAltView = createDefaultViewable(defaultAltViewType);
-        createWithAltView(defaultAltView, true);
         
-        if (false)
+        boolean isUsingSwitcher         = MultiView.isOptionOn(createOptions, MultiView.VIEW_SWITCHER);
+        boolean isUsingOnlyCreationMode = MultiView.isOptionOn(createOptions, MultiView.USE_ONLY_CREATION_MODE);
+        
+        //log.debug("isUsingOnlyCreationMode "+isUsingOnlyCreationMode + " " + createWithMode + "  defaultAltViewType: "+defaultAltViewType);
+        
+        AltViewIFace defaultAltView = createDefaultViewable(defaultAltViewType);
+        
+        if (isUsingSwitcher)
         {
             for (AltViewIFace av : view.getAltViews())
             {
-                if (av != defaultAltView)
+                if ((isUsingOnlyCreationMode  && av.getMode() == createWithMode) || 
+                    (!isUsingOnlyCreationMode && (av.getMode() == createWithMode || mvParent == null)))
                 {
-                    showView(av.getName());
+                    // temporarily set this for creation, because it gets asked via getMode()
+                    this.createWithMode = av.getMode();
+                    
+                    //log.debug("CREATING: createWithMode "+createWithMode+"  "+av.getName()+" "+av.getMode());
+                    createViewable(av.getName());
+                    
+                } else
+                {
+                    //log.debug("SKIPPED:  createWithMode "+createWithMode+"  "+av.getName()+" "+av.getMode());
                 }
             }
-            showView(defaultAltView.getName());
-            
-            editable = defaultAltView.getMode() == AltViewIFace.CreationMode.EDIT;
-            log.debug(mvParent+"  "+editable);
-            int x = 0;
-            x++;
+        } else
+        {
+            createViewable(defaultAltView.getName());
         }
+        
+        this.createWithMode = createWithMode;
+        
+        editable = defaultAltView.getMode() == AltViewIFace.CreationMode.EDIT;
+        
+        showView(defaultAltView.getName());
+        
+        //log.debug( "*** Parent " + (mvParent != null ? "NOT NULL" : "NULL"));
+        currentValidator = currentViewable.getValidator();
     }
 
     /**
@@ -238,7 +256,8 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         this.createWithMode = createWithMode;
         this.createOptions  = options | (createWithMode == AltViewIFace.CreationMode.EDIT ? IS_EDITTING : NO_OPTIONS);
         
-        createWithAltView(altView != null ? altView : createDefaultViewable(null), true);
+        createViewable(altView != null ? altView : createDefaultViewable(null));
+        showView(altView.getName());
     }
     
     /**
@@ -252,6 +271,18 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
             formViewObj.getValidator().setHasChanged(true);
             formViewObj.getValidator().wasValidated(null);
         }
+    }
+    
+    /**
+     * @return
+     */
+    public FormValidator getCurrentValidator()
+    {
+        if (currentViewable != null)
+        {
+            return currentViewable.getValidator();
+        }
+        return null;
     }
     
     /**
@@ -312,15 +343,6 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     public Collection<Viewable> getViewables()
     {
         return viewMapByName.values();
-    }
-
-    /**
-     * Adds child view.
-     * @param mv add child view
-     */
-    public void addChild(final MultiView mv)
-    {
-        kids.add(mv);
     }
 
     /**
@@ -428,9 +450,9 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      */
     public void clearValidators()
     {
-        for (FormValidator validator : formValidators)
+        if (currentValidator != null)
         {
-            validator.setHasChanged(false);
+            currentValidator.setUIValidatorsToNotChanged();
         }
     }
     
@@ -442,35 +464,11 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     {
         if (!ignoreDataChanges)
         {
-            for (FormValidator validator : formValidators)
+            if (currentValidator != null)
             {
-                validator.setFirstTime(false);
-            }
-
-            for (FormValidator validator : formValidators)
-            {
-                if (validator.hasChanged())
-                {
-                    return true;
-                }
-            }
-            
-            for (Enumeration<Viewable> e=viewMapByName.elements();e.hasMoreElements();)
-            {
-                Viewable      viewable  = e.nextElement();
-                FormValidator validator = viewable.getValidator();
-                if (validator != null)
-                {
-                    if (validator.hasChanged())
-                    {
-                        return true;
-                    }
-                }
-            }
-            
-            for (MultiView mv : kids)
-            {
-                if (mv.hasChanged())
+                currentValidator.setFirstTime(false);
+    
+                if (currentValidator.hasChanged())
                 {
                     return true;
                 }
@@ -530,7 +528,8 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      * @param altView the altView to use.
      * @param bgColor the bgColor
      */
-    protected Viewable createWithAltView(final AltViewIFace altView, final boolean doShow)
+    /*protected Viewable createWithAltView(final AltViewIFace altView, 
+                                         final boolean doShow)
     {
         editable = altView.getMode() == AltViewIFace.CreationMode.EDIT;
 
@@ -585,7 +584,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         }
         
         return viewable;
-    }
+    }*/
 
 
     /**
@@ -619,32 +618,6 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     }
 
     /**
-     * Adds a form validator.
-     * @param validator the validator
-     */
-    public void addFormValidator(final FormValidator validator)
-    {
-        if (validator != null)
-        {
-            validator.addDataChangeListener(this);
-            formValidators.add(validator);
-        }
-    }
-
-    /**
-     * Removes a form validator.
-     * @param validator the validator
-     */
-    public void removeFormValidator(final FormValidator validator)
-    {
-        if (validator != null)
-        {
-            validator.removeDataChangeListener(this);
-            formValidators.remove(validator);
-        }
-    }
-
-    /**
      * Show the AltViewIFace.
      * @param altView show the AltViewIFace
      */
@@ -659,124 +632,233 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      */
     public void showView(final String name)
     {
-        // This needs to always map from the incoming name to the ID for that view
-        // so first look it up by name
         Viewable viewable = viewMapByName.get(name);
-        
-        boolean creatingViewable = viewable == null;
-
-        // If it isn't in the map then it needs to be created
-        // all the view are created when needed.
-        if (creatingViewable)
+        if (viewable == null)
         {
-            List<AltViewIFace> list = currentViewable.getView().getAltViews();
-            int inx = 0;
-            for (AltViewIFace altView : list)
-            {
-                if (name.equals(altView.getName()))
-                {
-                    break;
-                }
-                inx++;
-            }
-
-            if (inx < list.size())
-            {
-                AltViewIFace altView = list.get(inx);
-                ViewIFace newView = AppContextMgr.getInstance().getView(currentViewable.getView().getViewSetName(), altView.getView().getName());
-                if (newView != null)
-                {
-                    if (false)
-                    {
-                        log.debug("--------------------------");
-                        for (int i=0;i<getComponentCount();i++)
-                        {
-                            Component comp = getComponent(i);
-                            if (comp instanceof Viewable)
-                            {
-                                log.debug(((Viewable)comp).getName());
-                            } else
-                            {
-                                log.debug(comp);
-                            }
-                        }
-                        log.debug("--------------------------");
-                    }
-
-                    String altViewName = altView.getName();
-                    
-                    //Dimension size = currentViewable.getUIComponent().getSize();
-                    
-                    currentViewable.aboutToShow(false);
-                    removeFormValidator(currentViewable.getValidator());
-                    
-                    
-                    editable       = altView.getMode() == AltViewIFace.CreationMode.EDIT;
-                    createWithMode = altView.getMode();
-                    
-                    //printCreateOptions("Create Sub View "+altViewName, createOptions);
-                    //int adjustedOptions = createOptions | ((editable && MultiView.isOptionOn(createOptions, MultiView.IS_NEW_OBJECT))? MultiView.RESULTSET_CONTROLLER : 0);
-                    viewable = ViewFactory.createFormView(this, newView, altViewName, data, createOptions, getBackground());
-                    if (viewable != null)
-                    {
-                        if (add(viewable, altViewName))
-                        {
-                            if (viewable instanceof TableViewObj)
-                            {
-                                ((TableViewObj)viewable).setVisibleRowCount(5);// XXX FIX ME cellSubView.getTableRows());
-                            }
-                            if (mvParent != null)
-                            {
-                                viewable.getUIComponent().validate();
-                                viewable.getUIComponent().doLayout();
-                            }
-                            viewable.aboutToShow(true);
-                            cardLayout.show(this, altViewName);
-                            log.debug("Added Viewable["+altViewName+"]");
-                            
-                            validate();
-                            invalidate();
-                            doLayout();
-                        }
-                    
-                    } else
-                    {
-                        log.error("The Viewable could not be created for some reason View["+newView+"] AltViewIFace["+altViewName+"] Options["+createOptions+"]");
-                    }
-
-                } else
-                {
-                    log.error("Unable to load form ViewSetName ["+currentViewable.getView().getViewSetName()+"] Name["+altView.getName()+"]");
-                }
-            } else
-            {
-                log.error("Couldn't find Alt View ["+name+"]in AltViewIFace List");
-            }
-
-        } else
+            viewable = createViewable(name);
+        }
+        
+        if (viewable != null)
         {
             if (currentViewable != null)
             {
                 currentViewable.aboutToShow(false);
-                removeFormValidator(currentViewable.getValidator());
+                
+                if (currentValidator != null)
+                {
+                    adjustValidationTree(this, currentValidator, false);
+                }
             }
-            viewable.aboutToShow(true);
-            addFormValidator(viewable.getValidator());
-            cardLayout.show(this, name);
-        }
 
-        currentViewable = viewable;
-
-        if (currentViewable != null)
-        {
+            currentViewable = viewable;
+            currentViewable.aboutToShow(true);
+            
             currentViewable.setParentDataObj(parentDataObj);
-        }
-        
-        if (!creatingViewable)
-        {
+            currentValidator = currentViewable.getValidator();
+            
+            createWithMode = currentViewable.getAltView().getMode();
+            editable       = createWithMode == AltViewIFace.CreationMode.EDIT;
+            
             setData(data, false);
             
             setFormForSelector();
+            
+            cardLayout.show(this, name);
+            
+            if (mvParent == null)
+            {
+                int x= 0;
+                x++;
+            }
+            
+            if (currentValidator != null)
+            {
+                if (mvParent != null && mvParent.getCurrentValidator() != null)
+                {
+                    adjustValidationTree(mvParent, mvParent.getCurrentValidator(), true);
+                    //mvParent.getCurrentValidator().dumpState(true, 0);
+                    
+                } else
+                {
+                    adjustValidationTree(this, currentValidator, true);
+                    //currentValidator.dumpState(true, 0);
+                }
+            }
+            
+        } else
+        {
+            log.error("Viewable was null and shouldn't have been!");
+        }
+    }
+
+    /**
+     * Show a Viewable by name.
+     * @param name the registered name of the component (In this case it is the name of the Viewable)
+     */
+    public Viewable createViewable(final String altViewName)
+    {
+        // Find the AltView to create
+        List<AltViewIFace> list = view.getAltViews();
+        int inx = 0;
+        for (AltViewIFace altView : list)
+        {
+            if (altViewName.equals(altView.getName()))
+            {
+                return createViewable(altView);
+            }
+            inx++;
+        }
+        
+        log.error("Couldn't find Alt View ["+altViewName+"]in AltViewIFace List");
+        
+        return null;
+    }
+
+    /**
+     * Show a Viewable by name.
+     * @param name the registered name of the component (In this case it is the name of the Viewable)
+     */
+    public Viewable createViewable(final AltViewIFace altView)
+    {
+        ViewIFace newView = AppContextMgr.getInstance().getView(view.getViewSetName(), altView.getView().getName());
+        if (newView != null)
+        {
+            if (false)
+            {
+                log.debug("--------------------------");
+                for (int i=0;i<getComponentCount();i++)
+                {
+                    Component comp = getComponent(i);
+                    if (comp instanceof Viewable)
+                    {
+                        log.debug(((Viewable)comp).getName());
+                    } else
+                    {
+                        log.debug(comp);
+                    }
+                }
+                log.debug("--------------------------");
+            }
+
+            Viewable viewable = ViewFactory.createFormView(this, newView, altView.getName(), data, createOptions, getBackground());
+            if (viewable != null)
+            {
+                if (add(viewable, altView.getName()))
+                {
+                    if (viewable instanceof TableViewObj)
+                    {
+                        ((TableViewObj)viewable).setVisibleRowCount(5);// XXX FIX ME cellSubView.getTableRows());
+                    }
+                    
+                    if (mvParent != null)
+                    {
+                        viewable.getUIComponent().validate();
+                        viewable.getUIComponent().doLayout();
+                    }
+                    
+                    //log.debug("Added Viewable["+altView.getName()+"]");
+                    
+                    validate();
+                    invalidate();
+                    doLayout();
+                    
+                    return viewable;
+                }
+            
+            } else
+            {
+                log.error("The Viewable could not be created for some reason View["+newView+"] AltViewIFace["+altView.getName()+"] Options["+createOptions+"]");
+            }
+
+        } else
+        {
+            log.error("Unable to load form ViewSetName ["+currentViewable.getView().getViewSetName()+"] Name["+altView.getName()+"]");
+        }
+        
+        return null;
+    }
+    
+    /**
+     * @param parent
+     * @param parentVal
+     * @param doAdd
+     */
+    protected void adjustValidationTree(final MultiView     parent, 
+                                        final FormValidator parentVal,
+                                        final boolean       doAdd)
+    {
+        parentVal.clearKids();
+        
+        if (parent != null)
+        {
+            for (MultiView kid : parent.kids)
+            {
+                //log.debug(kid.getView().getName()+" "+ kid.getCurrentView().getAltView().getName());
+                
+                FormValidator kidVal = kid.getCurrentValidator();
+                if (kidVal != null)
+                {
+                    if (doAdd)
+                    {
+                        parentVal.add(kid.getCurrentValidator());
+                        kidVal.setParent(parentVal);
+                    }/* else
+                    {
+                        parentVal.remove(kid.getCurrentValidator());
+                        kidVal.setParent(null);
+    //                }*/
+                    adjustValidationTree(kid, kidVal, doAdd);
+                }
+            }
+        }
+    }
+    
+    /**
+     * 
+     */
+    protected void addCurrentValidator()
+    {
+        if (currentViewable != null)
+        {
+            currentValidator = currentViewable.getValidator();
+            if (currentValidator != null)
+            {
+                if (mvParent != null)
+                {
+                    FormValidator parentVal = mvParent.getCurrentValidator();
+                    if (parentVal != null)
+                    {
+                        parentVal.add(currentValidator);
+                        currentValidator.setParent(parentVal);
+                        //parentVal.dumpState(true, 0);
+                    }
+                    adjustValidationTree(this, currentValidator, true);
+                    
+                }
+                //currentValidator.dumpState(true, 100);
+            }
+        } else
+        {
+            log.error("CurrentViewable can't be null");
+        }
+    }
+    
+    /**
+     * 
+     */
+    protected void removeCurrentValidator()
+    {
+        if (currentValidator != null)
+        {
+            adjustValidationTree(mvParent, currentValidator, false);
+            
+            FormValidator parentVal = currentValidator.getParent();
+            if (parentVal != null)
+            {
+                parentVal.remove(currentValidator);
+            }
+            currentValidator.setParent(null);
+            currentValidator = null;
         }
     }
 
@@ -789,6 +871,35 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         return mvParent;
     }
 
+    /**
+     * Sets the parent MV.
+     * @param parent the parent MV
+     */
+    public void setMultiViewParent(final MultiView parent)
+    {
+        mvParent = parent;
+    }
+    
+    /**
+     * Adds a MultiView as a child of another MultiView
+     * @param kidMV the child to be added
+     */
+    public void addChildMV(final MultiView kidMV)
+    {
+        kids.add(kidMV);
+        kidMV.setMultiViewParent(this);
+    }
+    
+    /**
+     * Removes a MultiView as a child of another MultiView
+     * @param kidMV the child to be removed
+     */
+    public void removeChildMV(final MultiView kidMV)
+    {
+        kids.remove(kidMV);
+        kidMV.setMultiViewParent(null);
+    }
+    
     /**
      * Return whether the MultiView is in Edit Mode.
      * @return whether the MultiView is in Edit Mode
@@ -861,6 +972,13 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      */
     protected boolean setFormForSelector()
     {
+        if (doingSelector)
+        {
+            return true;
+        }
+        
+        doingSelector = true;
+        
         boolean doSetData = true;
         
         boolean cacheIgnoreDataChanges = ignoreDataChanges;
@@ -918,6 +1036,7 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         }
         
         ignoreDataChanges = cacheIgnoreDataChanges;
+        doingSelector     = false;
         
         return doSetData;
 
@@ -942,14 +1061,9 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      */
     public boolean isAllValidationOK()
     {
-        for (FormValidator validator : formValidators)
+        if (currentValidator != null)
         {
-            //log.debug("*** "+validator.isFormValid()+"  "+validator.getName());
-            //validator.dumpState(false);
-            if (!validator.isFormValid())
-            {
-                return false;
-            }
+            currentValidator.isFormValid();
         }
         return true;
     }
@@ -959,9 +1073,9 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
      */
     public void validateAll()
     {
-        for (FormValidator validator : formValidators)
+        if (currentValidator != null)
         {
-            validator.validateForm();
+            currentValidator.validateForm();
         }
     }
 
@@ -976,7 +1090,17 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         
         if (currentViewable != null)
         {
-            currentViewable.setParentDataObj(parentDataObj);
+            //currentViewable.setParentDataObj(parentDataObj);
+        }
+        
+        for (Viewable v : viewMapByName.values())
+        {
+            v.setParentDataObj(parentDataObj);
+        }
+        
+        for (MultiView kidMV : kids)
+        {
+            kidMV.setParentDataObj(parentDataObj);
         }
     }
 
@@ -1057,6 +1181,14 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
         return createOptions;
     }
     
+    /**
+     * @return the isOKToAddAllAltViews
+     */
+    public boolean isOKToAddAllAltViews()
+    {
+        return !MultiView.isOptionOn(createOptions, MultiView.DONT_ADD_ALL_ALTVIEWS);
+    }
+
     /**
      * Adds an item to be deleted to a list.
      * @param deletedItem the item to be deleted.
@@ -1141,11 +1273,10 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
             e.nextElement().shutdown();
         }
 
-        for (FormValidator fv : formValidators)
+        if (currentValidator != null)
         {
-            fv.cleanUp();
+            currentValidator.cleanUp();
         }
-        formValidators.clear();
 
         for (MultiView mv : kids)
         {
@@ -1188,50 +1319,15 @@ public class MultiView extends JPanel implements ValidationListener, DataChangeL
     {
         log.debug(" ");
         log.debug(msg);
-        log.debug("RESULTSET_CONTROLLER ["+((options & MultiView.RESULTSET_CONTROLLER) == MultiView.RESULTSET_CONTROLLER ? "true" : "false")+"]");
-        log.debug("IS_NEW_OBJECT        ["+((options & MultiView.IS_NEW_OBJECT) == MultiView.IS_NEW_OBJECT ? "true" : "false")+"]");
-        log.debug("VIEW_SWITCHER        ["+((options & MultiView.VIEW_SWITCHER) == MultiView.VIEW_SWITCHER ? "true" : "false")+"]");
-        log.debug("HIDE_SAVE_BTN        ["+((options & MultiView.HIDE_SAVE_BTN) == MultiView.HIDE_SAVE_BTN ? "true" : "false")+"]");
-        log.debug("IS_EDITTING          ["+((options & MultiView.IS_EDITTING) == MultiView.IS_EDITTING ? "true" : "false")+"]");
-        log.debug("IS_SINGLE_OBJ        ["+((options & MultiView.IS_SINGLE_OBJ) == MultiView.IS_SINGLE_OBJ ? "true" : "false")+"]");
-        log.debug("NO_SCROLLBARS        ["+((options & MultiView.NO_SCROLLBARS) == MultiView.NO_SCROLLBARS ? "true" : "false")+"]");
-        log.debug("ADD_SEARCH_BTN       ["+((options & MultiView.ADD_SEARCH_BTN) == MultiView.ADD_SEARCH_BTN ? "true" : "false")+"]");
+        log.debug("RESULTSET_CONTROLLER  ["+((options & MultiView.RESULTSET_CONTROLLER) == MultiView.RESULTSET_CONTROLLER ? "true" : "false")+"]");
+        log.debug("IS_NEW_OBJECT         ["+((options & MultiView.IS_NEW_OBJECT) == MultiView.IS_NEW_OBJECT ? "true" : "false")+"]");
+        log.debug("VIEW_SWITCHER         ["+((options & MultiView.VIEW_SWITCHER) == MultiView.VIEW_SWITCHER ? "true" : "false")+"]");
+        log.debug("HIDE_SAVE_BTN         ["+((options & MultiView.HIDE_SAVE_BTN) == MultiView.HIDE_SAVE_BTN ? "true" : "false")+"]");
+        log.debug("IS_EDITTING           ["+((options & MultiView.IS_EDITTING) == MultiView.IS_EDITTING ? "true" : "false")+"]");
+        log.debug("IS_SINGLE_OBJ         ["+((options & MultiView.IS_SINGLE_OBJ) == MultiView.IS_SINGLE_OBJ ? "true" : "false")+"]");
+        log.debug("NO_SCROLLBARS         ["+((options & MultiView.NO_SCROLLBARS) == MultiView.NO_SCROLLBARS ? "true" : "false")+"]");
+        log.debug("ADD_SEARCH_BTN        ["+((options & MultiView.ADD_SEARCH_BTN) == MultiView.ADD_SEARCH_BTN ? "true" : "false")+"]");
+        log.debug("DONT_ADD_ALL_ALTVIEWS ["+((options & MultiView.DONT_ADD_ALL_ALTVIEWS) == MultiView.DONT_ADD_ALL_ALTVIEWS ? "true" : "false")+"]");
         log.debug(" ");        
-    }
-
-    //-----------------------------------------------------
-    // ValidationListener
-    //-----------------------------------------------------
-
-
-    /* (non-Javadoc)
-     * @see ValidationListener#wasValidated(UIValidator)
-     */
-    public void wasValidated(final UIValidator validator)
-    {
-        boolean wasOK = isAllValidationOK();
-        for (Enumeration<Viewable> e=viewMapByName.elements();e.hasMoreElements();)
-        {
-            Viewable viewable = e.nextElement();
-            viewable.validationWasOK(wasOK);
-        }
-    }
-
-    //-----------------------------------------------------
-    // DataChangeListener
-    //-----------------------------------------------------
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.validation.DataChangeListener#dataChanged(java.lang.String, java.awt.Component, edu.ku.brc.ui.forms.validation.DataChangeNotifier)
-     */
-    public void dataChanged(final String name, final Component comp, DataChangeNotifier dcn)
-    {
-        
-        boolean wasOK = isAllValidationOK();
-        for (Enumeration<Viewable> e=viewMapByName.elements();e.hasMoreElements();)
-        {
-            Viewable viewable = e.nextElement();
-            viewable.validationWasOK(wasOK);
-        }
     }
 }

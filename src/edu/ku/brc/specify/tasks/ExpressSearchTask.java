@@ -265,7 +265,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     {
         String searchTerm = (searchText != null ? searchTerm = searchText.getText() : searchTextStr).toLowerCase();
 
-        boolean hasResults = true;
+        //boolean hasResults = true;
         if (searchTerm != null && searchTerm.length() > 0)
         {
             instance.sqlHasResults    = false;
@@ -273,6 +273,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
             
             instance.searchText.setEnabled(false);
             instance.searchBtn.setEnabled(false);
+            UIRegistry.getStatusBar().setIndeterminate(true);
             
             SearchConfig config = SearchConfigService.getInstance().getSearchConfig();
            
@@ -334,6 +335,10 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                 // Now loop through each of the view queries
                 for (ExpressResultsTableInfo erti : list)
                 {
+                    //if (!erti.getId().equals("5")) // ZZZ
+                    //{
+                    //    continue;
+                    //}
                     //log.debug("Checking up["+tblInfo.getTableId()+"]");
                     
                     QueryForIdResultsSQL results = resultsForJoinsMap.get(erti.getId());
@@ -614,10 +619,15 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                 String searchTerm = cmdAction.getData().toString();
                 ESResultsSubPane expressSearchPane = new ESResultsSubPane(searchTerm, this, true);
                 doQuery(null, searchTerm, badSearchColor, expressSearchPane);
+                
             } else if (cmdAction.isAction("Search"))
             {
                 doBasicSearch(cmdAction.getData().toString());
-            }  
+                
+            } else if (cmdAction.isAction("SearchComplete"))
+            {
+                UIRegistry.getStatusBar().setIndeterminate(false);
+            }
         }
     }
     
@@ -640,7 +650,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
      * @see edu.ku.brc.dbsupport.SQLExecutionListener#exectionDone(edu.ku.brc.dbsupport.SQLExecutionProcessor, java.sql.ResultSet)
      */
     //@Override
-    public void exectionDone(SQLExecutionProcessor process, ResultSet resultSet)
+    public synchronized void exectionDone(SQLExecutionProcessor process, ResultSet resultSet)
     {
         if (!sqlHasResults)
         {
@@ -703,7 +713,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
      * @see edu.ku.brc.dbsupport.SQLExecutionListener#executionError(edu.ku.brc.dbsupport.SQLExecutionProcessor, java.lang.Exception)
      */
     //@Override
-    public void executionError(SQLExecutionProcessor process, Exception ex)
+    public synchronized void executionError(SQLExecutionProcessor process, Exception ex)
     {
         sqlProcessorList.remove(process);
         
@@ -713,15 +723,15 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     //-- CustomQueryListener Interface
     //-------------------------------------------------------------------------
     
-    protected void completionUIHelper(final boolean decrement)
+    protected synchronized void completionUIHelper(final boolean decrement)
     {
         if (decrement)
         {
             instance.sqlResultsCount--;
         }
         
-        //System.out.println(instance.sqlResultsCount);
-        if (instance.sqlResultsCount == 0)
+        System.out.println(instance.sqlResultsCount+"  "+decrement);
+        if (instance.sqlResultsCount < 1)
         {
             searchText.setEnabled(true);
             searchBtn.setEnabled(true);
@@ -745,6 +755,8 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                 searchText.repaint();
                 UIRegistry.getStatusBar().setText("");
             }
+            
+            CommandDispatcher.dispatch(new CommandAction(EXPRESSSEARCH, "SearchComplete"));
         } 
     }
 
@@ -767,8 +779,6 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         
         if (list != null)
         {
-            completionUIHelper(false);
-            
             Object[]                      data              = (Object[])jpaQuery.getData();
             SearchTableConfig             searchTableConfig = (SearchTableConfig)data[0];
             ExpressSearchResultsPaneIFace esrPane           = (ExpressSearchResultsPaneIFace)data[1];

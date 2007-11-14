@@ -171,7 +171,7 @@ public class StatGroupTableFromCustomQuery extends StatGroupTable implements Cus
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQueryListener#exectionDone(edu.ku.brc.dbsupport.CustomQuery)
      */
-    public void exectionDone(final CustomQuery customQuery)
+    public synchronized void exectionDone(final CustomQuery customQuery)
     {
         model.clear();
         hasData = true;
@@ -203,7 +203,7 @@ public class StatGroupTableFromCustomQuery extends StatGroupTable implements Cus
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQueryListener#executionError(edu.ku.brc.dbsupport.CustomQuery)
      */
-    public void executionError(CustomQuery customQuery)
+    public synchronized void executionError(CustomQuery customQuery)
     {
         addNoneAvailableMsg(getResourceString("GetStatsError"));
         

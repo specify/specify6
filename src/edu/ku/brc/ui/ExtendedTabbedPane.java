@@ -11,6 +11,8 @@ import javax.swing.Icon;
 import javax.swing.JTabbedPane;
 import javax.swing.event.MouseInputAdapter;
 
+import org.apache.log4j.Logger;
+
 /**
  * Adds a close "X" in the bottom right of the TabbedPane for closing tabs and adds a Close btn to each tab.
  *
@@ -22,6 +24,8 @@ import javax.swing.event.MouseInputAdapter;
 @SuppressWarnings("serial")
 public class ExtendedTabbedPane extends JTabbedPane
 {
+    private static final Logger log = Logger.getLogger(ExtendedTabbedPane.class);
+    
     protected static final int CLOSER_SIZE = 5;
     
     protected Rectangle closerRect = new Rectangle();
@@ -238,7 +242,14 @@ public class ExtendedTabbedPane extends JTabbedPane
     @Override
     public void paintComponent(Graphics g)
     {
-        super.paintComponent(g);
+        try
+        {
+            super.paintComponent(g);
+            
+        } catch (java.lang.ArrayIndexOutOfBoundsException ex)
+        {
+            log.error(ex);
+        }
         
         if (this.getTabCount() > 0)
         {

@@ -335,7 +335,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    ViewBasedSearchDialogIFace dlg = UIRegistry.getViewbasedFactory().createSearchDialog(UIHelper.getFrame(searchBtn), searchDialogName);
+                    ViewBasedSearchDialogIFace dlg = UIRegistry.getViewbasedFactory().createSearchDialog(UIHelper.getWindow(searchBtn), searchDialogName);
                     dlg.getDialog().setVisible(true);
                     if (!dlg.isCancelled())
                     {
@@ -458,7 +458,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     protected void createEditFrame(final boolean isNewObject)
     {
         String closeBtnTitle = getResourceString("Save");
-        frame = UIRegistry.getViewbasedFactory().createDisplay(UIHelper.getFrame(this),
+        frame = UIRegistry.getViewbasedFactory().createDisplay(UIHelper.getWindow(this),
                                                                    displayInfoDialogName,
                                                                    frameTitle,
                                                                    closeBtnTitle,
@@ -668,10 +668,10 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
 
             if (newVal != null)
             {
+                valState = UIValidatable.ErrorType.Valid;
                 comboBox.getTextField().setCaretPosition(0);
                 list.add(newVal.toString());
                 comboBox.setSelectedIndex(0);
-                valState = UIValidatable.ErrorType.Valid;
                 if (editBtn != null)
                 {
                     editBtn.setEnabled(true);
@@ -779,6 +779,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     public UIValidatable.ErrorType validateState()
     {
         valState = isRequired && comboBox.getSelectedIndex() == -1 ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
+        //log.debug(valState);
         return valState;
     }
 

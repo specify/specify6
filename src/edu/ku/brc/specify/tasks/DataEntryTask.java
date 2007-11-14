@@ -232,7 +232,7 @@ public class DataEntryTask extends BaseTask
         }
         
         final FormPane formPane = new FormPane(view.getName(), task, view.getViewSetName(), viewName, mode, dataObj, 
-                                         isNewForm ? (MultiView.IS_NEW_OBJECT |  MultiView.RESULTSET_CONTROLLER): 0);
+                                         isNewForm ? (MultiView.IS_NEW_OBJECT | MultiView.RESULTSET_CONTROLLER): 0);
         
         formPane.setIcon(getIconForView(view));
         

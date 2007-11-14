@@ -28,6 +28,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
+import javax.swing.ScrollPaneConstants;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -101,8 +102,8 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
             textArea     = new JTextArea(80,6);
             taScrollPane = new JScrollPane(textArea);
 
-            taScrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-            taScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+            taScrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            taScrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
             taScrollPane.setPreferredSize(new Dimension(400,100));
             
             FormLayout      formLayout = new FormLayout("p,2dlu,100dlu:g,2dlu,p", "center:p:g");
@@ -259,7 +260,7 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
     /* (non-Javadoc)
      * @see edu.ku.brc.af.dbsupport.SQLExecutionListener#exectionDone(edu.ku.brc.af.dbsupport.SQLExecutionProcessor, java.sql.ResultSet)
      */
-    public void exectionDone(final SQLExecutionProcessor process, final java.sql.ResultSet resultSet)
+    public synchronized void exectionDone(final SQLExecutionProcessor process, final java.sql.ResultSet resultSet)
     {
         /*
         if (this.hideSQLField)
@@ -292,7 +293,7 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
     /* (non-Javadoc)
      * @see edu.ku.brc.af.dbsupport.SQLExecutionListener#executionError(edu.ku.brc.af.dbsupport.SQLExecutionProcessor, java.lang.Exception)
      */
-    public void executionError(final SQLExecutionProcessor process, final Exception ex)
+    public synchronized void executionError(final SQLExecutionProcessor process, final Exception ex)
     {
         sqlExecutor = null;
         enableUI(true);

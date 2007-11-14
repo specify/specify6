@@ -120,6 +120,9 @@ public class FormCellSubView extends FormCell implements FormCellSubViewIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.FormCellSubViewIFace#getClassDesc()
      */
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellSubViewIFace#getClassDesc()
+     */
     public String getClassDesc()
     {
         return classDesc;

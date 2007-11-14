@@ -110,7 +110,7 @@ public class CommandDispatcher
         Vector<CommandListener> list = instance.listeners.get(cmdAction.getType());
         if (list != null)
         {
-            for (CommandListener l : list)
+            for (CommandListener l : new Vector<CommandListener>(list))
             {
                 l.doCommand(cmdAction);
                 if (cmdAction.isConsumed)

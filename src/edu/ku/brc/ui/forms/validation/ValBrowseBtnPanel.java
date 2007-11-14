@@ -23,6 +23,11 @@ public class ValBrowseBtnPanel extends BrowseBtnPanel implements UIValidatable
     protected ValTextField textField;
     
 
+    /**
+     * @param textField
+     * @param doDirsOnly
+     * @param isForInput
+     */
     public ValBrowseBtnPanel(ValTextField textField, boolean doDirsOnly, boolean isForInput)
     {
         super(textField, doDirsOnly, isForInput);
@@ -37,9 +42,8 @@ public class ValBrowseBtnPanel extends BrowseBtnPanel implements UIValidatable
     public void setEnabled(boolean enabled)
     {
         // Don't call super
-        
         browseBtn.setEnabled(enabled);
-        textField.setEditable(enabled);
+        textField.setEnabled(enabled);
     }
 
     /* (non-Javadoc)
@@ -79,6 +83,7 @@ public class ValBrowseBtnPanel extends BrowseBtnPanel implements UIValidatable
      */
     public boolean isInError()
     {
+        //System.out.println("isInError: "+textField.isInError());
         return textField.isInError();
     }
 
@@ -87,6 +92,7 @@ public class ValBrowseBtnPanel extends BrowseBtnPanel implements UIValidatable
      */
     public boolean isRequired()
     {
+        //System.out.println("textField.isRequired(): "+textField.isRequired());
         return textField.isRequired();
     }
 
@@ -135,6 +141,7 @@ public class ValBrowseBtnPanel extends BrowseBtnPanel implements UIValidatable
      */
     public ErrorType validateState()
     {
+        System.out.println("validateState: "+textField.validateState());
         return textField.validateState();
     }
 }

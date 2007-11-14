@@ -76,44 +76,8 @@ public class FormattingPrefsPanel extends JPanel implements PrefsPanelIFace, Pre
         {
             
             ViewBasedDisplayPanel vbp = new ViewBasedDisplayPanel(null, name, viewName, "XXX", "java.util.Hashtable", "", true, MultiView.IS_EDITTING);
-/*            
-            //form = ViewFactory.createFormView(null, formView, null, AppPreferences.getRemote(), MultiView.NO_OPTIONS, null);
-            MultiView multiView = new MultiView(null, null, formView, AltViewIFace.CreationMode.EDIT, MultiView.IS_EDITTING);
-            if (multiView != null)
-            {
-                this.data = dataArg;
-                this.removeAll();
-
-                multiView.invalidate();
-                add(multiView, BorderLayout.CENTER);
-                
-                if (data != null)
-                {
-                    multiView.setData(data);
-                }
-
-                // Tells it is is a new form and all the validator painting should be supressed
-                // on required fields until the user inputs something
-                if (MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT))
-                {
-                    multiView.setIsNewForm(true, false); // traverse immediate children only
-                }
-
-                if (multiView.getCurrentView().getValidator() != null)
-                {
-                    multiView.getCurrentView().getValidator().validateForm();
-                }
-
-                cacheDesc = desc;
-                desc      = null;
-                doLayout();
-                UIRegistry.forceTopFrameRepaint();
-                */
-
-                add(vbp, BorderLayout.CENTER);
-            //}
-
-                form = vbp.getMultiView().getCurrentViewAsFormViewObj();
+            add(vbp, BorderLayout.CENTER);
+            form = vbp.getMultiView().getCurrentViewAsFormViewObj();
                 
         } else
         {
@@ -184,11 +148,11 @@ public class FormattingPrefsPanel extends JPanel implements PrefsPanelIFace, Pre
         comboBox.setRenderer(new DefaultListCellRenderer()
         {
             @SuppressWarnings("unchecked")
-            public Component getListCellRendererComponent(JList list, Object value,
+            public Component getListCellRendererComponent(JList listArg, Object value,
                     int index, boolean isSelected, boolean cellHasFocus)
             {
                 Pair<String, ImageIcon> item = (Pair<String, ImageIcon>)value;
-                JLabel label = (JLabel)super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                JLabel label = (JLabel)super.getListCellRendererComponent(listArg, value, index, isSelected, cellHasFocus);
                 if (item != null)
                 {
                     label.setIcon(item.second);

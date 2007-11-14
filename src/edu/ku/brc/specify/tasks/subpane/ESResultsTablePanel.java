@@ -306,6 +306,17 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
     }
     
     /**
+     * 
+     */
+    public void expandView()
+    {
+        if (!expandBtn.isDown())
+        {
+            expandTable(false);
+        }
+    }
+    
+    /**
      * @param isInitial
      */
     protected void expandTable(final boolean isInitial)
@@ -390,7 +401,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         DefaultTableCellRenderer dtcr = (DefaultTableCellRenderer) tcr;
         
         // set the alignment to center
-        dtcr.setHorizontalAlignment(DefaultTableCellRenderer.CENTER);
+        dtcr.setHorizontalAlignment(SwingConstants.CENTER);
         
     }
     

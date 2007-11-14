@@ -83,7 +83,7 @@ public class CollectorActionListener implements ActionListener
         String  title      = (MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT) && isEditting) ? 
                                 getResourceString("Edit") : collector.getIdentityTitle();
                                 
-        ViewBasedDisplayIFace dialog = UIRegistry.getViewbasedFactory().createDisplay(UIHelper.getFrame(iconViewObj.getUIComponent()),
+        ViewBasedDisplayIFace dialog = UIRegistry.getViewbasedFactory().createDisplay(UIHelper.getWindow(iconViewObj.getUIComponent()),
                                                                     defFormName,
                                                                     title,
                                                                     getResourceString("OK"),

@@ -275,7 +275,6 @@ public class DropDownButtonStateful extends DropDownButton
     {
         currInx = index;
         int nxtInx = doAdvance ? getNextIndex() : index;
-        System.err.println(hashCode()+"  "+nxtInx);
         cardLayout.show(cardPanel, Integer.toString(nxtInx));
 
     }

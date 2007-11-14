@@ -90,7 +90,7 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
         String species = taxon.getName();
         String genus   = taxon.getParent().getName();
 
-        frame = UIRegistry.getViewbasedFactory().createDisplay(UIHelper.getFrame(this),
+        frame = UIRegistry.getViewbasedFactory().createDisplay(UIHelper.getWindow(this),
                                                                    "FishBase",
                                                                    "Fish Base Information",
                                                                    getResourceString("Close"),

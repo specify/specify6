@@ -43,6 +43,8 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
     protected ViewBasedDisplayPanel         viewBasedPanel = null;
     protected ViewBasedDisplayActionAdapter vbdaa          = null;
     
+    
+    
     /**
      * Constructs a search dialog from form infor and from search info.
      * @param frame the parent frame
@@ -66,6 +68,36 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
                                   final boolean isEdit,
                                   final int     options)
     {
+        this(parentFrame, viewSetName, viewName, displayName, title, closeBtnTitle, className, idFieldName, isEdit, true, null, null, options);
+    }
+
+    /**
+     * Constructs a search dialog from form infor and from search info.
+     * @param frame the parent frame
+     * @param viewSetName the viewset name
+     * @param viewName the form name from the viewset
+     * @param displayName the search name, this is looked up by name in the "search_config.xml" file
+     * @param title the title (should be already localized before passing in)
+     * @param closeBtnTitle the title of close btn
+     * @param className the name of the class to be created from the selected results
+     * @param idFieldName the name of the field in the clas that is the primary key which is filled in from the search table id
+     * @param doRegOKBtn Indicates whether the OK btn should be registered so it calls save
+     * @param options the options needed for creating the form
+     */
+    public ViewBasedDisplayDialog(final Frame     parentFrame,
+                                  final String    viewSetName,
+                                  final String    viewName,
+                                  final String    displayName,
+                                  final String    title,
+                                  final String    closeBtnTitle,
+                                  final String    className,
+                                  final String    idFieldName,
+                                  final boolean   isEdit,
+                                  final boolean   doRegOKBtn,
+                                  final String    cellName,
+                                  final MultiView mvParent,
+                                  final int       options)
+    {
         super(parentFrame, title, true, isEdit ? CustomDialog.OKCANCEL : CustomDialog.OK_BTN, null);
         
         viewBasedPanel = new ViewBasedDisplayPanel(this, 
@@ -75,6 +107,9 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
                 className, 
                 idFieldName, 
                 isEdit, 
+                doRegOKBtn,
+                cellName,
+                mvParent,
                 options | MultiView.NO_SCROLLBARS);
         
         if (StringUtils.isNotEmpty(closeBtnTitle))
@@ -106,6 +141,36 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
                                   final boolean isEdit,
                                   final int     options)
     {
+        this(parentDialog, viewSetName, viewName, displayName, title, closeBtnTitle, className, idFieldName, isEdit, true, null, null, options);
+    }
+    
+    /**
+     * Constructs a search dialog from form infor and from search info.
+     * @param dlg the parent frame
+     * @param viewSetName the viewset name
+     * @param viewName the form name from the viewset
+     * @param displayName the search name, this is looked up by name in the "search_config.xml" file
+     * @param title the title (should be already localized before passing in)
+     * @param closeBtnTitle the title of close btn
+     * @param className the name of the class to be created from the selected results
+     * @param idFieldName the name of the field in the clas that is the primary key which is filled in from the search table id
+     * @param doRegOKBtn Indicates whether the OK btn should be registered so it calls save
+     * @param options the options needed for creating the form
+     */
+    public ViewBasedDisplayDialog(final Dialog    parentDialog,
+                                  final String    viewSetName,
+                                  final String    viewName,
+                                  final String    displayName,
+                                  final String    title,
+                                  final String    closeBtnTitle,
+                                  final String    className,
+                                  final String    idFieldName,
+                                  final boolean   isEdit,
+                                  final boolean   doRegOKBtn,
+                                  final String    cellName,
+                                  final MultiView mvParent,
+                                  final int       options)
+    {
         super(parentDialog, title, true, isEdit ? CustomDialog.OKCANCEL : CustomDialog.OK_BTN, null);
         
         viewBasedPanel = new ViewBasedDisplayPanel(this, 
@@ -115,6 +180,9 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
                 className, 
                 idFieldName, 
                 isEdit, 
+                doRegOKBtn,
+                cellName,
+                mvParent,
                 options | MultiView.NO_SCROLLBARS);
 
         if (StringUtils.isNotEmpty(closeBtnTitle))

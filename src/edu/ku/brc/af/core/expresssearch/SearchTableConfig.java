@@ -101,6 +101,9 @@ public class SearchTableConfig implements DisplayOrderingIFace,
         this.displayOrder = displayOrder;
     }
     
+    /**
+     * @return
+     */
     public boolean hasConfiguredSearchFields()
     {
         for (SearchFieldConfig sfc : searchFields)

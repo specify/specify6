@@ -44,15 +44,15 @@ public interface ViewBasedDialogFactoryIFace
 
     /**
      * Creates a new DBObjSearchDialog by name
-     * @param frame the parent frame
+     * @param window the parent frame
      * @param name the name of the DBObjSearchDialog to return
      * @return a DBObjSearchDialog by name
      */
-    public ViewBasedSearchDialogIFace createSearchDialog(Window frame, String name);
+    public ViewBasedSearchDialogIFace createSearchDialog(Window window, String name);
 
    /**
      * Creates a Frame/Dialog from the Factory by name.
-     * @param frame the parent frame, can be null and is ignored type is FRAME.
+     * @param window the parent frame, can be null and is ignored type is FRAME.
      * @param name the Name of the display to create (the factory uses this name)
      * @param frameTitle the title on the frame or dialog
      * @param closeBtnTitle the title of close btn
@@ -61,7 +61,7 @@ public interface ViewBasedDialogFactoryIFace
      * @param type the type of frame (Frame or Dialog) model or non-model
      * @return the object (Frame) displaying the form
      */
-    public ViewBasedDisplayIFace createDisplay(Window      frame, 
+    public ViewBasedDisplayIFace createDisplay(Window      window, 
                                                String      name,
                                                String      frameTitle,
                                                String      closeBtnTitle,

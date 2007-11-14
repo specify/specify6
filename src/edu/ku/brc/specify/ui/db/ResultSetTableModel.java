@@ -335,7 +335,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
      */
     //@Override
     //@SuppressWarnings("null")
-    public void exectionDone(final SQLExecutionProcessor process, final ResultSet resultSet)
+    public synchronized void exectionDone(final SQLExecutionProcessor process, final ResultSet resultSet)
     {
         List<ERTICaptionInfo> captions = results.getVisibleCaptionInfo();
         
@@ -388,6 +388,8 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                      
                      if (caption.getAggregatorName() != null)
                      {
+                         //log.debug("The Agg is ["+caption.getAggregatorName()+"] "+caption.getColName());
+                         
                          // Alright we have an aggregator
                          aggList         = new Vector<Object>();
                          aggListRecycler = new Stack<Object>();
@@ -453,10 +455,10 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                     if (StringUtils.isNotEmpty(ordColName))
                     {
                         String colName = StringUtils.substringAfterLast(ordColName, ".");
-                        log.debug("colName ["+colName+"]");
+                        //log.debug("colName ["+colName+"]");
                         for (int i=0;i<metaData.getColumnCount();i++)
                         {
-                            log.debug("["+colName+"]["+metaData.getColumnName(i+1)+"]");
+                            //log.debug("["+colName+"]["+metaData.getColumnName(i+1)+"]");
                             if (colName.equalsIgnoreCase(metaData.getColumnName(i+1)))
                             {
                                 aggCaption.setOrderColIndex(i);
@@ -492,6 +494,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                 do 
                 {
                     int id = resultSet.getInt(1);
+                    //log.debug("id: "+id+"  prevId: "+prevId);
                     
                     // Remember aggCaption is used by both a Aggregation and a Composite
                     if (aggCaption != null && !hasCompositeObj)
@@ -505,6 +508,8 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                             
                         } else if (id != prevId)
                         {
+                            log.debug("Agg List len: "+aggList.size());
+                            
                             if (row != null && aggList != null)
                             {
                                 int aggInx = captions.indexOf(aggCaption);
@@ -520,6 +525,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                                 row = new Vector<Object>();
                                 cache.add(row);
                             }
+                            prevId = id;
                             
                         } else if (row == null)
                         {
@@ -639,7 +645,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
      * @see edu.ku.brc.dbsupport.SQLExecutionListener#executionError(edu.ku.brc.dbsupport.SQLExecutionProcessor, java.lang.Exception)
      */
     //@Override
-    public void executionError(SQLExecutionProcessor process, Exception ex)
+    public synchronized void executionError(SQLExecutionProcessor process, Exception ex)
     {
         // TODO Auto-generated method stub
         

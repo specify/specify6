@@ -125,7 +125,7 @@ public class PickListProcessor implements FormProcessor
             });
 
             JButton saveBtn = (JButton) Viewable.getCompById("savePL");
-            Viewable.getValidator().registerOKButton(saveBtn);
+            Viewable.getValidator().addEnableItem(saveBtn);
 
             //Viewable.getValidator().addRuleObjectMapping("titleVal", new TitleValidator(name, titlesList));
             Viewable.getValidator().addRuleObjectMapping("processor", this);

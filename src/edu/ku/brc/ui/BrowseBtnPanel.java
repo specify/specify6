@@ -70,7 +70,9 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
      * Constructor.
      * @param textField the text field to use (most likely is a ValTextField)
      */
-    public BrowseBtnPanel(final JTextField textField, final boolean doDirsOnly, final boolean isForInput)
+    public BrowseBtnPanel(final JTextField textField, 
+                          final boolean doDirsOnly, 
+                          final boolean isForInput)
     {
         super(new BorderLayout());
         this.textField = textField;
@@ -85,7 +87,10 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
      * @param doDirsOnly
      * @param isForInputArg
      */
-    protected void createUI(final Object value, final int cols, final boolean doDirsOnly, final boolean isForInputArg)
+    protected void createUI(final Object  value, 
+                            final int     cols, 
+                            final boolean doDirsOnly, 
+                            final boolean isForInputArg)
     {
         PanelBuilder panelBuilder = new PanelBuilder(new FormLayout("f:p:g, 2dlu, r:p", "p"), this);
         CellConstraints cc = new CellConstraints();
@@ -212,7 +217,13 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
             
             if (returnVal == JFileChooser.APPROVE_OPTION)
             {
-                txtField.setText(chooser.getSelectedFile().getAbsolutePath());
+                if (textField instanceof ValTextField)
+                {
+                    ((ValTextField)txtField).setValue(chooser.getSelectedFile().getAbsolutePath(), "");
+                } else
+                {
+                    txtField.setText(chooser.getSelectedFile().getAbsolutePath());
+                }
                 txtField.repaint();
             }
         }

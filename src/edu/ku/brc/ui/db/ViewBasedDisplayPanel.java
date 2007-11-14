@@ -70,6 +70,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
     protected JPanel         contentPanel;
     protected Window         parentWin;
     protected boolean        isCancelled  = false;
+    protected boolean        doRegOKBtn;                   // Indicates whether the OK btn should be registered so it calls save
 
     /**
      * Constructor.
@@ -91,6 +92,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
      * @param closeBtnTitle the title of close btn
      * @param className the name of the class to be created from the selected results
      * @param idFieldName the name of the field in the class that is the primary key which is filled in from the search table id
+     * @param isEdit whether it is in edit mode or not
      * @param options the options needed for creating the form
      */
     public ViewBasedDisplayPanel(final Window  parent,
@@ -102,12 +104,41 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
                                  final boolean isEdit,
                                  final int     options)
     {
+        this(parent, viewSetName, viewName, displayName, className, idFieldName, isEdit, true, null, null, options);
+    }
+
+    /**
+     * Constructs a search dialog from form infor and from search info.
+     * @param viewSetName the viewset name
+     * @param viewName the form name from the viewset
+     * @param displayName the search name, this is looked up by name in the "search_config.xml" file
+     * @param closeBtnTitle the title of close btn
+     * @param className the name of the class to be created from the selected results
+     * @param idFieldName the name of the field in the class that is the primary key which is filled in from the search table id
+     * @param isEdit whether it is in edit mode or not
+     * @param doRegOKBtn Indicates whether the OK btn should be registered so it calls save
+     * @param cellName the cellName of the data
+     * @param options the options needed for creating the form
+     */
+    public ViewBasedDisplayPanel(final Window    parent,
+                                 final String    viewSetName,
+                                 final String    viewName,
+                                 final String    displayName,
+                                 final String    className,
+                                 final String    idFieldName,
+                                 final boolean   isEdit,
+                                 final boolean   doRegOKBtn,
+                                 final String    cellName,
+                                 final MultiView mvParent,
+                                 final int       options)
+    {
         this.parentWin   = parent;
         this.className   = className;
         this.idFieldName = idFieldName;
         this.displayName = displayName;
+        this.doRegOKBtn  = doRegOKBtn;
 
-        createUI(viewSetName, viewName, isEdit, options);
+        createUI(viewSetName, viewName, isEdit, cellName, mvParent, options);
     }
 
     /**
@@ -116,19 +147,22 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
      * @param viewName the view name to use
      * @param closeBtnTitle the title of close btn
      * @param isEdit true is in edit mode, false is in view mode
+     * @param cellName the cellName of the data
      * @param options the options needed for creating the form
      */
     protected void createUI(final String  viewSetName,
                             final String  viewName,
                             final boolean isEdit,
+                            final String  cellName,
+                            final MultiView mvParent,
                             final int     options)
     {
 
         formView = AppContextMgr.getInstance().getView(viewSetName, viewName);
         if (formView != null)
         {
-            multiView = new MultiView(null,
-                                      null, 
+            multiView = new MultiView(mvParent,
+                                      cellName, 
                                       formView, 
                                       isEdit ? AltViewIFace.CreationMode.EDIT : AltViewIFace.CreationMode.VIEW,
                                       options, null);
@@ -156,14 +190,18 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
      * @param okBtn ok btn (cannot be null)
      * @param cancelBtn the cancel btn (can be null
      */
-    public void setOkCancelBtns(final JButton okBtn, final JButton cancelBtn)
+    public void setOkCancelBtns(final JButton okBtn, 
+                                final JButton cancelBtn)
     {
         this.okBtn     = okBtn;
         this.cancelBtn = cancelBtn;
         
-        for (Viewable v : multiView.getViewables())
+        if (doRegOKBtn)
         {
-            v.registerSaveBtn(okBtn);
+            for (Viewable v : multiView.getViewables())
+            {
+                v.registerSaveBtn(okBtn);
+            }
         }
         
         for (Viewable viewable : multiView.getViewables())
@@ -171,13 +209,18 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
             FormValidator fv = viewable.getValidator();
             if (fv != null)
             {
-                fv.registerOKButton(okBtn);
+                fv.addEnableItem(okBtn);
             }
         }
         
         if (okBtn != null)
         {
             okBtn.addActionListener(this);
+            
+            if (MultiView.isOptionOn(multiView.getOptions(), MultiView.IS_EDITTING))
+            {
+                okBtn.setEnabled(true);
+            }
         }
         
         if (cancelBtn != null)

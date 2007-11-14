@@ -174,20 +174,38 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
                                                final int        options,
                                                final FRAME_TYPE type)
     {
+        // Override when trying to parent a Frame to a Dialog, because
+        // the Frame will be placed behind the Dialog
+        
         DialogInfo info =  instance.dialogs.get(name);
         if (info != null)
         {
             if (type == ViewBasedDialogFactoryIFace.FRAME_TYPE.FRAME)
             {
-                return new ViewBasedDisplayFrame(info.getViewSetName(),
-                                                 info.getViewName(),
-                                                 info.getSearchName(),
-                                                 frameTitle,
-                                                 closeBtnTitle,
-                                                 info.getClassName(),
-                                                 info.getIdFieldName(),
-                                                 isEdit,
-                                                 options);
+                if (parent instanceof Frame)
+                {
+                    return new ViewBasedDisplayFrame(info.getViewSetName(),
+                                                     info.getViewName(),
+                                                     info.getSearchName(),
+                                                     frameTitle,
+                                                     closeBtnTitle,
+                                                     info.getClassName(),
+                                                     info.getIdFieldName(),
+                                                     isEdit,
+                                                     options);
+                }
+                
+                return new ViewBasedDisplayDialog((Dialog)parent,
+                                                    info.getViewSetName(),
+                                                    info.getViewName(),
+                                                    info.getSearchName(),
+                                                    frameTitle,
+                                                    closeBtnTitle,
+                                                    info.getClassName(),
+                                                    info.getIdFieldName(),
+                                                    isEdit,
+                                                    options);
+                
             } else if (parent instanceof Frame)
             {
                 return new ViewBasedDisplayDialog((Frame)parent,

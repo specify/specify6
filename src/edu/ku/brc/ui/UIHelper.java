@@ -191,7 +191,7 @@ public final class UIHelper
     {
         if (isWindows())
         {
-            UIManager.put("Table.selectionBackground", new ColorUIResource(195, 212, 232));
+            UIManager.put("Table.selectionBackground", new ColorUIResource(161, 175, 191));
         }
     }
     
@@ -1396,7 +1396,8 @@ public final class UIHelper
      * @param isNewObject whether it is a new object
      * @return the dialog
      */
-    public static  ViewBasedDisplayIFace createDataObjectDialog(@SuppressWarnings("unused") final AltViewIFace     altView, 
+    public static  ViewBasedDisplayIFace createDataObjectDialog(@SuppressWarnings("unused") 
+                                                                final AltViewIFace     altView, 
                                                                 final JComponent       mainComp, 
                                                                 final FormDataObjIFace dataObj, 
                                                                 final boolean          isEditMode,
@@ -1409,10 +1410,10 @@ public final class UIHelper
         {
             int     opts = (isNewObject ? MultiView.IS_NEW_OBJECT : MultiView.NO_OPTIONS) | MultiView.HIDE_SAVE_BTN;
             String  title   = (isNewObject && isEditMode) ? getResourceString("Edit") : dataObj.getIdentityTitle();
-            ViewBasedDisplayIFace dialog = UIRegistry.getViewbasedFactory().createDisplay(UIHelper.getFrame(mainComp),
+            ViewBasedDisplayIFace dialog = UIRegistry.getViewbasedFactory().createDisplay(UIHelper.getWindow(mainComp),
                                                                         defFormName,
                                                                         title,
-                                                                        getResourceString(isEditMode ? "Save" : "Close"),
+                                                                        getResourceString(isEditMode ? "Accept" : "Close"),
                                                                         isEditMode,
                                                                         opts,
                                                                         FRAME_TYPE.DIALOG);

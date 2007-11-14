@@ -310,7 +310,7 @@ public class ViewFactory
                                                       final boolean       isViewOnly,
                                                       final boolean       allEditOK)
     {
-        log.debug(cellField.getName()+"  "+cellField.getUIFieldFormatter());
+        //log.debug(cellField.getName()+"  "+cellField.getUIFieldFormatter());
 
         // Because it is formatted we ALWAYS validate it when there is a validator
         if (validator != null)
@@ -771,22 +771,22 @@ public class ViewFactory
     {
         public Hashtable<CollapsableSeparator, String> collapseSepHash = null;
         
-        public int        curMaxRow       = 0;
-        public JComponent compToAdd       = null;
-        public JComponent compToReg       = null;
-        public boolean    addToValidator  = true;
-        public boolean    addControl      = true;
-        public int        colInx          = 0;   
-        public boolean    isRequired      = false;
-        public boolean    isDerivedLabel = false;
+        public int        curMaxRow        = 0;
+        public JComponent compToAdd        = null;
+        public JComponent compToReg        = null;
+        public boolean    doAddToValidator = true;
+        public boolean    doRegControl     = true;
+        public int        colInx           = 0;   
+        public boolean    isRequired       = false;
+        public boolean    isDerivedLabel   = false;
         
         public void clear()
         {
             curMaxRow       = 0;
             compToAdd       = null;
             compToReg       = null;
-            addToValidator  = true;
-            addControl      = true;
+            doAddToValidator  = true;
+            doRegControl      = true;
             colInx          = 0; 
             isRequired      = false;
             isDerivedLabel = false;
@@ -813,8 +813,8 @@ public class ViewFactory
     {
         bi.compToAdd      = null;
         bi.compToReg      = null;
-        bi.addToValidator = true;
-        bi.addControl     = true;
+        bi.doAddToValidator = true;
+        bi.doRegControl     = true;
         
         
         if (isEditOnCreateOnly)
@@ -822,6 +822,13 @@ public class ViewFactory
             EditViewCompSwitcherPanel evcsp = new EditViewCompSwitcherPanel(cell);
             bi.compToAdd =  evcsp;
             bi.compToReg =  evcsp;
+            
+            if (validator != null)
+            {
+                //DataChangeNotifier dcn = validator.createDataChangeNotifer(cell.getIdent(), evcsp, null);
+                DataChangeNotifier dcn = validator.hookupComponent(evcsp, cell.getIdent(), UIValidator.Type.Changed,  null, false);
+                evcsp.setDataChangeNotifier(dcn);
+            }
             
         } else if (cell.getType() == FormCellIFace.CellType.label)
         {
@@ -891,8 +898,8 @@ public class ViewFactory
                 viewBldObj.addLabel(cellLabel, lbl);
             }
 
-            bi.addToValidator = false;
-            bi.addControl     = false;
+            bi.doAddToValidator = false;
+            bi.doRegControl     = false;
 
 
         } else if (cell.getType() == FormCellIFace.CellType.field)
@@ -949,12 +956,12 @@ public class ViewFactory
             {
                 case text:
                     bi.compToAdd = createTextField(validator, cellField, adapter);
-                    bi.addToValidator = validator == null; // might already added to validator
+                    bi.doAddToValidator = validator == null; // might already added to validator
                     break;
                 
                 case formattedtext:
                     bi.compToAdd = createFormattedTextField(validator, cellField, mode == AltViewIFace.CreationMode.VIEW, cellField.getPropertyAsBoolean("alledit", false));
-                    bi.addToValidator = validator == null; // might already added to validator
+                    bi.doAddToValidator = validator == null; // might already added to validator
                     break;
                     
                 case label:
@@ -971,7 +978,7 @@ public class ViewFactory
                     } else
                     {
                         bi.compToAdd = createTextField(validator, cellField, adapter);
-                        bi.addToValidator = validator == null; // might already added to validator
+                        bi.doAddToValidator = validator == null; // might already added to validator
                     }
                     break;
 
@@ -982,19 +989,19 @@ public class ViewFactory
                     
                 case image:
                     bi.compToAdd = createImageDisplay(cellField, mode, validator);
-                    bi.addToValidator = (validator != null);
+                    bi.doAddToValidator = (validator != null);
                     break;
 
                 
                 case url:
                     bi.compToAdd = new BrowserLauncherBtn(cellField.getProperty("title"));
-                    bi.addToValidator = false;
+                    bi.doAddToValidator = false;
 
                     break;
                 
                 case combobox:
                     bi.compToAdd = createValComboBox(validator, cellField, adapter);
-                    bi.addToValidator = validator != null; // might already added to validator
+                    bi.doAddToValidator = validator != null; // might already added to validator
                     break;
                     
                 case checkbox:
@@ -1032,7 +1039,7 @@ public class ViewFactory
                  
                 case password:
                     bi.compToAdd      = createPasswordField(validator, cellField);
-                    bi.addToValidator = validator == null; // might already added to validator
+                    bi.doAddToValidator = validator == null; // might already added to validator
                     break;
                 
                 case dsptextarea:
@@ -1046,7 +1053,7 @@ public class ViewFactory
                     scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
                     scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
                     
-                    bi.addToValidator = validator == null; // might already added to validator
+                    bi.doAddToValidator = validator == null; // might already added to validator
                     bi.compToReg = ta;
                     bi.compToAdd = scrollPane;
                     break;
@@ -1079,7 +1086,7 @@ public class ViewFactory
                     cbx.setFrameTitle(cellField.getProperty("title"));
                     
                     bi.compToAdd = cbx;
-                    bi.addToValidator = validator == null; // might already added to validator
+                    bi.doAddToValidator = validator == null; // might already added to validator
                     break;
                 }
                 
@@ -1091,7 +1098,7 @@ public class ViewFactory
                     scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
                     scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 
-                    bi.addToValidator = validator == null;
+                    bi.doAddToValidator = validator == null;
                     bi.compToReg = list;
                     bi.compToAdd = scrollPane;
                     break;
@@ -1153,10 +1160,10 @@ public class ViewFactory
                 sep = collapseSep;
                 
             }
-            bi.addControl     = cell.getName().length() > 0;
+            bi.doRegControl     = cell.getName().length() > 0;
             bi.compToAdd      = (JComponent)sep;
-            bi.addControl     = false;
-            bi.addToValidator = false;
+            bi.doRegControl     = false;
+            bi.doAddToValidator = false;
             
             //curMaxRow = rowInx;
             //colInx += 2;
@@ -1169,7 +1176,7 @@ public class ViewFactory
             {
                 btn.addActionListener(new CommandActionWrapper(new CommandAction(cellCmd.getCommandType(), cellCmd.getAction(), "")));
             }
-            bi.addToValidator = false;
+            bi.doAddToValidator = false;
             bi.compToAdd = btn;
 
         } 
@@ -1193,7 +1200,7 @@ public class ViewFactory
                                                         subView, 
                                                         parent.getCreateWithMode(), 
                                                         options, null);
-                    parent.addChild(multiView);
+                    parent.addChildMV(multiView);
 
                     viewBldObj.addSubView(cellSubView, multiView, bi.colInx, rowInx, cellSubView.getColspan(), 1);
                     viewBldObj.closeSubView(cellSubView);
@@ -1247,37 +1254,69 @@ public class ViewFactory
                         {
                             log.error("Couldn't find field ["+cellSubView.getName()+"] in class ["+parentView.getClassName()+"]");
                         }
-
+                        
                         int options = (isACollection && !isSingle ? MultiView.RESULTSET_CONTROLLER : MultiView.IS_SINGLE_OBJ) | MultiView.VIEW_SWITCHER |
-                                      (MultiView.isOptionOn(parent.getCreateOptions(), MultiView.IS_NEW_OBJECT) ? MultiView.IS_NEW_OBJECT : MultiView.NO_OPTIONS);
-                        
-                        
-                        Color bgColor = getBackgroundColor(props, parent.getBackground());
-                        
-                        if (UIHelper.getProperty(props, "addsearch", false))
+                        (MultiView.isOptionOn(parent.getCreateOptions(), MultiView.IS_NEW_OBJECT) ? MultiView.IS_NEW_OBJECT : MultiView.NO_OPTIONS) |
+                        (mode == AltViewIFace.CreationMode.EDIT ? MultiView.IS_EDITTING : MultiView.NO_OPTIONS);
+          
+                        //MultiView.printCreateOptions("_______________________________", parent.getCreateOptions());
+                        //MultiView.printCreateOptions("_______________________________", options);
+                        boolean useBtn = UIHelper.getProperty(props, "btn", false);
+                        if (useBtn)
                         {
-                            options |= MultiView.ADD_SEARCH_BTN;
-                        }
-                        
-                        //MultiView.printCreateOptions("SUBVIEW", options);
-                        MultiView multiView = new MultiView(parent, 
-                                                            cellSubView.getName(),
-                                                            subView,
-                                                            parent.getCreateWithMode(), 
-                                                            cellSubView.getDefaultAltViewType(),
-                                                            options, 
-                                                            bgColor);
-                        setBorder(multiView, cellSubView.getProperties());
-                        
-                        parent.addChild(multiView);
-                        
-                        viewBldObj.addSubView(cellSubView, multiView, bi.colInx, rowInx, cellSubView.getColspan(), 1);
-                        viewBldObj.closeSubView(cellSubView);
-                        
-                        Viewable viewable = multiView.getCurrentView();
-                        if (viewable instanceof TableViewObj)
+                            SubViewBtn.DATA_TYPE dataType;
+                            if (isSingle)
+                            {
+                                dataType = SubViewBtn.DATA_TYPE.IS_SINGLESET_ITEM;
+                                
+                            } else if (isACollection)
+                            {
+                                dataType = SubViewBtn.DATA_TYPE.IS_SET;
+                            } else
+                            {
+                                dataType = cellSubView.getName().equals("this") ? SubViewBtn.DATA_TYPE.IS_THIS : SubViewBtn.DATA_TYPE.IS_SET;
+                            }
+                            
+                            SubViewBtn subViewBtn = new SubViewBtn(parent, cellSubView, subView, dataType, options, props);
+                            bi.doAddToValidator   = false;
+                            bi.compToAdd          = subViewBtn;
+                            
+                            addControl(validator, viewBldObj, rowInx, cell, bi);
+                            
+                            bi.doRegControl     = false;
+                            bi.compToAdd        = null;
+                            
+                        } else
                         {
-                            ((TableViewObj)viewable).setVisibleRowCount(cellSubView.getTableRows());
+                            
+                            Color bgColor = getBackgroundColor(props, parent.getBackground());
+                            
+                            if (UIHelper.getProperty(props, "addsearch", false))
+                            {
+                                options |= MultiView.ADD_SEARCH_BTN;
+                            }
+                            
+                            //MultiView.printCreateOptions("SUBVIEW", options);
+                            MultiView multiView = new MultiView(parent, 
+                                                                cellSubView.getName(),
+                                                                subView,
+                                                                parent.getCreateWithMode(), 
+                                                                cellSubView.getDefaultAltViewType(),
+                                                                options, 
+                                                                bgColor);
+                            setBorder(multiView, cellSubView.getProperties());
+                            
+                            parent.addChildMV(multiView);
+                            
+                            viewBldObj.addSubView(cellSubView, multiView, bi.colInx, rowInx, cellSubView.getColspan(), 1);
+                            viewBldObj.closeSubView(cellSubView);
+                            
+                            Viewable viewable = multiView.getCurrentView();
+                            if (viewable instanceof TableViewObj)
+                            {
+                                ((TableViewObj)viewable).setVisibleRowCount(cellSubView.getTableRows());
+                            }
+                            bi.colInx += 2;
                         }
                         bi.curMaxRow = rowInx;
                         
@@ -1289,6 +1328,7 @@ public class ViewFactory
                     } else
                     {
                         log.error("buildFormView - parent is NULL for subview ["+subViewName+"]");
+                        bi.colInx += 2;
                     }
                 } else
                 {
@@ -1298,6 +1338,7 @@ public class ViewFactory
                     FormViewDefIFace subFormViewDef = (FormViewDefIFace)altView.getViewDef();
                     processRows(parent, formViewDef, validator, viewBldObj, altView.getMode(), labelsForHash, currDataObj, subFormViewDef.getRows());
                     viewBldObj.closeSubView(cellSubView);
+                    bi.colInx += 2;
                 }
 
             } else
@@ -1305,13 +1346,13 @@ public class ViewFactory
                 log.error("buildFormView - Could find subview's with ViewSet["+cellSubView.getViewSetName()+"] ViewName["+subViewName+"]");
             }
             // still have compToAdd = null;
-            bi.colInx += 2;
+            
 
         } else if (cell.getType() == FormCellIFace.CellType.statusbar)
         {
             bi.compToAdd      = new JStatusBar();
-            bi.addControl     = true;
-            bi.addToValidator = false;
+            bi.doRegControl     = true;
+            bi.doAddToValidator = false;
             
         } else if (cell.getType() == FormCellIFace.CellType.panel)
         {
@@ -1335,8 +1376,8 @@ public class ViewFactory
                 throw new RuntimeException("Panel Type is not implemented.");
             }
 
-            bi.addControl     = false;
-            bi.addToValidator = false;
+            bi.doRegControl     = false;
+            bi.doAddToValidator = false;
 
         }
 
@@ -1383,26 +1424,32 @@ public class ViewFactory
                 }
                 
                 createItem(parent, formViewDef, validator, viewBldObj, mode, labelsForHash, currDataObj, cell, isEditOnCreateOnly, rowInx, bi);
-                
-                addControl(validator, viewBldObj, rowInx, cell, bi);
+                //log.debug(cell.getType()+" "+cell.getName());
+                if (bi.compToAdd != null)
+                {
+                    addControl(validator, viewBldObj, rowInx, cell, bi);
+                }
                 
                 if (isEditOnCreateOnly)
                 {
+                    EditViewCompSwitcherPanel evcsp = (EditViewCompSwitcherPanel)bi.compToReg;
+                    evcsp.setParentValidator(validator);
+                    
                     BuildInfoStruct bi2 = new BuildInfoStruct();
                     bi2.curMaxRow  = 1;
                     bi2.colInx     = 1;
                     
-                    createItem(parent, formViewDef, validator, viewBldObj, AltViewIFace.CreationMode.EDIT, 
+                    createItem(parent, formViewDef, evcsp.getValidator(), viewBldObj, AltViewIFace.CreationMode.EDIT, 
                                labelsForHash, currDataObj, cell, false, rowInx, bi2);
                     Component editCompReg = bi2.compToReg;
                     Component editCompAdd = bi2.compToAdd;
                     
-                    createItem(parent, formViewDef, validator, viewBldObj, AltViewIFace.CreationMode.VIEW, 
+                    createItem(parent, formViewDef, null, viewBldObj, AltViewIFace.CreationMode.VIEW, 
                                labelsForHash, currDataObj, cell, false, rowInx, bi2);
                     Component viewCompReg = bi2.compToReg;
                     Component viewCompAdd = bi2.compToAdd;
                     
-                    EditViewCompSwitcherPanel evcsp = (EditViewCompSwitcherPanel)bi.compToReg;
+                    
                     evcsp.set(editCompReg, editCompAdd, viewCompReg, viewCompAdd);
                 }
 
@@ -1446,23 +1493,20 @@ public class ViewFactory
         int colspan = cell.getColspan();
         int rowspan = cell.getRowspan();
         
-        if (bi.compToAdd != null)
+        viewBldObj.addControlToUI(bi.compToAdd, bi.colInx, rowInx, colspan, rowspan);
+
+        if (bi.doRegControl)
         {
-            viewBldObj.addControlToUI(bi.compToAdd, bi.colInx, rowInx, colspan, rowspan);
+            viewBldObj.registerControl(cell, bi.compToReg == null ? bi.compToAdd : bi.compToReg);
+        }
+        
+        bi.curMaxRow = Math.max(bi.curMaxRow, rowspan+rowInx);
 
-            if (bi.addControl)
-            {
-                viewBldObj.registerControl(cell, bi.compToReg == null ? bi.compToAdd : bi.compToReg);
-            }
-            
-            bi.curMaxRow = Math.max(bi.curMaxRow, rowspan+rowInx);
-
-            if (validator != null && bi.addToValidator)
-            {
-                validator.addUIComp(cell.getIdent(), bi.compToReg == null ? bi.compToAdd : bi.compToReg);
-            }
-            bi.colInx += colspan + 1;
-         }
+        if (validator != null && bi.doAddToValidator)
+        {
+            validator.addUIComp(cell.getIdent(), bi.compToReg == null ? bi.compToAdd : bi.compToReg);
+        }
+        bi.colInx += colspan + 1;
     }
     
     /**
@@ -1479,7 +1523,7 @@ public class ViewFactory
         {
             try
             {
-                System.out.println("["+fieldNames[i]+"]");
+                //System.out.println("["+fieldNames[i]+"]");
                 if (fieldNames[i].equals("this"))
                 {
                     continue;

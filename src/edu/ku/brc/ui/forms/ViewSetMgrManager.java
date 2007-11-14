@@ -49,7 +49,7 @@ public class ViewSetMgrManager
      */
     public static void pushViewMgr(final ViewSetMgr viewMgr)
     {
-        System.err.println("Pushing ["+viewMgr.getName()+"]");
+        //System.err.println("Pushing ["+viewMgr.getName()+"]");
         stack.push(viewMgr);
     }
     

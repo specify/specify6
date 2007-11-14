@@ -552,18 +552,9 @@ public class TableViewObj implements Viewable,
      */
     protected void tellMultiViewOfChange()
     {
-        if (mvParent != null)
+        if (formValidator != null)
         {
-            MultiView root = mvParent;
-            while (root.getMultiViewParent() != null)
-            {
-                root = root.getMultiViewParent();
-            }
-            if (formValidator != null)
-            {
-                formValidator.setHasChanged(true);
-            }
-            root.dataChanged(null, null, null);
+            formValidator.setHasChanged(true);
         }
     }
     
@@ -593,8 +584,24 @@ public class TableViewObj implements Viewable,
         final ViewBasedDisplayIFace dialog = UIHelper.createDataObjectDialog(altView, mainComp, dObj, isEditting, false);
         if (dialog != null)
         {
+            // Now we need to get the MultiView and add it into the MV tree
+            MultiView multiView = dialog.getMultiView();
+            
+            // Note: The 'real' parent is the parent of the current MultiView
+            // this is because the table's MultiView doesn;t have a validator.
+            MultiView realParent = mvParent.getMultiViewParent();
+            
+            realParent.addChildMV(multiView);
+            
+            multiView.addCurrentValidator();
+            
             dialog.setData(dObj);
             dialog.showDisplay(true);
+            
+            // OK, now unhook everything (MVs and the validators)
+            multiView.removeCurrentValidator();
+            realParent.removeChildMV(multiView);
+            
             if (isEditting && dialog.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
             {
                 dialog.getMultiView().getDataFromUI();
@@ -923,6 +930,7 @@ public class TableViewObj implements Viewable,
      */
     public void setDataIntoUI()
     {
+        //if (parentDataObj.getId() != null && dataObjList != null && model != null)
         if (dataObjList != null && model != null)
         {
 
@@ -1024,8 +1032,6 @@ public class TableViewObj implements Viewable,
         if (formValidator != null)
         {
             formValidator.validateForm();
-            
-            FormViewObj.addRemoveWithRootMV(mvParent, formValidator, show);
         }
         
         if (show)
