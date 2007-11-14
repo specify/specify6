@@ -310,14 +310,38 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         int rowHeight = 20;
         
 		lists[0] = new TreeDataGhostDropJList(listModel,this);
+        
+        // we need our MouseListener to be the first one called, so we detach the other MouseListeners, attach ours, then reattach the others.
+        MouseListener[] mouseListeners = lists[0].getMouseListeners();
+        for (MouseListener ml: mouseListeners)
+        {
+            lists[0].removeMouseListener(ml);
+        }
 		lists[0].addMouseListener(mouseListener);
+        for (MouseListener ml: mouseListeners)
+        {
+            lists[0].addMouseListener(ml);
+        }
+        
 		lists[0].setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		lists[0].setCellRenderer(listCellRenderer);
 		lists[0].addListSelectionListener(listSelListener);
         lists[0].setFixedCellHeight(rowHeight);
 		
 		lists[1] = new TreeDataGhostDropJList(listModel,this);
-		lists[1].addMouseListener(mouseListener);
+        
+        // we need our MouseListener to be the first one called, so we detach the other MouseListeners, attach ours, then reattach the others.
+        mouseListeners = lists[1].getMouseListeners();
+        for (MouseListener ml: mouseListeners)
+        {
+            lists[1].removeMouseListener(ml);
+        }
+        lists[1].addMouseListener(mouseListener);
+        for (MouseListener ml: mouseListeners)
+        {
+            lists[1].addMouseListener(ml);
+        }
+        
 		lists[1].setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		lists[1].setCellRenderer(listCellRenderer);
 		lists[1].addListSelectionListener(listSelListener);
