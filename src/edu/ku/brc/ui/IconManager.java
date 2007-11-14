@@ -101,6 +101,8 @@ public class IconManager extends Component
 
     protected static final String      relativePath = "images/";
     protected static final IconManager instance     = new IconManager();
+    
+    protected static String            subdirPath   = null;
 
     protected Class<?>                 appClass = null;
     
@@ -153,7 +155,7 @@ public class IconManager extends Component
 
         if (url == null)
         {
-            log.error("Couldn't find URL for resource path: ["+(relativePath+fileName)+"]");
+            log.error("Couldn't find URL for resource path: ["+(relativePath+(subdirPath != null ? subdirPath : "")+fileName)+"]");
         }
 
         ImageIcon icon = null;
@@ -352,6 +354,7 @@ public class IconManager extends Component
                 Hashtable<String, String> aliases = new Hashtable<String, String>();
                 Element iconsNode = (Element)root.selectSingleNode("/icons");
                 String  type      = XMLHelper.getAttr(iconsNode, "type", null);
+                String  subdir    = XMLHelper.getAttr(iconsNode, "subdir", null);
                 if (StringUtils.isNotEmpty(type))
                 {
                     if (instance.iconSets.get(type) == null)
@@ -362,6 +365,14 @@ public class IconManager extends Component
                     {
                         log.debug("Type ["+type+"] has already been loaded.");
                     }
+                }
+                
+                if (StringUtils.isNotEmpty(subdir))
+                {
+                    subdirPath = subdir + "/";
+                } else
+                {
+                    subdirPath = null; 
                 }
                 
                 List<?> boxes = root.selectNodes("/icons/icon");
@@ -427,6 +438,7 @@ public class IconManager extends Component
             log.error(ex);
         }
         
+        subdirPath               = null; 
         instance.iconListForType = null;
     }
     
@@ -520,7 +532,7 @@ public class IconManager extends Component
      */
     public static URL getImagePath(final String imageName)
     {
-        return instance.appClass.getResource(relativePath+imageName);
+        return instance.appClass.getResource(relativePath + (subdirPath != null ? subdirPath : "") + imageName);
     }
 
     /**

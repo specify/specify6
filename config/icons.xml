@@ -11,7 +11,7 @@
     <icon name="SpecifyLargeIcon" file="specify128.png" sizes="NonStd"/>
     <icon name="SpecifySplash" file="SpecifyBigSplash.png" sizes="NonStd"/>
     
-    <icon name="Save"           file="filesave.png" sizes="all"/>
+    <icon name="Save"           file="Save32x32.png" sizes="all"/>
     <icon name="Import"         file="ImportData16x16.png" sizes="16"/>
     <icon name="ImportImages"   file="ImportImages16x16.png" sizes="16"/>
     <icon name="Export16"       file="ExportDataSet16x16.png" sizes="16"/>
@@ -19,7 +19,6 @@
     
     <icon name="Workbench16"      file="Workbench16x16.png" sizes="16"/>
     <icon name="Workbench"        file="Workbench32x32.png" sizes="all"/>
-    <icon name="Taxon_Tree"       file="taxon.gif" sizes="all"/>
     <icon name="Interactions"     file="interactions.png" sizes="all"/>
     <icon name="Query"            file="queryIt.gif" sizes="all"/>
     <icon name="Statistics"       file="stats.gif" sizes="all"/>
@@ -30,12 +29,9 @@
     <icon name="Person"           file="emblem-personal.png" sizes="all"/>
     <icon name="People"           file="emblem-people.png" sizes="all"/>
     <icon name="Series"           file="series.gif" sizes="all"/>
-    <icon name="SystemSetup"      file="information.gif" sizes="all"/>
     <icon name="Search"           file="search.gif" sizes="all"/>
-    <icon name="LocalityMapper"   file="map.png" sizes="all"/>
-    <icon name="SystemSetup"      file="system.png" sizes="all"/>
+    <icon name="SystemSetup"      file="System32x32.png" sizes="all"/>
     <icon name="PlaceHolder"      file="specify32faded.png" sizes="32"/>
-    <icon name="Template"         file="template.png" sizes="all"/>
     
     <icon name="Labels16"      file="Label16x16.png" sizes="16"/>
     <icon name="Reports"       file="Reports32x32.png" sizes="all"/>
@@ -50,6 +46,7 @@
     <icon name="Data_Entry"    file="Form32x32.png" sizes="all"/>
     <icon name="Configure16"   file="Configure16x16.png" sizes="16"/>
     <icon name="CarryForward"  file="CarryForward16x16.png" sizes="16"/>
+    <icon name="EMail"         file="EMail32x32.png" sizes="all"/>
     
     <icon name="Configure"     file="Configure20x20.png" sizes="NonStd"/>
     <icon name="AddRec"        file="AddNewRecord20x20.png" sizes="NonStd"/>
@@ -165,23 +162,19 @@
     <icon name="Browse" file="browse.gif" sizes="all"/>
     
     <!-- TreeTableViewer icons -->
-    <icon name="TTV_Subtree"        file="zoom_in.png"    sizes="16"/>
-    <icon name="TTV_WholeTree"      file="zoom_out.png"   sizes="16"/>
+    <icon name="TTV_Subtree"        file="ZoomIn32x32.png"    sizes="32"/>
+    <icon name="TTV_WholeTree"      file="ZoomOut32x32.png"   sizes="32"/>
     <icon name="TTV_AllDescend"     file="expand.png"     sizes="16"/>
     <icon name="TTV_SyncViews"      file="sync.png"       sizes="16"/>
     <icon name="TTV_NewChild"       file="add.png"        sizes="16"/>
     <icon name="TTV_EditNode"       file="edit.png"       sizes="16"/>
     <icon name="TTV_DelNode"        file="delete.png"     sizes="16"/>
     <icon name="TTV_ToParent"       file="undo.png"       sizes="16"/>
-    <icon name="TTV_ToggleViewMode" file="split_view.png" sizes="32"/>
-    
-    <!-- Tree Task icons -->
-    <icon name="TreeDefEditor"      file="taxon.gif"    sizes="all"/>
-    <icon name="TreeViewer"			file="taxon.gif"	sizes="all"/>
+    <icon name="TTV_ToggleViewMode" file="SplitWindow32x32.png" sizes="all"/>
     
     <!-- MIME type icons -->
     <icon name="audio"              file="audio.png"    sizes="all"/>
-    <icon name="video"              file="video.png"    sizes="all"/>
+    <icon name="video"              file="Video32x32.png"    sizes="all"/>
     <icon name="image"              file="Image-Window-B-32x32.png"    sizes="all"/>
     <icon name="unknown"            file="binary.png"    sizes="all"/>
     <icon name="text"               file="text.png"        sizes="all"/>
@@ -202,13 +195,13 @@
     <icon name="cs"                  file="fishskeljar.png"  sizes="all"/>
     
     <!-- LatLon PluginUI -->
-    <icon name="LatLonPoint"           file="LatLonPoint.gif"           sizes="all"/>
+    <icon name="LatLonPoint"           file="LatLonPoint32x32.png"      sizes="all"/>
     <icon name="LatLonLine"            file="LatLonLine.gif"            sizes="all"/>
     <icon name="LatLonRect"            file="LatLonRect.gif"            sizes="all"/>
-    <icon name="LatLonLineLeft"        file="LatLonLineLeft.gif"        sizes="all"/>
+    <icon name="LatLonLineLeft"        file="LatLonLineLeft32x32.png"   sizes="all"/>
     <icon name="LatLonLineRight"       file="LatLonLineRight.gif"       sizes="all"/>
-    <icon name="LatLonRectTopLeft"     file="LatLonRectTopLeft.gif"     sizes="all"/>
-    <icon name="LatLonRectBottomRight" file="LatLonRectBottomRight.gif" sizes="all"/>
+    <icon name="LatLonRectTopLeft"     file="LatLonRectLeft32x32.png"       sizes="all"/>
+    <icon name="LatLonRectBottomRight" file="LatLonRectRight32x32.png"      sizes="all"/>
     
     <!-- Tree Node Find Widget -->
     <icon name="Top"				file="RightSideUp.png"		sizes="all"/>

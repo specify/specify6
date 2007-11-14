@@ -199,10 +199,10 @@ public class ESTableOrderPanel extends JPanel
         {
             SearchTableConfig stc = sfc.getStc();
             
-            // First does it have any index fields selcted to be searched?
+            // First does it have any index fields selected to be searched?
             if (stc.hasConfiguredSearchFields())
             {
-                // Now for thie 'core' table find all the related searches
+                // Now for the 'core' table find all the related searches
                 List<ExpressResultsTableInfo> joinList = joinHash.get(Integer.toString(stc.getTableInfo().getTableId()));
                 if (joinList != null)
                 {
@@ -217,10 +217,13 @@ public class ESTableOrderPanel extends JPanel
                             RelatedQuery rq = relatedQueriesHash.get(erti.getId());
                             if (rq == null)
                             {
-                                // Check tro see if this has already been configured
+                                // Check to see if this has already been configured
                                 // if it can't find it then it is suppose to create a new one
                                 rq = config.findRelatedQuery(erti.getId(), true);
-                                rq.setDisplayOrder(newOrdercnt++);
+                                if (rq.getDisplayOrder().intValue() == Integer.MAX_VALUE)
+                                {
+                                    rq.setDisplayOrder(newOrdercnt++);
+                                }
                                 relatedQueriesHash.put(erti.getId(), rq); // Id is guaranteed to be unique
                                 //System.out.println("* "+erti.getId() + " " + DBTableIdMgr.getInstance().getInfoById(Integer.parseInt(erti.getId())).getClassObj().getSimpleName());
                                 
@@ -243,6 +246,7 @@ public class ESTableOrderPanel extends JPanel
         {
             if (rq.isInUse())
             {
+                //System.out.println("* "+rq.getDisplayOrder()+ "  "+rq.getTitle());
                 tblList.add(rq);
             } 
         }
@@ -263,6 +267,7 @@ public class ESTableOrderPanel extends JPanel
         int i = 0;
         for (TableNameRendererIFace sr : tblList)
         {
+            //System.out.println(((DisplayOrderingIFace)sr).getDisplayOrder()+ "  "+sr.getTitle());
             ((DisplayOrderingIFace)sr).setDisplayOrder(i++);
             orderTablesModel.addElement(sr);
         }

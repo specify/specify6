@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<icons type="disciplines">
+<icons type="disciplines" subdir="disciplines">
 
     <!-- Discipline Icons -->
     <icon name="Fish"        file="fish.png" sizes="all"/>    
     <icon name="Bird"        file="bird.png" sizes="all"/>    
+    <icon name="Bug"         file="bug.png" sizes="all"/>    
     <icon name="Plants"      file="flower.png" sizes="all"/>    
-    <icon name="Frogs"       file="frogs.png" sizes="all"/>    
+    <icon name="Frogs"       file="frog.png" sizes="all"/>    
     <icon name="LowerPlants" file="lower_plant.png" sizes="all"/>    
     <icon name="Mammal"      file="mammal.png" sizes="all"/>    
     <icon name="Snake"       file="snake.png" sizes="all"/>    
