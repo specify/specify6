@@ -9,6 +9,8 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -588,27 +590,18 @@ public class MissingDataResolver implements ActionListener
             }
         };
     }
-    /**
-     * Show missing data resolver form.
-     * 
-     * @return true if user doesn't cancel out of the form.
-     */
-    protected boolean showUI(boolean readOnly)
+    
+    public JPanel getUI(boolean readOnly)
     {
-        if (missingClasses.size() == 0 && missingFlds.size() == 0)
-        {
-            return true;
-        }
-        
         JPanel mainPane = new JPanel(new BorderLayout());
-        JLabel msg = new JLabel("missing data"); //i18n
+        JLabel msg = new JLabel(getResourceString("WB_UPLOAD_MISSING_DATA")); 
         msg.setFont(msg.getFont().deriveFont(Font.BOLD));
         mainPane.add(msg, BorderLayout.NORTH);
         if (!readOnly)
         {
             CellConstraints cc = new CellConstraints();
             PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g,p", "p"));
-            JButton defBtn = new JButton("Defaults"); //i18n
+            JButton defBtn = new JButton(getResourceString("WB_UPLOAD_DEFAULTS_BTN")); 
             defBtn.setActionCommand("DEFAULTS");
             defBtn.addActionListener(this);
             pb.add(defBtn, cc.xy(2,1));
@@ -651,6 +644,22 @@ public class MissingDataResolver implements ActionListener
             }
         });
         mainPane.add(new JScrollPane(uiTbl), BorderLayout.CENTER);
+        return mainPane;
+    }
+    
+    /**
+     * Show missing data resolver form.
+     * 
+     * @return true if user doesn't cancel out of the form.
+     */
+    protected boolean showUI(boolean readOnly)
+    {
+        if (missingClasses.size() == 0 && missingFlds.size() == 0)
+        {
+            return true;
+        }
+        
+        JPanel mainPane = getUI(readOnly);
         CustomDialog cwin;
         if (!readOnly)
         {

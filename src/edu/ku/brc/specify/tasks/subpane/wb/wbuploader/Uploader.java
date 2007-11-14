@@ -60,6 +60,7 @@ import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable.RelatedClassEn
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable.UploadTableInvalidValue;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
@@ -1270,8 +1271,7 @@ public class Uploader implements ActionListener, WindowStateListener
         }
         else if (e.getActionCommand().equals(UploadMainForm.VIEW_SETTINGS))
         {
-            resolver.resolve(!currentOp.equals(Uploader.READY_TO_UPLOAD)
-                    && !currentOp.equals(Uploader.USER_INPUT));
+            showSettings();
             if (currentOp.equals(Uploader.READY_TO_UPLOAD) && !resolver.isResolved())
             {
                 setCurrentOp(Uploader.USER_INPUT);
@@ -1327,6 +1327,28 @@ public class Uploader implements ActionListener, WindowStateListener
              printInvalidValReport();
         }
         else log.error("Unrecognized action: " + e.getActionCommand());
+    }
+    
+    protected void showSettings()
+    {
+        //resolver.resolve(!currentOp.equals(Uploader.READY_TO_UPLOAD) && !currentOp.equals(Uploader.USER_INPUT));
+
+        boolean readOnly = !currentOp.equals(Uploader.READY_TO_UPLOAD) && !currentOp.equals(Uploader.USER_INPUT);
+        UploadSettingsPanel usp = new UploadSettingsPanel();
+        usp.buildUI(resolver, uploadTables, readOnly);
+        CustomDialog cwin;
+        if (!readOnly)
+        {
+            cwin = new CustomDialog(null, "Missing Data", true, usp); // i18n
+        }
+        else
+        {
+            cwin = new CustomDialog(null, "Missing Data", true, CustomDialog.OK_BTN, usp, CustomDialog.OK_BTN); // i18n
+        }
+            
+        cwin.setModal(true);
+        UIHelper.centerAndShow(cwin);
+        cwin.dispose();
     }
 
     /**

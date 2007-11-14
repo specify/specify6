@@ -131,6 +131,8 @@ public class UploadTable implements Comparable<UploadTable>
      */
     protected Vector<DefaultFieldEntry> missingRequiredFlds;
     
+    protected UploadMatchSetting matchSetting;
+    
     /**
      * @param table
      * @param relationship
@@ -146,6 +148,7 @@ public class UploadTable implements Comparable<UploadTable>
         matchChildren = new Vector<UploadTable>();
         relatedClassDefaults = null;
         dateConverter = new DateConverter();
+        matchSetting = new UploadMatchSetting();
     }
 
     /**
@@ -1425,8 +1428,8 @@ public class UploadTable implements Comparable<UploadTable>
      * than one match from occurring, or to specify which object to choose when multiple matches are
      * found.
      */
-    @SuppressWarnings("unchecked")
-  protected boolean findMatch(int recNum, boolean forceMatch) throws UploaderException,
+    @SuppressWarnings({"unchecked", "unused"})
+    protected boolean findMatch(int recNum, boolean forceMatch) throws UploaderException,
             InvocationTargetException, IllegalAccessException, ParseException,
             NoSuchMethodException
     {
@@ -2073,5 +2076,16 @@ public class UploadTable implements Comparable<UploadTable>
     public Vector<UploadTable> getMatchChildren()
     {
         return matchChildren;
+    }
+    
+    @Override
+    public String toString()
+    {
+        return DBTableIdMgr.getInstance().getByShortClassName(tblClass.getSimpleName()).getTitle(); 
+    }
+    
+    public UploadMatchSetting getMatchSetting()
+    {
+        return matchSetting;
     }
 }
