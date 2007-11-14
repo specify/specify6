@@ -19,7 +19,6 @@ package edu.ku.brc.ui;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -43,7 +42,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.factories.ButtonBarFactory;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
@@ -64,8 +62,8 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
     // Data Members
     protected List<T>               items                = new Vector<T>();
     protected Vector<JToggleButton> buttons              = new Vector<JToggleButton>();
-    protected JButton               selectAll;
-    protected JButton               delSelectAll;
+    protected JButton               selectAllBtn;
+    protected JButton               deselectAllBtn;
     protected ButtonGroup           group                = null;
     protected JScrollPane           listScroller         = null;
     protected JPanel                listPanel            = null;
@@ -188,18 +186,18 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
         
         rowDef.append("f:p:g");
         
-        if (addSelectAll)
+        if (addSelectAll && uiType == Type.Checkbox)
         {
             rowDef.append(",2px,p");
         }
-        rowDef.append(",2px,p");
-        
+
         int y    = 1;
         CellConstraints cc         = new CellConstraints();
-        PanelBuilder    panelBlder = new PanelBuilder(new FormLayout("f:p:g", rowDef.toString()));
+        PanelBuilder    panelBlder = new PanelBuilder(new FormLayout("f:p:g", rowDef.toString()), this);
         JPanel          panel      = panelBlder.getPanel();
         panel.setDoubleBuffered(true);
-        panel.setBorder(BorderFactory.createEmptyBorder(4,4,4,2));
+        // Please document when this is needed, it might need to be a configuration thing. - rods
+        //panel.setBorder(BorderFactory.createEmptyBorder(4,4,4,2));
         
         if (desc != null)
         {
@@ -217,7 +215,8 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
         if (useScrollPane)
         {
             listPanel.setBackground(Color.WHITE);
-            listPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.BLACK), listPanel.getBorder()));
+            // Please document when this is needed, it might need to be a configuration thing. - rods
+            //listPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.BLACK), listPanel.getBorder()));
         }
         
         group = uiType == Type.Checkbox ? null : new ButtonGroup();
@@ -244,8 +243,10 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
             if (listScroller == null)
             {
                 listScroller = new JScrollPane(listPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+                // Please document when this is needed, it might need to be a configuration thing. - rods
+                //listScroller.setBorder(BorderFactory.createEmptyBorder());
                 listScroller.setDoubleBuffered(true);
-           }
+            }
             
             // if there is at least 1 button, size the scrollpane to be the height of 10 buttons
             if (buttons.size() > 0)
@@ -258,7 +259,8 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
                 // this will actually result in the scrollpane being able to show about 10 buttons, due
                 // to spacing between the buttons
                 scollerPrefSize.height = btnPrefSize.height * 11;
-                listScroller.setPreferredSize(scollerPrefSize);
+                //listScroller.setPreferredSize(scollerPrefSize);
+                listScroller.getViewport().setPreferredSize(scollerPrefSize);
              }
             
             panelBlder.add(listScroller, cc.xy(1, y)); y += 2;
@@ -266,23 +268,22 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
         } else
         {
             panelBlder.add(listPanel, cc.xy(1, y)); y += 2;
-            setLayout(new BorderLayout());
-            add(panelBlder.getPanel(), BorderLayout.CENTER);
         }
         
-        panelBlder.getPanel().setDoubleBuffered(true);
+        panel.setDoubleBuffered(true);
         
         if (addSelectAll && uiType == Type.Checkbox)
         {
-            selectAll    = new JButton(getResourceString("SelectAll"));
-            delSelectAll = new JButton(getResourceString("DeselectAll"));
+            selectAllBtn    = new JButton(getResourceString("SelectAll"));
+            deselectAllBtn = new JButton(getResourceString("DeselectAll"));
 
-            selectAll.addActionListener(this);
-            delSelectAll.addActionListener(this);
+            selectAllBtn.addActionListener(this);
+            deselectAllBtn.addActionListener(this);
 
-            JPanel btnBar = ButtonBarFactory.buildOKCancelBar(selectAll, delSelectAll);
-            btnBar.setBorder(BorderFactory.createEmptyBorder(2,0,0,2));
-            panelBlder.add(btnBar, cc.xy(1, y)); y += 2;
+            PanelBuilder bb = new PanelBuilder(new FormLayout("f:p:g,p,10px,p,f:p:g", "p"));
+            bb.add(selectAllBtn, cc.xy(2, 1));
+            bb.add(deselectAllBtn, cc.xy(4, 1));
+            panelBlder.add(bb.getPanel(), cc.xy(1, y)); y += 2;
         }
         
         if (initialSelectedIndex != -1)
@@ -303,7 +304,7 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
      */
     public JComponent getUIComponent()
     {
-        return listScroller != null ? listScroller : this;
+        return this;//listScroller != null ? listScroller : this;
     }
 
     /**
@@ -397,7 +398,7 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
      */
     public void actionPerformed(ActionEvent e)
     {
-        boolean doSelect = e.getSource() == selectAll;
+        boolean doSelect = e.getSource() == selectAllBtn;
         for (JToggleButton tb : buttons)
         {
             tb.setSelected(doSelect);

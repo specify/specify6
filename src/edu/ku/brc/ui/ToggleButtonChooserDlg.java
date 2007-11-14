@@ -21,6 +21,7 @@ import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 
 /**
@@ -123,6 +124,7 @@ public class ToggleButtonChooserDlg<T> extends CustomDialog
         panel.setOkBtn(okBtn);
         panel.createUI();
         
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         mainPanel.add(panel.getUIComponent(), BorderLayout.CENTER);
         
         pack();
