@@ -1955,6 +1955,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	
 	public void mouseButtonPressed(MouseEvent e)
 	{
+        log.debug("mouse button pressed on " + e.getSource());
 		if(checkBusy())
 		{
 			return;
@@ -1971,7 +1972,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		}
 		
 		TreeDataGhostDropJList list = (TreeDataGhostDropJList)e.getSource();
-		if( clickIsOnText(e) )
+		boolean clickIsOnText = clickIsOnText(e);
+        log.debug("mouse click was on text: " + clickIsOnText);
+        if( clickIsOnText )
 		{
 			list.setClickOnText(true);
 		}
