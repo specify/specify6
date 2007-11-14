@@ -114,6 +114,24 @@ public class EditViewCompSwitcherPanel extends JPanel implements GetSetValueIFac
         return comp;
     }
     
+    /**
+     * @return the current component
+     */
+    public Component getCurrentComp()
+    {
+        return currentComp;
+    }
+    
+    /**
+     * @return the either the edit component 'true' or the view component 'false'
+     * @param isEditComp true -> edit, false -> view
+     * @return the component
+     */
+    public Component getComp(final boolean isEditComp)
+    {
+        return isEditComp ? editComp : viewComp;
+    }
+    
     /* (non-Javadoc)
      * @see javax.swing.JComponent#setEnabled(boolean)
      */

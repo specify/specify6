@@ -3347,8 +3347,15 @@ public class FormViewObj implements Viewable,
                     }
                 }
             }
+        } else
+        {
+            if (fieldInfo.comp instanceof EditViewCompSwitcherPanel)
+            {
+                return ((EditViewCompSwitcherPanel)fieldInfo.comp).getCurrentComp();
+            }
+            return fieldInfo.comp;
         }
-        return fieldInfo != null ? fieldInfo.comp : null;
+        return null;
     }
 
     /**
