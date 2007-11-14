@@ -34,6 +34,9 @@ import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
@@ -145,11 +148,28 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
             {
                 if (!currentDefInUse)
                 {
-                    requestContext();
-                    TreeTableViewer<T,D,I> treeViewer = createTreeViewer();
-                    currentDefInUse = true;
-                    visibleSubPane = treeViewer;
-                    addSubPaneToMgr(treeViewer);
+                    SwingWorker bgWorker = new SwingWorker()
+                    {
+                        private TreeTableViewer<T,D,I> treeViewer;
+                        
+                        @Override
+                        public Object construct()
+                        {
+                            treeViewer = createTreeViewer();
+                            return treeViewer;
+                        }
+
+                        @Override
+                        public void finished()
+                        {
+                            super.finished();
+                            ContextMgr.requestContext(BaseTreeTask.this);
+                            currentDefInUse = true;
+                            visibleSubPane = treeViewer;
+                            addSubPaneToMgr(treeViewer);
+                        }
+                    };
+                    bgWorker.start();
                 }
                 else
                 {
@@ -174,11 +194,28 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
             {
                 if (!currentDefInUse)
                 {
-                    requestContext();
-                    TreeDefinitionEditor<T,D,I> defEditor = createDefEditor();
-                    currentDefInUse = true;
-                    visibleSubPane = defEditor;
-                    addSubPaneToMgr(defEditor);
+                    SwingWorker bgWorker = new SwingWorker()
+                    {
+                        private TreeDefinitionEditor<T,D,I> defEditor;
+                        
+                        @Override
+                        public Object construct()
+                        {
+                            defEditor = createDefEditor();
+                            return defEditor;
+                        }
+
+                        @Override
+                        public void finished()
+                        {
+                            super.finished();
+                            ContextMgr.requestContext(BaseTreeTask.this);
+                            currentDefInUse = true;
+                            visibleSubPane = defEditor;
+                            addSubPaneToMgr(defEditor);
+                        }
+                    };
+                    bgWorker.start();
                 }
                 else
                 {
@@ -201,24 +238,28 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         return menus;
 	}
     
+    @SuppressWarnings("unchecked")
     protected TreeTableViewer<T,D,I> createTreeViewer()
     {
-        ContextMgr.requestContext(this);
-        String tabName = currentDef.getName();
-        TreeTableViewer<T,D,I> ttv = new TreeTableViewer<T,D,I>(currentDef,tabName,this);
-        currentDefInUse = true;
-        visibleSubPane = ttv;
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        D treeDef = (D)session.load(currentDef.getClass(), currentDef.getTreeDefId());
+        session.close();
+        String tabName = treeDef.getName();
+        TreeTableViewer<T,D,I> ttv = new TreeTableViewer<T,D,I>(treeDef,tabName,this);
         return ttv;
     }
 
     /**
      * Opens a {@link SubPaneIFace} for viewing/editing the current {@link TreeDefIface} object.
      */
+    @SuppressWarnings("unchecked")
     protected TreeDefinitionEditor<T,D,I> createDefEditor()
 	{
-        ContextMgr.requestContext(this);
-        String tabName = currentDef.getName();
-	    TreeDefinitionEditor<T,D,I> defEditor = new TreeDefinitionEditor<T,D,I>(currentDef,tabName,this);
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        D treeDef = (D)session.load(currentDef.getClass(), currentDef.getTreeDefId());
+        session.close();
+        String tabName = treeDef.getName();
+	    TreeDefinitionEditor<T,D,I> defEditor = new TreeDefinitionEditor<T,D,I>(treeDef,tabName,this);
         return defEditor;
 	}
     
