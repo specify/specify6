@@ -1531,33 +1531,41 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         }
         
         setStatusBarText(statusBarText);
-        
+
+        boolean nonNullSelection = (selectedNode != null);
+        boolean canAddChild = nonNullSelection ? (selectedNode.getRank() < getHighestPossibleNodeRank()) : false;
+        boolean isVisibleRoot = nonNullSelection ? (selectedNode.getId() == listModel.getVisibleRoot().getId()) : false;
+
         // disable the buttons so the user can't click them until the background task verifies if they should be enabled
         if (sourceList == lists[0])
         {
-            newChild0.setEnabled(false);
+            newChild0.setEnabled(canAddChild && nonNullSelection);
+            popupMenu.setNewEnabled(canAddChild && nonNullSelection);
+            editNode0.setEnabled(nonNullSelection);
+            subtree0.setEnabled(!isVisibleRoot && nonNullSelection);
+            toParent0.setEnabled(!isVisibleRoot && nonNullSelection);
+
+            // turn these off until the bg thread can find out if user can delete this node
             deleteNode0.setEnabled(false);
-            
-            editNode0.setEnabled(false);
-            subtree0.setEnabled(false);
-            toParent0.setEnabled(false);
+            popupMenu.setDeleteEnabled(false);
         }
         else
         {
-            newChild1.setEnabled(false);
-            deleteNode1.setEnabled(false);
+            newChild1.setEnabled(canAddChild && nonNullSelection);
+            popupMenu.setNewEnabled(canAddChild && nonNullSelection);            
+            editNode1.setEnabled(nonNullSelection);
+            subtree1.setEnabled(!isVisibleRoot && nonNullSelection);
+            toParent1.setEnabled(!isVisibleRoot && nonNullSelection);
             
-            editNode1.setEnabled(false);
-            subtree1.setEnabled(false);
-            toParent1.setEnabled(false);
+            // turn these off until the bg thread can find out if user can delete this node
+            deleteNode1.setEnabled(false);
+            popupMenu.setDeleteEnabled(false);
         }
 
         SwingWorker bgWork = new SwingWorker()
         {
             private T nodeRecord;
             private boolean canDelete = false;
-            private boolean canAddChild = false;
-            private boolean isVisibleRoot = false;
             
             @SuppressWarnings("synthetic-access")
             @Override
@@ -1571,8 +1579,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 
                 // these calls should work even if nodeRecord is null
                 canDelete   = (businessRules != null) ? businessRules.okToDelete(nodeRecord) : false;
-                canAddChild = (selectedNode != null) ? (selectedNode.getRank() < getHighestPossibleNodeRank()) : false;
-                isVisibleRoot = (selectedNode != null) ? (selectedNode.getId() == listModel.getVisibleRoot().getId()) : false;
                 return null;
             }
 
@@ -1589,46 +1595,19 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                     log.info("selection changed before updating status bar");
                     return;
                 }
-                
-                popupMenu.setDeleteEnabled(canDelete);
-                popupMenu.setNewEnabled(canAddChild);
 
-                boolean enable = (selectedNode != null);
+                boolean validSelection = (selectedNode != null);
                 
                 // update the state of all selection-sensative buttons
                 if (sourceList == lists[0])
                 {
-                    newChild0.setEnabled(canAddChild);
-                    deleteNode0.setEnabled(canDelete);
-                    
-                    editNode0.setEnabled(enable);
-                    subtree0.setEnabled(enable);
-                    
-                    if (!isVisibleRoot && enable)
-                    {
-                        toParent0.setEnabled(true);
-                    }
-                    else
-                    {
-                        toParent0.setEnabled(false);
-                    }
+                    deleteNode0.setEnabled(canDelete && validSelection);
+                    popupMenu.setDeleteEnabled(canDelete && validSelection);
                 }
                 else
                 {
-                    newChild1.setEnabled(canAddChild);
-                    deleteNode1.setEnabled(canDelete);
-                    
-                    editNode1.setEnabled(enable);
-                    subtree1.setEnabled(enable);
-                    
-                    if (!isVisibleRoot && enable)
-                    {
-                        toParent1.setEnabled(true);
-                    }
-                    else
-                    {
-                        toParent1.setEnabled(false);
-                    }
+                    deleteNode1.setEnabled(canDelete && validSelection);
+                    popupMenu.setDeleteEnabled(canDelete && validSelection);
                 }
             }            
         };
