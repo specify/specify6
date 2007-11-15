@@ -482,6 +482,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     @SuppressWarnings("unchecked")
     protected void adjustRankComboBoxModel(GetSetValueIFace parentField, ValComboBox rankComboBox, T nodeInForm)
     {
+        log.debug("Adjusting the model for the 'rank' combo box in a tree node form");
         DefaultComboBoxModel model = (DefaultComboBoxModel)rankComboBox.getModel();
         model.removeAllElements();
 
@@ -549,10 +550,18 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         if (nodeInForm.getDefinitionItem() != null)
         {
             I defItem = nodeInForm.getDefinitionItem();
-            if (model.getIndexOf(defItem) != -1)
+            for (int i = 0; i < model.getSize(); ++i)
             {
-                model.setSelectedItem(defItem);
+                I modelItem = (I)model.getElementAt(i);
+                if (modelItem.getRankId().equals(defItem.getRankId()))
+                {
+                    model.setSelectedItem(modelItem);
+                }
             }
+//            if (model.getIndexOf(defItem) != -1)
+//            {
+//                model.setSelectedItem(defItem);
+//            }
         }
         else if (model.getSize() == 1)
         {
