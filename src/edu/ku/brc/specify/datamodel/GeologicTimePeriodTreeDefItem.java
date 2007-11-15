@@ -401,4 +401,24 @@ public class GeologicTimePeriodTreeDefItem extends DataModelObjBase implements S
         return name;
     }
 
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj instanceof GeologicTimePeriodTreeDefItem)
+        {
+            GeologicTimePeriodTreeDefItem item = (GeologicTimePeriodTreeDefItem)obj;
+            if (item.geologicTimePeriodTreeDefItemId != null)
+            {
+                if (item.geologicTimePeriodTreeDefItemId.equals(this.geologicTimePeriodTreeDefItemId))
+                {
+                    return true;
+                }
+                // else
+                return false;
+            }
+            // else
+            return super.equals(obj);
+        }
+        return false;
+    }
 }

@@ -360,4 +360,25 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
     {
         return name;
     }
+    
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj instanceof LocationTreeDefItem)
+        {
+            LocationTreeDefItem item = (LocationTreeDefItem)obj;
+            if (item.locationTreeDefItemId != null)
+            {
+                if (item.locationTreeDefItemId.equals(this.locationTreeDefItemId))
+                {
+                    return true;
+                }
+                // else
+                return false;
+            }
+            // else
+            return super.equals(obj);
+        }
+        return false;
+    }
 }

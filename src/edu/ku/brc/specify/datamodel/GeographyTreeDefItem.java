@@ -366,4 +366,24 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
         return name;
     }
 
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj instanceof GeographyTreeDefItem)
+        {
+            GeographyTreeDefItem item = (GeographyTreeDefItem)obj;
+            if (item.geographyTreeDefItemId != null)
+            {
+                if (item.geographyTreeDefItemId.equals(this.geographyTreeDefItemId))
+                {
+                    return true;
+                }
+                // else
+                return false;
+            }
+            // else
+            return super.equals(obj);
+        }
+        return false;
+    }
 }
