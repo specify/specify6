@@ -447,6 +447,18 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                         return;
                     }
                     
+                    if (validator.getComp() == rankComboBox)
+                    {
+                        // if this validation event came from the rank combobox, ignore it
+                        return;
+                    }
+                    
+                    if (rankComboBox.getModel().getSize() > 0 && validator.getComp() != parentComboBox)
+                    {
+                        // if the rank cb already has model values, and the parent didn't fire a validation event, don't mess with the rank cb model
+                        return;
+                    }
+                    
                     log.debug("form was validated: calling adjustRankComboBoxModel()");
                     
                     Object objInForm = form.getDataObj();
