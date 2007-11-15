@@ -401,4 +401,24 @@ public class LithoStratTreeDefItem extends DataModelObjBase implements Serializa
         return name;
     }
 
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj instanceof LithoStratTreeDefItem)
+        {
+            LithoStratTreeDefItem item = (LithoStratTreeDefItem)obj;
+            if (item.lithoStratTreeDefItemId != null)
+            {
+                if (item.lithoStratTreeDefItemId.equals(this.lithoStratTreeDefItemId))
+                {
+                    return true;
+                }
+                // else
+                return false;
+            }
+            // else
+            return super.equals(obj);
+        }
+        return false;
+    }
 }
