@@ -923,11 +923,11 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="parent" label="Parent"/>
-                	<cell type="field" id="parent" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false;editoncreate=true" name="parent" colspan="3"/>
+                	<cell type="field" id="parent" valtype="Focus" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false;editoncreate=true" name="parent" colspan="3"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="definitionItem" label="Rank"/>
-                	<cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem" colspan="3"/>
+                	<cell type="field" id="definitionItem" valtype="Focus" isrequired="true" uitype="combobox" name="definitionItem" colspan="3"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="taxonomicSerialNumber" label="Taxonomic Serial Number"/>
@@ -1023,11 +1023,11 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="parent" label="Parent"/>
-                	<cell type="field" id="parent" isrequired="true" uitype="querycbx" initialize="name=Geography;title=Geography;editbtn=false;newbtn=false;editoncreate=true" name="parent"/>
+                	<cell type="field" id="parent" valtype="Focus" isrequired="true" uitype="querycbx" initialize="name=Geography;title=Geography;editbtn=false;newbtn=false;editoncreate=true" name="parent"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="definitionItem" label="Rank"/>
-                	<cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem"/>
+                	<cell type="field" id="definitionItem" valtype="Focus" isrequired="true" uitype="combobox" name="definitionItem"/>
                 </row>
                 <row>
                 	<cell type="label" labelfor="isAccepted" label="Is Accepted?"/>
@@ -1074,11 +1074,11 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="parent" label="Parent"/>
-                	<cell type="field" id="parent" isrequired="true" uitype="querycbx" initialize="name=Location;title=Location;editbtn=false;newbtn=false;editoncreate=true" name="parent"/>
+                	<cell type="field" id="parent" valtype="Focus" isrequired="true" uitype="querycbx" initialize="name=Location;title=Location;editbtn=false;newbtn=false;editoncreate=true" name="parent"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="definitionItem" label="Rank"/>
-                	<cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem"/>
+                	<cell type="field" id="definitionItem" valtype="Focus" isrequired="true" uitype="combobox" name="definitionItem"/>
                 </row>
                 <row>
                     <cell type="separator" label="Children" colspan="3"/>
@@ -1117,11 +1117,11 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="parent" label="Parent"/>
-                	<cell type="field" id="parent" isrequired="true" uitype="querycbx" initialize="name=GeologicTimePeriod;title=GeologicTimePeriod;editbtn=false;newbtn=false;editoncreate=true" name="parent" colspan="5"/>
+                	<cell type="field" id="parent" valtype="Focus" isrequired="true" uitype="querycbx" initialize="name=GeologicTimePeriod;title=GeologicTimePeriod;editbtn=false;newbtn=false;editoncreate=true" name="parent" colspan="5"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="definitionItem" label="Rank"/>
-                	<cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem" colspan="5"/>
+                	<cell type="field" id="definitionItem" valtype="Focus" isrequired="true" uitype="combobox" name="definitionItem" colspan="5"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="startPeriod" label="Start Period"/>
