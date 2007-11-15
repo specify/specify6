@@ -58,6 +58,7 @@ public class DropDownButtonStateful extends DropDownButton
     protected List<DropDownMenuInfo>   menuInfoItems;
     protected String                   currLabel     = null;
     protected int                      currInx       = 0;
+    protected int                      nxtInx        = 0;
     protected Dimension                preferredSize = null;
     protected boolean                  doAdvance     = true;
     
@@ -146,9 +147,9 @@ public class DropDownButtonStateful extends DropDownButton
     /**
      * @param doAdvance
      */
-    protected void init(final boolean doAdvance)
+    protected void init(final boolean doAdvanceArg)
     {
-        this.doAdvance = doAdvance;
+        this.doAdvance = doAdvanceArg;
         
         ActionListener menuAL = new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) 
@@ -179,7 +180,7 @@ public class DropDownButtonStateful extends DropDownButton
                         currInx = 0;
                     }
                 }
-                System.out.println("New Index: "+currInx);
+                //System.out.println("New Index: "+currInx);
                 setCurrentIndex(currInx);
                 cardLayout.show(cardPanel, Integer.toString(currInx));
                 
@@ -242,11 +243,12 @@ public class DropDownButtonStateful extends DropDownButton
         
         if (isHovering)
         {
-            JButton   btn = btns.get(currInx);
+            JButton   btn = btns.get(nxtInx);
             Rectangle r   = btn.getBounds();
             Rectangle pr  = getBounds();
             
             pr.x = r.x;
+            System.out.println(r.x);
             g.setColor(SystemColor.controlLtHighlight);
             g.drawLine(pr.x, pr.y, pr.width-1, pr.y);
             g.drawLine(pr.x, pr.y, pr.x, pr.height-1);
@@ -274,7 +276,7 @@ public class DropDownButtonStateful extends DropDownButton
     public void setCurrentIndex(final int index)
     {
         currInx = index;
-        int nxtInx = doAdvance ? getNextIndex() : index;
+        nxtInx = doAdvance ? getNextIndex() : index;
         cardLayout.show(cardPanel, Integer.toString(nxtInx));
 
     }

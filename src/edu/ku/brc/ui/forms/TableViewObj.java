@@ -343,7 +343,7 @@ public class TableViewObj implements Viewable,
                         }
                     } else
                     {
-                         editButton = UIHelper.createButton("ViewForm", getResourceString("ViewRecord"), IconManager.IconSize.Std16, true);
+                         editButton = UIHelper.createButton("InfoIcon", getResourceString("ViewRecord"), IconManager.IconSize.Std16, true);
                          editButton.addActionListener(new ActionListener() {
                             public void actionPerformed(ActionEvent e)
                             {
