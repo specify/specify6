@@ -340,7 +340,8 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
      */
     public Object getValue()
     {
-        return textField.getText();
+        //return textField.getText();
+        return dataObj;
     }
 
     //-------------------------------------------------
