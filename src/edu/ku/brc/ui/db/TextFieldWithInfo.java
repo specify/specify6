@@ -294,6 +294,9 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
     public void setValue(Object value, String defaultValue)
     {
         dataObj = value;
+        
+        infoBtn.setEnabled(value != null);
+        
         if (value != null)
         {
             if (getter == null)
