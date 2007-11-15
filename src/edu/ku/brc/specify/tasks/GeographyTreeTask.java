@@ -62,10 +62,14 @@ public class GeographyTreeTask extends BaseTreeTask<Geography,GeographyTreeDef,G
     @Override
     public void adjustForm(FormViewObj form)
     {
+        log.debug(this.getClass().getSimpleName() + ".adjustForm(" + form.getName() + ") : form data obj = " + form.getDataObj());
         if (form.getDataObj() instanceof Geography)
         {
+            log.debug("Adjusting Geography data entry form");
             adjustNodeForm(form);
         }
+        
+        
 //        else if (form.getDataObj() instanceof GeographyTreeDef)
 //        {
 //            adjustTreeDefForm(form);

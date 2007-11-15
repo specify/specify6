@@ -1036,6 +1036,7 @@ public class TableViewObj implements Viewable,
         
         if (show)
         {
+            log.debug("Dispatching a Data_Entry/ViewWasShown command/action");
             CommandDispatcher.dispatch(new CommandAction("Data_Entry", "ViewWasShown", this));
         }
     }

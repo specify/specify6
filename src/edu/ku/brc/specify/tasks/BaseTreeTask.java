@@ -363,6 +363,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                     FormViewObj formViewObj = (FormViewObj)cmdAction.getData();
                     if (formViewObj != null)
                     {
+                        log.debug(this.getClass().getSimpleName() + " is processing VIEW_WAS_SHOWN action for form " + formViewObj.getName());
                         adjustForm(formViewObj);
                     }
                 }
@@ -379,6 +380,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                         FormViewObj formViewObj = (FormViewObj)fp.getViewable();
                         if (formViewObj != null)
                         {
+                            log.debug(this.getClass().getSimpleName() + " is processing VIEW_WAS_OPENED action for form " + formViewObj.getName());
                             adjustForm(formViewObj);
                         }
                     }
@@ -392,10 +394,8 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         }
     }
     
-    public void adjustForm(FormViewObj form)
+    public void adjustForm(@SuppressWarnings("unused") FormViewObj form)
     {
-        log.debug("adjustForm(" + form.getName() + ")"); 
-        
         // this method should look a lot like ...
         
         /*
@@ -419,11 +419,12 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     @SuppressWarnings("unchecked")
     protected void adjustNodeForm(final FormViewObj form)
     {
-        log.debug("adjustNodeForm(" + form.getName() + ")");
+        log.debug("adjustNodeForm(" + form.getName() + ") in mode " + form.getAltView().getMode());
 
         if (form.getAltView().getMode() != CreationMode.EDIT)
         {
             // when we're not in edit mode, we don't need to setup any listeners since the user can't change anything
+            log.debug("form is not in edit mode: no special listeners will be attached");
             return;
         }
 
@@ -462,6 +463,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         
         if (nodeInForm.getDefinitionItem() != null)
         {
+            log.debug("node in form already has a set rank: forcing a call to adjustRankComboBoxModel()");
             adjustRankComboBoxModel((GetSetValueIFace)parentComboBox, rankComboBox, nodeInForm);
         }
         
