@@ -62,7 +62,7 @@ public class GtpTreeTask extends BaseTreeTask<GeologicTimePeriod,GeologicTimePer
     @Override
     public void adjustForm(FormViewObj form)
     {
-        if (form.getDataObj() instanceof GeologicTimePeriod)
+        if (form.getDataObj() instanceof GeologicTimePeriod || form.getViewDef().getClassName().equals(GeologicTimePeriod.class.getName()))
         {
             adjustNodeForm(form);
         }

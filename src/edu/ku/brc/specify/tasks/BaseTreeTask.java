@@ -48,7 +48,9 @@ import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.persist.AltViewIFace.CreationMode;
+import edu.ku.brc.ui.forms.validation.UIValidator;
 import edu.ku.brc.ui.forms.validation.ValComboBox;
+import edu.ku.brc.ui.forms.validation.ValidationListener;
 
 /**
  * A base task that provides functionality in common to all tasks
@@ -363,7 +365,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                     FormViewObj formViewObj = (FormViewObj)cmdAction.getData();
                     if (formViewObj != null)
                     {
-                        log.debug(this.getClass().getSimpleName() + " is processing VIEW_WAS_SHOWN action for form " + formViewObj.getName());
+                        //log.debug(this.getClass().getSimpleName() + " is processing VIEW_WAS_SHOWN action for form " + formViewObj.getName());
                         adjustForm(formViewObj);
                     }
                 }
@@ -380,7 +382,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                         FormViewObj formViewObj = (FormViewObj)fp.getViewable();
                         if (formViewObj != null)
                         {
-                            log.debug(this.getClass().getSimpleName() + " is processing VIEW_WAS_OPENED action for form " + formViewObj.getName());
+                            //log.debug(this.getClass().getSimpleName() + " is processing VIEW_WAS_OPENED action for form " + formViewObj.getName());
                             adjustForm(formViewObj);
                         }
                     }
@@ -435,33 +437,56 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         log.debug("parentComboBox = " + parentComboBox);
         log.debug("rankComboBox   = " + rankComboBox);
 
-        if (parentComboBox != null)
+        if (parentComboBox != null && rankComboBox != null)
         {
-            log.debug("adding focus listener to parentComboBox");
-            parentComboBox.addFocusListener(new FocusListener()
+            log.debug("adding validation listener to form");
+            form.getValidator().addValidationListener(new ValidationListener()
             {
-                public void focusGained(FocusEvent e)
+                public void wasValidated(UIValidator validator)
                 {
-                    // ignore this event
-                }
-                public void focusLost(FocusEvent e)
-                {
-                    log.debug("parentComboBox lost focus: calling adjustRankComboBoxModel()");
+                    if (form.getAltView().getMode() != CreationMode.EDIT)
+                    {
+                        return;
+                    }
+                    
+                    log.debug("form was validated: calling adjustRankComboBoxModel()");
+                    
+                    Object objInForm = form.getDataObj();
+                    log.debug("form data object = " + objInForm);
+                    if (objInForm == null)
+                    {
+                        return;
+                    }
+                    
+                    T formNode = (T)objInForm;
+                    
                     // set the contents of this combobox based on the value chosen as the parent
                     GetSetValueIFace parentField = (GetSetValueIFace)parentComboBox;
-                    adjustRankComboBoxModel(parentField, rankComboBox, nodeInForm);
+                    adjustRankComboBoxModel(parentField, rankComboBox, formNode);
 
+                    T parent = null;
+                    if (parentField.getValue() instanceof String)
+                    {
+                        // the data is still in the VIEW mode for some reason
+                        log.debug("Form is in mode (" + form.getAltView().getMode() + ") but the parent data is a String");
+                        parentField.getValue();
+                        parent = formNode.getParent();
+                    }
+                    else
+                    {
+                        parent = (T)parentField.getValue();
+                    }
+                    
                     // set the tree def for the object being edited by using the parent node's tree def
-                    T parent = (T)parentField.getValue();
                     if (parent != null)
                     {
-                        nodeInForm.setDefinition(parent.getDefinition());
+                        formNode.setDefinition(parent.getDefinition());
                     }
                 }
             });
         }
         
-        if (nodeInForm.getDefinitionItem() != null)
+        if (nodeInForm != null && nodeInForm.getDefinitionItem() != null)
         {
             log.debug("node in form already has a set rank: forcing a call to adjustRankComboBoxModel()");
             adjustRankComboBoxModel((GetSetValueIFace)parentComboBox, rankComboBox, nodeInForm);
@@ -489,6 +514,12 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     protected void adjustRankComboBoxModel(GetSetValueIFace parentField, ValComboBox rankComboBox, T nodeInForm)
     {
         log.debug("Adjusting the model for the 'rank' combo box in a tree node form");
+        log.debug("nodeInForm = " + nodeInForm);
+        if (nodeInForm == null)
+        {
+            return;
+        }
+        
         DefaultComboBoxModel model = (DefaultComboBoxModel)rankComboBox.getModel();
         model.removeAllElements();
 
@@ -518,13 +549,13 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         // grab all the def items from just below the parent's item all the way to the next enforced level
         // or to the level of the highest ranked child
         topItem = parent.getDefinitionItem().getChild();
+        log.debug("highest valid tree level: " + topItem);
         
         if (topItem == null)
         {
             // this only happens if a parent was chosen that cannot have children b/c it is at the
             // lowest defined level in the tree
             log.warn("Chosen node cannot be a parent node.  It is at the lowest defined level of the tree.");
-            log.warn("Figure out how to restrict the searching in the combobox from allowing non-parent nodes from appearing.");
             return;
         }
 
@@ -539,6 +570,8 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                 }
             }
         }
+        
+        log.debug("lowest valid tree level:  " + bottomItem);
 
         I item = topItem;
         boolean done = false;
@@ -561,6 +594,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                 I modelItem = (I)model.getElementAt(i);
                 if (modelItem.getRankId().equals(defItem.getRankId()))
                 {
+                    log.debug("setting rank selected value to " + modelItem);
                     model.setSelectedItem(modelItem);
                 }
             }

@@ -62,7 +62,7 @@ public class LocationTreeTask extends BaseTreeTask<Location,LocationTreeDef,Loca
     @Override
     public void adjustForm(FormViewObj form)
     {
-        if (form.getDataObj() instanceof Location)
+        if (form.getDataObj() instanceof Location || form.getViewDef().getClassName().equals(Location.class.getName()))
         {
             adjustNodeForm(form);
         }

@@ -15,6 +15,7 @@ import edu.ku.brc.specify.datamodel.LithoStrat;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDefItem;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.forms.FormViewObj;
 
 /**
  * Task that handles the UI for viewing litho stratigraphy data.
@@ -48,5 +49,24 @@ public class LithoStratTreeTask extends BaseTreeTask<LithoStrat,LithoStratTreeDe
     protected LithoStratTreeDef getCurrentTreeDef()
     {
         return CollectionType.getCurrentCollectionType().getLithoStratTreeDef();
+    }
+    
+    @Override
+    public void adjustForm(FormViewObj form)
+    {
+        if (form.getDataObj() instanceof LithoStrat  || form.getViewDef().getClassName().equals(LithoStrat.class.getName()))
+        {
+            adjustNodeForm(form);
+        }
+
+        
+//        else if (form.getDataObj() instanceof TaxonTreeDef)
+//        {
+//            adjustTreeDefForm(form);
+//        }
+//        else if (form.getDataObj() instanceof TaxonTreeDefItem)
+//        {
+//            adjustTreeDefItemForm(form);
+//        }
     }
 }

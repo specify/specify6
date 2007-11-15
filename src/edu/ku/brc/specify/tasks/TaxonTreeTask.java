@@ -186,7 +186,7 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
     @Override
     public void adjustForm(FormViewObj form)
     {
-        if (form.getDataObj() instanceof Taxon)
+        if (form.getDataObj() instanceof Taxon  || form.getViewDef().getClassName().equals(Taxon.class.getName()))
         {
             adjustNodeForm(form);
         }
