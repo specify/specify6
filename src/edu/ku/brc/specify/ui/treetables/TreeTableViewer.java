@@ -1426,7 +1426,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                         }
                         session.commit();
                         log.info("Successfully saved changes to " + mergedNode.getFullName());
-                        
                     }
                     catch (Exception e)
                     {
@@ -1533,8 +1532,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         setStatusBarText(statusBarText);
 
         boolean nonNullSelection = (selectedNode != null);
-        boolean canAddChild = nonNullSelection ? (selectedNode.getRank() < getHighestPossibleNodeRank()) : false;
-        boolean isVisibleRoot = nonNullSelection ? (selectedNode.getId() == listModel.getVisibleRoot().getId()) : false;
+        boolean canAddChild      = (selectedNode != null) ? (selectedNode.getRank() < getHighestPossibleNodeRank()) : false;
+        boolean isVisibleRoot    = (selectedNode != null) ? (selectedNode.getId() == listModel.getVisibleRoot().getId()) : false;
 
         // disable the buttons so the user can't click them until the background task verifies if they should be enabled
         if (sourceList == lists[0])
