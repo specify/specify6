@@ -394,7 +394,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     
     public void adjustForm(FormViewObj form)
     {
-        log.debug("adjustForm( " + form.getName() + " )"); 
+        log.debug("adjustForm(" + form.getName() + ")"); 
         
         // this method should look a lot like ...
         
@@ -419,7 +419,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     @SuppressWarnings("unchecked")
     protected void adjustNodeForm(final FormViewObj form)
     {
-        log.debug("adjustNodeForm(FormViewObj form)");
+        log.debug("adjustNodeForm(" + form.getName() + ")");
 
         if (form.getAltView().getMode() != CreationMode.EDIT)
         {
@@ -431,9 +431,12 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
 
         final Component parentComboBox = form.getControlByName("parent");
         final ValComboBox rankComboBox = (ValComboBox)form.getControlByName("definitionItem");
+        log.debug("parentComboBox = " + parentComboBox);
+        log.debug("rankComboBox   = " + rankComboBox);
 
         if (parentComboBox != null)
         {
+            log.debug("adding focus listener to parentComboBox");
             parentComboBox.addFocusListener(new FocusListener()
             {
                 public void focusGained(FocusEvent e)
@@ -442,6 +445,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                 }
                 public void focusLost(FocusEvent e)
                 {
+                    log.debug("parentComboBox lost focus: calling adjustRankComboBoxModel()");
                     // set the contents of this combobox based on the value chosen as the parent
                     GetSetValueIFace parentField = (GetSetValueIFace)parentComboBox;
                     adjustRankComboBoxModel(parentField, rankComboBox, nodeInForm);
@@ -565,7 +569,9 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         }
         else if (model.getSize() == 1)
         {
-            model.setSelectedItem(model.getElementAt(0));
+            Object defItem = model.getElementAt(0);
+            log.debug("setting rank selected value to the only available option: " + defItem);
+            model.setSelectedItem(defItem);
         }
     }
 }
