@@ -166,7 +166,7 @@ public class Attachment extends DataModelObjBase implements Serializable
         this.mimeType = mimeType;
     }
 
-    @Column(name = "OrigFilename", length = 128)
+    @Column(name = "OrigFilename", nullable = false, length = 128)
     public String getOrigFilename()
     {
         return this.origFilename;
