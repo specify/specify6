@@ -940,7 +940,7 @@ public class TableViewObj implements Viewable,
                 tmpSession = DataProviderFactory.getInstance().createSession();
                 for (Object dObj : dataObjList)
                 {
-                    if (dObj != null)
+                    if (dObj != null && dObj instanceof FormDataObjIFace && ((FormDataObjIFace)dObj).getId() != null)
                     {
                         tmpSession.attach(dObj);
                     } else

@@ -106,6 +106,18 @@ public class MenuSwitcherPanel extends JPanel
         }
     }
     
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#setEnabled(boolean)
+     */
+    public void setEnabled(final boolean enabled)
+    {
+        super.setEnabled(enabled);
+        for (DropDownButtonStateful ddbs : switcherHash.values())
+        {
+            ddbs.setEnabled(enabled);
+        }
+    }
+    
     /**
      * @param value
      */

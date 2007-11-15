@@ -154,10 +154,13 @@ public class GhostMouseInputAdapter extends MouseInputAdapter
         SwingUtilities.convertPointFromScreen(p, glassPane);
 
         BufferedImage bi = ghostActionable.getBufferedImage();
-        glassPane.setPoint(p, paintPositionMode);
-        glassPane.setOffset(pos);
-        glassPane.setImage(bi, bi.getWidth());
-        glassPane.repaint();
+        if (bi != null)
+        {
+            glassPane.setPoint(p, paintPositionMode);
+            glassPane.setOffset(pos);
+            glassPane.setImage(bi, bi.getWidth());
+            glassPane.repaint();
+        }
 
     }
 

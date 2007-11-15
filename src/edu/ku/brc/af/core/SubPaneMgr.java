@@ -193,7 +193,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
      * @param newName the new name for the tab
      * @return the same pane as the one renamed
      */
-    public SubPaneIFace replacePane(final SubPaneIFace oldPane, final SubPaneIFace newPane)
+    public synchronized SubPaneIFace replacePane(final SubPaneIFace oldPane, final SubPaneIFace newPane)
     {
         UIRegistry.getStatusBar().setText("");
         
@@ -210,7 +210,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             return newPane;
         }
         
-        int index = this.indexOfComponent(oldPane.getUIComponent());
+        final int index = this.indexOfComponent(oldPane.getUIComponent());
         if (index < 0)
         {
             log.error("Couldn't find index for panel ["+oldPane.getPaneName()+"] ");
@@ -229,7 +229,13 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             panes.put(newPane.getPaneName(), newPane);
             
             this.insertTab(newPane.getPaneName(), newPane.getIcon(), newPane.getUIComponent(), null, index);
-            this.setSelectedIndex(index);
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run()
+                {
+                    setSelectedIndex(index);
+                }
+            });
+            
             return newPane;
             
         } 

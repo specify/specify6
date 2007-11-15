@@ -1209,6 +1209,16 @@ public class FormValidator implements ValidationListener, DataChangeListener
             //parent.wasValidated(validator);
         }
     }
+    
+    public void validateRoot()
+    {
+        FormValidator parent = this;
+        while (parent.getParent() != null)
+        {
+            parent = parent.getParent();
+        }
+        parent.validateForm();
+    }
 
     //-----------------------------------------------------
     // DataChangeListener
@@ -1239,7 +1249,8 @@ public class FormValidator implements ValidationListener, DataChangeListener
         UIValidator uiv = dcn != null ? dcn.getUIV() : null;
         if (uiv == null)
         {
-            validateForm();
+            //validateForm();
+            validateRoot();
 
         } else
         {
@@ -1263,8 +1274,6 @@ public class FormValidator implements ValidationListener, DataChangeListener
 
         enableUIItems(formValidationState == UIValidatable.ErrorType.Valid);
         updateValidationBtnUIState();
-        
-        
     }
 
     /**

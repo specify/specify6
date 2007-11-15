@@ -53,7 +53,7 @@
             <desc><![CDATA[The Attachments Form.]]></desc>
             <altviews>
                 <altview name="Attachment View" viewdef="Attachment" label="View" mode="view" default="true"/>
-                <altview name="Attachment Edit" viewdef="Attachment" label="Edit" mode="edit" valtype="Changed"/>
+                <altview name="Attachment Edit" viewdef="Attachment" label="Edit" mode="edit"/>
             </altviews>
         </view>
 
@@ -482,14 +482,14 @@
                     <cell type="field" id="1" name="accessionNumber" uitype="formattedtext" isrequired="true" uifieldformatter="AccessionNumber"/>
 
                     <cell type="label" labelfor="2" label="Status"/>
-                    <cell type="field" id="2" name="status"  uitype="combobox" picklist="AccessionStatus" isrequired="true" valtype="Changed"/>
+                    <cell type="field" id="2" name="status"  uitype="combobox" picklist="AccessionStatus" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="3" label="Type"/>
-                    <cell type="field" id="3" name="type" uitype="combobox" picklist="AccessionType" isrequired="true" valtype="Changed"/>
+                    <cell type="field" id="3" name="type" uitype="combobox" picklist="AccessionType" isrequired="true"/>
                     
                     <cell type="label" labelfor="4" label="Division"/>
-                    <cell type="field" id="4" name="text1" uitype="combobox" initialize="data=Botany,Entomology,Herpetology,Ichthyology,Invertebrate Paleo,Invertebrate Zoology,Mammalogy,Ornithology,Paleobotany,Vertebrate Paleo" isrequired="true" valtype="Changed"/>
+                    <cell type="field" id="4" name="text1" uitype="combobox" initialize="data=Botany,Entomology,Herpetology,Ichthyology,Invertebrate Paleo,Invertebrate Zoology,Mammalogy,Ornithology,Paleobotany,Vertebrate Paleo" isrequired="true"/>
                     
                 </row>
                 <row>
@@ -501,7 +501,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="7" label="Description"/>
-                    <cell type="field" id="7" name="text2" uitype="textarea" cols="30" rows="6" colspan="10" valtype="Changed"/>
+                    <cell type="field" id="7" name="text2" uitype="textarea" cols="30" rows="6" colspan="10"/>
                 </row>
                 
                 <row>
@@ -629,7 +629,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="1" label="Title"/>
-                    <cell type="field" id="1" name="title" uitype="combobox" initialize="data=Asst. Director, Curator, Mr., Mrs., Ms., Dr." valtype="Changed"/> <!-- Needs to be a PickList -->
+                    <cell type="field" id="1" name="title" uitype="combobox" initialize="data=Asst. Director, Curator, Mr., Mrs., Ms., Dr."/> <!-- Needs to be a PickList -->
                     <cell type="label" labelfor="2" label="Title"/>
                     <cell type="field" id="2" name="jobTitle" uitype="text" cols="20"/>
                 </row>
@@ -785,15 +785,15 @@
     		    </row>
                 <row>
                     <cell type="label" labelfor="3" label="Last Name"/>
-                    <cell type="field" id="3" name="agent.lastName" uitype="text" cols="20"  isrequired="true" valtype="Changed" colspan="3"/>
+                    <cell type="field" id="3" name="agent.lastName" uitype="text" cols="20"  isrequired="true" colspan="3"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="5" label="First Name"/>
-                    <cell type="field" id="5" name="agent.firstName" uitype="text" cols="20" isrequired="true" valtype="Changed" colspan="3"/>
+                    <cell type="field" id="5" name="agent.firstName" uitype="text" cols="20" isrequired="true" colspan="3"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="7" label="E-mail"/>
-                    <cell type="field" id="7" name="agent.email" uitype="text" cols="32" valtype="Changed"/>
+                    <cell type="field" id="7" name="agent.email" uitype="text" cols="32"/>
                     <cell type="field" id="mailto" name="agent" uitype="plugin" initialize="name=WebLinkLauncherButton;url=mailto:$email$;label=Send Mail"/>
                 </row>
     		</rows>
@@ -827,7 +827,7 @@
     			</row>
     			<row>
                  <cell type="label" labelfor="3" label="Accession #"/>
-    			 <cell type="field" id="3" name="accession" uitype="querycbx" initialize="name=Accession;title=Accession" isrequired="false" valtype="Changed"/>
+    			 <cell type="field" id="3" name="accession" uitype="querycbx" initialize="name=Accession;title=Accession" isrequired="false"/>
 
                  <cell type="label" labelfor="4" label="Cataloger"/>
     			    <cell type="field" id="4" name="cataloger" uitype="querycbx" initialize="name=Agent;title=Catalog Agent;editoncreate=true" isrequired="true"/>
@@ -1089,16 +1089,16 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="3" label="Date"/>
-                    <cell type="field" id="3" name="loanDate" uitype="formattedtext" uifieldformatter="Date" valtype="Changed" isrequired="true" default="today"/>
+                    <cell type="field" id="3" name="loanDate" uitype="formattedtext" uifieldformatter="Date" isrequired="true" default="today"/>
                     <cell type="label" labelfor="4" label="Date Closed"/>
-                    <cell type="field" id="4" name="dateClosed" uitype="formattedtext" uifieldformatter="Date" valtype="Changed"/>
+                    <cell type="field" id="4" name="dateClosed" uitype="formattedtext" uifieldformatter="Date"/>
                     <cell type="label" labelfor="12" label="Due Date"/>
-                    <cell type="field" id="12" name="currentDueDate" uitype="formattedtext" uifieldformatter="Date" valtype="Changed" isrequired="true"/>
+                    <cell type="field" id="12" name="currentDueDate" uitype="formattedtext" uifieldformatter="Date" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="1" label="Number"/>
-                    <cell type="field" id="1" name="loanNumber" uitype="formattedtext" uifieldformatter="LoanNumber" valtype="Changed" isrequired="true"/>
-                    <cell type="field" id="2" name="isClosed" uitype="checkbox" label="Closed" valtype="Changed" initialize="editable=true"/>
+                    <cell type="field" id="1" name="loanNumber" uitype="formattedtext" uifieldformatter="LoanNumber" isrequired="true"/>
+                    <cell type="field" id="2" name="isClosed" uitype="checkbox" label="Closed" initialize="editable=true"/>
                 </row>
                 <row>
                      <cell type="label" labelfor="5" label="Remarks"/>
@@ -1158,7 +1158,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="3" label="Description"/>
-                    <cell type="field" id="3" name="descriptionOfMaterial" uitype="text" colspan="9" valtype="Changed"/>
+                    <cell type="field" id="3" name="descriptionOfMaterial" uitype="text" colspan="9"/>
                 </row>
                 <!-- <row>
                     <cell type="label" labelfor="4" label="Comments"/>
@@ -1191,7 +1191,7 @@
             <rows>
                 <!-- <row>
                     <cell type="label" labelfor="7" label="Prep Method"/>
-                    <cell type="field" id="7" name="prepType" uitype="querycbx" initialize="name=PrepType;title=Prep Type" isrequired="true" valtype="Changed"/>
+                    <cell type="field" id="7" name="prepType" uitype="querycbx" initialize="name=PrepType;title=Prep Type" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="1" label="Prepared Date"/>
@@ -1374,23 +1374,23 @@
 
                 <row>
                     <cell type="label" labelfor="5" label="Date Issued"/>
-                    <cell type="field" id="5" name="issuedDate" uitype="formattedtext" uifieldformatter="Date" valtype="Changed"/>
+                    <cell type="field" id="5" name="issuedDate" uitype="formattedtext" uifieldformatter="Date"/>
 
                     <cell type="label" labelfor="6" label="Date Renewed"/>
-                    <cell type="field" id="6" name="renewalDate" uitype="formattedtext" uifieldformatter="Date" valtype="Changed"/>
+                    <cell type="field" id="6" name="renewalDate" uitype="formattedtext" uifieldformatter="Date"/>
                 </row>
 
                 <row>
                     <cell type="label" labelfor="7" label="Start Date"/>
-                    <cell type="field" id="7" name="startDate" uitype="formattedtext" uifieldformatter="Date" valtype="Changed"/>
+                    <cell type="field" id="7" name="startDate" uitype="formattedtext" uifieldformatter="Date"/>
 
                     <cell type="label" labelfor="8" label="End Date"/>
-                    <cell type="field" id="8" name="endDate" uitype="formattedtext" uifieldformatter="Date" valtype="Changed"/>
+                    <cell type="field" id="8" name="endDate" uitype="formattedtext" uifieldformatter="Date"/>
                 </row>
 
                 <row>
                     <cell type="label" labelfor="9" label="Remarks"/>
-                    <cell type="field" id="9" name="remarks" uitype="textarea" colspan="10" valtype="Changed"/>
+                    <cell type="field" id="9" name="remarks" uitype="textarea" colspan="10"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="PermitAttachment" id="10" name="permitAttachments" colspan="10"/>
@@ -1477,7 +1477,7 @@
     		<rows>
 			   <row>
                    <cell type="label" labelfor="7" label="Prep Method"/>
-			       <cell type="field" id="7" name="prepType" uitype="combobox" picklist="PrepType" isrequired="true" valtype="Changed"/>
+			       <cell type="field" id="7" name="prepType" uitype="combobox" picklist="PrepType" isrequired="true"/>
 			   </row>
     			<row>
                     <cell type="label" labelfor="1" label="Prepared Date"/>
@@ -1578,10 +1578,10 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="3" label="Remarks"/>
-                    <cell type="field" id="3" name="remarks" uitype="textarea" cols="40" colspan="6" valtype="Changed"/>
+                    <cell type="field" id="3" name="remarks" uitype="textarea" cols="40" colspan="6"/>
                 </row>
                 <row>
-                    <cell type="subview" id="4" viewname="InfoRequestColObj" name="recordSet" colspan="8" valtype="Changed"/>
+                    <cell type="subview" id="4" viewname="InfoRequestColObj" name="recordSet" colspan="8"/>
                 </row>
                 <!--
                 <row>
@@ -1678,27 +1678,27 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="1" label="Date"/>
-                    <cell type="field" id="1" name="shipmentDate" uitype="formattedtext" uifieldformatter="Date" valtype="Changed" isrequired="true" default="today"/>
+                    <cell type="field" id="1" name="shipmentDate" uitype="formattedtext" uifieldformatter="Date" isrequired="true" default="today"/>
                     <cell type="label" labelfor="2" label="Number"/>
                     <cell type="field" id="2" name="shipmentNumber" uitype="formattedtext" uifieldformatter="LoanNumber" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="3" label="Method"/>
-                    <cell type="field" id="3" name="shipmentMethod"  uitype="combobox" picklist="ShipmentMethod" isrequired="true" valtype="Changed"/>
+                    <cell type="field" id="3" name="shipmentMethod"  uitype="combobox" picklist="ShipmentMethod" isrequired="true"/>
                     <cell type="label" labelfor="4" label="Number of Packages"/>
-                    <cell type="field" id="4" name="numberOfPackages" uitype="text"  isrequired="true" valtype="Changed" default="1"/>
+                    <cell type="field" id="4" name="numberOfPackages" uitype="text"  isrequired="true" default="1"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="5" label="Weight"/>
-                    <cell type="field" id="5" name="weight" uitype="text" valtype="Changed"/>
+                    <cell type="field" id="5" name="weight" uitype="text"/>
                     <cell type="label" labelfor="6" label="Insured For Amount"/>
-                    <cell type="field" id="6" name="insuredForAmount" uitype="text" valtype="Changed"/>
+                    <cell type="field" id="6" name="insuredForAmount" uitype="text"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="7" label="Shipped By"/>
-                    <cell type="field" id="7" name="shippedBy" uitype="querycbx" initialize="name=Agent;title=Agent" isrequired="true" valtype="Changed"/>
+                    <cell type="field" id="7" name="shippedBy" uitype="querycbx" initialize="name=Agent;title=Agent" isrequired="true"/>
                     <cell type="label" labelfor="8" label="Shipped To"/>
-                    <cell type="field" id="8" name="shippedTo" uitype="querycbx" initialize="name=Agent;title=Agent" isrequired="true" valtype="Changed"/>
+                    <cell type="field" id="8" name="shippedTo" uitype="querycbx" initialize="name=Agent;title=Agent" isrequired="true"/>
                 </row>
             </rows>
         </viewdef>
@@ -1976,7 +1976,7 @@
     		<rows>
                 <row>
                     <cell type="label" labelfor="origFilename" label="Filename"/>
-                    <cell type="field" required="true" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="mimeType" label="MIME Type"/>
@@ -1999,7 +1999,7 @@
     		<rows>
                 <row>
                     <cell type="label" labelfor="origFilename" label="Filename"/>
-                    <cell type="field" required="true" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="remarks" label="Remarks"/>
@@ -2025,7 +2025,7 @@
     		<rows>
                 <row>
                     <cell type="label" labelfor="origFilename" label="Filename"/>
-                    <cell type="field" required="true" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="mimeType" label="MIME Type"/>
@@ -2048,15 +2048,15 @@
     		<rows>
                 <row>
                     <cell type="label" labelfor="origFilename" label="Filename"/>
-                    <cell type="field" required="true" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse" isrequired="false"/>
                 </row>
                 <row>
                 	<cell type="label" labelfor="title" label="Title"/>
-                	<cell type="field" id="title" name="attachment.title" cols="30"/>
+                	<cell type="field" id="title" name="attachment.title" cols="30" isrequired="false"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="mimeType" label="MIME Type"/>
-                    <cell type="field" id="mimeType" name="attachment.mimeType" uitype="text"/>
+                    <cell type="field" id="mimeType" name="attachment.mimeType" uitype="text" isrequired="false" changesonly="true"/>
                 </row>
 			</rows>
 		</viewdef>
@@ -2075,7 +2075,7 @@
     		<rows>
                 <row>
                     <cell type="label" labelfor="origFilename" label="Filename"/>
-                    <cell type="field" required="true" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="mimeType" label="MIME Type"/>
@@ -2098,7 +2098,7 @@
     		<rows>
                 <row>
                     <cell type="label" labelfor="origFilename" label="Filename"/>
-                    <cell type="field" required="true" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="mimeType" label="MIME Type"/>
@@ -2121,7 +2121,7 @@
     		<rows>
                 <row>
                     <cell type="label" labelfor="origFilename" label="Filename"/>
-                    <cell type="field" required="true" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="mimeType" label="MIME Type"/>
@@ -2144,7 +2144,7 @@
     		<rows>
                 <row>
                     <cell type="label" labelfor="origFilename" label="Filename"/>
-                    <cell type="field" required="true" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="mimeType" label="MIME Type"/>
@@ -2167,7 +2167,7 @@
     		<rows>
                 <row>
                     <cell type="label" labelfor="origFilename" label="Filename"/>
-                    <cell type="field" required="true" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="remarks" label="Remarks"/>
@@ -2190,7 +2190,7 @@
     		<rows>
                 <row>
                     <cell type="label" labelfor="origFilename" label="Filename"/>
-                    <cell type="field" required="true" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="mimeType" label="MIME Type"/>
@@ -2213,7 +2213,7 @@
     		<rows>
                 <row>
                     <cell type="label" labelfor="origFilename" label="Filename"/>
-                    <cell type="field" required="true" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="mimeType" label="MIME Type"/>
@@ -2236,7 +2236,7 @@
     		<rows>
                 <row>
                     <cell type="label" labelfor="origFilename" label="Filename"/>
-                    <cell type="field" required="true" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="mimeType" label="MIME Type"/>
@@ -2262,9 +2262,9 @@
     		    </row>
                 <row>
                     <cell type="label" labelfor="name" label="Name"/>
-                    <cell type="field" required="true" id="name" name="name" cols="16" uitype="text"/>
+                    <cell type="field" isrequired="true" id="name" name="name" cols="16" uitype="text"/>
                     <cell type="label" labelfor="value" label="Value"/>
-                    <cell type="field" required="true" id="value" name="value" cols="32" uitype="text"/>
+                    <cell type="field" isrequired="true" id="value" name="value" cols="32" uitype="text"/>
                 </row>
 			</rows>
 		</viewdef>

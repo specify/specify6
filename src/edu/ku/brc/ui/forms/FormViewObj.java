@@ -288,7 +288,7 @@ public class FormViewObj implements Viewable,
         
         formIsInNewDataMode = isNewObject;
         
-        MultiView.printCreateOptions("Creating Form "+altView.getName(), options);
+        //MultiView.printCreateOptions("Creating Form "+altView.getName(), options);
 
         setValidator(formValidator);
 
@@ -300,14 +300,11 @@ public class FormViewObj implements Viewable,
 
         // See if we need to add a Selector ComboBox
         isSelectorForm = StringUtils.isNotEmpty(view.getSelectorName());
-        if (isSelectorForm || altView.getName().equals("Organization Edit"))
-        {
-            int x = 0;
-            x++;
-        }
+
         boolean addSelectorCBX = false;
-        log.debug(altView.getName()+"  "+altView.getMode()+"  "+AltViewIFace.CreationMode.EDIT);
-        if (isSelectorForm && isNewObject && altView.getMode() == AltViewIFace.CreationMode.EDIT)
+        //log.debug(altView.getName()+"  "+altView.getMode()+"  "+AltViewIFace.CreationMode.EDIT);
+        //if (isSelectorForm && isNewObject && altView.getMode() == AltViewIFace.CreationMode.EDIT)
+        if (isSelectorForm && altView.getMode() == AltViewIFace.CreationMode.EDIT)
         {
             addSelectorCBX = true;
         }
@@ -389,6 +386,10 @@ public class FormViewObj implements Viewable,
                     if (switcherUI != null)
                     {
                         comps.add(switcherUI);
+                        if (formValidator != null)
+                        {
+                            formValidator.addEnableItem(switcherUI);
+                        }
                     }
                 }
             }
@@ -1851,11 +1852,6 @@ public class FormViewObj implements Viewable,
             controlPanel.addController(rowBuilder.getPanel());
             setAddDelListeners(newRecBtn, delRecBtn);
             
-            // Set initial state to disabled
-            //newRecBtn.setEnabled(false);
-            //delRecBtn.setEnabled(false);
-            //srchRecBtn.setEnabled(false);
-            
             DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
             if (tblInfo != null)
             {
@@ -2031,9 +2027,9 @@ public class FormViewObj implements Viewable,
                 if (fieldInfo.getFormCell().getType() == FormCellIFace.CellType.field)
                 {
                     FormCellField cell = (FormCellField)fieldInfo.getFormCell();
-                    //System.out.println(fieldInfo.getFormCell().getName());
                     DBFieldInfo   fi   = ti.getFieldByName(fieldInfo.getFormCell().getName());
-                    if (cell.isRequired() || (fi != null && fi.isRequired()))
+                    
+                    if (isEditting && (cell.isRequired() || (fi != null && fi.isRequired())))
                     {
                         if (boldFont == null)
                         {
@@ -2140,6 +2136,7 @@ public class FormViewObj implements Viewable,
                 log.debug("  list != null             ["+(list != null)+"]");
                 log.debug("  list.size() > 0          ["+(list != null && list.size() > 0)+"]");
             }*/
+            
             delRecBtn.setEnabled(enableDelBtn);
         }
         
@@ -2151,7 +2148,7 @@ public class FormViewObj implements Viewable,
                 enableNewBtn = dataObj == null && parentDataObj != null;
             } else 
             {
-                enableNewBtn = dataObj != null || parentDataObj != null || mvParent.isTopLevel();
+                enableNewBtn = dataObj != null || parentDataObj != null;// || mvParent.isTopLevel();
             }
             //log.info(formViewDef.getName()+" Enabling The New Btn: "+enableNewBtn);
             /*if (isEditting)
@@ -2163,7 +2160,13 @@ public class FormViewObj implements Viewable,
             {
                 enableNewBtn = formValidator.isFormValid();
             }
+            
             newRecBtn.setEnabled(enableNewBtn);
+            
+            if (switcherUI != null)
+            {
+                switcherUI.setEnabled(enableNewBtn);
+            }
         }
         
         if (srchRecBtn != null)
@@ -3590,6 +3593,7 @@ public class FormViewObj implements Viewable,
         if (mvParent.getMultiViewParent() != null)
         {
             formValidator.setHasChanged(true);
+            formValidator.validateRoot();
         }
     }
 

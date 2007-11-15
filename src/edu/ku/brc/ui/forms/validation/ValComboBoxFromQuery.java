@@ -29,6 +29,7 @@ import java.awt.Insets;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.ArrayList;
@@ -39,6 +40,8 @@ import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
@@ -477,7 +480,8 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             DataObjectSettable ds = DataObjectSettableFactory.get(classObj.getName(), "edu.ku.brc.ui.forms.DataSetterForObj");
             if (ds != null)
             {
-                String value = comboBox.getTextField().getText();
+                log.error(comboBox.getSelectedIndex());
+                String value = comboBox.getSelectedId() == null ? comboBox.getTextField().getText() : "";
                 ds.setFieldValue(newDataObj, fieldNames[0], value);
             }
             frame.setData(newDataObj);
@@ -933,8 +937,10 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         }
     }
     
-    class VCBCombobBox extends JComboBoxFromQuery
+    class VCBCombobBox extends JComboBoxFromQuery implements DocumentListener
     {
+        protected boolean hasFocus = false;
+        
         public VCBCombobBox(final String tableName,
                             final String idColumn,
                             final String keyColumn,
@@ -942,6 +948,23 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                             final String format)
         {
             super(tableName, idColumn, keyColumn, displayColumns, format);
+            
+            getTextField().getDocument().addDocumentListener(this);
+            getTextField().addFocusListener(new FocusAdapter() {
+                @Override
+                public void focusGained(FocusEvent arg0)
+                {
+                    hasFocus = true;
+                    super.focusGained(arg0);
+                }
+
+                @Override
+                public void focusLost(FocusEvent arg0)
+                {
+                    hasFocus = false;
+                    super.focusLost(arg0);
+                }
+            });
         }
         
         /**
@@ -1006,6 +1029,44 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             }
 
         }
+        
+        /**
+         * 
+         */
+        protected void documentChanged()
+        {
+            if (hasFocus && comboBox.getSelectedIndex() > -1)
+            {
+                comboBox.setSelectedIndex(-1);    
+            }
+            
+        }
+
+        /* (non-Javadoc)
+         * @see javax.swing.event.DocumentListener#changedUpdate(javax.swing.event.DocumentEvent)
+         */
+        public void changedUpdate(DocumentEvent e)
+        {
+            documentChanged();
+        }
+
+        /* (non-Javadoc)
+         * @see javax.swing.event.DocumentListener#insertUpdate(javax.swing.event.DocumentEvent)
+         */
+        public void insertUpdate(DocumentEvent e)
+        {
+            documentChanged();
+        }
+
+        /* (non-Javadoc)
+         * @see javax.swing.event.DocumentListener#removeUpdate(javax.swing.event.DocumentEvent)
+         */
+        public void removeUpdate(DocumentEvent e)
+        {
+            documentChanged();
+        }
+        
+        
 
     }
 

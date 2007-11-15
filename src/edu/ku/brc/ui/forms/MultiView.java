@@ -658,6 +658,8 @@ public class MultiView extends JPanel
             {
                 currentViewable.aboutToShow(false);
                 
+                currentViewable.getDataFromUI();
+                
                 if (currentValidator != null)
                 {
                     adjustValidationTree(this, currentValidator, false);
