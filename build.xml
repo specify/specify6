@@ -116,7 +116,7 @@
 				<include name="**/*.class" />
 				<include name="**/*.properties" />
 				<include name="**/*.xml" />
-				<include name="**/images/*.*" />
+				<include name="**/images/**/*.*" />
 			</fileset>
 		</jar>
 
@@ -130,7 +130,7 @@
 				<include name="**/*.class" />
 				<include name="**/*.properties" />
 				<include name="**/*.xml" />
-				<include name="**/images/*.*" />
+				<include name="**/images/**/*.*" />
 			</fileset>
 	    </jar>
 	</target>
@@ -142,7 +142,7 @@
 				<include name="**/*.class" />
 				<include name="**/*.properties" />
 				<include name="**/*.xml" />
-				<exclude name="**/images/*.*" />
+				<exclude name="**/images/**/*.*" />
 			</fileset>
 	    </jar>
 	</target>
@@ -610,7 +610,19 @@
 	<!-- *************************************************************
 	     Windows Distribution
 	     ************************************************************* -->
-	<target name="dist-win">
+	
+	<target name="dist-win-update" description="Updates the Specify.jat, images, help etc.">
+		<property name="appdir" value="${dist-win}/Specify" />
+		<property name="derby.data.path" value="${dist-win}/DerbyDatabases" />
+		<antcall target="clean-jar"/>
+		<antcall target="dist-jar"/>
+		<antcall target="basic-non-mac-dist"/>
+		<!-- Copy Alt Help Image Files -->
+        <property name="alt.help.img.dir" value="AltHelpImages/Windows"/>
+        <antcall target="copy-alt-help-images"/>
+    </target>
+	
+	<target name="dist-win" description="Builds for Windows">
 		
 		<property name="appdir" value="${dist-win}/Specify" />
 		<property name="derby.data.path" value="${dist-win}/DerbyDatabases" />
