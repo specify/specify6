@@ -154,6 +154,39 @@ public class Uploader implements ActionListener, WindowStateListener
 
     protected static final Logger log = Logger.getLogger(Uploader.class);
    
+    private class SkippedRow
+    {
+        protected UploaderException cause;
+        protected int row;
+        /**
+         * @param cause
+         * @param row
+         */
+        public SkippedRow(UploaderException cause, int row)
+        {
+            super();
+            this.cause = cause;
+            this.row = row;
+        }
+        /**
+         * @return the cause
+         */
+        public UploaderException getCause()
+        {
+            return cause;
+        }
+        /**
+         * @return the row
+         */
+        public int getRow()
+        {
+            return row;
+        }
+        
+    }
+    
+    protected Vector<SkippedRow> skippedRows;
+    
     /**
      * @return dataValidated
      */
@@ -449,13 +482,24 @@ public class Uploader implements ActionListener, WindowStateListener
 		this.uploadFields = new Vector<UploadField>(importData.getCols());
         this.missingRequiredClasses = new Vector<UploadTable.RelatedClassEntry>();
         this.missingRequiredFields = new Vector<UploadTable.DefaultFieldEntry>();
+        this.skippedRows = new Vector<SkippedRow>();
 		buildUploadFields();
 		buildUploadTables();
 		buildUploadGraph();
 		processTreeMaps();
 		orderUploadTables();
         buildUploadTableParents();
+        System.out.println("Upload table ordering:");
+        for (UploadTable ut : uploadTables)
+        {
+            System.out.println(ut);
+        }
         reOrderUploadTables();
+        System.out.println("Upload table RE-ordering:");
+        for (UploadTable ut : uploadTables)
+        {
+            System.out.println(ut);
+        }
  	}
 
     
@@ -469,6 +513,7 @@ public class Uploader implements ActionListener, WindowStateListener
         SortedSet<Pair<UploadTable, UploadTable>> moves = new TreeSet<Pair<UploadTable, UploadTable>>(new Comparator<Pair<UploadTable,UploadTable>>(){
             private boolean isAncestorOf(UploadTable t1, UploadTable t2)
             {
+                log.debug("isAncestorOf(" + t1 + ", " + t2 + ")");
                 if (t1.equals(t2))
                 {
                     return true;
@@ -477,7 +522,7 @@ public class Uploader implements ActionListener, WindowStateListener
                 {
                     for (ParentTableEntry pte : ptes)
                     {
-                        if (isAncestorOf(pte.getImportTable(), t2))
+                        if (isAncestorOf(t1, pte.getImportTable()))
                         {
                             return true;
                         }
@@ -502,15 +547,13 @@ public class Uploader implements ActionListener, WindowStateListener
         {
             for (UploadTable mc : ut.getMatchChildren())
             {
-                for (Vector<ParentTableEntry> ptes : mc.getParentTables())
+                for (ParentTableEntry pte : mc.getAncestors())
                 {
-                    for (ParentTableEntry pte : ptes)
+                    if (uploadTables.indexOf(ut) < uploadTables.indexOf(pte.getImportTable()))
                     {
-                        if (uploadTables.indexOf(ut) < uploadTables.indexOf(pte.getImportTable()))
-                        {
-                            moves.add(new Pair<UploadTable, UploadTable>(ut, pte.getImportTable()));
-                        }
+                        moves.add(new Pair<UploadTable, UploadTable>(ut, pte.getImportTable()));
                     }
+                    
                 }
             }
         }
@@ -1021,6 +1064,8 @@ public class Uploader implements ActionListener, WindowStateListener
         {
             throw new UploaderException(nsmeEx, UploaderException.ABORT_IMPORT);
         }
+        //may want option to ONLY upload rows that were skipped...
+        skippedRows.clear();
     }
         
     
@@ -1339,11 +1384,11 @@ public class Uploader implements ActionListener, WindowStateListener
         CustomDialog cwin;
         if (!readOnly)
         {
-            cwin = new CustomDialog(null, "Missing Data", true, usp); // i18n
+            cwin = new CustomDialog(null, getResourceString("WB_UPLOAD_SETTINGS"), true, usp); // i18n
         }
         else
         {
-            cwin = new CustomDialog(null, "Missing Data", true, CustomDialog.OK_BTN, usp, CustomDialog.OK_BTN); // i18n
+            cwin = new CustomDialog(null, getResourceString("WB_UPLOAD_SETTINGS"), true, CustomDialog.OK_BTN, usp, CustomDialog.OK_BTN); // i18n
         }
             
         cwin.setModal(true);
@@ -1716,9 +1761,10 @@ public class Uploader implements ActionListener, WindowStateListener
                                 }
                                 catch (UploaderException ex)
                                 {
-                                    if (ex.getAbortStatus() != UploaderException.ABORT_IMPORT)
+                                    if (ex.getAbortStatus() == UploaderException.ABORT_ROW)
                                     {
                                         log.debug(ex.getMessage());
+                                        abortRow(ex, r);
                                         break;
                                     }
                                     throw ex;
@@ -1789,7 +1835,11 @@ public class Uploader implements ActionListener, WindowStateListener
         }
     }
     
-    
+    protected void abortRow(UploaderException cause, int row)
+    {
+        log.debug("NOT undoing writes which have already occurred while processing aborted row");
+        skippedRows.add(new SkippedRow(cause, row));
+    }
     
 	/**
      * Undoes the most recent upload.
@@ -2000,7 +2050,7 @@ public class Uploader implements ActionListener, WindowStateListener
 			writeRow(t);
 		} catch (UploaderException ex)
 		{
-			log.debug(ex.getMessage() + " (" + t.getTable().getName() + ", row " + Integer.toBinaryString(row) + ")");
+			log.debug(ex.getMessage() + " (" + t.getTable().getName() + ", row " + Integer.toString(row) + ")");
             throw ex;
 		}
 	}

@@ -17,8 +17,7 @@ package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
  */
 public class UploaderException extends Exception
 {
-	protected int abortStatus = ABORT_COLUMN;
-	public static final int ABORT_COLUMN = 0;
+	protected int abortStatus = ABORT_ROW;
 	public static final int ABORT_ROW = 10;
 	public static final int ABORT_IMPORT = 20;
 	

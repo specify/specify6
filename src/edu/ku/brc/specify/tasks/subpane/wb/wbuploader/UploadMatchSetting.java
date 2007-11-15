@@ -6,7 +6,11 @@
      */
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.util.Vector;
+
+import org.apache.log4j.Logger;
 
 /**
  * @author timbo
@@ -16,9 +20,12 @@ import java.util.Vector;
  */
 public class UploadMatchSetting
 {
+    protected static final Logger log = Logger.getLogger(UploadMatchSetting.class);
+
     public static int ASK_MODE = 0;
     public static int ADD_NEW_MODE = 1;
     public static int PICK_FIRST_MODE = 2;
+    public static int SKIP_ROW_MODE = 3;
     
     /**
      * one of the 'MODE' statics above 
@@ -46,13 +53,53 @@ public class UploadMatchSetting
      */
     protected boolean remember;
     
+    /**
+     * If true then all fields in the uploaded dataset are used to find matches,
+     * if false then fields whose cells are empty are not matched on. 
+     */
+    protected boolean matchEmptyValues;
+    
+    public static Vector<String> getModeTexts()
+    {
+        Vector<String> result = new Vector<String>();
+        result.addElement(getResourceString("WB_UPLOAD_MATCH_MODE_ASK"));
+        result.addElement(getResourceString("WB_UPLOAD_MATCH_MODE_ADD"));
+        result.addElement(getResourceString("WB_UPLOAD_MATCH_MODE_FIRST"));
+        result.addElement(getResourceString("WB_UPLOAD_MATCH_MODE_SKIP_ROW"));
+        return result;
+    }
+    
+    public static int getMode(final String modeName)
+    {
+        if (modeName.equals(getResourceString("WB_UPLOAD_MATCH_MODE_ASK")))
+        {
+            return ASK_MODE;
+        }
+        if (modeName.equals(getResourceString("WB_UPLOAD_MATCH_MODE_ADD")))
+        {
+            return ADD_NEW_MODE;
+        }
+        if (modeName.equals(getResourceString("WB_UPLOAD_MATCH_MODE_FIRST")))
+        {
+            return PICK_FIRST_MODE;
+        }
+        if (modeName.equals(getResourceString("WB_UPLOAD_MATCH_MODE_SKIP_ROW")))
+        {
+            return SKIP_ROW_MODE;
+        }
+        return -1;
+    }
+    
     public UploadMatchSetting()
     {
-        mode = UploadMatchSetting.ASK_MODE;        
+        //mode = UploadMatchSetting.ASK_MODE;        
+        mode = UploadMatchSetting.SKIP_ROW_MODE;        
+        log.debug("Setting match mode to skip row");
         colsToMatch = new Vector<Integer>();
         selections = new Vector<MatchSelection>();
         lookups = new Vector<MatchSelection>();
         remember = true;
+        matchEmptyValues = true; //for now, default probably should be false
     }
     
     public void addSelection(final MatchSelection selection)
@@ -150,8 +197,7 @@ public class UploadMatchSetting
         {
             return lookup;
         } 
-        
-    }
+     }
 
     /**
      * @return the mode
@@ -183,6 +229,22 @@ public class UploadMatchSetting
     public void setRemember(boolean remember)
     {
         this.remember = remember;
+    }
+
+    /**
+     * @return the matchEmptyValues
+     */
+    public boolean isMatchEmptyValues()
+    {
+        return matchEmptyValues;
+    }
+
+    /**
+     * @param matchEmptyValues the matchEmptyValues to set
+     */
+    public void setMatchEmptyValues(boolean matchEmptyValues)
+    {
+        this.matchEmptyValues = matchEmptyValues;
     }
     
     

@@ -12,7 +12,6 @@ package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -26,7 +25,6 @@ import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -594,9 +592,9 @@ public class MissingDataResolver implements ActionListener
     public JPanel getUI(boolean readOnly)
     {
         JPanel mainPane = new JPanel(new BorderLayout());
-        JLabel msg = new JLabel(getResourceString("WB_UPLOAD_MISSING_DATA")); 
-        msg.setFont(msg.getFont().deriveFont(Font.BOLD));
-        mainPane.add(msg, BorderLayout.NORTH);
+        //JLabel msg = new JLabel(getResourceString("WB_UPLOAD_MISSING_DATA")); 
+        //msg.setFont(msg.getFont().deriveFont(Font.BOLD));
+        //mainPane.add(msg, BorderLayout.NORTH);
         if (!readOnly)
         {
             CellConstraints cc = new CellConstraints();

@@ -134,6 +134,12 @@ public class UploadTable implements Comparable<UploadTable>
     protected UploadMatchSetting matchSetting;
     
     /**
+     * If true then matching records are updated with values in uploading dataset.
+     * 
+     */
+    protected boolean updateMatches = false;
+    
+    /**
      * @param table
      * @param relationship
      */
@@ -1338,6 +1344,10 @@ public class UploadTable implements Comparable<UploadTable>
                 }
             }
         }
+        else if (tblClass.equals(CollectionObject.class) && !updateMatches)
+        {
+            result = true;
+        }
         else // Oh no!!
         {
             log.error("Unable to check matching children for " + tblClass.getName());
@@ -1358,6 +1368,7 @@ public class UploadTable implements Comparable<UploadTable>
     protected boolean needToMatchChild(Class<?> childClass)
     {
         //temporary fix. Really should determine based on cascade rules and the fields in the dataset.
+        log.debug("need to add more child classes");
         if (tblClass.equals(Accession.class)) 
         { 
             return childClass.equals(AccessionAgent.class)
@@ -1369,7 +1380,8 @@ public class UploadTable implements Comparable<UploadTable>
         }
         if (tblClass.equals(CollectionObject.class)) 
         { 
-            return false; //should be good enough for now 
+            return childClass.equals(Determination.class)
+              || childClass.equals(Preparation.class);
         }
         return false;
     }
@@ -1469,8 +1481,6 @@ public class UploadTable implements Comparable<UploadTable>
             {
                 //filter out duplicates. This seems very weird, but docs i found say it is normal for
                 //list() to return duplicate objects, and they did not mention any sort of 'select distinct' property.
-                //It is more efficent code-wise and possibly more efficient performance-wise to do it this way than to call uniqueResult() and catch 
-                // NonUniqueResult execption and then call list()...
                 Set<DataModelObjBase> matchSet = new HashSet<DataModelObjBase>(matchList);
                 matches = new ArrayList<DataModelObjBase>(matchSet);
             }
@@ -1506,7 +1516,7 @@ public class UploadTable implements Comparable<UploadTable>
         if (match != null)
         {
             setCurrentRecord(match, recNum);
-            // if a match was found matchChildren don't need to do anything.
+            // if a match was found matchChildren don't need to do anything. (assuming !updateMatches!!!)
             for (UploadTable child : matchChildren)
             {
                 child.skipRow = true;
@@ -1520,8 +1530,21 @@ public class UploadTable implements Comparable<UploadTable>
      * @param matches
      * @return 
      */
-    protected DataModelObjBase dealWithMultipleMatches(List<DataModelObjBase> matches)
+    protected DataModelObjBase dealWithMultipleMatches(List<DataModelObjBase> matches) throws UploaderException
     {
+        if (matchSetting.getMode() == UploadMatchSetting.ADD_NEW_MODE)
+        {
+            return null;
+        }
+        if (matchSetting.getMode() == UploadMatchSetting.PICK_FIRST_MODE)
+        {
+            return matches.get(0);
+        }
+        if (matchSetting.getMode() == UploadMatchSetting.SKIP_ROW_MODE)
+        {
+            throw new UploaderException("Skipping row due to multiple matches", UploaderException.ABORT_ROW);
+        }
+        
         String title = null;
         DBTableInfo ti = DBTableIdMgr.getInstance().getInfoByTableName(getWriteTable().getName());        
         if (ti != null)
@@ -1752,6 +1775,19 @@ public class UploadTable implements Comparable<UploadTable>
         }
     }
 
+    public Vector<ParentTableEntry> getAncestors()
+    {
+        Vector<ParentTableEntry> result = new Vector<ParentTableEntry>();
+        for (Vector<ParentTableEntry> ptes : parentTables)
+        {
+            for (ParentTableEntry pte : ptes)
+            {
+                result.add(pte);
+                result.addAll(pte.getImportTable().getAncestors());
+            }
+        }
+        return result;
+    }
     /**
      * @param rec
      * @param recNum
@@ -2081,7 +2117,26 @@ public class UploadTable implements Comparable<UploadTable>
     @Override
     public String toString()
     {
-        return DBTableIdMgr.getInstance().getByShortClassName(tblClass.getSimpleName()).getTitle(); 
+//        if (tblClass.equals(Agent.class))
+//        {
+//            if (relationship.getRelatedField().getFieldInfo() != null)
+//            {
+//                return relationship.getRelatedField().getFieldInfo().getTitle();
+//            }
+//            DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(tblClass.getSimpleName());
+//            DBFieldInfo fldInfo = tblInfo.getFieldByColumnName(relationship.getRelatedField().getName());
+//            if (fldInfo != null)
+//            {
+//                return fldInfo.getTitle();
+//            }
+//            List<DBRelationshipInfo> rels = tblInfo.getRelationships();
+//            for (DBRelationshipInfo rel : rels)
+//            {
+//                System.out.println(rel.getName() + ", " + rel.getColName() + ", " + rel.getOtherSide() + ", " + rel.getClassName());
+//            }
+//            return "Blunderous Moo Cow";
+//        }
+        return DBTableIdMgr.getInstance().getByShortClassName(tblClass.getSimpleName()).getTitle();
     }
     
     public UploadMatchSetting getMatchSetting()

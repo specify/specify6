@@ -8,6 +8,7 @@ package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Vector;
@@ -15,8 +16,11 @@ import java.util.Vector;
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
@@ -24,10 +28,11 @@ import org.apache.log4j.Logger;
 
 public class UploadMatchSettingsPanel extends JPanel implements ActionListener
 {
-    protected static final Logger log = Logger.getLogger(UploadTable.class);
+    protected static final Logger log = Logger.getLogger(UploadMatchSettingsPanel.class);
 
     protected DefaultComboBoxModel modeTexts;
     protected DefaultComboBoxModel boolTexts;
+    protected JLabel tblLbl;
     protected TableModel tblModel;
     protected JTable tblTbl;
     protected final Vector<UploadTable> tables;
@@ -42,7 +47,6 @@ public class UploadMatchSettingsPanel extends JPanel implements ActionListener
                 tblTbl.getModel().setValueAt(jbox.getSelectedItem(), tblTbl.getEditingRow(), tblTbl.getEditingColumn());
             }
         }
-        
     }
     
     public void refresh()
@@ -60,8 +64,7 @@ public class UploadMatchSettingsPanel extends JPanel implements ActionListener
         for (int row = 0; row < tables.size(); row++)
         {
             UploadMatchSetting matchSet = tables.get(row).getMatchSetting();
-            matchSet.setMode(modeTexts.getIndexOf(tblTbl.getModel().getValueAt(row, 1)));
-            log.debug("setRemember() called dubiously wrt i18n");
+            matchSet.setMode(UploadMatchSetting.getMode(tblTbl.getModel().getValueAt(row, 1).toString()));
             matchSet.setRemember(Boolean.valueOf(tblTbl.getModel().getValueAt(row, 2).toString()));
             log.debug("NOT setting fields to match!");
         }
@@ -71,10 +74,7 @@ public class UploadMatchSettingsPanel extends JPanel implements ActionListener
     {
         this.tables = tables;
         
-        modeTexts = new DefaultComboBoxModel();
-        modeTexts.addElement(getResourceString("WB_UPLOAD_MATCH_MODE_ASK"));
-        modeTexts.addElement(getResourceString("WB_UPLOAD_MATCH_MODE_ADD"));
-        modeTexts.addElement(getResourceString("WB_UPLOAD_MATCH_MODE_FIRST"));
+        modeTexts = new DefaultComboBoxModel(UploadMatchSetting.getModeTexts());
         
         boolTexts = new DefaultComboBoxModel();
         boolTexts.addElement(Boolean.toString(Boolean.TRUE)); //i18n ?
@@ -86,6 +86,11 @@ public class UploadMatchSettingsPanel extends JPanel implements ActionListener
         headers.add(getResourceString("WB_UPLOAD_MATCH_REMEMBER_CAPTION"));
         headers.add(getResourceString("WB_UPLOAD_MATCH_FLDS_CAPTION"));
         
+//        SortedSet<String> tblNames = new TreeSet<String>();
+//        for (UploadTable tbl : tables)
+//        {
+//            tblNames.add(tbl.toString());
+//        }
         Vector<Vector<String>> rows = new Vector<Vector<String>>();
         for (UploadTable tbl : tables)
         {
@@ -137,7 +142,11 @@ public class UploadMatchSettingsPanel extends JPanel implements ActionListener
             };
         }
         tblTbl = new JTable(tblModel);
-        add(tblTbl);
+        //tblLbl = new JLabel(getResourceString("WB_UPLOAD_MATCH_SETTINGS"));
+        //tblLbl.setFont(tblLbl.getFont().deriveFont(Font.BOLD));        
+        setLayout(new BorderLayout());
+        //add(tblLbl, BorderLayout.NORTH);
+        JScrollPane sp = new JScrollPane(tblTbl, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        add(sp, BorderLayout.CENTER);
     }    
-    
 }
