@@ -924,9 +924,6 @@
                 <row>
                     <cell type="label" labelfor="parent" label="Parent"/>
                 	<cell type="field" id="parent" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false;editoncreate=true" name="parent" colspan="3"/>
-                	<!--
-                	<cell type="field" id="parent" isrequired="true" name="parent" uitype="plugin" initialize="name=TreeNodeComboBox;queryName=Taxon;title=Taxon;editoncreate=true" colspan="3"/>
-                	-->
                 </row>
                 <row>
                     <cell type="label" labelfor="definitionItem" label="Rank"/>
@@ -1078,9 +1075,6 @@
                 <row>
                     <cell type="label" labelfor="parent" label="Parent"/>
                 	<cell type="field" id="parent" isrequired="true" uitype="querycbx" initialize="name=Location;title=Location;editbtn=false;newbtn=false;editoncreate=true" name="parent"/>
-                    <!--
-                    <cell type="field" id="parent" isrequired="true" name="parent" uitype="plugin" initialize="name=TreeNodeComboBox;queryName=Location;title=Location;editoncreate=true"/>
-                	-->
                 </row>
                 <row>
                     <cell type="label" labelfor="definitionItem" label="Rank"/>
