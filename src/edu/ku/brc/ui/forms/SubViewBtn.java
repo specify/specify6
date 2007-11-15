@@ -118,7 +118,7 @@ public class SubViewBtn extends JButton implements GetSetValueIFace
             /* (non-Javadoc)
              * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
              */
-            @Override
+            //@Override
             public void actionPerformed(ActionEvent e)
             {
                 showForm();
@@ -233,7 +233,7 @@ public class SubViewBtn extends JButton implements GetSetValueIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.GetSetValueIFace#getValue()
      */
-    @Override
+    //@Override
     public Object getValue()
     {
         return dataObj;
@@ -242,12 +242,12 @@ public class SubViewBtn extends JButton implements GetSetValueIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.GetSetValueIFace#setValue(java.lang.Object, java.lang.String)
      */
-    @Override
+    //@Override
     public void setValue(Object value, String defaultValue)
     {
         dataObj = value;
         
-        // Retieve lazy object while in the context of a session (just like a subform would do
+        // Retrieve lazy object while in the context of a session (just like a subform would do
         if (dataObj != null)
         {
             if (dataObj instanceof FormDataObjIFace)

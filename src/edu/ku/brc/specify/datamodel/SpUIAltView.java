@@ -60,6 +60,7 @@ public class SpUIAltView extends DataModelObjBase implements AltViewIFace
     protected Integer     spUIAltViewId;
     protected String      name;
     protected String      label;
+    protected String      title;
     protected String      modeName;
     protected Boolean     isValidated;
     protected Boolean     isDefaultAltView;
@@ -83,6 +84,7 @@ public class SpUIAltView extends DataModelObjBase implements AltViewIFace
     public SpUIAltView(final ViewIFace view, 
                        final String name, 
                        final String label, 
+                       final String title, 
                        final CreationMode mode, 
                        final boolean validated, 
                        final boolean isDefault, 
@@ -93,6 +95,7 @@ public class SpUIAltView extends DataModelObjBase implements AltViewIFace
         this.spView = (SpUIView)view;
         this.name = name;
         this.label = label;
+        this.title = title;
         this.modeName = SpUIView.getCreationModeStrFrom(mode);
         this.isValidated = validated;
         this.isDefaultAltView = isDefault;
@@ -113,6 +116,7 @@ public class SpUIAltView extends DataModelObjBase implements AltViewIFace
         spUIAltViewId = null;
         name          = null;
         label         = null;
+        title         = null;
         modeName      = null;
         isValidated   = null;
         isDefaultAltView = null;
@@ -165,6 +169,23 @@ public class SpUIAltView extends DataModelObjBase implements AltViewIFace
     public void setLabel(String label)
     {
         this.label = label;
+    }
+
+    /**
+     * @return the title
+     */
+    @Column(name = "Title", unique = false, nullable = false, insertable = true, updatable = true, length = 32)
+    public String getTitle()
+    {
+        return title;
+    }
+
+    /**
+     * @param title the title to set
+     */
+    public void setTitle(String title)
+    {
+        this.title = title;
     }
 
     /**
@@ -478,6 +499,7 @@ public class SpUIAltView extends DataModelObjBase implements AltViewIFace
         
         name             = altView.getName();
         label            = altView.getLabel();
+        title            = altView.getTitle();
         modeName         = altView.getMode().toString().toLowerCase();
         isValidated      = altView.isValidated();
         isDefaultAltView = altView.isDefault();
@@ -497,6 +519,7 @@ public class SpUIAltView extends DataModelObjBase implements AltViewIFace
         xmlAttr(sb, "name", name);
         xmlAttr(sb, "viewdef", spViewDef.getName());
         xmlAttr(sb, "label", label);
+        xmlAttr(sb, "title", title);
         xmlAttr(sb, "validated", isValidated);
         xmlAttr(sb, "default", isDefaultAltView);
         xmlAttr(sb, "selector", selectorName);

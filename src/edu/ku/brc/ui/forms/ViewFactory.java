@@ -1948,7 +1948,7 @@ public class ViewFactory
      * @return a new FormViewObj
      */
     public static Viewable createFormView(final MultiView multiView, 
-                                          final ViewIFace      view, 
+                                          final ViewIFace view, 
                                           final String    altName, 
                                           final Object    data,
                                           final int       options,

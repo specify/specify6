@@ -41,9 +41,14 @@ public interface AltViewIFace extends Comparable<AltViewIFace>
     public abstract String getViewDefName();
 
     /**
-     * @return
+     * @return a human readable string for the altview (mostly used by Views with selectors).
      */
     public abstract String getLabel();
+    
+    /**
+     * @return title used by the selector combobox
+     */
+    public abstract String getTitle();
 
     /**
      * @param label the human readable title string that appears in the combobox switcher
@@ -71,7 +76,8 @@ public interface AltViewIFace extends Comparable<AltViewIFace>
     public abstract ViewDefIFace getViewDef();
 
     /**
-     * @param viewDef
+     * Sets the ViewDef.
+     * @param viewDef the ViewDef
      */
     public abstract void setViewDef(ViewDefIFace viewDef);
 

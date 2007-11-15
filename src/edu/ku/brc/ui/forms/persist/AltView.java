@@ -33,6 +33,7 @@ public class AltView implements Comparable<AltViewIFace>, Cloneable, AltViewIFac
     protected ViewIFace     view;
     protected String        name;
     protected String        label;
+    protected String        title;
     protected AltViewIFace.CreationMode  mode;
     protected boolean       validated;
     protected boolean       isDefault;
@@ -54,6 +55,7 @@ public class AltView implements Comparable<AltViewIFace>, Cloneable, AltViewIFac
     public AltView(final ViewIFace view, 
                    final String name, 
                    final String label, 
+                   final String title, 
                    final CreationMode mode, 
                    final boolean validated, 
                    final boolean isDefault, 
@@ -62,6 +64,7 @@ public class AltView implements Comparable<AltViewIFace>, Cloneable, AltViewIFac
         this.view = view;
         this.name = name;
         this.label = label;
+        this.title = title;
         this.mode = mode;
         this.validated = validated;
         this.isDefault = isDefault;
@@ -99,6 +102,14 @@ public class AltView implements Comparable<AltViewIFace>, Cloneable, AltViewIFac
     public String getLabel()
     {
         return label;
+    }
+
+    /**
+     * @return the title (or name if title is null).
+     */
+    public String getTitle()
+    {
+        return title != null ? title : name;
     }
 
     /* (non-Javadoc)
@@ -263,13 +274,14 @@ public class AltView implements Comparable<AltViewIFace>, Cloneable, AltViewIFac
     public Object clone() throws CloneNotSupportedException
     {
         AltView altView = (AltView)super.clone();
-        altView.view = view;
-        altView.name = name;
-        altView.label = label;
-        altView.mode = mode;
+        altView.view      = view;
+        altView.name      = name;
+        altView.label     = label;
+        altView.title     = title;
+        altView.mode      = mode;
         altView.validated = validated;
         altView.isDefault = isDefault;
-        altView.viewDef = viewDef;
+        altView.viewDef   = viewDef;
         altView.selectorName = selectorName;
         altView.selectorValue = selectorValue;
         altView.subViews = new Vector<AltViewIFace>(subViews); // OK not to clone the references
@@ -285,6 +297,7 @@ public class AltView implements Comparable<AltViewIFace>, Cloneable, AltViewIFac
         xmlAttr(sb, "name", name);
         xmlAttr(sb, "viewdef", viewDef.getName());
         xmlAttr(sb, "label", label);
+        xmlAttr(sb, "title", title);
         xmlAttr(sb, "validated", validated);
         xmlAttr(sb, "default", isDefault);
         xmlAttr(sb, "selector", selectorName);

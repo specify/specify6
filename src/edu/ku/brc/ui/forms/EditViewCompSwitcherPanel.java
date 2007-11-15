@@ -223,7 +223,7 @@ public class EditViewCompSwitcherPanel extends JPanel implements GetSetValueIFac
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.validation.UIValidatable#cleanUp()
      */
-    @Override
+    //@Override
     public void cleanUp()
     {
         dataObj = null;
@@ -244,7 +244,7 @@ public class EditViewCompSwitcherPanel extends JPanel implements GetSetValueIFac
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.validation.UIValidatable#getState()
      */
-    @Override
+    //@Override
     public ErrorType getState()
     {
         if (currentComp == viewComp)
@@ -257,7 +257,7 @@ public class EditViewCompSwitcherPanel extends JPanel implements GetSetValueIFac
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.validation.UIValidatable#getValidatableUIComp()
      */
-    @Override
+    //@Override
     public Component getValidatableUIComp()
     {
         return this;
@@ -266,7 +266,7 @@ public class EditViewCompSwitcherPanel extends JPanel implements GetSetValueIFac
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.validation.UIValidatable#isChanged()
      */
-    @Override
+    //@Override
     public boolean isChanged()
     {
         if (currentComp == viewComp)
@@ -279,7 +279,7 @@ public class EditViewCompSwitcherPanel extends JPanel implements GetSetValueIFac
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.validation.UIValidatable#isInError()
      */
-    @Override
+    //@Override
     public boolean isInError()
     {
         if (currentComp == viewComp)
@@ -292,7 +292,7 @@ public class EditViewCompSwitcherPanel extends JPanel implements GetSetValueIFac
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.validation.UIValidatable#isRequired()
      */
-    @Override
+    //@Override
     public boolean isRequired()
     {
         if (currentComp == viewComp)
@@ -305,7 +305,7 @@ public class EditViewCompSwitcherPanel extends JPanel implements GetSetValueIFac
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.validation.UIValidatable#reset()
      */
-    @Override
+    //@Override
     public void reset()
     {
         if (uiVal != null)
@@ -317,7 +317,7 @@ public class EditViewCompSwitcherPanel extends JPanel implements GetSetValueIFac
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.validation.UIValidatable#setAsNew(boolean)
      */
-    @Override
+    //@Override
     public void setAsNew(boolean isNew)
     {
         if (currentComp == editComp && uiVal != null)
@@ -329,7 +329,7 @@ public class EditViewCompSwitcherPanel extends JPanel implements GetSetValueIFac
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.validation.UIValidatable#setChanged(boolean)
      */
-    @Override
+    //@Override
     public void setChanged(boolean isChanged)
     {
         if (currentComp == editComp && uiVal != null)
@@ -341,7 +341,7 @@ public class EditViewCompSwitcherPanel extends JPanel implements GetSetValueIFac
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.validation.UIValidatable#setRequired(boolean)
      */
-    @Override
+    //@Override
     public void setRequired(boolean isRequired)
     {
         if (currentComp == editComp && uiVal != null)
@@ -353,7 +353,7 @@ public class EditViewCompSwitcherPanel extends JPanel implements GetSetValueIFac
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.validation.UIValidatable#setState(edu.ku.brc.ui.forms.validation.UIValidatable.ErrorType)
      */
-    @Override
+    //@Override
     public void setState(ErrorType state)
     {
         if (currentComp == editComp && uiVal != null)
@@ -365,7 +365,7 @@ public class EditViewCompSwitcherPanel extends JPanel implements GetSetValueIFac
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.validation.UIValidatable#validateState()
      */
-    @Override
+    //@Override
     public ErrorType validateState()
     {
         if (currentComp == viewComp)
@@ -379,7 +379,7 @@ public class EditViewCompSwitcherPanel extends JPanel implements GetSetValueIFac
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.validation.DataChangeListener#dataChanged(java.lang.String, java.awt.Component, edu.ku.brc.ui.forms.validation.DataChangeNotifier)
      */
-    @Override
+    //@Override
     public void dataChanged(String name, Component comp, DataChangeNotifier dcn)
     {
         if (dcn != null)
@@ -391,7 +391,7 @@ public class EditViewCompSwitcherPanel extends JPanel implements GetSetValueIFac
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.validation.ValidationListener#wasValidated(edu.ku.brc.ui.forms.validation.UIValidator)
      */
-    @Override
+    //@Override
     public void wasValidated(UIValidator validatorArg)
     {
         if (parentValidator != null)

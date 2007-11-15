@@ -126,6 +126,12 @@ public class ViewLoader
                 String altName      = altElement.attributeValue(NAME);
                 String viewDefName  = altElement.attributeValue("viewdef");
                 String label        = altElement.attributeValue(LABEL);
+                String title        = altElement.attributeValue("title");
+                if (title != null)
+                {
+                    int x = 0;
+                    x++;
+                }
                 boolean isValidated = getAttr(altElement, "validated", mode == AltViewIFace.CreationMode.EDIT);
                 boolean isDefault   = getAttr(altElement, "default", false);
 
@@ -146,7 +152,7 @@ public class ViewLoader
                 Boolean nameExists = nameCheckHash.get(altName);
                 if (nameExists == null) // no need to check the boolean
                 {
-                    AltView altView = new AltView(view, altName, label, mode, isValidated, isDefault, viewDef);
+                    AltView altView = new AltView(view, altName, label, title, mode, isValidated, isDefault, viewDef);
                     
                     if (StringUtils.isNotEmpty(selectorName))
                     {

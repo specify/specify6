@@ -37,6 +37,7 @@ import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -287,7 +288,7 @@ public class FormViewObj implements Viewable,
         
         formIsInNewDataMode = isNewObject;
         
-        //MultiView.printCreateOptions("Creating Form "+altView.getName(), options);
+        MultiView.printCreateOptions("Creating Form "+altView.getName(), options);
 
         setValidator(formValidator);
 
@@ -299,9 +300,14 @@ public class FormViewObj implements Viewable,
 
         // See if we need to add a Selector ComboBox
         isSelectorForm = StringUtils.isNotEmpty(view.getSelectorName());
-        
+        if (isSelectorForm || altView.getName().equals("Organization Edit"))
+        {
+            int x = 0;
+            x++;
+        }
         boolean addSelectorCBX = false;
-        if (isSelectorForm && isNewObject)
+        log.debug(altView.getName()+"  "+altView.getMode()+"  "+AltViewIFace.CreationMode.EDIT);
+        if (isSelectorForm && isNewObject && altView.getMode() == AltViewIFace.CreationMode.EDIT)
         {
             addSelectorCBX = true;
         }
@@ -313,13 +319,13 @@ public class FormViewObj implements Viewable,
         // when creating a new object
         if (addSelectorCBX)
         {
-            Vector<String> cbxList = new Vector<String>();
-            cbxList.add(altView.getName());
+            Vector<AltViewIFace> cbxList = new Vector<AltViewIFace>();
+            cbxList.add(altView);
             for (AltViewIFace av : view.getAltViews())
             {
                 if (av != altView && av.getMode() == AltViewIFace.CreationMode.EDIT)
                 {
-                    cbxList.add(av.getName());
+                    cbxList.add(av);
                 }
             }
             JPanel p = new JPanel(new BorderLayout());
@@ -327,15 +333,16 @@ public class FormViewObj implements Viewable,
             
             p.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
             selectorCBX = new JComboBox(cbxList);
+            selectorCBX.setRenderer(new SelectorCellRenderer());
             p.add(selectorCBX, BorderLayout.WEST);
             mainComp.add(p, BorderLayout.NORTH);
             
             if (mvParent != null)
             {
                 selectorCBX.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent ex)
+                    public void actionPerformed(ActionEvent ev)
                     {
-                        mvParent.showView(((JComboBox)ex.getSource()).getSelectedItem().toString());
+                        doSelectorWasSelected(mvParent, ev);
                     }
                 });
             }
@@ -451,7 +458,15 @@ public class FormViewObj implements Viewable,
         {
             createAddDelSearchPanel();
         }
-
+    }
+    
+    protected void doSelectorWasSelected(final MultiView mv, final ActionEvent ev)
+    {
+        if (!ignoreSelection)
+        {
+            AltViewIFace selectedAV = (AltViewIFace)((JComboBox)ev.getSource()).getSelectedItem();
+            mv.showView(selectedAV.getName());
+        }
     }
     
     
@@ -578,7 +593,7 @@ public class FormViewObj implements Viewable,
         {
             JButton validationInfoBtn = new JButton(IconManager.getIcon("ValidationValid"));
             validationInfoBtn.setOpaque(false);
-            validationInfoBtn.setToolTipText(getResourceString("ShowValidationInfoTT"));
+            validationInfoBtn.setToolTipText(getResourceString("SHOW_VALIDATION_INFO_TT"));
             validationInfoBtn.setMargin(new Insets(1,1,1,1));
             validationInfoBtn.setBorder(BorderFactory.createEmptyBorder());
             validationInfoBtn.setFocusable(false);
@@ -795,10 +810,7 @@ public class FormViewObj implements Viewable,
             }
             public void actionPerformed(ActionEvent ae)
             {
-                if (!ignoreSelection)
-                {
-                     mv.showView((AltViewIFace)((JComboBox)ae.getSource()).getSelectedItem());
-                }
+                doSelectorWasSelected(mv, ae);
             }
         }
 
@@ -3641,6 +3653,26 @@ public class FormViewObj implements Viewable,
             }
         }
 
+    }
+    
+    public class SelectorCellRenderer extends DefaultListCellRenderer
+    {
+        public SelectorCellRenderer() 
+        {
+            super();
+        }
+
+        public Component getListCellRendererComponent(JList   list,
+                                                      Object  value,   // value to display
+                                                      int     index,      // cell index
+                                                      boolean iss,    // is the cell selected
+                                                      boolean chf)    // the list and the cell have the focus
+        {
+            AltViewIFace av = (AltViewIFace)value;
+            JLabel label = (JLabel)super.getListCellRendererComponent(list, value, index, iss, chf);
+            label.setText(av.getTitle());
+            return label;
+        }
     }
 
     //-------------------------------------------------

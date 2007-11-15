@@ -290,7 +290,7 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.CommandListener#doCommand(edu.ku.brc.ui.CommandAction)
      */
-    @Override
+    //@Override
     public void doCommand(CommandAction cmdAction)
     {
         if (cmdAction.isType(ExpressSearchTask.EXPRESSSEARCH))

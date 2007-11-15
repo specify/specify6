@@ -195,6 +195,7 @@ public class MultiView extends JPanel
         
         boolean isUsingSwitcher         = MultiView.isOptionOn(createOptions, MultiView.VIEW_SWITCHER);
         boolean isUsingOnlyCreationMode = MultiView.isOptionOn(createOptions, MultiView.USE_ONLY_CREATION_MODE);
+        boolean isUsingSelector         = StringUtils.isNotEmpty(view.getSelectorName());
         
         //log.debug("isUsingOnlyCreationMode "+isUsingOnlyCreationMode + " " + createWithMode + "  defaultAltViewType: "+defaultAltViewType);
         
@@ -216,6 +217,19 @@ public class MultiView extends JPanel
                 } else
                 {
                     //log.debug("SKIPPED:  createWithMode "+createWithMode+"  "+av.getName()+" "+av.getMode());
+                }
+            }
+        } else if (isUsingSelector && defaultAltView.getMode() == AltViewIFace.CreationMode.EDIT) // Special situation for selectors in edit mode
+        {
+            for (AltViewIFace av : view.getAltViews())
+            {
+                if (av.getMode() == createWithMode && av.getMode() == AltViewIFace.CreationMode.EDIT)
+                {
+                    // temporarily set this for creation, because it gets asked via getMode()
+                    this.createWithMode = av.getMode();
+                    
+                    //log.debug("CREATING: createWithMode "+createWithMode+"  "+av.getName()+" "+av.getMode());
+                    createViewable(av.getName());
                 }
             }
         } else
@@ -987,7 +1001,6 @@ public class MultiView extends JPanel
         selectorValue = null;
         if (isSelectorForm)
         {
-            
             // We the data gets set into the MultiView we need to display the correct
             // AlView with the matching selector value.
             AltViewIFace altView = currentViewable.getAltView();
@@ -1011,7 +1024,7 @@ public class MultiView extends JPanel
                     // Find the matching Viewable with the same selectorValue
                     for (AltViewIFace av : view.getAltViews())
                     {
-                        log.info("["+av.getSelectorName()+"]["+av.getSelectorValue()+"]["+selectorValue+"]");
+                        //log.debug("["+av.getSelectorName()+"]["+av.getSelectorValue()+"]["+selectorValue+"]");
                         
                         if (StringUtils.isNotEmpty(av.getSelectorName()) && 
                             av.getSelectorValue().equals(selectorValue) &&
@@ -1032,6 +1045,11 @@ public class MultiView extends JPanel
                         }
                     }
                 }
+            } else
+            {
+                //AltViewIFace defAltView = view.getDefaultAltViewWithMode(createWithMode, "form");
+                //log.debug(defAltView.getName());
+                //showView(defAltView.getName());
             }
         }
         

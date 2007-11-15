@@ -1270,6 +1270,25 @@ public final class UIHelper
     }*/
     
     /**
+     * There are certain exceptions that are coming from the JVM or toolkits that we have
+     * no control over. This will mask them out.
+     * 
+     * @param e the thrown exception
+     * @return whether the exception dialog should be displayed
+     */
+    protected static boolean isExceptionOKToThrow(Throwable e)
+    {
+        if (e instanceof java.lang.ArrayIndexOutOfBoundsException)
+        {
+            if (e.getMessage().indexOf("apple.awt.CWindow.displayChanged") > 0)
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    /**
      * Creates and attaches the UnhandledException handler for piping them to the dialog
      */
     public static void attachUnhandledException()
@@ -1280,10 +1299,12 @@ public final class UIHelper
         {
             public void uncaughtException(Thread t, Throwable e)
             {
-                UIHelper.showUnhandledException(e);
+                if (isExceptionOKToThrow(e))
+                {
+                    UIHelper.showUnhandledException(e);
+                }
                 UsageTracker.incrUsageCount("UncaughtException");
                 e.printStackTrace();
-                
             }
         });
         
@@ -1291,7 +1312,10 @@ public final class UIHelper
         {
             public void uncaughtException(Thread t, Throwable e)
             {
-                UIHelper.showUnhandledException(e);
+                if (isExceptionOKToThrow(e))
+                {
+                    UIHelper.showUnhandledException(e);
+                }
                 UsageTracker.incrUsageCount("UncaughtException");
                 e.printStackTrace();
             }

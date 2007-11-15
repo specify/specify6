@@ -994,6 +994,10 @@
                     <cell type="field" id="2" name="label" uitype="text"/>
                 </row>
                 <row>
+                    <cell type="label" labelfor="2" label="Title"/>
+                    <cell type="field" id="2" name="title" uitype="text"/>
+                </row>
+                <row>
                     <cell type="label" labelfor="6" label="Is Validated"/>
                     <cell type="field" id="6" name="validated" uitype="checkbox"/>
                 </row>

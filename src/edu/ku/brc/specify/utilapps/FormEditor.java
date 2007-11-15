@@ -545,7 +545,7 @@ public class FormEditor implements DatabaseLoginListener
                 JButton btn = (JButton)form.getComp("OK");
                 if (btn != null)
                 {
-                    ((FormViewObj)form).getValidator().registerOKButton(btn);
+                    ((FormViewObj)form).getValidator().addEnableItem(btn);
                 }
 
                 btn = (JButton)form.getComp("validateBtn");
@@ -566,7 +566,7 @@ public class FormEditor implements DatabaseLoginListener
                 form.setDataObj(pl);
 
                 FormViewObj fvo = (FormViewObj)form;
-                fvo.getValidator().registerOKButton((JButton)form.getComp("savePL"));
+                fvo.getValidator().addEnableItem((JButton)form.getComp("savePL"));
                 fvo.getValidator().validateForm();
 
             } else

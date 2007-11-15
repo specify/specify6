@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <views>
     <view sidebar="true"  name="Accession"          title="Accession"          viewset="Fish Views"   view="Accession"          iconname="Accession"          tooltip=""/>    
-    <view sidebar="true"  name="Agent"              title="Agent"              viewset="Fish Views"   view="Agent"              iconname="Agent"              tooltip=""/>    
+    <view sidebar="true"  name="Agent"              title="Agent"              viewset="Global"       view="Agent"              iconname="Agent"              tooltip=""/>    
     <view sidebar="true"  name="Collection Object"  title="Collection Object"  viewset="Fish Views"   view="CollectionObject"   iconname="CollectionObject"         tooltip=""/>    
     <view sidebar="true"  name="Collecting Event"   title="Collecting Event"   viewset="Fish Views"   view="CollectingEvent"    iconname="CollectingEvent"    tooltip=""/>    
     <view sidebar="false" name="Determination"      title="Determination"      viewset="Fish Views"   view="Determination"      iconname="Determination"      tooltip=""/>

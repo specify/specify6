@@ -17,6 +17,7 @@ package edu.ku.brc.ui.forms.persist;
 import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
 import static edu.ku.brc.helpers.XMLHelper.xmlNode;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -97,30 +98,48 @@ public class View implements ViewIFace
      */
     public AltViewIFace getDefaultAltView(final AltViewIFace.CreationMode creationMode, final String altViewType)
     {
-        
+        // If both are not null/empty then we do the complicated lookup
+        // if not we simply return the default
         if (creationMode != null && StringUtils.isNotEmpty(altViewType))
         {
+            // First determine the type of AltView we are looking for
+            // and collect them into a list, note that forms are special
+            // Also track which AltView is the default.
             AltViewIFace defAltView = null;
             boolean      isForm     = altViewType.equals("form");
+            List<AltViewIFace> list = new ArrayList<AltViewIFace>();
             for (AltViewIFace altView : altViews)
             {
                 ViewDef.ViewType type = altView.getViewDef().getType();
-                //System.out.println("View.getDefaultAltView ["+type+"]["+altView.getName()+"] mode["+altView.getMode()+"]["+creationMode+"]");
+                //System.err.println("View.getDefaultAltView ["+type+"]["+altView.getName()+"] mode["+altView.getMode()+"]["+creationMode+"] isDef "+altView.isDefault());
                 if (isForm && type == ViewDefIFace.ViewType.form ||
                     !isForm && type != ViewDefIFace.ViewType.form)
                 {
                     if (altView.getMode() == creationMode)
                     {
-                        return altView;
+                        list.add(altView);
                     }
                 }
                 
-                if (altView.isDefault())
+                if (altView.isDefault()) // keep track of the one and only default
                 {
                     defAltView = altView;
                 }
             }
             
+            // Now see if we found in any the 'category' we are looking for
+            if (list.size() > 0)
+            {
+                // return the default if it is part of the category
+                if (defAltView != null && list.contains(defAltView))
+                {
+                    return defAltView;
+                }
+                // if not then we basically return the only one we found
+                return list.get(0);
+            }
+            
+            // As a last result, return the default if there is one (there should be)
             if (defAltView != null)
             {
                 return defAltView;
