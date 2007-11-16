@@ -25,6 +25,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Vector;
 
 import javax.swing.JButton;
@@ -187,8 +188,8 @@ public class InteractionsTask extends BaseTask
             roc.addDropDataFlavor(dfx);
             
             // Misc Action (does nothing at the moment XXX IMPLEMENT ME!)
-            navBox.add(NavBox.createBtn(getResourceString("New_Gifts"), "Loan", IconManager.IconSize.Std16));
-            navBox.add(NavBox.createBtn(getResourceString("New_Exchange"), "Loan", IconManager.IconSize.Std16));
+            navBox.add(NavBox.createBtn(getResourceString("New_Gifts"),    name, IconManager.IconSize.Std16));
+            navBox.add(NavBox.createBtn(getResourceString("New_Exchange"), name, IconManager.IconSize.Std16));
             
             // InfoRequest Action
             cmdAction = new CommandAction(INTERACTIONS, InfoRequestName);
@@ -209,25 +210,28 @@ public class InteractionsTask extends BaseTask
             {
                 for (AppResourceIFace ap : AppContextMgr.getInstance().getResourceByMimeType("jrxml/report"))
                 {
-                    Map<String, String> params = ap.getMetaDataMap();
-                    params.put("title", ap.getDescription());
-                    params.put("file", ap.getName());
-                    //log.info("["+ap.getDescription()+"]["+ap.getName()+"]");
-                    
-                    commands.add(new TaskCommandDef(ap.getDescription(), name, params));
+                    Properties params = ap.getMetaDataMap();
+                    if (params.getProperty("reporttype", "").equals("Invoice"))
+                    {
+                        params.put("title", ap.getDescription());
+                        params.put("file", ap.getName());
+                        //log.info("["+ap.getDescription()+"]["+ap.getName()+"]");
+                        
+                        commands.add(new TaskCommandDef(ap.getDescription(), name, params));
+                    }
                 }
                 
                 for (TaskCommandDef tcd : commands)
                 {
                     // XXX won't be needed when we start validating the XML
-                    String tableIdStr = tcd.getParams().get("tableid");
+                    String tableIdStr = tcd.getParams().getProperty("tableid");
                     if (tableIdStr != null)
                     {
                         //addToNavBoxAndRegisterAsDroppable(navBox, NavBox.createBtn(tcd.getName(), "Loan", IconManager.IconSize.Std16, new NavBoxAction(tcd, this)), tcd.getParams());
                         
                         cmdAction = new CommandAction(INTERACTIONS, PRINT_LOAN, Loan.getClassTableId());
                         cmdAction.addStringProperties(tcd.getParams());
-                        NavBoxItemIFace nbi = makeDnDNavBtn(navBox, tcd.getName(), "Loan", cmdAction, null, true, false);
+                        NavBoxItemIFace nbi = makeDnDNavBtn(navBox, tcd.getName(), "Reports", cmdAction, null, true, false);
                         roc = (NavBoxButton)nbi;
                         invoiceList.add(nbi);// true means make it draggable
                         //setUpDraggable(nbi, new DataFlavor[]{Trash.TRASH_FLAVOR, INFOREQUEST_FLAVOR}, new NavBoxAction("", ""));
@@ -274,7 +278,7 @@ public class InteractionsTask extends BaseTask
      */
     protected NavBoxItemIFace addToNavBoxAndRegisterAsDroppable(final NavBox              navBox,
                                                                 final NavBoxItemIFace     nbi,
-                                                                final Map<String, String> params)
+                                                                final Properties params)
     {
         NavBoxButton roc = (NavBoxButton)nbi;
         roc.setData(params);

@@ -345,7 +345,7 @@ public class QueryTask extends BaseTask
      */
     protected NavBoxItemIFace addToNavBox(final RecordSet recordSet)
     {
-        final RolloverCommand roc = (RolloverCommand)makeDnDNavBtn(navBox, recordSet.getName(), "Search", null, 
+        final RolloverCommand roc = (RolloverCommand)makeDnDNavBtn(navBox, recordSet.getName(), "Query", null, 
                                                                    new CommandAction(QUERY, DELETE_CMD_ACT, recordSet), 
                                                                    true, true);// true means make it draggable
         roc.setData(recordSet);

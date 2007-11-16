@@ -14,7 +14,7 @@
  */
 package edu.ku.brc.af.core;
 
-import java.util.Map;
+import java.util.Properties;
 
 /**
  * Class that defines a command that is issued by UI components in a Task's SubPane or from the side bar.
@@ -29,7 +29,7 @@ public class TaskCommandDef
 {
     protected String iconName;
     protected String name;
-    protected Map<String, String> params;
+    protected Properties params;
 
     /**
      * Constructs a TaskCommand Definition.
@@ -37,11 +37,11 @@ public class TaskCommandDef
      * @param iconName the icon for the command (to be looked up in the IconManager by name)
      * @param params a Hash Map of parameters
      */
-    public TaskCommandDef(final String name, final String iconName, final Map<String, String> params)
+    public TaskCommandDef(final String name, final String iconName, final Properties params)
     {
         this.iconName = iconName;
-        this.name = name;
-        this.params = params;
+        this.name     = name;
+        this.params   = params;
     }
 
     public String getIconName()
@@ -54,7 +54,7 @@ public class TaskCommandDef
         return name;
     }
 
-    public Map<String, String> getParams()
+    public Properties getParams()
     {
         return params;
     }

@@ -61,8 +61,8 @@ public class NavBoxAction implements ActionListener
     public NavBoxAction(final TaskCommandDef tcd, Taskable origTask)
     {
         this.originatingTask = origTask;
-        this.type            = tcd.getParams().get("type");
-        this.action          = tcd.getParams().get("action");
+        this.type            = tcd.getParams().getProperty("type");
+        this.action          = tcd.getParams().getProperty("action");
         
         this.properties = new Properties();
         this.properties.putAll(tcd.getParams());

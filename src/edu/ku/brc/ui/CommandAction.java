@@ -15,7 +15,6 @@
 package edu.ku.brc.ui;
 
 import java.util.Hashtable;
-import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -258,7 +257,7 @@ public class CommandAction implements Cloneable
         }
     }
     
-    public void addStringProperties(final Map<String, String> props)
+    public void addStringProperties(final Properties props)
     {
         if (props != null)
         {

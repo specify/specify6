@@ -23,6 +23,7 @@ import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
@@ -904,10 +905,10 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     {
         for (AppResourceIFace ap : AppContextMgr.getInstance().getResourceByMimeType(mimeType))
         {
-            Map<String, String> params = ap.getMetaDataMap();
+            Properties params = ap.getMetaDataMap();
             
-            String tableid = params.get("tableid");
-            String rptType = params.get("reporttype");
+            String tableid = params.getProperty("tableid");
+            String rptType = params.getProperty("reporttype");
             
             if (StringUtils.isNotEmpty(tableid) && 
                (classTableId == null || (Integer.parseInt(tableid) == classTableId.intValue())) &&
@@ -918,7 +919,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
                 
                 //log.debug("["+ap.getDescription()+"]["+ap.getName()+"]");
                 
-                String iconName = params.get("icon");
+                String iconName = params.getProperty("icon");
                 if (StringUtils.isEmpty(iconName))
                 {
                     iconName = name;
@@ -937,7 +938,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      protected NavBoxItemIFace addToNavBoxAndRegisterAsDroppable(final DataFlavor          dataFlavor,
                                                                  final NavBox              navBox,
                                                                  final NavBoxItemIFace     nbi,
-                                                                 final Map<String, String> params)
+                                                                 final Properties          params)
      {
          NavBoxButton roc = (NavBoxButton)nbi;
          roc.setData(params);

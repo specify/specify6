@@ -35,7 +35,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
@@ -108,13 +107,6 @@ import edu.ku.brc.specify.tasks.subpane.wb.TemplateEditor;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchBackupMgr;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchJRDataSource;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
-import edu.ku.brc.specify.tasks.subpane.wb.graph.DirectedGraphException;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.DB;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadData;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMappingDef;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploaderException;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.WorkbenchUploadMapper;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -264,15 +256,15 @@ public class WorkbenchTask extends BaseTask
                 navBoxes.add(reportsNavBox);
                 for (AppResourceIFace ap : AppContextMgr.getInstance().getResourceByMimeType("jrxml/report"))
                 {
-                    Map<String, String> params = ap.getMetaDataMap();
-                    String tableid = params.get("tableid");
+                    Properties params = ap.getMetaDataMap();
+                    String tableid = params.getProperty("tableid");
                     
                     if (StringUtils.isNotEmpty(tableid) && Integer.parseInt(tableid) == Workbench.getClassTableId())
                     {
                         params.put("title", ap.getDescription());
                         params.put("file", ap.getName());
                         //log.debug("["+ap.getDescription()+"]["+ap.getName()+"]");
-                        String iconName = params.get("icon");
+                        String iconName = params.getProperty("icon");
                         if (StringUtils.isEmpty(iconName))
                         {
                             iconName = name;
@@ -285,7 +277,7 @@ public class WorkbenchTask extends BaseTask
                 for (TaskCommandDef tcd : commands)
                 {
                     // XXX won't be needed when we start validating the XML
-                    String tableIdStr = tcd.getParams().get("tableid");
+                    String tableIdStr = tcd.getParams().getProperty("tableid");
                     if (tableIdStr != null)
                     {
                         CommandAction cmdAction = new CommandAction(WORKBENCH, PRINT_REPORT, Workbench.getClassTableId());

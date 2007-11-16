@@ -156,7 +156,7 @@ public class ReportsBaseTask extends BaseTask
                     for (TaskCommandDef tcd : commands)
                     {
                         // XXX won't be needed when we start validating the XML
-                        String tableIdStr = tcd.getParams().get("tableid");
+                        String tableIdStr = tcd.getParams().getProperty("tableid");
                         if (tableIdStr != null)
                         {
                             CommandAction cmdAction = new CommandAction(REPORTS, PRINT_REPORT, tableIdStr);
@@ -308,16 +308,16 @@ public class ReportsBaseTask extends BaseTask
     /**
      * Single place to convert the data to a Map.
      * @param data the data in a nbi
-     * @return a Map<String, String>
+     * @return a Properties
      */
     @SuppressWarnings("unchecked")
-    protected Map<String, String> convertDataToMap(final Object data)
+    protected Properties convertDataToMap(final Object data)
     {
         if (data instanceof Map)
         {
-            return (Map<String, String>)data; // ok to Cast
+            return (Properties)data; // ok to Cast
         }
-        throw new RuntimeException("Why isn't the data a Map<String, String>!");
+        throw new RuntimeException("Why isn't the data a Properties!");
     }
 
     /**

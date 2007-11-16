@@ -16,6 +16,7 @@ package edu.ku.brc.af.core;
 
 import java.sql.Timestamp;
 import java.util.Map;
+import java.util.Properties;
 
 import edu.ku.brc.specify.datamodel.Agent;
 
@@ -73,7 +74,7 @@ public interface AppResourceIFace
 
     public void setMetaData(String metaData);
     
-    public Map<String, String> getMetaDataMap();
+    public Properties getMetaDataMap();
     
     public abstract void setDataAsString(final String dataStr);
     

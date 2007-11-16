@@ -33,6 +33,7 @@ import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -96,7 +97,7 @@ public class SpAppResource extends DataModelObjBase implements java.io.Serializa
      
      // Non Persisted Fields
      protected String                    fileName     = null;
-     protected Hashtable<String, String> metaDataHash = null;
+     protected Properties                metaDataHash = null;
 
     // Constructors
 
@@ -260,7 +261,7 @@ public class SpAppResource extends DataModelObjBase implements java.io.Serializa
     {
         initMetaData();
         
-        return metaDataHash != null ? metaDataHash.get(attr) : null;
+        return metaDataHash != null ? metaDataHash.getProperty(attr) : null;
     }
 
     /* (non-Javadoc)
@@ -291,7 +292,7 @@ public class SpAppResource extends DataModelObjBase implements java.io.Serializa
      * @see edu.ku.brc.af.core.AppResourceIFace#getMetaDataMap()
      */
     @Transient
-    public Map<String, String> getMetaDataMap()
+    public Properties getMetaDataMap()
     {
         initMetaData();
         
@@ -329,7 +330,7 @@ public class SpAppResource extends DataModelObjBase implements java.io.Serializa
     {
         if (metaDataHash == null)
         {
-            metaDataHash = new Hashtable<String, String>(); 
+            metaDataHash = new Properties(); 
             
             if (StringUtils.isNotEmpty(metaData))
             {

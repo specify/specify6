@@ -28,7 +28,7 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+import java.util.Properties;
 import java.util.Vector;
 
 import javax.swing.AbstractButton;
@@ -48,7 +48,6 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToolbarLayoutManager;
 import edu.ku.brc.ui.UIPluginable;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.UIHelper;
 
 /**
  * Manages all the tasks as described in the plugin registry. 
@@ -577,7 +576,7 @@ public class TaskMgr
                 String cmdIconName = getAttr(cmdElement, "icon", null);
                 if (StringUtils.isNotEmpty(cmdName) && StringUtils.isNotEmpty(cmdIconName))
                 {
-                    Map<String, String> params = null;
+                    Properties params = null;
                     List<?> paramsList = cmdElement.selectNodes("param");
                     for ( Iterator<?> iterServices = paramsList.iterator(); iterServices.hasNext(); )
                     {
@@ -588,7 +587,7 @@ public class TaskMgr
                         {
                             if (params == null)
                             {
-                                params = UIHelper.createMap();
+                                params = new Properties();
                             }
                             params.put(name, value);
                         }

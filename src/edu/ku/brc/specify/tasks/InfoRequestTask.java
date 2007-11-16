@@ -92,8 +92,10 @@ public class InfoRequestTask extends BaseTask
     
     public static final String     INFOREQUEST        = "InfoRequest";
     public static final DataFlavor INFOREQUEST_FLAVOR = new DataFlavor(RecordSetTask.class, INFOREQUEST);
-    public static final String     INFO_REQ_MESSAGE = "Specify Info Request";
-    public static final String     CREATE_MAILMSG   = "CreateMailMsg";
+    public static final String     INFO_REQ_MESSAGE   = "Specify Info Request";
+    public static final String     CREATE_MAILMSG     = "CreateMailMsg";
+    
+    protected static final String infoReqIconName     = "inforequest";
     
 
     protected static DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
@@ -144,7 +146,7 @@ public class InfoRequestTask extends BaseTask
      */
     protected void addInfoRequest(final InfoRequest infoRequest)
     {           
-        NavBoxItemIFace nbi = addNavBoxItem(navBox, infoRequest.getIdentityTitle(), INFOREQUEST, new CommandAction(INFOREQUEST, DELETE_CMD_ACT, infoRequest), infoRequest);
+        NavBoxItemIFace nbi = addNavBoxItem(navBox, infoRequest.getIdentityTitle(), infoReqIconName, new CommandAction(INFOREQUEST, DELETE_CMD_ACT, infoRequest), infoRequest);
         setUpDraggable(nbi, new DataFlavor[]{Trash.TRASH_FLAVOR, INFOREQUEST_FLAVOR}, new NavBoxAction("", ""));
     }
     
@@ -165,7 +167,6 @@ public class InfoRequestTask extends BaseTask
     public void saveInfoRequest(final InfoRequest infoRequest)
     {
         addInfoRequest(infoRequest);
-
         
         Timestamp now = new Timestamp(System.currentTimeMillis());
         infoRequest.setTimestampCreated(now);

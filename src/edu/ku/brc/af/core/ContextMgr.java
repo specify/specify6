@@ -216,14 +216,6 @@ public class ContextMgr
                 instance.servicesByTable.put(tableId, serviceList);
             }
             
-            // If we have a default, set all the others to not be the default
-            if (isDefault)
-            {
-                for (ServiceInfo si : serviceList)
-                {
-                    //si.setDefault(false);
-                }
-            }
             serviceList.add(serviceInfo);
         }
         return serviceInfo;

@@ -154,7 +154,7 @@ public class DBObjSearchDialog extends CustomDialog implements ViewBasedSearchDi
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.ViewBasedSearchDialogIFace#registerQueryBuilder(edu.ku.brc.ui.db.ViewBasedSearchQueryBuilderIFace)
      */
-    @Override
+    //@Override
     public void registerQueryBuilder(ViewBasedSearchQueryBuilderIFace builder)
     {
         if (panel != null)

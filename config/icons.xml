@@ -20,8 +20,7 @@
     <icon name="Workbench16"      file="Workbench16x16.png" sizes="16"/>
     <icon name="Workbench"        file="Workbench32x32.png" sizes="all"/>
     <icon name="Interactions"     file="interactions.png" sizes="all"/>
-    <icon name="Query"            file="queryIt.gif" sizes="all"/>
-    <icon name="Statistics"       file="stats.gif" sizes="all"/>
+    <icon name="Statistics"       file="BarGraph32x32.png" sizes="all"/>
     <icon name="Pie_Chart"        file="PieChart32x32.png" sizes="all"/>
     <icon name="Bar_Chart"        file="BarGraph32x32.png" sizes="all"/>
     <icon name="Record_Set"       file="bundle.png" sizes="all"/>
@@ -29,7 +28,9 @@
     <icon name="Person"           file="emblem-personal.png" sizes="all"/>
     <icon name="People"           file="emblem-people.png" sizes="all"/>
     <icon name="Series"           file="series.gif" sizes="all"/>
-    <icon name="Search"           file="search.gif" sizes="all"/>
+    <icon name="Query"            file="Query32x32.png" sizes="all"/>
+    <icon name="Search"           file="Search32x32.png" sizes="all"/>
+    <icon name="SearchRev"        file="Search32x32Rev.png" sizes="all"/>
     <icon name="SystemSetup"      file="System32x32.png" sizes="all"/>
     <icon name="PlaceHolder"      file="specify32faded.png" sizes="32"/>
     
@@ -46,7 +47,7 @@
     <icon name="Data_Entry"    file="Form32x32.png" sizes="all"/>
     <icon name="Configure16"   file="Configure16x16.png" sizes="16"/>
     <icon name="CarryForward"  file="CarryForward16x16.png" sizes="16"/>
-    <icon name="EMail"         file="EMail32x32.png" sizes="all"/>
+    <icon name="EMail"         file="Email32x32.png" sizes="all"/>
     
     <icon name="Configure"     file="Configure20x20.png" sizes="NonStd"/>
     <icon name="AddRec"        file="AddNewRecord20x20.png" sizes="NonStd"/>
