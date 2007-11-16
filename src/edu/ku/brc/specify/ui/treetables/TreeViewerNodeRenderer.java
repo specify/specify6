@@ -17,6 +17,7 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Stroke;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -139,10 +140,16 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
             tooltipBuilder.append("<br><br>");
             tooltipBuilder.append(getResourceString("TTV_SYNONYMS"));
             tooltipBuilder.append("<ul>");
+            List<String> justNames = new ArrayList<String>();
             for (Pair<Integer,String> idAndName: idsAndNames)
             {
+                justNames.add(idAndName.second);
+            }
+            Collections.sort(justNames);
+            for (String name: justNames)
+            {
                 tooltipBuilder.append("<li>");
-                tooltipBuilder.append(idAndName.second);
+                tooltipBuilder.append(name);
                 tooltipBuilder.append("</li>");
             }
             tooltipBuilder.append("</ul>");
