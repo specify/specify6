@@ -6,21 +6,34 @@
      */
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.awt.BorderLayout;
 import java.util.Vector;
 
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 public class UploadSettingsPanel extends JPanel
 {
-    UploadMatchSettingsPanel matchPane;
-    JTabbedPane mainPane;
+    UploadMatchSettingsPanel advancedMatchPane;
+    protected final Vector<UploadTable> tables;
+    protected UploadMatchSettingsBasicPanel basicMatchPane;
+    protected JTabbedPane matchPane;
+    protected JTabbedPane mainPane;
     
-    public void buildUI(final MissingDataResolver resolver, final Vector<UploadTable> tables, final boolean readOnly)
+    public UploadSettingsPanel(final Vector<UploadTable> tables)
     {
-        matchPane = new UploadMatchSettingsPanel(tables, readOnly);
+        this.tables = tables;
+    }
+    
+    public void buildUI(final MissingDataResolver resolver, final boolean readOnly)
+    {
+        matchPane = new JTabbedPane();
+        //basicMatchPane = new UploadMatchSettingsBasicPanel();
+        advancedMatchPane = new UploadMatchSettingsPanel(tables, readOnly);
+        //matchPane.add(getResourceString("WB_UPLOAD_GLOBAL"), basicMatchPane);
+        matchPane.add(getResourceString("WB_UPLOAD_INDIVIDUAL"), advancedMatchPane);
         setLayout(new BorderLayout());
         mainPane = new JTabbedPane();
         mainPane.addTab(getResourceString("WB_UPLOAD_MATCH_SETTINGS"), matchPane);

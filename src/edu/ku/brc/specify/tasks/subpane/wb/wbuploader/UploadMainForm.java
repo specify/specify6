@@ -57,7 +57,7 @@ public class UploadMainForm extends JFrame
     public static String CANCEL_OPERATION = "CANCEL_OPERATION";
     public static String TBL_CLICK = "TBL_CLICK";
     public static String TBL_DBL_CLICK = "TBL_DBL_CLICK";
-    public static String INVALID_VAL_CLICK = "INVALID_VAL_CLICK";
+    public static String MSG_CLICK = "MSG_CLICK";
     public static String UNDO_UPLOAD = "UNDO_UPLOAD";
     public static String PRINT_INVALID = "PRINT_INVALID";
     
@@ -72,9 +72,10 @@ public class UploadMainForm extends JFrame
     protected JButton cancelBtn;
     protected JButton undoBtn;
     protected JButton printInvalidBtn;
-    protected JPanel invalidValPane;
-    protected JLabel invalidValLbl;
-    protected JList invalidVals;
+    protected JPanel msgPane;
+    protected JLabel msgLbl;
+    //protected DefaultListModel msgModel;
+    protected JList msgList;
     
     /**
      * The object listening to this form. Currently an Uploader object.
@@ -130,15 +131,15 @@ public class UploadMainForm extends JFrame
         mainPane.add(uploadTblPane);
         mainPane.add(Box.createVerticalStrut(10));
         
-        invalidValPane = new JPanel(new BorderLayout());
-        invalidValLbl = new JLabel(getResourceString("WB_UPLOAD_INVALID_DATA_LIST"));
-        invalidValPane.add(invalidValLbl, BorderLayout.NORTH);
-        invalidVals = new JList();
-        invalidVals.addMouseListener(new MouseListener()
+        msgPane = new JPanel(new BorderLayout());
+        msgLbl = new JLabel(getResourceString("WB_UPLOAD_MESSAGES"));
+        msgPane.add(msgLbl, BorderLayout.NORTH);
+        msgList = new JList();
+        msgList.addMouseListener(new MouseListener()
         {
             public void mouseClicked(MouseEvent me)
             {
-               invalidValClick();
+               msgClick();
             }
 
             public void mouseEntered(MouseEvent me)
@@ -162,12 +163,12 @@ public class UploadMainForm extends JFrame
             }
         });
         
-        sp = new JScrollPane(invalidVals, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        invalidValPane.add(sp, BorderLayout.CENTER);
+        sp = new JScrollPane(msgList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        msgPane.add(sp, BorderLayout.CENTER);
         printInvalidBtn = new JButton(getResourceString("WB_UPLOAD_PRINT_INVALID_BTN")); 
         printInvalidBtn.setActionCommand(PRINT_INVALID);
-        invalidValPane.add(printInvalidBtn, BorderLayout.SOUTH);
-        mainPane.add(invalidValPane);
+        msgPane.add(printInvalidBtn, BorderLayout.SOUTH);
+        mainPane.add(msgPane);
         
         mainPane.add(Box.createVerticalStrut(20));
         
@@ -224,23 +225,23 @@ public class UploadMainForm extends JFrame
         
         // Invalid Pane
         
-        invalidValPane = new JPanel(new BorderLayout());
-        PanelBuilder invalidValPanePB = new PanelBuilder(new FormLayout("p:g", "p,2px,p,4px,p"), invalidValPane);
+        msgPane = new JPanel(new BorderLayout());
+        PanelBuilder invalidValPanePB = new PanelBuilder(new FormLayout("p:g", "p,2px,p,4px,p"), msgPane);
         
-        invalidValLbl  = new JLabel(getResourceString("WB_UPLOAD_INVALID_DATA_LIST"));
-        invalidValPanePB.add(invalidValLbl, cc.xy(1, 1));
+        msgLbl  = new JLabel(getResourceString("WB_UPLOAD_MSG_LIST"));
+        invalidValPanePB.add(msgLbl, cc.xy(1, 1));
         
-        invalidVals = new JList();
-        sp = new JScrollPane(invalidVals, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        msgList = new JList(new DefaultListModel());
+        sp = new JScrollPane(msgList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         invalidValPanePB.add(sp, cc.xy(1, 3));
 
         PanelBuilder rppb = new PanelBuilder(new FormLayout("f:p:g, p", "p"));
-        printInvalidBtn = new JButton(getResourceString("WB_UPLOAD_PRINT_INVALID_BTN")); 
+        printInvalidBtn = new JButton(getResourceString("WB_UPLOAD_PRINT_MESSAGES_BTN")); 
         printInvalidBtn.setActionCommand(PRINT_INVALID);
         rppb.add(printInvalidBtn, cc.xy(2, 1));
         invalidValPanePB.add(rppb.getPanel(), cc.xy(1, 5));
         
-        pb.add(invalidValPane, cc.xy(1, 5));
+        pb.add(msgPane, cc.xy(1, 5));
         
         // Progress Pane
         
@@ -310,11 +311,11 @@ public class UploadMainForm extends JFrame
             }
         });
         
-        invalidVals.addMouseListener(new MouseListener()
+        msgList.addMouseListener(new MouseListener()
         {
             public void mouseClicked(MouseEvent me)
             {
-               invalidValClick();
+               msgClick();
             }
 
             public void mouseEntered(MouseEvent me)
@@ -374,11 +375,11 @@ public class UploadMainForm extends JFrame
     /**
      * Relays user action to listener.
      */
-    protected void invalidValClick()
+    protected void msgClick()
     {
         if (listener != null)
         {
-            listener.actionPerformed(new ActionEvent(invalidVals, 0, INVALID_VAL_CLICK));
+            listener.actionPerformed(new ActionEvent(msgList, 0, MSG_CLICK));
         }
     }
     /**
@@ -422,11 +423,11 @@ public class UploadMainForm extends JFrame
     }
 
     /**
-     * @return the invalidVals
+     * @return the msgList
      */
-    public JList getInvalidVals()
+    public JList getMsgList()
     {
-        return invalidVals;
+        return msgList;
     }
 
     /**
@@ -462,19 +463,19 @@ public class UploadMainForm extends JFrame
     }
 
     /**
-     * @return the invalidValLbl
+     * @return the msgLbl
      */
-    public JLabel getInvalidValLbl()
+    public JLabel getMsgLbl()
     {
-        return invalidValLbl;
+        return msgLbl;
     }
 
     /**
-     * @return the invalidValPane
+     * @return the msgPane
      */
-    public JPanel getInvalidValPane()
+    public JPanel getMsgPane()
     {
-        return invalidValPane;
+        return msgPane;
     }
 
     /**
@@ -512,6 +513,40 @@ public class UploadMainForm extends JFrame
         setBtnListener(printInvalidBtn, listener);
     }
     
+    public void addMsg(UploadMessage msg)
+    {
+        ((DefaultListModel)msgList.getModel()).addElement(msg);
+        if (!msgPane.isVisible())
+        {
+            msgPane.setVisible(true);
+            pack();
+        }
+        msgList.ensureIndexIsVisible(msgList.getModel().getSize()-1);
+    }
+    
+    public void clearMsgs(Class<?> toClear)
+    {
+        DefaultListModel model = (DefaultListModel)msgList.getModel();
+        for (int i = model.getSize()-1; i >= 0; i--)
+        {
+            if (model.getElementAt(i).getClass().equals(toClear))
+            {
+                model.remove(i);
+            }
+        }
+    }
+    
+    public void updateObjectsCreated()
+    {
+        DefaultListModel model = (DefaultListModel)uploadTbls.getModel();
+        for (int i = model.getSize()-1; i >= 0; i--)
+        {
+            ((UploadInfoRenderable)model.getElementAt(i)).setShowCreatedCnt(true);
+            ((UploadInfoRenderable)model.getElementAt(i)).refresh();
+        }
+        uploadTbls.repaint();
+    }
+    
     public class TesterThingy implements ActionListener
     {
         public void actionPerformed(ActionEvent e)
@@ -540,9 +575,9 @@ public class UploadMainForm extends JFrame
             {
                 System.out.println(UploadMainForm.TBL_DBL_CLICK);
             }
-            else if (e.getActionCommand().equals(UploadMainForm.INVALID_VAL_CLICK))
+            else if (e.getActionCommand().equals(UploadMainForm.MSG_CLICK))
             {
-                System.out.println(UploadMainForm.INVALID_VAL_CLICK);
+                System.out.println(UploadMainForm.MSG_CLICK);
             }
        }
     }
@@ -561,9 +596,9 @@ public class UploadMainForm extends JFrame
         invalids.addElement("bad");
         invalids.addElement("wrong");
         invalids.addElement("shame");
-        tf.getInvalidVals().setModel(invalids);
+        tf.getMsgList().setModel(invalids);
         
-        tf.getInvalidValPane().setVisible(invalids.size() > 0);
+        tf.getMsgPane().setVisible(invalids.size() > 0);
         
         tf.setActionListener(tf.new TesterThingy());
         

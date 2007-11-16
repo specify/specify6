@@ -36,10 +36,7 @@ import net.sf.jasperreports.engine.JRField;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.af.core.expresssearch.TableInfoRenderable;
 import edu.ku.brc.af.core.expresssearch.TableNameRenderer;
-import edu.ku.brc.af.core.expresssearch.TableNameRendererIFace;
-import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.SwingWorker;
@@ -154,7 +151,7 @@ public class Uploader implements ActionListener, WindowStateListener
 
     protected static final Logger log = Logger.getLogger(Uploader.class);
    
-    private class SkippedRow
+    private class SkippedRow implements UploadMessage
     {
         protected UploaderException cause;
         protected int row;
@@ -162,7 +159,7 @@ public class Uploader implements ActionListener, WindowStateListener
          * @param cause
          * @param row
          */
-        public SkippedRow(UploaderException cause, int row)
+        public SkippedRow(UploaderException cause, int row) 
         {
             super();
             this.cause = cause;
@@ -175,17 +172,53 @@ public class Uploader implements ActionListener, WindowStateListener
         {
             return cause;
         }
-        /**
-         * @return the row
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMessage#getRow()
          */
         public int getRow()
         {
             return row;
         }
         
+        /* (non-Javadoc)
+         * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMessage#getCol()
+         */
+        public int getCol()
+        {
+            return -1;
+        }
+        
+        /* (non-Javadoc)
+         * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMessage#getMsg()
+         */
+        public String getMsg()
+        {
+            return cause.getMessage();
+        }
+        
+        /* (non-Javadoc)
+         * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMessage#getData()
+         */
+        public Object getData()
+        {
+            return cause;
+        }
+        
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString()
+        {
+            return getMsg();
+        }
     }
     
     protected Vector<SkippedRow> skippedRows;
+    
+    protected Vector<UploadMessage> messages;
+    protected Vector<UploadMessage> newMessages;
     
     /**
      * @return dataValidated
@@ -483,23 +516,15 @@ public class Uploader implements ActionListener, WindowStateListener
         this.missingRequiredClasses = new Vector<UploadTable.RelatedClassEntry>();
         this.missingRequiredFields = new Vector<UploadTable.DefaultFieldEntry>();
         this.skippedRows = new Vector<SkippedRow>();
+        this.messages = new Vector<UploadMessage>();
+        this.newMessages = new Vector<UploadMessage>();
 		buildUploadFields();
 		buildUploadTables();
 		buildUploadGraph();
 		processTreeMaps();
 		orderUploadTables();
         buildUploadTableParents();
-        System.out.println("Upload table ordering:");
-        for (UploadTable ut : uploadTables)
-        {
-            System.out.println(ut);
-        }
         reOrderUploadTables();
-        System.out.println("Upload table RE-ordering:");
-        for (UploadTable ut : uploadTables)
-        {
-            System.out.println(ut);
-        }
  	}
 
     
@@ -1064,8 +1089,10 @@ public class Uploader implements ActionListener, WindowStateListener
         {
             throw new UploaderException(nsmeEx, UploaderException.ABORT_IMPORT);
         }
-        //may want option to ONLY upload rows that were skipped...
+        //But may want option to ONLY upload rows that were skipped...
         skippedRows.clear();
+        messages.clear();
+        newMessages.clear();
     }
         
     
@@ -1138,6 +1165,22 @@ public class Uploader implements ActionListener, WindowStateListener
         }
     }
     
+    protected synchronized void showUploadProgress(int val)
+    {
+        if (mainForm == null)
+        {
+            log.error("UI does not exist.");
+            return;
+        }
+        setCurrentOpProgress(val);
+        for (UploadMessage newMsg : newMessages)
+        {
+            mainForm.addMsg(newMsg);
+            messages.add(newMsg);
+        }
+        newMessages.clear();
+        mainForm.updateObjectsCreated();
+    }
     /**
      * @param initOp
      * 
@@ -1363,9 +1406,9 @@ public class Uploader implements ActionListener, WindowStateListener
         {
             mainForm.getViewUploadBtn().setEnabled(canViewUpload(currentOp));
         }
-        else if (e.getActionCommand().equals(UploadMainForm.INVALID_VAL_CLICK))
+        else if (e.getActionCommand().equals(UploadMainForm.MSG_CLICK))
         {
-             goToInvalidWBCell();
+             goToMsgWBCell();
         }
         else if (e.getActionCommand().equals(UploadMainForm.PRINT_INVALID))
         {
@@ -1379,8 +1422,8 @@ public class Uploader implements ActionListener, WindowStateListener
         //resolver.resolve(!currentOp.equals(Uploader.READY_TO_UPLOAD) && !currentOp.equals(Uploader.USER_INPUT));
 
         boolean readOnly = !currentOp.equals(Uploader.READY_TO_UPLOAD) && !currentOp.equals(Uploader.USER_INPUT);
-        UploadSettingsPanel usp = new UploadSettingsPanel();
-        usp.buildUI(resolver, uploadTables, readOnly);
+        UploadSettingsPanel usp = new UploadSettingsPanel(uploadTables);
+        usp.buildUI(resolver, readOnly);
         CustomDialog cwin;
         if (!readOnly)
         {
@@ -1394,6 +1437,15 @@ public class Uploader implements ActionListener, WindowStateListener
         cwin.setModal(true);
         UIHelper.centerAndShow(cwin);
         cwin.dispose();
+//        for (UploadTable tbl : uploadTables)
+//        {
+//            System.out.println(tbl);
+//            UploadMatchSetting matchSets = tbl.getMatchSetting();
+//            System.out.println("    matchEmptyValues: " + matchSets.matchEmptyValues);
+//            System.out.println("    remember: " + matchSets.isRemember());
+//            System.out.println("    blanks: " + matchSets.isMatchEmptyValues());
+//            System.out.println("    mode: " + UploadMatchSetting.getModeText(matchSets.getMode()));
+//        }
     }
 
     /**
@@ -1423,7 +1475,7 @@ public class Uploader implements ActionListener, WindowStateListener
         {
             if (field.getName().equals("row"))
             {
-                return String.valueOf(rows.get(rowIndex).getRowNum());
+                return String.valueOf(rows.get(rowIndex).getRow());
             }
             if (field.getName().equals("col"))
             {
@@ -1439,7 +1491,7 @@ public class Uploader implements ActionListener, WindowStateListener
             }
             if (field.getName().equals("cellData"))
             {
-                return uploadData.get(rows.get(rowIndex).getRowNum(), rows.get(rowIndex).getUploadFld().getIndex());                
+                return uploadData.get(rows.get(rowIndex).getRow(), rows.get(rowIndex).getUploadFld().getIndex());                
             }
             log.error("Unrecognized field Name: " + field.getName());
             return null;
@@ -1481,7 +1533,7 @@ public class Uploader implements ActionListener, WindowStateListener
     /**
      * Moves to dataset cell corresponding to currently selected validation issue and starts editor.
      */
-    protected void goToInvalidWBCell()
+    protected void goToMsgWBCell()
     {
         if (mainForm == null)
         {
@@ -1489,11 +1541,26 @@ public class Uploader implements ActionListener, WindowStateListener
         }
         if (wbSS != null)
         {
-            UploadTableInvalidValue invalid = validationIssues.get(mainForm.getInvalidVals().getSelectedIndex());
-            Rectangle rect = wbSS.getSpreadSheet().getCellRect(invalid.getRowNum(), invalid.getUploadFld().getIndex(), false);
-            wbSS.getSpreadSheet().scrollRectToVisible(rect);
-            wbSS.getSpreadSheet().editCellAt(invalid.getRowNum(), invalid.getUploadFld().getIndex(), null);
-            wbSS.getSpreadSheet().grabFocus();
+            UploadMessage msg = (UploadMessage)mainForm.getMsgList().getSelectedValue();
+            if (msg.getRow() != -1)
+            {
+                if (msg.getCol() == -1)
+                {
+                    wbSS.getSpreadSheet().scrollToRow(msg.getRow());
+                    wbSS.getSpreadSheet().getSelectionModel().clearSelection();
+                    wbSS.getSpreadSheet().getSelectionModel().setSelectionInterval(msg.getRow()-1, msg.getRow()-1);
+                }
+                else
+                {
+                    Rectangle rect = wbSS.getSpreadSheet().getCellRect(msg.getRow(), msg.getCol(), false);
+                    wbSS.getSpreadSheet().scrollRectToVisible(rect);
+                    if (msg instanceof UploadTableInvalidValue && msg.getCol() != -1)
+                    {
+                        wbSS.getSpreadSheet().editCellAt(msg.getRow(), msg.getCol(), null);
+                        wbSS.getSpreadSheet().grabFocus();
+                    }
+                }
+            }
         }
     }
     
@@ -1519,37 +1586,40 @@ public class Uploader implements ActionListener, WindowStateListener
         mainForm = new UploadMainForm();
         mainForm.buildUI();
          
-        SortedSet<String> tblNames = new TreeSet<String>();
+        SortedSet<UploadInfoRenderable> uts = new TreeSet<UploadInfoRenderable>();
         for (UploadTable ut : uploadTables)
         {
-            tblNames.add(ut.getWriteTable().getName());
+            UploadInfoRenderable render = new UploadInfoRenderable(ut);
+            if (uts.contains(render))
+            {
+                for (UploadInfoRenderable r : uts)
+                {
+                    if (r.equals(render))
+                    {
+                        r.addTable(ut);
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                uts.add(new UploadInfoRenderable(ut));
+            }
         }
         
         DefaultListModel tbls = new DefaultListModel();
-        if (false)
+        JList tableList = mainForm.getUploadTbls();
+        TableNameRenderer nameRender = new TableNameRenderer(IconManager.IconSize.Std24);
+        nameRender.setUseIcon("PlaceHolder");
+        tableList.setCellRenderer(nameRender);
+        for (UploadInfoRenderable ut : uts)
         {
-            for (String tblName : tblNames)
-            {
-                tbls.addElement(tblName);
-            }
-        } else
-        {
-            JList tableList = mainForm.getUploadTbls();
-            TableNameRenderer nameRender = new TableNameRenderer(IconManager.IconSize.Std24);
-            nameRender.setUseIcon("PlaceHolder");
-            tableList.setCellRenderer(nameRender);
-            
-            for (String tblName : tblNames)
-            {
-                //NOTE: Using the constructor below, TableInfoRenderable.getTitle() returns ShortClassName not TableInfo.title.
-                tbls.addElement(new TableInfoRenderable(DBTableIdMgr.getInstance().getByShortClassName(tblName)));
-            }
+            tbls.addElement(ut);
         }
-        mainForm.getUploadTbls().setModel(tbls);
+        tableList.setModel(tbls);
         mainForm.setActionListener(this);
         mainForm.addWindowStateListener(this);
     }
-    
     
     /**
      * @param op
@@ -1590,16 +1660,14 @@ public class Uploader implements ActionListener, WindowStateListener
         
         mainForm.getCloseBtn().setEnabled(canClose(op));
         
-        DefaultListModel invalids = new DefaultListModel();
+        mainForm.clearMsgs(UploadTableInvalidValue.class);
         if (validationIssues != null)
         {
             for (UploadTableInvalidValue invalid : validationIssues)
             {
-                invalids.addElement(invalid);
+                mainForm.addMsg(invalid);
             }
         }
-        mainForm.getInvalidVals().setModel(invalids);
-        mainForm.getInvalidValPane().setVisible(invalids.size() > 0);
         
         mainForm.getCurrOpProgress().setVisible(mainForm.getCancelBtn().isVisible());
         
@@ -1631,7 +1699,7 @@ public class Uploader implements ActionListener, WindowStateListener
                     }
                     if (bogusViewer != null)
                     {
-                        bogusViewer.viewBogusTbl(((TableNameRendererIFace)mainForm.getUploadTbls().getSelectedValue()).getTitle(), true);
+                        bogusViewer.viewBogusTbl(((UploadInfoRenderable)mainForm.getUploadTbls().getSelectedValue()).getTableName(), true);
                     }
                 }
             }
@@ -1748,7 +1816,7 @@ public class Uploader implements ActionListener, WindowStateListener
                         log.debug("uploading row " + String.valueOf(r));
                         if (!holdIt)
                         {
-                            setCurrentOpProgress(r + 1);
+                            showUploadProgress(r + 1);
                             for (UploadTable t : uploadTables)
                             {
                                 if (cancelled)
@@ -1838,7 +1906,9 @@ public class Uploader implements ActionListener, WindowStateListener
     protected void abortRow(UploaderException cause, int row)
     {
         log.debug("NOT undoing writes which have already occurred while processing aborted row");
-        skippedRows.add(new SkippedRow(cause, row));
+        SkippedRow sr = new SkippedRow(cause, row);
+        skippedRows.add(sr);
+        newMessages.add(sr);
     }
     
 	/**
@@ -1965,7 +2035,6 @@ public class Uploader implements ActionListener, WindowStateListener
                             Vector<Vector<String>> vals = ut.printUpload();
                             if (vals.size() > 0)
                             {
-                                //String title = DBTableIdMgr.getInstance().getByShortClassName(ut.getWriteTable().getName()).getTitle();
                                 String title = ut.getWriteTable().getName();
                                 if (!bogusStorages.containsKey(title))
                                 {

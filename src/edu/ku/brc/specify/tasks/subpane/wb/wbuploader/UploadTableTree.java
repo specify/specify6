@@ -18,7 +18,6 @@ import java.util.TreeSet;
 
 import org.hibernate.NonUniqueResultException;
 
-import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
@@ -497,7 +496,7 @@ public class UploadTableTree extends UploadTable
         }
         catch (UploaderException ex)
         {
-            throw new RuntimeException(ex);
+            return super.toString();
         }
     }
 }

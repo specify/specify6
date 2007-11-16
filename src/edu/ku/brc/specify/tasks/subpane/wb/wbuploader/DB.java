@@ -329,7 +329,14 @@ public class DB
             }
             else
             {
-                fldNames.addAll(myStorages.get(tblName).get(0));
+                if (myStorages.containsKey(tblName))
+                {
+                    fldNames.addAll(myStorages.get(tblName).get(0));
+                }
+                else
+                {
+                    return;
+                }
             }
             
             if (myStorages == null)

@@ -69,6 +69,28 @@ public class UploadMatchSetting
         return result;
     }
     
+    public static String getModeText(int mode)
+    {
+        if (mode == ASK_MODE)
+        {
+            return getResourceString("WB_UPLOAD_MATCH_MODE_ASK");
+        }
+        if (mode == ADD_NEW_MODE)
+        {
+            return getResourceString("WB_UPLOAD_MATCH_MODE_ADD");
+        }
+        if (mode == PICK_FIRST_MODE)
+        {
+            return getResourceString("WB_UPLOAD_MATCH_MODE_FIRST");
+        }
+        if (mode == SKIP_ROW_MODE)
+        {
+            return getResourceString("WB_UPLOAD_MATCH_MODE_SKIP_ROW");
+        }
+        throw new RuntimeException("Unknown match mode.");
+        
+    }
+    
     public static int getMode(final String modeName)
     {
         if (modeName.equals(getResourceString("WB_UPLOAD_MATCH_MODE_ASK")))

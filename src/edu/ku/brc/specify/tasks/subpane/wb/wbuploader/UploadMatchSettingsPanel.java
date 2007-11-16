@@ -11,10 +11,12 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -35,6 +37,8 @@ public class UploadMatchSettingsPanel extends JPanel implements ActionListener
     protected JLabel tblLbl;
     protected TableModel tblModel;
     protected JTable tblTbl;
+    protected JButton applyBtn;
+    
     protected final Vector<UploadTable> tables;
     
     public void actionPerformed(ActionEvent action)
@@ -46,6 +50,10 @@ public class UploadMatchSettingsPanel extends JPanel implements ActionListener
                 JComboBox jbox = (JComboBox)action.getSource();
                 tblTbl.getModel().setValueAt(jbox.getSelectedItem(), tblTbl.getEditingRow(), tblTbl.getEditingColumn());
             }
+        }
+        else if (action.getActionCommand().equals("APPLY"))
+        {
+            apply();
         }
     }
     
@@ -66,13 +74,15 @@ public class UploadMatchSettingsPanel extends JPanel implements ActionListener
             UploadMatchSetting matchSet = tables.get(row).getMatchSetting();
             matchSet.setMode(UploadMatchSetting.getMode(tblTbl.getModel().getValueAt(row, 1).toString()));
             matchSet.setRemember(Boolean.valueOf(tblTbl.getModel().getValueAt(row, 2).toString()));
+            matchSet.setMatchEmptyValues(Boolean.valueOf(tblTbl.getModel().getValueAt(row, 3).toString()));
             log.debug("NOT setting fields to match!");
         }
     }
     
     public UploadMatchSettingsPanel(final Vector<UploadTable> tables, boolean readOnly)
     {
-        this.tables = tables;
+        //display tables alphabetically
+        this.tables = new Vector<UploadTable>(new TreeSet<UploadTable>(tables));
         
         modeTexts = new DefaultComboBoxModel(UploadMatchSetting.getModeTexts());
         
@@ -84,20 +94,17 @@ public class UploadMatchSettingsPanel extends JPanel implements ActionListener
         headers.add(getResourceString("SL_TABLES"));
         headers.add(getResourceString("WB_MATCH_MODE_CAPTION"));
         headers.add(getResourceString("WB_UPLOAD_MATCH_REMEMBER_CAPTION"));
+        headers.add(getResourceString("WB_UPLOAD_MATCH_BLANKS_CAPTION"));
         headers.add(getResourceString("WB_UPLOAD_MATCH_FLDS_CAPTION"));
         
-//        SortedSet<String> tblNames = new TreeSet<String>();
-//        for (UploadTable tbl : tables)
-//        {
-//            tblNames.add(tbl.toString());
-//        }
         Vector<Vector<String>> rows = new Vector<Vector<String>>();
-        for (UploadTable tbl : tables)
+        for (UploadTable tbl : this.tables)
         {
             Vector<String> row = new Vector<String>();
             row.add(tbl.toString());
             row.add(modeTexts.getElementAt(tbl.getMatchSetting().getMode()).toString());
             row.add(Boolean.toString(tbl.getMatchSetting().isRemember()));
+            row.add(Boolean.toString(tbl.getMatchSetting().isMatchEmptyValues()));
             row.add(getResourceString("WB_UPLOAD_MATCH_ALL"));
             rows.add(row);
         }
@@ -121,7 +128,7 @@ public class UploadMatchSettingsPanel extends JPanel implements ActionListener
                 @Override
                 public boolean isCellEditable(int row, int col)
                 {
-                    if (col == 1 || col == 2)
+                    if (col >= 1 && col <= 3)
                     {
                         JComboBox jBox;
                         if (col == 1)
@@ -142,11 +149,12 @@ public class UploadMatchSettingsPanel extends JPanel implements ActionListener
             };
         }
         tblTbl = new JTable(tblModel);
-        //tblLbl = new JLabel(getResourceString("WB_UPLOAD_MATCH_SETTINGS"));
-        //tblLbl.setFont(tblLbl.getFont().deriveFont(Font.BOLD));        
         setLayout(new BorderLayout());
-        //add(tblLbl, BorderLayout.NORTH);
         JScrollPane sp = new JScrollPane(tblTbl, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         add(sp, BorderLayout.CENTER);
+        applyBtn = new JButton(getResourceString("Apply"));
+        applyBtn.setActionCommand("APPLY");
+        applyBtn.addActionListener(this);
+        add(applyBtn, BorderLayout.SOUTH);
     }    
 }

@@ -823,11 +823,11 @@ public class UploadTable implements Comparable<UploadTable>
     {
         return required;
     }
-    
+        
     public int compareTo(UploadTable impT)
     {
         if (impT == null) { return -1; }
-        int result = table.getName().compareTo(impT.table.getName());
+        int result = toString().compareTo(impT.toString());
         if (result != 0) { return result; }
         if (relationship != null)
         {
@@ -1393,13 +1393,13 @@ public class UploadTable implements Comparable<UploadTable>
      * 
      * Adds a restriction to critter for propName.
      */
-    protected void addRestriction(CriteriaIFace critter, String propName, Object arg)
+    protected void addRestriction(final CriteriaIFace critter, final String propName, final Object arg, boolean ignoreNulls)
     {
         if (arg != null)
         {
             critter.add(Restrictions.eq(propName, arg));
         }
-        else
+        else if (!ignoreNulls || matchSetting.isMatchEmptyValues())
         {
             critter.add(Restrictions.isNull(propName));
         }
@@ -1455,14 +1455,14 @@ public class UploadTable implements Comparable<UploadTable>
             {
                 if (uf.getSetter() != null)
                 {
-                    addRestriction(critter, deCapitalize(uf.getField().getName()), getArgForSetter(uf)[0]);
+                    addRestriction(critter, deCapitalize(uf.getField().getName()), getArgForSetter(uf)[0], true);
                 }
             }
             for (Vector<ParentTableEntry> ptes : parentTables)
             {
                 for (ParentTableEntry pte : ptes)
                 {
-                    addRestriction(critter, pte.getPropertyName(), pte.getImportTable().getCurrentRecord(recNum));
+                    addRestriction(critter, pte.getPropertyName(), pte.getImportTable().getCurrentRecord(recNum), false);
                 }
             }
             for (RelatedClassEntry rce : relatedClassDefaults)
@@ -1575,7 +1575,7 @@ public class UploadTable implements Comparable<UploadTable>
         //do nothing for now
     }
     
-    public class UploadTableInvalidValue 
+    public class UploadTableInvalidValue implements UploadMessage
     {
         protected UploadTable uploadTbl;
         protected UploadField uploadFld;
@@ -1598,7 +1598,7 @@ public class UploadTable implements Comparable<UploadTable>
         }
         /**
          * @return the description
-         */
+        */
         public String getDescription()
         {
             if (cause == null)
@@ -1622,14 +1622,14 @@ public class UploadTable implements Comparable<UploadTable>
         /**
          * @return the rowNum
          */
-        public int getRowNum()
+        public int getRow()
         {
             return rowNum;
         }
         /**
          * @param rowNum the rowNum to set
          */
-        public void setRowNum(int rowNum)
+        public void setRow(int rowNum)
         {
             this.rowNum = rowNum;
         }
@@ -1661,10 +1661,26 @@ public class UploadTable implements Comparable<UploadTable>
         {
             this.uploadTbl = uploadTbl;
         }
+        
+        public String getMsg()
+        {
+            return uploadTbl.getTable().getName() + "." + uploadFld.getWbFldName() + " (row " + rowNum.toString() + "): " + getIssueName();
+        }
+
         @Override
         public String toString()
         {
-            return uploadTbl.getTable().getName() + "." + uploadFld.getWbFldName() + " (row " + rowNum.toString() + "): " + getIssueName();
+            return getMsg();
+        }
+        
+        public int getCol()
+        {
+            return getUploadFld().getIndex();
+        }
+        
+        public Object getData()
+        {
+            return cause;
         }
      }
         
