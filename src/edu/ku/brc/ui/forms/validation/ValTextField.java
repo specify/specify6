@@ -187,7 +187,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
      * @see javax.swing.text.JTextComponent#setText(java.lang.String)
      */
     @Override
-    public void setText(String text)
+    public void setText(final String text)
     {
         if (document != null)
         {
@@ -200,6 +200,15 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
         {
             document.setIgnoreNotify(false);
         }
+    }
+    
+    /**
+     * Sets the Text with Notification to the document (validators).
+     * @param text the text to be set
+     */
+    public void setTextWithNotification(final String text)
+    {
+        super.setText(text);
     }
 
     //--------------------------------------------------
@@ -355,6 +364,21 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
      */
     public void setValue(Object value, String defaultValue)
     {
+        setValueWithNotification(value, defaultValue, false);
+    }
+    
+    /**
+     * Sets the value and the caller gets to says whether the document gets notified
+     * which will invkde the change listeners and the validation.
+     * @param value the actual value
+     * @param defaultValue the default value
+     * @param doNotification whether to send notifications
+     */
+    public void setValueWithNotification(final Object  value, 
+                                         final String  defaultValue, 
+                                         final boolean doNotification)
+    {
+
         this.defaultValue = defaultValue;
 
         String data;
@@ -369,7 +393,14 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
             isChanged = StringUtils.isNotEmpty(defaultValue);
             data      = isChanged ? defaultValue : "";
         }
-        setText(data);
+        
+        if (doNotification)
+        {
+            setTextWithNotification(data);
+        } else
+        {
+            setText(data);
+        }
         
         if (undoManager != null)
         {

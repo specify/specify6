@@ -33,7 +33,7 @@ public class LithoStratBusRules extends BaseTreeBusRules<LithoStrat, LithoStratT
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToDelete(java.lang.Object)
      */
     @Override
-    public boolean okToDelete(Object dataObj)
+    public boolean okToEnableDelete(Object dataObj)
     {
         if (dataObj instanceof LithoStrat)
         {
@@ -48,7 +48,7 @@ public class LithoStratBusRules extends BaseTreeBusRules<LithoStrat, LithoStratT
     }
     
     /**
-     * Handles the {@link #okToDelete(Object)} method in the case that the passed in
+     * Handles the {@link #okToEnableDelete(Object)} method in the case that the passed in
      * {@link Object} is an instance of {@link LithoStratTreeDefItem}.
      * 
      * @param defItem the {@link LithoStratTreeDefItem} being inspected

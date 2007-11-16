@@ -43,6 +43,7 @@ import edu.ku.brc.specify.tasks.SystemSetupTask;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.forms.Viewable;
+import edu.ku.brc.ui.forms.validation.FormValidator;
 
 /**
  * The process for the pick list "editor" form
@@ -125,7 +126,7 @@ public class PickListProcessor implements FormProcessor
             });
 
             JButton saveBtn = (JButton) Viewable.getCompById("savePL");
-            Viewable.getValidator().addEnableItem(saveBtn);
+            Viewable.getValidator().addEnableItem(saveBtn, FormValidator.EnableType.ValidAndChangedItems);
 
             //Viewable.getValidator().addRuleObjectMapping("titleVal", new TitleValidator(name, titlesList));
             Viewable.getValidator().addRuleObjectMapping("processor", this);

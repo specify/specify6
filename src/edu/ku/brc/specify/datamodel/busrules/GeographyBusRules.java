@@ -60,7 +60,7 @@ public class GeographyBusRules extends BaseTreeBusRules<Geography, GeographyTree
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToDelete(java.lang.Object)
      */
     @Override
-    public boolean okToDelete(Object dataObj)
+    public boolean okToEnableDelete(Object dataObj)
     {
         if (dataObj instanceof Geography)
         {
@@ -75,7 +75,7 @@ public class GeographyBusRules extends BaseTreeBusRules<Geography, GeographyTree
     }
 
     /**
-     * Handles the {@link #okToDelete(Object)} method in the case that the passed in
+     * Handles the {@link #okToEnableDelete(Object)} method in the case that the passed in
      * {@link Object} is an instance of {@link GeographyTreeDefItem}.
      * 
      * @param defItem the {@link GeographyTreeDefItem} being inspected

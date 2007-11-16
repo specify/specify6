@@ -37,6 +37,8 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.forms.persist.AltViewIFace;
 import edu.ku.brc.ui.forms.persist.ViewIFace;
@@ -681,11 +683,6 @@ public class MultiView extends JPanel
             
             cardLayout.show(this, name);
             
-            if (mvParent == null)
-            {
-                int x= 0;
-                x++;
-            }
             
             if (currentValidator != null)
             {
@@ -700,6 +697,13 @@ public class MultiView extends JPanel
                     //currentValidator.dumpState(true, 0);
                 }
             }
+            
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run()
+                {
+                    CommandDispatcher.dispatch(new CommandAction("Data_Entry", "ViewWasShown", currentViewable));
+                }
+            });
             
         } else
         {

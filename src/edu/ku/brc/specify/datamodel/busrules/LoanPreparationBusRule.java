@@ -39,7 +39,7 @@ public class LoanPreparationBusRule extends BaseBusRules
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToDelete(java.lang.Object)
      */
     @Override
-    public boolean okToDelete(Object dataObj)
+    public boolean okToEnableDelete(Object dataObj)
     {
         return false;
     }

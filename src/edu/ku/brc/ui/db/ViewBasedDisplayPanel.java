@@ -108,7 +108,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
     }
 
     /**
-     * Constructs a search dialog from form infor and from search info.
+     * Constructs a search dialog from form information and from search info.
      * @param viewSetName the viewset name
      * @param viewName the form name from the viewset
      * @param displayName the search name, this is looked up by name in the "search_config.xml" file
@@ -186,7 +186,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
     }
     
     /**
-     * Sest the OK and Cancel; buttons into the panel
+     * Sets the OK and Cancel; buttons into the panel
      * @param okBtn ok btn (cannot be null)
      * @param cancelBtn the cancel btn (can be null
      */
@@ -209,7 +209,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
             FormValidator fv = viewable.getValidator();
             if (fv != null)
             {
-                fv.addEnableItem(okBtn);
+                fv.addEnableItem(okBtn, FormValidator.EnableType.ValidAndChangedItems);
             }
         }
         
@@ -217,10 +217,13 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
         {
             okBtn.addActionListener(this);
             
-            if (MultiView.isOptionOn(multiView.getOptions(), MultiView.IS_EDITTING))
+            // Why are we doing this????? - rods 11/15/07
+            // I am commenting it out because the dialog "ok/accept/save" buttons are being enabled
+            // when they shouldn't be
+            /*if (MultiView.isOptionOn(multiView.getOptions(), MultiView.IS_EDITTING))
             {
                 okBtn.setEnabled(true);
-            }
+            }*/
         }
         
         if (cancelBtn != null)

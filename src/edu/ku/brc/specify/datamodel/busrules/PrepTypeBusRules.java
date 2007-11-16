@@ -74,7 +74,7 @@ public class PrepTypeBusRules extends BaseBusRules
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#okToDelete(java.lang.Object)
      */
-    public boolean okToDelete(Object dataObj)
+    public boolean okToEnableDelete(Object dataObj)
     {
         PrepType prepType = (PrepType)dataObj;
         if (prepType.getId() == null)

@@ -32,7 +32,7 @@ public class DataTypeBusRules extends BaseBusRules
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#okToDelete(java.lang.Object)
      */
     @Override
-    public boolean okToDelete(Object dataObj)
+    public boolean okToEnableDelete(Object dataObj)
     {
         return okToDelete("collectiontype", "DataTypeID", ((FormDataObjIFace)dataObj).getId());
     }

@@ -60,6 +60,7 @@ public class JComboBoxFromQuery extends JComboBox
     protected boolean              foundMatch       = false;
     protected boolean              ignoreFocus      = false;
     protected boolean              allowNewValues   = false;
+    protected boolean              doingSelection   = false;
 
     protected DefaultComboBoxModel model;
     protected Vector<Integer>      idList           = new Vector<Integer>();
@@ -230,12 +231,17 @@ public class JComboBoxFromQuery extends JComboBox
     @Override
     public void setSelectedIndex(int index)
     {
-        super.setSelectedIndex(index);
-        if (index > -1)
+        if (!doingSelection)
         {
-	        tf.setText((String)getItemAt(index));
-	        tf.setSelectionEnd(caretPos + tf.getText().length());
-	        tf.moveCaretPosition(Math.min(caretPos, 0));
+            doingSelection = true;
+            super.setSelectedIndex(index);
+            if (index > -1)
+            {
+    	        tf.setText((String)getItemAt(index));
+    	        tf.setSelectionEnd(caretPos + tf.getText().length());
+    	        tf.moveCaretPosition(Math.min(caretPos, 0));
+            }
+            doingSelection = false;
         }
     }
 

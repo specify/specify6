@@ -36,7 +36,7 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
         attachOwnerRules = new AttachmentOwnerBaseBusRules()
         {
             @Override
-            public boolean okToDelete(Object dataObj)
+            public boolean okToEnableDelete(Object dataObj)
             {
                 return false;
             }
@@ -56,7 +56,7 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToDelete(java.lang.Object)
      */
     @Override
-    public boolean okToDelete(Object dataObj)
+    public boolean okToEnableDelete(Object dataObj)
     {
         if (dataObj instanceof Taxon)
         {
@@ -71,7 +71,7 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
     }
     
     /**
-     * Handles the {@link #okToDelete(Object)} method in the case that the passed in
+     * Handles the {@link #okToEnableDelete(Object)} method in the case that the passed in
      * {@link Object} is an instance of {@link TaxonTreeDefItem}.
      * 
      * @param defItem the {@link TaxonTreeDefItem} being inspected

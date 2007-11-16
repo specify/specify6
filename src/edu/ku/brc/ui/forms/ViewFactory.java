@@ -238,7 +238,7 @@ public class ViewFactory
             textField.setRequired(cellField.isRequired());
 
             validator.hookupTextField(textField,
-                                      cellField.getIdent(),
+                                      cellField.getIdent()+"_text",
                                       cellField.isRequired(),
                                       parseValidationType(cellField.getValidationType()),
                                       cellField.getValidationRule(),

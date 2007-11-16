@@ -218,8 +218,9 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         
         if (panes.get(oldPane.getPaneName()) != null)
         {
+            this.insertTab(newPane.getPaneName(), newPane.getIcon(), newPane.getUIComponent(), null, index);
+            
             panes.remove(oldPane.getPaneName());
-            this.remove(index);
 
             // Add this pane to the tabs
             String title = buildUniqueName(newPane.getPaneName());
@@ -228,11 +229,11 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             //log.debug("Putting SubPane ["+newPane.getPaneName()+"] ");
             panes.put(newPane.getPaneName(), newPane);
             
-            this.insertTab(newPane.getPaneName(), newPane.getIcon(), newPane.getUIComponent(), null, index);
             SwingUtilities.invokeLater(new Runnable() {
                 public void run()
                 {
                     setSelectedIndex(index);
+                    remove(index+1);
                 }
             });
             

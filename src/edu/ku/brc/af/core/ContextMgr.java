@@ -180,7 +180,28 @@ public class ContextMgr
                                               final String        iconName, 
                                               final String        tooltip)
     {
-        ServiceInfo serviceInfo = new ServiceInfo(serviceName, tableId, command, task, iconName, tooltip);
+        return registerService(serviceName, tableId, command, task, iconName, tooltip, false);
+    }
+
+    /**
+     * Register a service for other UI components to use.
+     * @param serviceName the name of the service
+     * @param tableId the table ID that the service is provided for
+     * @param command the command to be sent
+     * @param task the task that provides the service
+     * @param iconName the name of the icon to be used
+     * @param tooltip the tooltip text for any UI
+     * @return a service info object that provide the service
+     */
+    public static ServiceInfo registerService(final String        serviceName, 
+                                              final int           tableId, 
+                                              final CommandAction command, 
+                                              final Taskable      task, 
+                                              final String        iconName, 
+                                              final String        tooltip,
+                                              final boolean       isDefault)
+    {
+        ServiceInfo serviceInfo = new ServiceInfo(serviceName, tableId, command, task, iconName, tooltip, isDefault);
         if (tableId == -1)
         {
             instance.genericService.add(serviceInfo);
@@ -194,9 +215,33 @@ public class ContextMgr
                 serviceList = new ArrayList<ServiceInfo>();
                 instance.servicesByTable.put(tableId, serviceList);
             }
+            
+            // If we have a default, set all the others to not be the default
+            if (isDefault)
+            {
+                for (ServiceInfo si : serviceList)
+                {
+                    //si.setDefault(false);
+                }
+            }
             serviceList.add(serviceInfo);
         }
         return serviceInfo;
+    }
+    
+    /**
+     * @return the default service or null if there is none.
+     */
+    public static ServiceInfo getDefaultService()
+    {
+        for (ServiceInfo si : instance.services.values())
+        {
+            if (si.isDefault())
+            {
+                return si;
+            }
+        }
+        return null;
     }
     
     /**

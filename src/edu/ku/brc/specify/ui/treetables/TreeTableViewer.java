@@ -59,10 +59,10 @@ import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.StaleObjectException;
-import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
@@ -1374,6 +1374,11 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		// the dialog has been dismissed by the user
 		if (dialog.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
 		{
+		    FormViewObj fvo = dialog.getMultiView().getCurrentViewAsFormViewObj();
+		    if (fvo != null)
+		    {
+		        fvo.traverseToGetDataFromForms();
+		    }
             UIRegistry.writeGlassPaneMsg(getResourceString("TTV_Saving"), 24);
             
             SwingWorker bgThread = new SwingWorker()
@@ -1577,7 +1582,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 }
                 
                 // these calls should work even if nodeRecord is null
-                canDelete   = (businessRules != null) ? businessRules.okToDelete(nodeRecord) : false;
+                canDelete   = (businessRules != null) ? businessRules.okToEnableDelete(nodeRecord) : false;
                 return null;
             }
 

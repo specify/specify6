@@ -45,6 +45,14 @@ public interface BusinessRulesIFace
     public void fillForm(Object dataObj, Viewable viewable);
     
     /**
+     * This enables a new data object to be populated with any children objects before being
+     * set into a form. Some data object may require children to be added.
+     * 
+     * @param dataObj the new dataObject
+     */
+    public void addChildrenToNewDataObjects(Object newDataObj);
+    
+    /**
      * Processes the business rules for the data object.
      * 
      * @param dataObj the data object for rthe rules to be processed on.
@@ -65,7 +73,7 @@ public interface BusinessRulesIFace
      * @param dataObj the data object in question
      * @return true if it can be deleted, false if not
      */
-    public boolean okToDelete(Object dataObj);
+    public boolean okToEnableDelete(Object dataObj);
     
     
     /**

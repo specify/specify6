@@ -107,7 +107,7 @@ public class QueryFieldPanel extends JPanel
         thisItem = this;
         
         validator = new FormValidator(null);
-        validator.addEnableItem(saveBtn);
+        validator.addEnableItem(saveBtn, FormValidator.EnableType.ValidAndChangedItems);
         validator.setEnabled(true);
         
         boolean createAsHeader = StringUtils.isEmpty(columnDefStr);

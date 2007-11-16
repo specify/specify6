@@ -76,8 +76,6 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.ui.ColorWrapper;
-import edu.ku.brc.ui.CommandAction;
-import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
@@ -615,7 +613,14 @@ public class TableViewObj implements Viewable,
                     {
                         dataObjList.add(daObj);
                         
-                        Collections.sort((List)dataObjList);                          
+                        if (dataObjList != null && dataObjList.size() > 0)
+                        {
+                            if (dataObjList.get(0) instanceof Comparable<?>)
+                            {
+                                Collections.sort((List)dataObjList);
+                            }
+                        }
+                                             
                         if (origDataSet != null)
                         {
                             origDataSet.add(daObj);
@@ -1034,11 +1039,12 @@ public class TableViewObj implements Viewable,
             formValidator.validateForm();
         }
         
-        if (show)
+        // Moving this to the MultiView
+        /*if (show)
         {
             log.debug("Dispatching a Data_Entry/ViewWasShown command/action");
             CommandDispatcher.dispatch(new CommandAction("Data_Entry", "ViewWasShown", this));
-        }
+        }*/
     }
 
     /* (non-Javadoc)

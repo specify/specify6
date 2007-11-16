@@ -53,6 +53,8 @@ import edu.ku.brc.ui.IconManager;
 public class FormValidator implements ValidationListener, DataChangeListener
 {
     private static final Logger log = Logger.getLogger(FormValidator.class);
+    
+    public enum EnableType { ValidItems, ValidAndChangedItems}
 
     private String name = ""; // Optional for debugging
 
@@ -70,7 +72,8 @@ public class FormValidator implements ValidationListener, DataChangeListener
     protected Hashtable<String, Component>          fields      = new Hashtable<String, Component>();
     protected Hashtable<String, JLabel>             labels      = new Hashtable<String, JLabel>();
     
-    protected Vector<Component>                     enableItems = new Vector<Component>();
+    protected Vector<Component>                     enableItemsValid   = new Vector<Component>();
+    protected Vector<Component>                     enableItemsChanged = new Vector<Component>();
 
     protected boolean                               enabled     = false;
     protected boolean                               hasChanged  = false;
@@ -147,15 +150,28 @@ public class FormValidator implements ValidationListener, DataChangeListener
     /**
      * @param comp
      */
-    public void addEnableItem(final Component comp)
+    public void addEnableItem(final Component comp, final EnableType type)
     {
-        enableItems.add(comp);
+        if (type == EnableType.ValidItems)
+        {
+            enableItemsValid.add(comp);
+        } else
+        {
+            enableItemsChanged.add(comp);
+        }
         comp.setEnabled(false);
     }
     
-    public void removeEnabledItem(final Component comp)
+    public void removeEnabledItem(final Component comp, final EnableType type)
     {
-        enableItems.remove(comp);
+        
+        if (type == EnableType.ValidItems)
+        {
+            enableItemsValid.remove(comp);
+        } else
+        {
+            enableItemsChanged.remove(comp);
+        }
     }
     
     /**
@@ -338,13 +354,15 @@ public class FormValidator implements ValidationListener, DataChangeListener
      * @param parent
      * @param enable
      */
-    protected void enabledTreeForUI(final FormValidator parentFV, final boolean enable)
+    protected void enabledTreeForUI(final FormValidator parentFV, 
+                                    final boolean enable,
+                                    final EnableType type)
     {
-        enableUIItems(enable);
+        enableUIItems(enable, type);
         
         for (FormValidator kid : parentFV.kids)
         {
-            enabledTreeForUI(kid, enable);
+            enabledTreeForUI(kid, enable, type);
         }
     }
 
@@ -749,8 +767,9 @@ public class FormValidator implements ValidationListener, DataChangeListener
             }
         }
 
-        boolean isEnabled = hasChanged && getState() == UIValidatable.ErrorType.Valid;
-        enableUIItems(isEnabled);
+        boolean isValid = getState() == UIValidatable.ErrorType.Valid;
+        enableUIItems(hasChanged && isValid, EnableType.ValidAndChangedItems);
+        enableUIItems(isValid, EnableType.ValidItems);
         
         //log.debug(name);
         if (parent != null)
@@ -874,7 +893,10 @@ public class FormValidator implements ValidationListener, DataChangeListener
     
             //log.debug("validateForm ["+name+"] State: "+formValidationState);
             
-            enableUIItems(isFormValid() && hasChanged);
+            boolean isValid = isFormValid();
+            enableUIItems(hasChanged && isValid, EnableType.ValidAndChangedItems);
+            enableUIItems(isValid, EnableType.ValidItems);
+            
             updateValidationBtnUIState();
             
             ignoreValidationNotifications = curIgnoreVal;
@@ -991,7 +1013,8 @@ public class FormValidator implements ValidationListener, DataChangeListener
         }
         formRules.clear();
 
-        enableItems.clear();
+        enableItemsValid.clear();
+        enableItemsChanged.clear();
         dcListeners.clear();
         valListeners.clear();
     }
@@ -1170,13 +1193,18 @@ public class FormValidator implements ValidationListener, DataChangeListener
      * Helper methods for turning on the "default" OK button after a validation was completed.
      * @param itsOKToEnable indicates whether it is OK to enable the "OK" button
      */
-    protected void enableUIItems(final boolean itsOKToEnable)
+    protected void enableUIItems(final boolean itsOKToEnable, final EnableType type)
     {
-        //log.debug(name+" hasChanged "+hasChanged+"  itsOKToEnable "+itsOKToEnable+ " enableItems: " + enableItems.size());
-        //log.debug(this.hashCode()+"  "+hasChanged+"  "+itsOKToEnable);
+        List<Component> list = type == EnableType.ValidItems ? enableItemsValid : enableItemsChanged;
+        log.debug(name+" hasChanged "+hasChanged+"  itsOKToEnable "+itsOKToEnable+ " enableItems: " + list.size());
+        log.debug(this.hashCode()+"  "+hasChanged+"  "+itsOKToEnable);
 
-        for (Component comp : enableItems)
+        for (Component comp : list)
         {
+            if (comp instanceof JButton)
+            {
+                log.debug(">>>>>>>> "+((JButton)comp).getText());
+            }
             comp.setEnabled(itsOKToEnable);
         }
         updateValidationBtnUIState();
@@ -1272,7 +1300,10 @@ public class FormValidator implements ValidationListener, DataChangeListener
             dcl.dataChanged(dcName, comp, dcn);
         }
 
-        enableUIItems(formValidationState == UIValidatable.ErrorType.Valid);
+        boolean isValid = formValidationState == UIValidatable.ErrorType.Valid;
+        enableUIItems(hasChanged && isValid, EnableType.ValidAndChangedItems);
+        enableUIItems(isValid, EnableType.ValidItems);
+        
         updateValidationBtnUIState();
     }
 

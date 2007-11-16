@@ -440,9 +440,9 @@ public class CustomDialog extends JDialog
         if (okBtn == null && visible)
         {
             createUI();
-            UIHelper.centerWindow(this);
         }
         
+        UIHelper.centerWindow(this);
         super.setVisible(visible);
     }
 

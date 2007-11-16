@@ -219,7 +219,7 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
             {
                 if (textField instanceof ValTextField)
                 {
-                    ((ValTextField)txtField).setValue(chooser.getSelectedFile().getAbsolutePath(), "");
+                    ((ValTextField)txtField).setValueWithNotification(chooser.getSelectedFile().getAbsolutePath(), "", true);
                 } else
                 {
                     txtField.setText(chooser.getSelectedFile().getAbsolutePath());

@@ -52,6 +52,14 @@ public abstract class BaseBusRules implements BusinessRulesIFace
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#addChildrenToNewDataObjects(java.lang.Object)
+     */
+    public void addChildrenToNewDataObjects(Object newDataObj)
+    {
+        // op
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#getDeleteMsg(java.lang.Object)
      */
     public String getDeleteMsg(Object dataObj)
@@ -203,7 +211,7 @@ public abstract class BaseBusRules implements BusinessRulesIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#okToDelete(java.lang.Object)
      */
-    public abstract boolean okToDelete(Object dataObj);
+    public abstract boolean okToEnableDelete(Object dataObj);
     
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#afterSave(java.lang.Object)

@@ -917,10 +917,11 @@
                     <cell type="field" id="WebLink" name="this" uitype="plugin" initialize="name=WebLinkLauncherButton;url=[GBIF_Canada]?king=$kingdomName$&amp;p_action=containing&amp;taxa=$genusName$%20$speciesName$&amp;p_format=html;label=ITIS"/>
                     <!-- Put in remote prefs: URL_Prefix.GBIF_Canada = http://www.cbif.gc.ca/pls/itisca/taxastep -->
                 </row>
+                <!-- 
                 <row>
                     <cell type="label" labelfor="remarks" label="Remarks"/>
                     <cell type="field" id="remarks" uitype="textarea" name="remarks" colspan="3"/>
-                </row>
+                </row> -->
                 <row>
                     <cell type="label" labelfor="parent" label="Parent"/>
                 	<cell type="field" id="parent" valtype="Focus" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false;editoncreate=true" name="parent" colspan="3"/>
@@ -929,6 +930,7 @@
                     <cell type="label" labelfor="definitionItem" label="Rank"/>
                 	<cell type="field" id="definitionItem" valtype="Focus" isrequired="true" uitype="combobox" name="definitionItem" colspan="3"/>
                 </row>
+                <!--
                 <row>
                     <cell type="label" labelfor="taxonomicSerialNumber" label="Taxonomic Serial Number"/>
                     <cell type="field" id="taxonomicSerialNumber" uitype="text" name="taxonomicSerialNumber" colspan="3"/>
@@ -937,10 +939,12 @@
                     <cell type="label" labelfor="guid" label="GUID"/>
                     <cell type="field" id="guid" uitype="text" name="guid" colspan="3"/>
                 </row>
+                -->
                 <row>
                     <cell type="label" labelfor="commonName" label="Common Name"/>
                     <cell type="field" id="commonName" uitype="text" name="commonName" colspan="3"/>
                 </row>
+                <!-- 
                 <row>
                     <cell type="label" labelfor="author" label="Author"/>
                     <cell type="field" id="author" uitype="text" name="author" colspan="3"/>
@@ -953,6 +957,7 @@
                     <cell type="label" labelfor="environmentalProtectionStatus" label="Environmental Protection Status"/>
                     <cell type="field" id="environmentalProtectionStatus" uitype="text" name="environmentalProtectionStatus" colspan="3"/>
                 </row>
+                 -->
                 <row>
                 	<cell type="label" labelfor="isAccepted" label="Is Accepted?"/>
                 	<cell type="field" id="isAccepted" uitype="checkbox" name="isAccepted" default="true" isrequired="true" colspan="3"/>
@@ -1308,12 +1313,9 @@
             <columnDef>p,5dlu,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
     		<rows>
-    		    <row>
-    		        <cell type="label" label="Attachments" icon="Attachment" recordobj="true" colspan="3"/>
-    		    </row>
                 <row>
                     <cell type="label" labelfor="origFilename" label="Filename"/>
-                    <cell type="field" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" uitype="browse"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" uitype="browse" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="mimeType" label="MIME Type"/>
@@ -1390,11 +1392,11 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="1" label="Title"/>
-                    <cell type="field" id="1" name="Title" uitype="text" required="true"/> 
+                    <cell type="field" id="1" name="Title" uitype="text" isrequired="true"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="2" label="Filename"/>
-                    <cell type="field" id="2" name="FilePath" uitype="browse" required="true" cols="30" initialize="forinput=false"/>
+                    <cell type="field" id="2" name="FilePath" uitype="browse" isrequired="true" cols="30" initialize="forinput=false"/>
                 </row>
             </rows>
         </viewdef>

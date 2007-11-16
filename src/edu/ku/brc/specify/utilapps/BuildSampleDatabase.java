@@ -2166,10 +2166,6 @@ public class BuildSampleDatabase
                     ex.printStackTrace();
                 }
                 
-                frame.setVisible(false);
-                frame.dispose();
-
-
                 return null;
             }
 
@@ -2185,6 +2181,11 @@ public class BuildSampleDatabase
                 
                 // In fact, we're doing stuff in the construct method that should happen on the Swing
                 // thread.  The construct() method IS NOT run on the Swing thread.
+                
+                frame.setVisible(false);
+                frame.dispose();
+                System.exit(0); // I didn't used to have to do this.
+
             }
         };
         worker.start();

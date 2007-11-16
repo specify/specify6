@@ -43,6 +43,7 @@ public class ServiceInfo
     protected Taskable       task;
     protected String         tooltip;
     protected CommandAction  command;
+    protected boolean        isDefault;
     
     
     protected Hashtable<String, ImageIcon> icons = new Hashtable<String, ImageIcon>();
@@ -64,11 +65,34 @@ public class ServiceInfo
                        final String iconName,
                        final String tooltip)
     {
-        this.name    = serviceName;
-        this.tableId = tableId;
-        this.command = command;
-        this.task    = task;
-        this.tooltip = tooltip;
+        this(serviceName, tableId, command, task, iconName, tooltip, false);
+    }
+    
+    /**
+     * Constructs a service info object describing the service for UI components to use; also looks up the iconName in the IconCache
+     * and creates icons for sizes 16, 24, and 32.
+     * @param serviceName the name of the service
+     * @param tableId the table ID that the service is provided for
+     * @param command the command to be sent
+     * @param task the task that provides the service
+     * @param iconName the name of the icon to be used
+     * @param tooltip the tooltip text for any UI
+     * @param isDefault the default service
+     */
+    public ServiceInfo(final String serviceName, 
+                       final int tableId, 
+                       final CommandAction command, 
+                       final Taskable task, 
+                       final String iconName,
+                       final String tooltip,
+                       final boolean isDefault)
+    {
+        this.name      = serviceName;
+        this.tableId   = tableId;
+        this.command   = command;
+        this.task      = task;
+        this.tooltip   = tooltip;
+        this.isDefault = isDefault;
         
         addIcon(IconManager.getIcon(iconName, IconManager.IconSize.Std16), IconManager.IconSize.Std16);
         addIcon(IconManager.getIcon(iconName, IconManager.IconSize.Std24), IconManager.IconSize.Std24);
@@ -136,10 +160,26 @@ public class ServiceInfo
         return command;
     }
 
+    /**
+     * @return the isDefault
+     */
+    public boolean isDefault()
+    {
+        return isDefault;
+    }
+
+    /**
+     * @param isDefault the isDefault to set
+     */
+    public void setDefault(boolean isDefault)
+    {
+        this.isDefault = isDefault;
+    }
+    
     //------------------------------------------
     //-- Static Methods
     //------------------------------------------
-    
+
 
     /**
      * Returns the a string that includes the name and the table ID

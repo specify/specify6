@@ -141,7 +141,7 @@ public class ValBrowseBtnPanel extends BrowseBtnPanel implements UIValidatable
      */
     public ErrorType validateState()
     {
-        System.out.println("validateState: "+textField.validateState());
+        //System.out.println("validateState: "+textField.validateState());
         return textField.validateState();
     }
 }

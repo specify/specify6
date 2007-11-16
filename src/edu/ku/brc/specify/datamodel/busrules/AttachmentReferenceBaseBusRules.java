@@ -58,7 +58,7 @@ public class AttachmentReferenceBaseBusRules extends BaseBusRules
     }
 
     @Override
-    public boolean okToDelete(Object dataObj)
+    public boolean okToEnableDelete(Object dataObj)
     {
         return true;
     }
@@ -72,7 +72,7 @@ public class AttachmentReferenceBaseBusRules extends BaseBusRules
         System.out.println("afterSaveCommit(): " + a.getOrigFilename());
         
         AttachmentBusRules attachBusRules = new AttachmentBusRules();
-        boolean okToDelete = attachBusRules.okToDelete(a);
+        boolean okToDelete = attachBusRules.okToEnableDelete(a);
         
         if (okToDelete)
         {

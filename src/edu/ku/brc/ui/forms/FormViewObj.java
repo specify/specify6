@@ -217,7 +217,7 @@ public class FormViewObj implements Viewable,
      * Constructor with FormView definition.
      * @param view the definition of the view
      * @param altView indicates which AltViewIFace we will be using
-     * @param mvParent the mvParent mulitview
+     * @param mvParent the mvParent multiview
      * @param createResultSetController indicates that a ResultSet Controller should be created
      * @param formValidator the form's formValidator
      * @param options the options needed for creating the form
@@ -388,7 +388,7 @@ public class FormViewObj implements Viewable,
                         comps.add(switcherUI);
                         if (formValidator != null)
                         {
-                            formValidator.addEnableItem(switcherUI);
+                            formValidator.addEnableItem(switcherUI, FormValidator.EnableType.ValidItems);
                         }
                     }
                 }
@@ -541,7 +541,7 @@ public class FormViewObj implements Viewable,
         
         if (formValidator != null)
         {
-            formValidator.addEnableItem(saveComp);
+            formValidator.addEnableItem(saveComp, FormValidator.EnableType.ValidAndChangedItems);
         }
     }
 
@@ -687,11 +687,12 @@ public class FormViewObj implements Viewable,
             mv.aboutToShow(show);
         }
         
-        if (show)
+        // Moving this to the MultiView
+        /*if (show)
         {
             log.debug("Dispatching a Data_Entry/ViewWasShown command/action");
             CommandDispatcher.dispatch(new CommandAction("Data_Entry", "ViewWasShown", this));
-        }
+        }*/
     }
 
     /* (non-Javadoc)
@@ -868,6 +869,15 @@ public class FormViewObj implements Viewable,
         {
             throw new RuntimeException("Hmmm,Why are we trying to delete a NULL object?");
         }
+    }
+
+    /**
+     * Walks the MultiView hierarchy and has them transfer their data from the UI to the DB Object
+     * @param parentMV the parent MultiView
+     */
+    public void traverseToGetDataFromForms()
+    {
+        traverseToGetDataFromForms(mvParent);
     }
 
     /**
@@ -1818,7 +1828,7 @@ public class FormViewObj implements Viewable,
             
             if (formValidator != null)
             {
-                formValidator.addEnableItem(newRecBtn);
+                formValidator.addEnableItem(newRecBtn, FormValidator.EnableType.ValidItems);
             }
             setAddDelListeners(newRecBtn, delRecBtn);
         }
@@ -2125,7 +2135,7 @@ public class FormViewObj implements Viewable,
         //log.debug("----------------- "+formViewDef.getName()+"----------------- ");
         if (delRecBtn != null)
         {
-            boolean enableDelBtn = dataObj != null && (businessRules == null || businessRules.okToDelete(this.dataObj));// && list != null && list.size() > 0;
+            boolean enableDelBtn = dataObj != null && (businessRules == null || businessRules.okToEnableDelete(this.dataObj));// && list != null && list.size() > 0;
             /*log.info(formViewDef.getName()+" Enabling The Del Btn: "+enableDelBtn);
             if (!enableDelBtn)
             {
@@ -2162,6 +2172,7 @@ public class FormViewObj implements Viewable,
                 enableNewBtn = formValidator.isFormValid();
             }
             
+            log.debug("enableNewBtn "+enableNewBtn);
             newRecBtn.setEnabled(enableNewBtn);
             
             if (switcherUI != null)
@@ -3153,7 +3164,7 @@ public class FormViewObj implements Viewable,
 
         if (formValidator != null)
         {
-            formValidator.addEnableItem(saveControl);
+            formValidator.addEnableItem(saveControl, FormValidator.EnableType.ValidAndChangedItems);
         }
 
     }

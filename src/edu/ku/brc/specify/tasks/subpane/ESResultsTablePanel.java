@@ -28,6 +28,7 @@ import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
@@ -92,6 +93,8 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
     protected int                      rowCount       = 0;
     protected boolean                  showingAllRows = false;
     protected boolean                  hasResults     = false;
+    
+    protected Hashtable<ServiceInfo, JButton> serviceBtns = null;
 
     protected JPanel                   morePanel      = null;
     protected Color                    bannerColor    = new Color(30, 144, 255);    // XXX PREF
@@ -157,13 +160,12 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         showTopNumEntriesBtn.setVisible(false);
         showTopNumEntriesBtn.setCursor(handCursor);
 
-        List<ServiceInfo> services = installServices ? ContextMgr.checkForServices(results.getTableId()) :
-                                                       new ArrayList<ServiceInfo>();
+        List<ServiceInfo> services = installServices ? ContextMgr.checkForServices(results.getTableId()) : null;
 
         //System.out.println("["+tableInfo.getTableId()+"]["+services.size()+"]");
         StringBuffer colDef = new StringBuffer("p,0px,p:g,0px,p,0px,p,0px,");
-        colDef.append(UIHelper.createDuplicateJGoodiesDef("p", "0px", services.size())); // add additional col defs for services
-
+        colDef.append(UIHelper.createDuplicateJGoodiesDef("p", "0px", installServices ? services.size() : 0)); // add additional col defs for services
+        
         FormLayout      formLayout = new FormLayout(colDef.toString(), "f:p:g");
         PanelBuilder    builder    = new PanelBuilder(formLayout);
         CellConstraints cc         = new CellConstraints();
@@ -177,18 +179,22 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
 
         builder.add(showTopNumEntriesBtn, cc.xy(col,1));
         col += 2;
-
-        // install the btns on the banner with available services
-        for (ServiceInfo serviceInfo : services)
+        
+        if (installServices && services.size() > 0)
         {
-            GradiantButton btn = new GradiantButton(serviceInfo.getIcon(IconManager.IconSize.Std16)); // XXX PREF
-            btn.setToolTipText(serviceInfo.getTooltip());
-            btn.setForeground(bannerColor);
-            builder.add(btn, cc.xy(col,1));
-
-            btn.addActionListener(new ESTableAction(serviceInfo.getCommandAction(), table, serviceInfo.getTooltip()));
-
-            col += 2;
+            serviceBtns = new Hashtable<ServiceInfo, JButton>();
+            
+            // install the btns on the banner with available services
+            for (ServiceInfo serviceInfo : services)
+            {
+                GradiantButton btn = new GradiantButton(serviceInfo.getIcon(IconManager.IconSize.Std16)); // XXX PREF
+                btn.setToolTipText(serviceInfo.getTooltip());
+                btn.setForeground(bannerColor);
+                builder.add(btn, cc.xy(col,1));
+                btn.addActionListener(new ESTableAction(serviceInfo.getCommandAction(), table, serviceInfo.getTooltip()));
+                serviceBtns.put(serviceInfo, btn);
+                col += 2;
+            }
         }
 
         CloseButton closeBtn = new CloseButton();
@@ -297,9 +303,27 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         {
             public void mouseClicked(MouseEvent e) 
             {
-                if (propChangeListener != null && e.getClickCount() == 2) 
+                if (e.getClickCount() == 2)
                 {
-                    propChangeListener.propertyChange(new PropertyChangeEvent(this, "doubleClick", 2, 0));
+                    if (propChangeListener != null) 
+                    {
+                        propChangeListener.propertyChange(new PropertyChangeEvent(this, "doubleClick", 2, 0));
+                    }
+                    
+                    if (serviceBtns != null)
+                    {
+                        for (ServiceInfo si : serviceBtns.keySet())
+                        {
+                            if (si.isDefault())
+                            {
+                                JButton defBtn = serviceBtns.get(si);
+                                if (defBtn != null)
+                                {
+                                    defBtn.doClick();
+                                }
+                            }
+                        }
+                    }
                 }
             }
         });

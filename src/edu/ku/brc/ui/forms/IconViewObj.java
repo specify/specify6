@@ -40,8 +40,6 @@ import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
-import edu.ku.brc.ui.CommandAction;
-import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DefaultClassActionHandler;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.IconTray;
@@ -723,11 +721,13 @@ public class IconViewObj implements Viewable
         {
             switcherUI.set(altView);
         }
-        if (show)
+        
+        // Moving this to the MultiView
+        /*if (show)
         {
             log.debug("Dispatching a Data_Entry/ViewWasShown command/action");
             CommandDispatcher.dispatch(new CommandAction("Data_Entry", "ViewWasShown", this));
-        }
+        }*/
     }
 
     /* (non-Javadoc)

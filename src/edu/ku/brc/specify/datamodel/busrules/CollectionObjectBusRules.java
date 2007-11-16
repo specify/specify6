@@ -42,7 +42,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToDelete(java.lang.Object)
      */
     @Override
-    public boolean okToDelete(Object dataObj)
+    public boolean okToEnableDelete(Object dataObj)
     {
         if (!(dataObj instanceof CollectionObject))
         {

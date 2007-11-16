@@ -63,7 +63,7 @@ public class GeologicTimePeriodBusRules extends BaseTreeBusRules<GeologicTimePer
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToDelete(java.lang.Object)
      */
     @Override
-    public boolean okToDelete(Object dataObj)
+    public boolean okToEnableDelete(Object dataObj)
     {
         if (dataObj instanceof GeologicTimePeriod)
         {
@@ -78,7 +78,7 @@ public class GeologicTimePeriodBusRules extends BaseTreeBusRules<GeologicTimePer
     }
     
     /**
-     * Handles the {@link #okToDelete(Object)} method in the case that the passed in
+     * Handles the {@link #okToEnableDelete(Object)} method in the case that the passed in
      * {@link Object} is an instance of {@link GeologicTimePeriodTreeDefItem}.
      * 
      * @param defItem the {@link GeologicTimePeriodTreeDefItem} being inspected
