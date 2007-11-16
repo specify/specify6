@@ -354,18 +354,18 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
      */
     public JButton createArrowBtn(final MouseInputAdapter mouseInputAdapter)
     {
-        JButton arwBtn = new JButton(dropDownArrow);
-        arwBtn.setOpaque(false);
-        arwBtn.setBorder(new EmptyBorder(4,4,4,4)); // T,L,B,R
-        arwBtn.getModel().addChangeListener(this);
-        arwBtn.addActionListener(this);
-        arwBtn.setMargin(new Insets(3, 3, 3, 3));
-        arwBtn.setFocusPainted(false); 
-        arwBtn.setFocusable(false);            
-        arwBtn.setVisible(getPopMenuSize() > 0);
-        arwBtn.addMouseListener(mouseInputAdapter);
-        arwBtn.addMouseMotionListener(mouseInputAdapter);
-        return arwBtn;
+        JButton arrowBtn = new JButton(dropDownArrow);
+        arrowBtn.setOpaque(false);
+        arrowBtn.setBorder(new EmptyBorder(4,4,4,4)); // T,L,B,R
+        arrowBtn.getModel().addChangeListener(this);
+        arrowBtn.addActionListener(this);
+        arrowBtn.setMargin(new Insets(3, 3, 3, 3));
+        arrowBtn.setFocusPainted(false); 
+        arrowBtn.setFocusable(false);            
+        arrowBtn.setVisible(getPopMenuSize() > 0);
+        arrowBtn.addMouseListener(mouseInputAdapter);
+        arrowBtn.addMouseMotionListener(mouseInputAdapter);
+        return arrowBtn;
     }
     
     /**

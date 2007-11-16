@@ -247,18 +247,6 @@ public class SearchTableConfig implements DisplayOrderingIFace,
         {
         }
         
-        boolean isNumeric;
-        boolean hasDecimalPoint = false;
-        
-        if (!StringUtils.isNumeric(searchTerm))
-        {
-            isNumeric = false;
-        } else
-        {
-            isNumeric       = true;
-            hasDecimalPoint = StringUtils.contains(searchTerm, '.');
-        }
-        
         StringBuilder sqlStr = new StringBuilder("SELECT ");
         
         DBTableInfo ti = getTableInfo();
@@ -296,77 +284,94 @@ public class SearchTableConfig implements DisplayOrderingIFace,
         int orderByCnt = 0;
         
         int cnt = 0;
-
-        for (SearchFieldConfig searchField : searchFields)
+        
+        String[] terms = StringUtils.split(searchTerm, ' ');
+        for (String term : terms)
         {
-            String clause;
-            DBFieldInfo fi = searchField.getFieldInfo();
+            log.debug(term);
+            boolean isNumeric;
+            boolean hasDecimalPoint = false;
             
-            if (ids == null)
+            if (!StringUtils.isNumeric(term))
             {
-                if (fi.getDataClass() == Date.class || searchField.getFieldInfo().getDataClass() == Calendar.class)
+                isNumeric = false;
+            } else
+            {
+                isNumeric       = true;
+                hasDecimalPoint = StringUtils.contains(term, '.');
+            }
+
+            for (SearchFieldConfig searchField : searchFields)
+            {
+                String clause;
+                DBFieldInfo fi = searchField.getFieldInfo();
+                
+                if (ids == null)
                 {
-                    if (!isDate)
+                    if (fi.getDataClass() == Date.class || searchField.getFieldInfo().getDataClass() == Calendar.class)
                     {
-                        if (isNumeric && ! hasDecimalPoint && searchTerm.length() == 4)
+                        if (!isDate)
                         {
-                            clause = "YEAR("+fi.getName()+") = " + searchTerm;
+                            if (isNumeric && ! hasDecimalPoint && term.length() == 4)
+                            {
+                                clause = "YEAR("+fi.getName()+") = " + term;
+                            } else
+                            {
+                                continue;
+                            }
                         } else
+                        {
+                            clause = fi.getColumn() + " = " + "'" + term + "'";
+                        }
+                        
+                    } else if (fi.getDataClass() == Float.class || fi.getDataClass() == Double.class || fi.getDataClass() == BigDecimal.class)
+                    {
+                        if (!isNumeric)
                         {
                             continue;
                         }
-                    } else
+                        clause = fi.getColumn() + " = " + term;
+                        
+                    } else if (fi.getDataClass() == Byte.class || fi.getDataClass() == Short.class || 
+                               fi.getDataClass() == Integer.class|| fi.getDataClass() == Long.class)
                     {
-                        clause = fi.getColumn() + " = " + "'" + searchTerm + "'";
-                    }
-                    
-                } else if (fi.getDataClass() == Float.class || fi.getDataClass() == Double.class || fi.getDataClass() == BigDecimal.class)
-                {
-                    if (!isNumeric)
+                        if (!isNumeric || hasDecimalPoint)
+                        {
+                            continue;
+                        }
+                        clause = fi.getColumn() + " = " + term;
+                        
+                    } else 
                     {
-                        continue;
+                        if (fi.getDataClass() == String.class)
+                        {
+                            log.error("Handling class ["+fi.getDataClass()+"] as a String");
+                        }
+                        clause = "lower(" + fi.getColumn() + ") like " + "'%" + term + "%'";
                     }
-                    clause = fi.getColumn() + " = " + searchTerm;
-                    
-                } else if (fi.getDataClass() == Byte.class || fi.getDataClass() == Short.class || 
-                           fi.getDataClass() == Integer.class|| fi.getDataClass() == Long.class)
-                {
-                    if (!isNumeric || hasDecimalPoint)
-                    {
-                        continue;
-                    }
-                    clause = fi.getColumn() + " = " + searchTerm;
-                    
-                } else 
-                {
-                    if (fi.getDataClass() == String.class)
-                    {
-                        log.error("Handling class ["+fi.getDataClass()+"] as a String");
-                    }
-                    clause = "lower(" + fi.getColumn() + ") like " + "'%" + searchTerm + "%'";
+    
+                    if (cnt > 0) sqlStr.append(" OR ");
+                    sqlStr.append(clause);
                 }
-
-                if (cnt > 0) sqlStr.append(" OR ");
-                sqlStr.append(clause);
-            }
-            
-            cnt++;
-            
-            if (!idsOnly)
-            {
-                if (searchField.getIsSortable())
+                
+                cnt++;
+                
+                if (!idsOnly)
                 {
-                    if (orderByCnt == 0)
+                    if (searchField.getIsSortable())
                     {
-                        orderBy.append(" ORDER BY ");
-                    } else
-                    {
-                        orderBy.append(", ");
+                        if (orderByCnt == 0)
+                        {
+                            orderBy.append(" ORDER BY ");
+                        } else
+                        {
+                            orderBy.append(", ");
+                        }
+                        orderBy.append(searchField.getFieldName());
+                        orderBy.append(searchField.getIsAscending() ? " ASC" : " DESC");
+                        
+                        orderByCnt++;
                     }
-                    orderBy.append(searchField.getFieldName());
-                    orderBy.append(searchField.getIsAscending() ? " ASC" : " DESC");
-                    
-                    orderByCnt++;
                 }
             }
         }

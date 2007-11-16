@@ -150,6 +150,7 @@ public class FormViewObj implements Viewable,
     // Data Members
     protected DataProviderSessionIFace      session        = null;
     protected boolean                       isEditting     = false;
+    protected boolean                       isNewlyCreatedDataObj = false;
     protected boolean                       formIsInNewDataMode = false; // when this is true it means the form was cleared and new data is expected
     protected MultiView                     mvParent       = null;
     protected ViewIFace                     view;
@@ -655,13 +656,13 @@ public class FormViewObj implements Viewable,
     {
         isShowing = show;
         
-        if (origDataSet != null && list != null && origDataSet.size() != list.size())
+        /*if (origDataSet != null && list != null && origDataSet.size() != list.size())
         {
             // XXX Ok here we know new items have been added
             // so we need to resort (maybe) but certainly need to re-adjust the RecordSet controller.
             //
             // Actually check the sizes isn't enough, we need to really know if there was a change in the list
-        }
+        }*/
         
         if (formValidator != null)
         {
@@ -1099,14 +1100,19 @@ public class FormViewObj implements Viewable,
 
         //log.info("createNewDataObject "+hashCode() + " Session ["+(session != null ? session.hashCode() : "null")+"] ");
         FormDataObjIFace obj = FormHelper.createAndNewDataObj(view.getClassName());
-        if (parentDataObj instanceof FormDataObjIFace)
+        if (true)
         {
-            ((FormDataObjIFace)parentDataObj).addReference(obj, cellName);
-            
-        } else
-        {
-            FormHelper.addToParent(parentDataObj, obj);
+            if (parentDataObj instanceof FormDataObjIFace)
+            {
+                ((FormDataObjIFace)parentDataObj).addReference(obj, cellName);
+                
+            } else
+            {
+                FormHelper.addToParent(parentDataObj, obj);
+            }
         }
+        
+        isNewlyCreatedDataObj = true;
 
         if (carryFwdDataObj == null && dataObj != null)
         {
@@ -1315,6 +1321,8 @@ public class FormViewObj implements Viewable,
                 session.flush();
                 
                 tryAgain = false;
+                
+                isNewlyCreatedDataObj = false; // shouldn't be needed, but just in case
                 
                 for (FieldInfo fi : controlsByName.values())
                 {
@@ -2755,6 +2763,21 @@ public class FormViewObj implements Viewable,
     {
         if (isEditting)
         {
+            // This should only happen when the user created a new object
+            // in a form in a dialog and then they pressed Cancel without it being saved.
+            /*if (isNewlyCreatedDataObj)
+            {
+                if (parentDataObj instanceof FormDataObjIFace)
+                {
+                    ((FormDataObjIFace)parentDataObj).addReference((FormDataObjIFace)dataObj, cellName);
+                    
+                } else
+                {
+                    FormHelper.addToParent(parentDataObj, dataObj);
+                }
+                isNewlyCreatedDataObj = false;
+            }*/
+            
             DataObjectSettable ds = formViewDef.getDataSettable();
             DataObjectGettable dg = formViewDef.getDataGettable();
             if (ds != null)
@@ -2858,6 +2881,13 @@ public class FormViewObj implements Viewable,
         return true;
     }
     
+    /**
+     * @param comp
+     * @param isSingleValueFromSet
+     * @param isCommand
+     * @param id
+     * @return
+     */
     public static Object getValueFromComponent(final Component comp, 
                                                final boolean isSingleValueFromSet,
                                                final boolean isCommand,
@@ -3589,6 +3619,7 @@ public class FormViewObj implements Viewable,
     public boolean indexAboutToChange(int oldIndex, int newIndex)
     {
         return checkForChanges();
+        
         /*if (formValidator != null && formValidator.hasChanged())
         {
             getDataFromUI();

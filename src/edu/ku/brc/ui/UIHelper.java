@@ -1283,8 +1283,17 @@ public final class UIHelper
             if (e.getMessage().indexOf("apple.awt.CWindow.displayChanged") > 0)
             {
                 return false;
+                
+            }
+            
+        } else if (e instanceof java.lang.NullPointerException)
+        {
+            if (e.getMessage().indexOf("javax.help.WindowPresentation") > 0)
+            {
+                return false;
             }
         }
+        
         return true;
     }
     

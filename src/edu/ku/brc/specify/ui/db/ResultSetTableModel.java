@@ -32,7 +32,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.expresssearch.ERTICaptionInfo;
-import edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.dbsupport.CustomQuery;
 import edu.ku.brc.dbsupport.CustomQueryListener;
@@ -42,6 +41,7 @@ import edu.ku.brc.dbsupport.SQLExecutionListener;
 import edu.ku.brc.dbsupport.SQLExecutionProcessor;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.ui.DateWrapper;
+import edu.ku.brc.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.ui.forms.DataObjectSettable;
 import edu.ku.brc.ui.forms.DataObjectSettableFactory;
 import edu.ku.brc.ui.forms.formatters.DataObjAggregator;

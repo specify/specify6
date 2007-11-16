@@ -22,7 +22,6 @@ public class ValBrowseBtnPanel extends BrowseBtnPanel implements UIValidatable
 {
     protected ValTextField textField;
     
-
     /**
      * @param textField
      * @param doDirsOnly
@@ -33,6 +32,8 @@ public class ValBrowseBtnPanel extends BrowseBtnPanel implements UIValidatable
         super(textField, doDirsOnly, isForInput);
         
         this.textField = textField;
+        
+        setValidatingFile(true);
     }
 
     /* (non-Javadoc)
@@ -141,7 +142,9 @@ public class ValBrowseBtnPanel extends BrowseBtnPanel implements UIValidatable
      */
     public ErrorType validateState()
     {
-        //System.out.println("validateState: "+textField.validateState());
-        return textField.validateState();
+        ErrorType err       = textField.validateState();
+        ErrorType fileError = isValidatingFile && isValidFile ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
+        
+        return err.ordinal() > fileError.ordinal() ? err : fileError;
     }
 }

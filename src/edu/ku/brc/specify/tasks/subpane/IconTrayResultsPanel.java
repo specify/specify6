@@ -10,13 +10,13 @@ import java.util.Vector;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.ui.IconTray;
+import edu.ku.brc.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 public class IconTrayResultsPanel extends IconTray implements ESResultsTablePanelIFace

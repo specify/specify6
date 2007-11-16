@@ -136,7 +136,21 @@ public class ViewBasedDisplayFrame extends CustomFrame implements ViewBasedDispl
             btn.addActionListener(this);
         }
     }
-
+    
+    /*
+     * (non-Javadoc)
+     * @see java.awt.Dialog#setVisible(boolean)
+     */
+    @Override
+    public void setVisible(final boolean visible)
+    {
+        if (viewBasedPanel != null && !visible)
+        {
+            viewBasedPanel.aboutToShow(visible);
+        }
+        super.setVisible(visible);
+    }
+    
     //------------------------------------------------------------
     //-- ActionListener Interface
     //------------------------------------------------------------

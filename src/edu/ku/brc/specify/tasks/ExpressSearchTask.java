@@ -50,7 +50,6 @@ import edu.ku.brc.af.core.expresssearch.ExpressResultsTableInfo;
 import edu.ku.brc.af.core.expresssearch.ExpressSearchConfigCache;
 import edu.ku.brc.af.core.expresssearch.ExpressSearchConfigDlg;
 import edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL;
-import edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace;
 import edu.ku.brc.af.core.expresssearch.QueryForIdResultsSQL;
 import edu.ku.brc.af.core.expresssearch.SearchConfig;
 import edu.ku.brc.af.core.expresssearch.SearchConfigService;
@@ -76,6 +75,7 @@ import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.JAutoCompTextField;
 import edu.ku.brc.ui.db.PickListDBAdapterFactory;
+import edu.ku.brc.ui.db.QueryForIdResultsIFace;
 /**
  * This task will enable the user to index the database and preform express searches. This is where the Express Search starts.
  *

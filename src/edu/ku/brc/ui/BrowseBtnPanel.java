@@ -19,11 +19,16 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+
+import org.apache.commons.lang.StringUtils;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -41,11 +46,14 @@ import edu.ku.brc.ui.forms.validation.ValTextField;
  *
  */
 @SuppressWarnings("serial")
-public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
+public class BrowseBtnPanel extends JPanel implements GetSetValueIFace, DocumentListener
 {
     protected JTextField textField;
     protected JButton    browseBtn;
     protected boolean    isForInput;
+    
+    protected boolean    isValidFile      = false;
+    protected boolean    isValidatingFile = false;
 
     /**
      * Constructor.
@@ -106,7 +114,41 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
         panelBuilder.add(browseBtn, cc.xy(3,1));
 
         setOpaque(false);
+        
+    }
+    
 
+    /**
+     * @return the isValidatingFile
+     */
+    public boolean isValidatingFile()
+    {
+        return isValidatingFile;
+    }
+
+    /**
+     * @param isValidatingFile the isValidatingFile to set
+     */
+    public void setValidatingFile(boolean isValidatingFile)
+    {
+        this.isValidatingFile = isValidatingFile;
+        
+        if (this.isValidatingFile)
+        {
+            textField.getDocument().addDocumentListener(this);
+        } else
+        {
+            textField.getDocument().removeDocumentListener(this);
+            isValidFile = true; // then it is always valid
+        }
+    }
+
+    /**
+     * @return the isValidFile
+     */
+    public boolean isValidFile()
+    {
+        return isValidFile;
     }
 
     /**
@@ -126,8 +168,51 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace
     public void setEnabled(boolean enabled)
     {
         super.setEnabled(enabled);
+        
         textField.setEnabled(enabled);
         browseBtn.setEnabled(enabled);
+    }
+    
+    //-----------------------------------------------------
+    // DocumentListener
+    //-----------------------------------------------------
+    
+    protected void verifyForValidFile()
+    {
+        String str = textField.getText();
+
+        if (StringUtils.isNotEmpty(str))
+        {
+            File file = new File(str);
+            isValidFile = file.exists();
+        }
+    }
+    
+    /* (non-Javadoc)
+     * @see javax.swing.event.DocumentListener#changedUpdate(javax.swing.event.DocumentEvent)
+     */
+    @Override
+    public void changedUpdate(DocumentEvent e)
+    {
+        verifyForValidFile();
+    }
+
+    /* (non-Javadoc)
+     * @see javax.swing.event.DocumentListener#insertUpdate(javax.swing.event.DocumentEvent)
+     */
+    @Override
+    public void insertUpdate(DocumentEvent e)
+    {
+        verifyForValidFile();
+    }
+
+    /* (non-Javadoc)
+     * @see javax.swing.event.DocumentListener#removeUpdate(javax.swing.event.DocumentEvent)
+     */
+    @Override
+    public void removeUpdate(DocumentEvent e)
+    {
+        verifyForValidFile();
     }
 
     //-----------------------------------------------------

@@ -860,13 +860,9 @@
     			<row>
     			    <cell type="subview" viewname="Preparation" id="8" name="preparations" defaulttype="table" colspan="12"/>
     			</row>
-
+   		    
     		    <row>
-    		        <cell type="separator" label="Attachments" colspan="12"/>
-    		    </row>
-    		    
-    		    <row>
-                    <cell type="subview" id="attachments" viewname="CollectionObjectAttachment" name="collectionObjectAttachments" colspan="12"/>
+                    <cell type="subview" id="attachments" viewname="CollectionObjectAttachment" name="collectionObjectAttachments" colspan="12" initialize="btn=true"/>
                 </row>
     			<row>
     				<cell type="separator" label="" colspan="12"/>

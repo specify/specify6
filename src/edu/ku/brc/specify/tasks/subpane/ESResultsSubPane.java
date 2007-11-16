@@ -35,7 +35,6 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxLayoutManager;
 import edu.ku.brc.af.core.Taskable;
-import edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.ui.HelpMgr;
@@ -44,6 +43,7 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.db.QueryForIdResultsIFace;
 
 /**
  * This pane contains all the Express Search Result table panes. 

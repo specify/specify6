@@ -10,7 +10,9 @@ import javax.swing.ImageIcon;
 
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.RecordSetItem;
+import edu.ku.brc.specify.tasks.DataEntryTask;
 import edu.ku.brc.specify.tasks.RecordSetTask;
+import edu.ku.brc.ui.DataFlavorTableExt;
 import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 
@@ -25,8 +27,9 @@ import edu.ku.brc.ui.forms.FormDataObjIFace;
  */
 public class SpecifyDraggableRecordIdentifier extends DraggableRecordIdentifier
 {
-    protected RecordSet     recordSet     = null;
-    protected RecordSetItem recordSetItem = null;
+    protected RecordSet          recordSet     = null;
+    protected RecordSetItem      recordSetItem = null;
+    protected DataFlavorTableExt dataFlavor     = new DataFlavorTableExt(RecordSetTask.class, "RECORD_SET", -1);
     
     /**
      * Constructor with icon and label.
@@ -36,7 +39,7 @@ public class SpecifyDraggableRecordIdentifier extends DraggableRecordIdentifier
     public SpecifyDraggableRecordIdentifier(final ImageIcon icon, final String label)
     {
         super(icon, label);
-        dragFlavors.add(RecordSetTask.RECORDSET_FLAVOR);
+        dragFlavors.add(dataFlavor);
 
     }
 
@@ -47,7 +50,7 @@ public class SpecifyDraggableRecordIdentifier extends DraggableRecordIdentifier
     public SpecifyDraggableRecordIdentifier(final ImageIcon icon)
     {
         super(icon);
-        dragFlavors.add(RecordSetTask.RECORDSET_FLAVOR);
+        dragFlavors.add(dataFlavor);
     }
 
     /* (non-Javadoc)
@@ -91,6 +94,7 @@ public class SpecifyDraggableRecordIdentifier extends DraggableRecordIdentifier
                 recordSet = new RecordSet();
                 recordSet.initialize();
                 recordSet.setDbTableId(formDataObj.getTableId());
+                dataFlavor.addTableId(formDataObj.getTableId());
             }
             
             recordSetItem = (RecordSetItem)recordSet.addItem(formDataObj.getId());

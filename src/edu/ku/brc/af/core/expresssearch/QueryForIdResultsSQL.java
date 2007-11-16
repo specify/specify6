@@ -22,6 +22,8 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.ui.db.QueryForIdResultsIFace;
+
 
 /**
  * This class is used for collecting all the record primary keys for a given Express Definition.

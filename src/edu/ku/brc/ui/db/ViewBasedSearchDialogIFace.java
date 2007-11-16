@@ -53,4 +53,9 @@ public interface ViewBasedSearchDialogIFace
     public void setTitle(String title);
     
 
+    /**
+     * Registers an interface that can be asked for the Query string and the results info.
+     * @param builder the builder object
+     */
+    public void registerQueryBuilder(ViewBasedSearchQueryBuilderIFace builder);
 }

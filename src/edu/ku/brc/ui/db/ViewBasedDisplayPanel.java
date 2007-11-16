@@ -306,6 +306,19 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
             multiView.setData(dataObj);
         }
     }
+    
+    /**
+     * Tells the multiview that it is about to be shown.
+     * We filter out true because it has already been called during the creation process.
+     * @param show the is will be shown or hidden
+     */
+    protected void aboutToShow(final boolean show)
+    {
+        if (multiView != null && !show)
+        {
+            multiView.aboutToShow(show);
+        }  
+    }
 
     /**
      * Tells the panel that it is being shutdown ans it should be cleaned up.

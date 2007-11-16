@@ -15,17 +15,22 @@
 /**
  * 
  */
-package edu.ku.brc.af.core.expresssearch;
+package edu.ku.brc.ui.db;
 
 import java.awt.Color;
 import java.util.List;
 import java.util.Vector;
 
+import edu.ku.brc.af.core.expresssearch.ERTICaptionInfo;
+
 
 /**
+ * This interface is used to describe to the results "renderer" what it should display. It is used to both display
+ * results and it can be used to run a new query from a list of Ids to create a set of results.
+ * 
  * @author rods
  *
- * @code_status Alpha
+ * @code_status Beta
  *
  * Created Date: Sep 6, 2007
  *
@@ -104,6 +109,11 @@ public interface QueryForIdResultsIFace
      */
     public abstract boolean isExpanded();
     
+    /**
+     * Returns a description (already localized) as to what the results means.
+     * Note: This is required for search dialog box results, but may be helpful.
+     * @return a description (already localized) as to what the results means.
+     */
     public abstract String getDescription();
     
 }

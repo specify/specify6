@@ -53,12 +53,13 @@ import edu.ku.brc.af.core.NavBoxLayoutManager;
 import edu.ku.brc.af.core.expresssearch.ERTICaptionInfo;
 import edu.ku.brc.af.core.expresssearch.ExpressResultsTableInfo;
 import edu.ku.brc.af.core.expresssearch.ExpressSearchConfigCache;
-import edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace;
 import edu.ku.brc.af.core.expresssearch.QueryForIdResultsSQL;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanel;
 import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
+import edu.ku.brc.ui.db.QueryForIdResultsIFace;
+import edu.ku.brc.ui.db.ViewBasedSearchQueryBuilderIFace;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.ViewFactory;
 import edu.ku.brc.ui.forms.Viewable;
@@ -114,6 +115,10 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
 
     protected Hashtable<String, Object> dataMap = new Hashtable<String, Object>();
     
+    protected ViewBasedSearchQueryBuilderIFace queryBuilder      = null;
+    protected QueryForIdResultsIFace           queryForIdResults = null;
+    
+    
     /**
      * Constructs a search dialog from form infor and from search info.
      * @param viewSetName the viewset name
@@ -151,8 +156,8 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
         {
             rowDef = "p";
         }
-        PanelBuilder    builder    = new PanelBuilder(new FormLayout("p,1dlu,p", rowDef));
-        CellConstraints cc         = new CellConstraints();
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,1dlu,p", rowDef));
+        CellConstraints cc = new CellConstraints();
 
         
         formView = AppContextMgr.getInstance().getView(viewSetName, viewName);
@@ -180,11 +185,11 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
             
             createSearchBtn();
     
-            builder.add(form.getUIComponent(), cc.xy(1,1));
+            pb.add(form.getUIComponent(), cc.xy(1,1));
     
-            builder.add(searchBtn, cc.xy(3,1));
+            pb.add(searchBtn, cc.xy(3,1));
     
-            add(builder.getPanel(), BorderLayout.NORTH);
+            add(pb.getPanel(), BorderLayout.NORTH);
             
             createUI();
         } else
@@ -228,13 +233,13 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
             }
         });
         
-        PanelBuilder    builder    = new PanelBuilder(new FormLayout("p,1dlu,p", "p,2dlu,p,2dlu,p"));
-        CellConstraints cc         = new CellConstraints();
+        PanelBuilder    pb  = new PanelBuilder(new FormLayout("p,1dlu,p", "p,2dlu,p,2dlu,p"));
+        CellConstraints cc = new CellConstraints();
 
-        builder.add(searchText, cc.xy(1,1));
-        builder.add(searchBtn, cc.xy(3,1));
+        pb.add(searchText, cc.xy(1,1));
+        pb.add(searchBtn, cc.xy(3,1));
 
-        add(builder.getPanel(), BorderLayout.NORTH);
+        add(pb.getPanel(), BorderLayout.NORTH);
 
         createUI();
     }
@@ -269,20 +274,23 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
             }
         };
         
-        ExpressResultsTableInfo tblInfo = ExpressSearchConfigCache.getTableInfoByName(searchName);
-        if (tblInfo != null)
+        if (queryBuilder == null)
         {
-           tableInfo = tblInfo;
-           tableInfo.setViewSQLOverridden(true);
-           
-           tables.put(tableInfo.getTableId(), tableInfo);
-           
-           sqlStr = tableInfo.getViewSql();
-
-       } else
-       {
-           throw new RuntimeException("Couldn't find search name["+searchName+"] in the search_config.xml");
-       }
+            ExpressResultsTableInfo tblInfo = ExpressSearchConfigCache.getTableInfoByName(searchName);
+            if (tblInfo != null)
+            {
+               tableInfo = tblInfo;
+               tableInfo.setViewSQLOverridden(true);
+               
+               tables.put(tableInfo.getTableId(), tableInfo);
+               
+               sqlStr = tableInfo.getViewSql();
+    
+           } else
+           {
+               throw new RuntimeException("Couldn't find search name["+searchName+"] in the search_config.xml");
+           }
+        }
     }
     
     /**
@@ -367,46 +375,56 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
         panel.removeAll();
 
         getDataFromUI();
-
-        StringBuilder strBuf = new StringBuilder(256);
-        int cnt = 0;
-        for (ERTICaptionInfo captionInfo : tableInfo.getVisibleCaptionInfo())
+        
+        QueryForIdResultsIFace resultsInfo = null;
+        if (queryBuilder != null)
         {
-            Object value  = dataMap.get(captionInfo.getColName());
-            log.debug("Column Name["+captionInfo.getColName()+"] Value["+value+"]");
-            if (value != null)
+            sqlStr      = queryBuilder.buildSQL(dataMap);
+            resultsInfo = queryBuilder.createQueryForIdResults();
+            
+        } else
+        {
+            StringBuilder strBuf = new StringBuilder(256);
+            int cnt = 0;
+            for (ERTICaptionInfo captionInfo : tableInfo.getVisibleCaptionInfo())
             {
-                String valStr = value.toString();
-                if (valStr.length() > 0)
+                Object value  = dataMap.get(captionInfo.getColName());
+                log.debug("Column Name["+captionInfo.getColName()+"] Value["+value+"]");
+                if (value != null)
                 {
-                    if (cnt > 0)
+                    String valStr = value.toString();
+                    if (valStr.length() > 0)
                     {
-                        strBuf.append(" OR ");
+                        if (cnt > 0)
+                        {
+                            strBuf.append(" OR ");
+                        }
+                        strBuf.append(" lower("+captionInfo.getColName()+") like '#$#"+valStr+"#$#'");
+                        cnt++;
                     }
-                    strBuf.append(" lower("+captionInfo.getColName()+") like '#$#"+valStr+"#$#'");
-                    cnt++;
+                } else
+                {
+                    log.debug("DataMap was null for Column Name["+captionInfo.getColName()+"] make sure there is a field of this name in the form.");
                 }
-            } else
-            {
-                log.debug("DataMap was null for Column Name["+captionInfo.getColName()+"] make sure there is a field of this name in the form.");
             }
+            
+            String fullStrSql = sqlStr;
+            
+            //System.out.println("\n1["+sqlStr+"]");
+            //System.out.println("2["+strBuf+"]");
+            
+            String fullSQL = fullStrSql.replace("%s", strBuf.toString());
+            log.info(fullSQL);
+            fullSQL = fullSQL.replace("#$#", "%");
+            log.info(fullSQL);
+            //tableInfo.setViewSql(fullSQL);
+            setUIEnabled(false);
+            
+            resultsInfo = new QueryForIdResultsSQL(tableInfo.getId(), null, tableInfo, 0, "");
+            resultsInfo.setSQL(fullSQL);
         }
         
-        String fullStrSql = sqlStr;
-        
-        //System.out.println("\n1["+sqlStr+"]");
-        //System.out.println("2["+strBuf+"]");
-        
-        String fullSQL = fullStrSql.replace("%s", strBuf.toString());
-        log.info(fullSQL);
-        fullSQL = fullSQL.replace("#$#", "%");
-        log.info(fullSQL);
-        //tableInfo.setViewSql(fullSQL);
-        setUIEnabled(false);
-        
-        QueryForIdResultsSQL results = new QueryForIdResultsSQL(tableInfo.getId(), null, tableInfo, 0, "");
-        results.setSQL(fullSQL);
-        addSearchResults(results);
+        addSearchResults(resultsInfo);
         
         if (comp instanceof JTextField)
         {
@@ -609,6 +627,15 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
         {
             okBtn.doClick();
         }
+    }
+    
+
+    /**
+     * @param builder
+     */
+    public void registerQueryBuilder(final ViewBasedSearchQueryBuilderIFace builder)
+    {
+        this.queryBuilder = builder;
     }
     
 }

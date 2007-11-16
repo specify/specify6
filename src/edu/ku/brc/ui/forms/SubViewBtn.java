@@ -23,9 +23,14 @@ import java.util.Properties;
 import java.util.Set;
 
 import javax.swing.JButton;
+import javax.swing.JPanel;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
@@ -44,7 +49,7 @@ import edu.ku.brc.ui.forms.persist.ViewIFace;
  * Created Date: Nov 6, 2007
  *
  */
-public class SubViewBtn extends JButton implements GetSetValueIFace
+public class SubViewBtn extends JPanel implements GetSetValueIFace
 {
     public enum DATA_TYPE {IS_SET, IS_SINGLE, IS_THIS, IS_SINGLESET_ITEM}
     
@@ -60,6 +65,8 @@ public class SubViewBtn extends JButton implements GetSetValueIFace
     protected String                cellName;
     protected int                   options;
     protected String                baseLabel;
+    
+    protected JButton               subViewBtn;
     
     protected Object                dataObj;
     protected Object                newDataObj;
@@ -90,6 +97,7 @@ public class SubViewBtn extends JButton implements GetSetValueIFace
 
         cellName   = subviewDef.getName();
         frameTitle = props.getProperty("title");
+        String align =  props.getProperty("align", "left");
         
         baseLabel = props.getProperty("label");
         if (baseLabel == null)
@@ -101,7 +109,26 @@ public class SubViewBtn extends JButton implements GetSetValueIFace
             }
         }
         
-        setText(baseLabel);
+        int x = 2;
+        String colDef;
+        if (align.equals("center"))
+        {
+            colDef = "f:p:g,p,f:p:g";
+            
+        } else if (align.equals("right"))
+        {
+            colDef = "f:p:g, p";
+            
+        } else // defaults to left
+        {
+            colDef = "p,f:p:g";
+            x = 1;  
+        }
+        
+        subViewBtn = new JButton(baseLabel);
+        PanelBuilder    pb = new PanelBuilder(new FormLayout(colDef, "p"), this);
+        CellConstraints cc = new CellConstraints();
+        pb.add(subViewBtn, cc.xy(x,1));
         
         try
         {
@@ -113,7 +140,7 @@ public class SubViewBtn extends JButton implements GetSetValueIFace
            throw new RuntimeException(ex);
         }
         
-        addActionListener(new ActionListener() {
+        subViewBtn.addActionListener(new ActionListener() {
 
             /* (non-Javadoc)
              * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
@@ -124,6 +151,16 @@ public class SubViewBtn extends JButton implements GetSetValueIFace
                 showForm();
             }
         });
+    }
+    
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#setEnabled(boolean)
+     */
+    public void setEnabled(final boolean enabled)
+    {
+        super.setEnabled(enabled);
+        
+        subViewBtn.setEnabled(enabled);
     }
     
     /**
@@ -226,7 +263,7 @@ public class SubViewBtn extends JButton implements GetSetValueIFace
             {
                 format = "%s (%s) ...";
             }
-            setText(String.format(format, baseLabel, size));
+            subViewBtn.setText(String.format(format, baseLabel, size));
         }
     }
     

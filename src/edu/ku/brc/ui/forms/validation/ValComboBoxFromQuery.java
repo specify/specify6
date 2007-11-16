@@ -67,6 +67,7 @@ import edu.ku.brc.ui.ViewBasedDialogFactoryIFace;
 import edu.ku.brc.ui.db.JComboBoxFromQuery;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
+import edu.ku.brc.ui.db.ViewBasedSearchQueryBuilderIFace;
 import edu.ku.brc.ui.forms.DataGetterForObj;
 import edu.ku.brc.ui.forms.DataObjectSettable;
 import edu.ku.brc.ui.forms.DataObjectSettableFactory;
@@ -119,7 +120,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     protected boolean            hasBeenVisited = false;
     protected Color              bgColor    = null;
 
-    protected VCBCombobBox       comboBox;
+    protected VCBComboBox       comboBox;
     protected JButton            searchBtn  = null;
     protected JButton            createBtn  = null;
     protected JButton            editBtn    = null;
@@ -148,6 +149,8 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     protected ActionListener defaultSearchAction;
     protected ActionListener defaultEditAction;
     protected ActionListener defaultNewAction;
+    
+    protected ViewBasedSearchQueryBuilderIFace builder = null;
 
     /**
      *  Constructor.
@@ -200,7 +203,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         this.searchDialogName = searchDialogName;
         this.displayInfoDialogName = displayInfoDialogName;
 
-        comboBox = new VCBCombobBox(tableName, idColumn, keyColumn, displayColumn, format);
+        comboBox = new VCBComboBox(tableName, idColumn, keyColumn, displayColumn, format);
         comboBox.setAllowNewValues(true);
         
         init(objTitle, btns);
@@ -836,6 +839,15 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         comboBox = null;
         AppPreferences.getRemote().removeChangeListener("ui.formatting.requiredfieldcolor", this);
     }
+    
+    /**
+     * Registers an interface that can be asked for the Query string and the results info.
+     * @param builder the builder object
+     */
+    public void registerQueryBuilder(final ViewBasedSearchQueryBuilderIFace builderArg)
+    {
+        this.builder = builderArg;
+    }
 
     // --------------------------------------------------------
     // ListDataListener (JComboxBox)
@@ -937,11 +949,14 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         }
     }
     
-    class VCBCombobBox extends JComboBoxFromQuery implements DocumentListener
+    //-------------------------------------------------
+    // Inner Classes
+    //-------------------------------------------------
+    class VCBComboBox extends JComboBoxFromQuery implements DocumentListener
     {
         protected boolean hasFocus = false;
         
-        public VCBCombobBox(final String tableName,
+        public VCBComboBox(final String tableName,
                             final String idColumn,
                             final String keyColumn,
                             final String displayColumns,
@@ -1027,7 +1042,19 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             {
                 l.focusLost(e);
             }
-
+        }
+        
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.db.JComboBoxFromQuery#buildSQL(java.lang.String)
+         */
+        @Override
+        protected String buildSQL(final String searchText)
+        {
+            if (builder != null)
+            {
+                return builder.buildSQL(searchText);
+            }
+            return super.buildSQL(searchText);
         }
         
         /**

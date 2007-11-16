@@ -107,27 +107,34 @@ public class DataFlavorTableExt extends DataFlavor
     
     public void addTableIds(final int[] ids)
     {
-        if (tableIds == null)
-        {
-            tableIds = new Vector<Integer>();
-            hash     = new Hashtable<Integer, Boolean>();
-        }
         for (int id : ids)
         {
-            tableIds.add(id);
-            hash.put(id, true);
+            addTableId(id);
         }
     }
 
-    public void addTableId(final int id)
+    public void addTableId(final Integer id)
     {
         if (tableIds == null)
         {
             tableIds = new Vector<Integer>();
             hash     = new Hashtable<Integer, Boolean>();
         }
-        tableIds.add(id);
-        hash.put(id, true);
+        
+        if (hash.get(id) == null)
+        {
+            tableIds.add(id);
+            hash.put(id, true);
+        }
+    }
+    
+    public void removeTableId(final Integer id)
+    {
+        if (tableIds != null)
+        {
+            tableIds.remove(id);
+            hash.remove(id);
+        }
     }
 
     @Override

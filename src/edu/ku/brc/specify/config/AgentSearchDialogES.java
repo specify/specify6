@@ -32,7 +32,6 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.NavBoxLayoutManager;
-import edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
@@ -42,6 +41,7 @@ import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanel;
 import edu.ku.brc.specify.ui.DBObjSearchDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.ViewFactory;
 import edu.ku.brc.ui.forms.Viewable;

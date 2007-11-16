@@ -31,6 +31,7 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
+import edu.ku.brc.ui.db.ViewBasedSearchQueryBuilderIFace;
 
 /**
  * @author rods
@@ -149,4 +150,20 @@ public class DBObjSearchDialog extends CustomDialog implements ViewBasedSearchDi
         }
         return null;
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.ViewBasedSearchDialogIFace#registerQueryBuilder(edu.ku.brc.ui.db.ViewBasedSearchQueryBuilderIFace)
+     */
+    @Override
+    public void registerQueryBuilder(ViewBasedSearchQueryBuilderIFace builder)
+    {
+        if (panel != null)
+        {
+            panel.registerQueryBuilder(builder);
+        } else
+        {
+            log.error("The internal panel is null!");
+        }
+    }
+    
 }

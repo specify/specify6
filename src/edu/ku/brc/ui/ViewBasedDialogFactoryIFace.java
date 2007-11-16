@@ -48,7 +48,7 @@ public interface ViewBasedDialogFactoryIFace
      * @param name the name of the DBObjSearchDialog to return
      * @return a DBObjSearchDialog by name
      */
-    public ViewBasedSearchDialogIFace createSearchDialog(Window window, String name);
+    public abstract ViewBasedSearchDialogIFace createSearchDialog(Window window, String name);
 
    /**
      * Creates a Frame/Dialog from the Factory by name.
@@ -61,12 +61,12 @@ public interface ViewBasedDialogFactoryIFace
      * @param type the type of frame (Frame or Dialog) model or non-model
      * @return the object (Frame) displaying the form
      */
-    public ViewBasedDisplayIFace createDisplay(Window      window, 
-                                               String      name,
-                                               String      frameTitle,
-                                               String      closeBtnTitle,
-                                               boolean     isEdit,
-                                               int         options,
-                                               FRAME_TYPE  type);
+    public abstract ViewBasedDisplayIFace createDisplay(Window      window, 
+                                                        String      name,
+                                                        String      frameTitle,
+                                                        String      closeBtnTitle,
+                                                        boolean     isEdit,
+                                                        int         options,
+                                                        FRAME_TYPE  type);
 
 }

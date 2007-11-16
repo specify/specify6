@@ -339,6 +339,22 @@ public class JComboBoxFromQuery extends JComboBox
 
         foundMatch = false;
     }
+    
+    /**
+     * Builds the SQL to be used to do the search.
+     * @param newEntryStr the string value to be searched
+     * @return the full sql string.
+     */
+    protected String buildSQL(final String newEntryStr)
+    {
+        if (sql == null)
+        {
+            // XXX MYSQL
+            return "select distinct " + displayColumns + "," + idColumn  + " from " + tableName + " where lower(" + keyColumn +
+                             ") like '"+ entryStr.toLowerCase() +"%' order by " + keyColumn + " asc";
+        }
+        return sql.replace("%s", entryStr.toLowerCase());
+    }
 
     /**
      * Fill the the drop down with the list from the query
@@ -362,16 +378,7 @@ public class JComboBoxFromQuery extends JComboBox
             }
             entryStr = newEntryStr;
 
-            String queryString;
-            if (sql == null)
-            {
-                // XXX MYSQL
-                queryString= "select distinct " + displayColumns + "," + idColumn  + " from " + tableName + " where lower(" + keyColumn +
-                                 ") like '"+ entryStr.toLowerCase() +"%' order by " + keyColumn + " asc";
-            } else
-            {
-                queryString = sql.replace("%s", entryStr.toLowerCase());
-            }
+            String queryString = buildSQL(newEntryStr);
             log.debug(queryString);
 
             Connection connection   = DBConnection.getInstance().createConnection();
