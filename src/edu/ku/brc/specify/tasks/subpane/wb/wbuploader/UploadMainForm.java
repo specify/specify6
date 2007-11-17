@@ -71,7 +71,7 @@ public class UploadMainForm extends JFrame
     protected JButton closeBtn;
     protected JButton cancelBtn;
     protected JButton undoBtn;
-    protected JButton printInvalidBtn;
+    protected JButton printBtn;
     protected JPanel msgPane;
     protected JLabel msgLbl;
     //protected DefaultListModel msgModel;
@@ -165,9 +165,9 @@ public class UploadMainForm extends JFrame
         
         sp = new JScrollPane(msgList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         msgPane.add(sp, BorderLayout.CENTER);
-        printInvalidBtn = new JButton(getResourceString("WB_UPLOAD_PRINT_INVALID_BTN")); 
-        printInvalidBtn.setActionCommand(PRINT_INVALID);
-        msgPane.add(printInvalidBtn, BorderLayout.SOUTH);
+        printBtn = new JButton(getResourceString("WB_UPLOAD_PRINT_INVALID_BTN")); 
+        printBtn.setActionCommand(PRINT_INVALID);
+        msgPane.add(printBtn, BorderLayout.SOUTH);
         mainPane.add(msgPane);
         
         mainPane.add(Box.createVerticalStrut(20));
@@ -236,9 +236,9 @@ public class UploadMainForm extends JFrame
         invalidValPanePB.add(sp, cc.xy(1, 3));
 
         PanelBuilder rppb = new PanelBuilder(new FormLayout("f:p:g, p", "p"));
-        printInvalidBtn = new JButton(getResourceString("WB_UPLOAD_PRINT_MESSAGES_BTN")); 
-        printInvalidBtn.setActionCommand(PRINT_INVALID);
-        rppb.add(printInvalidBtn, cc.xy(2, 1));
+        printBtn = new JButton(getResourceString("WB_UPLOAD_PRINT_MESSAGES_BTN")); 
+        printBtn.setActionCommand(PRINT_INVALID);
+        rppb.add(printBtn, cc.xy(2, 1));
         invalidValPanePB.add(rppb.getPanel(), cc.xy(1, 5));
         
         pb.add(msgPane, cc.xy(1, 5));
@@ -510,7 +510,7 @@ public class UploadMainForm extends JFrame
         setBtnListener(closeBtn, listener);
         setBtnListener(cancelBtn, listener);
         setBtnListener(undoBtn, listener);
-        setBtnListener(printInvalidBtn, listener);
+        setBtnListener(printBtn, listener);
     }
     
     public void addMsg(UploadMessage msg)
@@ -538,14 +538,25 @@ public class UploadMainForm extends JFrame
     
     public void updateObjectsCreated()
     {
+        showObjectsCreated(false);
+    }
+    
+    public void clearObjectsCreated()
+    {
+        showObjectsCreated(true);
+    }
+
+    protected void showObjectsCreated(boolean clear)
+    {
         DefaultListModel model = (DefaultListModel)uploadTbls.getModel();
         for (int i = model.getSize()-1; i >= 0; i--)
         {
-            ((UploadInfoRenderable)model.getElementAt(i)).setShowCreatedCnt(true);
+            ((UploadInfoRenderable)model.getElementAt(i)).setShowCreatedCnt(!clear);
             ((UploadInfoRenderable)model.getElementAt(i)).refresh();
         }
         uploadTbls.repaint();
     }
+
     
     public class TesterThingy implements ActionListener
     {
@@ -630,10 +641,10 @@ public class UploadMainForm extends JFrame
     }
 
     /**
-     * @return the printInvalidBtn
+     * @return the printBtn
      */
-    public JButton getPrintInvalidBtn()
+    public JButton getPrintBtn()
     {
-        return printInvalidBtn;
+        return printBtn;
     }
 }

@@ -8,9 +8,12 @@ package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.util.TreeMap;
 import java.util.Vector;
 
 import org.apache.log4j.Logger;
+
+import edu.ku.brc.util.Pair;
 
 /**
  * @author timbo
@@ -46,7 +49,7 @@ public class UploadMatchSetting
     /**
      * selections that should be re-used.
      */
-    protected Vector<MatchSelection> lookups;
+    protected TreeMap<String, MatchSelection> lookups;
     
     /**
      * Default value for MatchSelection.lookup
@@ -119,7 +122,7 @@ public class UploadMatchSetting
         log.debug("Setting match mode to skip row");
         colsToMatch = new Vector<Integer>();
         selections = new Vector<MatchSelection>();
-        lookups = new Vector<MatchSelection>();
+        lookups = new TreeMap<String, MatchSelection>();
         remember = true;
         matchEmptyValues = true; //for now, default probably should be false
     }
@@ -127,10 +130,31 @@ public class UploadMatchSetting
     public void addSelection(final MatchSelection selection)
     {
         selections.add(selection);
-        if (selection.isLookup())
+        if (remember || mode == UploadMatchSetting.ADD_NEW_MODE)
         {
-            lookups.add(selection);
+            lookups.put(selection.getRowValues(), selection);
         }
+    }
+    
+    public String buildRowValues(final Vector<Pair<String, String>> rowVals)
+    {
+        StringBuilder result = new StringBuilder();
+        for (Pair<String, String> val : rowVals)
+        {
+            result.append(val.getSecond());
+            result.append("\t");
+        }
+        return result.toString();
+    }
+    
+    public Object doLookup(final Vector<Pair<String, String>> values)
+    {
+        MatchSelection match = lookups.get(buildRowValues(values));
+        if (match != null)
+        {
+            return match.getSelectionKeyId();
+        }
+        return null;
     }
     
     public class MatchSelection
@@ -147,41 +171,26 @@ public class UploadMatchSetting
          * The id of the selected object
          */
         protected Object selectionKeyId;
-        /**
-         * one of the 'MODE' statics above 
-         */
-        protected int selectionMode;
-        
         
         /**
-         * The next time matching rowValues occur, use this selection w/o asking user.
+         * the value of the parent MatchSetting's mode when this selection was created.
          */
-        protected boolean lookup;
+        protected int modeOfSelection;
+        
         /**
          * @param rowValues
          * @param rowNumber
          * @param object
          */
-        public MatchSelection(final Vector<String> rowValues, int rowNumber, Object selectionKeyId, int mode, boolean lookup)
+        public MatchSelection(final Vector<Pair<String, String>> rowValues, int rowNumber, Object selectionKeyId, int mode)
         {
             super();
             this.rowValues = buildRowValues(rowValues);
             this.rowNumber = rowNumber;
             this.selectionKeyId = selectionKeyId;
-            this.selectionMode = mode;
-            this.lookup = lookup;
+            this.modeOfSelection = mode;
         }
         
-        protected String buildRowValues(final Vector<String> rowVals)
-        {
-            StringBuilder result = new StringBuilder();
-            for (String val : rowVals)
-            {
-                result.append(val);
-                result.append("\t");
-            }
-            return result.toString();
-        }
         /**
          * @return the rowNumber
          */
@@ -203,22 +212,14 @@ public class UploadMatchSetting
         {
             return selectionKeyId;
         }
-
+        
         /**
-         * @return the mode
+         * @return modeOfSelection
          */
-        public int getSelectionMode()
+        public int getModeOfSelection()
         {
-            return selectionMode;
+            return modeOfSelection;
         }
-
-        /**
-         * @return the lookup
-         */
-        public boolean isLookup()
-        {
-            return lookup;
-        } 
      }
 
     /**

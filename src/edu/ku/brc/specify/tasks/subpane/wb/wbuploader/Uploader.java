@@ -237,6 +237,18 @@ public class Uploader implements ActionListener, WindowStateListener
     }
     
     /**
+     * the index of the currently processing row in the dataset. 
+     */
+    protected int rowUploading;
+    
+    /**
+     * @return rowUploading
+     */
+    public int getRow()
+    {
+        return rowUploading;
+    }
+    /**
      * @return the identifier.
      */
     public final String getIdentifier()
@@ -1179,6 +1191,11 @@ public class Uploader implements ActionListener, WindowStateListener
             messages.add(newMsg);
         }
         newMessages.clear();
+        //mainForm.updateObjectsCreated();
+    }
+    
+    protected synchronized void updateObjectsCreated()
+    {
         mainForm.updateObjectsCreated();
     }
     /**
@@ -1668,6 +1685,7 @@ public class Uploader implements ActionListener, WindowStateListener
                 mainForm.addMsg(invalid);
             }
         }
+        mainForm.getPrintBtn().setEnabled(validationIssues != null && validationIssues.size() > 0);
         
         mainForm.getCurrOpProgress().setVisible(mainForm.getCancelBtn().isVisible());
         
@@ -1811,12 +1829,12 @@ public class Uploader implements ActionListener, WindowStateListener
                 initProgressBar(0, uploadData.getRows());
                 try
                 {
-                    for (int r = 0; r < uploadData.getRows();)
+                    for (rowUploading = 0; rowUploading < uploadData.getRows();)
                     {
-                        log.debug("uploading row " + String.valueOf(r));
+                        log.debug("uploading row " + String.valueOf(rowUploading));
+                        setCurrentOpProgress(rowUploading+1);
                         if (!holdIt)
                         {
-                            showUploadProgress(r + 1);
                             for (UploadTable t : uploadTables)
                             {
                                 if (cancelled)
@@ -1825,20 +1843,22 @@ public class Uploader implements ActionListener, WindowStateListener
                                 }
                                 try
                                 {
-                                    uploadRow(t, r);
+                                    uploadRow(t, rowUploading);
                                 }
                                 catch (UploaderException ex)
                                 {
-                                    if (ex.getAbortStatus() == UploaderException.ABORT_ROW)
+                                    if (ex.getStatus() == UploaderException.ABORT_ROW)
                                     {
                                         log.debug(ex.getMessage());
-                                        abortRow(ex, r);
+                                        abortRow(ex, rowUploading);
                                         break;
                                     }
                                     throw ex;
                                 }
+                                updateObjectsCreated();
                             }
-                            r++;
+                            rowUploading++;
+                            showUploadProgress(rowUploading);
                         }
                     }
                 }
@@ -1860,6 +1880,7 @@ public class Uploader implements ActionListener, WindowStateListener
                 }
                 else 
                 {
+                    mainForm.clearObjectsCreated();
                     for (int ut = uploadTables.size()-1; ut >= 0; ut--)
                     {
                         uploadTables.get(ut).undoUpload();
@@ -1906,9 +1927,14 @@ public class Uploader implements ActionListener, WindowStateListener
     protected void abortRow(UploaderException cause, int row)
     {
         log.debug("NOT undoing writes which have already occurred while processing aborted row");
-        SkippedRow sr = new SkippedRow(cause, row);
+        SkippedRow sr = new SkippedRow(cause, row+1);
         skippedRows.add(sr);
         newMessages.add(sr);
+    }
+    
+    public void addMsg(final UploadMessage msg)
+    {
+        newMessages.add(msg);
     }
     
 	/**

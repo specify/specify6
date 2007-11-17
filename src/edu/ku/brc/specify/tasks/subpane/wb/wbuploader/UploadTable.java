@@ -3,6 +3,8 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -45,6 +47,7 @@ import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader.ParentTableEntry;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
+import edu.ku.brc.util.Pair;
 
 /**
  * @author timbo
@@ -138,6 +141,11 @@ public class UploadTable implements Comparable<UploadTable>
      * 
      */
     protected boolean updateMatches = false;
+    
+    /**
+     * Used in processing new objects added as result of the UploadMatchSetting.ADD_NEW_MODE option.
+     */
+    protected Vector<Pair<String,String>> restrictedValsForAddNewMatch = null;
     
     /**
      * @param table
@@ -1391,18 +1399,27 @@ public class UploadTable implements Comparable<UploadTable>
      * @param propName
      * @param arg
      * 
+     * returns string representation of the restriction added.
+     * 
      * Adds a restriction to critter for propName.
      */
-    protected void addRestriction(final CriteriaIFace critter, final String propName, final Object arg, boolean ignoreNulls)
+    protected String addRestriction(final CriteriaIFace critter, final String propName, final Object arg, boolean ignoreNulls)
     {
-        if (arg != null)
+        if (arg != null && !arg.equals(""))
         {
             critter.add(Restrictions.eq(propName, arg));
+            if (arg instanceof DataModelObjBase)
+            {
+                return ((DataModelObjBase)arg).getId().toString();
+            }
+            return arg.toString();
         }
-        else if (!ignoreNulls || matchSetting.isMatchEmptyValues())
+        if (!ignoreNulls || matchSetting.isMatchEmptyValues())
         {
             critter.add(Restrictions.isNull(propName));
+            return "#null#";
         }
+        return "";
     }
     
     protected List<DataModelObjBase> matchChildren(List<DataModelObjBase> matches, int recNum) throws UploaderException
@@ -1435,10 +1452,8 @@ public class UploadTable implements Comparable<UploadTable>
      * 
      * Searches the database for matches to values in current row of uploading dataset. If one match
      * is found it is set to the current value for this table. If no matches are created a new
-     * record is created and saved for the current value. If more than one match an Uploader
-     * exception is thrown. (NOTE: validation SHOULD have already been performed to prevent more
-     * than one match from occurring, or to specify which object to choose when multiple matches are
-     * found.
+     * record is created and saved for the current value. If more than one match is found then
+     * action depends on props of matchSetting member.
      */
     @SuppressWarnings({"unchecked", "unused"})
     protected boolean findMatch(int recNum, boolean forceMatch) throws UploaderException,
@@ -1448,6 +1463,8 @@ public class UploadTable implements Comparable<UploadTable>
         //if (!forceMatch && (!hasChildren || tblClass == CollectionObject.class)) { return false; }
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         DataModelObjBase match = null;
+        Vector<Pair<String, String>> restrictedVals = new Vector<Pair<String, String>>();
+        boolean ignoringBlankCell = false;
         try
         {
             CriteriaIFace critter = session.createCriteria(tblClass);
@@ -1455,14 +1472,17 @@ public class UploadTable implements Comparable<UploadTable>
             {
                 if (uf.getSetter() != null)
                 {
-                    addRestriction(critter, deCapitalize(uf.getField().getName()), getArgForSetter(uf)[0], true);
+                    String restriction = addRestriction(critter, deCapitalize(uf.getField().getName()), getArgForSetter(uf)[0], true);
+                    ignoringBlankCell = ignoringBlankCell || restriction.equals("") && !matchSetting.isMatchEmptyValues();
+                    restrictedVals.add(new Pair<String, String>(uf.getWbFldName(), restriction));
                 }
             }
             for (Vector<ParentTableEntry> ptes : parentTables)
             {
                 for (ParentTableEntry pte : ptes)
                 {
-                    addRestriction(critter, pte.getPropertyName(), pte.getImportTable().getCurrentRecord(recNum), false);
+                    restrictedVals.add(new Pair<String, String>(pte.getPropertyName(),
+                            addRestriction(critter, pte.getPropertyName(), pte.getImportTable().getCurrentRecord(recNum), false)));
                 }
             }
             for (RelatedClassEntry rce : relatedClassDefaults)
@@ -1495,6 +1515,11 @@ public class UploadTable implements Comparable<UploadTable>
             if (matches.size() == 1)
             {
                 match = matches.get(0);
+                if (ignoringBlankCell)
+                {
+                    Uploader.currentUpload.addMsg(new PartialMatchMsg(restrictedVals, match.toString(), 
+                            Uploader.currentUpload.getRow()+1, this));
+                }
             }
             else if (matches.size() > 1)
             {
@@ -1505,7 +1530,12 @@ public class UploadTable implements Comparable<UploadTable>
                 }
                 else
                 {
-                    match = dealWithMultipleMatches(matches);
+                    match = dealWithMultipleMatches(matches, restrictedVals);
+                    if (match != null)
+                    {
+                        matchSetting.addSelection(matchSetting.new MatchSelection(restrictedVals, Uploader.currentUpload.getRow(), match.getId(),
+                                matchSetting.getMode()));
+                    }
                 }
             }
         }
@@ -1528,23 +1558,41 @@ public class UploadTable implements Comparable<UploadTable>
     
     /**
      * @param matches
-     * @return 
+     * @return selected match
      */
-    protected DataModelObjBase dealWithMultipleMatches(List<DataModelObjBase> matches) throws UploaderException
+    protected DataModelObjBase dealWithMultipleMatches(final List<DataModelObjBase> matches, final Vector<Pair<String,String>> restrictedVals) throws UploaderException
     {
-        if (matchSetting.getMode() == UploadMatchSetting.ADD_NEW_MODE)
-        {
-            return null;
-        }
         if (matchSetting.getMode() == UploadMatchSetting.PICK_FIRST_MODE)
         {
             return matches.get(0);
         }
         if (matchSetting.getMode() == UploadMatchSetting.SKIP_ROW_MODE)
         {
-            throw new UploaderException("Skipping row due to multiple matches", UploaderException.ABORT_ROW);
+            throw new UploaderMatchSkipException(UploaderMatchSkipException.makeMsg(restrictedVals, uploadFields.get(0).size(), Uploader.getCurrentUpload().getRow()), 
+                    matches, Uploader.getCurrentUpload().getRow(), this);
         }
-        
+        if (matchSetting.isRemember() || matchSetting.getMode() == UploadMatchSetting.ADD_NEW_MODE)
+        {
+            Object key = matchSetting.doLookup(restrictedVals);
+            if (matchSetting.getMode() == UploadMatchSetting.ADD_NEW_MODE && key == null)
+            {
+                //yuck. Only want to create one new record for each set values. If cell values 'Roger' 'Johnson' match 2 records in database
+                //we only want to add ONE new record for 'Roger' 'Johnson' and use it from now on.
+                restrictedValsForAddNewMatch = restrictedVals;                 
+                return null;
+            }
+            if (key != null)
+            {
+                for (DataModelObjBase match : matches)
+                {
+                    if (key.equals(match.getId()))
+                    {
+                        return match;
+                    }
+                }
+                log.error("WB values matched previous selection, but no matching database object was found.");
+            }
+        }
         String title = null;
         DBTableInfo ti = DBTableIdMgr.getInstance().getInfoByTableName(getWriteTable().getName());        
         if (ti != null)
@@ -1761,6 +1809,7 @@ public class UploadTable implements Comparable<UploadTable>
                         uploadedKeys.add(rec.getId());
                     }
                     setCurrentRecord(rec, recNum);
+                    finishMatching(rec);
                 }
             }
             catch (InstantiationException ieEx)
@@ -1791,6 +1840,15 @@ public class UploadTable implements Comparable<UploadTable>
         }
     }
 
+    protected void finishMatching(final DataModelObjBase rec)
+    {
+        if (restrictedValsForAddNewMatch != null)
+        {
+            matchSetting.addSelection(matchSetting.new MatchSelection(restrictedValsForAddNewMatch, Uploader.currentUpload.getRow(), rec.getId(),
+                    matchSetting.getMode()));
+            restrictedValsForAddNewMatch = null;
+        }
+    }
     public Vector<ParentTableEntry> getAncestors()
     {
         Vector<ParentTableEntry> result = new Vector<ParentTableEntry>();
@@ -2158,5 +2216,89 @@ public class UploadTable implements Comparable<UploadTable>
     public UploadMatchSetting getMatchSetting()
     {
         return matchSetting;
+    }
+    
+    public class PartialMatchMsg implements UploadMessage
+    {
+        protected String matchVals;
+        protected String matchedText;
+        protected int row;
+        protected UploadTable uploadTable;
+        /**
+         * @param matchVals
+         * @param matchedText
+         * @param row
+         * @param uploadTable
+         */
+        public PartialMatchMsg(Vector<Pair<String,String>> cellVals, String matchedText, int row, UploadTable uploadTable)
+        {
+            StringBuilder sb = new StringBuilder();
+            for (Pair<String,String> p : cellVals)
+            {
+                if (!sb.toString().equals(""))
+                {
+                    sb.append(", ");
+                }
+                sb.append(p.getFirst());
+                sb.append("=");
+                sb.append(p.getSecond());
+            }
+            this.matchVals = sb.toString();
+            this.matchedText = matchedText;
+            this.row = row;
+            this.uploadTable = uploadTable;
+        }
+        
+        /* (non-Javadoc)
+         * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMessage#getData()
+         */
+        public Object getData()
+        {
+            return uploadTable;
+        }
+        
+        /* (non-Javadoc)
+         * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMessage#getCol()
+         */
+        public int getCol()
+        {
+            return -1;
+        }
+        
+        /* (non-Javadoc)
+         * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMessage#getRow()
+         */
+        public int getRow()
+        {
+            return row;
+        }
+        
+        /* (non-Javadoc)
+         * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMessage#getMsg()
+         */
+        public String getMsg()
+        {
+            StringBuilder result = new StringBuilder(getResourceString("Row"));
+            result.append(" ");
+            result.append(String.valueOf(row));
+            result.append(": ");
+            result.append(getResourceString("WB_UPLOAD_PARTIAL_MATCH"));
+            result.append(" (");
+            result.append(matchVals);
+            result.append(" ");
+            result.append(getResourceString("WB_UPLOAD_MATCHED"));
+            result.append(" ");
+            result.append(matchedText);
+            return result.toString();
+        }
+        
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString()
+        {
+            return getMsg();
+        }
     }
 }

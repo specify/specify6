@@ -17,14 +17,14 @@ package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
  */
 public class UploaderException extends Exception
 {
-	protected int abortStatus = ABORT_ROW;
+	protected int status = ABORT_ROW;
 	public static final int ABORT_ROW = 10;
 	public static final int ABORT_IMPORT = 20;
 	
 	public UploaderException(final String msg, int abortStatus)
 	{
 		super(msg);
-		this.abortStatus = abortStatus;
+		this.status = abortStatus;
 	}
 	
 	public UploaderException(Exception ex)
@@ -35,14 +35,14 @@ public class UploaderException extends Exception
     public UploaderException(Exception ex, int abortStatus)
     {
         super(ex);
-        this.abortStatus = abortStatus;
+        this.status = abortStatus;
     }
 
 	/**
-	 * @return the abortStatus
+	 * @return the status
 	 */
-	public int getAbortStatus()
+	public int getStatus()
 	{
-		return abortStatus;
+		return status;
 	}
 }

@@ -7,7 +7,7 @@
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
 import java.util.Vector;
-
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import edu.ku.brc.af.core.expresssearch.TableNameRendererIFace;
 
 public class UploadInfoRenderable implements TableNameRendererIFace, Comparable<UploadInfoRenderable>
@@ -58,7 +58,19 @@ public class UploadInfoRenderable implements TableNameRendererIFace, Comparable<
         {
             return title;
         }
-        return title + " (" + createdCnt + " objects created)";
+        StringBuilder count = new StringBuilder(" (");
+        count.append(createdCnt);
+        count.append(" ");
+        if (createdCnt == 1)
+        {
+            count.append(getResourceString("WB_OBJECT_CREATED"));
+        }
+        else
+        {
+            count.append(getResourceString("WB_OBJECTS_CREATED"));
+        }
+        count.append(")");
+        return title + count.toString();
     }
     
     /* (non-Javadoc)
@@ -75,7 +87,7 @@ public class UploadInfoRenderable implements TableNameRendererIFace, Comparable<
     @Override
     public boolean equals(Object obj)
     {
-        if (obj.getClass().equals(UploadInfoRenderable.class))
+        if (!obj.getClass().equals(UploadInfoRenderable.class))
         {
             return false;
         }
