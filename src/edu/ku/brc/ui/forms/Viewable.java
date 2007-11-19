@@ -235,6 +235,11 @@ public interface Viewable
     public JComponent getSaveComponent();
     
     /**
+     * @return
+     */
+    public boolean checkForChanges();
+    
+    /**
      * Focus the appropriate UI element.
      */
     public void focus();

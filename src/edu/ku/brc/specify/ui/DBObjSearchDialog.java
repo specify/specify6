@@ -27,6 +27,7 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.ui.CustomDialog;
@@ -65,10 +66,16 @@ public class DBObjSearchDialog extends CustomDialog implements ViewBasedSearchDi
                              final String searchName,
                              final String title,
                              final String className,
-                             final String idFieldName) throws HeadlessException
+                             final String idFieldName,
+                             final String helpContext) throws HeadlessException
     {
-        //this((Window)parent, viewSetName, viewName, searchName, className, idFieldName);
-        super(parent, title, true, null);
+        super(parent, title, true, OK_BTN | CANCEL_BTN, null);
+        
+        if (StringUtils.isNotEmpty(helpContext))
+        {
+            this.whichBtns |= HELP_BTN;
+            setHelpContext(helpContext);
+        }
         
         this.parent = parent;
         this.panel  = new DBObjSearchPanel(viewSetName, viewName, searchName, className, idFieldName, SwingConstants.CENTER);
@@ -94,9 +101,16 @@ public class DBObjSearchDialog extends CustomDialog implements ViewBasedSearchDi
                              final String searchName,
                              final String title,
                              final String className,
-                             final String idFieldName) throws HeadlessException
+                             final String idFieldName,
+                             final String helpContext) throws HeadlessException
     {
-        super(parent, title, true, OK_BTN | CANCEL_BTN, null);
+        super(parent, title, true, OK_BTN | CANCEL_BTN | HELP_BTN, null);
+        
+        if (StringUtils.isNotEmpty(helpContext))
+        {
+            this.whichBtns |= HELP_BTN;
+            setHelpContext(helpContext);
+        }
         
         this.parent = parent;
         this.panel  = new DBObjSearchPanel(viewSetName, viewName, searchName, className, idFieldName, SwingConstants.CENTER);

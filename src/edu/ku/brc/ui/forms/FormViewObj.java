@@ -1207,6 +1207,14 @@ public class FormViewObj implements Viewable,
         this.setDataIntoUI();
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#doSave()
+     */
+    public boolean doSave()
+    {
+        return saveObject();
+    }
+    
     /**
      * This method enables us to loop when there is a duplicate key
      * @param dataObj the data object to be saved
@@ -1552,6 +1560,20 @@ public class FormViewObj implements Viewable,
      */
     protected void removeObject()
     {
+        Object[] delBtnLabels = {getResourceString("Delete"), getResourceString("Cancel")};
+        String title = dataObj instanceof FormDataObjIFace ? ((FormDataObjIFace)dataObj).getIdentityTitle() : tableInfo.getTitle();
+        int rv = JOptionPane.showOptionDialog(null, UIRegistry.getLocalizedMessage("ASK_DELETE", title),
+                                              getResourceString("Delete"),
+                                              JOptionPane.YES_NO_OPTION,
+                                              JOptionPane.QUESTION_MESSAGE,
+                                              null,
+                                              delBtnLabels,
+                                              delBtnLabels[1]);
+        if (rv == JOptionPane.NO_OPTION)
+        {
+            return;
+        }
+        
         // Delete a child object by caching it in the Top Level MultiView
         if (mvParent != null && !mvParent.isTopLevel())
         {
@@ -3711,6 +3733,10 @@ public class FormViewObj implements Viewable,
 
     }
     
+    //-------------------------------------------------
+    // SelectorCellRenderer
+    //-------------------------------------------------
+
     public class SelectorCellRenderer extends DefaultListCellRenderer
     {
         public SelectorCellRenderer() 
@@ -3718,7 +3744,7 @@ public class FormViewObj implements Viewable,
             super();
         }
 
-        public Component getListCellRendererComponent(JList   list,
+        public Component getListCellRendererComponent(@SuppressWarnings("hiding")JList   list,
                                                       Object  value,   // value to display
                                                       int     index,      // cell index
                                                       boolean iss,    // is the cell selected

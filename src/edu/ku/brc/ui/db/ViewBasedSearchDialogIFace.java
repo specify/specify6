@@ -58,4 +58,9 @@ public interface ViewBasedSearchDialogIFace
      * @param builder the builder object
      */
     public void registerQueryBuilder(ViewBasedSearchQueryBuilderIFace builder);
+    
+    /**
+     * @param helpContext
+     */
+    public void setHelpContext(String helpContext);
 }

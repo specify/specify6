@@ -102,7 +102,8 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
                                                     name,
                                                     getAttr(fileElement, "title", null),
                                                     getAttr(fileElement, "class", null),
-                                                    getAttr(fileElement, "idfield", null));
+                                                    getAttr(fileElement, "idfield", null),
+                                                    getAttr(fileElement, "helpcontext", ""));
 
                     if (type.equalsIgnoreCase("search"))
                     {
@@ -146,7 +147,8 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
                         info.getSearchName(),
                         UIRegistry.getResourceString(info.getTitle()),
                         info.getClassName(),
-                        info.getIdFieldName()
+                        info.getIdFieldName(),
+                        info.getHelpContext()
                         );
             }
             // else
@@ -156,7 +158,8 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
                     info.getSearchName(),
                     UIRegistry.getResourceString(info.getTitle()),
                     info.getClassName(),
-                    info.getIdFieldName()
+                    info.getIdFieldName(),
+                    info.getHelpContext()
                     );                
         }
         // else
@@ -247,13 +250,15 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
         protected String title;
         protected String className;
         protected String idFieldName;
+        protected String helpContext;
 
         public DialogInfo(String viewSetName,
                           String viewName,
                           String dialogName,
                           String title,
                           String className,
-                          String idFieldName)
+                          String idFieldName,
+                          String helpContext)
         {
             super();
             this.viewSetName = viewSetName;
@@ -262,6 +267,7 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
             this.title       = title;
             this.className   = className;
             this.idFieldName = idFieldName;
+            this.helpContext = helpContext;
         }
 
         public String getClassName()
@@ -292,6 +298,11 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
         public String getViewSetName()
         {
             return viewSetName;
+        }
+
+        public String getHelpContext()
+        {
+            return helpContext;
         }
     }
 }

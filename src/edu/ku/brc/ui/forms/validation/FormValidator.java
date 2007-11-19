@@ -1196,15 +1196,11 @@ public class FormValidator implements ValidationListener, DataChangeListener
     protected void enableUIItems(final boolean itsOKToEnable, final EnableType type)
     {
         List<Component> list = type == EnableType.ValidItems ? enableItemsValid : enableItemsChanged;
-        log.debug(name+" hasChanged "+hasChanged+"  itsOKToEnable "+itsOKToEnable+ " enableItems: " + list.size());
-        log.debug(this.hashCode()+"  "+hasChanged+"  "+itsOKToEnable);
+        //log.debug(name+" hasChanged "+hasChanged+"  itsOKToEnable "+itsOKToEnable+ " enableItems: " + list.size());
+        //log.debug(this.hashCode()+"  "+hasChanged+"  "+itsOKToEnable);
 
         for (Component comp : list)
         {
-            if (comp instanceof JButton)
-            {
-                log.debug(">>>>>>>> "+((JButton)comp).getText());
-            }
             comp.setEnabled(itsOKToEnable);
         }
         updateValidationBtnUIState();
@@ -1240,12 +1236,12 @@ public class FormValidator implements ValidationListener, DataChangeListener
     
     public void validateRoot()
     {
-        FormValidator parent = this;
-        while (parent.getParent() != null)
+        FormValidator fvParent = this;
+        while (fvParent.getParent() != null)
         {
-            parent = parent.getParent();
+            fvParent = fvParent.getParent();
         }
-        parent.validateForm();
+        fvParent.validateForm();
     }
 
     //-----------------------------------------------------

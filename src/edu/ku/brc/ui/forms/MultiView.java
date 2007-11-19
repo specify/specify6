@@ -639,7 +639,16 @@ public class MultiView extends JPanel
      */
     public void showView(final AltViewIFace altView)
     {
-        showView(altView.getName());
+        if (hasChanged())
+        {
+            if (currentViewable.checkForChanges())
+            {
+                showView(altView.getName());         
+            }
+        } else
+        {
+            showView(altView.getName());
+        }
     }
 
     /**

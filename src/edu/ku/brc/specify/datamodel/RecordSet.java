@@ -65,9 +65,12 @@ import edu.ku.brc.dbsupport.RecordSetItemIFace;
     })
 public class RecordSet extends DataModelObjBase implements java.io.Serializable, RecordSetIFace 
 {
-
+    public final static Byte GLOBAL    = 0;
+    public final static Byte WB_UPLOAD = 1;
+       
     // Fields
      protected Integer                 recordSetId;
+     protected Byte                    type;
      protected String                  name;
      protected Integer                 dbTableId;
      protected String                  remarks;
@@ -106,6 +109,16 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
         this.dbTableId = dbTableId;
     }
 
+    /** constructor with name, id, type */
+    public RecordSet(final String name, final int dbTableId, final Byte type) 
+    {
+        initialize();
+        this.name      = name;
+        this.dbTableId = dbTableId;
+        this.dbTableId = dbTableId;
+        this.type      = type;
+    }
+
     // Initializer
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.RecordSet#initialize()
@@ -118,6 +131,7 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
     {
         super.init();
         recordSetId = null;
+        type        = GLOBAL;
         //name = null;
         //tableId = null;
         remarks = null;
@@ -142,6 +156,23 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
     public Integer getRecordSetId()
     {
         return this.recordSetId;
+    }
+
+    /**
+     * @return the type
+     */
+    @Column(name = "Type", unique = false, nullable = false, insertable = true, updatable = true)
+    public Byte getType()
+    {
+        return type;
+    }
+
+    /**
+     * @param type the type to set
+     */
+    public void setType(Byte type)
+    {
+        this.type = type;
     }
 
     /* (non-Javadoc)

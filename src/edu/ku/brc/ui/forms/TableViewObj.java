@@ -41,6 +41,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -462,8 +463,7 @@ public class TableViewObj implements Viewable,
         table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e)
             {
-                
-                ListSelectionModel lsm          = (ListSelectionModel)e.getSource();
+                ListSelectionModel lsm = (ListSelectionModel)e.getSource();
                 updateUI(!lsm.isSelectionEmpty());
                 
             }
@@ -645,30 +645,41 @@ public class TableViewObj implements Viewable,
     protected void deleteRow(final int rowIndex)
     {
         FormDataObjIFace dObj = (FormDataObjIFace)dataObjList.get(rowIndex);
-        if (dObj == null)
+        if (dObj != null)
         {
-            return;
-        }
-        parentDataObj.removeReference(dObj, dataSetFieldName);
-        dataObjList.remove(rowIndex);
-        
-        model.fireDataChanged();
-        table.invalidate();
-        
-        JComponent comp = mvParent.getTopLevel();
-        comp.validate();
-        comp.repaint();
-        
-        tellMultiViewOfChange();
-        
-        // Delete a child object by caching it in the Top Level MultiView
-        if (mvParent != null && !mvParent.isTopLevel())
-        {
-            mvParent.getTopLevel().addDeletedItem(dObj);
-            String delMsg = (businessRules != null) ? businessRules.getDeleteMsg(dObj) : "";
-            UIRegistry.getStatusBar().setText(delMsg);
-
-            return;
+            Object[] delBtnLabels = {getResourceString("Delete"), getResourceString("Cancel")};
+            int rv = JOptionPane.showOptionDialog(null, UIRegistry.getLocalizedMessage("ASK_DELETE", dObj.getIdentityTitle()),
+                                                  getResourceString("Delete"),
+                                                  JOptionPane.YES_NO_OPTION,
+                                                  JOptionPane.QUESTION_MESSAGE,
+                                                  null,
+                                                  delBtnLabels,
+                                                  delBtnLabels[1]);
+            if (rv == JOptionPane.YES_OPTION)
+            {
+                parentDataObj.removeReference(dObj, dataSetFieldName);
+                dataObjList.remove(rowIndex);
+                
+                model.fireDataChanged();
+                table.invalidate();
+                
+                JComponent comp = mvParent.getTopLevel();
+                comp.validate();
+                comp.repaint();
+                
+                tellMultiViewOfChange();
+                
+                table.getSelectionModel().clearSelection();
+                updateUI(false);
+                
+                // Delete a child object by caching it in the Top Level MultiView
+                if (mvParent != null && !mvParent.isTopLevel())
+                {
+                    mvParent.getTopLevel().addDeletedItem(dObj);
+                    String delMsg = (businessRules != null) ? businessRules.getDeleteMsg(dObj) : "";
+                    UIRegistry.getStatusBar().setText(delMsg);
+                }
+            }
         }
     }
     
@@ -1421,6 +1432,14 @@ public class TableViewObj implements Viewable,
     public JComponent getSaveComponent()
     {
         return null;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#checkForChanges()
+     */
+    public boolean checkForChanges()
+    {
+        return false;
     }
     
     //-----------------------------------------------------

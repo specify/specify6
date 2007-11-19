@@ -27,6 +27,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.apache.log4j.Logger;
@@ -45,6 +46,7 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.IconTray;
 import edu.ku.brc.ui.OrderedIconTray;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.forms.persist.AltViewIFace;
 import edu.ku.brc.ui.forms.persist.FormViewDef;
@@ -281,6 +283,14 @@ public class IconViewObj implements Viewable
         mainComp.add(iconTray,BorderLayout.CENTER);
         mainComp.add(southPanel,BorderLayout.SOUTH);
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#checkForChanges()
+     */
+    public boolean checkForChanges()
+    {
+        return false;
+    }
 
     /**
      * @param e mouse event
@@ -428,26 +438,44 @@ public class IconViewObj implements Viewable
     /**
      * 
      */
+    protected void doDelete()
+    {
+        FormDataObjIFace dataObj = iconTray.getSelection();
+        if (dataObj != null)
+        {
+            Object[] delBtnLabels = {getResourceString("Delete"), getResourceString("Cancel")};
+            int rv = JOptionPane.showOptionDialog(null, UIRegistry.getLocalizedMessage("ASK_DELETE", dataObj.getIdentityTitle()),
+                                                  getResourceString("Delete"),
+                                                  JOptionPane.YES_NO_OPTION,
+                                                  JOptionPane.QUESTION_MESSAGE,
+                                                  null,
+                                                  delBtnLabels,
+                                                  delBtnLabels[1]);
+            if (rv == JOptionPane.YES_OPTION)
+            {
+                
+                iconTray.removeItem(dataObj);
+                parentDataObj.removeReference(dataObj, IconViewObj.this.cellName);
+                if (mvParent != null)
+                {
+                    MultiView topLvl = mvParent.getTopLevel();
+                    topLvl.addDeletedItem(dataObj);
+                    rootHasChanged();
+                }
+            }
+        }
+    }
+    
+    /**
+     * 
+     */
     protected void addActionListenerToDeleteButton()
     {
         delBtn.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
-                FormDataObjIFace selection = iconTray.getSelection();
-                if (selection==null)
-                {
-                    return;
-                }
-                
-                iconTray.removeItem(selection);
-                parentDataObj.removeReference(selection, IconViewObj.this.cellName);
-                if (mvParent != null)
-                {
-                    MultiView topLvl = mvParent.getTopLevel();
-                    topLvl.addDeletedItem(selection);
-                    rootHasChanged();
-                }
+                doDelete();
             }
         });
     }
