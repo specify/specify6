@@ -48,7 +48,7 @@ public class UnhandledExceptionDialog extends JDialog
      */
     public UnhandledExceptionDialog(final String message, final Exception exception)
     {
-        super((Frame)UIRegistry.get(UIRegistry.FRAME), getResourceString("UnhandledExceptionTitle"), true);
+        super(UIRegistry.getTopWindow() instanceof Frame ? (Frame)UIRegistry.getTopWindow() : null, getResourceString("UnhandledExceptionTitle"), true);
         
         createUI(message, exception);
         
@@ -62,7 +62,7 @@ public class UnhandledExceptionDialog extends JDialog
      */
     public UnhandledExceptionDialog(final String message)
     {
-        super((Frame)UIRegistry.get(UIRegistry.FRAME), getResourceString("UnhandledExceptionTitle"), true);
+        super(UIRegistry.getTopWindow() instanceof Frame ? (Frame)UIRegistry.getTopWindow() : null, getResourceString("UnhandledExceptionTitle"), true);
         
         createUI(message, null);
         setLocationRelativeTo(UIRegistry.get(UIRegistry.FRAME));
@@ -75,7 +75,7 @@ public class UnhandledExceptionDialog extends JDialog
      */
     public UnhandledExceptionDialog(final Throwable throwable)
     {
-        super((Frame)UIRegistry.get(UIRegistry.FRAME), getResourceString("UnhandledExceptionTitle"), true);
+        super(UIRegistry.getTopWindow() instanceof Frame ? (Frame)UIRegistry.getTopWindow() : null, getResourceString("UnhandledExceptionTitle"), true);
         
         createUI(throwable.getMessage(), throwable);
         

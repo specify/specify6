@@ -1336,6 +1336,7 @@ public final class UIHelper
         if (e instanceof java.lang.ArrayIndexOutOfBoundsException)
         {
             String msg = e.getMessage();
+            log.debug("MESSAGE["+msg+"]");
             if (msg != null && msg.indexOf("apple.awt.CWindow.displayChanged") > -1)
             {
                 return false;
@@ -1345,6 +1346,7 @@ public final class UIHelper
         } else if (e instanceof java.lang.NullPointerException)
         {
             String msg = e.getMessage();
+            log.debug("MESSAGE["+msg+"]");
             if (msg != null && msg.indexOf("javax.help.WindowPresentation") > -1)
             {
                 return false;

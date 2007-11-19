@@ -8,7 +8,7 @@
     <icon name="deaccession"    file="deaccession.png" sizes="all"/>
     <icon name="appraisal"      file="appraisal.png" sizes="all"/>
     <icon name="accessionagent" file="agent.png" sizes="all"/>
-    <icon name="address"        file="address.png" sizes="all"/>
+    <!-- <icon name="address"        file="address.png" sizes="all"/>  -->
     <icon name="agent"          file="agent.png" sizes="all"/>
     <icon name="author"         file="author.png" sizes="all"/>
     <icon name="attachment"     file="attachment.png" sizes="all"/>
@@ -21,7 +21,6 @@
     <icon name="collection"     file="collection.png" sizes="all"/>
     <icon name="collector"      file="collector.png" sizes="all"/>
     <icon name="collectionobject" file="collection_object.png" sizes="all"/>
-    <icon name="collectionobjectcitation" file="citation.png" sizes="all"/>
     <icon name="collectionobjectcitation" file="citation.png" sizes="all"/>
     <icon name="commonname"           file="common_name.png" sizes="all"/>
     <icon name="container"            file="container.png" sizes="all"/>
