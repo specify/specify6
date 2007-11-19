@@ -608,7 +608,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     {
         super.paint(g);
 
-        if ((!isNew || hasBeenVisited) && isInError() && comboBox.isEnabled())
+        if ((!isNew || hasBeenVisited) && isInError() && comboBox != null && comboBox.isEnabled())
         {
             Graphics2D g2d = (Graphics2D)g;
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);

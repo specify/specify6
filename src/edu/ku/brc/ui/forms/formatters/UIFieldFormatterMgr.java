@@ -48,6 +48,7 @@ public class UIFieldFormatterMgr
     private static final Logger log = Logger.getLogger(UIFieldFormatterMgr.class);
     
     protected static UIFieldFormatterMgr instance = null;
+    protected static boolean             doingLocal = false;
 
     private Hashtable<String, UIFieldFormatterIFace> hash = new Hashtable<String, UIFieldFormatterIFace>();
 
@@ -97,6 +98,14 @@ public class UIFieldFormatterMgr
         }
         // should not happen
         throw new RuntimeException("Can't instantiate UIFieldFormatterMgr factory [" + factoryNameStr+"]");
+    }
+
+    /**
+     * @param doingLocal the doingLocal to set
+     */
+    public static void setDoingLocal(boolean doingLocal)
+    {
+        UIFieldFormatterMgr.doingLocal = doingLocal;
     }
 
     /**
@@ -178,7 +187,30 @@ public class UIFieldFormatterMgr
         }
         return null;
     }
-
+    
+    /**
+     * Returns a list of formatters that match the class, the default (if there is one) is at the beginning of the list.
+     * @param isForPartial indicates to get Partial Date formatters
+     * @return return a list of formatters that match the class
+     */
+    public static List<UIFieldFormatterIFace> getDateFormatterList(final boolean isForPartial)
+    {
+        Vector<UIFieldFormatterIFace> list = new Vector<UIFieldFormatterIFace>();
+        for (Enumeration<UIFieldFormatterIFace> e=getInstance().hash.elements();e.hasMoreElements();)
+        {
+            UIFieldFormatterIFace f = e.nextElement();
+            if (f.isDate())
+            {
+                boolean isPartial = f.getName().indexOf("Partial") > -1;
+                if ((isForPartial && isPartial) || (!isForPartial && !isPartial))
+                {
+                    list.add(f);
+                }
+            }
+        }
+        return list;
+    }
+    
     /**
      * Returns a list of formatters that match the class, the default (if there is one) is at the beginning of the list.
      * @param clazz the class of the data that the formatter is used for.
@@ -186,14 +218,26 @@ public class UIFieldFormatterMgr
      */
     public static List<UIFieldFormatterIFace> getFormatterList(final Class<?> clazz)
     {
-        Vector<UIFieldFormatterIFace> list         = new Vector<UIFieldFormatterIFace>();
+        return getFormatterList(clazz, null);
+    }
+
+    /**
+     * Returns a list of formatters that match the class, the default (if there is one) is at the beginning of the list.
+     * @param clazz the class of the data that the formatter is used for.
+     * @return return a list of formatters that match the class
+     */
+    public static List<UIFieldFormatterIFace> getFormatterList(final Class<?> clazz,
+                                                               final String fieldName)
+    {
+        Vector<UIFieldFormatterIFace> list = new Vector<UIFieldFormatterIFace>();
         UIFieldFormatterIFace         defFormatter = null;
         for (Enumeration<UIFieldFormatterIFace> e=getInstance().hash.elements();e.hasMoreElements();)
         {
             UIFieldFormatterIFace f = e.nextElement();
-            if (clazz == f.getDataClass())
+            if (clazz == f.getDataClass() && 
+                (fieldName == null || (fieldName.equals(f.getFieldName()) || fieldName.equals("*"))))
             {
-                if (f.isDefault())
+                if (f.isDefault() && defFormatter == null)
                 {
                     defFormatter = f;
                 } else
@@ -215,7 +259,10 @@ public class UIFieldFormatterMgr
      */
     protected Element getDOM() throws Exception
     {
-        //return XMLHelper.readDOMFromConfigDir("backstop/uiformatters.xml");
+        if (doingLocal)
+        {
+            return XMLHelper.readDOMFromConfigDir("backstop/uiformatters.xml");
+        }
         return AppContextMgr.getInstance().getResourceAsDOM("UIFormatters");
     }
     
@@ -265,6 +312,7 @@ public class UIFieldFormatterMgr
 
                     String  name          = formatElement.attributeValue("name");
                     String  fType         = formatElement.attributeValue("type");
+                    String  fieldName     = XMLHelper.getAttr(formatElement, "fieldname", "*");
                     String  dataClassName = formatElement.attributeValue("class");
                     boolean isDefault     = XMLHelper.getAttr(formatElement, "default", true);
                     
@@ -273,7 +321,6 @@ public class UIFieldFormatterMgr
                     if (autoNumberElement != null)
                     {
                         String autoNumberClassName = autoNumberElement.getTextTrim();
-                        String fieldName           = XMLHelper.getAttr(autoNumberElement, "field", null);
                         if (StringUtils.isNotEmpty(autoNumberClassName) && StringUtils.isNotEmpty(dataClassName) && StringUtils.isNotEmpty(fieldName))
                         {
                             autoNumberObj = createAutoNumber(autoNumberClassName, dataClassName, fieldName);
@@ -370,7 +417,7 @@ public class UIFieldFormatterMgr
                         }
 
                         boolean isDate = StringUtils.isNotEmpty(fType) && fType.equals("date");
-                        UIFieldFormatter formatter = new UIFieldFormatter(name, isDate, partialDateType, dataClass, isDefault, isInc, fields);
+                        UIFieldFormatter formatter = new UIFieldFormatter(name, fieldName, isDate, partialDateType, dataClass, isDefault, isInc, fields);
                         if (isDate && fields.size() == 0)
                         {
                             addFieldsForDate(formatter);

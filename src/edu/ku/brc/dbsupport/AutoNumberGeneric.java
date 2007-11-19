@@ -34,6 +34,7 @@ public class AutoNumberGeneric implements AutoNumberIFace
     protected Class<?>         classObj  = null;
     protected String           fieldName = null;
     protected DataGetterForObj getter    = new DataGetterForObj();
+    protected boolean          isGeneric = true;
     
     /**
      * 
@@ -59,6 +60,8 @@ public class AutoNumberGeneric implements AutoNumberIFace
         String className = properties.getProperty("class");
         if (StringUtils.isNotEmpty(className))
         {
+            isGeneric = StringUtils.contains(className, "Generic");
+            
             DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(className);
             if (tblInfo != null)
             {
@@ -354,6 +357,14 @@ public class AutoNumberGeneric implements AutoNumberIFace
         }
         // This should never happen, so let's throw an exception
         throw new RuntimeException("Value ["+formValue+"] was not the proper length to be incremented.");
+    }
+
+    /**
+     * @return the isGeneric
+     */
+    public boolean isGeneric()
+    {
+        return isGeneric;
     }
     
 }

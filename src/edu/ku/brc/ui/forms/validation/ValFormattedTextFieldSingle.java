@@ -115,17 +115,39 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
      * Constructor
      * @param formatterName the formatters name
      */
+    public ValFormattedTextFieldSingle(final UIFieldFormatterIFace formatter, final boolean isViewOnly)
+    {
+      super();
+      
+      init(formatter, isViewOnly);
+
+    }
+
+    /**
+     * Constructor
+     * @param formatterName the formatters name
+     */
     public ValFormattedTextFieldSingle(final String formatterName, final boolean isViewOnly)
     {
         super();
 
+        init(UIFieldFormatterMgr.getFormatter(formatterName), isViewOnly);
+
+    }
+    
+    /**
+     * @param formatter
+     * @param isViewOnly
+     */
+    protected void init(final UIFieldFormatterIFace formatter, final boolean isViewOnly)
+    {
         this.isViewOnly = isViewOnly;
         
-        init();
+        initColors();
         
         inner = getInsets();
         
-        setFormatterInternal(UIFieldFormatterMgr.getFormatter(formatterName));
+        setFormatterInternal(formatter);
         
         addFocusListener(new FocusAdapter()
         {
@@ -204,7 +226,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
     /**
      * Inits the control
      */
-    public void init()
+    public void initColors()
     {
         bgColor = getBackground();
         if (valtextcolor == null || requiredfieldcolor == null)
@@ -216,7 +238,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
 
 
     /**
-     * Helper method for validation sripting to see if the text field is empty
+     * Helper method for validation scripting to see if the text field is empty
      * @return whether the text field is empty or not
      */
     public boolean isNotEmpty()

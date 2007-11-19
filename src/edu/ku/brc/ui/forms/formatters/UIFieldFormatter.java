@@ -41,6 +41,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
     
     protected String               name;
     protected String               title;
+    protected String               fieldName;
     protected Class<?>             dataClass;
     protected boolean              isDate;
     protected PartialDateEnum      partialDateType;
@@ -61,6 +62,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
      * @param fields the list of fields that make up the formatter
      */
     public UIFieldFormatter(final String          name, 
+                            final String          fieldName, 
                             final boolean         isDate, 
                             final PartialDateEnum partialDateType,
                             final Class<?>        dataClass,
@@ -69,6 +71,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
                             final List<UIFieldFormatterField> fields)
     {
         this.name            = name;
+        this.fieldName       = fieldName;
         this.dataClass       = dataClass;
         this.partialDateType = partialDateType;
         this.isDate          = isDate;
@@ -82,7 +85,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
      */
     public String getTitle()
     {
-        return title;
+        return title == null ? name : title;
     }
 
     /* (non-Javadoc)
@@ -91,6 +94,14 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
     public void setTitle(String title)
     {
         this.title = title;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getFieldName()
+     */
+    public String getFieldName()
+    {
+        return fieldName;
     }
 
     /* (non-Javadoc)
@@ -362,13 +373,17 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
      */
     public String toString()
     {
-        StringBuilder s = new StringBuilder();
-        s.append( "Name["+name+"] isDate["+isDate+"]  dataClass["+dataClass.getSimpleName()+"] isDefault["+isDefault+"] isIncrementor["+isIncrementer+"]");
-        for (UIFieldFormatterField f : fields)
+        if (false)
         {
-            s.append("\n  "+f.toString());
+            StringBuilder s = new StringBuilder();
+            s.append( "Name["+name+"] isDate["+isDate+"]  dataClass["+dataClass.getSimpleName()+"] isDefault["+isDefault+"] isIncrementor["+isIncrementer+"]");
+            for (UIFieldFormatterField f : fields)
+            {
+                s.append("\n  "+f.toString());
+            }
+            return s.toString();
         }
-        return s.toString();
+        return title == null ? name : title;
     }
 
     /* (non-Javadoc)

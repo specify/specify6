@@ -51,6 +51,11 @@ public interface UIFieldFormatterIFace
     public abstract String getTitle();
 
     /**
+     * @return The unique name of the field it can be applied to (unless it is a date).
+     */
+    public abstract String getFieldName();
+
+    /**
      * The human readable and possibly localized name of the format, used in the editor.
      * @param title the title
      */

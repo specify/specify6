@@ -48,7 +48,6 @@ import edu.ku.brc.ui.forms.formatters.DataObjAggregator;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.ui.forms.formatters.DataObjSwitchFormatter;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 
 /**
  * @code_status Alpha
@@ -198,16 +197,10 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                 
                 //System.out.println(row+" "+column+" ["+obj+"] "+getColumnClass(column).getSimpleName() + " " + useColOffset);
                 
-                String fmtName = captionInfo != null ? captionInfo.get(column).getFormatter() : null;
-                if (fmtName != null)
+                UIFieldFormatterIFace formatter = captionInfo != null ? captionInfo.get(column).getUiFieldFormatter() : null;
+                if (formatter != null && formatter.isInBoundFormatter())
                 {
-                    UIFieldFormatterIFace formatter = UIFieldFormatterMgr.getFormatter(fmtName);
-                    if (formatter != null && formatter.isInBoundFormatter())
-                    {
-                        return formatter.formatInBound(obj);
-                    }
-                    //log.error("Couldn't find UIFieldFormatterIFace ["+fmtName+"] or doesn't support In Bound formatting. InBnd["+
-                    //        formatter != null ? (formatter != null ? formatter.isInBoundFormatter() : "formatter is null") : "???"+"]");
+                    return formatter.formatInBound(obj);
                 }
                 return obj;
             }
@@ -412,7 +405,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                          // We need to get the formatter to see what the Class is of the object
                          hasCompositeObj = true;
                          aggCaption      = caption;
-                         formatterObj    = DataObjFieldFormatMgr.getFormatter(caption.getFormatter());
+                         formatterObj    = caption.getDataObjFormatter();
                          if (formatterObj != null)
                          {
                              if (formatterObj.getDataClass() != null)
@@ -420,11 +413,11 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                                  aggSetter = DataObjectSettableFactory.get(formatterObj.getDataClass().getName(), "edu.ku.brc.ui.forms.DataSetterForObj");
                              } else
                              {
-                                 log.error("formatterObj.getDataClass() was null for "+caption.getFormatter());
+                                 log.error("formatterObj.getDataClass() was null for "+caption.getColName());
                              }
                          } else
                          {
-                             log.error("formatterObj was null for "+caption.getFormatter());
+                             log.error("DataObjFormatter was null for "+caption.getColName());
                          }
                          
                      }

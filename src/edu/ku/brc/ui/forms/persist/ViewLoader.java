@@ -35,6 +35,9 @@ import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.dom4j.Node;
 
+import edu.ku.brc.dbsupport.DBFieldInfo;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
@@ -227,6 +230,8 @@ public class ViewLoader
         {
             //throw new RuntimeException("settableClassName Name is null.name["+name+"] classname["+className+"] settableClassName["+settableClassName+"]");
         }
+        
+        DBTableInfo tableinfo = DBTableIdMgr.getInstance().getByClassName(className);
 
         ViewDef.ViewType type;
         try
@@ -246,7 +251,7 @@ public class ViewLoader
             case rstable:
             case formtable :
             case form :
-                viewDef = createFormViewDef(element, type, name, className, gettableClassName, settableClassName, desc);
+                viewDef = createFormViewDef(element, type, name, className, gettableClassName, settableClassName, desc, tableinfo);
                 break;
 
             case table :
@@ -260,7 +265,7 @@ public class ViewLoader
                break;
                
             case iconview:
-                viewDef = createIconViewDef(type, name, className, gettableClassName, settableClassName, desc);
+                viewDef = createIconViewDef(type, name, className, gettableClassName, settableClassName, desc, tableinfo);
                 break;
         }
         return viewDef;
@@ -507,7 +512,9 @@ public class ViewLoader
      * @param element the parent DOM element of the rows
      * @param cellRows the list the rows are to be added to
      */
-    protected static void processRows(Element element, List<FormRowIFace> cellRows)
+    protected static void processRows(final Element            element, 
+                                      final List<FormRowIFace> cellRows,
+                                      final DBTableInfo        tableinfo)
     {
         Element rowsElement = (Element)element.selectSingleNode("rows");
         if (rowsElement != null)
@@ -558,12 +565,13 @@ public class ViewLoader
                                                                          colspan));
                             break;
                         }
+                        
                         case field:
                         {
                             String uitypeStr      = getAttr(cellElement, "uitype", "");
                             String format         = getAttr(cellElement, "format", "");
                             String formatName     = getAttr(cellElement, "formatname", "");
-                            String uiFieldFormatter = getAttr(cellElement, "uifieldformatter", "");
+                            String uiFieldFormatterName = getAttr(cellElement, "uifieldformatter", "");
                             int    cols           = getAttr(cellElement, "cols", DEFAULT_COLS); // XXX PREF for default width of text field
                             int    rows           = getAttr(cellElement, "rows", DEFAULT_ROWS);  // XXX PREF for default heightof text area
                             String validationType = getAttr(cellElement, "valtype", "Changed");
@@ -571,7 +579,7 @@ public class ViewLoader
                             String initialize     = getAttr(cellElement, "initialize", "");
                             boolean isRequired    = getAttr(cellElement, "isrequired", false);
                             String  pickListName  = getAttr(cellElement, "picklist", "");
-
+                            
                             if (isNotEmpty(format) && isNotEmpty(formatName))
                             {
                                 //throw new RuntimeException("Both format and formatname cannot both be set! ["+cellName+"]");
@@ -616,16 +624,34 @@ public class ViewLoader
                                 {
                                     validationRule = getAttr(cellElement, "validation", "formatted"); // XXX Is this OK?
                                     dspUITypeStr   = getAttr(cellElement, "dspuitype", "formattedtext");
-                                    if (isNotEmpty(uiFieldFormatter))
+                                    
+                                    if (isNotEmpty(uiFieldFormatterName))
                                     {
-                                        UIFieldFormatterIFace formatter = UIFieldFormatterMgr.getFormatter(uiFieldFormatter);
-                                        if (formatter == null)
+                                        UIFieldFormatterIFace uiFormatter = UIFieldFormatterMgr.getFormatter(uiFieldFormatterName);
+                                        if (uiFormatter == null)
                                         {
-                                            log.error("Couldn't find formatter["+uiFieldFormatter+"]");
-                                            uiFieldFormatter = "";
+                                            log.error("Couldn't find formatter["+uiFieldFormatterName+"]");
+                                            uiFieldFormatterName = "";
                                             uitype = FormCellFieldIFace.FieldType.text;
                                         }
+                                        
+                                    } else // ok now check the schema for the UI formatter
+                                    {
+                                        DBFieldInfo fieldInfo = tableinfo.getFieldByName(cellName);
+                                        if (fieldInfo != null)
+                                        {
+                                            if (fieldInfo.getFormatter() != null)
+                                            {
+                                                uiFieldFormatterName = fieldInfo.getFormatter().getName();
+                                                
+                                            } else 
+                                            {
+                                                uiFieldFormatterName = "";
+                                                uitype = FormCellFieldIFace.FieldType.text;
+                                            }
+                                        }
                                     }
+                                    
                                     break;
                                 }
 
@@ -682,16 +708,16 @@ public class ViewLoader
                             
                             
                             FormCellField field = new FormCellField(FormCellIFace.CellType.field, cellId, 
-                                                                    cellName, uitype, dspUIType, format, formatName, uiFieldFormatter, isRequired,
+                                                                    cellName, uitype, dspUIType, format, formatName, uiFieldFormatterName, isRequired,
                                                                     cols, rows, colspan, rowspan, validationType, validationRule, isEncrypted);
                             
-                            field.setLabel(getAttr(cellElement,        "label", ""));
+                            field.setLabel(getAttr(cellElement,        "label",    ""));
                             field.setReadOnly(getAttr(cellElement,     "readonly", false));
-                            field.setDefaultValue(getAttr(cellElement, "default", ""));
+                            field.setDefaultValue(getAttr(cellElement, "default",  ""));
                             field.setPickListName(pickListName);
                             field.setChangeListenerOnly(getAttr(cellElement, "changesonly", true) && !isRequired);
                             field.setProperties(properties);
-
+                            
                             cell = formRow.addCell(field);
                             break;
                         }
@@ -710,7 +736,8 @@ public class ViewLoader
                                                                         getAttr(cellElement, "coldef", "p"),
                                                                         getAttr(cellElement, "rowdef", "p"),
                                                                         colspan, rowspan);
-                            processRows(cellElement, cellPanel.getRows());
+                            
+                            processRows(cellElement, cellPanel.getRows(), tableinfo);
                             cell = formRow.addCell(cellPanel);
                             break;
                         }
@@ -796,7 +823,8 @@ public class ViewLoader
                                                    final String  className,
                                                    final String  gettableClassName,
                                                    final String  settableClassName,
-                                                   final String  desc)
+                                                   final String  desc,
+                                                   final DBTableInfo tableinfo)
     {
         FormViewDef formView = new FormViewDef(type, name, className, gettableClassName, settableClassName, desc);
 
@@ -804,7 +832,7 @@ public class ViewLoader
         {
             List<FormRowIFace> rows = formView.getRows();
             
-            processRows(element, rows);
+            processRows(element, rows, tableinfo);
             
             createDef(element, "columnDef", rows.size(), formView.getColumnDefItem());
             createDef(element, "rowDef",    rows.size(), formView.getRowDefItem());
@@ -844,7 +872,8 @@ public class ViewLoader
                                                final String  className,
                                                final String  gettableClassName,
                                                final String  settableClassName,
-                                               final String  desc)
+                                               final String  desc,
+                                               final DBTableInfo tableinfo)
     {
         ViewDef formView = new ViewDef(type, name, className, gettableClassName, settableClassName, desc);
 

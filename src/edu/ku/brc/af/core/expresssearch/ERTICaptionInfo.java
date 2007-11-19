@@ -31,6 +31,8 @@ import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.ui.forms.formatters.DataObjSwitchFormatter;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 
 /**
  * @author rods
@@ -47,7 +49,6 @@ public class ERTICaptionInfo
     protected String                  colName;
     protected String                  colLabel      = null;
     protected boolean                 isVisible;
-    protected String                  formatter;
     protected int                     posIndex;
     protected String                  description   = null;
     
@@ -60,10 +61,33 @@ public class ERTICaptionInfo
     protected String                  subClassFieldName = null;  // The name of the field if the subClass in the agg class
     
     // Transient 
-    protected Class<?>                colClass      = null;
-    protected int                     orderColIndex = -1;
-    protected DBFieldInfo             fieldInfo     = null;
+    protected Class<?>                colClass         = null;
+    protected int                     orderColIndex    = -1;
+    protected DBFieldInfo             fieldInfo        = null;
+    protected DataObjSwitchFormatter  dataObjFormatter = null;
+    protected UIFieldFormatterIFace   uiFieldFormatter = null;
     
+
+    /**
+     * @param colName
+     * @param colLabel
+     * @param isVisible
+     * @param formatter
+     * @param posIndex
+     */
+    public ERTICaptionInfo(String  colName, 
+                           String  colLabel, 
+                           boolean isVisible, 
+                           UIFieldFormatterIFace uiFieldFormatter,
+                           int     posIndex)
+    {
+        super();
+        this.colName          = colName;
+        this.colLabel         = colLabel;
+        this.isVisible        = isVisible;
+        this.uiFieldFormatter = uiFieldFormatter;
+        this.posIndex         = posIndex;
+    }
     
     /**
      * Constructor. Position Index is set after object is created.
@@ -114,7 +138,7 @@ public class ERTICaptionInfo
         this.isVisible = getAttr(element, "visible", true);
         
         String dataObjFormatterName = getAttr(element, "dataobjformatter", null);
-        this.formatter              = getAttr(element, "formatter", dataObjFormatterName);
+        String formatter            = getAttr(element, "formatter", dataObjFormatterName);
         
         String aggTableClassName = null;
         
@@ -158,8 +182,6 @@ public class ERTICaptionInfo
             }
         }
         
-        
-        
         String compositeClassName = null;
         if (StringUtils.isNotEmpty(aggTableClassName))
         {
@@ -167,10 +189,10 @@ public class ERTICaptionInfo
             
         } else if (StringUtils.isNotEmpty(dataObjFormatterName))
         {
-            DataObjSwitchFormatter formatterObj = DataObjFieldFormatMgr.getFormatter(dataObjFormatterName);
-            if (formatterObj != null)
+            dataObjFormatter = DataObjFieldFormatMgr.getFormatter(dataObjFormatterName);
+            if (dataObjFormatter != null)
             {
-                compositeClassName = formatterObj.getDataClass().getName();
+                compositeClassName = dataObjFormatter.getDataClass().getName();
                 try
                 {
                     aggClass = Class.forName(compositeClassName);
@@ -181,7 +203,7 @@ public class ERTICaptionInfo
                 }
             } else
             {
-                log.error("Couldn't find formatter["+formatter+"]");
+                log.error("Couldn't find formatter["+dataObjFormatterName+"]");
             }
         }
         
@@ -216,21 +238,17 @@ public class ERTICaptionInfo
                 log.error("Aggregate Sub Class is not a Data Table["+compositeClassName+"]");
             }
         }
+        
+        if (StringUtils.isNotEmpty(formatter))
+        {
+            uiFieldFormatter = UIFieldFormatterMgr.getFormatter(formatter);
+            if (uiFieldFormatter == null)
+            {
+                log.error("The UIFieldFormatter could not be found named ["+formatter+"]");
+            }
+        }
     }
 
-    public ERTICaptionInfo(String  colName, 
-                           String  colLabel, 
-                           boolean isVisible, 
-                           String  formatter,
-                           int     posIndex)
-    {
-        super();
-        this.colName = colName;
-        this.colLabel = colLabel;
-        this.isVisible = isVisible;
-        this.formatter = formatter;
-        this.posIndex = posIndex;
-    }
 
     public String getColName()
     {
@@ -249,11 +267,6 @@ public class ERTICaptionInfo
     public boolean isVisible()
     {
         return isVisible;
-    }
-
-    public String getFormatter()
-    {
-        return formatter;
     }
 
     public int getPosIndex()
@@ -308,14 +321,6 @@ public class ERTICaptionInfo
     public void setVisible(boolean isVisible)
     {
         this.isVisible = isVisible;
-    }
-
-    /**
-     * @param formatter the formatter to set
-     */
-    public void setFormatter(String formatter)
-    {
-        this.formatter = formatter;
     }
 
     /**
@@ -471,6 +476,24 @@ public class ERTICaptionInfo
             this.fieldClass = fieldClass;
         }
         
+    }
+
+
+
+    /**
+     * @return the dataObjFormatter
+     */
+    public DataObjSwitchFormatter getDataObjFormatter()
+    {
+        return dataObjFormatter;
+    }
+
+    /**
+     * @return the uiFieldFormatter
+     */
+    public UIFieldFormatterIFace getUiFieldFormatter()
+    {
+        return uiFieldFormatter;
     }
 
 }

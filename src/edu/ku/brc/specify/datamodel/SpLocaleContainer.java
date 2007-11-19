@@ -414,7 +414,6 @@ public class SpLocaleContainer extends SpLocaleBase implements LocalizableContai
         {
             log.error("LocalizableStrIFace was null or not of Class SpLocaleItemStr");
         }
-        
     }
 
     /* (non-Javadoc)

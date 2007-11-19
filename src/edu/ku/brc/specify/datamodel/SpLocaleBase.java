@@ -38,6 +38,9 @@ public abstract class SpLocaleBase extends DataModelObjBase
     protected String  type;
     protected Boolean isHidden;
     
+    protected String  format;
+    protected Boolean isUIFormatter;
+    
     /**
      * 
      */
@@ -56,7 +59,8 @@ public abstract class SpLocaleBase extends DataModelObjBase
         name     = null;
         type     = null;
         isHidden = false;
-
+        format   = null;
+        isUIFormatter = null;
     }
 
     /**
@@ -136,4 +140,39 @@ public abstract class SpLocaleBase extends DataModelObjBase
         return false;
     }
 
+    /**
+     * @return the format
+     */
+    @Column(name = "Format", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    public String getFormat()
+    {
+        return format;
+    }
+
+    /**
+     * @param format the format to set
+     */
+    public void setFormat(String format)
+    {
+        this.format = format;
+    }
+
+    /**
+     * @return the isUIFormatter
+     */
+    @Column(name = "IsUIFormatter", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getIsUIFormatter()
+    {
+        return isUIFormatter;
+    }
+
+    /**
+     * @param isUIFormatter the isUIFormatter to set
+     */
+    public void setIsUIFormatter(Boolean isUIFormatter)
+    {
+        this.isUIFormatter = isUIFormatter;
+    }
+    
+    
 }

@@ -37,6 +37,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -137,6 +138,7 @@ public final class UIHelper
     protected static Border          emptyBorder     = BorderFactory.createEmptyBorder(1, 1, 1, 1);
     protected static Border          focusBorder     = new LineBorder(Color.GRAY, 1, true);
     protected static RenderingHints  txtRenderingHints;
+    protected static Hashtable<String, Boolean> baseClassHash = new Hashtable<String, Boolean>();
     
     static {
 
@@ -158,6 +160,13 @@ public final class UIHelper
             oSType   = OSTYPE.Unknown;
         }
         txtRenderingHints = createTextRenderingHints();
+        
+        Class<?>[] baseClasses = {Boolean.class, Integer.class, Double.class, String.class, Float.class,
+                Character.class, Short.class, Byte.class, BigDecimal.class, Date.class, Calendar.class};
+        for (Class<?> cls : baseClasses)
+        {
+            baseClassHash.put(cls.getSimpleName(), true);
+        }
     }
     
     /**
@@ -182,6 +191,16 @@ public final class UIHelper
     public static boolean isLinux()
     {
         return oSType == OSTYPE.Linux;
+    }
+    
+    /**
+     * Returns whether the class is a primitive object type.
+     * @param clazz the class in question
+     * @return true if it is, false if not
+     */
+    public static boolean isPrimitiveObjectType(final Class<?> clazz)
+    {
+        return baseClassHash.get(clazz);
     }
     
     /**
@@ -518,6 +537,43 @@ public final class UIHelper
         {
             throw new RuntimeException("Unsupported type for conversion["+cls.getSimpleName()+"]");
         }
+    }
+    
+    /**
+     * @param cls
+     * @return
+     */
+    public static boolean isClassNumeric(final Class<?> cls)
+    {
+        if (cls == Integer.class)
+        {
+            return true;
+            
+        } else if (cls == Float.class)
+        {
+            return true;
+            
+        } else if (cls == Double.class)
+        {
+            return true;
+            
+        } else if (cls == Long.class)
+        {
+            return true;
+            
+        } else if (cls == Short.class)
+        {
+            return true;
+            
+        } else if (cls == Byte.class)
+        {
+            return true;
+            
+        } else if (cls == BigDecimal.class)
+        {
+            return true;
+        }
+        return false;
     }
     
     /**
@@ -1054,7 +1110,6 @@ public final class UIHelper
         {
             return valuesArg[0] != null ? valuesArg[0].toString() : "";
         }
-
     }
 
     //-------------------------------------------------------
@@ -1280,7 +1335,8 @@ public final class UIHelper
     {
         if (e instanceof java.lang.ArrayIndexOutOfBoundsException)
         {
-            if (e.getMessage().indexOf("apple.awt.CWindow.displayChanged") > 0)
+            String msg = e.getMessage();
+            if (msg != null && msg.indexOf("apple.awt.CWindow.displayChanged") > -1)
             {
                 return false;
                 
@@ -1288,7 +1344,8 @@ public final class UIHelper
             
         } else if (e instanceof java.lang.NullPointerException)
         {
-            if (e.getMessage().indexOf("javax.help.WindowPresentation") > 0)
+            String msg = e.getMessage();
+            if (msg != null && msg.indexOf("javax.help.WindowPresentation") > -1)
             {
                 return false;
             }

@@ -38,4 +38,9 @@ public interface AutoNumberIFace
      */
     public abstract String getNextNumber(final UIFieldFormatterIFace formatter, String value);
     
+    /**
+     * @return true if using the defined 'generic' class for numbering, false if using an external class.
+     */
+    public abstract boolean isGeneric();
+    
 }

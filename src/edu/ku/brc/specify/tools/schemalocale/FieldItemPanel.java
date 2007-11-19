@@ -17,11 +17,18 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Hashtable;
+import java.util.List;
 import java.util.Locale;
 
+import javax.swing.BorderFactory;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -52,7 +59,11 @@ import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBRelationshipInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.ui.JStatusBar;
+import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 
 /**
  * @author rod
@@ -66,15 +77,18 @@ public class FieldItemPanel extends LocalizerBasePanel
 {
     private static final Logger log = Logger.getLogger(FieldItemPanel.class);
             
-    protected LocalizableIOIFace localizableIO = null;
+    protected LocalizableIOIFace        localizableIO = null;
     
     protected SchemaLocalizerPanel      schemaPanel;
     
     protected LocalizableJListItem      currJListItem   = null;
     protected LocalizableContainerIFace currContainer   = null;
-    protected boolean                   includeHiddenUI = true;              // Must be set before creatng the panel
-    protected boolean                   isDBSchema = true;
-
+    protected boolean                   includeHiddenUI;              // Must be set before creatng the panel
+    protected boolean                   isDBSchema;
+    protected boolean                   includeFormatAndAutoNumUI;
+    protected DBTableInfo               tableInfo       = null;
+    protected DBFieldInfo               fieldInfo       = null;
+    
     // LocalizableItemIFace Fields
     protected JList            fieldsList;
     protected JTextArea        fieldDescText = new JTextArea();
@@ -85,6 +99,17 @@ public class FieldItemPanel extends LocalizerBasePanel
     protected JLabel           fieldLengthLbl;
     protected JLabel           fieldTypeTxt;
     protected JLabel           fieldLengthTxt;
+    
+    // Formatting
+    protected JLabel           formatLbl     = null;
+    protected JComboBox        formatCombo;
+    protected JTextField       formatTxt;
+    protected Hashtable<String, UIFieldFormatterIFace> formatHash = new Hashtable<String, UIFieldFormatterIFace>();
+    
+    
+    protected JLabel           autoNumLbl;
+    protected JComboBox        autoNumberCombo;
+    
     protected DefaultListModel fieldsModel   = new DefaultListModel();
     protected JButton          nxtBtn;
     protected JButton          nxtEmptyBtn;
@@ -97,17 +122,20 @@ public class FieldItemPanel extends LocalizerBasePanel
     protected JButton          fldSpellChkBtn = null;
     
     protected PropertyChangeListener pcl   = null;
+    protected String           noneStr = UIRegistry.getResourceString("None");
     
     /**
      * 
      */
     public FieldItemPanel(final SchemaLocalizerPanel schemaPanel,
                           final boolean              includeHiddenUI, 
+                          final boolean              includeFormatAndAutoNumUI, 
                           final boolean              isDBSchema,
                           final PropertyChangeListener pcl)
     {
         this.schemaPanel     = schemaPanel;
         this.includeHiddenUI = includeHiddenUI;
+        this.includeFormatAndAutoNumUI = includeFormatAndAutoNumUI;
         this.isDBSchema      = isDBSchema;
         this.pcl             = pcl;
         
@@ -161,14 +189,15 @@ public class FieldItemPanel extends LocalizerBasePanel
         JScrollPane fldsp = new JScrollPane(fieldsList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         
         // LocalizableNameDescIFace
-        PanelBuilder pb = new PanelBuilder(new FormLayout("max(200px;p),4px,p,2px,f:p:g", 
+        PanelBuilder pb = new PanelBuilder(new FormLayout("max(200px;p),4px,p,2px,p,f:p:g", 
                                                              (includeHiddenUI ? "p,2px," : "") + 
                                                              (isDBSchema ? "p,2px,p,2px," : "") + 
+                                                             (includeFormatAndAutoNumUI ? "p,2px," : "") + 
                                                              "p,2px,p,2px,p,2px,p,2px,p,2px,f:p:g"), this);
         
         pb.add(fldsp, cc.xywh(1, y, 1, 7+(isDBSchema ? 4 : 0)));
         pb.add(fieldNameLbl = new JLabel(labelStr, SwingConstants.RIGHT), cc.xy(3, y));
-        pb.add(fieldNameText, cc.xy(5, y));   y += 2;
+        pb.add(fieldNameText, cc.xywh(5, y, 2, 1));   y += 2;
         
         if (includeHiddenUI)
         {
@@ -177,7 +206,7 @@ public class FieldItemPanel extends LocalizerBasePanel
        
         pb.add(fieldDescLbl = new JLabel(descStr, SwingConstants.RIGHT), cc.xy(3, y));
         JScrollPane sp = new JScrollPane(fieldDescText, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        pb.add(sp,   cc.xy(5, y));   y += 2;
+        pb.add(sp,   cc.xywh(5, y, 2, 1));   y += 2;
         fieldDescText.setLineWrap(true);
         fieldDescText.setRows(4);
         fieldDescText.setWrapStyleWord(true);
@@ -198,13 +227,52 @@ public class FieldItemPanel extends LocalizerBasePanel
             fieldLengthTxt.setOpaque(true);
         }
         
+        if (includeFormatAndAutoNumUI)
+        {
+            PanelBuilder inner = new PanelBuilder(new FormLayout("max(p;150px),2px,f:p:g", "p"));
+            
+            formatCombo = new JComboBox(new DefaultComboBoxModel());
+            formatTxt   = new JTextField(15);
+            
+            pb.add(formatLbl = new JLabel(getResourceString("SL_FORMAT") + ":", SwingConstants.RIGHT), cc.xy(3, y));
+            
+            inner.add(formatCombo,   cc.xy(1, 1));   
+            inner.add(formatTxt,     cc.xy(3, 1));
+            pb.add(inner.getPanel(), cc.xywh(5, y, 2, 1));   y += 2;
+            
+            //String[] items = {noneStr, getResourceString("Generic"), getResourceString("External")};
+            
+            //autoNumberCombo = new JComboBox(items);
+            //pb.add(autoNumLbl = new JLabel(getResourceString("SL_AUTONUM") + ":", SwingConstants.RIGHT), cc.xy(3, y));
+            //pb.add(autoNumberCombo, cc.xy(5, y));   y += 2;
+            
+            ActionListener changed = new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    setHasChanged(true);
+                    schemaPanel.setHasChanged(true);
+                    hasFieldInfoChanged = true;
+                    String  fmtName = (String)formatCombo.getSelectedItem();
+                    if (StringUtils.isNotEmpty(fmtName)) // should never be empty
+                    {
+                        formatTxt.setEnabled(fmtName.equals(noneStr));
+                    }
+                }
+            };
+            formatCombo.addActionListener(changed);
+            //autoNumberCombo.addActionListener(changed);
+            
+        }
+        
         
         nxtBtn         = new JButton(getResourceString("NEXT"));
         nxtEmptyBtn    = new JButton(getResourceString("SL_NEXT_EMPTY"));
         fldSpellChkBtn = new JButton(getResourceString("SL_SPELL_CHECK"));
         
         JPanel bbp = ButtonBarFactory.buildCenteredBar(new JButton[] {nxtEmptyBtn, nxtBtn, fldSpellChkBtn});
-        pb.add(bbp,   cc.xywh(3, y, 3, 1));
+        bbp.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
+        pb.add(bbp,   cc.xywh(3, y, 4, 1));
+        
         nxtBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
@@ -267,6 +335,11 @@ public class FieldItemPanel extends LocalizerBasePanel
         fieldNameText.getDocument().addDocumentListener(dl);
         fieldDescText.getDocument().addDocumentListener(dl);
         
+        if (formatTxt != null)
+        {
+            formatTxt.getDocument().addDocumentListener(dl);
+        }
+        
         SchemaI18NService.getInstance().checkCurrentLocaleMenu();
         
         enableUIControls(false);
@@ -274,11 +347,134 @@ public class FieldItemPanel extends LocalizerBasePanel
         setIgnoreChanges(false);
     }
     
+    protected void formTextChanged()
+    {
+        setHasChanged(true);
+        schemaPanel.setHasChanged(true);
+    }
+    
+    /**
+     * Fills the format combobox with the available formatters.
+     */
+    protected void fillFormatBox()
+    {
+        if (formatCombo != null)
+        {
+            ((DefaultComboBoxModel)formatCombo.getModel()).removeAllElements();
+            formatCombo.setEnabled(false);
+            formatTxt.setEnabled(false);
+            formatTxt.setText("");
+            
+            if (fieldInfo != null)
+            {
+                if (currContainer instanceof SpLocaleContainer)
+                {
+                    SpLocaleContainer localeContainer = (SpLocaleContainer)currContainer;
+                    
+                    if (fieldInfo.getDataClass() == Date.class || 
+                        fieldInfo.getDataClass() == Calendar.class)
+                    {
+                        fillWithDate(localeContainer);
+                        
+                    } else 
+                    {
+                        fillWithFieldFormatter();
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
+     * @param localeContainer
+     */
+    protected void fillWithDate(final SpLocaleContainer localeContainer)
+    {
+        formatHash.clear();
+        DefaultComboBoxModel cbxModel = (DefaultComboBoxModel)formatCombo.getModel();
+        cbxModel.removeAllElements();
+        
+        DBFieldInfo                 precision = tableInfo.getFieldByName(fieldInfo.getName()+"Precision");
+        if (precision != null)
+        {
+            cbxModel.addElement("Partial Date"); // I18N
+        } else
+        {
+            cbxModel.addElement("Date");
+        }
+        formatCombo.setSelectedIndex(0);
+        formatCombo.setEnabled(false);
+        formatTxt.setEnabled(false);
+    }
+    
+    /**
+     * @param localeContainer
+     */
+    protected UIFieldFormatterIFace fillWithFieldFormatter()
+    {
+        formatHash.clear();
+        DefaultComboBoxModel cbxModel = (DefaultComboBoxModel)formatCombo.getModel();
+        cbxModel.removeAllElements();
+        
+        cbxModel.addElement(noneStr); // Add None
+        
+        /*if (UIHelper.isClassNumeric(fieldInfo.getDataClass()))
+        {
+            formatCombo.setEnabled(false);
+            formatTxt.setEnabled(false);
+            
+        } */
+        
+        boolean              isUIFormatter = false;
+        String               formatName    = null;
+        LocalizableItemIFace fld           = getSelectedFieldItem();
+        if (fld != null)
+        {
+            formatName    = fld.getFormat();
+            isUIFormatter = fld.getIsUIFormatter() == null ? false : fld.getIsUIFormatter();
+            
+        } else
+        {
+            return null; // Why did this happen?
+        }
+        
+        int selectedInx = 0; // default to 'None'
+        
+        UIFieldFormatterIFace       selectedFmt = null;
+        List<UIFieldFormatterIFace> fList       = UIFieldFormatterMgr.getFormatterList(tableInfo.getClassObj(), fieldInfo.getName());
+        if (fList != null && fList.size() > 0)
+        {
+            for (UIFieldFormatterIFace fmt : fList)
+            {
+                log.debug(fmt.getTitle());
+                
+                cbxModel.addElement(fmt.toString());
+                formatHash.put(fmt.toString(), fmt);
+                
+                if (isUIFormatter && formatName != null && formatName.equals(fmt.toString()))
+                {
+                    selectedInx = formatHash.size();
+                    selectedFmt = fmt;
+                }
+            }
+        }
+        
+        formatCombo.setSelectedIndex(selectedInx);
+        formatCombo.setEnabled(formatHash.size() > 1);
+        formatTxt.setEnabled(selectedInx == 0);
+        
+        formatTxt.setText(selectedInx != 0 ? "" : formatName);
+        
+        return selectedFmt;
+    }
+    
     public void setContainer(LocalizableContainerIFace container,
                              LocalizableJListItem      jListContainerItem)
     {
         currContainer = container;
         currJListItem = jListContainerItem;
+        
+        tableInfo = DBTableIdMgr.getInstance().getInfoByTableName(currContainer.getName());
         
         fillFieldList();
     }
@@ -351,6 +547,16 @@ public class FieldItemPanel extends LocalizerBasePanel
         
         fieldLengthLbl.setEnabled(enable);
         fieldLengthTxt.setEnabled(enable);
+        
+        if (formatLbl != null)
+        {
+            formatLbl.setEnabled(enable);
+            formatCombo.setEnabled(enable);
+            formatTxt.setEnabled(enable);
+            
+            //autoNumLbl.setEnabled(enable);
+            //autoNumberCombo.setEnabled(enable);
+        }
         
         if (!enable)
         {
@@ -487,6 +693,37 @@ public class FieldItemPanel extends LocalizerBasePanel
                 setHasChanged(true);
                 schemaPanel.setHasChanged(true);
             }
+            
+            if (formatCombo != null)
+            {
+                String  fmtName = (String)formatCombo.getSelectedItem();
+                if (StringUtils.isNotEmpty(fmtName)) // should never be empty
+                {
+                    boolean isNone = fmtName.equals(noneStr);
+                    if (!isNone)
+                    {
+                        prevField.setFormat(formatHash.get(fmtName).getName());
+                        prevField.setIsUIFormatter(true);
+                    
+                    } else
+                    {
+                        prevField.setIsUIFormatter(false);
+                        
+                        fmtName = formatTxt.getText();
+                        if (StringUtils.isNotEmpty(fmtName)) 
+                        {
+                            prevField.setFormat(fmtName);     // this should a format string like %s or %5.2f etc
+                            
+                        } else
+                        {
+                            prevField.setFormat(null);
+                        }
+                    }
+                } else
+                {
+                    log.error("We should never get here!");
+                }
+            }
             prevField = null;
         }
         hasFieldInfoChanged = false;
@@ -534,9 +771,9 @@ public class FieldItemPanel extends LocalizerBasePanel
             LocalizableContainerIFace tbl = localizableIO.getContainer(currJListItem);
             if (tbl != null)
             {
-                for (LocalizableJListItem f : localizableIO.getDisplayItems(currJListItem))
+                for (LocalizableJListItem fItem : localizableIO.getDisplayItems(currJListItem))
                 {
-                    fieldsModel.addElement(f);
+                    fieldsModel.addElement(fItem);
                 }
     
                 fieldsList.setSelectedIndex(0);
@@ -671,6 +908,10 @@ public class FieldItemPanel extends LocalizerBasePanel
             fieldTypeTxt.setText("");
             fieldLengthTxt.setText("");
         }
+        
+        fieldInfo = tableInfo.getFieldByName(fld.getName());
+        
+        fillFormatBox();
         
         boolean ok = fld != null;
         fieldDescText.setEnabled(ok);

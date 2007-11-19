@@ -297,8 +297,14 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
         {
             if (cmdAction.isAction("SearchComplete"))
             {
-                adjustDisplay();
-                CommandDispatcher.unregister(ExpressSearchTask.EXPRESSSEARCH, this);
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run()
+                    {
+                        adjustDisplay();
+                        CommandDispatcher.unregister(ExpressSearchTask.EXPRESSSEARCH, ESResultsSubPane.this);                        
+                    }
+                });
+
             }
         }
     }

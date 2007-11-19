@@ -86,6 +86,14 @@ public class CatalogNumberUIFieldFormatter implements UIFieldFormatterIFace
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getFieldName()
+     */
+    public String getFieldName()
+    {
+        return "catalogNumber";
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getDataClass()
      */
     public Class<?> getDataClass()
@@ -315,5 +323,13 @@ public class CatalogNumberUIFieldFormatter implements UIFieldFormatterIFace
     public boolean isNumericOnly()
     {
         return isNumericCatalogNumber;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    public String toString()
+    {
+        return title;
     }
 }

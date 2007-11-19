@@ -41,6 +41,8 @@ import org.hibernate.annotations.Index;
 
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.ui.DateWrapper;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.ui.forms.persist.AltViewIFace;
 import edu.ku.brc.ui.forms.persist.FormCellCommandIFace;
 import edu.ku.brc.ui.forms.persist.FormCellFieldIFace;
@@ -109,7 +111,7 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
     
     protected String    format;
     protected String    formatName;
-    protected String    uiFieldFormatter;
+    protected String    uiFieldFormatterName;
     protected Boolean   isRequiredDB;
     protected Boolean   isReadOnlyDB;
     protected Boolean   isEncryptedDB;
@@ -214,7 +216,7 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
         dspUITypeStr   = null;
         format         = null;
         formatName     = null;
-        uiFieldFormatter = null;
+        uiFieldFormatterName = null;
         isRequiredDB   = null;
         isReadOnlyDB   = null;
         isEncryptedDB  = null;
@@ -501,9 +503,9 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
     {
         if (defaultValue != null)
         {
-            if (defaultDateTodayDB == null && StringUtils.isNotEmpty(uiFieldFormatter))
+            if (defaultDateTodayDB == null && StringUtils.isNotEmpty(uiFieldFormatterName))
             {
-                defaultDateTodayDB = uiFieldFormatter.equals("Date") && defaultValue.equals("today");
+                defaultDateTodayDB = uiFieldFormatterName.equals("Date") && defaultValue.equals("today");
             }
             
             if (defaultDateTodayDB != null && defaultDateTodayDB)
@@ -1055,18 +1057,29 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
     /**
      * @return the uiFieldFormatter
      */
-    @Column(name = "UiFieldFormatter", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
-    public String getUiFieldFormatter()
+    @Column(name = "UiFieldFormatterName", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    public String getUiFieldFormatterName()
     {
-        return uiFieldFormatter;
+        return uiFieldFormatterName;
     }
+    
+    /**
+     * @return the uiFieldFormatter
+     */
+    @Transient
+    public String getUIFieldFormatterName()
+    {
+        return uiFieldFormatterName;
+    }
+
+
 
     /**
      * @param uiFieldFormatter the uiFieldFormatter to set
      */
-    public void setUiFieldFormatter(String uiFieldFormatter)
+    public void setUiFieldFormatter(String uiFieldFormatterName)
     {
-        this.uiFieldFormatter = uiFieldFormatter;
+        this.uiFieldFormatterName = uiFieldFormatterName;
     }
 
     /**
@@ -1593,15 +1606,6 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#getUIFieldFormatter()
-     */
-    @Transient
-    public String getUIFieldFormatter()
-    {
-        return uiFieldFormatter;
-    }
-
-    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#getUiType()
      */
     @Transient
@@ -1716,9 +1720,9 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#setUIFieldFormatter(java.lang.String)
      */
-    public void setUIFieldFormatter(String uiFieldFormatter)
+    public void setUIFieldFormatterName(String uiFieldFormatter)
     {
-        this.uiFieldFormatter = uiFieldFormatter;
+        this.uiFieldFormatterName = uiFieldFormatter;
     }
 
     /* (non-Javadoc)
@@ -1924,7 +1928,7 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
             dspUITypeStr     = fcf.getDspUIType().toString().toLowerCase();
             format           = fcf.getFormat();
             formatName       = fcf.getFormatName();
-            uiFieldFormatter = fcf.getUIFieldFormatter();
+            uiFieldFormatterName = fcf.getUIFieldFormatterName();
             isRequiredDB     = fcf.isRequired();
             isReadOnlyDB     = fcf.isReadOnly();
             isEncryptedDB    = fcf.isEncrypted();
@@ -1982,6 +1986,21 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
     {
         this.isEditOnCreate = isEditOnCreate;
     }
+    
+    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#getUIFieldFormatter()
+     */
+    @Transient
+    public UIFieldFormatterIFace getUIFieldFormatter()
+    {
+        if (StringUtils.isNotEmpty(uiFieldFormatterName))
+        {
+            return UIFieldFormatterMgr.getFormatter(uiFieldFormatterName);
+        }
+        return null;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.FormCellIFace#toXML(java.lang.StringBuffer)
@@ -2036,7 +2055,7 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
             
             xmlAttr(sb, "format", format);
             xmlAttr(sb, "formatname", formatName);
-            xmlAttr(sb, "uifieldformatter", uiFieldFormatter);
+            xmlAttr(sb, "uifieldformatter", uiFieldFormatterName);
             xmlAttr(sb, "isrequired", isRequiredDB);
             xmlAttr(sb, "valtype", validationType);
             xmlAttr(sb, "readonly", isReadOnlyDB);

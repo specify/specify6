@@ -577,6 +577,8 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
         
         xstream.useAttributeFor(SpLocaleBase.class, "name");
         xstream.useAttributeFor(SpLocaleBase.class, "type");
+        xstream.useAttributeFor(SpLocaleBase.class, "format");
+        xstream.useAttributeFor(SpLocaleBase.class, "isUIFormatter");
         
         xstream.useAttributeFor(SpLocaleItemStr.class, "country");
         xstream.useAttributeFor(SpLocaleItemStr.class, "language");
@@ -589,7 +591,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
         
         xstream.omitField(SpLocaleContainerItem.class,  "spLocaleContainerItemId");
         xstream.omitField(SpLocaleContainerItem.class,  "container");
-        
+
         xstream.omitField(SpLocaleItemStr.class,        "spLocaleItemStrId");
         
         xstream.omitField(DataModelObjBase.class,  "timestampCreated");

@@ -195,7 +195,7 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
             ERTICaptionInfo caption = new ERTICaptionInfo(dfc.getFieldInfo().getColumn(), 
                                                           dfc.getFieldInfo().getTitle(), 
                                                           true,
-                                                          "", 
+                                                          dfc.getFieldInfo().getFormatter(), 
                                                           i+1);
             try
             {

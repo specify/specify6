@@ -238,6 +238,12 @@ public interface Viewable
      * Focus the appropriate UI element.
      */
     public void focus();
+    
+    /**
+     * They the Viewable that the form was cancelled (when it is in a dialog).
+     * And it should undo anything it can undo.
+     */
+    public void formWasCancelled();
 
     /**
      * Tells the Viewable that it is being shutdown and it should cleanup.

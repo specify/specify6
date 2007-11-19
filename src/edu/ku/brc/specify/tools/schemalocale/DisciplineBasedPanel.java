@@ -140,7 +140,7 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace, 
             
         });
         
-        fieldPanel = new FieldItemPanel(schemaPanel, true, true, null);
+        fieldPanel = new FieldItemPanel(schemaPanel, true, true, true, null);
         fieldPanel.setLocalizableIO(this);
         fieldPanel.setStatusBar(schemaPanel.getStatusBar());
         

@@ -39,7 +39,7 @@ public final class FormCellField extends FormCell implements FormCellFieldIFace
     protected FieldType dspUIType;
     protected String    format;
     protected String    formatName;
-    protected String    uiFieldFormatter;
+    protected String    uiFieldFormatterName;
     protected boolean   isRequired     = false;
     protected boolean   isReadOnly     = false;
     protected boolean   isEncrypted    = false;
@@ -63,7 +63,7 @@ public final class FormCellField extends FormCell implements FormCellFieldIFace
     protected boolean  isTextField    = false;
     protected boolean  isDSPTextField = false;
     protected boolean  isEditOnCreate = false;
-
+    
     /**
      * Constructor
      * @param type type of cell
@@ -90,7 +90,7 @@ public final class FormCellField extends FormCell implements FormCellFieldIFace
      * @param uiType the type of ui component to be created (i.e. "checkbox", "textfield")
      * @param format the format for a text field
      * @param formatName name of formatter to use
-     * @param uiFieldFormatter name of UIFieldFormatter to use
+     * @param uiFieldFormatterName name of UIFieldFormatter to use
      * @param isRequired whether the control MUST have value
      * @param cols the number of default columns to make the text field/area
      * @param rows the number of default rows to make TextArea
@@ -107,7 +107,7 @@ public final class FormCellField extends FormCell implements FormCellFieldIFace
                          final FieldType dspUIType,
                          final String  format,
                          final String  formatName,
-                         final String  uiFieldFormatter,
+                         final String  uiFieldFormatterName,
                          final boolean isRequired,
                          final int     cols,
                          final int     rows,
@@ -121,7 +121,7 @@ public final class FormCellField extends FormCell implements FormCellFieldIFace
 
         this.format         = format;
         this.formatName     = formatName;
-        this.uiFieldFormatter = uiFieldFormatter;
+        this.uiFieldFormatterName = uiFieldFormatterName;
         this.cols           = cols;
         this.rows           = rows;
         this.validationRule = validationRule;
@@ -257,7 +257,7 @@ public final class FormCellField extends FormCell implements FormCellFieldIFace
     {
         if (defaultDateToday == null)
         {
-            defaultDateToday = uiFieldFormatter.equals("Date") && defaultValue.equals("today");
+            defaultDateToday = uiFieldFormatterName.equals("Date") && defaultValue.equals("today");
         }
         
         if (defaultDateToday)
@@ -378,19 +378,19 @@ public final class FormCellField extends FormCell implements FormCellFieldIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#getUIFieldFormatter()
+     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#getUIFieldFormatterName()
      */
-    public String getUIFieldFormatter()
+    public String getUIFieldFormatterName()
     {
-        return uiFieldFormatter;
+        return uiFieldFormatterName;
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#setUIFieldFormatter(java.lang.String)
+     * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#setUIFieldFormatterName(java.lang.String)
      */
-    public void setUIFieldFormatter(String uiFieldFormatter)
+    public void setUIFieldFormatterName(String uiFieldFormatterName)
     {
-        this.uiFieldFormatter = uiFieldFormatter;
+        this.uiFieldFormatterName = uiFieldFormatterName;
     }
 
     /* (non-Javadoc)
@@ -460,34 +460,31 @@ public final class FormCellField extends FormCell implements FormCellFieldIFace
     {
         this.isEditOnCreate = isEditOnCreate;
     }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.persist.FormCell#clone()
-     */
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#clone()
      */
     @SuppressWarnings("unchecked")
     public Object clone() throws CloneNotSupportedException
     {
-        FormCellField fcf = (FormCellField)super.clone();
-        fcf.uiType = uiType;
-        fcf.dspUIType = dspUIType;
-        fcf.format = format;
-        fcf.formatName = formatName;
-        fcf.uiFieldFormatter = uiFieldFormatter;
-        fcf.isRequired = isRequired;
-        fcf.isReadOnly = isReadOnly;
-        fcf.isEncrypted = isEncrypted;
-        fcf.label = label;
-        fcf.defaultValue = defaultValue;
+        FormCellField fcf  = (FormCellField)super.clone();
+        fcf.uiType         = uiType;
+        fcf.dspUIType      = dspUIType;
+        fcf.format         = format;
+        fcf.formatName     = formatName;
+        fcf.uiFieldFormatterName = uiFieldFormatterName;
+        fcf.isRequired     = isRequired;
+        fcf.isReadOnly     = isReadOnly;
+        fcf.isEncrypted    = isEncrypted;
+        fcf.label          = label;
+        fcf.defaultValue   = defaultValue;
         fcf.defaultDateToday = defaultDateToday;
-        fcf.pickListName = pickListName;
-        fcf.cols = cols;
-        fcf.rows = rows;
+        fcf.pickListName   = pickListName;
+        fcf.cols           = cols;
+        fcf.rows           = rows;
         fcf.validationType = validationType;
         fcf.validationRule = validationRule;
-        fcf.isTextField = isTextField;
+        fcf.isTextField    = isTextField;
         fcf.isDSPTextField = isDSPTextField;
         return fcf;      
     }
@@ -530,7 +527,7 @@ public final class FormCellField extends FormCell implements FormCellFieldIFace
         
         xmlAttr(sb, "format", format);
         xmlAttr(sb, "formatname", formatName);
-        xmlAttr(sb, "uifieldformatter", uiFieldFormatter);
+        xmlAttr(sb, "uifieldformatter", uiFieldFormatterName);
         
         if (isRequired) xmlAttr(sb, "isrequired", isRequired);
         

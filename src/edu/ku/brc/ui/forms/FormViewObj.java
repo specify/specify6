@@ -15,6 +15,7 @@
 package edu.ku.brc.ui.forms;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
+import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.BorderLayout;
@@ -2566,33 +2567,33 @@ public class FormViewObj implements Viewable,
                 if (fieldInfo.isOfType(FormCellIFace.CellType.field))
                 {
                     // Do Formatting here
-                    FormCellField cellField    = (FormCellField)fieldInfo.getFormCell();
-                    String        formatName   = cellField.getFormatName();
-                    String        defaultValue = cellField.getDefaultValue();
+                    FormCellField cellField         = (FormCellField)fieldInfo.getFormCell();
+                    String        dataObjFormatName = cellField.getFormatName();
+                    String        defaultValue      = cellField.getDefaultValue();
                     
                     boolean isTextFieldPerMode = cellField.isTextFieldForMode(altView.getMode());
 
-                    boolean useFormatName = isTextFieldPerMode && isNotEmpty(formatName);
+                    boolean useDataObjFormatName = isTextFieldPerMode && isNotEmpty(dataObjFormatName);
                     //log.debug("["+cellField.getName()+"] useFormatName["+useFormatName+"]  "+comp.getClass().getSimpleName());
 
-                    if (useFormatName)
+                    if (useDataObjFormatName)
                     {
                         if (cellField.getFieldNames().length > 1)
                         {
-                            throw new RuntimeException("formatName ["+formatName+"] only works on a single value.");
+                            throw new RuntimeException("formatName ["+dataObjFormatName+"] only works on a single value.");
                         }
                         
                         Object[] values;
                         if (fieldInfo.getFormCell().isIgnoreSetGet())
                         {
                             defaultDataArray[0] = defaultValue;
-                            values = defaultDataArray;
+                            values              = defaultDataArray;
                         } else
                         {
                             values = UIHelper.getFieldValues(cellField.getFieldNames(), dataObj, dg);
                         }
                         
-                        setDataIntoUIComp(comp, DataObjFieldFormatMgr.format(values[0], formatName), defaultValue);
+                        setDataIntoUIComp(comp, DataObjFieldFormatMgr.format(values[0], dataObjFormatName), defaultValue);
 
                     } else
                     {
@@ -2604,7 +2605,7 @@ public class FormViewObj implements Viewable,
                         } else if (fieldInfo.getFormCell().isIgnoreSetGet())
                         {
                             defaultDataArray[0] = defaultValue;
-                            values = defaultDataArray;
+                            values              = defaultDataArray;
                             
                         } else
                         {
@@ -2613,10 +2614,19 @@ public class FormViewObj implements Viewable,
 
                         if (values != null && values.length > 0)
                         {
-                            String   format = cellField.getFormat();
+                            String format = cellField.getFormat();
+                            if (tableInfo != null && isEmpty(format))
+                            {
+                                DBFieldInfo fi = tableInfo.getFieldByName(fieldInfo.getFormCell().getName());
+                                if (fi != null)
+                                {
+                                    format = fi.getFormatStr();
+                                }
+                            }
+                            
                             if (isNotEmpty(format))
                             {
-                                setDataIntoUIComp(comp, UIHelper.getFormattedValue(values, cellField.getFormat()), defaultValue);
+                                setDataIntoUIComp(comp, UIHelper.getFormattedValue(values, format), defaultValue);
 
                             } else
                             {
@@ -3532,6 +3542,34 @@ public class FormViewObj implements Viewable,
         }
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#formWasCancelled()
+     */
+    //@Override
+    public void formWasCancelled()
+    {
+        session = DataProviderFactory.getInstance().createSession();
+        setSession(session);
+
+        for (Object obj : new Vector<Object>(list))
+        {
+            if (obj instanceof FormDataObjIFace)
+            {
+                FormDataObjIFace formData = (FormDataObjIFace)obj;
+                if (formData.getId() == null)
+                {
+                    removeFromParent(formData);
+                    
+                } else
+                {
+                    session.refresh(formData);
+                }
+            }
+        }
+        
+        session.close();
+        session = null;
+    }
     
     //-----------------------------------------------------
     // ValidationListener

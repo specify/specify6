@@ -69,26 +69,26 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
     protected LocalizableContainerIFace currContainer   = null;
     protected boolean                   includeHiddenUI = true;              // Must be set before creatng the panel
     protected boolean                   isDBSchema      = true;
-    protected boolean                   useDisciplines  = true;
+    protected boolean                   useDisciplines  = false;
     
     protected DisciplineBasedPanel      disciplineBasedPanel = null;
 
     // LocalizableContainerIFace Fields
-    protected FieldItemPanel   fieldPanel;
+    protected FieldItemPanel            fieldPanel;
     
     // LocalizableContainerIFace Tables
-    protected JList            tablesList;
-    protected JTextArea        tblDescText   = new JTextArea();
-    protected JTextField       tblNameText   = new JTextField();
-    protected JLabel           tblDescLbl;
-    protected JLabel           tblNameLbl;
-    protected JCheckBox        tblHideChk  = new JCheckBox(getResourceString("SL_TABLE_HIDE_CHK"));
-    protected boolean          hasTableInfoChanged  = false;
+    protected JList                     tablesList;
+    protected JTextArea                 tblDescText   = new JTextArea();
+    protected JTextField                tblNameText   = new JTextField();
+    protected JLabel                    tblDescLbl;
+    protected JLabel                    tblNameLbl;
+    protected JCheckBox                 tblHideChk  = new JCheckBox(getResourceString("SL_TABLE_HIDE_CHK"));
+    protected boolean                   hasTableInfoChanged  = false;
     
-    protected LocalizableItemIFace prevTable = null;
+    protected LocalizableItemIFace      prevTable = null;
     
-    protected JStatusBar       statusBar      = null;
-    protected JButton          tblSpellChkBtn = null;
+    protected JStatusBar                statusBar      = null;
+    protected JButton                   tblSpellChkBtn = null;
     
     protected Hashtable<String, String>         resHash     = new Hashtable<String, String>();
     protected Hashtable<String, PackageTracker> packageHash = new Hashtable<String, PackageTracker>();
@@ -100,7 +100,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
     /**
      * 
      */
-    public SchemaLocalizerPanel(PropertyChangeListener l)
+    public SchemaLocalizerPanel(final PropertyChangeListener l)
     {
         listener = l;
         init();
@@ -165,7 +165,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         JScrollPane tblsp = new JScrollPane(tablesList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         
         // LocalizableNameDescIFace
-        fieldPanel = new FieldItemPanel(this, includeHiddenUI, isDBSchema, this);
+        fieldPanel = new FieldItemPanel(this, includeHiddenUI, true, isDBSchema, this);
         fieldPanel.setStatusBar(statusBar);
         fieldPanel.setLocalizableIO(localizableIO);
         
@@ -262,6 +262,14 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
     }
 
     /**
+     * @param useDisciplines the useDisciplines to set
+     */
+    public void setUseDisciplines(boolean useDisciplines)
+    {
+        this.useDisciplines = useDisciplines;
+    }
+
+    /**
      * @return the localizableIO
      */
     public LocalizableIOIFace getLocalizableIO()
@@ -308,6 +316,14 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         {
             enableSpellCheck();
         }
+    }
+    
+    /**
+     * @return the current container
+     */
+    public LocalizableContainerIFace getCurrentContainer()
+    {
+        return currContainer;
     }
     
     /**

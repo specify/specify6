@@ -49,6 +49,7 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.ui.forms.persist.FormViewDef.JGDefItem;
 
 /**
@@ -415,7 +416,10 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
                 }
 
                 System.setProperty(SchemaI18NService.factoryName, "edu.ku.brc.specify.config.SpecifySchemaI18NService");    // Needed for Localization and Schema
+                System.setProperty(UIFieldFormatterMgr.factoryName, "edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr");    // Needed for CatalogNumbering
                 
+                UIFieldFormatterMgr.setDoingLocal(true); // reads from local disk
+               
                 Object[] options = { "Full Specify Schema", "WorkBench Schema" };
                 int retVal = JOptionPane.showOptionDialog(null, "Which Schema would you like to localize?", "Choose a Schema", JOptionPane.YES_NO_CANCEL_OPTION,
                         JOptionPane.QUESTION_MESSAGE, null, options, options[0]);

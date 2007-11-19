@@ -14,6 +14,7 @@
  */
 package edu.ku.brc.ui.forms.persist;
 
+
 /**
  * Represents a Form Cell 'Field' in the UI. See the enum to as a list of those components it can create. The plugin enum
  * enables it to handle additional type of controls.
@@ -164,12 +165,12 @@ public interface FormCellFieldIFace extends FormCellIFace
     /**
      * @return
      */
-    public abstract String getUIFieldFormatter();
+    public abstract String getUIFieldFormatterName();
 
     /**
      * @param uiFieldFormatter the name of the predefined UIFieldFormatter
      */
-    public abstract void setUIFieldFormatter(String uiFieldFormatter);
+    public abstract void setUIFieldFormatterName(String uiFieldFormatter);
 
     /**
      * @return the type of control the field is
@@ -210,7 +211,7 @@ public interface FormCellFieldIFace extends FormCellIFace
      * @return whether the control is ONLY editable on create
      */
     public abstract boolean isEditOnCreate();
-
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.FormCell#clone()
      */

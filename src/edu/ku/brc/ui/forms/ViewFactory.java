@@ -318,15 +318,17 @@ public class ViewFactory
             // deliberately ignore "cellField.isChangeListenerOnly()"
             // pass in false instead
 
-            UIFieldFormatterIFace formatter = UIFieldFormatterMgr.getFormatter(cellField.getUIFieldFormatter());
+            
+            // THis is the OLD way before the UIFieldFormatter was moved into the DBFieldInfo and also the CellField
+            UIFieldFormatterIFace formatter = UIFieldFormatterMgr.getFormatter(cellField.getUIFieldFormatterName());
             if (formatter == null)
             {
-                throw new RuntimeException("Missing formatter by name ["+cellField.getUIFieldFormatter()+"]");
+                throw new RuntimeException("Missing formatter by name ["+cellField.getUIFieldFormatterName()+"]");
             }
             
             if (formatter.isDate())
             {
-                ValFormattedTextFieldSingle textField = new ValFormattedTextFieldSingle(cellField.getUIFieldFormatter(), isViewOnly);
+                ValFormattedTextFieldSingle textField = new ValFormattedTextFieldSingle(cellField.getUIFieldFormatterName(), isViewOnly);
                 textField.setRequired(cellField.isRequired());
                 
                 validator.hookupTextField(textField,
@@ -342,9 +344,8 @@ public class ViewFactory
                     textField.setEditable(!cellField.isReadOnly());
                 }
                 return textField;
-                
             }
-            
+
             ValFormattedTextField textField = new ValFormattedTextField(formatter, isViewOnly, allEditOK);
             textField.setRequired(cellField.isRequired());
             
@@ -359,12 +360,12 @@ public class ViewFactory
         
         if (isViewOnly)
         {
-            ValFormattedTextFieldSingle vtfs = new ValFormattedTextFieldSingle(cellField.getUIFieldFormatter(), isViewOnly);
+            ValFormattedTextFieldSingle vtfs = new ValFormattedTextFieldSingle(cellField.getUIFieldFormatterName(), isViewOnly);
             changeTextFieldUIForDisplay(vtfs, cellField.getPropertyAsBoolean("transparent", false));
             return vtfs;
         }
         // else
-        ValFormattedTextField vtf = new ValFormattedTextField(cellField.getUIFieldFormatter(), isViewOnly, allEditOK);
+        ValFormattedTextField vtf = new ValFormattedTextField(cellField.getUIFieldFormatterName(), isViewOnly, allEditOK);
         vtf.setEnabled(!cellField.isReadOnly());
         return vtf;
     }
@@ -532,14 +533,15 @@ public class ViewFactory
     }
     
     /**
-     * Makes adjusts to the border and the colors to make it "flat" for diaply mode.
+     * Makes adjusts to the border and the colors to make it "flat" for display mode.
      * @param textField the text field to be flattened
      * @param isTransparent make the background transparent instead of using the viewFieldColor
      */
     public static void changeTextFieldUIForDisplay(final JTextField textField, final boolean isTransparent)
     {
         Insets insets = textField.getBorder().getBorderInsets(textField);
-        textField.setBorder(BorderFactory.createEmptyBorder(insets.top, insets.left, insets.bottom, insets.bottom));
+        textField.setBorder(BorderFactory.createEmptyBorder(Math.min(insets.top, 3), Math.min(insets.left, 3), 
+                                                            Math.min(insets.bottom, 3), Math.min(insets.right, 3)));
         textField.setForeground(Color.BLACK);
         textField.setEditable(false);
         textField.setFocusable(false);

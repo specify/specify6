@@ -19,7 +19,11 @@ import java.util.Calendar;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
+
 /**
+ * Represents a field in the database schema.
+ * 
  * @author rods
  *
  * @code_status Alpha
@@ -39,6 +43,12 @@ public class DBFieldInfo extends DBInfoBase
     protected boolean     isUpdatable;
     protected boolean     isUnique;
     protected boolean     isIndexed;
+    
+    // Transient
+    protected UIFieldFormatterIFace formatter  = null;
+    protected String                formatStr  = null;
+    
+    
 
     public DBFieldInfo(final DBTableInfo tableInfo, 
                        final String column, 
@@ -119,6 +129,40 @@ public class DBFieldInfo extends DBInfoBase
         return isIndexed;
     }
     
+    
+    
+    /**
+     * @return the formatter
+     */
+    public UIFieldFormatterIFace getFormatter()
+    {
+        return formatter;
+    }
+
+    /**
+     * @param formatter the formatter to set
+     */
+    public void setFormatter(UIFieldFormatterIFace formatter)
+    {
+        this.formatter = formatter;
+    }
+
+    /**
+     * @return the formatStr
+     */
+    public String getFormatStr()
+    {
+        return formatStr;
+    }
+
+    /**
+     * @param formatStr the formatStr to set
+     */
+    public void setFormatStr(String formatStr)
+    {
+        this.formatStr = formatStr;
+    }
+
     public Class<?> getDataClass()
     {
         if (StringUtils.isNotEmpty(type))

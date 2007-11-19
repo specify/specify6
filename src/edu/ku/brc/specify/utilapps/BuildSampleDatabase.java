@@ -2776,7 +2776,9 @@ public class BuildSampleDatabase
     {
         newItem.setName(memoryItem.getName());
         newItem.setType(memoryItem.getType());
-       
+        newItem.setFormat(memoryItem.getFormat());
+        newItem.setIsUIFormatter(memoryItem.getIsUIFormatter());
+        
         for (SpLocaleItemStr nm : memoryItem.getNames())
         {
             SpLocaleItemStr str = new SpLocaleItemStr();
@@ -2813,8 +2815,10 @@ public class BuildSampleDatabase
     {
         newContainer.setName(memoryContainer.getName());
         newContainer.setType(memoryContainer.getType());
+        newContainer.setFormat(newContainer.getFormat());
+        newContainer.setIsUIFormatter(newContainer.getIsUIFormatter());
         
-        debugOn = memoryContainer.getName().equals("accession");
+        debugOn = false;//memoryContainer.getName().equals("collectionobject");
        
         for (SpLocaleItemStr nm : memoryContainer.getNames())
         {

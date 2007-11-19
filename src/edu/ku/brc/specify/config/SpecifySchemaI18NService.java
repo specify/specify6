@@ -24,13 +24,17 @@ import java.util.Locale;
 import java.util.Stack;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBInfoBase;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 
 /**
  * This class gets all the L10N string from the database for a locale and populates the DBTableInfo etc structures.
@@ -95,7 +99,7 @@ public class SpecifySchemaI18NService extends SchemaI18NService
             }
         }
         
-        sql = "SELECT splocalecontainer.Name,splocalecontaineritem.Name, splocaleitemstr.Text "+
+        sql = "SELECT splocalecontainer.Name,splocalecontaineritem.Name,splocalecontaineritem.Format, splocalecontaineritem.IsUIFormatter,splocaleitemstr.Text "+
               "FROM splocalecontainer INNER JOIN splocalecontaineritem ON splocalecontainer.SpLocaleContainerID = splocalecontaineritem.SpLocaleContainerID "+
               "INNER JOIN splocaleitemstr ON splocalecontaineritem.SpLocaleContainerItemID = splocaleitemstr.SpLocaleContainerItemNameID "+
               " where splocaleitemstr.Language = '"+locale.getLanguage()+"' AND " +
@@ -118,12 +122,42 @@ public class SpecifySchemaI18NService extends SchemaI18NService
                 DBInfoBase fi = ti.getItemByName(p.get(1));
                 if (fi != null)
                 {
-                    fi.setTitle(p.get(2));
+                    fi.setTitle(p.get(4));
                     
                 } else
                 {
                     log.error("Couldn't find field["+p.get(1)+"] for table ["+p.get(0)+"]");
                 }
+                
+                if (fi instanceof DBFieldInfo)
+                {
+                    String format   = p.get(2);
+                    boolean isUIFmt = p.get(3) == null ? false : !p.get(3).equals("0");
+                    
+                    DBFieldInfo fieldInfo = (DBFieldInfo)fi;
+                    if (fieldInfo.getName().equals("countAmt"))
+                    {
+                        int x = 0;
+                        x++;
+                    }
+                    
+                    if (isUIFmt)
+                    {
+                        UIFieldFormatterIFace formatter = UIFieldFormatterMgr.getFormatter(format);
+                        if (formatter != null)
+                        {
+                            fieldInfo.setFormatter(formatter);
+                        } else
+                        {
+                            log.error("Couldn't find UIFieldFormatter with name ["+format+"]");
+                        }
+                        
+                    } else if (StringUtils.isNotEmpty(format))
+                    {
+                        fieldInfo.setFormatStr(format);
+                    }
+                }
+                
             } else
             {
                 log.error("Couldn't find table ["+p.get(0)+"]");

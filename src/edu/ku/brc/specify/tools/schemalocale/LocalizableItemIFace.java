@@ -81,4 +81,23 @@ public interface LocalizableItemIFace
      */
     public abstract void fillNames(List<LocalizableStrIFace> names);
     
+    /**
+     * 
+     */
+    public abstract String getFormat();
+    
+    /**
+     * 
+     */
+    public abstract void setFormat(String format);
+    
+    /**
+     * @param isUIFormatter
+     */
+    public abstract void setIsUIFormatter(Boolean isUIFormatter);
+    
+    /**
+     * @return
+     */
+    public abstract Boolean getIsUIFormatter();
 }

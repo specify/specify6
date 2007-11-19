@@ -287,7 +287,7 @@ public class SpLocaleContainerItem extends SpLocaleBase implements LocalizableIt
             log.error("LocalizableStrIFace was null or not of Class SpLocaleItemStr");
         }
     }
-
+    
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */

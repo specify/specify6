@@ -1423,6 +1423,15 @@ public class TableViewObj implements Viewable,
         return null;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#formWasCancelled()
+     */
+    //@Override
+    public void formWasCancelled()
+    {
+        // no-op
+    }
+    
     //-----------------------------------------------------
     // ValidationListener
     //-----------------------------------------------------

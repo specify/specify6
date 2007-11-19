@@ -80,8 +80,8 @@
     <icon name="UpArrow"       file="up.png"            sizes="16"/>
     <icon name="DownArrow"     file="down.png"          sizes="16"/>
     <icon name="BlankIcon"     file="blank32x32.png"    sizes="all"/>
-    <icon name="PlusSign"      file="plussign.gif"      sizes="16"/>
-    <icon name="MinusSign"     file="minussign.gif"     sizes="16"/>
+    <icon name="PlusSign"      file="add.png"      sizes="16"/>
+    <icon name="MinusSign"     file="delete.png"     sizes="16"/>
     <icon name="GrayDot"       file="graydot.gif"       sizes="16"/>
     <icon name="Eraser16"      file="Clear16x16.png"  sizes="16"/>
     

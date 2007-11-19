@@ -122,9 +122,13 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
 
     /**
      * Constructor.
-     * @param formatter the formatters
+     * @param formatter
+     * @param isViewOnly
+     * @param isAllEditable
      */
-    public ValFormattedTextField(final UIFieldFormatterIFace formatter, final boolean isViewOnly, final boolean isAllEditable)
+    public ValFormattedTextField(final UIFieldFormatterIFace formatter, 
+                                 final boolean isViewOnly, 
+                                 final boolean isAllEditable)
     {
         this();
         
@@ -472,7 +476,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
         boolean isTextEmpty = StringUtils.isEmpty(text);
         
         int txtLen = text.length();
-        int len    = formatter.getLength();
+        //int len    = formatter.getLength();
         int inx    = 0;
         int pos    = 0;
         for (UIFieldFormatterField field : fields)
