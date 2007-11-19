@@ -372,6 +372,9 @@ public class CustomDialog extends JDialog
         return isCancelled;
     }
 
+    /**
+     * @param text
+     */
     public void setOkLabel(final String text)
     {
         this.okLabel = text;
@@ -382,6 +385,9 @@ public class CustomDialog extends JDialog
         }
     }
 
+    /**
+     * @param text
+     */
     public void setCancelLabel(final String text)
     {
         this.cancelLabel = text;
@@ -392,11 +398,17 @@ public class CustomDialog extends JDialog
         }
     }
 
+    /**
+     * @return
+     */
     public int getBtnPressed()
     {
         return btnPressed;
     }
 
+    /**
+     * @param applyLabel
+     */
     public void setApplyLabel(String applyLabel)
     {
         this.applyLabel = applyLabel;
@@ -407,11 +419,17 @@ public class CustomDialog extends JDialog
         }
     }
 
+    /**
+     * @param helpContext
+     */
     public void setHelpContext(String helpContext)
     {
         this.helpContext = helpContext;
     }
 
+    /**
+     * @param helpLabel
+     */
     public void setHelpLabel(String helpLabel)
     {
         this.helpLabel = helpLabel;

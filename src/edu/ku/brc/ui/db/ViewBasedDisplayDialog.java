@@ -68,7 +68,20 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
                                   final boolean isEdit,
                                   final int     options)
     {
-        this(parentFrame, viewSetName, viewName, displayName, title, closeBtnTitle, className, idFieldName, isEdit, true, null, null, options);
+        this(parentFrame, 
+             viewSetName, 
+             viewName, 
+             displayName, 
+             title, 
+             closeBtnTitle, 
+             className, 
+             idFieldName, 
+             isEdit, 
+             true, 
+             null, 
+             null, 
+             options,
+             (isEdit ? CustomDialog.OKCANCEL : CustomDialog.OK_BTN) | CustomDialog.HELP_BTN);
     }
 
     /**
@@ -83,6 +96,7 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
      * @param idFieldName the name of the field in the clas that is the primary key which is filled in from the search table id
      * @param doRegOKBtn Indicates whether the OK btn should be registered so it calls save
      * @param options the options needed for creating the form
+     * @param dlgBtnOptions which btns the dialog should display
      */
     public ViewBasedDisplayDialog(final Frame     parentFrame,
                                   final String    viewSetName,
@@ -96,9 +110,10 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
                                   final boolean   doRegOKBtn,
                                   final String    cellName,
                                   final MultiView mvParent,
-                                  final int       options)
+                                  final int       options,
+                                  final int       dlgBtnOptions)
     {
-        super(parentFrame, title, true, isEdit ? CustomDialog.OKCANCEL : CustomDialog.OK_BTN, null);
+        super(parentFrame, title, true, dlgBtnOptions, null);
         
         viewBasedPanel = new ViewBasedDisplayPanel(this, 
                 viewSetName, 
@@ -171,7 +186,7 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
                                   final MultiView mvParent,
                                   final int       options)
     {
-        super(parentDialog, title, true, isEdit ? CustomDialog.OKCANCEL : CustomDialog.OK_BTN, null);
+        super(parentDialog, title, true, (isEdit ? CustomDialog.OKCANCEL : CustomDialog.OK_BTN) | CustomDialog.HELP_BTN, null);
         
         viewBasedPanel = new ViewBasedDisplayPanel(this, 
                 viewSetName, 

@@ -99,4 +99,9 @@ public interface ViewBasedDisplayIFace
      * @return the integer code for which btn of the CustomDialog was pressed
      */
     public abstract int getBtnPressed();
+    
+    /**
+     * @param helpContext
+     */
+    public abstract void setHelpContext(String helpContext);
 }

@@ -830,15 +830,6 @@ public class IconViewObj implements Viewable
     {
         // do nothing
     }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.Viewable#formWasCancelled()
-     */
-    //@Override
-    public void formWasCancelled()
-    {
-        
-    }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#shutdown()

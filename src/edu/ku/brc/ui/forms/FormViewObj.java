@@ -2181,7 +2181,7 @@ public class FormViewObj implements Viewable,
                 enableNewBtn = formValidator.isFormValid();
             }
             
-            log.debug("enableNewBtn "+enableNewBtn);
+            //log.debug("enableNewBtn "+enableNewBtn);
             newRecBtn.setEnabled(enableNewBtn);
             
             if (switcherUI != null)
@@ -2706,10 +2706,10 @@ public class FormViewObj implements Viewable,
                     }
                 }
             }
-        } else
+        }/* else
         {
             log.debug("******************* No Data!");
-        }
+        }*/
         
         formIsInNewDataMode = false;
         
@@ -3540,35 +3540,6 @@ public class FormViewObj implements Viewable,
             }
             formViewObj.getValidator().setDataChangeInNotifier(comp);
         }
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.Viewable#formWasCancelled()
-     */
-    //@Override
-    public void formWasCancelled()
-    {
-        session = DataProviderFactory.getInstance().createSession();
-        setSession(session);
-
-        for (Object obj : new Vector<Object>(list))
-        {
-            if (obj instanceof FormDataObjIFace)
-            {
-                FormDataObjIFace formData = (FormDataObjIFace)obj;
-                if (formData.getId() == null)
-                {
-                    removeFromParent(formData);
-                    
-                } else
-                {
-                    session.refresh(formData);
-                }
-            }
-        }
-        
-        session.close();
-        session = null;
     }
     
     //-----------------------------------------------------

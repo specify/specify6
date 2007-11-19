@@ -248,7 +248,6 @@ public class DropDownButtonStateful extends DropDownButton
             Rectangle pr  = getBounds();
             
             pr.x = r.x;
-            System.out.println(r.x);
             g.setColor(SystemColor.controlLtHighlight);
             g.drawLine(pr.x, pr.y, pr.width-1, pr.y);
             g.drawLine(pr.x, pr.y, pr.x, pr.height-1);

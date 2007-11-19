@@ -34,6 +34,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
@@ -180,12 +181,12 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
         boolean isNewObject = MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT);
         boolean isEditing   = MultiView.isOptionOn(options, MultiView.IS_EDITTING) || isNewObject;
         
-        String closeBtnTitle = isEditing ? getResourceString("Accept") : getResourceString("Close");
+        String closeBtnTitle = isEditing ? getResourceString("Done") : getResourceString("Close");
         
         frame = new ViewBasedDisplayDialog((Frame)null,
                 subviewDef.getViewSetName(),
                 subviewDef.getViewName(),
-                "XXXX",                      // What is this argument???
+                null,                      // What is this argument???
                 frameTitle,
                 closeBtnTitle,
                 view.getClassName(),
@@ -194,7 +195,8 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
                 false,
                 cellName,
                 mvParent,
-                options | MultiView.HIDE_SAVE_BTN | MultiView.DONT_ADD_ALL_ALTVIEWS | MultiView.USE_ONLY_CREATION_MODE);
+                options | MultiView.HIDE_SAVE_BTN | MultiView.DONT_ADD_ALL_ALTVIEWS | MultiView.USE_ONLY_CREATION_MODE,
+                CustomDialog.OK_BTN);
         
         /*if (isNewObject)
         {

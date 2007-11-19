@@ -462,29 +462,6 @@ public class MultiView extends JPanel
     }
     
     /**
-     * Sometime a MultiView can be put into a Dialog and it needs to know that
-     * it was cancelled to discard and changes.
-     */
-    public void formWasCancelled()
-    {
-        /*for (Enumeration<Viewable> e=viewMapByName.elements();e.hasMoreElements();)
-        {
-            Viewable viewable = e.nextElement();
-            viewable.formWasCancelled();
-        }*/
-        
-        if (currentViewable != null)
-        {
-            currentViewable.formWasCancelled();
-        }
-        
-        for (MultiView mv : kids)
-        {
-            mv.formWasCancelled();
-        }
-    }
-    
-    /**
      * Sets all validators to unchanged state.
      */
     public void clearValidators()

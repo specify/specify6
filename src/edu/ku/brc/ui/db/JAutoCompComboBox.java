@@ -94,18 +94,13 @@ public class JAutoCompComboBox extends JEditComboBox
     
     protected void init()
     {
-        addActionListener(new ActionListener() {
-
-            /* (non-Javadoc)
-             * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-             */
+        /*addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
                 System.out.println(getSelectedIndex()+ " "+e);
-                
             }
             
-        });
+        });*/
     }
     
     

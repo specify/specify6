@@ -283,11 +283,6 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
         } else
         {
             isCancelled = true;
-            
-            if (multiView != null)
-            {
-                multiView.formWasCancelled();
-            }
         }
     }
 
