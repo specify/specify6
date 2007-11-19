@@ -38,12 +38,29 @@ public class ObjectAttachmentIconMapper implements ObjectIconMapper, ObjectTextM
         return null;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.ui.ObjectTextMapper#getString(java.lang.Object)
+     */
     public String getString(Object o)
     {
         if (o instanceof ObjectAttachmentIFace<?>)
         {
             ObjectAttachmentIFace<?> oa = (ObjectAttachmentIFace<?>)o;
-            return oa.getAttachment().getMimeType();
+            
+            String title = oa.getAttachment().getTitle();
+            String filename = oa.getAttachment().getOrigFilename();
+            if (filename != null)
+            {
+                int lastWinSepIndex = filename.lastIndexOf('\\');
+                int lastUnixSepIndex = filename.lastIndexOf('/');
+                int lastIndex = Math.max(lastWinSepIndex, lastUnixSepIndex);
+                if (lastIndex != -1)
+                {
+                   filename = filename.substring(lastIndex+1);
+                }
+            }
+            
+            return (title != null) ? title : filename;
         }
 
         return null;

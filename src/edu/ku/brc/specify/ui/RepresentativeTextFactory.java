@@ -91,14 +91,20 @@ public class RepresentativeTextFactory implements ObjectTextMapper
      */
     public String getString(Object o)
     {
-        // if an ObjectTextMapper was registered to handle this class of object
-        // let the registered object do the work
-    	// TODO: improve this to work when a handler is registered for a superclass of
-    	//       the passed in object
+        // first see if a submapper handles this type of object
         ObjectTextMapper subMapper = subMappers.get(o.getClass());
         if (subMapper!=null)
         {
             return subMapper.getString(o);
+        }
+
+        // try one more thing in case the submapper handles an interface or superclass
+        for (Class<?> clazz: subMappers.keySet())
+        {
+            if (clazz.isAssignableFrom(o.getClass()))
+            {
+                return subMappers.get(clazz).getString(o);
+            }
         }
         
         // otherwise...
