@@ -51,6 +51,11 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.prefs.AppPrefsCache;
+import edu.ku.brc.dbsupport.DBFieldInfo;
+import edu.ku.brc.dbsupport.DBInfoBase;
+import edu.ku.brc.dbsupport.DBRelationshipInfo;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.ui.BrowseBtnPanel;
 import edu.ku.brc.ui.ColorChooser;
@@ -1146,7 +1151,6 @@ public class ViewFactory
 
         } else if (cell.getType() == FormCellIFace.CellType.separator)
         {
-            
             // still have compToAdd = null;
             FormCellSeparatorIFace fcs             = (FormCellSeparatorIFace)cell;
             String            collapsableName = fcs.getCollapseCompName();
@@ -1184,7 +1188,7 @@ public class ViewFactory
         } 
         else if (cell.getType() == FormCellIFace.CellType.iconview)
         {
-            FormCellSubView cellSubView = (FormCellSubView) cell;
+            FormCellSubView cellSubView = (FormCellSubView)cell;
 
             String subViewName = cellSubView.getViewName();
 
@@ -1203,6 +1207,7 @@ public class ViewFactory
                                                         parent.getCreateWithMode(), 
                                                         options, null);
                     parent.addChildMV(multiView);
+                    multiView.setClassToCreate(getClassToCreate(parent, cell));
 
                     viewBldObj.addSubView(cellSubView, multiView, bi.colInx, rowInx, cellSubView.getColspan(), 1);
                     viewBldObj.closeSubView(cellSubView);
@@ -1228,6 +1233,7 @@ public class ViewFactory
             FormCellSubView cellSubView = (FormCellSubView)cell;
             String          subViewName = cellSubView.getViewName();
             ViewIFace       subView     = AppContextMgr.getInstance().getView(cellSubView.getViewSetName(), subViewName);
+
             if (subView != null)
             {
                 // Check to see this view should be "flatten" meaning we are creating a grid from a form
@@ -1279,7 +1285,7 @@ public class ViewFactory
                                 dataType = cellSubView.getName().equals("this") ? SubViewBtn.DATA_TYPE.IS_THIS : SubViewBtn.DATA_TYPE.IS_SET;
                             }
                             
-                            SubViewBtn subViewBtn = new SubViewBtn(parent, cellSubView, subView, dataType, options, props);
+                            SubViewBtn subViewBtn = new SubViewBtn(parent, cellSubView, subView, dataType, options, props, getClassToCreate(parent, cell));
                             bi.doAddToValidator   = false;
                             bi.compToAdd          = subViewBtn;
                             
@@ -1306,6 +1312,7 @@ public class ViewFactory
                                                                 cellSubView.getDefaultAltViewType(),
                                                                 options, 
                                                                 bgColor);
+                            multiView.setClassToCreate(getClassToCreate(parent, cell));
                             setBorder(multiView, cellSubView.getProperties());
                             
                             parent.addChildMV(multiView);
@@ -1553,6 +1560,41 @@ public class ViewFactory
     }
     
     /**
+     * Determines the clas that is to be created.
+     * @param multiView the parent
+     * @param cell the definitions
+     * @return the class
+     */
+    protected Class<?> getClassToCreate(final MultiView multiView, final FormCellIFace cell)
+    {
+        DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(multiView.getView().getClassName());
+        if (tableInfo != null)
+        {
+            DBInfoBase ib = tableInfo.getItemByName(cell.getName());
+            if (ib != null)
+            {
+                if (ib instanceof DBFieldInfo)
+                {
+                    DBFieldInfo fi = (DBFieldInfo)ib;
+                    return fi.getDataClass();
+                    
+                } else if (ib instanceof DBRelationshipInfo)
+                {
+                    DBRelationshipInfo ri = (DBRelationshipInfo)ib;
+                    return ri.getDataClass();
+                } else
+                {
+                    log.debug("How did we get here.");
+                }
+            } else
+            {
+                log.debug("How did we get here? ["+cell.getName()+"]");
+            }
+        }
+        return null;
+    }
+    
+    /**
      * Sets a border on the component as defined in the properties.
      * @param comp the component
      * @param props the list of properties
@@ -1779,11 +1821,11 @@ public class ViewFactory
      * @param options the options needed for creating the form
      * @return the form
      */
-    public TableViewObj buildTableViewable(final ViewIFace        view,
-                                           final AltViewIFace     altView,
-                                           final MultiView   parentView,
-                                           final int         options,
-                                           final Color       bgColor)
+    public TableViewObj buildTableViewable(final ViewIFace    view,
+                                           final AltViewIFace altView,
+                                           final MultiView    parentView,
+                                           final int          options,
+                                           final Color        bgColor)
     {
         try
         {
@@ -1796,10 +1838,11 @@ public class ViewFactory
                 validator      = validatedPanel.getFormValidator();
                 validator.setDataChangeNotification(true);
             }
+            
             // Special situation where we create a table from a Form Definition
             if (viewDef instanceof FormViewDef)
             {
-                FormViewDefIFace               formViewDef   = (FormViewDefIFace)viewDef;  
+                FormViewDefIFace          formViewDef   = (FormViewDefIFace)viewDef;  
                 Hashtable<String, JLabel> labelsForHash = new Hashtable<String, JLabel>();
                 TableViewObj              tableViewObj  = new TableViewObj(view, altView, parentView, validator, options, bgColor);
 
@@ -1824,7 +1867,7 @@ public class ViewFactory
             */
             
             TableViewObj tableViewObj = new TableViewObj(view, altView, parentView, null, options, bgColor);
-
+            
             //Object currDataObj = tableViewObj.getCurrentDataObj();
 
             processRows(parentView, formViewDef, null, tableViewObj, altView.getMode(), labelsForHash, validator, formViewDef.getRows());

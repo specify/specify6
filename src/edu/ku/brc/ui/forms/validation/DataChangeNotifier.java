@@ -144,7 +144,7 @@ public class DataChangeNotifier implements FocusListener,
      */
     public String getValueForControl(Component component)
     {
-        log.debug("DataChangeNotifier - getValueForControl "+component);
+        //log.debug("DataChangeNotifier - getValueForControl "+component);
         
         if (component instanceof JTextComponent)
         {

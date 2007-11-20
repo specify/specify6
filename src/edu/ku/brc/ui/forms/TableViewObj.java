@@ -145,6 +145,7 @@ public class TableViewObj implements Viewable,
     protected Vector<AltViewIFace>          altViewsList   = null;
     protected TableViewDef                  tableViewDef;
     protected DataObjectGettable            dataGetter      = null;
+    protected Class<?>                      classToCreate   = null;
     
     protected Stack<FormCellSubView>        subViewStack    = new Stack<FormCellSubView>();
     protected StringBuilder                 fullObjPath     = new StringBuilder();
@@ -386,6 +387,14 @@ public class TableViewObj implements Viewable,
             //mainBuilder.add(controlPanel, cc.xy(1, mainCompRowInx+2));
             mainComp.add(controlPanel, BorderLayout.SOUTH);
         }
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#setClassToCreate(java.lang.String)
+     */
+    public void setClassToCreate(final Class<?> classToCreate)
+    {
+        this.classToCreate = classToCreate;
     }
     
     /**

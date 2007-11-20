@@ -40,6 +40,8 @@ public class DBRelationshipInfo extends DBInfoBase
     protected boolean          isRequired;
     protected boolean          isUpdatable;
     
+    protected Class<?>         dataClass = null;
+    
     public DBRelationshipInfo(final String name, 
                               final RelationshipType type, 
                               final String className, 
@@ -50,12 +52,21 @@ public class DBRelationshipInfo extends DBInfoBase
     {
         super(name);
         
-        this.type = type;
-        this.className = className;
-        this.colName = colName;
-        this.otherSide = otherSide;
-        this.isRequired = isRequired;
+        this.type        = type;
+        this.className   = className;
+        this.colName     = colName;
+        this.otherSide   = otherSide;
+        this.isRequired  = isRequired;
         this.isUpdatable = isUpdatable;
+        
+        try
+        {
+            dataClass = Class.forName(className);
+            
+        } catch (ClassNotFoundException ex)
+        {
+            log.error(ex);
+        }
     }
     
     /**
@@ -108,5 +119,13 @@ public class DBRelationshipInfo extends DBInfoBase
     public boolean isUpdatable()
     {
         return isUpdatable;
+    }
+
+    /**
+     * @return the dataClass
+     */
+    public Class<?> getDataClass()
+    {
+        return dataClass;
     }
 }

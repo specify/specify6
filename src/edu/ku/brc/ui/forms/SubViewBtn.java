@@ -66,6 +66,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
     protected String                cellName;
     protected int                   options;
     protected String                baseLabel;
+    protected Class<?>              classToCreate = null;
     
     protected JButton               subViewBtn;
     
@@ -85,25 +86,27 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
                       final ViewIFace            view,
                       final DATA_TYPE            dataType,
                       final int                  options,
-                      final Properties           props)
+                      final Properties           props,
+                      final Class<?>             classToCreate)
     {
-        this.mvParent     = mvParent;
-        this.subviewDef   = subviewDef;
-        this.dataType     = dataType;
-        this.view         = view;
-        this.options      = options;
+        this.mvParent      = mvParent;
+        this.subviewDef    = subviewDef;
+        this.dataType      = dataType;
+        this.view          = view;
+        this.options       = options;
+        this.classToCreate = classToCreate;
         
         //log.debug("Editing "+MultiView.isOptionOn(options, MultiView.IS_EDITTING));
         //log.debug("IsNew "+MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT));
 
-        cellName   = subviewDef.getName();
-        frameTitle = props.getProperty("title");
+        cellName     = subviewDef.getName();
+        frameTitle   = props.getProperty("title");
         String align =  props.getProperty("align", "left");
         
         baseLabel = props.getProperty("label");
         if (baseLabel == null)
         {
-            DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
+            DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(classToCreate != null ? classToCreate.getName() : view.getClassName());
             if (tableInfo != null)
             {
                 baseLabel = tableInfo.getTitle();
@@ -208,6 +211,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
         multiView = frame.getMultiView();
         multiView.setParentDataObj(mvParent.getData());
         multiView.setData(dataObj);
+        multiView.setClassToCreate(classToCreate);
         
         multiView.addCurrentValidator();
         

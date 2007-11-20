@@ -76,6 +76,7 @@ public class IconViewObj implements Viewable
     protected String                        cellName;
     protected Vector<AltViewIFace>          altViewsList;
     protected int                           viewOptions;
+    protected Class<?>                      classToCreate = null;
     
     protected FormDataObjIFace              parentDataObj;
     protected Set<Object>                   dataSet;
@@ -150,6 +151,14 @@ public class IconViewObj implements Viewable
         {
             log.error("Data class of view cannot be found", e);
         }
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#setClassToCreate(java.lang.String)
+     */
+    public void setClassToCreate(final Class<?> classToCreate)
+    {
+        this.classToCreate = classToCreate;
     }
     
     /**

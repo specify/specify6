@@ -321,7 +321,7 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
     }
 
     /**
-     * Tells the panel that it is being shutdown ans it should be cleaned up.
+     * Tells the panel that it is being shutdown and it should be cleaned up.
      */
     public void shutdown()
     {

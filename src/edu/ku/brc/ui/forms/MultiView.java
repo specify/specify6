@@ -85,6 +85,7 @@ public class MultiView extends JPanel
     protected CardLayout                   cardLayout           = new CardLayout();
     protected Viewable                     currentViewable      = null;
     protected FormValidator                currentValidator     = null;
+    protected Class<?>                     classToCreate        = null;
     
     protected boolean                      editable             = false;
     protected AltViewIFace.CreationMode    createWithMode       = AltViewIFace.CreationMode.NONE;
@@ -1134,6 +1135,20 @@ public class MultiView extends JPanel
         for (MultiView kidMV : kids)
         {
             kidMV.setParentDataObj(parentDataObj);
+        }
+    }
+
+    /**
+     * Sets into the multiview and viewables the class name that should be used
+     * o create new data objects.
+     * @param classToCreateArg the class to be created
+     */
+    public void setClassToCreate(final Class<?> classToCreateArg)
+    {
+        this.classToCreate = classToCreateArg;
+        for (Viewable v : viewMapByName.values())
+        {
+            v.setClassToCreate(classToCreate);
         }
     }
 

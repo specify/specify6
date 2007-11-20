@@ -104,21 +104,17 @@ public final class FormHelper
       * Creates a new data object and initializes it
       * @param newDataClass class of new Object to be created and initialized
      */
-    public static FormDataObjIFace createAndNewDataObj(final String newDataClassName)
+    public static FormDataObjIFace createAndNewDataObj(final Class<?> newDataClass)
     {
         try
         {
-            FormDataObjIFace formDataObj = Class.forName(newDataClassName).asSubclass(FormDataObjIFace.class).newInstance();
+            FormDataObjIFace formDataObj = (FormDataObjIFace)newDataClass.newInstance();
             formDataObj.initialize();
             
             CommandDispatcher.dispatch(new CommandAction("Data", "NewObjDataCreated", formDataObj));
             
             return formDataObj;
             
-        } catch (ClassNotFoundException ex)
-        {
-            ex.printStackTrace();
-   
         } catch (IllegalAccessException ex)
         {
             ex.printStackTrace();
@@ -127,18 +123,26 @@ public final class FormHelper
         {
             ex.printStackTrace();
         }
-    
         return null;
-
     }
 
     /**
       * Creates a new data object and initializes it
       * @param newDataClass class of new Object to be created and initialized
      */
-    public static FormDataObjIFace createAndNewDataObj(final Class<?> newDataClass)
+    public static FormDataObjIFace createAndNewDataObj(final String newDataClassName)
     {
-        return createAndNewDataObj(newDataClass.getName());
+        try
+        {
+            return createAndNewDataObj(Class.forName(newDataClassName).asSubclass(FormDataObjIFace.class));
+            
+        } catch (ClassNotFoundException ex)
+        {
+            ex.printStackTrace();
+        }
+    
+        return null;
+
     }
 
     /**

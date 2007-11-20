@@ -118,7 +118,7 @@ import edu.ku.brc.ui.forms.validation.ValidationListener;
 /**
  * This implements a Form and is "owed" by a MultiView.<br>
  * <br>
- * Implmentation of the Viewable interface for the ui and this derived class is for handling Form's Only (not tables).<br>
+ * Implementation of the Viewable interface for the ui and this derived class is for handling Form's Only (not tables).<br>
  * <br>
  * Implements ViewBuilderIFace which the ViewFactory uses while processing the rows, it calls methods in this interface
  * to add labels, controls and subforms to the form.<br>
@@ -161,6 +161,7 @@ public class FormViewObj implements Viewable,
     protected Component                     formComp       = null;
     protected List<MultiView>               kids           = new ArrayList<MultiView>();
     protected Vector<AltViewIFace>          altViewsList   = null;
+    protected Class<?>                      classToCreate  = null;
 
     protected Hashtable<String, FieldInfo>  controlsById   = new Hashtable<String, FieldInfo>();
     protected Hashtable<String, FieldInfo>  controlsByName = new Hashtable<String, FieldInfo>();
@@ -463,6 +464,10 @@ public class FormViewObj implements Viewable,
         }
     }
     
+    /**
+     * @param mv
+     * @param ev
+     */
     protected void doSelectorWasSelected(final MultiView mv, final ActionEvent ev)
     {
         if (!ignoreSelection)
@@ -473,6 +478,14 @@ public class FormViewObj implements Viewable,
     }
     
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#setClassToCreate(java.lang.String)
+     */
+    public void setClassToCreate(final Class<?> classToCreate)
+    {
+        this.classToCreate = classToCreate;
+    }
+
     /**
      * Creates a special drop "switcher UI" component for switching between the Viewables in the MultiView.
      * @param mvParentArg the MultiView Parent
@@ -1100,17 +1113,22 @@ public class FormViewObj implements Viewable,
         }
 
         //log.info("createNewDataObject "+hashCode() + " Session ["+(session != null ? session.hashCode() : "null")+"] ");
-        FormDataObjIFace obj = FormHelper.createAndNewDataObj(view.getClassName());
-        if (true)
+        FormDataObjIFace obj;
+        if (classToCreate != null)
         {
-            if (parentDataObj instanceof FormDataObjIFace)
-            {
-                ((FormDataObjIFace)parentDataObj).addReference(obj, cellName);
-                
-            } else
-            {
-                FormHelper.addToParent(parentDataObj, obj);
-            }
+            obj = FormHelper.createAndNewDataObj(classToCreate);
+        } else
+        {
+            obj = FormHelper.createAndNewDataObj(view.getClassName());
+        }
+        
+        if (parentDataObj instanceof FormDataObjIFace)
+        {
+            ((FormDataObjIFace)parentDataObj).addReference(obj, cellName);
+            
+        } else
+        {
+            FormHelper.addToParent(parentDataObj, obj);
         }
         
         isNewlyCreatedDataObj = true;
@@ -2877,7 +2895,7 @@ public class FormViewObj implements Viewable,
                         Object uiData = getDataFromUIComp(id); // if ID is null then we have huge problems
                         if (uiData != null && dataObj != null)
                         {
-                            log.info(fieldInfo.getFormCell().getName()+" "+(dataObj != null ? dataObj.getClass().getSimpleName() : "dataObj was null"));
+                            //log.info(fieldInfo.getFormCell().getName()+" "+(dataObj != null ? dataObj.getClass().getSimpleName() : "dataObj was null"));
                             FormHelper.setFieldValue(fieldInfo.getFormCell().getName(), dataObj, uiData, dg, ds);
                         }
                     }

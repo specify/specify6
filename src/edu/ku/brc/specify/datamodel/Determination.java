@@ -482,9 +482,13 @@ public class Determination extends CollectionMember implements java.io.Serializa
      */
     public int compareTo(Determination obj)
     {
-        if (status != null && status.getIsCurrent())
+        DeterminationStatus objStatus = obj.getStatus();
+        if (status != null && objStatus != null)
         {
-            return -1;
+            if (objStatus.getIsCurrent().booleanValue() != status.getIsCurrent().booleanValue())
+            {
+                return objStatus.getIsCurrent().compareTo(status.getIsCurrent());
+            }
         }
         
         if (determinedDate != null && obj != null && obj.determinedDate != null)
