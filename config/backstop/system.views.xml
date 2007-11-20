@@ -250,20 +250,6 @@
             </altviews>
         </view>
         
-        <view name="TaxonAttachment"
-              class="edu.ku.brc.specify.datamodel.TaxonAttachment"
-              resourcelabels="false">
-            <desc><![CDATA[The TaxonAttachment Icon View.]]></desc>
-            <altviews>
-                <altview name="TaxonAttachment Icon View"  viewdef="TaxonAttachment IconView" label="Icon View"  mode="view"/>                
-                <altview name="TaxonAttachment Icon Edit"  viewdef="TaxonAttachment IconView" label="Icon Edit"  mode="edit"/>                
-                <altview name="TaxonAttachment Table View" viewdef="TaxonAttachment Table"    label="Table View" mode="view" />                
-                <altview name="TaxonAttachment Table Edit" viewdef="TaxonAttachment Table"    label="Table Edit" mode="edit"/>                
-                <altview name="TaxonAttachment Form View"  viewdef="TaxonAttachment Form"     label="Form View"  mode="view" default="true"/>                
-                <altview name="TaxonAttachment Form Edit"  viewdef="TaxonAttachment Form"     label="Form Edit"  mode="edit"/>                
-            </altviews>
-        </view>
-        
         <view name="ViewProps"
             class="edu.ku.brc.specify.datamodel.ViewIFace"
             resourcelabels="false">
@@ -282,7 +268,31 @@
             </altviews>
         </view>
         
-        
+		<view name="ObjectAttachment"
+			class="edu.ku.brc.specify.datamodel.ObjectAttachmentIFace"
+			resourcelabels="false">
+			<desc><![CDATA[The Object-Attachment View.]]></desc>
+            <altviews>
+                <altview name="ObjectAttachment Icon View"  viewdef="ObjectAttachment IconView" label="Icon View"  mode="view"/>
+                <altview name="ObjectAttachment Icon Edit"  viewdef="ObjectAttachment IconView" label="Icon Edit"  mode="edit"/>
+                <altview name="ObjectAttachment Table View" viewdef="ObjectAttachment Table"    label="Table View" mode="view" />
+                <altview name="ObjectAttachment Table Edit" viewdef="ObjectAttachment Table"    label="Table Edit" mode="edit"/>
+                <altview name="ObjectAttachment Form View"  viewdef="ObjectAttachment Form"     label="Form View"  mode="view" default="true"/>
+                <altview name="ObjectAttachment Form Edit"  viewdef="ObjectAttachment Form"     label="Form Edit"  mode="edit"/>
+            </altviews>
+        </view>
+			
+		<view name="AttachmentMetadata"
+			class="edu.ku.brc.specify.datamodel.AttachmentMetadata"
+			resourecelabels="false">
+			<desc><![CDATA[The AttachmentMetadata Form.]]></desc>
+			<altviews>
+				<altview name="AttachmentMetadata Form View"  viewdef="AttachmentMetadata Form"  label="Form View"  mode="view" default="true"/>
+				<altview name="AttachmentMetadata Table View" viewdef="AttachmentMetadata Table" label="Table View" mode="view"/>
+				<altview name="AttachmentMetadata Form View"  viewdef="AttachmentMetadata Form"  label="Form Edit"  mode="edit"/>
+				<altview name="AttachmentMetadata Table View" viewdef="AttachmentMetadata Table" label="Table Edit" mode="edit"/>
+			</altviews>
+		</view>
 
     </views>
   
@@ -921,7 +931,8 @@
                 <row>
                     <cell type="label" labelfor="remarks" label="Remarks"/>
                     <cell type="field" id="remarks" uitype="textarea" name="remarks" colspan="3"/>
-                </row> -->
+                </row>
+                -->
                 <row>
                     <cell type="label" labelfor="parent" label="Parent"/>
                 	<cell type="field" id="parent" valtype="Focus" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false;editoncreate=true" name="parent" colspan="3"/>
@@ -982,7 +993,7 @@
                     <cell type="separator" label="Attachments" colspan="5"/>
                 </row>
                 <row>
-                    <cell type="subview" id="attachments" viewname="TaxonAttachment" name="taxonAttachments" colspan="5"/>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="taxonAttachments" colspan="5"/>
                 </row>
                 <row>
                     <cell type="separator" label="Children" colspan="5"/>
@@ -1282,49 +1293,6 @@
         </viewdef>
 
         <viewdef
-            type="formtable"
-            name="TaxonAttachment Table"
-            class="edu.ku.brc.specify.datamodel.TaxonAttachment"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
-            
-            <desc><![CDATA[TaxonAttachment grid view.]]></desc>
-            <definition>TaxonAttachment Form</definition>
-        </viewdef>
-        
-        <viewdef
-            type="iconview"
-            name="TaxonAttachment IconView"
-            class="edu.ku.brc.specify.datamodel.TaxonAttachment"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
-            <desc><![CDATA[The TaxonAttachment Icon Viewer]]></desc>
-        </viewdef>
-
-        <viewdef
-            type="form"
-            name="TaxonAttachment Form"
-            class="edu.ku.brc.specify.datamodel.TaxonAttachment"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
-
-            <desc><![CDATA[The TaxonAttachment form.]]></desc>
-
-            <columnDef>p,5dlu,p:g</columnDef>
-            <rowDef auto="true" cell="p" sep="2px"/>
-    		<rows>
-                <row>
-                    <cell type="label" labelfor="origFilename" label="Filename"/>
-                    <cell type="field" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" uitype="browse" isrequired="true"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="mimeType" label="MIME Type"/>
-                    <cell type="field" id="mimeType" name="attachment.mimeType" uitype="text"/>
-                </row>
-			</rows>
-		</viewdef>
-		
-        <viewdef
             type="form"
             name="ViewProps"
             class="edu.ku.brc.specify.datamodel.View"
@@ -1401,6 +1369,84 @@
             </rows>
         </viewdef>
 		
+        <viewdef
+            type="formtable"
+            name="ObjectAttachment Table"
+            class="edu.ku.brc.specify.datamodel.ObjectAttachmentIFace"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[ObjectAttachment grid view.]]></desc>
+            <definition>ObjectAttachment Form</definition>
+        </viewdef>
+        
+        <viewdef
+            type="iconview"
+            name="ObjectAttachment IconView"
+            class="edu.ku.brc.specify.datamodel.ObjectAttachmentIFace"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The ObjectAttachment Icon Viewer]]></desc>
+        </viewdef>
+
+        <viewdef
+            type="form"
+            name="ObjectAttachment Form"
+            class="edu.ku.brc.specify.datamodel.ObjectAttachmentIFace"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+
+            <desc><![CDATA[The ObjectAttachment form.]]></desc>
+
+            <columnDef>p,5dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+    		<rows>
+                <row>
+                    <cell type="label" labelfor="origFilename" label="Filename"/>
+                    <cell type="field" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse" isrequired="true"/>
+                </row>
+                <row>
+                	<cell type="label" labelfor="title" label="Title"/>
+                	<cell type="field" id="title" name="attachment.title" cols="30"/>
+                </row>
+			</rows>
+		</viewdef>
+
+        <viewdef
+        	type="form"
+        	name="AttachmentMetadata Form"
+        	class="edu.ku.brc.specify.datamodel.AttachmentMetadata"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[The AttachmentMetadata Form.]]></desc>
+        
+            <columnDef>80px,2dlu,p:g,5dlu,80px,2dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+    		<rows>
+    		    <row>
+    		        <cell type="label" label="Attachment Metadata" colspan="7"/>
+    		    </row>
+                <row>
+                    <cell type="label" labelfor="name" label="Name"/>
+                    <cell type="field" isrequired="true" id="name" name="name" cols="16" uitype="text"/>
+                    <cell type="label" labelfor="value" label="Value"/>
+                    <cell type="field" isrequired="true" id="value" name="value" cols="32" uitype="text"/>
+                </row>
+			</rows>
+		</viewdef>
+		
+        <viewdef
+            type="formtable"
+            name="AttachmentMetadata Table"
+            class="edu.ku.brc.specify.datamodel.AttachmentMetadata"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[AttachmentMetadata Grid View.]]></desc>
+            <definition>AttachmentMetadata Form</definition>
+        </viewdef>
+
     </viewdefs>
         
 </viewset>
