@@ -6,6 +6,8 @@
  */
 package edu.ku.brc.specify.ui.treetables;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -41,7 +43,7 @@ public class TreeNodePopupMenu extends JPopupMenu
 	{
 		this.ttv = owner;
 		
-		subtree = new JMenuItem("Subtree");
+		subtree = new JMenuItem(getResourceString("TTV_ZOOM_IN"));
         find = new JMenuItem("Find next");
         edit = new JMenuItem("Edit...");
         delete = new JMenuItem("Delete");
@@ -51,7 +53,7 @@ public class TreeNodePopupMenu extends JPopupMenu
 		{
 			public void actionPerformed(ActionEvent ae)
 			{
-				//ttv.showSubtreeOfSelection(list);
+				ttv.showSubtreeOfSelection(list);
 			}
 		});
 
