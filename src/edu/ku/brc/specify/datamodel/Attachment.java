@@ -189,11 +189,11 @@ public class Attachment extends DataModelObjBase implements Serializable
 //            AttachmentUtils.getAttachmentManager().setStorageLocationIntoAttachment(this);
 //        }
 //        
-//        // if a MIME type isn't already set, try to determine it
-//        if (this.mimeType == null)
-//        {
-//            this.mimeType = AttachmentUtils.getMimeType(origFilename);
-//        }
+        // if a MIME type isn't already set, try to determine it
+        if (this.mimeType == null && this.origFilename != null)
+        {
+            this.mimeType = AttachmentUtils.getMimeType(origFilename);
+        }
     }
 
     @Column(name = "Title", length = 64)
