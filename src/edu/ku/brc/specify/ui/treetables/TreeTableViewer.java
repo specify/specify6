@@ -382,7 +382,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         
         subtree0 = new JButton(icon_subtree);
         subtree0.setSize(20,20);
-        subtree0.setToolTipText("Zoom In");
+        subtree0.setToolTipText(getResourceString("TTV_ZOOM_IN"));
         subtree0.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
@@ -393,7 +393,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         
         wholeTree0 = new JButton(icon_wholeTree);
         wholeTree0.setSize(20,20);
-        wholeTree0.setToolTipText("Zoom Out");
+        wholeTree0.setToolTipText(getResourceString("TTV_ZOOM_OUT"));
         wholeTree0.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
@@ -524,7 +524,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         
         subtree1 = new JButton(icon_subtree);
         subtree1.setSize(20,20);
-        subtree1.setToolTipText("View Subtree");
+        subtree1.setToolTipText(getResourceString("TTV_ZOOM_IN"));
         subtree1.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
@@ -535,7 +535,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         
         wholeTree1 = new JButton(icon_wholeTree);
         wholeTree1.setSize(20,20);
-        wholeTree1.setToolTipText("View Whole Tree");
+        wholeTree1.setToolTipText(getResourceString("TTV_ZOOM_OUT"));
         wholeTree1.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
