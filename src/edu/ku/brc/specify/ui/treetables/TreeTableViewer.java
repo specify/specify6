@@ -298,6 +298,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 TreeNode node = (TreeNode)sourceList.getSelectedValue();
 
 				newNodeSelected(sourceList,node);
+                listModel.setDropLocationNode(null);
 			}
 		};
 
