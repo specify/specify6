@@ -191,7 +191,8 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 		southPanel = new JPanel();
 		southPanel.setLayout(new BoxLayout(southPanel,BoxLayout.LINE_AXIS));
 		
-		deleteItemButton = new JButton("Delete");
+        Icon delIcon = IconManager.getIcon("MinusSign", IconSize.Std16);
+		deleteItemButton = new JButton("Delete", delIcon);
 		deleteItemButton.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent ae)
@@ -199,7 +200,8 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 				deleteItem(defItemsTable.getSelectedRow());
 			}
 		});
-        newItemButton = new JButton("New");
+        Icon newIcon = IconManager.getIcon("PlusSign", IconSize.Std16);
+        newItemButton = new JButton("New", newIcon);
         newItemButton.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
@@ -207,7 +209,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                 newItem(defItemsTable.getSelectedRow());
             }
         });
-        editItemButton = new JButton("Edit");
+        editItemButton = new JButton("Edit", editIcon);
         editItemButton.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
