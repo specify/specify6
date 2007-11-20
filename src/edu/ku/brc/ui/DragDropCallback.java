@@ -29,4 +29,11 @@ public interface DragDropCallback
      * @return true if the drop is acceptable
      */
     public boolean dropAcceptable(Object dragged, Object droppedOn, int dropAction);
+    
+    /**
+     * Signals that a drag-and-drop operation ended.
+     * 
+     * @param success the end status of the drag-and-drop operation
+     */
+    public void dragDropEnded(boolean success);
 }

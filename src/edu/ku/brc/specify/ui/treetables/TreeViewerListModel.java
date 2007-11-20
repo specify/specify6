@@ -70,14 +70,24 @@ public class TreeViewerListModel extends AbstractListModel
 
 	public void setDropLocationNode(Object dropLocationNode)
 	{
+        TreeNode prevDropLocNode = this.dropLocationNode;
+        
 		if (dropLocationNode instanceof TreeNode)
 		{
 			this.dropLocationNode = (TreeNode)dropLocationNode;
+            log.debug("Setting drop location node to " + this.dropLocationNode.getName());
 		}
 		else
 		{
+            log.debug("Setting drop location node to NULL");
 			this.dropLocationNode = null;
 		}
+        
+        if (prevDropLocNode != null)
+        {
+            int nodeIndex = indexOf(prevDropLocNode);
+            fireContentsChanged(this, nodeIndex, nodeIndex);
+        }
 	}
 
 	public synchronized TreeNode getVisibleRoot()

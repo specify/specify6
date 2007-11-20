@@ -1,5 +1,6 @@
 package edu.ku.brc.ui;
 
+import java.awt.Cursor;
 import java.awt.Point;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -21,6 +22,8 @@ import java.awt.dnd.DropTargetListener;
 import javax.swing.JList;
 import javax.swing.ListModel;
 
+import org.apache.log4j.Logger;
+
 /**
  * A custom {@link JList} with enhanced drag and drop features.
  *
@@ -31,7 +34,8 @@ import javax.swing.ListModel;
 public class DragDropJList extends JList implements DragSourceListener,
 		DropTargetListener, DragGestureListener
 {
-
+    private static Logger log = Logger.getLogger(DragDropJList.class);
+    
 	/** A static handle to <code>DataFlavor.javaJVMLocalObjectMimeType</code>. */
 	protected static DataFlavor	localObjectFlavor;
 	static
@@ -95,7 +99,14 @@ public class DragDropJList extends JList implements DragSourceListener,
 	 */
 	public void dragDropEnd(DragSourceDropEvent dsde)
 	{
-		// do nothing
+        log.debug("processing dragDropEnd notification");
+
+		if (dragDropCallback != null)
+        {
+            boolean dropSuccess = dsde.getDropSuccess();
+            log.debug("Notifying callback that a DnD operation ended with success status " + dropSuccess);
+		    dragDropCallback.dragDropEnded(dropSuccess);
+        }
 	}
 
 	/* (non-Javadoc)
@@ -135,14 +146,15 @@ public class DragDropJList extends JList implements DragSourceListener,
 	 */
 	public void dragEnter(DropTargetDragEvent dtde)
 	{
-		if( shouldAccept(dtde) )
-		{
-			dtde.acceptDrag(dtde.getDropAction());
-		}
-		else
-		{
-			dtde.rejectDrag();
-		}
+//        log.debug("processing dragEnter notification");
+//		if( shouldAccept(dtde) )
+//		{
+//			dtde.acceptDrag(dtde.getDropAction());
+//		}
+//		else
+//		{
+//			dtde.rejectDrag();
+//		}
 	}
 
 	/* (non-Javadoc)
@@ -158,6 +170,8 @@ public class DragDropJList extends JList implements DragSourceListener,
 	 */
 	public void dragOver(DropTargetDragEvent dtde)
 	{
+        log.debug("processing dragOver notification");
+        
 		if( shouldAccept(dtde) )
 		{
 			dtde.acceptDrag(dtde.getDropAction());
@@ -176,6 +190,8 @@ public class DragDropJList extends JList implements DragSourceListener,
 	 */
 	protected boolean shouldAccept(DropTargetDragEvent dtde)
 	{
+        log.debug("determining if drop is acceptable");
+
 		Point loc = dtde.getLocation();
 		int index = locationToIndex(loc);
 		Object droppedOn = getModel().getElementAt(index);
@@ -201,6 +217,8 @@ public class DragDropJList extends JList implements DragSourceListener,
 	 */
 	public void drop(DropTargetDropEvent dtde)
 	{
+        log.debug("processing drop");
+        
 		Point loc = dtde.getLocation();
 		int index = locationToIndex(loc);
 		Object droppedOn = getModel().getElementAt(index);
@@ -217,10 +235,13 @@ public class DragDropJList extends JList implements DragSourceListener,
 		boolean dropped = false;
 		if( dragDropCallback.dropAcceptable(dragged,droppedOn,dtde.getDropAction()) )
 		{
+            log.debug("notifying callback that an acceptable drop occurred");
 			dropped = dragDropCallback.dropOccurred(dragged,droppedOn,dtde.getDropAction());
 		}
 		else
 		{
+            log.debug("notifying callback that an unacceptable drop occurred, ending the DnD operation");
+            dragDropCallback.dragDropEnded(false);
 			dropped = false;
 		}
 		dtde.dropComplete(dropped);
@@ -231,7 +252,15 @@ public class DragDropJList extends JList implements DragSourceListener,
 	 */
 	public void dropActionChanged(DropTargetDragEvent dtde)
 	{
-		// do nothing
+        log.debug("processing dropActionChanged notification");
+        if( shouldAccept(dtde) )
+        {
+            dtde.acceptDrag(dtde.getDropAction());
+        }
+        else
+        {
+            dtde.rejectDrag();
+        }
 	}
 	
 	/**

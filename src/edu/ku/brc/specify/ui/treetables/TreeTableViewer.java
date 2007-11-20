@@ -1747,6 +1747,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			return false;
 		}
 
+        log.debug("dropAcceptable setting drop location to " + droppedOn);
 		listModel.setDropLocationNode(droppedOn);
 		repaint();
 		
@@ -1814,7 +1815,15 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		return false;
 	}
 
-	@SuppressWarnings("unchecked")
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.ui.DragDropCallback#dragDropEnded(boolean)
+	 */
+	public void dragDropEnded(boolean success)
+    {
+        listModel.setDropLocationNode(null);
+    }
+
+    @SuppressWarnings("unchecked")
 	public void showPopup(MouseEvent e)
 	{
 		if(checkBusy())
