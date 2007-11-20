@@ -99,5 +99,14 @@ public class TreeMapElement
     public final String getWbFldName()
     {
         return wbFldName;
-    }			
+    }	
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return wbFldName + "(" + String.valueOf(index) + ") " + String.valueOf(rank) + ", " + String.valueOf(sequence);
+    }
 }

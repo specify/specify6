@@ -238,11 +238,11 @@ public class UploadTable implements Comparable<UploadTable>
      */
     protected boolean fldInDataset(final String fldName)
     {
-        for (UploadField fld : uploadFields.get(0))
+        if (uploadFields != null && uploadFields.size() > 0)
         {
-            if (fld.getField().getName().equalsIgnoreCase(fldName))
+            for (UploadField fld : uploadFields.get(0))
             {
-                return true;
+                if (fld.getField().getName().equalsIgnoreCase(fldName)) { return true; }
             }
         }
         return false;
@@ -250,7 +250,8 @@ public class UploadTable implements Comparable<UploadTable>
     /**
      * @throws NoSuchMethodException
      * 
-     * Builds vector of non-nullable fields in tblClass that are not present in the uploading dataset.
+     * Builds vector of non-nullable fields in tblClass that are not present in the uploading
+     * dataset.
      */
     protected void buildMissingRequiredFlds() throws NoSuchMethodException
     {

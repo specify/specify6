@@ -40,7 +40,10 @@ import edu.ku.brc.af.core.expresssearch.TableNameRenderer;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
+import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.tasks.ReportsBaseTask;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
@@ -532,6 +535,7 @@ public class Uploader implements ActionListener, WindowStateListener
         this.newMessages = new Vector<UploadMessage>();
 		buildUploadFields();
 		buildUploadTables();
+        addEmptyUploadTables();
 		buildUploadGraph();
 		processTreeMaps();
 		orderUploadTables();
@@ -539,7 +543,54 @@ public class Uploader implements ActionListener, WindowStateListener
         reOrderUploadTables();
  	}
 
-    
+    /**
+     * Adds extra upload tables.
+     * Currently only adds Determination if necessary when Genus/Species are selected.
+     * Also should add CollectingEvent if Locality and CollectionObject are present.
+     * And others???
+     */
+    protected void addEmptyUploadTables() throws UploaderException
+    {
+        //see if genus/species are present and determination is not, and adds determination if so
+        boolean genSpPresent = false, detPresent = false;
+        for (UploadTable ut : uploadTables)
+        {
+            if (ut.getTblClass().equals(Determination.class))
+            {
+                detPresent = true;
+                break;
+            }
+        }
+        if (!detPresent)
+        {
+            int maxSeq = 0;
+            WorkbenchRow wbRow = uploadData.getWbRow(0);
+            for (WorkbenchDataItem mapI : wbRow.getWorkbenchDataItems())
+            {
+                String fldName = mapI.getWorkbenchTemplateMappingItem().getFieldName();
+                if (fldName.startsWith("genus") || fldName.startsWith("species") || fldName.startsWith("variety") || fldName.startsWith("subspecies"))
+                {
+                    genSpPresent = true;
+                    if (Integer.valueOf(fldName.substring(fldName.length()-1)) > maxSeq)
+                    {
+                        maxSeq = Integer.valueOf(fldName.substring(fldName.length()-1));
+                    }
+                }
+            }
+            if (genSpPresent)
+            {
+                UploadTable det = new UploadTable(db.getSchema().getTable("Determination"), null);
+                det.init();
+                for (int seq = 0; seq < maxSeq; seq++)
+                {
+                    UploadField fld = new UploadField(db.getSchema().getField("determination", "collectionobjectid"), -1, null, null);
+                    fld.setSequence(seq);
+                    det.addField(fld);
+                }
+                uploadTables.add(det);
+            }
+        }
+    }
     
     /**
      * Imposes additional ordering constraints created by the matchChildren property of UploadTable.

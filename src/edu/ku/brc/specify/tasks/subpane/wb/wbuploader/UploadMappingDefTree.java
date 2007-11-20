@@ -72,4 +72,21 @@ public class UploadMappingDefTree extends UploadMappingDef
 	{
 		return parentField;
 	}
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMappingDef#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder result = new StringBuilder(super.toString() + " (");
+        for (Vector<TreeMapElement> level : levels)
+        {
+            for (TreeMapElement rank : level)
+            {
+                result.append("(" + rank + ") ");
+            }
+        }
+        return result.toString();
+    }
 }

@@ -172,6 +172,15 @@ public class UploadMappingDefRel extends UploadMappingDef
         {
             return wbFieldName;
         }
+        
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString()
+        {
+            return wbFieldName + "(" + String.valueOf(fldIndex) + ") " + fieldName;
+        }
 	}
 	/**
 	 * @return the sequenceFld
@@ -216,6 +225,27 @@ public class UploadMappingDefRel extends UploadMappingDef
             }
             result.append(f.getWbFldName());
         }
+        return result.toString();
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMappingDef#toString()
+     */
+    @Override
+    public String toString()
+    {
+        StringBuilder result = new StringBuilder(super.toString());
+        result.append(" (");
+        for (ImportMappingRelFld fld : localFields)
+        {
+            result.append("(" + fld + ") ");
+        }
+        result.append(") " + relatedTable + " (");
+        for (ImportMappingRelFld fld : relatedFields)
+        {
+            result.append("(" + fld + ") ");
+        }
+        result.append(")");
         return result.toString();
     }
 }

@@ -74,6 +74,11 @@ public class UploadField
         this.required = false;
     }
 
+    @Override
+    public String toString()
+    {
+        return wbFldName + ", " + String.valueOf(index) + ", " + field.getName();
+    }
     /**
      * @return the field
      */

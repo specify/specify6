@@ -43,8 +43,9 @@ public class UploadMatchSettingsBasicPanel extends JPanel implements ActionListe
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         modePanel = new ToggleButtonChooserPanel<String>(UploadMatchSetting.getModeTexts(), getResourceString("WB_MATCH_MODE_CAPTION"), 
                 ToggleButtonChooserPanel.Type.RadioButton);
-        add(modePanel);
         modePanel.createUI();
+        modePanel.setOkBtn(new JButton()); //needs an ok button for setSelectedObj() etc to work??
+        add(modePanel);
         rememberCheck = new JCheckBox(getResourceString("WB_UPLOAD_MATCH_REMEMBER_CAPTION"));
         add(rememberCheck);
         matchBlanksCheck = new JCheckBox(getResourceString("WB_UPLOAD_MATCH_BLANKS_CAPTION"));

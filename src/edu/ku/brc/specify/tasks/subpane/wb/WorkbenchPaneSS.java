@@ -2992,7 +2992,6 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             Vector<UploadMappingDef> maps = importMapper.getImporterMapping();
             DB db = new DB();
-            System.out.println("constructing importer...");
             dataSetUploader = new Uploader(db, new UploadData(maps, workbench.getWorkbenchRowsAsList()), this);
             dataSetUploader.prepareToUpload();
             if (!dataSetUploader.validateStructure()) { throw new UploaderException(
