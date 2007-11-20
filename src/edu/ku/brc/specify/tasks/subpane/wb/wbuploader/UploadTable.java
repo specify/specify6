@@ -25,7 +25,6 @@ import org.hibernate.criterion.Restrictions;
 
 import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.CriteriaIFace;
@@ -45,7 +44,6 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Relationship;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader.ParentTableEntry;
-import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.util.Pair;
 
@@ -1530,7 +1528,7 @@ public class UploadTable implements Comparable<UploadTable>
                 }
                 else
                 {
-                    match = dealWithMultipleMatches(matches, restrictedVals);
+                    match = dealWithMultipleMatches(matches, restrictedVals, recNum);
                     if (match != null)
                     {
                         matchSetting.addSelection(matchSetting.new MatchSelection(restrictedVals, Uploader.currentUpload.getRow(), match.getId(),
@@ -1556,59 +1554,20 @@ public class UploadTable implements Comparable<UploadTable>
         return false;
     }
     
+    public void onAddNewMatch(final Vector<Pair<String,String>> restrictedVals)
+    {
+    //yuck. Only want to create one new record for each set values. If cell values 'Roger' 'Johnson' match 2 records in database
+    //we only want to add ONE new record for 'Roger' 'Johnson' and use it from now on.
+        restrictedValsForAddNewMatch = restrictedVals;                 
+    }
+        
     /**
      * @param matches
      * @return selected match
      */
-    protected DataModelObjBase dealWithMultipleMatches(final List<DataModelObjBase> matches, final Vector<Pair<String,String>> restrictedVals) throws UploaderException
+    protected DataModelObjBase dealWithMultipleMatches(final List<DataModelObjBase> matches, final Vector<Pair<String,String>> restrictedVals, int recNum) throws UploaderException
     {
-        if (matchSetting.getMode() == UploadMatchSetting.PICK_FIRST_MODE)
-        {
-            return matches.get(0);
-        }
-        if (matchSetting.getMode() == UploadMatchSetting.SKIP_ROW_MODE)
-        {
-            throw new UploaderMatchSkipException(UploaderMatchSkipException.makeMsg(restrictedVals, uploadFields.get(0).size(), Uploader.getCurrentUpload().getRow()), 
-                    matches, Uploader.getCurrentUpload().getRow(), this);
-        }
-        if (matchSetting.isRemember() || matchSetting.getMode() == UploadMatchSetting.ADD_NEW_MODE)
-        {
-            Object key = matchSetting.doLookup(restrictedVals);
-            if (matchSetting.getMode() == UploadMatchSetting.ADD_NEW_MODE && key == null)
-            {
-                //yuck. Only want to create one new record for each set values. If cell values 'Roger' 'Johnson' match 2 records in database
-                //we only want to add ONE new record for 'Roger' 'Johnson' and use it from now on.
-                restrictedValsForAddNewMatch = restrictedVals;                 
-                return null;
-            }
-            if (key != null)
-            {
-                for (DataModelObjBase match : matches)
-                {
-                    if (key.equals(match.getId()))
-                    {
-                        return match;
-                    }
-                }
-                log.error("WB values matched previous selection, but no matching database object was found.");
-            }
-        }
-        String title = null;
-        DBTableInfo ti = DBTableIdMgr.getInstance().getInfoByTableName(getWriteTable().getName());        
-        if (ti != null)
-        {
-            title = ti.getTitle();
-        }
-
-        String msg = title != null ? String.format("Choose the a %s", title)
-                : "Choose the best Match"; //i18n
-
-        ChooseFromListDlg<DataModelObjBase> dlg = new ChooseFromListDlg<DataModelObjBase>(null,
-                msg, matches);
-        dlg.setModal(true);
-        dlg.setVisible(true);
-        if (!dlg.isCancelled()) { return dlg.getSelectedObject(); }
-        return null; 
+        return new MatchHandler(this).dealWithMultipleMatches(matches, restrictedVals, recNum);
     }
     
     /**

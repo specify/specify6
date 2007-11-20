@@ -91,7 +91,6 @@ public class UploadMatchSetting
             return getResourceString("WB_UPLOAD_MATCH_MODE_SKIP_ROW");
         }
         throw new RuntimeException("Unknown match mode.");
-        
     }
     
     public static int getMode(final String modeName)

@@ -10,6 +10,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Vector;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -50,5 +51,27 @@ public class UploadMatchSettingsBasicPanel extends JPanel implements ActionListe
         add(matchBlanksCheck);
         //advancedBtn = new JButton(getResourceString("WB_UPLOAD_ADVANCED_BTN"));
         //add(advancedBtn);
+    }
+    
+    public void showSetting(final UploadTable uploadTable)
+    {
+        modePanel.setSelectedObj(UploadMatchSetting.getModeText(uploadTable.getMatchSetting().getMode()));
+        rememberCheck.setSelected(uploadTable.getMatchSetting().isRemember());
+        matchBlanksCheck.setSelected(uploadTable.getMatchSetting().isMatchEmptyValues());        
+    }
+    
+    public void applySetting(final UploadTable uploadTable)
+    {
+        uploadTable.getMatchSetting().setMode(UploadMatchSetting.getMode(modePanel.getSelectedObject()));
+        uploadTable.getMatchSetting().setRemember(rememberCheck.isSelected());
+        uploadTable.getMatchSetting().setMatchEmptyValues(matchBlanksCheck.isSelected());       
+    }
+    
+    public void applySettingToAll(final Vector<UploadTable> uploadTables)
+    {
+        for (UploadTable ut : uploadTables)
+        {
+            applySetting(ut);
+        }
     }
 }
