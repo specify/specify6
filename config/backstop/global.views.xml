@@ -146,16 +146,6 @@
             </altviews>
         </view>
         
-        <view name="GeologicTimePeriod"
-            class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
-            resourcelabels="false">
-            <desc><![CDATA[The GeologicTimePeriod Form.]]></desc>
-            <altviews>
-                <altview name="GeologicTimePeriod View" viewdef="GeologicTimePeriod" label="View" mode="view" validated="false" default="true"/>                
-                <altview name="GeologicTimePeriod Edit" viewdef="GeologicTimePeriod" label="Edit" mode="edit" validated="true"/>                
-            </altviews>
-        </view>
-        
         <view name="LithoStrat"
             class="edu.ku.brc.specify.datamodel.LithoStrat"
             resourcelabels="false">
