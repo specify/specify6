@@ -935,11 +935,11 @@
                 -->
                 <row>
                     <cell type="label" labelfor="parent" label="Parent"/>
-                	<cell type="field" id="parent" valtype="Focus" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false;editoncreate=true" name="parent" colspan="3"/>
+                	<cell type="field" id="parent" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false;editoncreate=true" name="parent" colspan="3"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="definitionItem" label="Rank"/>
-                	<cell type="field" id="definitionItem" valtype="Focus" isrequired="true" uitype="combobox" name="definitionItem" colspan="3"/>
+                	<cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem" colspan="3"/>
                 </row>
                 <!--
                 <row>

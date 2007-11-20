@@ -417,7 +417,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         
         syncViews0 = new JButton(icon_syncViews);
         syncViews0.setSize(20,20);
-        syncViews0.setToolTipText("Sync w/ Other View");
+        syncViews0.setToolTipText(getResourceString("TTV_SYNC_WITH_BOTTOM"));
         syncViews0.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
@@ -429,7 +429,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         
         toggle0 = new JButton(icon_toggle);
         toggle0.setSize(20,20);
-        toggle0.setToolTipText("Toggle View Mode");
+        toggle0.setToolTipText(getResourceString("TTV_SPLIT_VIEW"));
         toggle0.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
@@ -492,10 +492,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         editLabel0.setSize(32,editLabel0.getHeight());
         buttonPanel0.add(editLabel0);
         editLabel0.setAlignmentX(Component.CENTER_ALIGNMENT);
-        buttonPanel0.add(newChild0);
-        newChild0.setAlignmentX(Component.CENTER_ALIGNMENT);
         buttonPanel0.add(editNode0);
         editNode0.setAlignmentX(Component.CENTER_ALIGNMENT);
+        buttonPanel0.add(newChild0);
+        newChild0.setAlignmentX(Component.CENTER_ALIGNMENT);
         buttonPanel0.add(deleteNode0);
         deleteNode0.setAlignmentX(Component.CENTER_ALIGNMENT);
         
@@ -559,7 +559,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         
         syncViews1 = new JButton(icon_syncViews);
         syncViews1.setSize(20,20);
-        syncViews1.setToolTipText("Sync w/ Other View");
+        syncViews1.setToolTipText(getResourceString("TTV_SYNC_WITH_TOP"));
         syncViews1.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
@@ -570,7 +570,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         
         toggle1 = new JButton(icon_toggle);
         toggle1.setSize(20,20);
-        toggle1.setToolTipText("Toggle View Mode");
+        toggle1.setToolTipText(getResourceString("TTV_SINGLE_VIEW"));
         toggle1.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
@@ -633,10 +633,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         editLabel1.setSize(32,editLabel1.getHeight());
         buttonPanel1.add(editLabel1);
         editLabel1.setAlignmentX(Component.CENTER_ALIGNMENT);
-        buttonPanel1.add(newChild1);
-        newChild1.setAlignmentX(Component.CENTER_ALIGNMENT);
         buttonPanel1.add(editNode1);
         editNode1.setAlignmentX(Component.CENTER_ALIGNMENT);
+        buttonPanel1.add(newChild1);
+        newChild1.setAlignmentX(Component.CENTER_ALIGNMENT);
         buttonPanel1.add(deleteNode1);
         deleteNode1.setAlignmentX(Component.CENTER_ALIGNMENT);
         
@@ -801,11 +801,13 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		{
 			// set to single view mode
 			this.add(treeListPanels[0],BorderLayout.CENTER);
+            toggle0.setToolTipText(getResourceString("TTV_SPLIT_VIEW"));
 		}
 		else
 		{
 			// set to dual view mode
 			this.add(new JSplitPane(JSplitPane.VERTICAL_SPLIT,treeListPanels[0],treeListPanels[1]),BorderLayout.CENTER);
+            toggle0.setToolTipText(getResourceString("TTV_SINGLE_VIEW"));
 		}
         updateAllUI();
 	}
@@ -1345,10 +1347,14 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		    {
                 FormViewObj form = (FormViewObj)viewable;
 		        parentTask.adjustForm(form);
-		        Component parentComp = form.getControlByName("parent");
-                if (parentComp != null)
+                
+                if (isNewObject)
                 {
-                    parentComp.setEnabled(false);
+                    Component parentComp = form.getControlByName("parent");
+                    if (parentComp != null)
+                    {
+                        parentComp.setEnabled(false);
+                    }
                 }
 		    }
 		}

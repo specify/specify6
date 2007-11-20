@@ -166,9 +166,9 @@
     <icon name="TTV_WholeTree"      file="ZoomOut32x32.png"   sizes="32"/>
     <icon name="TTV_AllDescend"     file="expand.png"     sizes="16"/>
     <icon name="TTV_SyncViews"      file="sync.png"       sizes="16"/>
-    <icon name="TTV_NewChild"       file="add.png"        sizes="16"/>
+    <icon name="TTV_NewChild"       alias="PlusSign"/>
     <icon name="TTV_EditNode"       file="edit.png"       sizes="16"/>
-    <icon name="TTV_DelNode"        file="delete.png"     sizes="16"/>
+    <icon name="TTV_DelNode"        alias="MinusSign"/>
     <icon name="TTV_ToParent"       file="undo.png"       sizes="16"/>
     <icon name="TTV_ToggleViewMode" file="SplitWindow32x32.png" sizes="all"/>
     
