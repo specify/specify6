@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
@@ -39,7 +40,7 @@ import edu.ku.brc.helpers.XMLHelper;
 public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
 {
     private static final Logger  log = Logger.getLogger(ViewSet.class);
-    private static boolean ALWAYS_LOAD = true; // XXX PREF
+    private static boolean ALWAYS_LOAD = false; // XXX PREF
 
     protected Type                       type              = Type.User;
     protected String                     name              = null;
@@ -317,7 +318,10 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
 
     /**
      * Loads the ViewSet from a DOM element.
-     * @param rootDOM the root
+     * @param rootDOM
+     * @param doSetName
+     * @param doMapDefinitions tells it to map and clone the definitions for formtables (use false for the FormEditor)
+     * @throws Exception
      */
     protected void loadDOM(final Element rootDOM, 
                            final boolean doSetName,
@@ -327,11 +331,10 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
         {
             viewDefs.clear();
             views.clear();
+            
+            Hashtable<AltViewIFace, String> altViewsViewDefName = new Hashtable<AltViewIFace, String>();
 
-            // Do these first so the view can check their altViews against them            
-            ViewLoader.getViewDefs(rootDOM, viewDefs, doMapDefinitions);
-
-            String viewsName = ViewLoader.getViews(rootDOM, views, viewDefs);
+            String viewsName = ViewLoader.getViews(rootDOM, views, altViewsViewDefName);
             if (doSetName)
             {
                 name = viewsName;
@@ -342,8 +345,13 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
                 log.error(msg);
                 throw new ConfigurationException(msg);
             }
+            
+            // Do these first so the view can check their altViews against them 
+            ViewLoader.getViewDefs(rootDOM, viewDefs, views, doMapDefinitions);
 
-
+            verifyViewsAndViewDefs(altViewsViewDefName);
+            
+            
         } else
         {
             String msg = "The root element for the document was null!";
@@ -351,6 +359,42 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
             throw new ConfigurationException(msg);
         }
         hasLoadedViews = true;
+    }
+    
+    /**
+     * This verifies that a view refers to a valid ViewDef. It also sets the ViewDef object into the AltView.
+     * @param views the hash of views
+     * @param viewDefs the hash of viewdefs
+     */
+    protected void verifyViewsAndViewDefs(final Hashtable<AltViewIFace, String> altViewsViewDefName)
+    {
+        // Need to get the Viewdefs and put them into the AltView
+        
+        for (ViewIFace view : views.values())
+        {
+            for (AltViewIFace av : view.getAltViews())
+            {
+                if (av.getViewDef() == null)
+                {
+                    String viewDefName = altViewsViewDefName.get(av);
+                    if (StringUtils.isNotEmpty(viewDefName))
+                    {
+                        ViewDefIFace referredToViewDef = viewDefs.get(viewDefName);
+                        if (referredToViewDef != null)
+                        {
+                            av.setViewDef(referredToViewDef);
+                        } else
+                        {
+                            log.error("AltView referrs to a non-existent view with name["+av.getViewDefName()+"]");
+                        }
+                        
+                    } else
+                    {
+                        log.error("Couldn't find the ViewDef Name for the AltView!");
+                    }
+                }
+            }
+        }
     }
     
     

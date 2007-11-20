@@ -1324,6 +1324,19 @@ public final class UIHelper
         throw new RuntimeException(message);
     }*/
     
+    protected static boolean doesContain(final Throwable e, final String className, final String methodName)
+    {
+        for (StackTraceElement ste : e.getStackTrace())
+        {
+            if (ste.getClassName().equals(className) && 
+               (methodName == null || ste.getMethodName().equals(methodName)))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     /**
      * There are certain exceptions that are coming from the JVM or toolkits that we have
      * no control over. This will mask them out.
@@ -1335,19 +1348,23 @@ public final class UIHelper
     {
         if (e instanceof java.lang.ArrayIndexOutOfBoundsException)
         {
-            String msg = e.getMessage();
-            log.debug("MESSAGE["+msg+"]");
-            if (msg != null && msg.indexOf("apple.awt.CWindow.displayChanged") > -1)
+            String msg = e.getCause().toString();
+            //log.debug("MESSAGE["+msg+"]");
+            if (msg != null && doesContain(e, "apple.awt.CWindow", "displayChanged"))
             {
                 return false;
-                
+            }
+            
+            if (msg != null && doesContain(e, "javax.swing.RepaintManager", "paint"))
+            {
+                return false;
             }
             
         } else if (e instanceof java.lang.NullPointerException)
         {
             String msg = e.getMessage();
-            log.debug("MESSAGE["+msg+"]");
-            if (msg != null && msg.indexOf("javax.help.WindowPresentation") > -1)
+            //log.debug("MESSAGE["+msg+"]");
+            if (msg != null && doesContain(e, "javax.help.WindowPresentation", null))
             {
                 return false;
             }

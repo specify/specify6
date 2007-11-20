@@ -167,13 +167,22 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
      */
     public SubPaneIFace renamePane(final SubPaneIFace pane, final String newName)
     {
+        // Makes we have a unique name, this shouldn't happen
+        int    cnt        = 1;
+        String newNameStr = newName;
+        while (panes.get(newNameStr) != null)
+        {
+            newNameStr = newName + " " + Integer.toString(cnt);
+            cnt++;
+        }
+        
         UIRegistry.getStatusBar().setText("");
         
         if (panes.get(pane.getPaneName()) != null)
         {
             panes.remove(pane.getPaneName());
             
-            pane.setPaneName(newName);
+            pane.setPaneName(newNameStr);
             this.setTitleAt(indexOfComponent(pane.getUIComponent()), pane.getPaneName());
             
             //log.debug("Putting SubPane ["+newName+"] ");
@@ -190,7 +199,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
     /**
      * Replaces  the "old pane" with a new pane, the main point here that the new gets inserted into the same position.
      * @param oldPane the old pane to be replaced
-     * @param newName the new name for the tab
+     * @param newPane the new pane
      * @return the same pane as the one renamed
      */
     public synchronized SubPaneIFace replacePane(final SubPaneIFace oldPane, final SubPaneIFace newPane)
@@ -211,9 +220,9 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         }
         
         final int index = this.indexOfComponent(oldPane.getUIComponent());
-        if (index < 0)
+        if (index < 0 && index >= this.getComponentCount())
         {
-            log.error("Couldn't find index for panel ["+oldPane.getPaneName()+"] ");
+            log.error("Couldn't find index for panel ["+oldPane.getPaneName()+"] index was["+index+"] number tab["+this.getComponentCount()+"]");
         }
         
         if (panes.get(oldPane.getPaneName()) != null)
@@ -329,6 +338,31 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         } else
         {
             log.error("Couldn't find pane named["+pane.getPaneName()+"]");
+            
+            // Note: We should never get here, but if we do....
+            //
+            // At this point we should bail but remove the current tab manually
+            // it wasn't found in the panes list
+            //
+            SubPaneIFace subPane = this.getCurrentSubPane();
+            if(subPane != null)
+            {
+                if (!subPane.aboutToShutdown())
+                {
+                    return false;
+                }
+                
+                subPane.shutdown();
+                try
+                {
+                    this.remove(pane.getUIComponent());
+                    
+                } catch (ArrayIndexOutOfBoundsException ex)
+                {
+                    
+                }
+                adjustCloseAllMenu();
+            }
         }
         
         adjustCloseAllMenu();

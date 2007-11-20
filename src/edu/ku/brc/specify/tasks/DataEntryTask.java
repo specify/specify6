@@ -364,8 +364,8 @@ public class DataEntryTask extends BaseTask
             
         } else
         {
-            // formPane = subPane instanceof FormPane ? (FormPane) subPane : null;
-            throw new RuntimeException("Ask Rod about getting here!");
+            formPane = subPane instanceof FormPane ? (FormPane) subPane : null;
+            //throw new RuntimeException("Ask Rod about getting here!");
         }
         
         return formPane;

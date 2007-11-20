@@ -59,6 +59,7 @@ import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.ViewSetMgr;
 import edu.ku.brc.ui.forms.persist.ViewIFace;
+import edu.ku.brc.ui.forms.persist.ViewLoader;
 import edu.ku.brc.ui.forms.persist.ViewSet;
 import edu.ku.brc.ui.forms.persist.ViewSetIFace;
 
@@ -493,8 +494,17 @@ public class SpecifyAppContextMgr extends AppContextMgr
             if (debug) log.debug("Adding1 "+getSpAppResDefAsString(appResourceDef));
             spAppResourceList.add(appResourceDef);
         }
-
-
+        
+        backStopViewSetMgr = new ViewSetMgr("BackStop", XMLHelper.getConfigDir("backstop"));
+        backStopAppResMgr  = new AppResourceMgr(XMLHelper.getConfigDir("backstop"));
+        
+        // Here is where you turn on View/Viewdef re-use.
+        if (false)
+        {
+            backStopViewSetMgr.getView("Global", "Accession"); // force the loading of all the views
+            ViewLoader.setBackStopViewSetMgr(backStopViewSetMgr);
+        }
+        
         // Add Backstop for Discipline and User Type
         for (String discipline : dispHash.keySet())
         {
@@ -542,9 +552,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
             }
         }
 
-        backStopViewSetMgr = new ViewSetMgr("BackStop", XMLHelper.getConfigDir("backstop"));
-        backStopAppResMgr  = new AppResourceMgr(XMLHelper.getConfigDir("backstop"));
-        
         currentStatus = CONTEXT_STATUS.OK;
         
         session.close();

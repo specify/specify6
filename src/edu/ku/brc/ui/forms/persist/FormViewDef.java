@@ -199,11 +199,6 @@ public class FormViewDef extends ViewDef implements Cloneable, FormViewDefIFace
     public void setDefinitionName(String definitionName)
     {
         this.definitionName = definitionName;
-        if (definitionName == null)
-        {
-            int x = 0;
-            x++;
-        }
     }
     
     /**

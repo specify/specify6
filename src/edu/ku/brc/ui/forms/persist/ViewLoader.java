@@ -40,6 +40,7 @@ import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.forms.ViewSetMgr;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.ui.forms.validation.TypeSearchForQueryFactory;
@@ -71,7 +72,12 @@ public class ViewLoader
     private static final String GETTABLE   = "gettable";
     private static final String SETTABLE   = "settable";
     private static final String RESOURCELABELS = "resourcelabels";
-
+    
+    private static ViewSetMgr backStopViewSetMgr = null;
+    
+    private Hashtable<String, ViewIFace>    views    = null;
+    private Hashtable<String, ViewDefIFace> viewDefs = null;
+    
     // Data Members
     protected boolean doingResourceLabels = false;
     protected String  viewSetName         = null;
@@ -85,15 +91,23 @@ public class ViewLoader
         // do nothing
     }
 
+    /**
+     * @param backStopViewSetMgr the backStopViewSetMgr to set
+     */
+    public static void setBackStopViewSetMgr(ViewSetMgr backStopViewSetMgr)
+    {
+        ViewLoader.backStopViewSetMgr = backStopViewSetMgr;
+    }
 
     /**
      * Creates the view.
      * @param element the element to build the View from
-     * @return the view
-     * @throws Exception anything
+     * @param altViewsViewDefName the hastable to track the AltView's ViewDefName
+     * @return the View
+     * @throws Exception
      */
-    public static ViewIFace createView(final Element element,
-                                       final Hashtable<String, ViewDefIFace> viewDefs) throws Exception
+    protected static ViewIFace createView(final Element element,
+                                          final Hashtable<AltViewIFace, String> altViewsViewDefName) throws Exception
     {
        boolean useResourceLabels = getAttr(element, "useresourcelabels", "false").equals("true");
 
@@ -130,20 +144,9 @@ public class ViewLoader
                 String viewDefName  = altElement.attributeValue("viewdef");
                 String label        = altElement.attributeValue(LABEL);
                 String title        = altElement.attributeValue("title");
-                if (title != null)
-                {
-                    int x = 0;
-                    x++;
-                }
+                
                 boolean isValidated = getAttr(altElement, "validated", mode == AltViewIFace.CreationMode.EDIT);
                 boolean isDefault   = getAttr(altElement, "default", false);
-
-                //log.debug("Trying to get viewDef ["+ viewDefName + "]");
-                ViewDefIFace viewDef = viewDefs.get(viewDefName);
-                if (viewDef == null)
-                {
-                    throw new RuntimeException("View Name["+name+"] refers to a ViewDef ["+viewDefName+"] that doesn't exist.");
-                }
 
                 // Make sure we only have one default view
                 if (defaultAltView != null && isDefault)
@@ -155,7 +158,8 @@ public class ViewLoader
                 Boolean nameExists = nameCheckHash.get(altName);
                 if (nameExists == null) // no need to check the boolean
                 {
-                    AltView altView = new AltView(view, altName, label, title, mode, isValidated, isDefault, viewDef);
+                    AltView altView = new AltView(view, altName, label, title, mode, isValidated, isDefault, null); // setting a null viewdef
+                    altViewsViewDefName.put(altView, viewDefName);
                     
                     if (StringUtils.isNotEmpty(selectorName))
                     {
@@ -265,7 +269,7 @@ public class ViewLoader
                break;
                
             case iconview:
-                viewDef = createIconViewDef(type, name, className, gettableClassName, settableClassName, desc, tableinfo);
+                viewDef = createIconViewDef(type, name, className, gettableClassName, settableClassName, desc);
                 break;
         }
         return viewDef;
@@ -296,7 +300,7 @@ public class ViewLoader
      */
     public static String getViews(final Element doc,
                                   final Hashtable<String, ViewIFace> views,
-                                  final Hashtable<String, ViewDefIFace> viewDefs) throws Exception
+                                  final Hashtable<AltViewIFace, String> altViewsViewDefName) throws Exception
     {
         instance.viewSetName = doc.attributeValue(NAME);
 
@@ -306,7 +310,8 @@ public class ViewLoader
             for ( Iterator<?> i = viewsElement.elementIterator( "view" ); i.hasNext(); )
             {
                 Element   element = (Element) i.next(); // assume element is NOT null, if it is null it will cause an exception
-                ViewIFace view    = createView(element, viewDefs);
+                ViewIFace view    = createView(element, altViewsViewDefName);
+                
                 if (views.get(view.getName()) == null)
                 {
                     views.put(view.getName(), view);
@@ -326,13 +331,19 @@ public class ViewLoader
      * Fill the Vector with all the views from the DOM document
      * @param doc the DOM document conforming to form.xsd
      * @param viewDefs the list to be filled
+     * @param doMapDefinitions tells it to map and clone the definitions for formtables (use false for the FormEditor)
+     * @return the viewset name
      * @throws Exception for duplicate view set names or if a ViewDef name is not unique
      */
     public static String getViewDefs(final Element doc, 
                                      final Hashtable<String, ViewDefIFace> viewDefs,
+                                     final Hashtable<String, ViewIFace>    views,
                                      final boolean doMapDefinitions) throws Exception
     {
         instance.viewSetName = doc.attributeValue(NAME);
+        
+        instance.views    = views;
+        instance.viewDefs = viewDefs;
 
         Element viewDefsElement = (Element)doc.selectSingleNode("viewdefs");
         if (viewDefsElement != null)
@@ -341,6 +352,7 @@ public class ViewLoader
             {
                 Element  element = (Element) i.next(); // assume element is NOT null, if it is null it will cause an exception
                 ViewDef  viewDef = createViewDef(element);
+                
                 //log.debug("Loaded ViewDef["+viewDef.getName()+"]");
                 if (viewDefs.get(viewDef.getName()) == null)
                 {
@@ -359,6 +371,9 @@ public class ViewLoader
                 mapDefinitionViewDefs(viewDefs);
             }
         }
+        
+        instance.views    = null;
+        instance.viewDefs = null;
 
         return instance.viewSetName;
     }
@@ -376,18 +391,23 @@ public class ViewLoader
         {
             if (viewDef.getType() == ViewDefIFace.ViewType.formtable)
             {
-                ViewDefIFace actualDef = viewDefs.get(((FormViewDefIFace)viewDef).getDefinitionName());
-                if (actualDef != null)
+                String viewDefName = ((FormViewDefIFace)viewDef).getDefinitionName();
+                if (viewDefName != null)
                 {
-                    viewDefs.remove(viewDef.getName());
-                    actualDef = (ViewDef)actualDef.clone();
-                    actualDef.setType(ViewDefIFace.ViewType.formtable);
-                    actualDef.setName(viewDef.getName());
-                    viewDefs.put(actualDef.getName(), actualDef);
-                    
-                } else
-                {
-                    throw new RuntimeException("Couldn't find the ViewDef for formtable definition name["+((FormViewDefIFace)viewDef).getDefinitionName()+"]");
+                    log.debug(viewDefName);
+                    ViewDefIFace actualDef = viewDefs.get(viewDefName);
+                    if (actualDef != null)
+                    {
+                        viewDefs.remove(viewDef.getName());
+                        actualDef = (ViewDef)actualDef.clone();
+                        actualDef.setType(ViewDefIFace.ViewType.formtable);
+                        actualDef.setName(viewDef.getName());
+                        viewDefs.put(actualDef.getName(), actualDef);
+                        
+                    } else
+                    {
+                        throw new RuntimeException("Couldn't find the ViewDef for formtable definition name["+((FormViewDefIFace)viewDef).getDefinitionName()+"]");
+                    }
                 }
             }
         } 
@@ -750,11 +770,13 @@ public class ViewLoader
                             {
                                 svViewSetName = instance.viewSetName;
                             }
+                            
+                            String viewName = instance.getViewName(cellElement);
 
                             cell = formRow.addCell(new FormCellSubView(cellId, 
                                                    cellName,
                                                    svViewSetName,
-                                                   cellElement.attributeValue("viewname"),
+                                                   viewName,
                                                    cellElement.attributeValue("class"),
                                                    getAttr(cellElement, "desc", ""),
                                                    getAttr(cellElement, "defaulttype", null),
@@ -772,10 +794,12 @@ public class ViewLoader
                             {
                                 vsName = instance.viewSetName;
                             }
+                            
+                            String viewName = instance.getViewName(cellElement);
 
-                             cell = formRow.addCell(new FormCellSubView(cellId, cellName,
+                            cell = formRow.addCell(new FormCellSubView(cellId, cellName,
                                     vsName,
-                                    cellElement.attributeValue("viewname"),
+                                    viewName,
                                     cellElement.attributeValue("class"),
                                     getAttr(cellElement, "desc", ""),
                                     colspan,
@@ -801,7 +825,43 @@ public class ViewLoader
                 rowNumber++;
             }
         }
-
+    }
+    
+    /**
+     * Gets the view from the element and makes sure theView exists. If the View is null then it checks the Global ViewSet in the BackStop.
+     * It will actually get a reference to the View and it's ViewDefs and put them into the current ViewSet.
+     * @param cellElement the subview element
+     * @return the view name
+     */
+    protected String getViewName(final Element cellElement)
+    {
+        String viewName = getAttr(cellElement, "viewname", null);
+        
+        if (views.get(viewName) == null)
+        {
+            if (backStopViewSetMgr != null)
+            {
+                ViewIFace view = backStopViewSetMgr.getView("Global", viewName);
+                if (view != null)
+                {
+                    views.put(viewName, view);
+                    for (AltViewIFace av : view.getAltViews())
+                    {
+                        ViewDefIFace vd = av.getViewDef();
+                        viewDefs.put(vd.getName(), vd);
+                    }
+                    
+                } else
+                {
+                   throw new RuntimeException("Can't find View in current ViewSet or the `Global` backstop ["+viewName+"]"); 
+                }
+            } else
+            {
+                throw new RuntimeException("Can't find View in current ViewSet and the backstop was not installed into the ViewLoader ["+viewName+"]"); 
+            }
+        }
+        
+        return viewName;
     }
 
     /**
@@ -872,8 +932,7 @@ public class ViewLoader
                                                final String  className,
                                                final String  gettableClassName,
                                                final String  settableClassName,
-                                               final String  desc,
-                                               final DBTableInfo tableinfo)
+                                               final String  desc)
     {
         ViewDef formView = new ViewDef(type, name, className, gettableClassName, settableClassName, desc);
 
