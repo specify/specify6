@@ -253,32 +253,32 @@ public class TreeFactory
 	    log.info("getAppropriateFormsetAndViewNames(Object): Replace this with a call to the table ID manager to get the appropriate form");
 		if( node instanceof Geography )
 		{
-			return new Pair<String,String>("SystemSetup","Geography");
+			return new Pair<String,String>("Global","Geography");
 		}
 
 		if( node instanceof GeologicTimePeriod )
 		{
-			return new Pair<String,String>("SystemSetup","GeologicTimePeriod");
+			return new Pair<String,String>("Global","GeologicTimePeriod");
 		}
 
         if( node instanceof LithoStrat )
         {
-            return new Pair<String,String>("SystemSetup","LithoStrat");
+            return new Pair<String,String>("Global","LithoStrat");
         }
         
 		if( node instanceof Location )
 		{
-			return new Pair<String,String>("SystemSetup","Location");
+			return new Pair<String,String>("Global","Location");
 		}
 
         if( node instanceof Taxon )
         {
-            return new Pair<String,String>("SystemSetup","Taxon");
+            return new Pair<String,String>("Global","Taxon");
         }
         
 		if( node instanceof TreeDefIface<?,?,?>)
 		{
-			return new Pair<String,String>("SystemSetup","TreeDefEditor");
+			return new Pair<String,String>("Global","TreeDefEditor");
 		}
 		
         if( node instanceof GeographyTreeDefItem)
@@ -286,9 +286,9 @@ public class TreeFactory
             TreeDefItemIface<?,?,?> defItem = (TreeDefItemIface<?,?,?>)node;
             if (defItem.getParent() == null)
             {
-                return new Pair<String, String>("SystemSetup","RootGeographyTreeDefItem");
+                return new Pair<String, String>("Global","RootGeographyTreeDefItem");
             }
-            return new Pair<String, String>("SystemSetup","GeographyTreeDefItem");
+            return new Pair<String, String>("Global","GeographyTreeDefItem");
         }
         
         if( node instanceof GeologicTimePeriodTreeDefItem)
@@ -296,9 +296,9 @@ public class TreeFactory
             TreeDefItemIface<?,?,?> defItem = (TreeDefItemIface<?,?,?>)node;
             if (defItem.getParent() == null)
             {
-                return new Pair<String, String>("SystemSetup","RootGeologicTimePeriodTreeDefItem");
+                return new Pair<String, String>("Global","RootGeologicTimePeriodTreeDefItem");
             }
-            return new Pair<String, String>("SystemSetup","GeologicTimePeriodTreeDefItem");
+            return new Pair<String, String>("Global","GeologicTimePeriodTreeDefItem");
         }
         
         if( node instanceof LithoStratTreeDefItem)
@@ -306,9 +306,9 @@ public class TreeFactory
             TreeDefItemIface<?,?,?> defItem = (TreeDefItemIface<?,?,?>)node;
             if (defItem.getParent() == null)
             {
-                return new Pair<String, String>("SystemSetup","RootLithoStratTreeDefItem");
+                return new Pair<String, String>("Global","RootLithoStratTreeDefItem");
             }
-            return new Pair<String, String>("SystemSetup","LithoStratTreeDefItem");
+            return new Pair<String, String>("Global","LithoStratTreeDefItem");
         }
         
         if( node instanceof LocationTreeDefItem)
@@ -316,9 +316,9 @@ public class TreeFactory
             TreeDefItemIface<?,?,?> defItem = (TreeDefItemIface<?,?,?>)node;
             if (defItem.getParent() == null)
             {
-                return new Pair<String, String>("SystemSetup","RootLocationTreeDefItem");
+                return new Pair<String, String>("Global","RootLocationTreeDefItem");
             }
-            return new Pair<String, String>("SystemSetup","LocationTreeDefItem");
+            return new Pair<String, String>("Global","LocationTreeDefItem");
         }
         
         if( node instanceof TaxonTreeDefItem)
@@ -326,9 +326,9 @@ public class TreeFactory
             TreeDefItemIface<?,?,?> defItem = (TreeDefItemIface<?,?,?>)node;
             if (defItem.getParent() == null)
             {
-                return new Pair<String, String>("SystemSetup","RootTaxonTreeDefItem");
+                return new Pair<String, String>("Global","RootTaxonTreeDefItem");
             }
-            return new Pair<String, String>("SystemSetup","TaxonTreeDefItem");
+            return new Pair<String, String>("Global","TaxonTreeDefItem");
         }
         
 		return null;

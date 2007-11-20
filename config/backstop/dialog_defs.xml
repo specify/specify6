@@ -19,15 +19,15 @@
     <dialog type="display" viewset="Global"      view="AccessionAgent"     name="AccessionAgentDisplay"    title="AccessionAgentTitle"       class="edu.ku.brc.specify.datamodel.AccessionAgent"/>
     <dialog type="display" viewset="Global"      view="Agent"              name="AgentDisplay"             title="AgentTitle"                class="edu.ku.brc.specify.datamodel.Agent"/>
     <dialog type="display" viewset="Global"      view="AttachmentsForm"    name="AttachmentsForm"          title="Attachment"                class="edu.ku.brc.specify.datamodel.Attachment"/>
-    <dialog type="display" viewset="SystemSetup" view="GeologicTimePeriod" name="GeologicTimePeriodDisplay" title="GeologicTimePeriodTitle"  class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"/>
+    <dialog type="display" viewset="Global"      view="GeologicTimePeriod" name="GeologicTimePeriodDisplay" title="GeologicTimePeriodTitle"  class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"/>
     <dialog type="display" viewset="Fish Views"  view="Determination"      name="DeterminationDisplay"     title="Determination"             class="edu.ku.brc.specify.datamodel.Determination"/>
-    <dialog type="display" viewset="SystemSetup" view="Geography"          name="GeographyDisplay"         title="GeographyTitle"            class="edu.ku.brc.specify.datamodel.Geography"/>
+    <dialog type="display" viewset="Global"      view="Geography"          name="GeographyDisplay"         title="GeographyTitle"            class="edu.ku.brc.specify.datamodel.Geography"/>
     <dialog type="display" viewset="Global"      view="LithoStrat"         name="LithoStratDisplay"        title="Lithostratigraphy"         class="edu.ku.brc.specify.datamodel.LithoStrat"/>
     <dialog type="display" viewset="Global"      view="Locality"           name="LocalityDisplay"          title="LocalityTitle"             class="edu.ku.brc.specify.datamodel.Locality"/>
-    <dialog type="display" viewset="SystemSetup" view="Location"           name="LocationDisplay"          title="LocationTitle"             class="edu.ku.brc.specify.datamodel.Location"/>
+    <dialog type="display" viewset="Global"      view="Location"           name="LocationDisplay"          title="LocationTitle"             class="edu.ku.brc.specify.datamodel.Location"/>
     <dialog type="display" viewset="Global"      view="Permit"             name="PermitDisplay"            title="PermitTitle"               class="edu.ku.brc.specify.datamodel.Agent"/>
     <dialog type="display" viewset="Fish Views"  view="Preparation"        name="PreparationDisplay"       title="Preparation"               class="edu.ku.brc.specify.datamodel.Preparation"/>
-    <dialog type="display" viewset="SystemSetup" view="Taxon"              name="TaxonDisplay"             title="TaxonTitle"                class="edu.ku.brc.specify.datamodel.Taxon"/>
+    <dialog type="display" viewset="Global"      view="Taxon"              name="TaxonDisplay"             title="TaxonTitle"                class="edu.ku.brc.specify.datamodel.Taxon"/>
 
 <!--
     <dialog type="display" viewset="Fish Views"  view="AccessionAttachment"            name="AccessionAttachmentDisplay"            title="AttachmentTitle" class="edu.ku.brc.specify.datamodel.AccessionAttachment"/>
@@ -45,26 +45,26 @@
     <dialog type="display" viewset="Fish Views"  view="PermitAttachment"               name="PermitAttachmentDisplay"               title="AttachmentTitle" class="edu.ku.brc.specify.datamodel.PermitAttachment"/>
     <dialog type="display" viewset="Fish Views"  view="PreparationAttachment"          name="PreparationAttachmentDisplay"          title="AttachmentTitle" class="edu.ku.brc.specify.datamodel.PreparationAttachment"/>
     <dialog type="display" viewset="Fish Views"  view="RepositoryAgreementAttachment"  name="RepositoryAgreementAttachmentDisplay"  title="AttachmentTitle" class="edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment"/>
-    <dialog type="display" viewset="SystemSetup" view="TaxonAttachment"                name="TaxonAttachmentDisplay"                title="AttachmentTitle" class="edu.ku.brc.specify.datamodel.TaxonAttachment"/>
+    <dialog type="display" viewset="Global"      view="TaxonAttachment"                name="TaxonAttachmentDisplay"                title="AttachmentTitle" class="edu.ku.brc.specify.datamodel.TaxonAttachment"/>
 -->
 
 	<!-- Attachment-related displays -->
-    <dialog type="display" viewset="SystemSetup"  view="ObjectAttachment" name="AccessionAttachmentDisplay"            title="AttachmentTitle" class="edu.ku.brc.specify.datamodel.AccessionAttachment"/>
-    <dialog type="display" viewset="SystemSetup"  view="ObjectAttachment" name="AgentAttachmentDisplay"                title="AttachmentTitle" class="edu.ku.brc.specify.datamodel.AgentAttachment"/>
-    <dialog type="display" viewset="SystemSetup"  view="ObjectAttachment" name="CollectingEventAttachmentDisplay"      title="AttachmentTitle" class="edu.ku.brc.specify.datamodel.CollectingEventAttachment"/>
-    <dialog type="display" viewset="SystemSetup"  view="ObjectAttachment" name="CollectionObjectAttachmentDisplay"     title="AttachmentTitle" class="edu.ku.brc.specify.datamodel.CollectionObjectAttachment"/>
-    <dialog type="display" viewset="SystemSetup"  view="ObjectAttachment" name="ConservDescriptionAttachmentDisplay"   title="AttachmentTitle" class="edu.ku.brc.specify.datamodel.ConservDescriptionAttachment"/>
-    <dialog type="display" viewset="SystemSetup"  view="ObjectAttachment" name="ConservEventAttachmentDisplay"         title="AttachmentTitle" class="edu.ku.brc.specify.datamodel.ConservEventAttachment"/>
-    <dialog type="display" viewset="SystemSetup"  view="ObjectAttachment" name="DNASequenceAttachmentDisplay"          title="AttachmentTitle" class="edu.ku.brc.specify.datamodel.DNASequenceAttachment"/>
-    <dialog type="display" viewset="SystemSetup"  view="ObjectAttachment" name="FieldNotebookAttachmentDisplay"        title="AttachmentTitle" class="edu.ku.brc.specify.datamodel.FieldNotebookAttachment"/>
-    <dialog type="display" viewset="SystemSetup"  view="ObjectAttachment" name="FieldNotebookAttachmentPageDisplay"    title="AttachmentTitle" class="edu.ku.brc.specify.datamodel.FieldNotebookPageAttachment"/>
-    <dialog type="display" viewset="SystemSetup"  view="ObjectAttachment" name="FieldNotebookAttachmentPageSetDisplay" title="AttachmentTitle" class="edu.ku.brc.specify.datamodel.FieldNotebookPageSetAttachment"/>
-    <dialog type="display" viewset="SystemSetup"  view="ObjectAttachment" name="LoanAttachmentDisplay"                 title="AttachmentTitle" class="edu.ku.brc.specify.datamodel.LoanAttachment"/>
-    <dialog type="display" viewset="SystemSetup"  view="ObjectAttachment" name="LocalityAttachmentDisplay"             title="AttachmentTitle" class="edu.ku.brc.specify.datamodel.LocalityAttachment"/>
-    <dialog type="display" viewset="SystemSetup"  view="ObjectAttachment" name="PermitAttachmentDisplay"               title="AttachmentTitle" class="edu.ku.brc.specify.datamodel.PermitAttachment"/>
-    <dialog type="display" viewset="SystemSetup"  view="ObjectAttachment" name="PreparationAttachmentDisplay"          title="AttachmentTitle" class="edu.ku.brc.specify.datamodel.PreparationAttachment"/>
-    <dialog type="display" viewset="SystemSetup"  view="ObjectAttachment" name="RepositoryAgreementAttachmentDisplay"  title="AttachmentTitle" class="edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment"/>
-    <dialog type="display" viewset="SystemSetup"  view="ObjectAttachment" name="TaxonAttachmentDisplay"                title="AttachmentTitle" class="edu.ku.brc.specify.datamodel.TaxonAttachment"/>
+    <dialog type="display" viewset="Global"  view="ObjectAttachment" name="AccessionAttachmentDisplay"            title="AttachmentTitle" class="edu.ku.brc.specify.datamodel.AccessionAttachment"/>
+    <dialog type="display" viewset="Global"  view="ObjectAttachment" name="AgentAttachmentDisplay"                title="AttachmentTitle" class="edu.ku.brc.specify.datamodel.AgentAttachment"/>
+    <dialog type="display" viewset="Global"  view="ObjectAttachment" name="CollectingEventAttachmentDisplay"      title="AttachmentTitle" class="edu.ku.brc.specify.datamodel.CollectingEventAttachment"/>
+    <dialog type="display" viewset="Global"  view="ObjectAttachment" name="CollectionObjectAttachmentDisplay"     title="AttachmentTitle" class="edu.ku.brc.specify.datamodel.CollectionObjectAttachment"/>
+    <dialog type="display" viewset="Global"  view="ObjectAttachment" name="ConservDescriptionAttachmentDisplay"   title="AttachmentTitle" class="edu.ku.brc.specify.datamodel.ConservDescriptionAttachment"/>
+    <dialog type="display" viewset="Global"  view="ObjectAttachment" name="ConservEventAttachmentDisplay"         title="AttachmentTitle" class="edu.ku.brc.specify.datamodel.ConservEventAttachment"/>
+    <dialog type="display" viewset="Global"  view="ObjectAttachment" name="DNASequenceAttachmentDisplay"          title="AttachmentTitle" class="edu.ku.brc.specify.datamodel.DNASequenceAttachment"/>
+    <dialog type="display" viewset="Global"  view="ObjectAttachment" name="FieldNotebookAttachmentDisplay"        title="AttachmentTitle" class="edu.ku.brc.specify.datamodel.FieldNotebookAttachment"/>
+    <dialog type="display" viewset="Global"  view="ObjectAttachment" name="FieldNotebookAttachmentPageDisplay"    title="AttachmentTitle" class="edu.ku.brc.specify.datamodel.FieldNotebookPageAttachment"/>
+    <dialog type="display" viewset="Global"  view="ObjectAttachment" name="FieldNotebookAttachmentPageSetDisplay" title="AttachmentTitle" class="edu.ku.brc.specify.datamodel.FieldNotebookPageSetAttachment"/>
+    <dialog type="display" viewset="Global"  view="ObjectAttachment" name="LoanAttachmentDisplay"                 title="AttachmentTitle" class="edu.ku.brc.specify.datamodel.LoanAttachment"/>
+    <dialog type="display" viewset="Global"  view="ObjectAttachment" name="LocalityAttachmentDisplay"             title="AttachmentTitle" class="edu.ku.brc.specify.datamodel.LocalityAttachment"/>
+    <dialog type="display" viewset="Global"  view="ObjectAttachment" name="PermitAttachmentDisplay"               title="AttachmentTitle" class="edu.ku.brc.specify.datamodel.PermitAttachment"/>
+    <dialog type="display" viewset="Global"  view="ObjectAttachment" name="PreparationAttachmentDisplay"          title="AttachmentTitle" class="edu.ku.brc.specify.datamodel.PreparationAttachment"/>
+    <dialog type="display" viewset="Global"  view="ObjectAttachment" name="RepositoryAgreementAttachmentDisplay"  title="AttachmentTitle" class="edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment"/>
+    <dialog type="display" viewset="Global"  view="ObjectAttachment" name="TaxonAttachmentDisplay"                title="AttachmentTitle" class="edu.ku.brc.specify.datamodel.TaxonAttachment"/>
 	
     <!--
     <dialog type="display" viewset="Global" view="PrepType"          name="PrepTypeDisplay"           title="Preparation Type"        class="edu.ku.brc.specify.datamodel.PrepType"/>

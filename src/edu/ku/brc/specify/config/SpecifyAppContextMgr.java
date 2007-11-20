@@ -499,7 +499,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         backStopAppResMgr  = new AppResourceMgr(XMLHelper.getConfigDir("backstop"));
         
         // Here is where you turn on View/Viewdef re-use.
-        if (false)
+        if (true)
         {
             backStopViewSetMgr.getView("Global", "Accession"); // force the loading of all the views
             ViewLoader.setBackStopViewSetMgr(backStopViewSetMgr);
