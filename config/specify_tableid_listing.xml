@@ -20,7 +20,7 @@
             <display objtitle="Accession Agent" view="AccessionAgent" dataobjformatter="AccessionAgent" searchdlg="AccessionAgentSearch" newobjdlg="AccessionAgentDisplay"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.AccessionAttachment" abbrev="acat" id="108" searchable="true">
-            <display view="AccessionAttachment" newobjdlg="AccessionAttachmentDisplay" searchdlg="AttachmentSearch" />
+            <display view="ObjectAttachment" newobjdlg="AccessionAttachmentDisplay" searchdlg="AttachmentSearch" />
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.AccessionAuthorization" abbrev="aca" id="13" searchable="true">
@@ -35,7 +35,7 @@
             <businessrule>edu.ku.brc.specify.datamodel.busrules.AgentBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.AgentAttachment" abbrev="agat" id="109" searchable="true">
-            <display objtitle="AgentAttachment" view="AgentAttachment" newobjdlg="AgentAttachmentDisplay"/>
+            <display objtitle="ObjectAttachment" view="AgentAttachment" newobjdlg="AgentAttachmentDisplay"/>
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.AgentVariant" abbrev="av" id="107" workbench="false" searchable="true"/>
@@ -63,7 +63,7 @@
             <businessrule>edu.ku.brc.specify.datamodel.busrules.CollectingEventBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.CollectingEventAttachment" abbrev="ceat" id="110" searchable="true">
-        	<display view="CollectingEventAttachment" newobjdlg="CollectingEventAttachmentDisplay"/>
+        	<display view="ObjectAttachment" newobjdlg="CollectingEventAttachmentDisplay"/>
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.CollectingEventAttr" abbrev="ceatr" id="25" searchable="true"/>
@@ -80,7 +80,7 @@
             <businessrule>edu.ku.brc.specify.datamodel.busrules.CollectionObjectBusRules</businessrule>          
         </table>
         <table name="edu.ku.brc.specify.datamodel.CollectionObjectAttachment" abbrev="coat" id="111" searchable="true">
-        	<display view="CollectionObjectAttachment" newobjdlg="CollectionObjectAttachmentDisplay"/>
+        	<display view="ObjectAttachment" newobjdlg="CollectionObjectAttachmentDisplay"/>
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.CollectionObjectAttr" abbrev="coa" id="28" searchable="true"/>
@@ -96,14 +96,14 @@
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.ConservDescriptionBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.ConservDescriptionAttachment" abbrev="csdat" id="112" searchable="true">
-        	<display view="ConservDescriptionAttachment" newobjdlg="ConservDescriptionAttachmentDisplay"/>
+        	<display view="ObjectAttachment" newobjdlg="ConservDescriptionAttachmentDisplay"/>
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.ConservEvent" abbrev="cse" id="73" searchable="true">
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.ConservEventBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.ConservEventAttachment" abbrev="cseat" id="113" searchable="true">
-        	<display view="ConservEventAttachment" newobjdlg="ConservEventAttachmentDisplay"/>
+        	<display view="ObjectAttachment" newobjdlg="ConservEventAttachmentDisplay"/>
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.ConservRecmdType" abbrev="csrt" id="105"/>
@@ -130,7 +130,7 @@
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.DNASequenceBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.DNASequenceAttachment" abbrev="dnaat" id="126" searchable="true">
-        	<display view="DNASequenceAttachment" newobjdlg="DNASequenceAttachmentDisplay"/>
+        	<display view="ObjectAttachment" newobjdlg="DNASequenceAttachmentDisplay"/>
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.ExchangeIn" abbrev="exi" id="39" searchable="true"/>
@@ -139,21 +139,21 @@
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.FieldNotebookBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.FieldNotebookAttachment" abbrev="fnbat" id="127" searchable="true">
-        	<display view="FieldNotebookAttachment" newobjdlg="FieldNotebookAttachmentDisplay"/>
+        	<display view="ObjectAttachment" newobjdlg="FieldNotebookAttachmentDisplay"/>
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.FieldNotebookPage" abbrev="fnbp" id="85" searchable="true">
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.FieldNotebookPageBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.FieldNotebookPageAttachment" abbrev="fnbpat" id="129" searchable="true">
-        	<display view="FieldNotebookPageAttachment" newobjdlg="FieldNotebookPageAttachmentDisplay"/>
+        	<display view="ObjectAttachment" newobjdlg="FieldNotebookPageAttachmentDisplay"/>
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.FieldNotebookPageSet" abbrev="fnbps" id="84" searchable="true">
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.FieldNotebookPageSetBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.FieldNotebookPageSetAttachment" abbrev="fnbpsat" id="128" searchable="true">
-        	<display view="FieldNotebookPageSetAttachment" newobjdlg="FieldNotebookPageSetAttachmentDisplay"/>
+        	<display view="ObjectAttachment" newobjdlg="FieldNotebookPageSetAttachmentDisplay"/>
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.GeoCoordDetail" abbrev="gcd" id="123" searchable="true"/>
@@ -194,7 +194,7 @@
         </table>
         <table name="edu.ku.brc.specify.datamodel.LoanAgent" abbrev="lna" id="53" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.LoanAttachment" abbrev="lnat" id="114" searchable="true">
-        	<display view="LoanAttachment" newobjdlg="LoanAttachmentDisplay"/>
+        	<display view="ObjectAttachment" newobjdlg="LoanAttachmentDisplay"/>
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.LoanPreparation" abbrev="lpo" id="54" searchable="true"/>
@@ -207,7 +207,7 @@
         </table>
         <table name="edu.ku.brc.specify.datamodel.LocalityDetail" abbrev="lcd" id="124" workbench="true" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.LocalityAttachment" abbrev="locat" id="115" searchable="true">
-            <display view="LocalityAttachment" newobjdlg="LocalityAttachmentDisplay" searchable="true"/>
+            <display view="ObjectAttachment" newobjdlg="LocalityAttachmentDisplay" searchable="true"/>
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.LocalityCitation" abbrev="locc" id="57" searchable="true"/>
@@ -229,7 +229,7 @@
             <businessrule>edu.ku.brc.specify.datamodel.busrules.PermitBusRules</businessrule>            
         </table>
         <table name="edu.ku.brc.specify.datamodel.PermitAttachment" abbrev="prat" id="116" searchable="true">
-        	<display view="PermitAttachment" newobjdlg="PermitAttachmentDisplay"/>
+        	<display view="ObjectAttachment" newobjdlg="PermitAttachmentDisplay"/>
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.PickList" abbrev="pl" id="500">
@@ -241,7 +241,7 @@
             <display objtitle="Preparation" view="Preparation" newobjdlg="PreparationDisplay"/>
 		</table>
         <table name="edu.ku.brc.specify.datamodel.PreparationAttachment" abbrev="ppat" id="117" searchable="true">
-        	<display view="PreparationAttachment" newobjdlg="PreparationAttachmentDisplay"/>
+        	<display view="ObjectAttachment" newobjdlg="PreparationAttachmentDisplay"/>
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.PreparationAttr" abbrev="ppa" id="64" searchable="true"/>
@@ -261,7 +261,7 @@
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.RepositoryAgreementBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment" abbrev="raat" id="118" searchable="true">
-        	<display view="RepositoryAgreementAttachment" newobjdlg="RepositoryAgreementAttachmentDisplay"/>
+        	<display view="ObjectAttachment" newobjdlg="RepositoryAgreementAttachmentDisplay"/>
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.Shipment" abbrev="sh" id="71" searchable="true">
@@ -297,7 +297,7 @@
             <businessrule>edu.ku.brc.specify.datamodel.busrules.TaxonBusRules</businessrule>                                                
         </table>
         <table name="edu.ku.brc.specify.datamodel.TaxonAttachment" abbrev="txat" id="119" searchable="true">
-        	<display view="TaxonAttachment" newobjdlg="TaxonAttachmentDisplay"/>
+        	<display view="ObjectAttachment" newobjdlg="TaxonAttachmentDisplay"/>
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
         <table name="edu.ku.brc.specify.datamodel.TaxonCitation" abbrev="txc" id="75" searchable="true"/>
