@@ -577,8 +577,13 @@ public class TableViewObj implements Viewable,
         FormDataObjIFace dObj = null;
         if (isNew)
         {
-            dObj = FormHelper.createAndNewDataObj(dataClassName);
-            
+            if (classToCreate != null)
+            {
+                dObj = FormHelper.createAndNewDataObj(classToCreate);
+            } else
+            {
+                dObj = FormHelper.createAndNewDataObj(view.getClassName());
+            }
         } else
         {
             dObj = (FormDataObjIFace)dataObjList.get(rowIndex);

@@ -363,7 +363,14 @@ public class IconViewObj implements Viewable
      */
     public boolean addRecord(final File f)
     {
-        final FormDataObjIFace newObject = FormHelper.createAndNewDataObj(dataClassName);
+        FormDataObjIFace newObject;
+        if (classToCreate != null)
+        {
+            newObject = FormHelper.createAndNewDataObj(classToCreate);
+        } else
+        {
+            newObject = FormHelper.createAndNewDataObj(view.getClassName());
+        }
 
         FileImportProcessor importer = FileImportProcessor.getInstance();
         if (!importer.importFileIntoRecord(newObject, f))
@@ -399,7 +406,14 @@ public class IconViewObj implements Viewable
         {
             public void actionPerformed(ActionEvent ae)
             {
-                final FormDataObjIFace newObject = FormHelper.createAndNewDataObj(dataClassName);
+                FormDataObjIFace newObject;
+                if (classToCreate != null)
+                {
+                    newObject = FormHelper.createAndNewDataObj(classToCreate);
+                } else
+                {
+                    newObject = FormHelper.createAndNewDataObj(view.getClassName());
+                }
                 
                 // get an edit dialog for the object
                 ViewBasedDisplayIFace dialog = UIHelper.createDataObjectDialog(altView, mainComp, newObject, true, true);
