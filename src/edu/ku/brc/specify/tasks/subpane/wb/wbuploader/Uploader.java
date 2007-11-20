@@ -40,7 +40,10 @@ import edu.ku.brc.af.core.expresssearch.TableNameRenderer;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.specify.datamodel.CollectingEvent;
+import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Determination;
+import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
@@ -551,14 +554,24 @@ public class Uploader implements ActionListener, WindowStateListener
      */
     protected void addEmptyUploadTables() throws UploaderException
     {
-        //see if genus/species are present and determination is not, and adds determination if so
-        boolean genSpPresent = false, detPresent = false;
+        boolean genSpPresent = false, detPresent = false, locPresent = false, coPresent = false, cePresent = false;
         for (UploadTable ut : uploadTables)
         {
             if (ut.getTblClass().equals(Determination.class))
             {
                 detPresent = true;
-                break;
+            }
+            if (ut.getTblClass().equals(Locality.class))
+            {
+                locPresent = true;
+            }
+            if (ut.getTblClass().equals(CollectionObject.class))
+            {
+                coPresent = true;
+            }
+            if (ut.getTblClass().equals(CollectingEvent.class))
+            {
+                cePresent = true;
             }
         }
         if (!detPresent)
@@ -568,12 +581,13 @@ public class Uploader implements ActionListener, WindowStateListener
             for (WorkbenchDataItem mapI : wbRow.getWorkbenchDataItems())
             {
                 String fldName = mapI.getWorkbenchTemplateMappingItem().getFieldName();
-                if (fldName.startsWith("genus") || fldName.startsWith("species") || fldName.startsWith("variety") || fldName.startsWith("subspecies"))
+                if (fldName.startsWith("genus") || fldName.startsWith("species")
+                        || fldName.startsWith("variety") || fldName.startsWith("subspecies"))
                 {
                     genSpPresent = true;
-                    if (Integer.valueOf(fldName.substring(fldName.length()-1)) > maxSeq)
+                    if (Integer.valueOf(fldName.substring(fldName.length() - 1)) > maxSeq)
                     {
-                        maxSeq = Integer.valueOf(fldName.substring(fldName.length()-1));
+                        maxSeq = Integer.valueOf(fldName.substring(fldName.length() - 1));
                     }
                 }
             }
@@ -583,12 +597,20 @@ public class Uploader implements ActionListener, WindowStateListener
                 det.init();
                 for (int seq = 0; seq < maxSeq; seq++)
                 {
-                    UploadField fld = new UploadField(db.getSchema().getField("determination", "collectionobjectid"), -1, null, null);
+                    UploadField fld = new UploadField(db.getSchema().getField("determination",
+                            "collectionobjectid"), -1, null, null);
                     fld.setSequence(seq);
                     det.addField(fld);
                 }
                 uploadTables.add(det);
             }
+        }
+        if (!cePresent && locPresent && coPresent)
+        {
+            UploadTable ce = new UploadTable(db.getSchema().getTable("CollectingEvent"), null);
+            ce.init();
+            ce.addField(new UploadField(db.getSchema().getField("collectingevent", "stationfieldnumber"), -1, null, null));
+            uploadTables.add(ce);
         }
     }
     
