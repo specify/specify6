@@ -289,7 +289,8 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         }
         else
         {
-            if (businessRules.okToEnableDelete(tableModel.get(selectionIndex)))
+            // if there are no business rules associated with this item, we assume it is open for deletion
+            if (businessRules == null || businessRules.okToEnableDelete(tableModel.get(selectionIndex)))
             {
                 deleteItemButton.setEnabled(true);
             }
