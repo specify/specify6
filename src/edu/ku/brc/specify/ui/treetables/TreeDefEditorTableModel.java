@@ -61,7 +61,7 @@ public class TreeDefEditorTableModel <T extends Treeable<T,D,I>,
 	 */
 	public int getColumnCount()
 	{
-		return 7;
+		return 4;
 	}
 
 	/* (non-Javadoc)

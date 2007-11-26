@@ -1552,6 +1552,7 @@
                     <cell type="label" labelfor="4" label="Is Enforced?"/>
                     <cell type="field" id="4" uitype="checkbox" name="isEnforced"/>
                 </row>
+                <!--
                 <row>
                     <cell type="label" labelfor="5" label="Text Before"/>
                     <cell type="field" id="5" name="textBefore"/>
@@ -1564,6 +1565,7 @@
                     <cell type="label" labelfor="7" label="Separator"/>
                     <cell type="field" id="7" name="fullNameSeparator"/>
                 </row>
+                -->
             </rows>
         </viewdef>
 
@@ -1622,6 +1624,7 @@
                     <cell type="label" labelfor="4" label="Is Enforced?"/>
                     <cell type="field" id="4" uitype="checkbox" name="isEnforced"/>
                 </row>
+                <!--
                 <row>
                     <cell type="label" labelfor="5" label="Text Before"/>
                     <cell type="field" id="5" name="textBefore"/>
@@ -1634,6 +1637,7 @@
                     <cell type="label" labelfor="7" label="Separator"/>
                     <cell type="field" id="7" name="fullNameSeparator"/>
                 </row>
+                -->
             </rows>
         </viewdef>
 
@@ -1692,6 +1696,7 @@
                     <cell type="label" labelfor="4" label="Is Enforced?"/>
                     <cell type="field" id="4" uitype="checkbox" name="isEnforced"/>
                 </row>
+                <!--
                 <row>
                     <cell type="label" labelfor="5" label="Text Before"/>
                     <cell type="field" id="5" name="textBefore"/>
@@ -1704,6 +1709,7 @@
                     <cell type="label" labelfor="7" label="Separator"/>
                     <cell type="field" id="7" name="fullNameSeparator"/>
                 </row>
+                -->
             </rows>
         </viewdef>
 
@@ -1762,6 +1768,7 @@
                     <cell type="label" labelfor="4" label="Is Enforced?"/>
                     <cell type="field" id="4" uitype="checkbox" name="isEnforced"/>
                 </row>
+                <!--
                 <row>
                     <cell type="label" labelfor="5" label="Text Before"/>
                     <cell type="field" id="5" name="textBefore"/>
@@ -1774,6 +1781,7 @@
                     <cell type="label" labelfor="7" label="Separator"/>
                     <cell type="field" id="7" name="fullNameSeparator"/>
                 </row>
+                -->
             </rows>
         </viewdef>
 
