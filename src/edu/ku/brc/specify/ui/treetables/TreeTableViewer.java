@@ -80,6 +80,7 @@ import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
+import edu.ku.brc.ui.forms.EditViewCompSwitcherPanel;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.Viewable;
@@ -1352,9 +1353,16 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 if (isNewObject)
                 {
                     Component parentComp = form.getControlByName("parent");
+                    
+                    while (!(parentComp instanceof EditViewCompSwitcherPanel) && parentComp != null)
+                    {
+                        parentComp = parentComp.getParent();
+                    }
+                    
                     if (parentComp != null)
                     {
-                        parentComp.setEnabled(false);
+                        EditViewCompSwitcherPanel parentSwitcher = (EditViewCompSwitcherPanel)parentComp;
+                        parentSwitcher.putIntoViewMode();
                     }
                 }
 		    }
