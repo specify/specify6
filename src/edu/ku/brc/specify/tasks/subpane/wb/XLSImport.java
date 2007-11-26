@@ -13,9 +13,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.NumberFormat;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.Set;
 import java.util.Vector;
@@ -121,7 +119,6 @@ public class XLSImport extends DataImport implements DataImportIFace
                 while (rows.hasNext())
                 {
                     HSSFRow row = (HSSFRow) rows.next();
-    
                     if (numRows == 0 && config.getFirstRowHasHeaders())
                     {
                         numRows++;
@@ -160,16 +157,12 @@ public class XLSImport extends DataImport implements DataImportIFace
                             {
                                 if (HSSFDateUtil.isCellDateFormatted(cell))
                                 {
+                                    //even if WorkbenchTask.getDataType(wbtmi) is not Calendar or Date. Hmmmm.
                                     value = scrDateFormat.getSimpleDateFormat().format(cell.getDateCellValue());
-                                    
                                 } else
                                 {
                                     Class<?> classObj = WorkbenchTask.getDataType(wbtmi);
-                                    if (classObj.equals(Calendar.class) || classObj.equals(Date.class))
-                                    {
-                                        value = scrDateFormat.getSimpleDateFormat().format(cell.getDateCellValue());
-        
-                                    } else if (classObj.equals(Integer.class))
+                                    if (classObj.equals(Integer.class))
                                     {
                                         double numeric = cell.getNumericCellValue();
                                         value = Integer.toString((int) numeric);
