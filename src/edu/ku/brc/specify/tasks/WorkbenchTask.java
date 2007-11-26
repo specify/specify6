@@ -1862,16 +1862,12 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         }
         
         UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_DELETING_DATASET"), new Object[] {workbench.getName()}), GLASSPANE_FONT_SIZE);
-        
-        String backupName = WorkbenchBackupMgr.backupWorkbench(workbench.getId(), this);
-        if (StringUtils.isNotEmpty(backupName))
-        {
-            UIRegistry.getStatusBar().setText(String.format(getResourceString("WB_DEL_BACKED_UP"), new Object[] { workbench.getName(), backupName }));
-        }
-
+        final WorkbenchTask thisTask = this;
         
         final SwingWorker worker = new SwingWorker()
         {
+            String backupName;
+            
             @SuppressWarnings("synthetic-access")
             @Override
             public Object construct()
@@ -1884,6 +1880,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 {
                     // ignore?
                 }
+                
+                backupName = WorkbenchBackupMgr.backupWorkbench(workbench.getId(), thisTask);
                 
                 final NavBoxItemIFace nbi = getBoxByTitle(workbenchNavBox, workbench.getName());
                 if (nbi != null)
@@ -1933,7 +1931,10 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             {
                 UIRegistry.clearGlassPaneMsg();
                 //UIRegistry.getStatusBar().setText(String.format(getResourceString("WB_DELETED_DATASET"), new Object[] {workbench.getName()}));
-
+                if (StringUtils.isNotEmpty(backupName))
+                {
+                    UIRegistry.getStatusBar().setText(String.format(getResourceString("WB_DEL_BACKED_UP"), new Object[] { workbench.getName(), backupName }));
+                }
             }
         };
         worker.start();
