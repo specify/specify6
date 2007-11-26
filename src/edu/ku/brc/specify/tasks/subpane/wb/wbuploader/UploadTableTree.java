@@ -260,7 +260,7 @@ public class UploadTableTree extends UploadTable
         TreeDefItemIface parentDefItem = defItem.getParent();
         while (parentDefItem != null && parentDefItem.getRankId() > 0)
         {
-            if (parentDefItem.getIsEnforced())
+            if (parentDefItem.getIsEnforced() != null && parentDefItem.getIsEnforced())
             {
                 break;
             }
