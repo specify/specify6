@@ -164,6 +164,13 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
                                                                MultiView.NO_OPTIONS | MultiView.DONT_ADD_ALL_ALTVIEWS | MultiView.USE_ONLY_CREATION_MODE,
                                                                ViewBasedDialogFactoryIFace.FRAME_TYPE.FRAME);
         
+        //frame.getOkBtn().setEnabled(true);
+
+        if (multiView != null)
+        {
+            multiView.registerDisplayFrame(frame);
+        }
+        
         frame.setCloseListener(new ViewBasedDisplayActionAdapter()
         {
             @Override
@@ -184,12 +191,11 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
         frame.setData(dataObj);
         frame.showDisplay(true);
         
-        frame.getOkBtn().setEnabled(true);
-
-        if (multiView != null)
+        if (frame instanceof ViewBasedDisplayFrame)
         {
-            multiView.registerDisplayFrame(frame);
+            frame.getOkBtn().setEnabled(true);
         }
+
     }
 
     /* (non-Javadoc)

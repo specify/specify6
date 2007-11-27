@@ -1322,6 +1322,11 @@ public class FormViewObj implements Viewable,
     
                 session.beginTransaction();
     
+                if (businessRules != null)
+                {
+                    businessRules.beforeMerge(dataObjArg, session);
+                }
+                
                 //if (dataObjArg != null && ((FormDataObjIFace)dataObjArg).getId() != null)
                 //{
                     dObj = session.merge(dataObjArg);
@@ -1333,13 +1338,13 @@ public class FormViewObj implements Viewable,
 
                 if (businessRules != null)
                 {
-                    businessRules.beforeSave(dObj,session);
+                    businessRules.beforeSave(dObj, session);
                 }
 
                 session.saveOrUpdate(dObj);
                 if (businessRules != null)
                 {
-                    if (!businessRules.beforeSaveCommit(dObj,session))
+                    if (!businessRules.beforeSaveCommit(dObj, session))
                     {
                         throw new Exception("Business rules processing failed");
                     }
@@ -1447,6 +1452,8 @@ public class FormViewObj implements Viewable,
             
             formIsInNewDataMode = false;
             
+            CommandDispatcher.dispatch(new CommandAction("Data_Entry", "SaveBeforeSetData", dataObj));
+            
             setDataIntoUI();
             
             formValidator.setHasChanged(false);
@@ -1464,8 +1471,6 @@ public class FormViewObj implements Viewable,
                 carryFwdDataObj = dataObj;
             }
 
-            CommandDispatcher.dispatch(new CommandAction("Data_Entry", "Save", dataObj));
-
             if (saveControl != null)
             {
                 saveControl.setEnabled(false);
@@ -1477,6 +1482,8 @@ public class FormViewObj implements Viewable,
                 session = null;
             }
             
+            CommandDispatcher.dispatch(new CommandAction("Data_Entry", "Save", dataObj));
+
             //log.debug("After save");
             //log.debug("Form     Val: "+(formValidator != null && formValidator.hasChanged()));
             //log.debug("mvParent Val: "+(mvParent != null && mvParent.isTopLevel() && mvParent.hasChanged()));

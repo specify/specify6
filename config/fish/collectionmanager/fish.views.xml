@@ -137,6 +137,7 @@
         
         <view name="Loan"
             class="edu.ku.brc.specify.datamodel.Loan"
+            busrules="edu.ku.brc.specify.datamodel.busrules.LoanBusRules"
             resourcelabels="false">
             <desc><![CDATA[Loan display form]]></desc>
             <altviews>
@@ -249,6 +250,7 @@
         
         <view name="Shipment"
             class="edu.ku.brc.specify.datamodel.Shipment"
+            busrules="edu.ku.brc.specify.datamodel.busrules.LoanShipmentBusRules"
             resourcelabels="false">
             <desc><![CDATA[Shipment Subform within the Loan Object form.]]></desc>
             <altviews>
@@ -1495,7 +1497,7 @@
                     <cell type="label" labelfor="1" label="Date"/>
                     <cell type="field" id="1" name="shipmentDate" uitype="formattedtext" uifieldformatter="Date" isrequired="true" default="today"/>
                     <cell type="label" labelfor="2" label="Number"/>
-                    <cell type="field" id="2" name="shipmentNumber" uitype="formattedtext" uifieldformatter="LoanNumber" isrequired="true"/>
+                    <cell type="field" id="2" name="shipmentNumber" uitype="dsptextfield"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="3" label="Method"/>

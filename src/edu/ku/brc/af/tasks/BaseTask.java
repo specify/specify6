@@ -916,6 +916,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
             {
                 params.put("title", ap.getDescription());
                 params.put("file", ap.getName());
+                params.put("mimetype", mimeType);
                 
                 //log.debug("["+ap.getDescription()+"]["+ap.getName()+"]");
                 

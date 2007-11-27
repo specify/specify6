@@ -222,6 +222,14 @@ public abstract class BaseBusRules implements BusinessRulesIFace
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#beforeMerge(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    public void beforeMerge(Object dataObj, DataProviderSessionIFace session)
+    {
+        // do nothing
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#beforeSave(java.lang.Object)
      */
     public void beforeSave(Object dataObj, DataProviderSessionIFace session)

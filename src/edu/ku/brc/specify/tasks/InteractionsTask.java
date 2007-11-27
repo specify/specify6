@@ -24,7 +24,6 @@ import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Vector;
 
@@ -237,6 +236,9 @@ public class InteractionsTask extends BaseTask
                         //setUpDraggable(nbi, new DataFlavor[]{Trash.TRASH_FLAVOR, INFOREQUEST_FLAVOR}, new NavBoxAction("", ""));
                         roc.addDragDataFlavor(INFOREQUEST_FLAVOR);
                         roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
+                        
+                        dfx = new DataFlavorTableExt(RecordSetTask.RECORDSET_FLAVOR.getDefaultRepresentationClass(), RecordSetTask.RECORDSET_FLAVOR.getHumanPresentableName(), new int[] {52});
+                        roc.addDropDataFlavor(dfx);
                         
                     } else
                     {
@@ -657,7 +659,7 @@ public class InteractionsTask extends BaseTask
     
     /**
      * Creates a new InfoRequest from a RecordSet.
-     * @param recordSet the recordset to use to create the InfoRequest
+     * @param recordSet the recordSet to use to create the InfoRequest
      */
     protected void createInfoRequest(final RecordSetIFace recordSet)
     {
@@ -725,12 +727,16 @@ public class InteractionsTask extends BaseTask
                 printLoan = n == 0;
             }
             
+            // XXX DEBUG
+            //printLoan = false;
             if (printLoan)
             {
                 DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
                 try
                 {
-                    session.attach(loan);
+                    //session.attach(loan);
+                    loan = (Loan)session.getData("From Loan where loanId = "+loan.getLoanId());
+                    
                     if (loan.getShipments().size() == 0)
                     {
                         UIRegistry.displayErrorDlg(getResourceString("NO_SHIPMENTS_ERROR"));
@@ -1199,7 +1205,7 @@ public class InteractionsTask extends BaseTask
             {
                 adjustLoanForm((FormPane)cmdAction.getData());
                 
-            } else if (cmdAction.isAction("Save"))
+            } else if (cmdAction.isAction("SaveBeforeSetData"))
             {
                 checkToPrintLoan(cmdAction);
             }

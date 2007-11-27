@@ -10,7 +10,7 @@
     
     
     <section title="settings">
-        <pref title="email" icon="Browse" panelClass="edu.ku.brc.specify.prefs.EMailPrefsPanel"/>
+        <pref title="email" icon="EMail" panelClass="edu.ku.brc.specify.prefs.EMailPrefsPanel"/>
     </section>
         
     <section title="misc">

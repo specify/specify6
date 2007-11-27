@@ -198,8 +198,8 @@ public class MatchHandler
         {
             settingDlg = new CustomDialog(null, getResourceString("WB_UPLOAD_SETTINGS"), true,
                     CustomDialog.OKCANCELAPPLYHELP, umsbp, CustomDialog.OK_BTN);
-            settingDlg.createUI();
             settingDlg.setApplyLabel(getResourceString("Apply to All")); // i18n
+            settingDlg.createUI();
             settingDlg.getApplyBtn().addActionListener(new ActionListener()
             {
                 public void actionPerformed(ActionEvent e)
@@ -208,6 +208,7 @@ public class MatchHandler
                 }
             });
 
+            //settingDlg.pack();
             UIHelper.centerAndShow(settingDlg);
             if (!settingDlg.isCancelled())
             {

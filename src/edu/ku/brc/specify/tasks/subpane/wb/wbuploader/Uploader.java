@@ -1517,11 +1517,11 @@ public class Uploader implements ActionListener, WindowStateListener
         CustomDialog cwin;
         if (!readOnly)
         {
-            cwin = new CustomDialog(null, getResourceString("WB_UPLOAD_SETTINGS"), true, usp); // i18n
+            cwin = new CustomDialog(mainForm, getResourceString("WB_UPLOAD_SETTINGS"), true, usp); // i18n
         }
         else
         {
-            cwin = new CustomDialog(null, getResourceString("WB_UPLOAD_SETTINGS"), true, CustomDialog.OK_BTN, usp, CustomDialog.OK_BTN); // i18n
+            cwin = new CustomDialog(mainForm, getResourceString("WB_UPLOAD_SETTINGS"), true, CustomDialog.OK_BTN, usp, CustomDialog.OK_BTN); // i18n
         }
             
         cwin.setModal(true);

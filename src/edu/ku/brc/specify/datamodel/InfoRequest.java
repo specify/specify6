@@ -103,25 +103,28 @@ public class InfoRequest extends CollectionMember implements java.io.Serializabl
         agent         = null;
         
         // XXX For Demo
-        try
+        if (false)
         {
-            Connection conn = DBConnection.getInstance().createConnection();
-            Statement  stmt = conn.createStatement();
-            ResultSet  rs   = stmt.executeQuery("select number from inforequest order by Number desc");
-            if (rs.next())
+            try
             {
-                String numStr = rs.getString(1);
-                int num = Integer.parseInt(numStr.substring(6,8));
-                num++;
-                number = String.format("2007-%03d", new Object[] {num});
-            } else
-            {
-                number = "2007-001";
+                Connection conn = DBConnection.getInstance().createConnection();
+                Statement  stmt = conn.createStatement();
+                ResultSet  rs   = stmt.executeQuery("select number from inforequest order by Number desc");
+                if (rs.next())
+                {
+                    String numStr = rs.getString(1);
+                    int num = Integer.parseInt(numStr.substring(6,8));
+                    num++;
+                    number = String.format("2007-%03d", new Object[] {num});
+                } else
+                {
+                    number = "2007-001";
+                }
             }
-        }
-        catch (Exception ex)
-        {
-            ex.printStackTrace();
+            catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
         }
         
     }

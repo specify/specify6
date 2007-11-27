@@ -169,6 +169,7 @@
 		<mkdir dir="${appdir}/Contents/Resources/Java" />
 		<mkdir dir="${appdir}/Contents/Resources/Java/src" />
 		<mkdir dir="${appdir}/Contents/Resources/Java/config" />
+		<mkdir dir="${appdir}/Contents/Resources/Java/demo_files" />
 		<mkdir dir="${appdir}/Contents/Resources/Java/system_dep_libs" />
 		<mkdir dir="${appdir}/Contents/Resources/Java/system_dep_libs/mac" />
 
@@ -186,11 +187,11 @@
 		<copy file="src/hibernate.cfg.xml" todir="${appdir}/Contents/Resources/Java/src" />
 
 		<!-- Copy config demo_files -->
-		<copy todir="${appdir}/Contents/Resources/Java/demo_files">
+		<!-- <copy todir="${appdir}/Contents/Resources/Java/demo_files">
 			<fileset dir="demo_files">
 				<include name="**/*.*" />
 			</fileset>
-		</copy>
+		</copy> -->
 		
 		<!-- Copy config dir -->
 		<copy todir="${appdir}/Contents/Resources/Java/config">
@@ -271,6 +272,7 @@
 		<mkdir dir="${appdir}/Contents/Resources" />
 		<mkdir dir="${appdir}/Contents/Resources/Java" />
 		<mkdir dir="${appdir}/Contents/Resources/Java/config" />
+		<mkdir dir="${appdir}/Contents/Resources/Java/demo_files" />
 
 		<!-- Copy Application Stub Compile the java source of the project -->
 		<copy file="${packaging}/JavaApplicationStub" todir="${appdir}/Contents/MacOS" />
@@ -282,6 +284,15 @@
 		<!-- Copy PkgInfo -->
 		<copy file="${packaging}/PkgInfo" todir="${appdir}/Contents" />
 
+		<!-- Copy demo_files dir -->
+		<copy todir="${appdir}/Contents/Resources/Java/demo_files">
+			<fileset dir="demo_files">
+				<exclude name="**/.svn" />
+				<exclude name="**/.csv" />
+				<include name="**/topbrc195x68.png" />
+			</fileset>
+		</copy>
+		
 		<!-- Copy config dir -->
 		<copy todir="${appdir}/Contents/Resources/Java/config">
 			<fileset dir="config">
@@ -577,6 +588,15 @@
 			<fileset dir="config">
 				<exclude name="**/.svn" />
 				<exclude name="**/.csv" />
+			</fileset>
+		</copy>
+		
+		<!-- Copy demo_files dir -->
+		<copy todir="${appdir}/demo_files">
+			<fileset dir="demo_files">
+				<exclude name="**/.svn" />
+				<exclude name="**/.csv" />
+				<include name="**/topbrc195x68.png" />
 			</fileset>
 		</copy>
 		

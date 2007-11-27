@@ -85,6 +85,15 @@ public interface BusinessRulesIFace
     public String getDeleteMsg(Object dataObj);
     
     /**
+     * Called BEFORE the merge with the database because the merge actually saves the obj.
+     * created objects or existing data objects that have been editted.
+     * 
+     * @param dataObj the object to be saved
+     * @param session the data provider session
+     */
+    public void beforeMerge(Object dataObj, DataProviderSessionIFace session);
+    
+    /**
      * Called BEFORE saving an object to the DB.  This can be called on newly
      * created objects or existing data objects that have been editted.
      * 

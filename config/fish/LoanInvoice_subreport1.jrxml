@@ -31,7 +31,7 @@ FROM (
 SELECT e7.*, locality.LocalityName, locality.Lat1Text, locality.Long1Text, locality.GeographyID 
 FROM (SELECT e6.*, collectingevent.StartDate, collectingevent.LocalityID 
 FROM (SELECT e5.*, loan.LoanNumber 
-FROM (SELECT e4.*, loanphysicalobject.LoanID, loanphysicalobject.Quantity, loanphysicalobject.QuantityReturned, loanphysicalobject.QuantityResolved  
+FROM (SELECT e4.*, loanpreparation.LoanID, loanpreparation.Quantity, loanpreparation.QuantityReturned, loanpreparation.QuantityResolved  
 FROM (SELECT e3.*, preptype.Name 
 FROM (SELECT e2.*, preparation.PreparationID, preparation.Count,  preparation.PrepTypeID 
 FROM (SELECT e1.*, taxon.FullName AS TaxonFullName 
@@ -47,8 +47,8 @@ INNER JOIN preparation
 ON e2.CollectionObjectID = preparation.CollectionObjectID) e3 
 INNER JOIN preptype 
 ON e3.PrepTypeID = preptype.PrepTypeID) e4 
-INNER JOIN loanphysicalobject 
-ON e4.PreparationID = loanphysicalobject.PreparationID) e5 
+INNER JOIN loanpreparation 
+ON e4.PreparationID = loanpreparation.PreparationID) e5 
 INNER JOIN loan 
 ON e5.LoanID = loan.LoanID) e6 
 INNER JOIN collectingevent 

@@ -26,6 +26,8 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
+import org.apache.commons.lang.StringUtils;
+
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxAction;
@@ -213,13 +215,17 @@ public class LabelsTask extends ReportsBaseTask
 
                     } catch (PrinterException ex)
                     {
-                        System.err.println(ex);
+                        //System.err.println(ex);
                         ex.printStackTrace(); 
                     }
                 }
             } else
             {
-                //super.doCommand(cmdAction);
+                String mimeTypeStr = (String)cmdAction.getProperty("mimetype");
+                if (StringUtils.isNotEmpty(mimeTypeStr) && mimeTypeStr.equals(mimeType))
+                {
+                    super.doCommand(cmdAction);
+                }
                 
                 /*if (cmdAction.isType(APP_CMD_TYPE) && cmdAction.isAction(APP_RESTART_ACT))
                 {
@@ -228,7 +234,6 @@ public class LabelsTask extends ReportsBaseTask
                 }*/
             }
         }
-        
     }
     
     public class MyTableCellRenderer extends JLabel implements TableCellRenderer 

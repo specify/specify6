@@ -74,7 +74,7 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
 {
     private static final Logger log  = Logger.getLogger(EMailPrefsPanel.class);
 
-    protected ViewIFace         formView = null;
+    protected ViewIFace    formView = null;
     protected Viewable     form     = null;
 
     // Checker

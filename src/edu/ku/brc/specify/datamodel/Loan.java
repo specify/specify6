@@ -163,7 +163,7 @@ public class Loan extends CollectionMember implements AttachmentOwnerIFace<LoanA
         division        = null;
         addressOfRecord = null;
 
-        if (true)
+        if (false)
         {
             // XXX For Demo
             try

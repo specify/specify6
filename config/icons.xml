@@ -25,8 +25,6 @@
     <icon name="Bar_Chart"        file="BarGraph32x32.png" sizes="all"/>
     <icon name="Record_Set"       file="bundle.png" sizes="all"/>
     <icon name="Record_Set16"     file="bundle.png" sizes="16"/>
-    <icon name="Person"           file="emblem-personal.png" sizes="all"/>
-    <icon name="People"           file="emblem-people.png" sizes="all"/>
     <icon name="Series"           file="series.gif" sizes="all"/>
     <icon name="Query"            file="Query32x32.png" sizes="all"/>
     <icon name="Search"           file="Search32x32.png" sizes="all"/>
@@ -53,6 +51,7 @@
     <icon name="DelRec"        file="RemoveRecord20x20.png" sizes="NonStd"/>
     <icon name="EditForm24"    file="Form20x20.png" sizes="NonStd"/>
     <icon name="Spreadsheet24" file="Grid20x20.png" sizes="NonStd"/>
+    <icon name="Spreadsheet"   file="Grid32x32.png" sizes="all"/>
     <icon name="Export"        file="ExportDataSet20x20.png" sizes="NonStd"/>
     <icon name="Upload"        file="upload_data.gif" sizes="NonStd"/>	
     <icon name="Eraser"        file="Clear20x20.png"   sizes="NonStd"/>
@@ -103,26 +102,9 @@
     <icon name="NextRec"  file="next.gif"  sizes="NonStd"/>
     <icon name="LastRec"  file="last.gif"  sizes="NonStd"/>
     
-    <!--
-        <icon name="Save"     file="save_disk.gif"  sizes="all"/>
-        <icon name="FirstRec" file="go-first.png" sizes="NonStd"/>
-        <icon name="PrevRec"  file="go-previous.png"  sizes="NonStd"/>
-        <icon name="NextRec"  file="go-next.png"  sizes="NonStd"/>
-        <icon name="LastRec"  file="go-last.png"  sizes="NonStd"/>
-        <icon name="NewRec"   file="document-new16.png"  sizes="NonStd"/>
-        <icon name="CreateObj"    file="document-new32.png"  sizes="all"/>
-    -->
-    
-    
-    
-    <!--
-        <icon name="Save"     file="document-save16.png"  sizes="NonStd"/>
-    -->
-    
     <icon name="EditIcon"      file="edit_icon.gif"  sizes="NonStd"/>
     <icon name="EditForm"      file="Form16x16.png" sizes="16"/>
     <icon name="Spreadsheet16" file="Grid16x16.png" sizes="16"/>
-    <icon name="Spreadsheet"   file="spreadsheet.gif" sizes="all"/>
     <icon name="InfoIcon"      file="info.png"       sizes="NonStd"/>
     <icon name="Reload"        file="view-refresh16.png" sizes="16"/>
     <icon name="ViewForm"      file="viewform16.gif" sizes="16"/>
@@ -159,7 +141,7 @@
     <icon name="Checkmark" file="stock-apply.png" sizes="all"/>
     
     <!-- Preferences -->
-    <icon name="Browse" file="browse.gif" sizes="all"/>
+
     
     <!-- TreeTableViewer icons -->
     <icon name="TTV_Subtree"        file="ZoomIn32x32.png"    sizes="32"/>
@@ -180,7 +162,6 @@
     <icon name="text"               file="text.png"        sizes="all"/>
     <icon name="pdf"                file="pdf.png"        sizes="all"/>
     <icon name="html"               file="html.png"        sizes="all"/>
-    <icon name="spreadsheet"        file="spreadsheet.png"    sizes="all"/>
     
     <!-- sorting button icons -->
     <icon name="move_to_start"      file="start.png"        sizes="all"/>

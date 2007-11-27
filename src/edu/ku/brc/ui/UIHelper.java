@@ -1368,6 +1368,15 @@ public final class UIHelper
             {
                 return false;
             }
+            
+        } else if (e instanceof java.lang.IndexOutOfBoundsException)
+        {
+            String msg = e.getMessage();
+            //log.debug("MESSAGE["+msg+"]");
+            if (msg != null && doesContain(e, "javax.swing.JTabbedPane", "checkIndex"))
+            {
+                return false;
+            }
         }
         
         return true;

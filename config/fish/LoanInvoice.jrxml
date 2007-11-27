@@ -32,9 +32,7 @@ FROM (SELECT Expr1.*, agent.LastName, agent.FirstName, agent.MiddleInitial
   FROM (SELECT Expr0.*, agent.LastName as prepLastName, agent.FirstName as prepFirstName, agent.MiddleInitial as prepMiddleInitial
     FROM (SELECT loan.LoanID, loan.LoanNumber, loan.LoanDate, loan.CurrentDueDate, loan.isGift, shipment.ShipmentMethod, shipment.NumberOfPackages,
           shipment.ShippedToID, shipment.ShippedByID
-          FROM loan
-          INNER JOIN loan_shipment on loan.LoanID = loan_shipment.LoanID
-          INNER JOIN shipment ON loan_shipment.ShipmentID = shipment.ShipmentID) Expr0
+          FROM loan INNER JOIN shipment ON loan.LoanID = shipment.LoanID) Expr0
     INNER JOIN agent ON Expr0.ShippedByID = agent.AgentID) Expr1
   INNER JOIN agent ON Expr1.ShippedToID = agent.AgentID) Expr2 
 INNER JOIN address ON Expr2.ShippedToID = address.AgentID 
@@ -76,11 +74,11 @@ WHERE LoanID $P!{itemnum}]]></queryString>
 						x="0"
 						y="0"
 						width="195"
-						height="70"
+						height="68"
 						key="image-1"/>
 					<box topBorder="None" topBorderColor="#000000" leftBorder="None" leftBorderColor="#000000" rightBorder="None" rightBorderColor="#000000" bottomBorder="None" bottomBorderColor="#000000"/>
 					<graphicElement stretchType="NoStretch"/>
-					<imageExpression class="java.lang.String"><![CDATA[$P{RPT_IMAGE_DIR} + "/topbrc4.jpg"]]></imageExpression>
+					<imageExpression class="java.lang.String"><![CDATA[$P{RPT_IMAGE_DIR} + "/topbrc195x68.png"]]></imageExpression>
 				</image>
 				<staticText>
 					<reportElement

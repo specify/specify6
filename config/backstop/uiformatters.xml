@@ -10,12 +10,14 @@
     </format>
     
     <format name="LoanNumber" class="edu.ku.brc.specify.datamodel.Loan" fieldname="loanNumber" default="true">
+        <autonumber>edu.ku.brc.dbsupport.AutoNumberGeneric</autonumber>
         <field size="4" type="year" value="YEAR" byyear="true"/>
         <field size="1" type="separator" value="-"/>
         <field size="3" type="numeric" value="NNN" inc="true"/>
     </format>
     
     <format name="InfoRequestNumber" class="edu.ku.brc.specify.datamodel.InfoRequest" fieldname="number" default="true">
+        <autonumber>edu.ku.brc.dbsupport.AutoNumberGeneric</autonumber>
         <field size="4" type="numeric" value="YEAR"/>
         <field size="1" type="separator" value="-"/>
         <field size="3" type="numeric" value="NNN" inc="true"/>

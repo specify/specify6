@@ -127,7 +127,7 @@ public class CustomDialog extends JDialog
      * @param title the title of the dialog
      * @param isModal whether or not it is model
      * @param whichBtns which button to use for the dialog
-     * @param contentPanel the contentpane
+     * @param contentPanel the contentPanel
      * @throws HeadlessException
      */
     public CustomDialog(final Frame     frame, 
@@ -147,7 +147,7 @@ public class CustomDialog extends JDialog
      * @param title the title of the dialog
      * @param isModal whether or not it is model
      * @param whichBtns which button to use for the dialog
-     * @param contentPanel the contentpane
+     * @param contentPanel the contentPanel
      * @throws HeadlessException
      */
     public CustomDialog(final Frame     frame, 
@@ -169,7 +169,7 @@ public class CustomDialog extends JDialog
      * @param title the title of the dialog
      * @param isModal whether or not it is model
      * @param whichBtns which button to use for the dialog
-     * @param contentPanel the contentpane
+     * @param contentPanel the contentPanel
      * @throws HeadlessException
      */
     public CustomDialog(final Dialog    dialog, 

@@ -75,9 +75,9 @@ public class ShipmentBusRules extends BaseBusRules
                 Component   shipComp = formViewObj.getControlByName("shipmentNumber");
                 if (shipComp instanceof JTextField)
                 {
-                    ValFormattedTextField shipTxt = (ValFormattedTextField)shipComp;
-                    shipTxt.setValue(loan.getLoanNumber(), loan.getLoanNumber());
-                    shipTxt.setChanged(true);
+                    JTextField shipTxt = (JTextField)shipComp;
+                    shipTxt.setText(loan.getLoanNumber());
+                    //shipTxt.setChanged(true);
                 }
             }
         }

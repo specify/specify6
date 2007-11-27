@@ -186,7 +186,7 @@ public class AttachmentIconMapper implements ObjectIconMapper
                 mimeType.equals("application/vnd.msexcel") )
                 
         {
-            return IconManager.getIcon("spreadsheet", size);
+            return IconManager.getIcon("Spreadsheet", size);
         }
 
         return IconManager.getIcon("unknown", size);

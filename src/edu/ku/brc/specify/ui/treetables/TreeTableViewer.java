@@ -1361,8 +1361,11 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                     
                     if (parentComp != null)
                     {
-                        EditViewCompSwitcherPanel parentSwitcher = (EditViewCompSwitcherPanel)parentComp;
-                        parentSwitcher.putIntoViewMode();
+                        while (!(parentComp instanceof EditViewCompSwitcherPanel))
+                        {
+                            parentComp = parentComp.getParent();
+                        }
+                        ((EditViewCompSwitcherPanel)parentComp).putIntoViewMode();
                     }
                 }
 		    }

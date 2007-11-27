@@ -27,10 +27,12 @@ import java.awt.Component;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.specify.datamodel.Shipment;
 import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
@@ -88,6 +90,52 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
     }
 
 
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeSaveCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public void beforeMerge(Object dataObj, DataProviderSessionIFace session)
+    {
+         Loan loan = (Loan)dataObj;
+        
+        System.out.println("beforeSaveCommit loanNum: "+loan.getLoanNumber());
+        
+        for (Shipment shipment : loan.getShipments())
+        {
+            if (shipment.getShipmentId() == null)
+            {
+                shipment.setShipmentNumber(loan.getLoanNumber());
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeSaveCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public boolean beforeSaveCommit(Object dataObj, DataProviderSessionIFace session) throws Exception
+    {
+        /*Loan loan = (Loan)dataObj;
+        
+        System.out.println("beforeSaveCommit loanNum: "+loan.getLoanNumber());
+        
+        for (Shipment shipment : loan.getShipments())
+        {
+            //if (shipment.getShipmentId() == null)
+            //{
+            String shipmentNum = shipment.getShipmentNumber();
+            if (StringUtils.isEmpty(shipmentNum))
+            {
+                shipmentNum = loan.getLoanNumber();
+                
+            } else if (StringUtils.contains(shipmentNum, '#')) // XXX Need to check the formatter!
+            {
+                shipment.setShipmentNumber(loan.getLoanNumber());
+            }
+        }*/
+        return super.beforeSaveCommit(dataObj, session);
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#processBusiessRules(java.lang.Object)

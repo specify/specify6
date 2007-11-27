@@ -237,7 +237,7 @@ public class LoanSelectPrepsDlg extends JDialog
     {
         for (Determination d : colObj.getDeterminations())
         {
-            if (d.getStatus().getDeterminationStatusId() == 1)
+            if (d.getStatus().getIsCurrent())
             {
                 return d;
             }
@@ -323,7 +323,7 @@ public class LoanSelectPrepsDlg extends JDialog
             String taxonName = "";
             for (Determination deter : colObj.getDeterminations())
             {
-                if (deter.getStatus().getDeterminationStatusId() == null ? deter.getStatus().getName().equals("Current") : deter.getStatus().getDeterminationStatusId() == 2)
+                if (deter.getStatus().getIsCurrent())
                 {
                     if (deter.getTaxon().getFullName() == null)
                     {
