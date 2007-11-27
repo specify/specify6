@@ -79,21 +79,16 @@ public class LocationBusRules extends BaseTreeBusRules<Location, LocationTreeDef
     }
     
     @Override
-    public boolean hasNoConnections(Location loc)
+    public String[] getRelatedTableAndColumnNames()
     {
-        Integer id = loc.getTreeId();
-        if (id == null)
+        String[] relationships = 
         {
-            return true;
-        }
-        
-        boolean noPreps       = super.okToDelete("preparation", "LocationID", id);
-        boolean noContainers  = super.okToDelete("container",   "LocationID", id);
-        boolean noSyns        = super.okToDelete("location",    "AcceptedID", id);
+                "preparation", "LocationID",
+                "container",   "LocationID",
+                "location",    "AcceptedID"
+        };
 
-        boolean noConns = noPreps && noContainers && noSyns;
-        
-        return noConns;
+        return relationships;
     }
 
     /* (non-Javadoc)

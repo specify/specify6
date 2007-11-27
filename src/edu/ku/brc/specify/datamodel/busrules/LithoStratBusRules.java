@@ -13,20 +13,15 @@ public class LithoStratBusRules extends BaseTreeBusRules<LithoStrat, LithoStratT
     }
     
     @Override
-    public boolean hasNoConnections(LithoStrat ls)
+    public String[] getRelatedTableAndColumnNames()
     {
-        Integer id = ls.getTreeId();
-        if (id == null)
+        String[] relationships = 
         {
-            return true;
-        }
-        
-        boolean noPCs  = super.okToDelete("paleocontext", "LithoStratID", id);
-        boolean noSyns = super.okToDelete("lithostrat",   "AcceptedID",   id);
+                "paleocontext", "LithoStratID",
+                "lithostrat",   "AcceptedID"
+        };
 
-        boolean noConns = noPCs && noSyns;
-        
-        return noConns;
+        return relationships;
     }
 
     /* (non-Javadoc)

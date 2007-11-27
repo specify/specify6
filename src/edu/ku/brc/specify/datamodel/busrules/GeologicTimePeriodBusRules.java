@@ -42,21 +42,16 @@ public class GeologicTimePeriodBusRules extends BaseTreeBusRules<GeologicTimePer
     }
 
     @Override
-    public boolean hasNoConnections(GeologicTimePeriod gtp)
+    public String[] getRelatedTableAndColumnNames()
     {
-        Integer id = gtp.getTreeId();
-        if (id == null)
+        String[] relationships = 
         {
-            return true;
-        }
-        
-        boolean noBSPCs = super.okToDelete("paleocontext",       "BioStratID",     id);
-        boolean noCSPCs = super.okToDelete("paleocontext",       "ChronosStratID", id);
-        boolean noSyns  = super.okToDelete("geologictimeperiod", "AcceptedID",     id);
+                "paleocontext", "BioStratID",
+                "paleocontext", "ChronosStratID",
+                "geologictimeperiod", "AcceptedID"
+        };
 
-        boolean noConns = noBSPCs && noCSPCs && noSyns;
-        
-        return noConns;
+        return relationships;
     }
 
     /* (non-Javadoc)

@@ -93,64 +93,20 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
         
         return true;
     }
-
-    @Override
-    public boolean hasNoConnections(Taxon taxon)
-    {
-        Integer id = taxon.getTreeId();
-        if (id == null)
-        {
-            return true;
-        }
-        
-        boolean noDeters = super.okToDelete("determination", "TaxonID",         id);
-        boolean noCites  = super.okToDelete("taxoncitation", "TaxonID",         id);
-        boolean noHyb1   = super.okToDelete("taxon",         "HybridParent1ID", id);
-        boolean noHyb2   = super.okToDelete("taxon",         "HybridParent2ID", id);
-        boolean noSyns   = super.okToDelete("taxon",         "AcceptedID",      id);
-
-        boolean noConns = noDeters && noCites && noHyb1 && noHyb2 && noSyns;
-        
-        return noConns;
-    }
     
-    public boolean okToDeleteTaxon(Taxon taxon)
+    @Override
+    public String[] getRelatedTableAndColumnNames()
     {
-        Integer id = taxon.getId();
-        if (id == null)
+        String[] relationships = 
         {
-            return true;
-        }
-        
-        boolean noDeters = super.okToDelete("determination", "TaxonID",         id);
-        boolean noCites  = super.okToDelete("taxoncitation", "TaxonID",         id);
-        boolean noHyb1   = super.okToDelete("taxon",         "HybridParent1ID", id);
-        boolean noHyb2   = super.okToDelete("taxon",         "HybridParent2ID", id);
-        boolean noSyns   = super.okToDelete("taxon",         "AcceptedID",      id);
+                "determination", "TaxonID",
+                "taxoncitation", "TaxonID",
+                "taxon",         "HybridParent1ID",
+                "taxon",         "HybridParent2ID",
+                "taxon",         "AcceptedID"
+        };
 
-        boolean okSoFar = noDeters && noCites && noHyb1 && noHyb2 && noSyns;
-        
-        if (okSoFar)
-        {
-            // now check the children
-
-            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            Taxon tmpT = session.load(Taxon.class, id);
-
-            for (Taxon child: tmpT.getChildren())
-            {
-                if (!okToDeleteTaxon(child))
-                {
-                    // this child can't be deleted
-                    // stop right here
-                    okSoFar = false;
-                    break;
-                }
-            }
-            session.close();
-        }
-        
-        return okSoFar;
+        return relationships;
     }
 
     /* (non-Javadoc)

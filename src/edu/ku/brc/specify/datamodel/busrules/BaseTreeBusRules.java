@@ -1,11 +1,13 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
+import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
@@ -30,8 +32,8 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
         super(dataClasses);
     }
     
-    public abstract boolean hasNoConnections(T node);
-
+    public abstract String[] getRelatedTableAndColumnNames();
+    
     @SuppressWarnings("unchecked")
     public boolean okToDeleteNode(T node)
     {
@@ -40,27 +42,27 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
         {
             return true;
         }
+        String[] relationships = getRelatedTableAndColumnNames();
         
-        boolean okSoFar = hasNoConnections(node);
+        boolean okSoFar = super.okToDelete(relationships, node.getTreeId());
         
         if (okSoFar)
         {
             // now check the children
 
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            T tmpT = (T)session.load(node.getClass(), id);
-
-            for (T child: tmpT.getChildren())
-            {
-                if (!okToDeleteNode(child))
-                {
-                    // this child can't be deleted
-                    // stop right here
-                    okSoFar = false;
-                    break;
-                }
-            }
+            
+            QueryIFace query = session.createQuery("SELECT n.id FROM " + node.getClass().getName() + " n WHERE n.id <= :highChild AND n.id > :nodeNum");
+            query.setParameter("highChild", node.getHighestChildNodeNumber());
+            query.setParameter("nodeNum", node.getNodeNumber());
+            List<Integer> childIDs = (List<Integer>)query.list();
             session.close();
+            
+            Integer[] childIDsArray = childIDs.toArray(new Integer[1]);
+            
+            boolean childrenDeletable = super.okToDelete(relationships, childIDsArray);
+            okSoFar = childrenDeletable;
+            
         }
         
         return okSoFar;

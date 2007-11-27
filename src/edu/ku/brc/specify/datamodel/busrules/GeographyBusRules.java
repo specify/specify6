@@ -40,20 +40,15 @@ public class GeographyBusRules extends BaseTreeBusRules<Geography, GeographyTree
     }
 
     @Override
-    public boolean hasNoConnections(Geography geo)
+    public String[] getRelatedTableAndColumnNames()
     {
-        Integer id = geo.getTreeId();
-        if (id == null)
+        String[] relationships = 
         {
-            return true;
-        }
-        
-        boolean noLocs = super.okToDelete("locality",  "GeographyID", id);
-        boolean noSyns = super.okToDelete("geography", "AcceptedID",  id);
+                "locality",  "GeographyID",
+                "geography", "AcceptedID"
+        };
 
-        boolean noConns = noLocs && noSyns;
-        
-        return noConns;
+        return relationships;
     }
 
     /* (non-Javadoc)

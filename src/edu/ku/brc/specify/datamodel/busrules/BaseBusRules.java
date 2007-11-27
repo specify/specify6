@@ -86,12 +86,12 @@ public abstract class BaseBusRules implements BusinessRulesIFace
      * Checks to see if it can be deleted.
      * @param tableName the table name to check
      * @param columnName the column name name to check
-     * @param id the Record ID to check
+     * @param ids the Record IDs to check
      * @return true means it can be deleted, false means it found something
      */
-    protected boolean okToDelete(final String tableName, final String columnName, final Integer id)
+    protected boolean okToDelete(final String tableName, final String columnName, final Integer...ids)
     {
-        if (id != null)
+        if (ids != null)
         {
             Connection conn = null;
             Statement  stmt = null;
@@ -100,7 +100,7 @@ public abstract class BaseBusRules implements BusinessRulesIFace
                 conn = DBConnection.getInstance().createConnection();
                 stmt = conn.createStatement();
     
-                return okToDelete(conn, stmt, tableName, columnName, id);
+                return okToDelete(conn, stmt, tableName, columnName, ids);
                 
             } catch (Exception ex)
             {
@@ -140,13 +140,22 @@ public abstract class BaseBusRules implements BusinessRulesIFace
      * @return true means it can be deleted, false means it found something
      */
     protected boolean okToDelete(@SuppressWarnings("unused") final Connection connection, 
-                                 final Statement  stmt,
-                                 final String tableName, 
-                                 final String columnName, final long id)
+                                                             final Statement  stmt,
+                                                             final String tableName, 
+                                                             final String columnName,
+                                                             final Integer...ids)
     {
         try
         {
-            ResultSet rs = stmt.executeQuery("select count(*) from " + tableName + " where " + tableName + "." + columnName + " = " + id);
+            StringBuilder idString = new StringBuilder();
+            for (Integer i: ids)
+            {
+                idString.append(i);
+                idString.append(", ");
+            }
+            idString.deleteCharAt(idString.length()-2);
+            String queryString = "select count(*) from " + tableName + " where " + tableName + "." + columnName + " in (" + idString.toString() + ")";
+            ResultSet rs = stmt.executeQuery(queryString);
             boolean isOK = rs.next() && rs.getInt(1) == 0;
             rs.close();
             return isOK;
@@ -165,7 +174,7 @@ public abstract class BaseBusRules implements BusinessRulesIFace
      * @param id the id to be checked
      * @return true if ok to delete
      */
-    protected boolean okToDelete(final String[] nameCombos, final long id)
+    protected boolean okToDelete(final String[] nameCombos, final Integer...ids)
     {
         Connection conn = null;
         Statement  stmt = null;
@@ -176,7 +185,7 @@ public abstract class BaseBusRules implements BusinessRulesIFace
 
             for (int i=0;i<nameCombos.length;i++)
             {
-                if (!okToDelete(conn, stmt, nameCombos[i], nameCombos[i+1], id))
+                if (!okToDelete(conn, stmt, nameCombos[i], nameCombos[i+1], ids))
                 {
                     return false;
                 }
