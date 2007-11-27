@@ -1545,6 +1545,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	@SuppressWarnings("unchecked")
 	protected void newNodeSelected(final JList sourceList, final TreeNode selectedNode)
 	{
+        log.debug("newNodeSelected()  selectedNode: " + selectedNode);
+        
         // clear the status bar if nothing is selected or show the fullname if a node is selected
         String statusBarText = null;
         if( selectedNode != null)
@@ -1596,10 +1598,13 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 nodeRecord = null;
                 if (selectedNode != null)
                 {
+                    log.debug("getting DB record for node " + selectedNode.getId());
                     nodeRecord = getRecordForNode(selectedNode);
+                    log.debug("retrieved DB record for node " + selectedNode.getId());
                 }
                 
                 // these calls should work even if nodeRecord is null
+                log.debug("processing business rules to determine if node " + (selectedNode != null ? selectedNode.getId() : "null") + " is deleteable");
                 canDelete   = (businessRules != null) ? businessRules.okToEnableDelete(nodeRecord) : false;
                 return null;
             }
@@ -1634,6 +1639,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             }            
         };
         
+        log.debug("starting background task to see if new selected node is deleteable");
         bgWork.start();
 	}
 
