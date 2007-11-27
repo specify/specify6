@@ -34,7 +34,25 @@ import com.jgoodies.forms.factories.ButtonBarFactory;
 import edu.ku.brc.specify.ui.HelpMgr;
 
 /**
- * Choose an object from a list of Objects using their "toString"
+ * CustomFrame is designed to enable developers to "customize" a frame's contents and 
+ * have the Frame's buttons automatically created with any label on them.
+ * The frame can have up to four different button: OK, Cancel, Apply, and Help.
+ * 
+ * You can use the class two ways. Create one directly and pass in the "contents" pane, or
+ * derive your own class and override the "createUI" method. Note: you should/must call super.createUI
+ * as the first line (or nearly the first line), this call will create all your buttons. Any changes to the labels
+ * of the four btns should be done before the call to createUI.
+ * 
+ * Also note that the setVisible call will automatically call createUI, but it is OK to call it manually
+ * yourself before the setVisible. BUT! if you do you may need to call "pack" before call setVisible.
+ * 
+ * If you override createUI and want to set your own contents pane internally do it like this:<br>
+ * <pre>
+ * contentPanel = myNewPanel;
+ * mainPanel.add(contentPanel, BorderLayout.CENTER);
+ * </pre>
+ * 
+ * IMPORTANT: The setVisible method will register and unregister the Frame with the UIRegistry window stack.
  * 
  * @code_status Complete
  * 
@@ -74,7 +92,7 @@ public class CustomFrame extends JFrame
     
     protected JPanel            mainPanel;
 
-    // Needed for delayed building of Dialog
+    // Needed for delayed building of Frame
     protected int               whichBtns        = OK_BTN;
     protected String            helpContext      = null;
     protected Component         contentPanel     = null;
@@ -83,8 +101,8 @@ public class CustomFrame extends JFrame
      * Constructor.
      * 
      * @param frame parent frame
-     * @param title the title of the dialog
-     * @param contentPanel the contentpane
+     * @param title the title of the frame
+     * @param contentPanel the contentPanel
      * @throws HeadlessException
      */
     public CustomFrame(final String    title, 
@@ -95,10 +113,10 @@ public class CustomFrame extends JFrame
 
     /**
      * @param frame parent frame
-     * @param title the title of the dialog
+     * @param title the title of the frame
      * @param isModal whether or not it is model
-     * @param whichBtns which button to use for the dialog
-     * @param contentPanel the contentpane
+     * @param whichBtns which button to use for the frame
+     * @param contentPanel the contentPanel
      * @throws HeadlessException
      */
     public CustomFrame(final String    title, 
@@ -112,7 +130,7 @@ public class CustomFrame extends JFrame
     }
 
     /**
-     * Create the UI for the dialog.
+     * Create the UI for the frame.
      */
     protected void createUI()
     {
@@ -328,9 +346,8 @@ public class CustomFrame extends JFrame
         return okBtn;
     }
 
-    /*
-     * (non-Javadoc)
-     * @see java.awt.Dialog#setVisible(boolean)
+    /* (non-Javadoc)
+     * @see java.awt.Component#setVisible(boolean)
      */
     @Override
     public void setVisible(final boolean visible)

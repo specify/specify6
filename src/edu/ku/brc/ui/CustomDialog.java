@@ -40,7 +40,25 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.specify.ui.HelpMgr;
 
 /**
- * Choose an object from a list of Objects using their "toString"
+ * CustomDialog is designed to enable developers to "customize" a dialog's contents and 
+ * have the Dialog's buttons automatically created with any label on them.
+ * The dialog can have up to four different button: OK, Cancel, Apply, and Help.
+ * 
+ * You can use the class two ways. Create one directly and pass in the "contents" pane, or
+ * derive your own class and override the "createUI" method. Note: you should/must call super.createUI
+ * as the first line (or nearly the first line), this call will create all your buttons. Any changes to the labels
+ * of the four btns should be done before the call to createUI.
+ * 
+ * Also note that the setVisible call will automatically call createUI, but it is OK to call it manually
+ * yourself before the setVisible. BUT! if you do you may need to call "pack" before call setVisible.
+ * 
+ * If you override createUI and want to set your own contents pane internally do it like this:<br>
+ * <pre>
+ * contentPanel = myNewPanel;
+ * mainPanel.add(contentPanel, BorderLayout.CENTER);
+ * </pre>
+ * 
+ * IMPORTANT: The setVisible method will register and unregister the dialog with the UIRegistry window stack.
  * 
  * @code_status Complete
  * 
