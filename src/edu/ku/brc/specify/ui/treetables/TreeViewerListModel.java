@@ -59,7 +59,7 @@ public class TreeViewerListModel extends AbstractListModel
     public synchronized int getSize()
     {
         // adjust the size for the nodes that are not visible (above the visible root)
-        log.debug("getSize() = " + visibleSize);
+        //log.debug("getSize() = " + visibleSize);
         return visibleSize;
     }
     
@@ -281,7 +281,7 @@ public class TreeViewerListModel extends AbstractListModel
             }
         }
         Collections.sort(visibleRanks);
-        log.debug("getVisibleRanks() = " + visibleRanks);
+        //log.debug("getVisibleRanks() = " + visibleRanks);
         return visibleRanks;
     }
     
