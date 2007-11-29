@@ -219,7 +219,8 @@ public class BuildSampleDatabase
     protected SetupDialog        setupDlg  = null;
     protected boolean            hideFrame = false;
     
-    protected boolean            copyToUserDir = true;
+    protected boolean            copyToUserDir      = true;
+    protected boolean            doShallowTaxonTree = true;
     
     /**
      * 
@@ -283,11 +284,11 @@ public class BuildSampleDatabase
         DataType          dataType          = createDataType(disciplineName);
 
         // create tree defs (later we will make the def items and nodes)
-        TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Sample Taxon Tree");
-        GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Sample Geography Tree");
-        GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Sample Geologic Time Period Tree");
-        LithoStratTreeDef         lithoStratTreeDef = createLithoStratTreeDef("Sample LithoStrat Tree");
-        LocationTreeDef           locTreeDef        = createLocationTreeDef("Sample Location Tree");
+        TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Test Taxon Tree");
+        GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Test Geography Tree");
+        GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Test Geologic Time Period Tree");
+        LithoStratTreeDef         lithoStratTreeDef = createLithoStratTreeDef("Test LithoStrat Tree");
+        LocationTreeDef           locTreeDef        = createLocationTreeDef("Test Location Tree");
 
         Institution    institution    = createInstitution("Natural History Museum");
         Division       division       = createDivision(institution, "Icthyology");
@@ -318,7 +319,7 @@ public class BuildSampleDatabase
         ////////////////////////////////
         // build the tree def items and nodes
         ////////////////////////////////
-        List<Object> taxa        = createSimpleTaxon(taxonTreeDef);
+        List<Object> taxa        = createSimpleTaxon(taxonTreeDef, doShallowTaxonTree);
         List<Object> geos        = createSimpleGeography(geoTreeDef);
         List<Object> locs        = createSimpleLocation(locTreeDef);
         List<Object> gtps        = createSimpleGeologicTimePeriod(gtpTreeDef);
@@ -342,7 +343,7 @@ public class BuildSampleDatabase
     
     /**
      * Returns a list of object of a specified class.
-     * @param cls the clas 
+     * @param cls the class
      * @param dataObjects the list of possible object
      * @return the list
      */
@@ -479,11 +480,11 @@ public class BuildSampleDatabase
         persist(dataType);
         
         // create tree defs (later we will make the def items and nodes)
-        TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Sample Taxon Tree");
-        GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Sample Geography Tree");
-        GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Sample Geologic Time Period Tree");
-        LithoStratTreeDef         lithoStratTreeDef = createLithoStratTreeDef("Sample LithoStrat Tree");
-        LocationTreeDef           locTreeDef        = createLocationTreeDef("Sample Location Tree");
+        TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Test Taxon");
+        GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Test Geography");
+        GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Test Chronos Stratigraphy");
+        LithoStratTreeDef         lithoStratTreeDef = createLithoStratTreeDef("Test LithoStrat Tree");
+        LocationTreeDef           locTreeDef        = createLocationTreeDef("Test Location Tree");
         
         lithoStratTreeDef.setRemarks("A simple super, group, formation, member, bed Litho Stratigraphy tree");
         
@@ -527,7 +528,7 @@ public class BuildSampleDatabase
         ////////////////////////////////
         // build the tree def items and nodes
         ////////////////////////////////
-        List<Object> taxa        = createSimpleTaxon(taxonTreeDef);
+        List<Object> taxa        = createSimpleTaxon(taxonTreeDef, doShallowTaxonTree);
         List<Object> geos        = createSimpleGeography(geoTreeDef);
         List<Object> locs        = createSimpleLocation(locTreeDef);
         List<Object> gtps        = createSimpleGeologicTimePeriod(gtpTreeDef);
@@ -876,22 +877,24 @@ public class BuildSampleDatabase
         longAgo.set(1976, 01, 29, 8, 12, 00);
         Calendar whileBack = Calendar.getInstance(); 
         whileBack.set(2002, 7, 4, 9, 33, 12);
-        determs.add(createDetermination(collObjs.get(0), agents.get(0), (Taxon)taxa.get(41), current, recent));
-        determs.add(createDetermination(collObjs.get(1), agents.get(0), (Taxon)taxa.get(42), current, recent));
-        determs.add(createDetermination(collObjs.get(2), agents.get(0), (Taxon)taxa.get(43), current, recent));
-        determs.add(createDetermination(collObjs.get(3), agents.get(0), (Taxon)taxa.get(44), current, recent));
-        determs.add(createDetermination(collObjs.get(4), agents.get(0), (Taxon)taxa.get(45), current, recent));
-        determs.add(createDetermination(collObjs.get(5), agents.get(0), (Taxon)taxa.get(46), current, recent));
-        determs.add(createDetermination(collObjs.get(6), agents.get(3), (Taxon)taxa.get(47), current, recent));
-        determs.add(createDetermination(collObjs.get(7), agents.get(4), (Taxon)taxa.get(48), current, recent));
         
-        determs.add(createDetermination(collObjs.get(0), agents.get(0), (Taxon)taxa.get(41), notCurrent, longAgo));
-        determs.add(createDetermination(collObjs.get(1), agents.get(1), (Taxon)taxa.get(48), notCurrent, whileBack));
-        determs.add(createDetermination(collObjs.get(2), agents.get(1), (Taxon)taxa.get(50), notCurrent, whileBack));
-        determs.add(createDetermination(collObjs.get(3), agents.get(2), (Taxon)taxa.get(51), notCurrent, whileBack));
-        determs.add(createDetermination(collObjs.get(4), agents.get(2), (Taxon)taxa.get(51), notCurrent, whileBack));
-        determs.add(createDetermination(collObjs.get(4), agents.get(3), (Taxon)taxa.get(54), incorrect, longAgo));
-        determs.add(createDetermination(collObjs.get(4), agents.get(4), (Taxon)taxa.get(53), incorrect, longAgo));
+        int baseInx = 41 - (doShallowTaxonTree ? 30 : 0);
+        determs.add(createDetermination(collObjs.get(0), agents.get(0), (Taxon)taxa.get(baseInx+1), current, recent));
+        determs.add(createDetermination(collObjs.get(1), agents.get(0), (Taxon)taxa.get(baseInx+2), current, recent));
+        determs.add(createDetermination(collObjs.get(2), agents.get(0), (Taxon)taxa.get(baseInx+3), current, recent));
+        determs.add(createDetermination(collObjs.get(3), agents.get(0), (Taxon)taxa.get(baseInx+4), current, recent));
+        determs.add(createDetermination(collObjs.get(4), agents.get(0), (Taxon)taxa.get(baseInx+5), current, recent));
+        determs.add(createDetermination(collObjs.get(5), agents.get(0), (Taxon)taxa.get(baseInx+6), current, recent));
+        determs.add(createDetermination(collObjs.get(6), agents.get(3), (Taxon)taxa.get(baseInx+7), current, recent));
+        determs.add(createDetermination(collObjs.get(7), agents.get(4), (Taxon)taxa.get(baseInx+8), current, recent));
+        
+        determs.add(createDetermination(collObjs.get(0), agents.get(0), (Taxon)taxa.get(baseInx), notCurrent, longAgo));
+        determs.add(createDetermination(collObjs.get(1), agents.get(1), (Taxon)taxa.get(baseInx+7), notCurrent, whileBack));
+        determs.add(createDetermination(collObjs.get(2), agents.get(1), (Taxon)taxa.get(baseInx+9), notCurrent, whileBack));
+        determs.add(createDetermination(collObjs.get(3), agents.get(2), (Taxon)taxa.get(baseInx+10), notCurrent, whileBack));
+        determs.add(createDetermination(collObjs.get(4), agents.get(2), (Taxon)taxa.get(baseInx+10), notCurrent, whileBack));
+        determs.add(createDetermination(collObjs.get(4), agents.get(3), (Taxon)taxa.get(baseInx+13), incorrect, longAgo));
+        determs.add(createDetermination(collObjs.get(4), agents.get(4), (Taxon)taxa.get(baseInx+12), incorrect, longAgo));
         determs.get(13).setRemarks("This determination is totally wrong.  What a foolish determination.");
         
         //startTx();
@@ -1748,13 +1751,30 @@ public class BuildSampleDatabase
     }
 
 
-    public static List<Object> createSimpleTaxon(final TaxonTreeDef taxonTreeDef)
+    public static List<Object> createSimpleTaxon(final TaxonTreeDef taxonTreeDef, 
+                                                 final boolean      doShallow)
     {
         log.info("createSimpleTaxon " + taxonTreeDef.getName());
 
         Vector<Object> newObjs = new Vector<Object>();
+        Set<TaxonTreeDefItem> newItems;
+        if (doShallow)
+        {
+            Object[][] taxonItems = {
+                { TaxonTreeDef.TAXONOMY_ROOT,   "Taxonomy Root", true,  false },
+                { TaxonTreeDef.ORDER,           "Order",         true,  false },
+                { TaxonTreeDef.SUBORDER,        "Suborder",      false, false },
+                { TaxonTreeDef.FAMILY,          "Family",        false, false },
+                { TaxonTreeDef.GENUS,           "Genus",         true,  true },
+                { TaxonTreeDef.SPECIES,         "Species",       false, true },
+                };
+            newItems = TreeFactory.addStandardTaxonDefItems(taxonTreeDef, taxonItems);
+            
+        } else
+        {
+            newItems = TreeFactory.addStandardTaxonDefItems(taxonTreeDef);
+        }
         
-        Set<TaxonTreeDefItem> newItems = TreeFactory.addStandardTaxonDefItems(taxonTreeDef);
         newObjs.addAll(newItems);
         // 0 - 27
         
@@ -1776,29 +1796,46 @@ public class BuildSampleDatabase
 
 
         Taxon life            = createTaxon(taxonTreeDef, null,            "Life",            TaxonTreeDef.TAXONOMY_ROOT);
-        Taxon animalia        = createTaxon(taxonTreeDef, life,            "Animalia",        TaxonTreeDef.KINGDOM);
-        Taxon chordata        = createTaxon(taxonTreeDef, animalia,        "Chordata",        TaxonTreeDef.PHYLUM);
-        Taxon vertebrata      = createTaxon(taxonTreeDef, chordata,        "Vertebrata",      TaxonTreeDef.SUBPHYLUM);
-        Taxon osteichthyes    = createTaxon(taxonTreeDef, vertebrata,      "Osteichthyes",    TaxonTreeDef.SUPERCLASS);
-        Taxon actinopterygii  = createTaxon(taxonTreeDef, osteichthyes,    "Actinopterygii",  TaxonTreeDef.CLASS);
-        Taxon neopterygii     = createTaxon(taxonTreeDef, actinopterygii,  "Neopterygii",     TaxonTreeDef.SUBCLASS);
-        Taxon teleostei       = createTaxon(taxonTreeDef, neopterygii,     "Teleostei",       TaxonTreeDef.INFRACLASS);
-        Taxon acanthopterygii = createTaxon(taxonTreeDef, teleostei,       "Acanthopterygii", TaxonTreeDef.SUPERORDER);
-        Taxon perciformes     = createTaxon(taxonTreeDef, acanthopterygii, "Perciformes",     TaxonTreeDef.ORDER);
+        
+        Taxon animalia        = null;
+        Taxon chordata        = null;
+        Taxon vertebrata      = null;
+        Taxon osteichthyes    = null;
+        Taxon actinopterygii  = null;
+        Taxon neopterygii     = null;
+        Taxon teleostei       = null;
+        Taxon acanthopterygii = null;
+        if (!doShallow)
+        {
+            animalia        = createTaxon(taxonTreeDef, life,            "Animalia",        TaxonTreeDef.KINGDOM);
+            chordata        = createTaxon(taxonTreeDef, animalia,        "Chordata",        TaxonTreeDef.PHYLUM);
+            vertebrata      = createTaxon(taxonTreeDef, chordata,        "Vertebrata",      TaxonTreeDef.SUBPHYLUM);
+            osteichthyes    = createTaxon(taxonTreeDef, vertebrata,      "Osteichthyes",    TaxonTreeDef.SUPERCLASS);
+            actinopterygii  = createTaxon(taxonTreeDef, osteichthyes,    "Actinopterygii",  TaxonTreeDef.CLASS);
+            neopterygii     = createTaxon(taxonTreeDef, actinopterygii,  "Neopterygii",     TaxonTreeDef.SUBCLASS);
+            teleostei       = createTaxon(taxonTreeDef, neopterygii,     "Teleostei",       TaxonTreeDef.INFRACLASS);
+            acanthopterygii = createTaxon(taxonTreeDef, teleostei,       "Acanthopterygii", TaxonTreeDef.SUPERORDER);
+        }
+        
+        Taxon perciformes     = createTaxon(taxonTreeDef, doShallow ? life : acanthopterygii, "Perciformes",     TaxonTreeDef.ORDER);
         Taxon percoidei       = createTaxon(taxonTreeDef, perciformes,     "Percoidei",       TaxonTreeDef.SUBORDER);
         Taxon percidae        = createTaxon(taxonTreeDef, percoidei,       "Percidae",        TaxonTreeDef.FAMILY);
         Taxon ammocrypta      = createTaxon(taxonTreeDef, percidae,        "Ammocrypta",      TaxonTreeDef.GENUS);
         ammocrypta.setCommonName("sand darters");
         
         newObjs.add(life);
-        newObjs.add(animalia);
-        newObjs.add(chordata);
-        newObjs.add(vertebrata);
-        newObjs.add(osteichthyes);
-        newObjs.add(actinopterygii);
-        newObjs.add(neopterygii);
-        newObjs.add(teleostei);
-        newObjs.add(acanthopterygii);
+        
+        if (!doShallow)
+        {
+            newObjs.add(animalia);
+            newObjs.add(chordata);
+            newObjs.add(vertebrata);
+            newObjs.add(osteichthyes);
+            newObjs.add(actinopterygii);
+            newObjs.add(neopterygii);
+            newObjs.add(teleostei);
+            newObjs.add(acanthopterygii);
+        }
         newObjs.add(perciformes);
         newObjs.add(percoidei);
         newObjs.add(percidae);
@@ -1824,16 +1861,18 @@ public class BuildSampleDatabase
         kids = createTaxonChildren(taxonTreeDef, caranx, speciesNames2, commonNames2, TaxonTreeDef.SPECIES);
         // 50 - 56
         newObjs.addAll(kids);
+        
+        int baseInx = 53 - (doShallow ? 30 : 0);
 
         // setup a couple of synonyms (and supporting nodes)
         Taxon fusus = createTaxon(taxonTreeDef, caranx, "fusus", TaxonTreeDef.SPECIES);
         fusus.setCommonName("Blue runner");
-        Taxon crysos = (Taxon)newObjs.get(53);
+        Taxon crysos = (Taxon)newObjs.get(baseInx);
         fusus.setAcceptedTaxon(crysos);
         
         Taxon carangus = createTaxon(taxonTreeDef, caranx, "carangus", TaxonTreeDef.SPECIES);
         carangus.setCommonName("Blacktailed trevally");
-        Taxon hippos = (Taxon)newObjs.get(55);
+        Taxon hippos = (Taxon)newObjs.get(baseInx+2);
         carangus.setAcceptedTaxon(hippos);
         
         Taxon etheostoma = createTaxon(taxonTreeDef, percidae, "Etheostoma", TaxonTreeDef.GENUS);
@@ -1841,22 +1880,22 @@ public class BuildSampleDatabase
         
         Taxon meridianum = createTaxon(taxonTreeDef, etheostoma, "meridianum", TaxonTreeDef.SPECIES);
         meridianum.setCommonName("southern sand darter");
-        Taxon merdiana = (Taxon)newObjs.get(45);
+        Taxon merdiana = (Taxon)newObjs.get(baseInx-8);
         merdiana.setAcceptedTaxon(meridianum);
         
         Taxon pellucidum = createTaxon(taxonTreeDef, etheostoma, "pellucidum", TaxonTreeDef.SPECIES);
         pellucidum.setCommonName("eastern sand darter");
-        Taxon pellucida = (Taxon)newObjs.get(46);
+        Taxon pellucida = (Taxon)newObjs.get(baseInx-7);
         pellucidum.setAcceptedTaxon(pellucida);
         
         Taxon ethVivax = createTaxon(taxonTreeDef, etheostoma, "vivax", TaxonTreeDef.SPECIES);
         ethVivax.setCommonName("scaly sand darter");
-        Taxon vivax = (Taxon)newObjs.get(47);
+        Taxon vivax = (Taxon)newObjs.get(baseInx-6);
         ethVivax.setAcceptedTaxon(vivax);
         
         Taxon beani = createTaxon(taxonTreeDef, ammocrypta, "beani", TaxonTreeDef.SPECIES);
         beani.setCommonName("naked sand darter");
-        Taxon beanii = (Taxon)newObjs.get(42);
+        Taxon beanii = (Taxon)newObjs.get(baseInx-11);
         beani.setAcceptedTaxon(beanii);
         
         Taxon crystallaria = createTaxon(taxonTreeDef, percidae, "Crystallaria", TaxonTreeDef.GENUS);
@@ -1864,7 +1903,7 @@ public class BuildSampleDatabase
         
         Taxon crysAsprella = createTaxon(taxonTreeDef, crystallaria, "asprella", TaxonTreeDef.SPECIES);
         crysAsprella.setCommonName("crystal darter");
-        Taxon asprella = (Taxon)newObjs.get(41);
+        Taxon asprella = (Taxon)newObjs.get(baseInx-12);
         asprella.setAcceptedTaxon(crysAsprella);
 
         newObjs.add(fusus);

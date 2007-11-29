@@ -372,15 +372,20 @@ public class TreeFactory
 		rootNode.setDefinition(def);
 		
 		return def;
-	}
+    }
     
     public static Set<TaxonTreeDefItem> addStandardTaxonDefItems(TaxonTreeDef def)
+    {
+        return addStandardTaxonDefItems(def, stdTaxonItems);
+    }
+    
+    public static Set<TaxonTreeDefItem> addStandardTaxonDefItems(TaxonTreeDef def, Object[][] taxonItems)
     {
         Set<TaxonTreeDefItem> items = def.getTreeDefItems();
         
         TaxonTreeDefItem prevItem = null;
         
-        for (Object[] itemDesc: stdTaxonItems)
+        for (Object[] itemDesc: taxonItems)
         {
             TaxonTreeDefItem item = new TaxonTreeDefItem();
             item.initialize();
