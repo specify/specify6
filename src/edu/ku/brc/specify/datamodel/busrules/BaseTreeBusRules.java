@@ -43,29 +43,52 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
             return true;
         }
         String[] relationships = getRelatedTableAndColumnNames();
-        
-        boolean okSoFar = super.okToDelete(relationships, node.getTreeId());
-        
-        if (okSoFar)
-        {
-            // now check the children
 
-            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            
-            QueryIFace query = session.createQuery("SELECT n.id FROM " + node.getClass().getName() + " n WHERE n.id <= :highChild AND n.id > :nodeNum");
-            query.setParameter("highChild", node.getHighestChildNodeNumber());
-            query.setParameter("nodeNum", node.getNodeNumber());
-            List<Integer> childIDs = (List<Integer>)query.list();
-            session.close();
-            
-            Integer[] childIDsArray = childIDs.toArray(new Integer[1]);
-            
-            boolean childrenDeletable = super.okToDelete(relationships, childIDsArray);
-            okSoFar = childrenDeletable;
-            
+        // if the given node can't be deleted, return false
+        if (!super.okToDelete(relationships, node.getTreeId()))
+        {
+            return false;
         }
+
+        // now check the children
+
+        // get a list of all descendent IDs
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        String queryStr = "SELECT n.id FROM " + node.getClass().getName() + " n WHERE n.nodeNumber <= :highChild AND n.nodeNumber > :nodeNum ORDER BY n.rankId DESC";
+        QueryIFace query = session.createQuery(queryStr);
+        query.setParameter("highChild", node.getHighestChildNodeNumber());
+        query.setParameter("nodeNum", node.getNodeNumber());
+        List<Integer> childIDs = (List<Integer>)query.list();
+        session.close();
+
+        // if there are no descendent nodes, return true
+        if (childIDs.size() == 0)
+        {
+            return true;
+        }
+
+        // break the descendent checks up into chunks or queries
         
-        return okSoFar;
+        // This is an arbitrary number.  Trial and error will determine a good value.  This determines
+        // the number of IDs that wind up in the "IN" clause of the query run inside okToDelete().
+        int chunkSize = 5;
+        int lastRecordChecked = -1;
+
+        boolean childrenDeletable = true;
+        while (lastRecordChecked  + 1 < childIDs.size() && childrenDeletable)
+        {
+            int startOfChunk = lastRecordChecked + 1;
+            int endOfChunk = Math.min(lastRecordChecked+1+chunkSize, childIDs.size());
+
+            // grabs selected subset, exclusive of the last index
+            List<Integer> chunk = childIDs.subList(startOfChunk, endOfChunk);
+            
+            Integer[] idChunk = chunk.toArray(new Integer[1]);
+            childrenDeletable = super.okToDelete(relationships, idChunk);
+            
+            lastRecordChecked = endOfChunk - 1;
+        }
+        return childrenDeletable;
     }
     
     /**
