@@ -19,6 +19,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -248,6 +249,34 @@ public class MultiView extends JPanel
         
         //log.debug( "*** Parent " + (mvParent != null ? "NOT NULL" : "NULL"));
         currentValidator = currentViewable.getValidator();
+        
+        if (false)
+        {
+            if (mvParent == null)
+            {
+                thisObj = this;
+    
+                addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mousePressed(MouseEvent e)
+                    {
+                        showContextMenu(e);
+                    }
+    
+                    @Override
+                    public void mouseReleased(MouseEvent e)
+                    {
+                        showContextMenu(e);
+    
+                    }
+                    @Override
+                    public void mouseClicked(MouseEvent e)
+                    {
+                        ((FormViewObj)thisObj.currentViewable).listFieldChanges();
+                    }
+                });
+            }
+        }
     }
 
     /**
@@ -540,70 +569,6 @@ public class MultiView extends JPanel
         return altView;
     }
     
-    /**
-     * Create MultiView with an AltViewIFace.
-     * @param altView the altView to use.
-     * @param bgColor the bgColor
-     */
-    /*protected Viewable createWithAltView(final AltViewIFace altView, 
-                                         final boolean doShow)
-    {
-        editable = altView.getMode() == AltViewIFace.CreationMode.EDIT;
-
-        log.debug("***********************************************************************");
-        log.debug("View :    " + altView.getView().getName());
-        log.debug("AltView : " + altView.getLabel());
-        log.debug("editable: " + editable);
-        printCreateOptions("createWithAltView", createOptions);
-        log.debug("***********************************************************************");
-
-        // this call parents the viewable to the multiview
-        Viewable viewable = ViewFactory.getInstance().buildViewable(view, altView, this, createOptions, getBackground());
-        if (viewable != null)
-        {
-            viewable.setParentDataObj(parentDataObj);
-    
-            // Add Viewable to the CardLayout
-            if (add(viewable, altView.getName()) && doShow)
-            {
-                showView(altView.getName());
-            }
-            
-            // Testing
-            if (mvParent == null)
-            {
-                thisObj = this;
-    
-                addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mousePressed(MouseEvent e)
-                    {
-                        showContextMenu(e);
-                    }
-    
-                    @Override
-                    public void mouseReleased(MouseEvent e)
-                    {
-                        showContextMenu(e);
-    
-                    }
-                    @Override
-                    public void mouseClicked(MouseEvent e)
-                    {
-                        ((FormViewObj)thisObj.currentViewable).listFieldChanges();
-                    }
-                });
-            }
-        } else
-        {
-            log.error("Couldn't create View["+view.getName()+"] alt["+altView.getName()+"] options["+createOptions+"]");
-            printCreateOptions("Error", createOptions);
-        }
-        
-        return viewable;
-    }*/
-
-
     /**
      * Returns the name of the view for the MultiView.
      * @return the name of the view for the MultiView

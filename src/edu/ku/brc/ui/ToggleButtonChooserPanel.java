@@ -83,6 +83,7 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
     
     protected JButton               okBtn                = null;
     protected int                   staticSize           = -1;
+    protected boolean               wasCreated           = false;
     
     /**
      * Constructor.
@@ -297,6 +298,8 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
         {
             setItems(null);
         }
+        
+        wasCreated = true;
     }
     
     /**
@@ -437,7 +440,7 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
      */
     public void setSelectedIndex(final int index)
     {
-        if (okBtn != null)
+        if (wasCreated)
         {
             if (index > -1 && index < buttons.size())
             {
@@ -482,7 +485,7 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
      */
     public void setSelectedObjects(final List<T> selectedItems)
     {
-        if (okBtn == null)
+        if (!wasCreated)
         {
             this.selectedItems = selectedItems;
             
@@ -537,6 +540,14 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
     public void setChangeListener(final ChangeListener changeListener)
     {
         this.changeListener = changeListener;
+        
+        if (wasCreated)
+        {
+            for (JToggleButton tb : buttons)
+            {
+                tb.addChangeListener(changeListener);
+            }
+        }
     }
 
     /**
@@ -545,6 +556,14 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
     public void setActionListener(ActionListener actionListener)
     {
         this.actionListener = actionListener;
+        
+        if (wasCreated)
+        {
+            for (JToggleButton tb : buttons)
+            {
+                tb.addActionListener(actionListener);
+            }
+        }
     }
     
 }

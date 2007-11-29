@@ -186,7 +186,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
         
         String closeBtnTitle = isEditing ? getResourceString("Done") : getResourceString("Close");
         
-        frame = new ViewBasedDisplayDialog((Frame)null,
+        ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Frame)null,
                 subviewDef.getViewSetName(),
                 subviewDef.getViewName(),
                 null,                      // What is this argument???
@@ -208,12 +208,18 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
             newDataObj = formDataObj;
         }*/
         
+        frame = dlg;
         multiView = frame.getMultiView();
         multiView.setParentDataObj(mvParent.getData());
         multiView.setData(dataObj);
         multiView.setClassToCreate(classToCreate);
         
+        multiView.getCurrentViewAsFormViewObj().getValidator().setEnabled(true);
+        
         multiView.addCurrentValidator();
+        
+        dlg.createUI();
+        frame.getOkBtn().setEnabled(true);
         
         frame.showDisplay(true);
         

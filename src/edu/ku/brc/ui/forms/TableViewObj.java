@@ -614,38 +614,47 @@ public class TableViewObj implements Viewable,
             multiView.removeCurrentValidator();
             realParent.removeChildMV(multiView);
             
-            if (isEditting && dialog.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
+            if (isEditting)
             {
-                dialog.getMultiView().getDataFromUI();
-                if (mvParent != null)
+                if (dialog.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
                 {
-                    tellMultiViewOfChange();
-                    
-                    Object daObj = dialog.getMultiView().getData();
-                    parentDataObj.addReference((FormDataObjIFace)daObj, dataSetFieldName);
-                    if (isNew)
+                    dialog.getMultiView().getDataFromUI();
+                    if (mvParent != null)
                     {
-                        dataObjList.add(daObj);
+                        tellMultiViewOfChange();
                         
-                        if (dataObjList != null && dataObjList.size() > 0)
+                        Object daObj = dialog.getMultiView().getData();
+                        parentDataObj.addReference((FormDataObjIFace)daObj, dataSetFieldName);
+                        if (isNew)
                         {
-                            if (dataObjList.get(0) instanceof Comparable<?>)
+                            dataObjList.add(daObj);
+                            
+                            if (dataObjList != null && dataObjList.size() > 0)
                             {
-                                Collections.sort((List)dataObjList);
+                                if (dataObjList.get(0) instanceof Comparable<?>)
+                                {
+                                    Collections.sort((List)dataObjList);
+                                }
+                            }
+                                                 
+                            if (origDataSet != null)
+                            {
+                                origDataSet.add(daObj);
                             }
                         }
-                                             
-                        if (origDataSet != null)
-                        {
-                            origDataSet.add(daObj);
-                        }
+                        model.fireDataChanged();
+                        table.invalidate();
+                        
+                        JComponent comp = mvParent.getTopLevel();
+                        comp.validate();
+                        comp.repaint();
                     }
-                    model.fireDataChanged();
-                    table.invalidate();
-                    
-                    JComponent comp = mvParent.getTopLevel();
-                    comp.validate();
-                    comp.repaint();
+                } else if (dialog.getBtnPressed() == ViewBasedDisplayIFace.CANCEL_BTN)
+                {
+                    if (mvParent.getMultiViewParent() != null && mvParent.getMultiViewParent().getCurrentValidator() != null)
+                    {
+                        mvParent.getMultiViewParent().getCurrentValidator().validateForm();
+                    }
                 }
             }
             dialog.dispose();

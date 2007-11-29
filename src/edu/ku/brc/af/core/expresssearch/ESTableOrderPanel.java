@@ -219,7 +219,7 @@ public class ESTableOrderPanel extends JPanel
                             {
                                 // Check to see if this has already been configured
                                 // if it can't find it then it is suppose to create a new one
-                                rq = config.findRelatedQuery(erti.getId(), true);
+                                rq = config.findRelatedQueryOrCreate(erti.getId());
                                 if (rq.getDisplayOrder().intValue() == Integer.MAX_VALUE)
                                 {
                                     rq.setDisplayOrder(newOrdercnt++);
@@ -248,7 +248,10 @@ public class ESTableOrderPanel extends JPanel
             {
                 //System.out.println("* "+rq.getDisplayOrder()+ "  "+rq.getTitle());
                 tblList.add(rq);
-            } 
+            } else
+            {
+                rq.setIsActive(false);
+            }
         }
         
         // Clear the model
@@ -269,7 +272,17 @@ public class ESTableOrderPanel extends JPanel
         {
             //System.out.println(((DisplayOrderingIFace)sr).getDisplayOrder()+ "  "+sr.getTitle());
             ((DisplayOrderingIFace)sr).setDisplayOrder(i++);
-            orderTablesModel.addElement(sr);
+            if (sr instanceof RelatedQuery)
+            {
+                RelatedQuery rq = (RelatedQuery)sr;
+                if (rq.getIsActive())
+                {
+                    orderTablesModel.addElement(sr);
+                }
+            } else
+            {
+                orderTablesModel.addElement(sr);
+            }
         }
     }
     

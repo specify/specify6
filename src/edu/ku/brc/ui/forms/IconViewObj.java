@@ -452,6 +452,12 @@ public class IconViewObj implements Viewable
                     parentDataObj.addReference(newObject, dataSetFieldName);
                     iconTray.addItem(newObject);
                     rootHasChanged();
+                } else if (dialog.getBtnPressed() == ViewBasedDisplayIFace.CANCEL_BTN)
+                {
+                    if (mvParent.getMultiViewParent() != null && mvParent.getMultiViewParent().getCurrentValidator() != null)
+                    {
+                        mvParent.getMultiViewParent().getCurrentValidator().validateForm();
+                    }
                 }
                 dialog.dispose();
             }

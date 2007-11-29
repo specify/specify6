@@ -19,6 +19,7 @@ package edu.ku.brc.af.core.expresssearch;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author rods
@@ -28,31 +29,42 @@ import edu.ku.brc.dbsupport.DBTableInfo;
  * Created Date: Sep 12, 2007
  *
  */
-public class RelatedQuery implements DisplayOrderingIFace, TableNameRendererIFace
+public class RelatedQuery implements Comparable<RelatedQuery>, DisplayOrderingIFace, TableNameRendererIFace
 {
-    protected String  id;
-    protected Integer displayOrder;
+    protected static boolean          addRealtedQueryTitle = true;
+    protected static String           relatedQueryTitle    = UIRegistry.getResourceString("ES_RELATED_QUERY");
+    protected String                  id;
+    protected Integer                 displayOrder;
+    protected Boolean                 isActive;
     
     // Transient
     protected ExpressResultsTableInfo erti      = null;
     protected boolean                 isInUse   = false;
     protected DBTableInfo             tableInfo = null;
+    
     /**
      * 
      */
     public RelatedQuery()
     {
-        // TODO Auto-generated constructor stub
+        // no-op
     }
 
     /**
      * @param id
      * @param displayOrder
      */
-    public RelatedQuery(String id, Integer displayOrder)
+    public RelatedQuery(final String id, final Integer displayOrder, final Boolean isActive)
     {
-        this.id = id;
+        this.id           = id;
         this.displayOrder = displayOrder;
+        this.isActive     = isActive;
+        
+        if (id.equals("12"))
+        {
+            int x = 0;
+            x++;
+        }
     }
 
     /**
@@ -121,16 +133,40 @@ public class RelatedQuery implements DisplayOrderingIFace, TableNameRendererIFac
      */
     public void setInUse(boolean isInUse)
     {
-        this.isInUse = isInUse;
+        this.isInUse  = isInUse;
     }
     
+    /**
+     * @return the isActive
+     */
+    public Boolean getIsActive()
+    {
+        return isActive == null ? false : isActive;
+    }
+
+    /**
+     * @param isActive the isActive to set
+     */
+    public void setIsActive(Boolean isActive)
+    {
+        this.isActive = isActive;
+    }
+
+    /**
+     * @param useRTIcon the useRTIcon to set
+     */
+    public static void setAddRealtedQueryTitle(boolean addRealtedQueryTitle)
+    {
+        RelatedQuery.addRealtedQueryTitle = addRealtedQueryTitle;
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString()
     {
-        return erti.getTitle();
+        return (erti == null ? id : erti.getTitle()) + (addRealtedQueryTitle ? (" " + relatedQueryTitle) : "");
     }
 
     /* (non-Javadoc)
@@ -139,7 +175,7 @@ public class RelatedQuery implements DisplayOrderingIFace, TableNameRendererIFac
     //@Override
     public String getIconName()
     {
-        return "RelatedTable";//tableInfo.getClassObj().getSimpleName();
+        return tableInfo == null ? "RelatedTable" : tableInfo.getClassObj().getSimpleName();
     }
 
     /* (non-Javadoc)
@@ -149,5 +185,16 @@ public class RelatedQuery implements DisplayOrderingIFace, TableNameRendererIFac
     public String getTitle()
     {
         return toString();
-    }   
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(RelatedQuery o)
+    {
+        return toString().compareTo(o.toString());
+    }  
+    
+    
 }

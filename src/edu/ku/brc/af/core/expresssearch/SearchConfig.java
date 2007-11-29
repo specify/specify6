@@ -15,13 +15,18 @@
 package edu.ku.brc.af.core.expresssearch;
 
 import java.util.Collections;
+import java.util.Hashtable;
 import java.util.Vector;
+
+import org.apache.log4j.Logger;
 
 import com.thoughtworks.xstream.XStream;
 
 /**
  * This class keeps track of tables that are configured to participate in the ExpressSearch. BNoth for searching
  * and display. 
+ * 
+ * This class and its children objects are created from a persistent store in XML.
  * 
  * Note: I tried to use a Comparator and a bindary search and it didn't work, 
  * it couldn't find an item when only three were in the list.
@@ -36,13 +41,17 @@ import com.thoughtworks.xstream.XStream;
  */
 public class SearchConfig
 {
-    //private static final Logger log = Logger.getLogger(ExpressSearchConfig.class);
+    private static final Logger log = Logger.getLogger(SearchConfig.class);
     
     protected Vector<SearchTableConfig> tables         = new Vector<SearchTableConfig>();
     protected Vector<RelatedQuery>      relatedQueries = new Vector<RelatedQuery>();
     
     // Transient
-    protected SearchTableConfig         searcher = new SearchTableConfig();
+    protected SearchTableConfig                    searcher = new SearchTableConfig(); // note: this is only used for doing a binary search.
+    
+    protected Hashtable<String, RelatedQuery>      relatedQueryIdHash;
+    protected Hashtable<String, SearchTableConfig> tableIdHash;
+    protected Hashtable<String, SearchTableConfig> tableNameHash;
     
     /**
      * 
@@ -58,12 +67,16 @@ public class SearchConfig
      */
     public static void configXStream(final XStream xstream)
     {
+        // Aliases
         xstream.alias("search",       SearchConfig.class);
         xstream.alias("searchtable",  SearchTableConfig.class);
         xstream.alias("searchfield",  SearchFieldConfig.class);
         xstream.alias("displayfield", DisplayFieldConfig.class);
         xstream.alias("relatedquery", RelatedQuery.class);
         
+        xstream.aliasAttribute(RelatedQuery.class, "isActive", "isactive");
+        
+        // Things to omit
         xstream.omitField(SearchConfig.class,       "searcher");
         
         xstream.omitField(SearchFieldConfig.class,  "isInUse");
@@ -82,13 +95,25 @@ public class SearchConfig
     }
     
     /**
-     * 
+     * Call after this is read in from XML
      */
     public void initialize()
     {
+        // Must be initialized here because it is serialized in from XML
+        relatedQueryIdHash = new Hashtable<String, RelatedQuery>();
+        tableIdHash        = new Hashtable<String, SearchTableConfig>();
+        tableNameHash      = new Hashtable<String, SearchTableConfig>();
+        
         for (SearchTableConfig table : tables)
         {
             table.initialize();
+            tableIdHash.put(Integer.toString(table.getTableId()), table);
+            tableNameHash.put(table.getTableName(), table);
+        }
+        
+        for (RelatedQuery rq : relatedQueries)
+        {
+            relatedQueryIdHash.put(rq.getId(), rq);
         }
     }
     
@@ -98,14 +123,18 @@ public class SearchConfig
      */
     public Integer getOrderForRelatedQueryId(final String id)
     {
-        for (RelatedQuery rq : relatedQueries)
-        {
-            if (id.equals(rq.getId()))
-            {
-                return rq.getDisplayOrder();
-            }
-        }
-        return Integer.MAX_VALUE;
+        RelatedQuery rq = relatedQueryIdHash.get(id);
+        return rq != null ? rq.getDisplayOrder() : Integer.MAX_VALUE;
+    }
+    
+    /**
+     * @param id
+     * @return
+     */
+    public Boolean isActiveForRelatedQueryId(final String id)
+    {
+        RelatedQuery rq = relatedQueryIdHash.get(id);
+        return rq != null ? rq.getIsActive() : false;
     }
     
     /**
@@ -114,14 +143,8 @@ public class SearchConfig
      */
     public Integer getOrderForTableId(final String id)
     {
-        for (SearchTableConfig stc : tables)
-        {
-            if (id.equals(stc.getTableInfo().getTableId()))
-            {
-                return stc.getDisplayOrder();
-            }
-        }
-        return Integer.MAX_VALUE;
+        SearchTableConfig stc = tableIdHash.get(id);
+        return stc != null ? stc.getDisplayOrder() : Integer.MAX_VALUE;
     }
     
     /**
@@ -132,16 +155,19 @@ public class SearchConfig
     public DisplayFieldConfig findDisplayField(final String tableName, 
                                                final String fieldName)
     {
-        SearchTableConfig tbl = findTable(tableName, false);
-        if (tbl != null)
+        SearchTableConfig stc = tableNameHash.get(tableName);
+        if (stc != null)
         {
-            for (DisplayFieldConfig dfc : tbl.getDisplayFields())
+            for (DisplayFieldConfig dfc : stc.getDisplayFields())
             {
                 if (fieldName.equals(dfc.getFieldName()))
                 {
                     return dfc;
                 }
             }
+        } else
+        {
+            log.error("Couldn't find table by name["+tableName+"]");
         }
         return null;
     }
@@ -154,16 +180,19 @@ public class SearchConfig
     public SearchFieldConfig findSearchField(final String tableName, 
                                              final String fieldName)
     {
-        SearchTableConfig tbl = findTable(tableName, false);
-        if (tbl != null)
+        SearchTableConfig stc = tableNameHash.get(tableName);
+        if (stc != null)
         {
-            for (SearchFieldConfig sfc : tbl.getSearchFields())
+            for (SearchFieldConfig sfc : stc.getSearchFields())
             {
                 if (fieldName.equals(sfc.getFieldName()))
                 {
                     return sfc;
                 }
             }
+        } else
+        {
+            log.error("Couldn't find table by name["+tableName+"]");
         }
         return null;
     }
@@ -266,27 +295,20 @@ public class SearchConfig
      * @param createWhenNotFnd
      * @return
      */
-    public SearchTableConfig findTable(final String tableName, final boolean createWhenNotFnd)
+    public SearchTableConfig findTableOrCreate(final String tableName)
     {
-        if (searcher == null) // might be null because of xstream
+        SearchTableConfig stc = tableNameHash.get(tableName);
+        if (stc == null)
         {
-            searcher = new SearchTableConfig();
-        }
-        searcher.setTableName(tableName);
-        int inx = Collections.binarySearch(tables, searcher);
-        if (inx > -1)
-        {
-            return tables.get(inx);
-        }
-        
-        if (createWhenNotFnd)
-        {
-            SearchTableConfig tbl = new SearchTableConfig(tableName, 0);   // YYY 
-            tables.add(tbl);
+            stc = new SearchTableConfig(tableName, 0);
+            stc.initialize();
+            tables.add(stc);
             Collections.sort(tables);
-            return tbl;
+            tableIdHash.put(Integer.toString(stc.getTableId()), stc);
+            tableNameHash.put(stc.getTableName(), stc);
+
         }
-        return null;
+        return stc;
     }
     
     /**
@@ -295,7 +317,7 @@ public class SearchConfig
      */
     public void addDisplayField(final String tableName, final DisplayFieldConfig field)
     {
-        SearchTableConfig tbl = findTable(tableName, true);
+        SearchTableConfig tbl = findTableOrCreate(tableName);
         if (tbl != null)
         {
             Vector<DisplayFieldConfig> list = tbl.getDisplayFields();
@@ -313,17 +335,20 @@ public class SearchConfig
      */
     public void removeDisplayField(final String tableName, final String fieldName)
     {
-        SearchTableConfig tbl = findTable(tableName, false);
-        if (tbl != null)
+        SearchTableConfig stc = tableNameHash.get(tableName);
+        if (stc != null)
         {
-            for (DisplayFieldConfig sfc : tbl.getDisplayFields())
+            for (DisplayFieldConfig sfc : stc.getDisplayFields())
             {
                 if (fieldName.equals(sfc.getFieldName()))
                 {
-                    tbl.getDisplayFields().remove(sfc);
+                    stc.getDisplayFields().remove(sfc);
                     break;
                 }
             }
+        } else
+        {
+            log.error("Couldn't find table by name["+tableName+"]");
         }
     }
 
@@ -333,7 +358,7 @@ public class SearchConfig
      */
     public void addSearchField(final String tableName, final SearchFieldConfig field)
     {
-        SearchTableConfig tbl = findTable(tableName, true);
+        SearchTableConfig tbl = findTableOrCreate(tableName);
         if (tbl != null)
         {
             Vector<SearchFieldConfig> list = tbl.getSearchFields();
@@ -350,34 +375,30 @@ public class SearchConfig
      */
     public void removeSearchField(final String tableName, final String fieldName)
     {
-        SearchTableConfig tbl = findTable(tableName, false);
-        if (tbl != null)
+        SearchTableConfig stc = tableNameHash.get(tableName);
+        if (stc != null)
         {
-            for (SearchFieldConfig sfc : tbl.getSearchFields())
+            for (SearchFieldConfig sfc : stc.getSearchFields())
             {
                 if (fieldName.equals(sfc.getFieldName()))
                 {
-                    tbl.getSearchFields().remove(sfc);
+                    stc.getSearchFields().remove(sfc);
                     break;
                 }
             }
+        } else
+        {
+            log.error("Couldn't find table by name["+tableName+"]");
         }
     }
 
     /**
+     * 
      * @return the tables
      */
     public Vector<SearchTableConfig> getTables()
     {
         return tables;
-    }
-
-    /**
-     * @param tables the tables to set
-     */
-    public void setTables(Vector<SearchTableConfig> tables)
-    {
-        this.tables = tables;
     }
 
     /**
@@ -401,22 +422,15 @@ public class SearchConfig
      * @param createWhenNotFound
      * @return
      */
-    public RelatedQuery findRelatedQuery(final String id, final boolean createWhenNotFound)
+    public RelatedQuery findRelatedQueryOrCreate(final String id)
     {
-        for (RelatedQuery rq : relatedQueries)
+        RelatedQuery rq = relatedQueryIdHash.get(id);
+        if (rq == null)
         {
-            if (rq.getId().equals(id))
-            {
-                return rq;
-            }
-        }
-        
-        if (createWhenNotFound)
-        {
-            RelatedQuery rq = new RelatedQuery(id, Integer.MAX_VALUE);
+            rq = new RelatedQuery(id, Integer.MAX_VALUE, true);
             relatedQueries.add(rq);
-            return rq;
+            relatedQueryIdHash.put(rq.getId(), rq);
         }
-        return null;
+        return rq;
     }
 }

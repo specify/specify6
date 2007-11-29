@@ -14,11 +14,11 @@
  */
 package edu.ku.brc.af.core.expresssearch;
 
+import static edu.ku.brc.ui.UIHelper.createI18NLabel;
 import static edu.ku.brc.ui.UIHelper.createIconBtn;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
@@ -34,16 +34,13 @@ import java.util.Vector;
 import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultCellEditor;
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
-import javax.swing.JTextArea;
 import javax.swing.JToggleButton;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
@@ -109,12 +106,6 @@ public class ExpressSearchConfigDlg extends CustomDialog
     
     protected Comparator<TableNameRendererIFace> toBeSearchedComparator = getTableFieldNameComparator();
     
-    // Related Tables
-    protected JList                          rtTableList;
-    protected JList                          relatedTablesList;
-    protected DefaultListModel               relatedTablesModel  = new DefaultListModel();
-    protected JTextArea                      relatedTableDescTA;
-    
     protected SearchConfigService            searchConfigService = SearchConfigService.getInstance();
     protected SearchConfig                   config              = new SearchConfig();
     
@@ -130,7 +121,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
      */
     public ExpressSearchConfigDlg()
     {
-        super((Frame)UIRegistry.getTopWindow(), getResourceString("ExpressSearchConfig"), true, OKCANCELHELP, null);
+        super((Frame)UIRegistry.getTopWindow(), getResourceString("ES_DLG_TITLE"), true, OKCANCELHELP, null);
         
         /*
         Locale german = new Locale("de", "", "");
@@ -178,7 +169,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
                 continue;
             }
 
-            SearchTableConfig stc = config.findTable(ti.getClassObj().getSimpleName(), true);
+            SearchTableConfig stc = config.findTableOrCreate(ti.getClassObj().getSimpleName());
             stc.setTableInfo(ti);
             
             List<ExpressResultsTableInfo> joinList = joinHash.get(Integer.toString(ti.getTableId()));
@@ -192,18 +183,6 @@ public class ExpressSearchConfigDlg extends CustomDialog
             
             for (DBFieldInfo fi : ti.getFields())
             {
-                /*if (fi.getColumn().endsWith("ID"))
-                {
-                    System.out.println(fi.getColumn());
-                    continue;
-                }
-                
-                if (fi.getName().endsWith("Id"))
-                {
-                    System.out.println(fi.getName());
-                    continue;
-                }*/
-                
                 if (fi.isIndexed())
                 {
                     // If found it sets inUse to true, otherwise it is false when created
@@ -295,31 +274,6 @@ public class ExpressSearchConfigDlg extends CustomDialog
             }
         });
         
-        //------------------------
-        // For Related Tables
-        //------------------------
-        Vector<TableInfoRenderable> relatedTableRenderList = new Vector<TableInfoRenderable>();
-        Collections.sort(tableListInfoWithJoins);
-        for (DBTableInfo ti : tableListInfoWithJoins)
-        {
-            relatedTableRenderList.add(new TableInfoRenderable(ti));
-        }
-        rtTableList = new JList(relatedTableRenderList);
-        rtTableList.setCellRenderer(nameRender);
-        
-        relatedTablesList = new JList(relatedTablesModel);
-        relatedTablesList.setCellRenderer(nameRender);
-        relatedTablesList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            //@Override
-            public void valueChanged(ListSelectionEvent e)
-            {
-                if (!e.getValueIsAdjusting())
-                {
-                    rtRelatedTableSelected();
-                }
-            }
-        });
-        
         // Build Layout
 
         PanelBuilder    outer   = new PanelBuilder(new FormLayout("p,6px,f:max(250px;p):g", "p,2px,f:p:g"));
@@ -328,8 +282,8 @@ public class ExpressSearchConfigDlg extends CustomDialog
 
         PanelBuilder innerBuilder = new PanelBuilder(new FormLayout("max(250px;p):g, 2px, p, 10px, max(250px;p):g", "p,2px,f:min(250px;p):g"));
 
-        innerBuilder.add(new JLabel(getResourceString("ES_SEARCHFIELDS"),   SwingConstants.CENTER), cc.xy(1, 1));
-        innerBuilder.add(new JLabel(getResourceString("ES_DISPLAYFIELDS"),  SwingConstants.CENTER), cc.xy(5, 1));
+        innerBuilder.add(createI18NLabel("ES_SEARCHFIELDS",   SwingConstants.CENTER), cc.xy(1, 1));
+        innerBuilder.add(createI18NLabel("ES_DISPLAYFIELDS",  SwingConstants.CENTER), cc.xy(5, 1));
         
         PanelBuilder upDownPanel = new PanelBuilder(new FormLayout("p", "f:p:g, p, 2px, p, f:p:g"));        
         upDownPanel.add(orderUpBtn,       cc.xy(1, 2));
@@ -389,35 +343,13 @@ public class ExpressSearchConfigDlg extends CustomDialog
             }
         });
 
-        outer.add(new JLabel(getResourceString("ES_AVAIL_TABLES"), SwingConstants.CENTER), cc.xy(1,1));
+        outer.add(createI18NLabel("ES_AVAIL_TABLES", SwingConstants.CENTER), cc.xy(1,1));
         outer.add(builder.getPanel(), cc.xy(1,3));
-        outer.add(new JLabel(getResourceString("ES_FLDS_TO_SEARCH"), SwingConstants.CENTER), cc.xy(3,1));
+        outer.add(createI18NLabel("ES_FLDS_TO_SEARCH", SwingConstants.CENTER), cc.xy(3,1));
         outer.add(sp, cc.xy(3,3));
         
         orderPanel = new ESTableOrderPanel(config);
-        
-        // Crate TabbedPane and add tabs
-        tabbedPane = new JTabbedPane();
-        tabbedPane.add(getResourceString("ES_SEARCH_FIELDS"), outer.getPanel());
-        tabbedPane.add(getResourceString("ES_RESULTS_ORDERING"), orderPanel);
-        tabbedPane.add(getResourceString("ES_RELATED_TABLES"), createRelatedTabledPanel());
-        
-        tabbedPane.addChangeListener(new ChangeListener() {
-            //@Override
-            public void stateChanged(ChangeEvent e)
-            {
-                tabChanged();
-            }
-        });
-        
-        JPanel tPanel = new JPanel(new BorderLayout());
-        tPanel.setBorder(BorderFactory.createEmptyBorder(4, 0, 4, 0));
-        tPanel.add(new JLabel(getResourceString("ES_EXPLAIN"), SwingConstants.CENTER), BorderLayout.NORTH);
-        tPanel.add(tabbedPane, BorderLayout.CENTER);
-        
-        contentPanel = tPanel;
-        mainPanel.add(contentPanel, BorderLayout.CENTER);
-        
+         
         // Preload the right-hand list
         if (config != null)
         {
@@ -434,6 +366,30 @@ public class ExpressSearchConfigDlg extends CustomDialog
             Collections.sort(toBeSearchedVect, toBeSearchedComparator);
         }
         
+        orderPanel.loadOrderList(toBeSearchedVect);
+        
+        // Create TabbedPane and add tabs
+        tabbedPane = new JTabbedPane();
+        tabbedPane.add(getResourceString("ES_SEARCH_FIELDS"), outer.getPanel());
+        tabbedPane.add(getResourceString("ES_RELATED_TABLES"), new RelatedTableInfoPanel(config));
+        tabbedPane.add(getResourceString("ES_RESULTS_ORDERING"), orderPanel);
+
+        tabbedPane.addChangeListener(new ChangeListener() {
+            //@Override
+            public void stateChanged(ChangeEvent e)
+            {
+                tabChanged();
+            }
+        });
+        
+        JPanel tPanel = new JPanel(new BorderLayout());
+        tPanel.setBorder(BorderFactory.createEmptyBorder(4, 0, 4, 0));
+        tPanel.add(createI18NLabel("ES_EXPLAIN", SwingConstants.CENTER), BorderLayout.NORTH);
+        tPanel.add(tabbedPane, BorderLayout.CENTER);
+        
+        contentPanel = tPanel;
+        mainPanel.add(contentPanel, BorderLayout.CENTER);
+
         pack();
     }
     
@@ -491,122 +447,6 @@ public class ExpressSearchConfigDlg extends CustomDialog
             orderPanel.grabOrderInList();
         }
         currTabComp = comp;
-    }
-    
-    /**
-     * Created the Panel that is displayed in the Related Tables Tab.
-     * @return the related searches panel
-     */
-    protected JPanel createRelatedTabledPanel()
-    {
-        PanelBuilder    outer = new PanelBuilder(new FormLayout("p,4px,f:p:g", "p,2px,p,10px,p,2px,f:p:g"));
-        CellConstraints cc      = new CellConstraints();
-        
-        rtTableList.setVisibleRowCount(10);
-        JScrollPane sp = new JScrollPane(rtTableList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        outer.add(new JLabel(getResourceString("ES_WHEN_INFO_FOUND")), cc.xy(1,1));
-        outer.add(sp, cc.xywh(1,3,3,1));
-        
-        sp = new JScrollPane(relatedTablesList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        outer.add(new JLabel(getResourceString("ES_INFORET_FOR")), cc.xy(1,5));
-        outer.add(sp, cc.xy(1,7));
-        
-        relatedTableDescTA = new JTextArea();
-        relatedTableDescTA.setEditable(false);
-        relatedTableDescTA.setWrapStyleWord(true);
-        relatedTableDescTA.setBackground(Color.WHITE);
-        relatedTableDescTA.setLineWrap(true);
-        sp = new JScrollPane(relatedTableDescTA, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        outer.add(new JLabel(getResourceString("ES_RELATED_DESC")), cc.xy(3,5));
-        outer.add(sp, cc.xy(3,7));
-        
-        rtTableList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-            //@Override
-            public void valueChanged(ListSelectionEvent e)
-            {
-                if (!e.getValueIsAdjusting())
-                {
-                    rtTableSelected();
-                }
-            }
-        });
-        
-        outer.getPanel().setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-        return outer.getPanel();    
-    }
-    
-    /**
-     * Called when an item is selected in the upper table list, so the 
-     * the list of related tables can be filled in.
-     */
-    protected void rtTableSelected()
-    {
-        TableInfoRenderable tir = (TableInfoRenderable)rtTableList.getSelectedValue();
-        
-        // This is a Hash of Table Ids to a List of Express Searches that this table is a part of
-        Hashtable<String, List<ExpressResultsTableInfo>> joinHash = ExpressSearchConfigCache.getJoinIdToTableInfoHash();
-        
-        Hashtable<String, SearchTableConfig>                  duplicateHash = new Hashtable<String, SearchTableConfig>();
-        Hashtable<SearchTableConfig, ExpressResultsTableInfo> ertiHash      = new Hashtable<SearchTableConfig, ExpressResultsTableInfo>();
-        
-        // Now for the selected Table (this is a 'core' Table that has at least one indexed field)
-        // we look up all the related Express Searches
-        for (ExpressResultsTableInfo erti : joinHash.get(Integer.toString(tir.getTableInfo().getTableId())))
-        {
-            // Look up the Search Config Info for the Express Search table Id
-            // and add it to a Hash of the Search Config -> the ExpressSearch Info
-            SearchTableConfig joinSTC = tiRenderHash.get(Integer.parseInt(erti.getTableId()));
-            
-            // The duplicate has it merely so we we don't end with two of the same SearchTableConfig objects
-            duplicateHash.put(joinSTC.getTableInfo().getClassObj().getSimpleName(), joinSTC);
-            ertiHash.put(joinSTC, erti);
-        }
-        
-        relatedTablesModel.clear();
-        
-        // Sort them by name using the duplicate hash
-        Vector<SearchTableConfig> sortedSTCs = new Vector<SearchTableConfig>(duplicateHash.values());
-        Collections.sort(sortedSTCs);
-        
-        // Now loop thought this duplicate name hash to list everything out
-        for (SearchTableConfig joinSTC : sortedSTCs)
-        {
-            ExpressResultsTableInfo erti = ertiHash.get(joinSTC);
-            TableInfoRenderable ertiTI = new TableInfoRenderable(erti.getTitle(), joinSTC.getIconName());
-            ertiTI.setUserData(erti);
-            relatedTablesModel.addElement(ertiTI);
-            
-            // List the fields that the ES returns.
-            for (ERTICaptionInfo caption : erti.getCaptionInfo())
-            {
-                if (caption.isVisible())
-                {
-                    TableInfoRenderable tirable = new TableInfoRenderable(caption.getColLabel(), "TableField");
-                    tirable.setUserData(caption);
-                    relatedTablesModel.addElement(tirable);
-                }
-            }
-        }
-    }
-    
-    protected void rtRelatedTableSelected()
-    {
-        TableInfoRenderable tir = (TableInfoRenderable)relatedTablesList.getSelectedValue();
-        if (tir != null)
-        {
-            if (tir.getUserData() instanceof ERTICaptionInfo)
-            {
-                relatedTableDescTA.setText(((ERTICaptionInfo)tir.getUserData()).getDescription());
-                
-            } else if (tir.getUserData() instanceof ExpressResultsTableInfo)
-            {
-                relatedTableDescTA.setText(((ExpressResultsTableInfo)tir.getUserData()).getDescription());
-                
-            } else
-            {
-                relatedTableDescTA.setText("");
-            }
-        }
     }
     
     /**

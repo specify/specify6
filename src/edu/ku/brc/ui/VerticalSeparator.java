@@ -33,7 +33,7 @@ public class VerticalSeparator extends JComponent
      * @param bgColor
      * @param fgColor
      */
-    public VerticalSeparator(Color fgColor, Color bgColor)
+    public VerticalSeparator(final Color fgColor, final Color bgColor)
     {
         this.bgColor = bgColor;
         this.fgColor = fgColor;
@@ -55,11 +55,11 @@ public class VerticalSeparator extends JComponent
         
         g.setColor(bgColor);
         g.drawLine(x, 2, x, size.height-1);
-        g.drawLine(x+1, 2, x+1, size.height-1);
+        //g.drawLine(x+1, 2, x+1, size.height-1);
         
         g.setColor(fgColor);
         g.drawLine(x-2, 0, x-2, size.height-3);
-        g.drawLine(x-1, 0, x-1, size.height-3);
+        //g.drawLine(x-1, 0, x-1, size.height-3);
     }
 
     /* (non-Javadoc)

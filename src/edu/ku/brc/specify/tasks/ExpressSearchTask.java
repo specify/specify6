@@ -275,11 +275,10 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
             instance.searchBtn.setEnabled(false);
             UIRegistry.getStatusBar().setIndeterminate(true);
             
-            SearchConfig config = SearchConfigService.getInstance().getSearchConfig();
-           
             SearchTableConfig context = SearchConfigService.getInstance().getSearchContext();
             if (context == null)
             {
+                SearchConfig config = SearchConfigService.getInstance().getSearchConfig();
                 for (SearchTableConfig table : config.getTables())
                 {
                     log.debug("**************> " +table.getTableName() );
@@ -298,15 +297,17 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
      * @param searchIdStr the ID of the Express Search definition
      * @param recId the record Id
      * @param idToTableInfoMap the TableInfo mapped by ID
-     * @param joinIdToTableInfoMap the TableInfo mapped by Join ID
+     * @param joinIdToTableInfoHash the TableInfo mapped by Join ID
      * @param resultsMap the primary result tables
-     * @param resultsForJoinsMap the related results table
+     * @param resultsForJoinsHash the related results table
      */
-    public static void collectResults(final QueryForIdResultsIFace qfir,
+    public static void collectResults(final SearchConfig           config,
+                                      final String                 tableId,
+                                      final String                 searchTerm,
                                       final ResultSet              resultSet,
                                       final Integer                id,
-                                      final Hashtable<String, List<ExpressResultsTableInfo>> joinIdToTableInfoMap,
-                                      final Hashtable<String, QueryForIdResultsSQL>          resultsForJoinsMap)
+                                      final Hashtable<String, List<ExpressResultsTableInfo>> joinIdToTableInfoHash,
+                                      final Hashtable<String, QueryForIdResultsSQL>          resultsForJoinsHash)
     {
         try
         {
@@ -321,27 +322,30 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
             
             //System.out.println("id "+id+"  "+recId);
             
-            String tableIdAsStr = Integer.toString(qfir.getTableId());
-            
             //log.debug("Find any Joins for TableID ["+tblInfo.getTableId()+"]");
             
             // Start by getting the List of next round of 'view' queries 
             // Before getting here we have constrcuted list of the queries that will need to be run
             // when we get a hit from the current table against one of the joins in the view query
             // 
-            List<ExpressResultsTableInfo> list = joinIdToTableInfoMap.get(tableIdAsStr);
+            List<ExpressResultsTableInfo> list = joinIdToTableInfoHash.get(tableId);
             if (list != null)
             {
                 // Now loop through each of the view queries
                 for (ExpressResultsTableInfo erti : list)
                 {
+                    if (!config.isActiveForRelatedQueryId(erti.getId()))
+                    {
+                        continue;
+                    }
+                    
                     //if (!erti.getId().equals("5")) // ZZZ
                     //{
                     //    continue;
                     //}
                     //log.debug("Checking up["+tblInfo.getTableId()+"]");
                     
-                    QueryForIdResultsSQL results = resultsForJoinsMap.get(erti.getId());
+                    QueryForIdResultsSQL results = resultsForJoinsHash.get(erti.getId());
                     if (results == null)
                     {
                         Integer joinColTableId = null;
@@ -350,7 +354,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                         {
                             for (ERTIJoinColInfo jci :  joinCols)
                             {
-                                if (tableIdAsStr.equals(jci.getJoinTableId()))
+                                if (tableId.equals(jci.getJoinTableId()))
                                 {
                                     joinColTableId = jci.getJoinTableIdAsInt();
                                     break;
@@ -363,8 +367,8 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                         }
                         Integer displayOrder = SearchConfigService.getInstance().getSearchConfig().getOrderForRelatedQueryId(erti.getId());
                         log.debug("ExpressSearchResults erti.getId()["+erti.getId()+"] joinColTableId["+joinColTableId+"] displayOrder["+displayOrder+"]");
-                        results = new QueryForIdResultsSQL(erti.getId(), joinColTableId, erti, displayOrder, qfir.getSearchTerm());
-                        resultsForJoinsMap.put(erti.getId(), results);
+                        results = new QueryForIdResultsSQL(erti.getId(), joinColTableId, erti, displayOrder, searchTerm);
+                        resultsForJoinsHash.put(erti.getId(), results);
                     }
                     results.add(recId);
                 }
@@ -674,31 +678,38 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                 ExpressSearchResultsPaneIFace esrPane           = (ExpressSearchResultsPaneIFace)data[1];
                 String                        searchTerm        = (String)data[2];
                 
-                Hashtable<String, ExpressResultsTableInfo>       idToTableInfoMap     = ExpressSearchConfigCache.getSearchIdToTableInfoHash();
-                Hashtable<String, List<ExpressResultsTableInfo>> joinIdToTableInfoMap = ExpressSearchConfigCache.getJoinIdToTableInfoHash();
-
-                Hashtable<String, QueryForIdResultsSQL> resultsForJoinsMap = new Hashtable<String, QueryForIdResultsSQL>();
+                Hashtable<String, ExpressResultsTableInfo>       idToTableInfoHash     = ExpressSearchConfigCache.getSearchIdToTableInfoHash();
+                Hashtable<String, List<ExpressResultsTableInfo>> joinIdToTableInfohash = ExpressSearchConfigCache.getJoinIdToTableInfoHash();
+                Hashtable<String, QueryForIdResultsSQL>          resultsForJoinsHash    = new Hashtable<String, QueryForIdResultsSQL>();
                 
                 try
                 {
                     if (resultSet.next())
                     {
                         String                  searchIdStr = Integer.toString(searchTableConfig.getTableInfo().getTableId());
-                        ExpressResultsTableInfo tblInfo = idToTableInfoMap.get(searchIdStr);
+                        ExpressResultsTableInfo tblInfo = idToTableInfoHash.get(searchIdStr);
                         if (tblInfo == null)
                         {
                             throw new RuntimeException("Bad id from search["+searchIdStr+"]");
                         }
                         
-                        QueryForIdResultsSQL queryResults = new QueryForIdResultsSQL(searchIdStr, null, tblInfo, searchTableConfig.getDisplayOrder(), searchTerm);
-                        
+                        SearchConfig config = SearchConfigService.getInstance().getSearchConfig();
+
                         do
                         {
-                            collectResults(queryResults, resultSet, null, joinIdToTableInfoMap, resultsForJoinsMap);
+                            collectResults(config, tblInfo.getTableId(), searchTerm, resultSet, null, joinIdToTableInfohash, resultsForJoinsHash);
                             
                         } while(resultSet.next());
                         
-                        displayResults(esrPane, queryResults, resultsForJoinsMap);
+                        if (resultsForJoinsHash.size() > 0)
+                        {
+                            QueryForIdResultsSQL queryResults = new QueryForIdResultsSQL(searchIdStr, null, tblInfo, searchTableConfig.getDisplayOrder(), searchTerm);
+                            displayResults(esrPane, queryResults, resultsForJoinsHash);
+                        } else
+                        {
+                            int x = 0;
+                            x++;
+                        }
                     }
                 } catch (SQLException ex)
                 {
@@ -779,34 +790,39 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         
         if (list != null)
         {
-            Object[]                      data              = (Object[])jpaQuery.getData();
-            SearchTableConfig             searchTableConfig = (SearchTableConfig)data[0];
-            ExpressSearchResultsPaneIFace esrPane           = (ExpressSearchResultsPaneIFace)data[1];
-            String                        searchTerm        = (String)data[2];
-            
-            if (addPane)
+            if (list.size() > 0)
             {
-                addSubPaneToMgr((SubPaneIFace)esrPane);
+                Object[]                      data              = (Object[])jpaQuery.getData();
+                SearchTableConfig             searchTableConfig = (SearchTableConfig)data[0];
+                ExpressSearchResultsPaneIFace esrPane           = (ExpressSearchResultsPaneIFace)data[1];
+                String                        searchTerm        = (String)data[2];
+                
+                if (addPane)
+                {
+                    addSubPaneToMgr((SubPaneIFace)esrPane);
+                }
+        
+                Hashtable<String, List<ExpressResultsTableInfo>> joinIdToTableInfoHash = ExpressSearchConfigCache.getJoinIdToTableInfoHash();
+                Hashtable<String, QueryForIdResultsSQL>          resultsForJoinsHash   = new Hashtable<String, QueryForIdResultsSQL>();
+                
+                //log.debug("TID["+searchTableConfig.getTableInfo().getTableId() + "] Table Order ["+searchTableConfig.getDisplayOrder()+"] "+list.size());
+                SearchConfig config = SearchConfigService.getInstance().getSearchConfig();
+                
+                String tableIdStr = Integer.toString(searchTableConfig.getTableInfo().getTableId());
+                for (Object idObj : list)
+                {
+                    collectResults(config, tableIdStr, searchTerm, null, (Integer)idObj, joinIdToTableInfoHash, resultsForJoinsHash);
+                }
+                
+                QueryForIdResultsHQL results = new QueryForIdResultsHQL(searchTableConfig, new Color(30, 144, 255), searchTerm, list);
+                displayResults(esrPane, results, resultsForJoinsHash);
+                
+                joinIdToTableInfoHash.clear();
             }
-    
-            Hashtable<String, List<ExpressResultsTableInfo>> joinIdToTableInfoMap = ExpressSearchConfigCache.getJoinIdToTableInfoHash();
-            
-            Hashtable<String, QueryForIdResultsSQL> resultsForJoinsMap = new Hashtable<String, QueryForIdResultsSQL>();
-            
-            //log.debug("TID["+searchTableConfig.getTableInfo().getTableId() + "] Table Order ["+searchTableConfig.getDisplayOrder()+"] "+list.size());
-            QueryForIdResultsHQL results = new QueryForIdResultsHQL(searchTableConfig, new Color(30, 144, 255), searchTerm, list);
-            
-            for (Object idObj : list)
-            {
-                Integer id = (Integer)idObj;
-                collectResults(results, null, id, joinIdToTableInfoMap, resultsForJoinsMap);
-                    
-            }
-            displayResults(esrPane, results, resultsForJoinsMap);
-            
+           
         } else
         {
-            log.error("List was null and cant't be.");
+            log.error("List was null and cant't be");
         }
         
         completionUIHelper(true);

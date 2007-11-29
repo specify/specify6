@@ -124,11 +124,11 @@ public class ExpressSearchConfigCache
      * @param tableItems the list of Elements to be processed
      * @param tables the table info hash
      */
-    protected static void intializeTableInfo(final List<?> tableItems, 
+    protected static void intializeTableInfo(final List<?>  tableItems, 
                                              final Hashtable<String, ExpressResultsTableInfo> tables,
                                              final Hashtable<String, ExpressResultsTableInfo> byIdHash,
                                              final Hashtable<String, List<ExpressResultsTableInfo>> joinIdToTableInfoHash,
-                                             final boolean isExpressSearch,
+                                             final boolean        isExpressSearch,
                                              final ResourceBundle resBundle)
     {
         // Basically this creates three hashtables

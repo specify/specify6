@@ -62,6 +62,7 @@ import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -2142,5 +2143,24 @@ public final class UIHelper
             x += 2;
         }
         return pb.getPanel();
+    }
+    
+    /**
+     * @param key
+     * @return
+     */
+    public static JLabel createI18NLabel(final String key)
+    {
+        return new JLabel(getResourceString(key));
+    }
+    
+    /**
+     * @param key
+     * @param align
+     * @return
+     */
+    public static JLabel createI18NLabel(final String key, final int align)
+    {
+        return new JLabel(getResourceString(key), align);
     }
 }

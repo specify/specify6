@@ -32,9 +32,12 @@ import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.ui.DateWrapper;
 
 /**
+ * This class is the root of the configuration tree for all the searches for tables and related queries.
+ * This class is used to persist the configuration.
+ * 
  * @author rods
  *
- * @code_status Alpha
+ * @code_status Beta
  *
  * Created Date: Sep 7, 2007
  *
@@ -114,6 +117,14 @@ public class SearchTableConfig implements DisplayOrderingIFace,
             }
         }
         return false;
+    }
+    
+    /**
+     * @return the table id or -1 if it hasn't been initialized
+     */
+    public int getTableId()
+    {
+        return tableInfo != null ? tableInfo.getTableId() : -1;
     }
 
     /**
