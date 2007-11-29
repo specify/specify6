@@ -336,6 +336,13 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
             node.setParent(null);
         }
         
+        // detach the node from an accepted parent
+        if (node.getAcceptedParent() != null)
+        {
+            node.getAcceptedParent().getAcceptedChildren().remove(node);
+            node.setAcceptedParent(null);
+        }
+        
         // let Hibernate delete the subtree
         DataProviderSessionIFace sessionWrapper = new HibernateDataProviderSession(session);
         
