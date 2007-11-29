@@ -1654,7 +1654,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	@SuppressWarnings("unchecked")
 	public boolean dropOccurred( Object dragged, Object droppedOn, int dropAction )
 	{
-		if(checkBusy() || dragged != droppedOn)
+		if(checkBusy() || dragged == droppedOn)
 		{
 			return false;
 		}
