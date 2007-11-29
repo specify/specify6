@@ -640,11 +640,12 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
             step5Query.setParameter("rootHC", rootHC);
             step5Query.executeUpdate();
 
-            String step6QueryStr = "UPDATE " + className + " SET highestChildNodeNumber=nodeNumber+highestChildNodeNumber WHERE nodeNumber >:yNN-:numMoving AND nodeNumber<=:yNN AND definition=:def";
+            String step6QueryStr = "UPDATE " + className + " SET highestChildNodeNumber=nodeNumber+highestChildNodeNumber WHERE nodeNumber >:lowerBound AND nodeNumber<=:yNN AND definition=:def";
             Query step6Query = session.createQuery(step6QueryStr);
             step6Query.setParameter("def", def);
             step6Query.setParameter("yNN", yNN);
-            step6Query.setParameter("numMoving", numMoving);
+            //step6Query.setParameter("numMoving", numMoving);
+            step6Query.setParameter("lowerBound", yNN - numMoving);
             step6Query.executeUpdate();
         }
         else
@@ -688,11 +689,12 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
             step5Query.setParameter("rootHC", rootHC);
             step5Query.executeUpdate();
 
-            String step6QueryStr = "UPDATE " + className + " SET highestChildNodeNumber=highestChildNodeNumber+nodeNumber WHERE nodeNumber>:yNN AND nodeNumber<=:yNN+:numMoving AND definition=:def";
+            String step6QueryStr = "UPDATE " + className + " SET highestChildNodeNumber=highestChildNodeNumber+nodeNumber WHERE nodeNumber>:yNN AND nodeNumber<=:upperBound AND definition=:def";
             Query step6Query = session.createQuery(step6QueryStr);
             step6Query.setParameter("def", def);
             step6Query.setParameter("yNN", yNN);
-            step6Query.setParameter("numMoving", numMoving);
+            //step6Query.setParameter("numMoving", numMoving);
+            step6Query.setParameter("upperBound", yNN + numMoving);
             step6Query.executeUpdate();
         }
 
