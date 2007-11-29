@@ -58,6 +58,7 @@ import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.ViewSetMgr;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.ui.forms.persist.ViewIFace;
 import edu.ku.brc.ui.forms.persist.ViewLoader;
 import edu.ku.brc.ui.forms.persist.ViewSet;
@@ -102,7 +103,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     protected AppResourceMgr backStopAppResMgr     = null;
     protected Agent          currentUserAgent      = null;
 
-    protected boolean        debug                 = false;
+    protected boolean        debug                 = true;
     
     /**
      * Singleton Constructor.
@@ -436,6 +437,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
         //
         // We need to search for User, Collection, CollectionType and UserType
         // Then
+        
+        
 
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
 
@@ -488,19 +491,28 @@ public class SpecifyAppContextMgr extends AppContextMgr
         
         dispHash.put(ct.getDiscipline(), ct.getDiscipline());
         
-        SpAppResourceDir appResourceDef = find(appResDefList, user, collection, ct);
-        if (appResourceDef != null)
+        SpAppResourceDir appResourceDir = find(appResDefList, user, collection, ct);
+        if (appResourceDir != null)
         {
-            if (debug) log.debug("Adding1 "+getSpAppResDefAsString(appResourceDef));
-            spAppResourceList.add(appResourceDef);
+            if (debug) log.debug("Adding1 "+getSpAppResDefAsString(appResourceDir));
+            spAppResourceList.add(appResourceDir);
         }
+        
+       
         
         backStopViewSetMgr = new ViewSetMgr("BackStop", XMLHelper.getConfigDir("backstop"));
         backStopAppResMgr  = new AppResourceMgr(XMLHelper.getConfigDir("backstop"));
         
+        // We close the session here so all SpAppResourceDir get unattached to hibernate
+        // because UIFieldFormatterMgr and loading views all need a session
+        // and we don't want to recuse in and get a double session
+        session.close();
+        
         // Here is where you turn on View/Viewdef re-use.
         if (true)
         {
+            UIFieldFormatterMgr.getInstance();
+            
             backStopViewSetMgr.getView("Global", "Accession"); // force the loading of all the views
             ViewLoader.setBackStopViewSetMgr(backStopViewSetMgr);
         }
@@ -554,7 +566,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
         currentStatus = CONTEXT_STATUS.OK;
         
-        session.close();
+
         
         return currentStatus;
     }
@@ -750,6 +762,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
         {
             for (SpAppResourceDir appResDef : spAppResourceList)
             {
+                log.error(appResDef.getId());
+                
                 if (appResDef.getSpAppResourceDirId() != null)
                 {
                     session.attach(appResDef);
@@ -812,7 +826,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
      * @see edu.ku.brc.af.core.AppContextMgr#getResourceAsXML(java.lang.String)
      */
     @Override
-    public String getResourceAsXML(String name)
+    public String getResourceAsXML(final String name)
     {
         AppResourceIFace appResource = getResource(name);
         
