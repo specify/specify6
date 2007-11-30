@@ -448,19 +448,23 @@ public class UploadTableTree extends UploadTable
             for (Treeable defParent : defaultParents)
             {
                 Object key = ((DataModelObjBase)defParent).getId();
-                try
+                if (key != null)
                 {
-                    q.setParameter("theKey", key);
-                    DataModelObjBase obj = (DataModelObjBase)q.uniqueResult();
-                    session.beginTransaction();
-                    session.delete(obj);
-                    session.commit();
-                }
-                catch (Exception ex)
-                {
-                    //the delete may fail if another user has used or deleted uploaded records...
-                    //or if another UploadTreeTable has deleted the parent.
-                    log.info(ex);
+                    try
+                    {
+                        q.setParameter("theKey", key);
+                        DataModelObjBase obj = (DataModelObjBase) q.uniqueResult();
+                        session.beginTransaction();
+                        session.delete(obj);
+                        session.commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        // the delete may fail if another user has used or deleted uploaded
+                        // records...
+                        // or if another UploadTreeTable has deleted the parent.
+                        log.info(ex);
+                    }
                 }
             }
         }
@@ -575,8 +579,6 @@ public class UploadTableTree extends UploadTable
             }
         }
         return false;
-        
-        //return fld.isRequired() && getTreeDefItem().getIsEnforced() != null && getTreeDefItem().getIsEnforced() && (fld.getValue() == null || fld.getValue().trim().equals(""));
     }
 
     /**

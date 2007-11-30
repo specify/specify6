@@ -1844,7 +1844,7 @@ public class UploadTable implements Comparable<UploadTable>
                         finalizeWrite(rec, recNum);
                         if (!doNotWrite)
                         {
-                            doWrite(rec/*, recNum*/);
+                            doWrite(rec);
                             uploadedKeys.add(rec.getId());
                         }
                         setCurrentRecord(rec, recNum);
@@ -1924,58 +1924,55 @@ public class UploadTable implements Comparable<UploadTable>
      * 
      * Creates session and saves rec.
      */
-    protected void doWrite(DataModelObjBase rec/*, int recNum*/) throws UploaderException
+    protected void doWrite(DataModelObjBase rec) throws UploaderException
     {
+        tblSession = DataProviderFactory.getInstance().createSession();
         boolean tblTransactionOpen = false;
-        //Ahem. DUH. Why not do the needToWrite check much earlier in the save process??????
-        //if (needToWrite(recNum))
-        //{
-            tblSession = DataProviderFactory.getInstance().createSession();
-            try
+        try
+        {
+            BusinessRulesIFace busRule = DBTableIdMgr.getInstance().getBusinessRule(tblClass);
+            if (busRule != null)
             {
-                BusinessRulesIFace busRule = DBTableIdMgr.getInstance().getBusinessRule(tblClass);
-                if (busRule != null)
-                {
-                    busRule.beforeSave(rec, tblSession);
-                }
-                tblSession.beginTransaction();
-                tblTransactionOpen = true;
-                tblSession.save(rec);
-                if (busRule != null)
-                {
-                    if (!busRule.beforeSaveCommit(rec, tblSession))
-                    {
-                        tblSession.rollback();
-                        throw new Exception("Business rules processing failed");
-                    }
-                }
-                tblSession.commit();
-                tblTransactionOpen = false;
-                if (busRule != null)
-                {
-                    busRule.afterSaveCommit(rec);
-                }
-                tblSession.refresh(rec);
+                busRule.beforeSave(rec, tblSession);
             }
-            catch (Exception ex)
+            tblSession.beginTransaction();
+            tblTransactionOpen = true;
+            tblSession.save(rec);
+            if (busRule != null)
             {
-                if (tblTransactionOpen)
+                if (!busRule.beforeSaveCommit(rec, tblSession))
                 {
                     tblSession.rollback();
+                    throw new Exception("Business rules processing failed");
                 }
-                throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
             }
-            finally
+            tblSession.commit();
+            tblTransactionOpen = false;
+            if (busRule != null)
             {
-                tblSession.close();
+                busRule.afterSaveCommit(rec);
             }
-        //}
+            tblSession.refresh(rec);
+        }
+        catch (Exception ex)
+        {
+            if (tblTransactionOpen)
+            {
+                tblSession.rollback();
+            }
+            throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
+        }
+        finally
+        {
+            tblSession.close();
+        }
     }
 
 
     /**
-     * Creates a new Hibernate session and associates the given objects with it.
-     * NOTE: Static for testing reasons only.
+     * Creates a new Hibernate session and associates the given objects with it. NOTE: Static for
+     * testing reasons only.
+     * 
      * @param objects the objects to associate with the new session
      * @return the newly created session
      */
