@@ -251,7 +251,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         this.name = name;
     }
 
-    @Column(name = "FullName", nullable=false, length = 255)
+    @Column(name = "FullName", length = 255)
     public String getFullName()
     {
         return this.fullName;

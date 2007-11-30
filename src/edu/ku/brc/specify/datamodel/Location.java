@@ -161,7 +161,7 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
 	/**
 	 * @return the fullName
 	 */
-    @Column(name = "FullName", nullable=false, length = 255)
+    @Column(name = "FullName", length = 255)
 	public String getFullName()
 	{
 		return fullName;

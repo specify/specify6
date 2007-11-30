@@ -199,7 +199,7 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
 	/**
 	 * @return the fullName
 	 */
-    @Column(name = "FullName", nullable=false, length = 255)
+    @Column(name = "FullName", length = 255)
 	public String getFullName()
 	{
 		return fullName;
