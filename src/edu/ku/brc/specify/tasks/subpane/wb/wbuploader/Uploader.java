@@ -271,7 +271,7 @@ public class Uploader implements ActionListener, WindowStateListener
     protected void buildIdentifier()
     {
         Calendar now = new GregorianCalendar();
-        identifier =  uploadData.getWbRow(0).getWorkbench().getName() + "_"+ now.get(Calendar.YEAR) + "-" + now.get(Calendar.MONTH) + "-"
+        identifier =  uploadData.getWbRow(0).getWorkbench().getName() + "_"+ now.get(Calendar.YEAR) + "-" + (now.get(Calendar.MONTH)+1) + "-"
             + now.get(Calendar.DAY_OF_MONTH) + "_" + now.get(Calendar.HOUR_OF_DAY) + ":" + now.get(Calendar.SECOND);
     }
     

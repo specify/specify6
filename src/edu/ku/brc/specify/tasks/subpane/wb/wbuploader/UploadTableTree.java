@@ -45,10 +45,11 @@ import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
 @SuppressWarnings("unchecked")
 public class UploadTableTree extends UploadTable
 {
-	protected Table baseTable; 
-	protected UploadTableTree parent;
-    protected Integer rank;
-    protected String wbLevelName;
+	protected final Table baseTable; 
+	protected final UploadTableTree parent;
+    protected UploadTableTree child;
+    protected final Integer rank;
+    protected final String wbLevelName;
     protected Treeable treeRoot;    
     protected SortedSet<Treeable> defaultParents;
     private static GeographyTreeDef geoTreeDef = null;
@@ -69,6 +70,10 @@ public class UploadTableTree extends UploadTable
 		super(table, null);
         this.baseTable = baseTable;
 		this.parent = parent;
+        if (this.parent != null)
+        {
+            this.parent.child = this;
+        }
 		this.required = required;
         this.rank = rank;
         this.wbLevelName = wbLevelName;
@@ -97,13 +102,6 @@ public class UploadTableTree extends UploadTable
 	public Table getBaseTable()
 	{
 		return baseTable;
-	}
-	/**
-	 * @param baseTable the baseTable to set
-	 */
-	public void setBaseTable(Table baseTable)
-	{
-		this.baseTable = baseTable;
 	}
 
 	/* (non-Javadoc)
@@ -227,6 +225,22 @@ public class UploadTableTree extends UploadTable
           && relatedClass != TaxonTreeDef.class && relatedClass != TaxonTreeDefItem.class;
     }
     
+    protected DataModelObjBase getParentRec(int recNum)
+    {
+        if (parent == null)
+        {
+            return null;
+        }
+        DataModelObjBase result = parent.getCurrentRecord(recNum);
+        UploadTableTree grandParent = parent.parent;
+        while (result == null && grandParent != null)
+        {
+            result = grandParent.getCurrentRecord(recNum);
+            grandParent = grandParent.parent;
+        }
+        return result;
+    }
+    
     /**
      * @param rec
      * @param recNum
@@ -241,13 +255,18 @@ public class UploadTableTree extends UploadTable
     protected void finalizeWrite(DataModelObjBase rec, int recNum) throws UploaderException
     {
         //assign treedef and treedefitem to rec
-        DataModelObjBase parentRec = parent == null ? null : parent.getCurrentRecord(recNum);
+        DataModelObjBase parentRec = getParentRec(recNum);
         Treeable tRec = (Treeable)rec;
         tRec.setDefinition(getTreeDef());
         tRec.setDefinitionItem(getTreeDefItem());
         if (parentRec == null)
         {
             tRec.setParent(getDefaultParent2(getTreeDefItem()));
+        }
+        else
+        {
+            //this probably will already have been done in UploadTable.setParents, unless immediate parent id is null.
+            tRec.setParent((Treeable)parentRec);
         }
     }
 
@@ -280,7 +299,6 @@ public class UploadTableTree extends UploadTable
         {
             return getTreeRoot();
         }
-        
         return getDefaultParent(parentDefItem);
      }
         
@@ -329,7 +347,7 @@ public class UploadTableTree extends UploadTable
             result.setName(getDefaultParentName());
             result.setDefinition(getTreeDef());
             result.setDefinitionItem(defItem);
-            doWrite((DataModelObjBase)result, 0);
+            doWrite((DataModelObjBase)result/*, 0*/);
             defaultParents.add(result);
             return result;            
         } 
@@ -520,17 +538,55 @@ public class UploadTableTree extends UploadTable
     
     /**
      * @param fldName
-     * @return true if a field named fldname is in the uploading dataset, or if it is filled programmitically..
+     * @return true if a field named fldname is in the uploading dataset, or if it is set programmitically..
      */
     @Override
     protected boolean fldInDataset(final String fldName)
     {
-        boolean result = super.fldInDataset(fldName);
-        if (!result)
+        return super.fldInDataset(fldName) || fldName.equalsIgnoreCase("fullname");
+    }
+
+    /**
+     * @param fld
+     * @returns true if fld is empty and that is not OK.
+     */
+    @Override
+    protected boolean invalidNull(final UploadField fld, final UploadData uploadData, int row, int seq) throws UploaderException
+    {
+        if (fld.isRequired() && getTreeDefItem().getIsEnforced() != null && getTreeDefItem().getIsEnforced())
         {
-            result = fldName.equalsIgnoreCase("fullname") || fldName.equalsIgnoreCase("rankid");
+            if (fld.getValue() == null || fld.getValue().trim().equals(""))
+            {
+                //if no children in the treeable hierarchy are non-null then ignore the nullness at this level.
+                UploadTableTree currentChild = child;
+                while (currentChild != null)
+                {
+                    UploadField uf = currentChild.findUploadField(fld.getField().getName(), seq);
+                    if (uf != null)
+                    {
+                        String val = uploadData.get(row, uf.getIndex());
+                        if (val != null && !val.trim().equals(""))
+                        {
+                            return true;
+                        }
+                    }
+                    currentChild = currentChild.child;
+                }
+            }
         }
-        return result;
+        return false;
+        
+        //return fld.isRequired() && getTreeDefItem().getIsEnforced() != null && getTreeDefItem().getIsEnforced() && (fld.getValue() == null || fld.getValue().trim().equals(""));
+    }
+
+    /**
+     * @param recNum
+     * @return true if there is some data in the current row dataset that needs to be written to this table in the database.
+     */
+    @Override
+    protected boolean needToWrite(int recNum)
+    {
+        return dataToWrite(recNum);
     }
 
 }
