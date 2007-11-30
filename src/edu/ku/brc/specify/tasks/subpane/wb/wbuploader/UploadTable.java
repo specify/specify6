@@ -32,6 +32,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.AccessionAuthorization;
+import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Collector;
@@ -41,6 +42,7 @@ import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.tasks.subpane.wb.schema.Field;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Relationship;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader.ParentTableEntry;
@@ -701,23 +703,39 @@ public class UploadTable implements Comparable<UploadTable>
             return uploadTbl;
         }
     }
-    
+     
     /**
-     * @return true if Table is importable.
+     * @return true if all required local (excluding foreign keys) fields for the table are 
+     * in the dataset. 
      */
-    public boolean isImportable()
-    {
-        return requiredFldsArePresent();
-    }
-
-    /**
-     * @return
-     */
-    protected boolean requiredFldsArePresent()
+    protected boolean requiredLocalFldsArePresent()
     {
         return true;
     }
 
+    protected Vector<Field> getMissingReqLocalFlds()
+    {
+        return new Vector<Field>();
+    }
+    
+    
+    @SuppressWarnings("unused")
+    public Vector<InvalidStructure> validateStructure() throws UploaderException
+    {
+        Vector<InvalidStructure> result = new Vector<InvalidStructure>();
+        if (!requiredLocalFldsArePresent())
+        {
+            for (Field fld : getMissingReqLocalFlds())
+            {
+                String tblTitle = getTable().getTableInfo().getTitle();
+                String fldTitle = fld.getFieldInfo().getTitle();
+                String msg = getResourceString("WB_UPLOAD_MISSING_FLD") + ": " + tblTitle + "." + fldTitle;
+                result.add(new InvalidStructure(msg, this));
+            }
+        }
+        return result;
+    }
+    
     /**
      * @param field
      */
@@ -2151,27 +2169,13 @@ public class UploadTable implements Comparable<UploadTable>
     @Override
     public String toString()
     {
-//        if (tblClass.equals(Agent.class))
-//        {
-//            if (relationship.getRelatedField().getFieldInfo() != null)
-//            {
-//                return relationship.getRelatedField().getFieldInfo().getTitle();
-//            }
-//            DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByShortClassName(tblClass.getSimpleName());
-//            DBFieldInfo fldInfo = tblInfo.getFieldByColumnName(relationship.getRelatedField().getName());
-//            if (fldInfo != null)
-//            {
-//                return fldInfo.getTitle();
-//            }
-//            List<DBRelationshipInfo> rels = tblInfo.getRelationships();
-//            for (DBRelationshipInfo rel : rels)
-//            {
-//                System.out.println(rel.getName() + ", " + rel.getColName() + ", " + rel.getOtherSide() + ", " + rel.getClassName());
-//            }
-//            return "Blunderous Moo Cow";
-//        }
-        return DBTableIdMgr.getInstance().getByShortClassName(tblClass.getSimpleName()).getTitle();
-    }
+        String result = DBTableIdMgr.getInstance().getByShortClassName(tblClass.getSimpleName()).getTitle();
+        if (tblClass.equals(Agent.class))
+        {
+            result += " (" + relationship.getRelatedField().getTable().getTableInfo().getTitle() + ")";
+        }
+        return result;
+     }
     
     public UploadMatchSetting getMatchSetting()
     {

@@ -35,7 +35,7 @@ public class TrayListCellRenderer extends DefaultListCellRenderer
     {
         super();
         
-        // remember, DefaultListCellRenderer extends JLabel,
+        // lookup, DefaultListCellRenderer extends JLabel,
         // so we can set any JLabel properties we want
         this.setVerticalTextPosition(SwingConstants.BOTTOM);
         this.setHorizontalTextPosition(SwingConstants.CENTER);

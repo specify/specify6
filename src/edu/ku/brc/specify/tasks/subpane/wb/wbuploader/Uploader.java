@@ -157,7 +157,8 @@ public class Uploader implements ActionListener, WindowStateListener
 
     protected static final Logger log = Logger.getLogger(Uploader.class);
    
-    private class SkippedRow implements UploadMessage
+    
+   private class SkippedRow implements UploadMessage
     {
         protected UploaderException cause;
         protected int row;
@@ -225,6 +226,7 @@ public class Uploader implements ActionListener, WindowStateListener
     
     protected Vector<UploadMessage> messages;
     protected Vector<UploadMessage> newMessages;
+    
     
     /**
      * @return dataValidated
@@ -765,7 +767,8 @@ public class Uploader implements ActionListener, WindowStateListener
 
 			UploadTableTree it = new UploadTableTree(rankTbl, baseTbl,
 					parentImpTbl, treeMap.getLevels().get(level).get(0).isRequired(),
-                    treeMap.getLevels().get(level).get(0).getRank());
+                    treeMap.getLevels().get(level).get(0).getRank(), 
+                    treeMap.getLevels().get(level).get(0).getWbFldName());
             it.init();
 			
 			// add ImportFields for new table
@@ -1127,17 +1130,38 @@ public class Uploader implements ActionListener, WindowStateListener
 	}
     
 	
+    /**
+     * @return (eventually) tables that, if added to the dataset, will
+     * probably make the dataset stucturally sufficient for upload. 
+     */
+    protected Vector<Table> getMissingTbls()
+    {
+        Vector<Table> result = new Vector<Table>();
+        //just add dummy value for now
+        result.add(null);
+        return result;
+    }
 	/**
 	 * @return true if the import mapping and graph are OK.
+     * Also saves messages for each problem. 
 	 */
-	public boolean validateStructure() throws UploaderException
+	public Vector<UploadMessage> validateStructure() throws UploaderException
 	{
+        Vector<UploadMessage> errors = new Vector<UploadMessage>();
         try
         {
             if (!uploadGraph.isConnected())
             {
-                System.out.println("some tables are missing or something.");
-                return false;
+                for (Table tbl : getMissingTbls())
+                {
+                    String msg = getResourceString("WB_UPLOAD_MISSING_TBL");
+                    if (tbl != null)
+                    {
+                        msg += " (" + tbl.getTableInfo().getTitle() + ")";
+                    }
+                    errors.add(new InvalidStructure(msg, tbl));
+                }
+                
             }
         }
         catch (DirectedGraphException ex)
@@ -1146,9 +1170,15 @@ public class Uploader implements ActionListener, WindowStateListener
         }
         for (UploadTable t : uploadTables)
         {
-            if (!t.isImportable()) { return false; }
+           errors.addAll(t.validateStructure());
         }
-        return true;
+        
+//        for (UploadMessage msg : errors)
+//        {
+//            addMsg(msg);
+//        }
+        
+        return errors;
     }
     
         
@@ -1509,33 +1539,35 @@ public class Uploader implements ActionListener, WindowStateListener
     
     protected void showSettings()
     {
-        //resolver.resolve(!currentOp.equals(Uploader.READY_TO_UPLOAD) && !currentOp.equals(Uploader.USER_INPUT));
-
         boolean readOnly = !currentOp.equals(Uploader.READY_TO_UPLOAD) && !currentOp.equals(Uploader.USER_INPUT);
         UploadSettingsPanel usp = new UploadSettingsPanel(uploadTables);
         usp.buildUI(resolver, readOnly);
         CustomDialog cwin;
         if (!readOnly)
         {
-            cwin = new CustomDialog(mainForm, getResourceString("WB_UPLOAD_SETTINGS"), true, usp); // i18n
+            cwin = new CustomDialog(mainForm, getResourceString("WB_UPLOAD_SETTINGS"), true, usp); 
         }
         else
         {
-            cwin = new CustomDialog(mainForm, getResourceString("WB_UPLOAD_SETTINGS"), true, CustomDialog.OK_BTN, usp, CustomDialog.OK_BTN); // i18n
+            cwin = new CustomDialog(mainForm, getResourceString("WB_UPLOAD_SETTINGS"), true, CustomDialog.OK_BTN, usp, CustomDialog.OK_BTN); 
         }
             
         cwin.setModal(true);
         UIHelper.centerAndShow(cwin);
+        if (!cwin.isCancelled())
+        {
+            usp.getMatchPanel().apply();
+        }
         cwin.dispose();
-//        for (UploadTable tbl : uploadTables)
-//        {
-//            System.out.println(tbl);
-//            UploadMatchSetting matchSets = tbl.getMatchSetting();
-//            System.out.println("    matchEmptyValues: " + matchSets.matchEmptyValues);
-//            System.out.println("    remember: " + matchSets.isRemember());
-//            System.out.println("    blanks: " + matchSets.isMatchEmptyValues());
-//            System.out.println("    mode: " + UploadMatchSetting.getModeText(matchSets.getMode()));
-//        }
+        for (UploadTable tbl : uploadTables)
+        {
+            System.out.println(tbl);
+            UploadMatchSetting matchSets = tbl.getMatchSetting();
+            System.out.println("    matchEmptyValues: " + matchSets.matchEmptyValues);
+            System.out.println("    remember: " + matchSets.isRemember());
+            System.out.println("    blanks: " + matchSets.isMatchEmptyValues());
+            System.out.println("    mode: " + UploadMatchSetting.getModeText(matchSets.getMode()));
+        }
     }
 
     /**
@@ -1674,7 +1706,6 @@ public class Uploader implements ActionListener, WindowStateListener
     protected void buildMainUI()
     {
         mainForm = new UploadMainForm();
-        mainForm.buildUI();
          
         SortedSet<UploadInfoRenderable> uts = new TreeSet<UploadInfoRenderable>();
         for (UploadTable ut : uploadTables)
@@ -2283,3 +2314,4 @@ public class Uploader implements ActionListener, WindowStateListener
         }
     }
 }
+

@@ -24,7 +24,6 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -39,13 +38,15 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.ui.CustomFrame;
+
 /**
  * @author timbo
  *
  * @code_status Alpha
  *
  */
-public class UploadMainForm extends JFrame
+public class UploadMainForm extends CustomFrame
 {
     private static final Logger log = Logger.getLogger(UploadMainForm.class);
 
@@ -82,6 +83,12 @@ public class UploadMainForm extends JFrame
      */
     protected ActionListener listener = null;
     
+    
+    public UploadMainForm()
+    {
+        super(getResourceString("WB_UPLOAD_MAINFORM_TITLE"), 0, null);
+        buildUI();
+     }
     /**
      * Builds the form.
      */
@@ -342,11 +349,13 @@ public class UploadMainForm extends JFrame
 
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         
-        setContentPane(pb.getPanel());
+        //setContentPane(pb.getPanel());
+        contentPanel = pb.getPanel();
+        createUI();
         pack();
         
         setSize(600,550);
-        setTitle("WorkBench Upload Validation"); // I18N
+        //setTitle("WorkBench Upload Validation"); // I18N
     }
 
     
@@ -385,6 +394,7 @@ public class UploadMainForm extends JFrame
     /**
      * @return the cancelBtn
      */
+    @Override
     public JButton getCancelBtn()
     {
         return cancelBtn;

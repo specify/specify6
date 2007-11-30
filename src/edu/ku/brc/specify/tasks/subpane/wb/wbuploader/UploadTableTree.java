@@ -9,12 +9,15 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Comparator;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.Vector;
 
 import org.hibernate.NonUniqueResultException;
 
@@ -45,6 +48,7 @@ public class UploadTableTree extends UploadTable
 	protected Table baseTable; 
 	protected UploadTableTree parent;
     protected Integer rank;
+    protected String wbLevelName;
     protected Treeable treeRoot;    
     protected SortedSet<Treeable> defaultParents;
     private static GeographyTreeDef geoTreeDef = null;
@@ -59,13 +63,15 @@ public class UploadTableTree extends UploadTable
 	 * @param required
 	 * @param rank
 	 */
-	public UploadTableTree(Table table, Table baseTable, UploadTableTree parent, boolean required, Integer rank) 
+	public UploadTableTree(Table table, Table baseTable, UploadTableTree parent, boolean required, Integer rank,
+                           String wbLevelName) 
 	{
 		super(table, null);
         this.baseTable = baseTable;
 		this.parent = parent;
 		this.required = required;
         this.rank = rank;
+        this.wbLevelName = wbLevelName;
         defaultParents = new TreeSet<Treeable>(new RankComparator());
 	}
 
@@ -498,5 +504,17 @@ public class UploadTableTree extends UploadTable
         {
             return super.toString();
         }
+    }
+
+    @Override
+    public Vector<InvalidStructure> validateStructure() throws UploaderException
+    {
+        Vector<InvalidStructure> result = super.validateStructure();
+        if (getTreeDefItem() == null)
+        {
+            String msg = getResourceString("WB_UPLOAD_NO_DEFITEM") + " (" + wbLevelName + ")";
+            result.add(new InvalidStructure(msg, this));            
+        }
+        return result;
     }
 }

@@ -9,6 +9,7 @@ package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.TreeSet;
@@ -38,6 +39,7 @@ public class UploadMatchSettingsPanel extends JPanel implements ActionListener
     protected TableModel tblModel;
     protected JTable tblTbl;
     protected JButton applyBtn;
+    protected JLabel caption;
     
     protected final Vector<UploadTable> tables;
     
@@ -79,7 +81,7 @@ public class UploadMatchSettingsPanel extends JPanel implements ActionListener
         }
     }
     
-    public UploadMatchSettingsPanel(final Vector<UploadTable> tables, boolean readOnly)
+    public UploadMatchSettingsPanel(final Vector<UploadTable> tables, boolean readOnly, boolean showApplyBtn)
     {
         //display tables alphabetically
         this.tables = new Vector<UploadTable>(new TreeSet<UploadTable>(tables));
@@ -95,7 +97,7 @@ public class UploadMatchSettingsPanel extends JPanel implements ActionListener
         headers.add(getResourceString("WB_MATCH_MODE_CAPTION"));
         headers.add(getResourceString("WB_UPLOAD_MATCH_REMEMBER_CAPTION"));
         headers.add(getResourceString("WB_UPLOAD_MATCH_BLANKS_CAPTION"));
-        headers.add(getResourceString("WB_UPLOAD_MATCH_FLDS_CAPTION"));
+        //headers.add(getResourceString("WB_UPLOAD_MATCH_FLDS_CAPTION"));
         
         Vector<Vector<String>> rows = new Vector<Vector<String>>();
         for (UploadTable tbl : this.tables)
@@ -105,7 +107,7 @@ public class UploadMatchSettingsPanel extends JPanel implements ActionListener
             row.add(modeTexts.getElementAt(tbl.getMatchSetting().getMode()).toString());
             row.add(Boolean.toString(tbl.getMatchSetting().isRemember()));
             row.add(Boolean.toString(tbl.getMatchSetting().isMatchEmptyValues()));
-            row.add(getResourceString("WB_UPLOAD_MATCH_ALL"));
+            //row.add(getResourceString("WB_UPLOAD_MATCH_ALL"));
             rows.add(row);
         }
         
@@ -150,11 +152,23 @@ public class UploadMatchSettingsPanel extends JPanel implements ActionListener
         }
         tblTbl = new JTable(tblModel);
         setLayout(new BorderLayout());
-        JScrollPane sp = new JScrollPane(tblTbl, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        JScrollPane sp = new JScrollPane(tblTbl, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         add(sp, BorderLayout.CENTER);
-        applyBtn = new JButton(getResourceString("Apply"));
-        applyBtn.setActionCommand("APPLY");
-        applyBtn.addActionListener(this);
-        add(applyBtn, BorderLayout.SOUTH);
+        
+        caption = new JLabel(getResourceString("WB_UPLOAD_MATCH_SETTINGS") + ":");
+        caption.setFont(caption.getFont().deriveFont(Font.BOLD));
+        add(caption, BorderLayout.NORTH);
+        
+        if (showApplyBtn)
+        {
+            applyBtn = new JButton(getResourceString("Apply"));
+            applyBtn.setActionCommand("APPLY");
+            applyBtn.addActionListener(this);
+            add(applyBtn, BorderLayout.SOUTH);
+        }
+        else
+        {
+            applyBtn = null;
+        }
     }    
 }

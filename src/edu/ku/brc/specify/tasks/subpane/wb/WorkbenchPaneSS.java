@@ -65,6 +65,7 @@ import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
@@ -137,12 +138,11 @@ import edu.ku.brc.specify.exporters.GoogleEarthPlacemarkIFace;
 import edu.ku.brc.specify.exporters.WorkbenchRowPlacemarkWrapper;
 import edu.ku.brc.specify.tasks.ExportTask;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
-import edu.ku.brc.specify.tasks.subpane.wb.graph.DirectedGraphException;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.DB;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadData;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMappingDef;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMessage;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploaderException;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.WorkbenchUploadMapper;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.specify.ui.LengthInputVerifier;
@@ -2772,7 +2772,15 @@ public class WorkbenchPaneSS extends BaseSubPane
                                                    JOptionPane.YES_NO_CANCEL_OPTION);
             if (rv == JOptionPane.YES_OPTION)
             {
-                saveObject();
+                UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_SAVING"), new Object[] { workbench.getName()}), WorkbenchTask.GLASSPANE_FONT_SIZE);            
+                try
+                {
+                    saveObject();
+                }
+                finally
+                {
+                    UIRegistry.clearGlassPaneMsg();
+                }
             }
             else if (rv == JOptionPane.CANCEL_OPTION)
             {
@@ -2994,23 +3002,35 @@ public class WorkbenchPaneSS extends BaseSubPane
             DB db = new DB();
             dataSetUploader = new Uploader(db, new UploadData(maps, workbench.getWorkbenchRowsAsList()), this);
             dataSetUploader.prepareToUpload();
-            if (!dataSetUploader.validateStructure()) { throw new UploaderException(
-                    "Invalid dataset structure", UploaderException.ABORT_IMPORT); // i18n
+            Vector<UploadMessage> structureErrors = dataSetUploader.validateStructure();
+            if (structureErrors.size() > 0) 
+            { 
+                JPanel pane = new JPanel(new BorderLayout());
+                pane.add(new JLabel(getResourceString("WB_UPLOAD_BAD_STRUCTURE_MSG") + ":"), BorderLayout.NORTH);
+                pane.add(new JList(structureErrors), BorderLayout.CENTER);
+                CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(),
+                        getResourceString("WB_UPLOAD_BAD_STRUCTURE_DLG"),
+                        true,
+                        CustomDialog.OKHELP,
+                        pane);
+                UIHelper.centerAndShow(dlg);
+                dlg.dispose();
             }
-            dataSetUploader.getDefaultsForMissingRequirements();
+            else
+            {
+                dataSetUploader.getDefaultsForMissingRequirements();
+            }
         }
-        catch (DirectedGraphException ex)
+        catch (Exception ex)
         {
-            UIRegistry.clearGlassPaneMsg();
             UIRegistry.getStatusBar().setErrorMessage(ex.getMessage());
         }
-        catch (UploaderException ex)
+        finally
         {
             UIRegistry.clearGlassPaneMsg();
-            UIRegistry.getStatusBar().setErrorMessage(ex.getMessage());
         }
     }
-
+    
     public void uploadDone()
     {
         dataSetUploader = null;

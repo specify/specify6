@@ -11,6 +11,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -32,6 +33,7 @@ import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
 public class MatchHandler 
@@ -152,13 +154,13 @@ public class MatchHandler
             title = ti.getTitle();
         }
 
-        matchDlg = new CustomDialog(null, title, true, CustomDialog.OKCANCELAPPLYHELP, pane, CustomDialog.OK_BTN);
-        matchDlg.createUI();
+        matchDlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), title, true, CustomDialog.OKCANCELAPPLYHELP, pane, CustomDialog.OK_BTN);
         matchDlg.setOkLabel(getResourceString("WB_UPLOAD_MATCH_SELECT_BTN"));
-        matchDlg.getOkBtn().setToolTipText(getResourceString("WB_UPLOAD_MATCH_SELECT_BTN_HINT"));
         matchDlg.setCancelLabel(getResourceString("WB_UPLOAD_MATCH_ADD_BTN"));
-        matchDlg.getCancelBtn().setToolTipText(getResourceString("WB_UPLOAD_MATCH_ADD_BTN_HINT"));
         matchDlg.setApplyLabel(getResourceString("WB_UPLOAD_MATCH_SKIPROW_BTN"));
+        matchDlg.createUI();
+        matchDlg.getOkBtn().setToolTipText(getResourceString("WB_UPLOAD_MATCH_SELECT_BTN_HINT"));
+        matchDlg.getCancelBtn().setToolTipText(getResourceString("WB_UPLOAD_MATCH_ADD_BTN_HINT"));
         matchDlg.getApplyBtn().setToolTipText(getResourceString("WB_UPLOAD_MATCH_SKIPROW_BTN_HINT"));
         matchDlg.getApplyBtn().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
