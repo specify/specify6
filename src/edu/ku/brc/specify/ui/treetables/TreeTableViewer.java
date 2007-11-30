@@ -196,6 +196,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         
         // TODO: implement some UI to let the user set this pref
         restoreTreeState = AppPreferences.getRemote().getBoolean("RestoreTreeExpansionState", false);
+        // then take out this line
         restoreTreeState = true;
         
         selNodePrefName = "selected_node:" + treeDef.getClass().getSimpleName() + ":" + treeDef.getTreeDefId();
