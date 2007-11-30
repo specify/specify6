@@ -71,7 +71,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
         
         // This is an arbitrary number.  Trial and error will determine a good value.  This determines
         // the number of IDs that wind up in the "IN" clause of the query run inside okToDelete().
-        int chunkSize = 5;
+        int chunkSize = 250;
         int lastRecordChecked = -1;
 
         boolean childrenDeletable = true;
