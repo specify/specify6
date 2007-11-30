@@ -517,4 +517,20 @@ public class UploadTableTree extends UploadTable
         }
         return result;
     }
+    
+    /**
+     * @param fldName
+     * @return true if a field named fldname is in the uploading dataset, or if it is filled programmitically..
+     */
+    @Override
+    protected boolean fldInDataset(final String fldName)
+    {
+        boolean result = super.fldInDataset(fldName);
+        if (!result)
+        {
+            result = fldName.equalsIgnoreCase("fullname") || fldName.equalsIgnoreCase("rankid");
+        }
+        return result;
+    }
+
 }
