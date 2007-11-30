@@ -645,8 +645,6 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 	public void setAcceptedTaxon(Taxon acceptedTaxon)
 	{
 		this.acceptedTaxon = acceptedTaxon;
-        boolean accepted = (acceptedTaxon == null);
-        setIsAccepted(accepted);
 	}
 
     @Transient

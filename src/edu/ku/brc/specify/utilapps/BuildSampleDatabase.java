@@ -1869,11 +1869,13 @@ public class BuildSampleDatabase
         fusus.setCommonName("Blue runner");
         Taxon crysos = (Taxon)newObjs.get(baseInx);
         fusus.setAcceptedTaxon(crysos);
+        fusus.setIsAccepted(false);
         
         Taxon carangus = createTaxon(taxonTreeDef, caranx, "carangus", TaxonTreeDef.SPECIES);
         carangus.setCommonName("Blacktailed trevally");
         Taxon hippos = (Taxon)newObjs.get(baseInx+2);
         carangus.setAcceptedTaxon(hippos);
+        carangus.setIsAccepted(false);
         
         Taxon etheostoma = createTaxon(taxonTreeDef, percidae, "Etheostoma", TaxonTreeDef.GENUS);
         etheostoma.setCommonName("smoothbelly darters");
@@ -1882,21 +1884,25 @@ public class BuildSampleDatabase
         meridianum.setCommonName("southern sand darter");
         Taxon merdiana = (Taxon)newObjs.get(baseInx-8);
         merdiana.setAcceptedTaxon(meridianum);
+        merdiana.setIsAccepted(false);
         
         Taxon pellucidum = createTaxon(taxonTreeDef, etheostoma, "pellucidum", TaxonTreeDef.SPECIES);
         pellucidum.setCommonName("eastern sand darter");
         Taxon pellucida = (Taxon)newObjs.get(baseInx-7);
         pellucidum.setAcceptedTaxon(pellucida);
+        pellucidum.setIsAccepted(false);
         
         Taxon ethVivax = createTaxon(taxonTreeDef, etheostoma, "vivax", TaxonTreeDef.SPECIES);
         ethVivax.setCommonName("scaly sand darter");
         Taxon vivax = (Taxon)newObjs.get(baseInx-6);
         ethVivax.setAcceptedTaxon(vivax);
+        ethVivax.setIsAccepted(false);
         
         Taxon beani = createTaxon(taxonTreeDef, ammocrypta, "beani", TaxonTreeDef.SPECIES);
         beani.setCommonName("naked sand darter");
         Taxon beanii = (Taxon)newObjs.get(baseInx-11);
         beani.setAcceptedTaxon(beanii);
+        beani.setIsAccepted(false);
         
         Taxon crystallaria = createTaxon(taxonTreeDef, percidae, "Crystallaria", TaxonTreeDef.GENUS);
         crystallaria.setCommonName("crystal darters");
@@ -1905,6 +1911,7 @@ public class BuildSampleDatabase
         crysAsprella.setCommonName("crystal darter");
         Taxon asprella = (Taxon)newObjs.get(baseInx-12);
         asprella.setAcceptedTaxon(crysAsprella);
+        asprella.setIsAccepted(false);
 
         newObjs.add(fusus);
         newObjs.add(carangus);
