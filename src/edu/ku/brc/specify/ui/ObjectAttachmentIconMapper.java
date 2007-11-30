@@ -60,7 +60,7 @@ public class ObjectAttachmentIconMapper implements ObjectIconMapper, ObjectTextM
                 }
             }
             
-            return (title != null) ? title : filename;
+            return (title != null && title.trim().length() > 0) ? title : filename;
         }
 
         return null;
