@@ -388,6 +388,7 @@ public class CollectingEvent extends CollectionMember implements AttachmentOwner
      * 
      */
     @OneToMany(mappedBy = "collectingEvent")
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     public Set<CollectionObject> getCollectionObjects() {
         return this.collectionObjects;
     }
