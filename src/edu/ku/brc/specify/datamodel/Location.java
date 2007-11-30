@@ -147,7 +147,7 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
 		this.locationId = locationId;
 	}
 
-    @Column(name = "Name", length = 64)
+    @Column(name = "Name", nullable=false, length = 64)
 	public String getName()
 	{
 		return this.name;
@@ -161,7 +161,7 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
 	/**
 	 * @return the fullName
 	 */
-    @Column(name = "FullName", length = 255)
+    @Column(name = "FullName", nullable=false, length = 255)
 	public String getFullName()
 	{
 		return fullName;
@@ -187,7 +187,7 @@ public class Location extends DataModelObjBase implements Serializable, Treeable
 		this.remarks = remarks;
 	}
 
-    @Column(name = "RankID", length = 10)
+    @Column(name = "RankID", nullable=false)
 	public Integer getRankId()
 	{
 		return this.rankId;

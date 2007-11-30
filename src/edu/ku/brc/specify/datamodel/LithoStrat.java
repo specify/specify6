@@ -171,7 +171,7 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
 	/**
 	 * 
 	 */
-    @Column(name = "RankID", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
+    @Column(name = "RankID", nullable=false)
 	public Integer getRankId()
 	{
 		return this.rankId;
@@ -185,7 +185,7 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
 	/**
 	 * 
 	 */
-    @Column(name = "Name", length = 64)
+    @Column(name = "Name", nullable=false, length = 64)
 	public String getName()
 	{
 		return this.name;
@@ -199,7 +199,7 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
 	/**
 	 * @return the fullName
 	 */
-    @Column(name = "FullName", length = 255)
+    @Column(name = "FullName", nullable=false, length = 255)
 	public String getFullName()
 	{
 		return fullName;

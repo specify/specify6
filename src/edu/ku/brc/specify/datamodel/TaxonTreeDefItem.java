@@ -112,7 +112,7 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 		this.taxonTreeDefItemId = taxonTreeDefItemId;
 	}
 
-    @Column(name = "Name", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    @Column(name = "Name", nullable=false, length = 64)
 	public String getName()
 	{
 		return this.name;
@@ -135,7 +135,7 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 		this.remarks = remarks;
 	}
 
-    @Column(name = "RankID", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "RankID", nullable=false)
 	public Integer getRankId()
 	{
 		return this.rankId;

@@ -151,7 +151,7 @@ public class GeologicTimePeriodTreeDefItem extends DataModelObjBase implements S
 	/**
 	 * 
 	 */
-    @Column(name = "Name", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    @Column(name = "Name", nullable=false, length = 64)
 	public String getName()
 	{
 		return this.name;
@@ -180,7 +180,7 @@ public class GeologicTimePeriodTreeDefItem extends DataModelObjBase implements S
 	/**
 	 * 
 	 */
-    @Column(name = "RankID", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "RankID", nullable=false)
 	public Integer getRankId()
 	{
 		return this.rankId;

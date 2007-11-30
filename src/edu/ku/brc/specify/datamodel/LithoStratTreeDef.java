@@ -131,7 +131,7 @@ public class LithoStratTreeDef extends DataModelObjBase implements java.io.Seria
 	/**
 	 * 
 	 */
-    @Column(name = "Name", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    @Column(name = "Name", nullable=false, length = 64)
 	public String getName()
 	{
 		return this.name;

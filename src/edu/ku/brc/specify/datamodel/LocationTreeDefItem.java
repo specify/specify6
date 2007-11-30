@@ -134,7 +134,7 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
 		this.locationTreeDefItemId = locationTreeDefItemId;
 	}
 
-    @Column(name = "Name", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    @Column(name = "Name", nullable=false, length = 64)
 	public String getName()
 	{
 		return this.name;
@@ -157,7 +157,7 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
 		this.remarks = remarks;
 	}
 
-    @Column(name = "RankID", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "RankID", nullable=false)
 	public Integer getRankId()
 	{
 		return this.rankId;

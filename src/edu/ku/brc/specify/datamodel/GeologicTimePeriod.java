@@ -180,7 +180,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
     /**
      * 
      */
-    @Column(name = "RankID")
+    @Column(name = "RankID", nullable=false)
     public Integer getRankId()
     {
         return this.rankId;
@@ -194,7 +194,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
     /**
      * 
      */
-    @Column(name = "Name", length = 64)
+    @Column(name = "Name", nullable=false, length = 64)
     public String getName()
     {
         return this.name;
@@ -208,7 +208,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
     /**
      * @return the fullName
      */
-    @Column(name = "FullName", length = 255)
+    @Column(name = "FullName", nullable=false, length = 255)
     public String getFullName()
     {
         return fullName;
