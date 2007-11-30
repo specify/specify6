@@ -1,5 +1,6 @@
 package edu.ku.brc.specify.ui.treetables;
 
+import java.util.Iterator;
 import java.util.Set;
 
 import edu.ku.brc.util.Pair;
@@ -142,6 +143,19 @@ public class TreeNode
     public Set<Pair<Integer, String>> getSynonymIdsAndNames()
     {
         return synonymIdsAndNames;
+    }
+    
+    public void removeSynonym(Integer synonymNodeId)
+    {
+        Iterator<Pair<Integer,String>> iter = synonymIdsAndNames.iterator();
+        while( iter.hasNext() )
+        {
+            if (iter.next().first.equals(synonymNodeId))
+            {
+                iter.remove();
+                return;
+            }
+        }
     }
 
     public void setSynonymIdsAndNames(Set<Pair<Integer, String>> synonymIdsAndNames)

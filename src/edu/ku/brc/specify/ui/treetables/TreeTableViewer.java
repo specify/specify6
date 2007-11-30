@@ -1373,20 +1373,22 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		}
 		
         // note some node values so we can see if they change
-		String nodeNameBefore = node.getName();
-		Integer parentIdBefore = (node.getParent() != null) ? node.getParent().getTreeId() : null;
+		String nodeNameBefore               = node.getName();
+		Integer parentIdBefore              = (node.getParent() != null) ? node.getParent().getTreeId() : null;
+        final Integer acceptedNodeIdBefore  = (node.getAcceptedParent() != null) ? node.getAcceptedParent().getTreeId() : null;
 		
-		// show the dialog
+		// show the dialog (which allows all user edits to happen)
 		dialog.setVisible(true);
 		
 		// see what important stuff was modified
-		String nodeNameAfter  = node.getName();
-		Integer parentIdAfter = (node.getParent() != null) ? node.getParent().getTreeId() : null;
-		boolean nameChanged   = !nodeNameBefore.equals(nodeNameAfter);
-		boolean parentChanged = (parentIdBefore == null && parentIdAfter != null) ||
-		                        (parentIdBefore != null && parentIdAfter == null) ||
-		                        (parentIdBefore != null && parentIdAfter != null && parentIdBefore.longValue() != parentIdAfter.longValue());
-		
+		String nodeNameAfter          = node.getName();
+		Integer parentIdAfter         = (node.getParent() != null) ? node.getParent().getTreeId() : null;
+        final boolean acceptedAfter   = (node.getIsAccepted() != null) ? node.getIsAccepted() : true;
+		boolean nameChanged           = !nodeNameBefore.equals(nodeNameAfter);
+		boolean parentChanged         = (parentIdBefore == null && parentIdAfter != null) ||
+		                                (parentIdBefore != null && parentIdAfter == null) ||
+		                                (parentIdBefore != null && parentIdAfter != null && parentIdBefore.longValue() != parentIdAfter.longValue());
+
 		log.debug("nameChange:    " + nameChanged);
 		log.debug("parentChanged: " + parentChanged);
 		
@@ -1480,6 +1482,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                     // now refresh the tree viewer
                     if (success)
                     {
+                        TreeNode editedNode = listModel.getNodeById(mergedNode.getTreeId());
+                        
                         if (isNewObject)
                         {
                             // show the children of the 
@@ -1495,11 +1499,23 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                         else
                         {
                             // this was an existing node being edited
-                            TreeNode editedNode = listModel.getNodeById(mergedNode.getTreeId());
                             editedNode.setName(mergedNode.getName());
                             editedNode.setRank(mergedNode.getRankId());
                             listModel.nodeValuesChanged(editedNode);
                         }
+                        
+                        if (acceptedAfter && acceptedNodeIdBefore != null)
+                        {
+                            // This node used to be synonymized to another node, but now it isn't.
+                            // Update the UI of both nodes.
+                            TreeNode acceptedParentBefore = listModel.getNodeById(acceptedNodeIdBefore);
+                            acceptedParentBefore.removeSynonym(editedNode.getId());
+                            editedNode.setAcceptedParentFullName(null);
+                            editedNode.setAcceptedParentId(null);
+                            listModel.nodeValuesChanged(acceptedParentBefore);
+                            listModel.nodeValuesChanged(editedNode);
+                        }
+
 
                         if (!afterSaveSuccess)
                         {
