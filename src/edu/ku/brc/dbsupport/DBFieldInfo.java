@@ -47,6 +47,7 @@ public class DBFieldInfo extends DBInfoBase
     // Transient
     protected UIFieldFormatterIFace formatter  = null;
     protected String                formatStr  = null;
+    protected Class<?>              dataClass  = null;
     
     
 
@@ -165,32 +166,35 @@ public class DBFieldInfo extends DBInfoBase
 
     public Class<?> getDataClass()
     {
-        if (StringUtils.isNotEmpty(type))
+        if (dataClass == null)
         {
-            if (type.equals("calendar_date"))
+            if (StringUtils.isNotEmpty(type))
             {
-                return Calendar.class;
-                
-            } else if (type.equals("text"))
-            {
-                return String.class;
-                
-            } else if (type.equals("boolean"))
-            {
-                return Boolean.class;
-                
-            } else
-            {
-                try
+                if (type.equals("calendar_date"))
                 {
-                    return Class.forName(type);
+                    dataClass = Calendar.class;
                     
-                } catch (Exception e)
+                } else if (type.equals("text"))
                 {
-                    log.error(e);
+                    dataClass = String.class;
+                    
+                } else if (type.equals("boolean"))
+                {
+                    dataClass = Boolean.class;
+                    
+                } else
+                {
+                    try
+                    {
+                        dataClass = Class.forName(type);
+                        
+                    } catch (Exception e)
+                    {
+                        log.error(e);
+                    }
                 }
             }
         }
-        return null;
+        return dataClass;
     }
 }

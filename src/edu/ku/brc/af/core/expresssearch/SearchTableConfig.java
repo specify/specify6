@@ -299,7 +299,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
         String[] terms = StringUtils.split(searchTerm, ' ');
         for (String term : terms)
         {
-            log.debug(term);
+            //log.debug(term);
             boolean isNumeric;
             boolean hasDecimalPoint = false;
             
@@ -354,10 +354,10 @@ public class SearchTableConfig implements DisplayOrderingIFace,
                         
                     } else 
                     {
-                        if (fi.getDataClass() == String.class)
+                        /*if (fi.getDataClass() == String.class)
                         {
                             log.error("Handling class ["+fi.getDataClass()+"] as a String");
-                        }
+                        }*/
                         clause = "lower(" + fi.getColumn() + ") like " + "'%" + term + "%'";
                     }
     

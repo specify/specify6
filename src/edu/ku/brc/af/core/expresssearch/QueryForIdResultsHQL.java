@@ -197,14 +197,8 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
                                                           true,
                                                           dfc.getFieldInfo().getFormatter(), 
                                                           i+1);
-            try
-            {
-                caption.setColClass(Class.forName(dfc.getFieldInfo().getType()));
+            caption.setColClass(dfc.getFieldInfo().getDataClass());
                 
-            } catch (ClassNotFoundException ex)
-            {
-                ex.printStackTrace();
-            }
             captions.add(caption);
             i++;
         }

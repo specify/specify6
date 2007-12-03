@@ -741,7 +741,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
             instance.sqlResultsCount--;
         }
         
-        System.out.println(instance.sqlResultsCount+"  "+decrement);
+        //System.out.println(instance.sqlResultsCount+"  "+decrement);
         if (instance.sqlResultsCount < 1)
         {
             searchText.setEnabled(true);
