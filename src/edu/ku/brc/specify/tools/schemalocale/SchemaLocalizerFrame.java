@@ -29,6 +29,9 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+
 import com.apple.eawt.Application;
 import com.apple.eawt.ApplicationAdapter;
 import com.apple.eawt.ApplicationEvent;
@@ -62,6 +65,8 @@ import edu.ku.brc.ui.forms.persist.FormViewDef.JGDefItem;
  */
 public class SchemaLocalizerFrame extends LocalizableBaseApp
 {
+    private static final Logger  log                = Logger.getLogger(SchemaLocalizerFrame.class);
+            
     protected SchemaLocalizerPanel schemaLocPanel;
     
     protected JStatusBar           statusBar     = new JStatusBar(new int[] {5,5});
@@ -375,7 +380,40 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
      */
     public static void main(String[] args)
     {
-        
+        log.debug("********* Current ["+(new File(".").getAbsolutePath())+"]");
+        // This is for Windows and Exe4J, turn the args into System Properties
+        for (String s : args)
+        {
+            String[] pairs = s.split("=");
+            if (pairs.length == 2)
+            {
+                log.debug("["+pairs[0]+"]["+pairs[1]+"]");
+                if (pairs[0].startsWith("-D"))
+                {
+                    System.setProperty(pairs[0].substring(2, pairs[0].length()), pairs[1]);
+                } 
+            }
+        }
+
+        // Now check the System Properties
+        String appDir = System.getProperty("appdir");
+        if (StringUtils.isNotEmpty(appDir))
+        {
+            UIRegistry.setDefaultWorkingPath(appDir);
+        }
+
+        String appdatadir = System.getProperty("appdatadir");
+        if (StringUtils.isNotEmpty(appdatadir))
+        {
+            UIRegistry.setBaseAppDataDir(appdatadir);
+        }
+
+        String javadbdir = System.getProperty("javadbdir");
+        if (StringUtils.isNotEmpty(javadbdir))
+        {
+            UIRegistry.setJavaDBDir(javadbdir);
+        }
+
         SwingUtilities.invokeLater(new Runnable()
         {
             public void run()
@@ -385,9 +423,10 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
                 UIRegistry.setAppName("Specify"); 
                 
                 // Then set this
-                IconManager.setApplicationClass(Specify.class);
-                IconManager.loadIcons(XMLHelper.getConfigDir("icons_datamodel.xml"));
-                IconManager.loadIcons(XMLHelper.getConfigDir("icons_plugins.xml"));
+              IconManager.setApplicationClass(Specify.class);
+              IconManager.loadIcons(XMLHelper.getConfigDir("icons_datamodel.xml"));
+              IconManager.loadIcons(XMLHelper.getConfigDir("icons_plugins.xml"));
+              IconManager.loadIcons(XMLHelper.getConfigDir("icons_disciplines.xml"));
                 
                 try
                 {
@@ -406,8 +445,6 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
                         //PlasticLookAndFeel.setPlasticTheme(new ExperienceBlue());
                         //PlasticLookAndFeel.setPlasticTheme(new ExperienceRoyale());
                         UIManager.setLookAndFeel(new PlasticLookAndFeel());
-                        
-                        
                     }
                 }
                 catch (Exception e)
