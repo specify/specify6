@@ -84,6 +84,7 @@ import edu.ku.brc.ui.forms.EditViewCompSwitcherPanel;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.Viewable;
+import edu.ku.brc.ui.forms.validation.UIValidator;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -1350,8 +1351,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		    if (viewable instanceof FormViewObj)
 		    {
                 FormViewObj form = (FormViewObj)viewable;
+                UIValidator.setIgnoreAllValidation(this, true);
 		        parentTask.adjustForm(form);
-                
+		        
                 if (isNewObject)
                 {
                     Component parentComp = form.getControlByName("parent");
@@ -1373,6 +1375,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                         }
                     }
                 }
+                UIValidator.setIgnoreAllValidation(this, false);
+
 		    }
 		}
 		
@@ -1381,6 +1385,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		Integer parentIdBefore              = (node.getParent() != null) ? node.getParent().getTreeId() : null;
         final Integer acceptedNodeIdBefore  = (node.getAcceptedParent() != null) ? node.getAcceptedParent().getTreeId() : null;
 		
+		dialog.pack();
 		// show the dialog (which allows all user edits to happen)
 		dialog.setVisible(true);
 		

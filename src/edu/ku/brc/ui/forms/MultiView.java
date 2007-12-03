@@ -512,7 +512,7 @@ public class MultiView extends JPanel
         {
             if (currentValidator != null)
             {
-                currentValidator.setFirstTime(false);
+                //currentValidator.setFirstTime(false);
     
                 if (currentValidator.hasChanged())
                 {

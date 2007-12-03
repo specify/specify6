@@ -62,7 +62,7 @@ public class ShipmentBusRules extends BaseBusRules
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#fillForm(java.lang.Object, edu.ku.brc.ui.forms.Viewable)
      */
     @Override
-    public void fillForm(Object dataObj, Viewable viewable)
+    public void afterFillForm(Object dataObj, Viewable viewable)
     {
         FormViewObj formViewObj = (FormViewObj)viewable;
         if (formViewObj != null && formViewObj.getDataObj() instanceof Shipment)

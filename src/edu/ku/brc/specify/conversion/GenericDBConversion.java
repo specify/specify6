@@ -60,6 +60,7 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.config.Discipline;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AttributeDef;
 import edu.ku.brc.specify.datamodel.CatalogNumberingScheme;
 import edu.ku.brc.specify.datamodel.Collection;
@@ -192,7 +193,7 @@ public class GenericDBConversion
         this.oldPassword  = oldPassword;
         this.idMapperMgr  = IdMapperMgr.getInstance();
         
-        DBConnection oldDB        = DBConnection.createInstance(oldDriver, null, oldDBName, connectionStr, oldUserName, oldPassword);
+        DBConnection oldDB = DBConnection.createInstance(oldDriver, null, oldDBName, connectionStr, oldUserName, oldPassword);
         oldDBConn = oldDB.createConnection();
         newDBConn = DBConnection.getInstance().createConnection();
     }
@@ -299,6 +300,183 @@ public class GenericDBConversion
         {
             ts.nextElement().compareStats();
         }
+    }
+    
+    /**
+     * 
+     */
+    public void doInitialize()
+    {
+        String[] tableNames = {"aalocality", 
+                "accession", 
+                "accessionagents", 
+                "accessionauthorizations", 
+                "address", 
+                "agent", 
+                "agentaddress", 
+                "authors", 
+                "biologicalobjectattributes", 
+                "biologicalobjectrelation", 
+                "biologicalobjectrelationtype", 
+                "borrow", 
+                "borrowagents", 
+                "borrowmaterial", 
+                "borrowreturnmaterial", 
+                "borrowshipments", 
+                "catalogseries", 
+                "catalogseriesdefinition", 
+                "collectingevent", 
+                "collection", 
+                "collectionobject", 
+                "collectionobjectcatalog", 
+                "collectionobjectcitation", 
+                "collectionobjecttype", 
+                "collectiontaxonomytypes", 
+                "collectors", 
+                "collevent_verbdate", 
+                "deaccession", 
+                "deaccessionagents", 
+                "deaccessioncollectionobject", 
+                "determination", 
+                "determinationcitation", 
+                "exchangein", 
+                "exchangeout", 
+                "geography", 
+                "geologictimeboundary", 
+                "geologictimeperiod", 
+                "grouppersons", 
+                "habitat", 
+                "image", 
+                "imageagents", 
+                "imagecollectionobjects", 
+                "imagelocalities", 
+                "journal", 
+                "loan", 
+                "loanagents", 
+                "loanphysicalobject", 
+                "loanreturnphysicalobject", 
+                "locality", 
+                "localitycitation", 
+                "observation", 
+                "otheridentifier", 
+                "permit", 
+                "preparation", 
+                "project", 
+                "projectcollectionobjects", 
+                "raveproject", 
+                "referencework", 
+                "reports", 
+                "shipment", 
+                "sound", 
+                "soundeventstorage", 
+                "stratigraphy", 
+                "taxoncitation", 
+                "taxonname", 
+                "taxonomicunittype", 
+                "taxonomytype", 
+                "usysaccessionarole", 
+                "usysaccessionstatus", 
+                "usysaccessiontype", 
+                "usysactionhotkey", 
+                "usysautoreports", 
+                "usysbiologicalsex", 
+                "usysbiologicalstage", 
+                "usysborrowagenrole", 
+                "usyscatalognumber", 
+                "usyscollectinggrouppermittedto", 
+                "usyscollectingmethod", 
+                "usyscollectioncontainertype", 
+                "usyscollobjprepmeth", 
+                "usysdatadefinition", 
+                "usysdatemasktypes", 
+                "usysdeaccessiorole", 
+                "usysdeaccessiotype", 
+                "usysdefaultquerydef", 
+                "usysdeterminatconfidence", 
+                "usysdeterminatmethod", 
+                "usysdeterminattypestatusname", 
+                "usysdigir", 
+                "usysdigirconcept", 
+                "usysfieldtypes", 
+                "usysfulltextcatalog", 
+                "usysfulltextfield", 
+                "usysfulltextupdates", 
+                "usyshabitathabitattype", 
+                "usyslanguages", 
+                "usyslatlongmasktypes", 
+                "usyslatlongtype", 
+                "usysloanagentsrole", 
+                "usyslocalityelevationmethod", 
+                "usyslocalitygrouppermittedtovi", 
+                "usyslocalitylatlongmethod", 
+                "usysmetacontrol", 
+                "usysmetadefaultcontrol", 
+                "usysmetafieldset", 
+                "usysmetafieldsetsubtype", 
+                "usysmetainterface", 
+                "usysmetaobject", 
+                "usysmetarelationshipsubtyperule", 
+                "usysmetasubtypecontents", 
+                "usysmetasubtypefield", 
+                "usysobservatioobservationmetho", 
+                "usyspermittype", 
+                "usyspreparatiocontainertype", 
+                "usyspreparatiomedium", 
+                "usyspreparatiopreparationtype", 
+                "usysquery", 
+                "usysqueryinterfaces", 
+                "usyssecuritytypes", 
+                "usysshipmentshipmentmethod", 
+                "usysspecifyadmin", 
+                "usysspecifyfullaccessuser", 
+                "usysspecifyguest", 
+                "usysspecifylimitedaccessuser", 
+                "usysspecifymanager", 
+                "usysstatistics", 
+                "usystaxonnamegrouppermittedtov", 
+                "usystemprequired", 
+                "usysuserpreferences", 
+                "usysversion", 
+                "usyswebqueryform", 
+                "usyswebquerylog", 
+                "usyswebquerytemplate", 
+                "webadmin"};
+        
+        Hashtable<String, Agent> agentMap = new Hashtable<String, Agent>();
+        Agent creatorAgent = new Agent();
+        creatorAgent.initialize();
+        creatorAgent.setFirstName("DB");
+        creatorAgent.setLastName("Creator");
+        agentMap.put("Creator", creatorAgent);
+        
+        Agent modifierAgent = new Agent();
+        modifierAgent.initialize();
+        modifierAgent.setFirstName("DB");
+        modifierAgent.setLastName("Modifier");
+        agentMap.put("Modifier", modifierAgent);
+        /*
+        for (String tableName : tableNames)
+        {
+            try
+            {
+                Statement stmt = oldDBConn.createStatement();
+                ResultSet rs   = stmt.executeQuery("select unique LastEditedBy from "+tableName);
+
+                while (rs.next())
+                {
+                    String modifierAgent = rs.getString(1);
+                    if (StringUtils.isNotEmpty(editedBy))
+                    {
+                        Agent agent = agentMap.get(editedBy);
+                    }
+                }
+                
+            } catch (Exception ex)
+            {
+                
+            }
+        }*/
+
     }
 
     /**
@@ -6199,7 +6377,9 @@ public class GenericDBConversion
                     // It has not been added yet so Add it
                     StringBuilder sqlStr = new StringBuilder();
                     sqlStr.append("INSERT INTO agent ");
-                    sqlStr.append("(AgentID, TimestampModified, AgentType, JobTitle, FirstName, LastName, MiddleInitial, Title, Interests, Abbreviation, Name, Email, URL, Remarks, TimestampCreated, LastEditedBy, Visibility, VisibilitySetBy, ParentOrganizationID)");
+                    sqlStr.append("(AgentID, TimestampModified, AgentType, JobTitle, FirstName, LastName, MiddleInitial, ");
+                    sqlStr.append("Title, Interests, Abbreviation, Name, Email, URL, Remarks, TimestampCreated, ");
+                    sqlStr.append("CreatedByAgent, Visibility, VisibilitySetBy, ParentOrganizationID)");
                     sqlStr.append(" VALUES (");
                     for (int i=0;i<agentColumns.length;i++)
                     {

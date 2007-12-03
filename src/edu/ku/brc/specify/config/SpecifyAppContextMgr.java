@@ -103,7 +103,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     protected AppResourceMgr backStopAppResMgr     = null;
     protected Agent          currentUserAgent      = null;
 
-    protected boolean        debug                 = true;
+    protected boolean        debug                 = false;
     
     /**
      * Singleton Constructor.

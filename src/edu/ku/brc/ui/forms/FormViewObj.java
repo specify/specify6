@@ -1025,7 +1025,7 @@ public class FormViewObj implements Viewable,
             
             String[] optionLabels;
             int      dlgOptions;
-            if (isNewandIncomplete)
+            if (isNewandIncomplete || (formValidator != null && !formValidator.isFormValid()))
             {
                 dlgOptions = JOptionPane.YES_NO_OPTION;
                 optionLabels = new String[] {getResourceString("DiscardChangesBtn"), 
@@ -1156,7 +1156,7 @@ public class FormViewObj implements Viewable,
             list.add(obj);
             int len = list.size();
             rsController.setLength(len);
-            rsController.setIndex(len-1);
+            rsController.setIndex(len-1, false);
         }
         
         if (recordSetItemList != null)
@@ -1604,6 +1604,7 @@ public class FormViewObj implements Viewable,
         {
             removeFromParent(dataObj);
             mvParent.getTopLevel().addDeletedItem(dataObj);
+
             String delMsg = (businessRules != null) ? businessRules.getDeleteMsg(dataObj) : "";
             UIRegistry.getStatusBar().setText(delMsg);
             formValidator.setHasChanged(true);
@@ -1614,6 +1615,7 @@ public class FormViewObj implements Viewable,
             adjustRSControllerAfterRemove();
             formValidator.setIgnoreValidationNotifications(false);
             
+            mvParent.getTopLevel().getCurrentValidator().setHasChanged(true);
             mvParent.getTopLevel().getCurrentValidator().validateForm();
             
             return;
@@ -1845,7 +1847,9 @@ public class FormViewObj implements Viewable,
             addBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae)
                 {
-                    createNewDataObject(true);
+                    UIValidator.setIgnoreAllValidation(this, true);
+                    createNewDataObject(false);
+                    UIValidator.setIgnoreAllValidation(this, false);
                     focusFirstFormControl();
                 }
             });
@@ -2486,6 +2490,11 @@ public class FormViewObj implements Viewable,
      */
     public void setDataIntoUI()
     {
+        if (businessRules != null)
+        {
+            businessRules.beforeFormFill(this);
+        }
+        
         if (dataObj != null && dataObj instanceof FormDataObjIFace && ((FormDataObjIFace)dataObj).getId() != null)
         {
             if (mvParent == null || mvParent.isTopLevel())
@@ -2519,6 +2528,11 @@ public class FormViewObj implements Viewable,
         {
             formValidator.setDataChangeNotification(false);
             formValidator.setEnabled(dataObj != null);
+            
+            // I have always wanted to avoid doing this globally
+            // but it is the best approach
+           
+            UIValidator.setIgnoreAllValidation(this, true);
         }
 
         boolean weHaveData = true;
@@ -2773,7 +2787,7 @@ public class FormViewObj implements Viewable,
         
         if (businessRules != null)
         {
-            businessRules.fillForm(dataObj, this);
+            businessRules.afterFillForm(dataObj, this);
         }
 
 
@@ -2810,7 +2824,12 @@ public class FormViewObj implements Viewable,
                 mvParent.setSession(session);  
             }
         }
-
+        
+        // See comment above where I turn this on
+        if (formValidator != null)
+        {
+            UIValidator.setIgnoreAllValidation(this, false);
+        }
     }
 
     /* (non-Javadoc)
@@ -3311,6 +3330,12 @@ public class FormViewObj implements Viewable,
                 parent.remove(formValidator);
             }
             formValidator.setParent(null);
+        }
+        
+        if (businessRules != null)
+        {
+            businessRules.formShutdown();
+            businessRules = null;
         }
     }
     

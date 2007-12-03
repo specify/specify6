@@ -37,12 +37,19 @@ public interface BusinessRulesIFace
     public enum STATUS {None, OK, Warning, Error}
     
     /**
+     * Notification a form is about to be filled in with data.
+     * 
+     * @param viewable the viewable that recieved the dataObject (using getDataOject would return the same object)
+     */
+    public void beforeFormFill(Viewable viewable);
+    
+    /**
      * Notification a form was just filled with data.
      * 
      * @param dataObj the data object that went into the form
      * @param viewable the viewable that recieved the dataObject (using getDataOject would return the same object)
      */
-    public void fillForm(Object dataObj, Viewable viewable);
+    public void afterFillForm(Object dataObj, Viewable viewable);
     
     /**
      * This enables a new data object to be populated with any children objects before being
@@ -172,5 +179,10 @@ public interface BusinessRulesIFace
      * @return the dataObjectFromSearch
      */
     public Object processSearchObject(Object newParentDataObj, Object dataObjectFromSearch);
+    
+    /**
+     * The form is being tossed.
+     */
+    public void formShutdown();
     
 }

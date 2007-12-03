@@ -15,10 +15,10 @@
 
 package edu.ku.brc.ui.forms.validation;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.awt.BorderLayout;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
+import java.util.Vector;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -27,6 +27,7 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.table.AbstractTableModel;
 
 import edu.ku.brc.ui.forms.Viewable;
+import edu.ku.brc.util.Pair;
 
 /**
  * This JPanel contains a Table display for all the controls that are Incomplete or in Error on a form or subform.
@@ -37,7 +38,7 @@ import edu.ku.brc.ui.forms.Viewable;
  * @author rods
  *
  */
-public class FormValidatorInfo extends JPanel implements ValidationListener
+public class FormValidatorInfo extends JPanel
 {
 
     protected JTable                 table;
@@ -54,7 +55,6 @@ public class FormValidatorInfo extends JPanel implements ValidationListener
         table = new JTable(model);
         
         formValidator = formViewObj.getValidator();
-        formValidator.addValidationListener(this);
         
         setLayout(new BorderLayout());
         JScrollPane scrollPane = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -66,113 +66,45 @@ public class FormValidatorInfo extends JPanel implements ValidationListener
      */
     public void cleanUp()
     {
-        formValidator.removeValidationListener(this);
         formValidator = null;
     }
     
     //-----------------------------------------------------------
     //-- ValidationListener
     //-----------------------------------------------------------
-    /* (non-Javadoc)
-     * @see ValidationListener#wasValidated(UIValidator)
-     */
-    public void wasValidated(final UIValidator validator)
-    {
-        model.updateModel();
-        model.fireTableDataChanged();
-        table.repaint();
-    }
     
-    //-----------------------------------------------------------
-    //--
-    //-----------------------------------------------------------
-    class ControlInfo 
-    {
-        protected String label;
-        protected UIValidatable uiv;
-        
-        public ControlInfo(String label, UIValidatable uiv)
-        {
-            this.label = label;
-            this.uiv = uiv;
-        }
-        public String getLabel()
-        {
-            return label;
-        }
-        public String getStateStr()
-        {
-            return uiv.getState().toString();
-        }
-        public UIValidatable.ErrorType getState()
-        {
-            return uiv.getState();
-        }
-    }
-
-
-
     class FormValidatorInfoModel extends AbstractTableModel
     {
-        protected List<ControlInfo> rows   = new ArrayList<ControlInfo>();
-        protected String[]          header = {"Control", "Status"}; // XXX I18N
+        protected Vector<Pair<String, UIValidatable.ErrorType>> rows   = new Vector<Pair<String, UIValidatable.ErrorType>>();
+        protected String[]            header = {getResourceString("VAL_CONTROLSUBFORM_LABEL"), getResourceString("VAL_STATUS_LABEL")};
         
-        protected int[]             rowInxMap;
-        protected int               rowCnt = 0;
-        
+        /**
+         * @param viewable
+         */
         public FormValidatorInfoModel(final Viewable viewable) 
         {
             FormValidator validator = viewable.getValidator();
-
-            Hashtable<String, String> labelsMap = new Hashtable<String, String>();
-            List<String>              ids       = new ArrayList<String>();
-            viewable.getFieldIds(ids);
-            rowInxMap = new int[ids.size()];
             
-            for (String id : ids)
+            for (FormValidator kidValidator : validator.getKids())
             {
-                if (validator.getComp(id).isEnabled())
+                if (!kidValidator.isFormValid())
                 {
-                    labelsMap.put(id, validator.getLabelTextForId(id));
+                    rows.add(new Pair<String, UIValidatable.ErrorType>(kidValidator.getName(), kidValidator.getState()));
                 }
-                //System.out.println("["+id+"]["+validator.getLabelTextForId(id)+"]");
             }
                 
-            int inx = 0;
             for (DataChangeNotifier dcn : validator.getDCNs().values())
             {
                 if (dcn.getUIV() != null)
                 {
-                    //System.out.println("["+dcn.getId()+"]");
                     UIValidatable uval =  dcn.getUIV().getUIV();
-                    if (uval.getValidatableUIComp().isEnabled())
+                    if (uval.getValidatableUIComp().isEnabled() && uval.getState() != UIValidatable.ErrorType.Valid)
                     {
-                        ControlInfo ci = new ControlInfo(validator.getLabelTextForId(dcn.getId()), uval);
-                        if (ci.getState() != UIValidatable.ErrorType.Valid)
-                        {
-                            rowInxMap[rowCnt++] = inx;
-                        }
-                        rows.add(ci);
-                        inx++;
+                        rows.add(new Pair<String, UIValidatable.ErrorType>(validator.getLabelTextForId(dcn.getId()), uval.getState()));
                     }
                 }
             }
 
-        }
-        
-        public void updateModel()
-        {
-            // Not optimzied
-            int inx = 0;
-            rowCnt  = 0;
-            for (ControlInfo ci : rows)
-            {
-                if (ci.getState() != UIValidatable.ErrorType.Valid)
-                {
-                    rowInxMap[rowCnt++] = inx;
-                }
-                inx++;
-            }
         }
 
         public int getColumnCount()
@@ -188,13 +120,13 @@ public class FormValidatorInfo extends JPanel implements ValidationListener
 
         public int getRowCount()
         {
-            return rowCnt;
+            return rows.size();
         }
 
         public Object getValueAt(int row, int column)
         {
-            ControlInfo ci = rows.get(rowInxMap[row]);
-            return column == 0 ? ci.getLabel() : ci.getState();
+            Pair<String, UIValidatable.ErrorType> item = rows.get(row);
+            return column == 0 ? item.first : getResourceString(item.second.toString());
         }
 
         @Override

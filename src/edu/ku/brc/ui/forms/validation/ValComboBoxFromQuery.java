@@ -908,7 +908,8 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     public Object getValue()
     {
-        if (comboBox.getTextField() != null && StringUtils.isEmpty(comboBox.getTextField().getText().trim()))
+        Object selectedObj = comboBox.getSelectedItem();
+        if (selectedObj == null)
         {
             return null;
         }

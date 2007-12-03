@@ -41,6 +41,9 @@ public class UIValidator
     public enum Type {None, Focus, Changed, OK}
 
     private static final Logger log = Logger.getLogger(UIValidator.class);
+    
+    protected static boolean ignoreAllValidation = false;
+    protected static Object  ignoreOwner         = null;
 
     protected JexlContext    jc  = null;
     protected Expression     exp = null;
@@ -160,6 +163,12 @@ public class UIValidator
      */
     public boolean validate()
     {
+        System.err.println("ignoreAllValidation "+ignoreAllValidation);
+        if (ignoreAllValidation)
+        {
+            return true;
+        }
+        
         // If it isn't enabled than don't validate it
         if (!comp.isEnabled())
         {
@@ -311,6 +320,34 @@ public class UIValidator
     public void cleanUp()
     {
         listeners.clear();
+    }
+
+    /**
+     * @param ignoreAllValidation the ignoreAllValidation to set
+     */
+    public static void setIgnoreAllValidation(final Object ignoreOwnerArg, boolean ignoreAllValidationArg)
+    {
+        if (ignoreAllValidationArg)
+        {
+            if (ignoreOwner == null)
+            {
+                UIValidator.ignoreOwner         = ignoreOwnerArg;
+                UIValidator.ignoreAllValidation = true;
+            } 
+            
+        } else if (ignoreOwner != null && ignoreOwner == ignoreOwnerArg)
+        {
+            UIValidator.ignoreOwner         = null;
+            UIValidator.ignoreAllValidation = false;
+        }
+    }
+
+    /**
+     * @return the ignoreAllValidation
+     */
+    public static boolean isIgnoreAllValidation()
+    {
+        return ignoreAllValidation;
     }
 
 }

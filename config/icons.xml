@@ -117,7 +117,7 @@
     <!-- <icon name="BGImage"  file="frogs_bg.gif" sizes="NonStd"/> -->
     
     <icon name="ValidationValid"   file="validation-valid.gif"    sizes="all"/>
-    <icon name="ValidationWarning" file="FeedbackRed32x32.png" sizes="all"/>
+    <icon name="ValidationWarning" file="FeedbackYellow32x32.png" sizes="all"/>
     <icon name="ValidationError"   file="FeedbackRed32x32.png"    sizes="all"/>
     <icon name="Warning"    alias="ValidationWarning"/>
     <icon name="Error"      alias="ValidationError"/>

@@ -44,9 +44,19 @@ public abstract class BaseBusRules implements BusinessRulesIFace
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#beforeFormFill(edu.ku.brc.ui.forms.Viewable)
+     */
+    //@Overrided
+    public void beforeFormFill(Viewable viewable)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#fillForm(java.lang.Object, edu.ku.brc.ui.forms.Viewable)
      */
-    public void fillForm(Object dataObj, Viewable viewable)
+    public void afterFillForm(Object dataObj, Viewable viewable)
     {
         //
     }
@@ -327,6 +337,14 @@ public abstract class BaseBusRules implements BusinessRulesIFace
     public Object processSearchObject(final Object parentdataObj, final Object dataObjectFromSearch)
     {
         return dataObjectFromSearch;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#formShutdown()
+     */
+    public void formShutdown()
+    {
+        // no op
     }
 
 }

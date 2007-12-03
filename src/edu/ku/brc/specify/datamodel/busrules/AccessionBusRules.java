@@ -59,14 +59,6 @@ public class AccessionBusRules extends AttachmentOwnerBaseBusRules
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#fillForm(java.lang.Object, edu.ku.brc.ui.forms.Viewable)
-     */
-    public void fillForm(Object dataObj, Viewable viewable)
-    {
-        
-    }
-
-    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#processBusiessRules(java.lang.Object)
      */
     public STATUS processBusinessRules(Object dataObj)

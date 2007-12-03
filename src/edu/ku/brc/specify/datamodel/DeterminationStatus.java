@@ -144,7 +144,7 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
     @Column(name = "IsCurrent", unique = false, nullable = true, insertable = true, updatable = true)
     public Boolean getIsCurrent()
     {
-        return isCurrent;
+        return isCurrent == null ? false : isCurrent;
     }
 
     /**

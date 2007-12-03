@@ -481,6 +481,11 @@ public class SpecifyDBConverter
 
                 frame.setDesc("Converting Agents.");
                 log.info("Converting Agents.");
+                
+                //---------------------------------------------------------------------------------------
+                //-- Create basic set of information.
+                //---------------------------------------------------------------------------------------
+                conversion.doInitialize();
 
                 // This MUST be done before any of the table copies because it
                 // creates the IdMappers for Agent, Address and mor eimportantly AgentAddress

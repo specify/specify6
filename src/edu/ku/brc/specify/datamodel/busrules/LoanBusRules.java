@@ -62,7 +62,7 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#fillForm(java.lang.Object, edu.ku.brc.ui.forms.Viewable)
      */
     @Override
-    public void fillForm(final Object dataObj, final Viewable viewable)
+    public void afterFillForm(final Object dataObj, final Viewable viewable)
     {
         if (viewable instanceof FormViewObj)
         {

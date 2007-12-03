@@ -1264,8 +1264,8 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
         List<String> selectedItems = new ArrayList<String>(5);
         //for (Object obj : list.getSelectedValues())
         //{
-            selectedItems.add(getSourceDatabaseName());
-            selectedItems.add(getDestDatabaseName());
+            selectedItems.add(getSourceDatabaseName().toLowerCase());
+            selectedItems.add(getDestDatabaseName().toLowerCase());
        // }
         return selectedItems;
     }

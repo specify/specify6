@@ -35,6 +35,7 @@ import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.FormViewObj;
+import edu.ku.brc.ui.forms.validation.UIValidator;
 import edu.ku.brc.util.AttachmentUtils;
 
 /**
@@ -185,6 +186,8 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
     @Override
     public void adjustForm(FormViewObj form)
     {
+        UIValidator.setIgnoreAllValidation(this, true);
+
         if (form.getDataObj() instanceof Taxon  || form.getViewDef().getClassName().equals(Taxon.class.getName()))
         {
             adjustNodeForm(form);
@@ -197,5 +200,7 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
         {
             adjustTreeDefItemForm(form);
         }
+        UIValidator.setIgnoreAllValidation(this, false);
+
     }
 }
