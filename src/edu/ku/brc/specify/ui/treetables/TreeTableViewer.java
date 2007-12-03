@@ -1124,25 +1124,26 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         }
 	}
     
-    protected void scrollToShowNode(TreeNode node, int listIndex)
-    {
-        int nodeIndex = listModel.indexOf(node);
-        if (nodeIndex != -1)
-        {
-            Rectangle listCellBounds = lists[listIndex].getUI().getCellBounds(lists[listIndex], nodeIndex, nodeIndex);
-            Pair<Integer, Integer> textBounds = listCellRenderer.getTextBoundsForRank(node.getRank());
-            if (textBounds != null)
-            {
-                Rectangle textRectangle = new Rectangle();
-                textRectangle.x = textBounds.first;
-                textRectangle.y = listCellBounds.y;
-                textRectangle.width = textBounds.second - textBounds.first;
-                textRectangle.height = listCellBounds.height;
-                
-                scrollers[listIndex].getViewport().scrollRectToVisible(textRectangle);
-            }
-        }
-    }
+	protected void scrollToShowNode(final TreeNode node, final int listIndex)
+	{
+	    int nodeIndex = listModel.indexOf(node);
+	    if (nodeIndex != -1)
+	    {
+	        Rectangle listCellBounds = lists[listIndex].getUI().getCellBounds(lists[listIndex], nodeIndex, nodeIndex);
+	        Pair<Integer, Integer> textBounds = listCellRenderer.getTextBoundsForRank(node.getRank());
+	        if (textBounds != null)
+	        {
+	            Rectangle textRectangle = new Rectangle();
+	            textRectangle.x = textBounds.first;
+	            textRectangle.y = listCellBounds.y;
+	            textRectangle.width = textBounds.second - textBounds.first;
+	            textRectangle.height = listCellBounds.height;
+
+	            scrollers[listIndex].scrollRectToVisible(textRectangle);
+	            scrollers[listIndex].getViewport().scrollRectToVisible(textRectangle);
+	        }
+	    }
+	}
 	
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.tasks.DualViewSearchable#findNext(java.lang.String, int, boolean)
