@@ -1976,7 +1976,13 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             }
             else
             {
-                showChildren(treeNode);
+                List<TreeNode> childrenShown = showChildren(treeNode);
+                if (childrenShown.size() > 0)
+                {
+                    TreeNode firstChild = childrenShown.get(0);
+                    int listIndex = (list == lists[0]) ? 0 : 1;
+                    scrollToShowNode(firstChild, listIndex);
+                }
             }
 		}
         // otherwise, ignore the click
@@ -2162,7 +2168,11 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         return node;
     }
     
-    protected synchronized void showChildren(T dbRecord)
+    /**
+     * @param dbRecord
+     * @return the list of children shown
+     */
+    protected synchronized List<TreeNode> showChildren(T dbRecord)
     {
         // get the child nodes
         List<TreeNode> childNodes = dataService.getChildTreeNodes(dbRecord);
@@ -2175,7 +2185,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         {
             parentNode.setHasChildren(false);
             listModel.nodeValuesChanged(parentNode);
-            return;
+            return childNodes;
         }
         listModel.showChildNodes(childNodes, parentNode);
 
@@ -2199,6 +2209,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 }
             }
         }
+        
+        return childNodes;
     }
     
     protected void showChildrenInTimer(final TreeNode childNode)
@@ -2215,12 +2227,12 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         swingTimer.start();
     }
 
-    protected synchronized void showChildren(TreeNode parent)
+    protected synchronized List<TreeNode> showChildren(TreeNode parent)
     {
         // get the DB record that corresponds to this TreeNode
         T dbRecord = getRecordForNode(parent);
 
-        showChildren(dbRecord);
+        return showChildren(dbRecord);
     }
 
     protected synchronized void hideChildren(TreeNode parent)
