@@ -20,6 +20,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JMenuItem;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.RecordSet;
@@ -109,7 +110,7 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
             });
             popup.add(getITIS);
 
-            JMenuItem getDeters = new JMenuItem(getResourceString("TTV_TAXON_ASSOC_DETERS"));
+            JMenuItem getDeters = new JMenuItem(getResourceString("TTV_TAXON_ASSOC_COS"));
             getDeters.addActionListener(new ActionListener()
             {
                 public void actionPerformed(ActionEvent e)
@@ -119,23 +120,21 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
                     // this call initializes all of the linked objects
                     // it only initializes the immediate links, not objects that are multiple hops away
                     ttv.initializeNodeAssociations(taxon);
-
-                    Set<Determination> deters = taxon.getDeterminations();
-
-                    if (deters.size() == 0)
+                    
+                    if (taxon.getDeterminations().size() == 0)
                     {
                         UIRegistry.getStatusBar().setText(getResourceString("TTV_TAXON_NO_DETERS_FOR_NODE"));
                         return;
                     }
 
-                    int deterTblId = DBTableIdMgr.getInstance().getIdByClassName(Determination.class.getName());
-                    RecordSet rs = new RecordSet("TTV.showDeterminations", deterTblId);
-                    for(Determination deter : deters)
+                    int collObjTableID = DBTableIdMgr.getInstance().getIdByClassName(CollectionObject.class.getName());
+                    RecordSet rs = new RecordSet("TTV.showCollectionObjects", collObjTableID);
+                    for(Determination deter : taxon.getDeterminations())
                     {
-                        rs.addItem(deter.getDeterminationId());
+                        rs.addItem(deter.getCollectionObject().getId());
                     }
 
-                    UIRegistry.getStatusBar().setText(getResourceString("TTV_OPENING_DETERS_FORM"));
+                    UIRegistry.getStatusBar().setText(getResourceString("TTV_OPENING_CO_FORM"));
                     CommandAction cmd = new CommandAction(DataEntryTask.DATA_ENTRY,DataEntryTask.EDIT_DATA,rs);
                     CommandDispatcher.dispatch(cmd);
                 }
