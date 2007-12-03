@@ -157,7 +157,7 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         if (node.getAcceptedParentFullName() != null)
         {
             tooltipBuilder.append("<br><br>");
-            tooltipBuilder.append(getResourceString("TTV_CURRENT_NAME"));
+            tooltipBuilder.append(getResourceString("TTV_PREFERRED_NAME"));
             tooltipBuilder.append(": ");
             tooltipBuilder.append(node.getAcceptedParentFullName());
         }
