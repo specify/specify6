@@ -84,8 +84,6 @@
             <altviews>
                 <altview name="Collectors Icon View"  viewdef="CollectorsIconView" label="Icon View" mode="view"/>
                 <altview name="Collectors Icon Edit"  viewdef="CollectorsIconView" label="Icon Edit" mode="edit"/>
-    	        <altview name="Collectors View"       viewdef="Collectors"         label="Form View" mode="view"/>
-    	        <altview name="Collectors Edit"       viewdef="Collectors"         label="Form Edit" mode="edit"/>
     	        <altview name="Collectors Table View" viewdef="Collectors Table"   label="Grid View" mode="view"/>
     	        <altview name="Collectors Table Edit" viewdef="Collectors Table"   label="Grid Edit" mode="edit" default="true"/>
             </altviews>
@@ -555,10 +553,10 @@
                     <cell type="subview" viewname="Collectors" id="8" name="collectors" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="separator" label="Attachments" colspan="10"/>
+                    <cell type="separator" label="Attachments" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectingEventAttachments" colspan="10"/>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectingEventAttachments" colspan="12"/>
                 </row>
                 <!--
                 <row>

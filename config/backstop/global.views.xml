@@ -96,6 +96,17 @@
             </altviews>
         </view>
         
+        <view name="CollectorsIconView"
+            class="edu.ku.brc.specify.datamodel.Collector"
+            resourcelabels="false">
+            <desc><![CDATA[The Attachments Icon View.]]></desc>
+            <altviews>
+                <altview name="Collectors Icon View" viewdef="CollectorsIconView" label="IconView" mode="view" validated="false" default="true"/>                
+                <altview name="Collectors Icon Edit" viewdef="CollectorsIconView" label="IconEdit" mode="edit" validated="true"/>                
+            </altviews>
+        </view>
+        
+        
         <view name="Locality"
             class="edu.ku.brc.specify.datamodel.Locality"
             resourcelabels="false">
@@ -113,6 +124,16 @@
             <altviews>
                 <altview name="Attachment View" viewdef="Attachment" label="View" mode="view" validated="false" default="true"/>                
                 <altview name="Attachment Edit" viewdef="Attachment" label="Edit" mode="edit" validated="true"/>                
+            </altviews>
+        </view>
+        
+        <view name="Collector"
+            class="edu.ku.brc.specify.datamodel.Collector"
+            resourcelabels="false">
+            <desc><![CDATA[The Collectors Form.]]></desc>
+            <altviews>
+                <altview name="Collector View" viewdef="Collector" label="View" mode="view" validated="false" default="true"/>                
+                <altview name="Collector Edit" viewdef="Collector" label="Edit" mode="edit" validated="true"/>                
             </altviews>
         </view>
         
@@ -485,27 +506,52 @@
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             <desc><![CDATA[The Accession form.]]></desc>
             <enableRules/>
-
+            
             <columnDef>100px,3dlu,p,3dlu,100px,3dlu,p:g</columnDef>
             <rowDef>p,2dlu,p:g,2dlu,p:g</rowDef>
-
+            
             <rows>
                 <row>
                     <cell type="label" labelfor="1" label="Agent"/>
                     <cell type="field" id="1" name="agent" uitype="querycbx" initialize="name=Agent;title=Agent" isrequired="true" valtype="Changed"/>
-
+                    
                     <cell type="label" labelfor="2" label="Role"/>
                     <cell type="field" id="2" name="role" uitype="combobox" picklist="AccessionRole" isrequired="true" valtype="Changed"/>
                 </row>
-
+                
                 <row>
                     <cell type="label" labelfor="3" label="Remarks"/>
-                    <cell type="field" id="3" name="remarks" uitype="textarea" colspan="5" cols="40" valtype="Changed"/>
+                    <cell type="field" id="3" name="remarks" uitype="textarea" colspan="5" cols="40"/>
                 </row>
                 
             </rows>
         </viewdef>
-
+        
+        <viewdef
+            type="form"
+            name="Collector"
+            class="edu.ku.brc.specify.datamodel.Collector"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The Accession form.]]></desc>
+            <enableRules/>
+            
+            <columnDef>100px,3dlu,p,p:g</columnDef>
+            <rowDef>p,2dlu,p:g,2dlu,p:g</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Agent"/>
+                    <cell type="field" id="1" name="agent" uitype="querycbx" initialize="name=Agent;title=Agent" isrequired="true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="Remarks"/>
+                    <cell type="field" id="3" name="remarks" uitype="textarea" colspan="2" cols="40"/>
+                </row>
+                
+            </rows>
+        </viewdef>
+        
         <viewdef
             type="form"
             name="Agent"
@@ -891,6 +937,16 @@
                 </row>
             </rows>
         </viewdef>
+        
+        <viewdef
+            type="iconview"
+            name="CollectorsIconView"
+            class="edu.ku.brc.specify.datamodel.Attachment"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The Attachments Icon Viewer]]></desc>
+        </viewdef>
+        
         
         <viewdef
             type="form"

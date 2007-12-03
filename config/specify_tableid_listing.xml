@@ -90,7 +90,9 @@
             <display objtitle="Collection Relationship Type"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.CollectionRelationship" abbrev="cr" id="99"/>
-        <table name="edu.ku.brc.specify.datamodel.Collector" abbrev="ctr" id="30" searchable="true"/>
+        <table name="edu.ku.brc.specify.datamodel.Collector" abbrev="ctr" id="30" searchable="true">
+            <display objtitle="Collector" view="Collector" dataobjformatter=""  searchdlg="CollectorSearch" newobjdlg="CollectorDisplay"/>            
+        </table>
         <table name="edu.ku.brc.specify.datamodel.CommonName" abbrev="cn" id="106" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.ConservDescription" abbrev="csd" id="103" searchable="true">
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.ConservDescriptionBusRules</businessrule>
