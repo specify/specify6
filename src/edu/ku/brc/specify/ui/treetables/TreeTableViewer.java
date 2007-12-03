@@ -1130,7 +1130,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	    int nodeIndex = listModel.indexOf(node);
 	    if (nodeIndex != -1)
 	    {
-	        Rectangle listCellBounds = lists[listIndex].getUI().getCellBounds(lists[listIndex], nodeIndex, nodeIndex);
+	        Rectangle listCellBounds = lists[listIndex].getCellBounds(nodeIndex, nodeIndex);
 	        Pair<Integer, Integer> textBounds = listCellRenderer.getTextBoundsForRank(node.getRank());
 	        if (textBounds != null)
 	        {
