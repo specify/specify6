@@ -136,10 +136,11 @@ public class MatchHandler
         matchedVec.add(row);
         
         JTable matchedTbl = new JTable(matchedVec, headers);
-        JLabel cornerLbl = new JLabel(getResourceString("WB_ROW"));
-        cornerLbl.setHorizontalAlignment(SwingConstants.CENTER);
         JScrollPane scrollPane = new JScrollPane(matchedTbl);
-        scrollPane.setCorner(ScrollPaneConstants.UPPER_LEFT_CORNER, cornerLbl);
+        //JLabel corner = new JLabel(getResourceString("WB_ROW"));
+        //corner.setHorizontalAlignment(SwingConstants.CENTER);
+        JPanel corner = new JPanel(); 
+        scrollPane.setCorner(ScrollPaneConstants.UPPER_LEFT_CORNER, corner);
         
 //following stuff is stolen from SpreadSheet.buildSpreadSheet().
 //Hopefully most of the stuff from SpreadSheet thats not necessary here has been removed.
@@ -163,11 +164,11 @@ public class MatchHandler
 
         int rowHeight = insets.bottom + metrics.getHeight() + insets.top;
 
-        int rowLabelWidth  = Math.max(metrics.stringWidth("9999"), metrics.stringWidth(getResourceString("WB_ROW"))) + insets.right + insets.left;
+        int rowLabelWidth  = metrics.stringWidth("9999") + insets.right + insets.left;
         
         Dimension dim  = new Dimension(rowLabelWidth, rowHeight);
           
-        JLabel lbl = new JLabel(Integer.toString(Uploader.getCurrentUpload().rowUploading));
+        JLabel lbl = new JLabel(Integer.toString(Uploader.getCurrentUpload().rowUploading+1));
         lbl.setHorizontalAlignment(SwingConstants.CENTER);
         lbl.setPreferredSize(dim); 
         lbl.setBorder(cellBorder);
