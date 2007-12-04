@@ -201,8 +201,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         restoreTreeState = true;
         
         selNodePrefName = "selected_node:" + treeDef.getClass().getSimpleName() + ":" + treeDef.getTreeDefId();
-        
-		setBusy(false,null);
 	}
 	
 	public D getTreeDef()
@@ -230,18 +228,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		}
 	}
 
-    protected boolean checkBusy()
-    {
-        if (statusBar!=null)
-        {
-            if(busy)
-            {
-                setStatusBarText("Tree Viewer busy: " + busyReason);
-            }
-        }
-        return busy;
-    }
-    
     protected void setStatusBarText(String text)
     {
         if (statusBar!=null)
@@ -745,41 +731,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 //        repaint();        
     }
 	
-	@SuppressWarnings("unchecked")
-    protected void setBusy(boolean busy,String statusText)
-	{
-		if (busy)
-		{
-			setCursor(new Cursor(Cursor.WAIT_CURSOR));
-		}
-		else
-		{
-			setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-		}
-		
-        // enable/disable all the buttons
-		for (AbstractButton ab: allButtons)
-		{
-			ab.setEnabled(!busy);
-		}
-
-		this.busy = busy;
-		busyReason = statusText;
-        if (statusBar!=null)
-        {
-            setStatusBarText(busyReason);
-            statusBar.setIndeterminate(busy);
-        }
-	}
-    
-	
 	protected void toggleViewMode()
 	{
-		if(checkBusy())
-		{
-			return;
-		}
-		
 		if(mode == SINGLE_VIEW_MODE)
 		{
 			setViewMode(DUAL_VIEW_MODE);
@@ -842,11 +795,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	@SuppressWarnings("unchecked")
     public void addChildToSelectedNode(JList list)
 	{
-        if (checkBusy())
-        {
-            return;
-        }
-
 		Object selection = list.getSelectedValue();
 		if( selection == null )
 		{
@@ -881,14 +829,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 */
     public void deleteSelectedNode(JList list)
 	{
-        // make sure we're not busy doing something else important
-		if(checkBusy())
-		{
-			return;
-		}
-        
-        setBusy(true, "Deleting node(s)");
-
         // get the selected TreeNode
 		Object selection = list.getSelectedValue();
 		if( selection == null )
@@ -935,7 +875,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             // remove the glasspane overlay text
             UIRegistry.clearGlassPaneMsg();
         }
-        setBusy(false,null);
 	}
     
     public void initializeNodeAssociations(T node)
@@ -949,11 +888,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	@SuppressWarnings("unchecked")
 	public void editSelectedNode(JList list)
 	{
-		if(checkBusy())
-		{
-			return;
-		}
-
 		Object selection = list.getSelectedValue();
 		if( selection == null )
 		{
@@ -971,11 +905,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	@SuppressWarnings("unchecked")
 	public synchronized void showSubtreeOfSelection(JList list)
 	{
-		if(checkBusy())
-		{
-			return;
-		}
-
         TreeNode selectedNode = (TreeNode)list.getSelectedValue();
 		if( selectedNode == null )
 		{
@@ -995,11 +924,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	
     public synchronized void zoomOutOneLevel(JList list)
     {
-        if (checkBusy())
-        {
-            return;
-        }
-        
         TreeNode selectedNode = (TreeNode)list.getSelectedValue();
         
         TreeNode visibleRoot = listModel.getVisibleRoot();
@@ -1027,11 +951,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 */
 	public synchronized void showWholeTree(JList list)
 	{
-		if(checkBusy())
-		{
-			return;
-		}
-
 		Object selection = list.getSelectedValue();		
 
 		listModel.setVisibleRoot(listModel.getRoot());
@@ -1047,11 +966,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	@SuppressWarnings("unchecked")
 	public void selectParentOfSelection(JList list)
 	{
-		if(checkBusy())
-		{
-			return;
-		}
-
 		Object selection = list.getSelectedValue();
 		if( selection == null )
 		{
@@ -1076,11 +990,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 */
 	public void find(String nodeName,int where,boolean wrap)
 	{
-		if(checkBusy())
-		{
-			return;
-		}
-
 		findName = nodeName;
 		findResults = dataService.findByName(treeDef, nodeName);
 		if(findResults.isEmpty())
@@ -1151,11 +1060,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 */
 	public void findNext(String key,int where,boolean wrap)
 	{
-		if(checkBusy())
-		{
-			return;
-		}
-
 		if(key != null && !key.equals(findName))
 		{
 			find(key,where,wrap);
@@ -1262,11 +1166,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	
 	public void findNext(JList where, boolean wrap, TreeNode currentNode)
 	{
-		if(checkBusy())
-		{
-			return;
-		}
-		
         T currentRecord = getRecordForNode(currentNode);
         
 		if(where == lists[0])
@@ -1631,7 +1530,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 
                 // these calls should work even if nodeRecord is null
                 log.debug("processing business rules to determine if node " + (selectedNode != null ? selectedNode.getId() : "null") + " is deleteable");
-                canDelete   = (businessRules != null) ? businessRules.okToEnableDelete(nodeRecord) : false;
+                canDelete = (businessRules != null) ? businessRules.okToEnableDelete(nodeRecord) : false;
+                canDelete = canDelete && (selectedNode != listModel.getVisibleRoot());
                 return null;
             }
 
@@ -1680,7 +1580,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	@SuppressWarnings("unchecked")
 	public boolean dropOccurred( Object dragged, Object droppedOn, int dropAction )
 	{
-		if(checkBusy() || dragged == droppedOn)
+		if(dragged == droppedOn)
 		{
 			return false;
 		}
@@ -1786,7 +1686,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	@SuppressWarnings("unchecked")
 	public boolean dropAcceptable( Object dragged, Object droppedOn, int dropAction )
 	{
-		if (checkBusy() || dragged == droppedOn)
+		if (dragged == droppedOn)
 		{
 			return false;
 		}
@@ -1870,11 +1770,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     @SuppressWarnings("unchecked")
 	public void showPopup(MouseEvent e)
 	{
-		if(checkBusy())
-		{
-			return;
-		}
-
 		if(clickIsOnText(e))
 		{
 			// select this node and display popup for it
@@ -1942,11 +1837,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	@SuppressWarnings("unchecked")
 	public void mouseButtonClicked(MouseEvent e)
 	{
-		if(checkBusy())
-		{
-			return;
-		}
-
 		if (e.isPopupTrigger())
 		{
 			showPopup(e);
@@ -2014,11 +1904,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     
 	public void mouseButtonReleased(MouseEvent e)
 	{
-		if(checkBusy())
-		{
-			return;
-		}
-
 		if(e.isPopupTrigger())
 		{
 			showPopup(e);
@@ -2028,10 +1913,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	public void mouseButtonPressed(MouseEvent e)
 	{
         log.debug("mouse button pressed on " + e.getSource());
-		if(checkBusy())
-		{
-			return;
-		}
 
 		if(e.isPopupTrigger())
 		{
@@ -2059,11 +1940,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	@Override
 	public boolean aboutToShutdown()
 	{
-		if (checkBusy())
-		{
-			return false;
-		}
-        
         try
         {
             T selectedNode = getSelectedNode(lists[0]);
