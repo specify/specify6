@@ -41,6 +41,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -402,6 +403,7 @@ public class CollectingEvent extends CollectionMember implements AttachmentOwner
      */
     @OneToMany(mappedBy = "collectingEvent")
     @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
+    @OrderBy("orderNumber ASC")
     public Set<Collector> getCollectors() {
         return this.collectors;
     }

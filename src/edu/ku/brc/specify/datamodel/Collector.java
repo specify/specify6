@@ -51,7 +51,7 @@ import edu.ku.brc.util.Orderable;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
-@Table(name = "collector", uniqueConstraints = { @UniqueConstraint(columnNames = {"OrderNumber", "CollectingEventID"}) })
+@Table(name = "collector", uniqueConstraints = { @UniqueConstraint(columnNames = {"AgentID", "CollectingEventID"}) })
 public class Collector extends CollectionMember implements java.io.Serializable, Orderable, Comparable<Collector> 
 {
 
