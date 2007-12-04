@@ -31,6 +31,8 @@ import javax.swing.table.AbstractTableModel;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import java.sql.Timestamp;
+
 import edu.ku.brc.af.core.expresssearch.ERTICaptionInfo;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.dbsupport.CustomQuery;
@@ -150,7 +152,17 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
      */
     public Class<?> getColumnClass(int column)
     {
-        return classNames.size() == 0 ? (Class<?>)String.class : (Class<?>)classNames.elementAt(column);
+        if (classNames.size() > 0)
+        {
+            Class<?> classObj = classNames.elementAt(column);
+            
+            if (classObj == Calendar.class || classObj == java.sql.Date.class || classObj == Date.class || classObj == Timestamp.class)
+            {
+                return String.class;
+            }
+            return classObj;
+        }
+        return String.class;
     }
 
     /**
@@ -186,11 +198,20 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
             {
                 Object obj = rowArray.get(column);
                 
+                if (obj == null && getColumnClass(column) == String.class)
+                {
+                    return "";
+                }
+                
                 if (obj instanceof Calendar)
                 {
                     return scrDateFormat.format((Calendar)obj);
                     
-                } else if (obj instanceof java.sql.Date || obj instanceof Date)
+                } else if (obj instanceof java.sql.Date || obj instanceof Date )
+                {
+                    return scrDateFormat.format((Date)obj);
+                    
+                } else if (obj instanceof Timestamp )
                 {
                     return scrDateFormat.format((Date)obj);
                 }
