@@ -266,7 +266,7 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
      */
     @Id
     @GeneratedValue
-    @Column(name = "AgentID", unique = false, nullable = false, insertable = true, updatable = true)
+    @Column(name = "AgentID")
     public Integer getAgentId() {
         return this.agentId;
     }
@@ -296,8 +296,8 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
         this.agentId = agentId;
     }
 
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "cataloger")
-    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    @OneToMany(mappedBy = "cataloger")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<CollectionObject> getCatalogers()
     {
         return catalogers;
@@ -311,7 +311,7 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     /**
      *
      */
-    @Column(name = "AgentType", unique = false, nullable = false, insertable = true, updatable = true, length = 3)
+    @Column(name = "AgentType", nullable = false)
     public Byte getAgentType() {
         return this.agentType;
     }
@@ -323,7 +323,7 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     /**
      *      * of Person
      */
-    @Column(name = "FirstName", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "FirstName", length = 50)
     public String getFirstName() {
         return this.firstName;
     }
@@ -335,7 +335,7 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     /**
      *      * of Person
      */
-    @Column(name = "LastName", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "LastName", length = 50)
     public String getLastName() {
         return this.lastName;
     }
@@ -347,7 +347,7 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     /**
      *      * of Person
      */
-    @Column(name = "MiddleInitial", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "MiddleInitial", length = 50)
     public String getMiddleInitial() {
         return this.middleInitial;
     }
@@ -359,7 +359,7 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     /**
      *      * of Person
      */
-    @Column(name = "Title", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "Title", length = 50)
     public String getTitle() {
         return this.title;
     }
@@ -371,7 +371,7 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     /**
      *      * of Person or Organization
      */
-    @Column(name = "Interests", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "Interests", length = 255)
     public String getInterests() {
         return this.interests;
     }
@@ -383,7 +383,7 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     /**
      *      * of organization
      */
-    @Column(name = "Abbreviation", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "Abbreviation", length = 50)
     public String getAbbreviation() {
         return this.abbreviation;
     }
@@ -395,7 +395,7 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     /**
      * @return the initials
      */
-    @Column(name = "Initials", unique = false, nullable = true, insertable = true, updatable = true, length = 8)
+    @Column(name = "Initials", length = 8)
     public String getInitials()
     {
         return initials;
@@ -412,7 +412,7 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     /**
      *      * of organization/group/Folks (and maybe persons)
      */
-    @Column(name = "Name", unique = false, nullable = true, insertable = true, updatable = true, length = 120)
+    @Column(name = "Name", length = 120)
     public String getName() {
         return this.name;
     }
@@ -436,7 +436,7 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     /**
      *      * Indicates whether this record can be viewed - by owner, by instituion, or by all
      */
-    @Column(name = "Visibility", unique = false, nullable = true, insertable = true, updatable = true, length = 10)
+    @Column(name = "Visibility")
     public Integer getVisibility() {
         return this.visibility;
     }
@@ -455,7 +455,7 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     /**
      * 
      */
-    @Column(name = "VisibilitySetBy", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "VisibilitySetBy", length = 50)
     public String getVisibilitySetBy() {
         return this.visibilitySetBy;
     }
@@ -468,8 +468,8 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     /**
      *
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OneToMany(mappedBy = "agent")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<Author> getAuthors() {
         return this.authors;
     }
@@ -481,8 +481,8 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     /**
      *
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "receivedBy")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OneToMany(mappedBy = "receivedBy")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<LoanReturnPreparation> getLoanReturnPreparations() 
     {
         return this.loanReturnPreparations;
@@ -496,8 +496,8 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     /**
      *
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OneToMany(mappedBy = "agent")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<BorrowReturnMaterial> getBorrowReturnMaterials() 
     {
         return this.borrowReturnMaterials;
@@ -511,8 +511,8 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     /**
      *
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agentCatalogedBy")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OneToMany(mappedBy = "agentCatalogedBy")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<ExchangeIn> getExchangeInCatalogedBys() 
     {
         return this.exchangeInCatalogedBys;
@@ -526,8 +526,8 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     /**
      *
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "organization")
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    @OneToMany(mappedBy = "organization")
+    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     public Set<Agent> getOrgMembers() 
     {
         return this.orgMembers;
@@ -541,8 +541,8 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     /**
      *      * of organization
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "ParentOrganizationID", unique = false, nullable = true, insertable = true, updatable = true)
+    @ManyToOne
+    @JoinColumn(name = "ParentOrganizationID")
     public Agent getOrganization() {
         return this.organization;
     }
@@ -555,8 +555,8 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     /**
      *
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OneToMany(mappedBy = "agent")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<Project> getProjects() 
     {
         return this.projects;
@@ -570,8 +570,8 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     /**
      *
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "preparedByAgent")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OneToMany(mappedBy = "preparedByAgent")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<Preparation> getPreparations() 
     {
         return this.preparations;
@@ -585,8 +585,8 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     /**
      *
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "member")
-    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    @OneToMany(mappedBy = "member")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<GroupPerson> getGroups() 
     {
         return this.groups;
@@ -600,8 +600,8 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     /**
      *
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "group")
-    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    @OneToMany(mappedBy = "group")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<GroupPerson> getMembers() 
     {
         return this.members;
@@ -615,8 +615,8 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     /**
     *
     */
-   @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "determiner")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+   @OneToMany(mappedBy = "determiner")
+   @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
    public Set<Determination> getDeterminations() 
    {
        return this.determinations;
@@ -630,8 +630,8 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
    /**
     *
     */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "geoRefDetBy")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OneToMany(mappedBy = "geoRefDetBy")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<GeoCoordDetail> getGeoCoordDetail() 
     {
         return this.geoCoordDetail;
@@ -645,8 +645,8 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     /**
      *
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "shippedBy")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OneToMany(mappedBy = "shippedBy")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<Shipment> getShipments() 
     {
         return this.shipments;
@@ -660,8 +660,8 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     /**
      *
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OneToMany(mappedBy = "agent")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<Collector> getCollectors() 
     {
         return this.collectors;
@@ -675,8 +675,8 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     /**
      *
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agentCatalogedBy")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OneToMany(mappedBy = "agentCatalogedBy")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<ExchangeOut> getExchangeOutCatalogedBys() 
     {
         return this.exchangeOutCatalogedBys;
@@ -690,8 +690,8 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     /**
     *
     */
-   @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "originator")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+   @OneToMany(mappedBy = "originator")
+   @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
    public Set<RepositoryAgreement> getRepositoryAgreements() 
    {
        return this.repositoryAgreements;
@@ -705,8 +705,8 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
    /**
     *  The Division this Agent belongs to.
     */
-   @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-   @JoinColumn(name = "DivisionID", unique = false, nullable = true, insertable = true, updatable = true)
+   @ManyToOne
+   @JoinColumn(name = "DivisionID")
    public Division getDivision() 
    {
        return this.division;
@@ -720,8 +720,8 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
    /**
     *  The Institution for Technical Contact.
     */
-   @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-   @JoinColumn(name = "InstitutionID", unique = false, nullable = true, insertable = true, updatable = true)
+   @ManyToOne
+   @JoinColumn(name = "InstitutionID")
    public Institution getInstTechContact() 
    {
        return this.instTechContact;
@@ -735,8 +735,8 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
    /**
     *  The Institution for Technical Contact.
     */
-   @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-   @JoinColumn(name = "InstitutionCCID", unique = false, nullable = true, insertable = true, updatable = true)
+   @ManyToOne
+   @JoinColumn(name = "InstitutionCCID")
    public Institution getInstContentContact() 
    {
        return this.instContentContact;
@@ -755,7 +755,7 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     /**
      *      * Agent's (person) job title at specified address and organization
      */
-    @Column(name = "JobTitle", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "JobTitle", length = 50)
     public String getJobTitle() {
         return this.jobTitle;
     }
@@ -767,7 +767,7 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     /**
      *
      */
-    @Column(name = "Email", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
+    @Column(name = "Email", length = 50)
     public String getEmail() {
         return this.email;
     }
@@ -779,7 +779,7 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     /**
      *
      */
-    @Column(name = "URL", length=1024, unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "URL", length=1024)
     public String getUrl() {
         return this.url;
     }
@@ -789,7 +789,7 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     }
 
 
-    @Column(name = "GUID", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    @Column(name = "GUID", length = 128)
     public String getGuid()
     {
         return this.guid;
@@ -803,7 +803,7 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     /**
      * @return the authorName
      */
-    @Column(name = "AuthorName", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    @Column(name = "AuthorName", length = 64)
     public String getAuthorName()
     {
         return authorName;
@@ -820,7 +820,7 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     /**
      * @return the labelName
      */
-    @Column(name = "LabelName", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    @Column(name = "LabelName", length = 64)
     public String getLabelName()
     {
         return labelName;
@@ -837,7 +837,7 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     /**
      * @return the collectorName
      */
-    @Column(name = "CollectorName", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    @Column(name = "CollectorName", length = 64)
     public String getCollectorName()
     {
         return collectorName;
@@ -854,7 +854,7 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     /**
      *      * Associated record in Address table
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
+    @OneToMany(mappedBy = "agent")
     @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<Address> getAddresses() {
         return this.addresses;
@@ -865,7 +865,7 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     }
 
     
-    @OneToMany(mappedBy = "agent")
+    @OneToMany(mappedBy = "agent", fetch = FetchType.EAGER)
     @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK, CascadeType.DELETE} )
     @OrderBy("ordinal ASC")
     public Set<AgentAttachment> getAgentAttachments()
@@ -881,7 +881,7 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     /**
      * @return the variants
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
+    @OneToMany(mappedBy = "agent")
     @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
     public Set<AgentVariant> getVariants()
     {
