@@ -23,8 +23,6 @@ import javax.swing.ImageIcon;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.dbsupport.DataProviderFactory;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AgentAttachment;
@@ -112,22 +110,7 @@ public class AgentIconTextMapper implements ObjectTextMapper, ObjectIconMapper
         Agent agent = getAgent(o);
         if (agent != null)
         {
-            DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
-            try
-            {
-                tmpSession.attach(agent);
-
-            } catch (Exception ex)
-            {
-                log.error(ex);
-                
-            } finally 
-            {
-                tmpSession.close();     
-            }
-
             return DataObjFieldFormatMgr.format(agent, "Agent");
-            
         }
         return null;
     }
@@ -140,10 +123,8 @@ public class AgentIconTextMapper implements ObjectTextMapper, ObjectIconMapper
         Agent agent = getAgent(o);
         if (agent != null)
         {
-            DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
             try
             {
-                tmpSession.attach(agent);
                 for (AgentAttachment agentAttach: agent.getAgentAttachments())
                 {
                     Attachment attach = agentAttach.getAttachment();
@@ -166,11 +147,7 @@ public class AgentIconTextMapper implements ObjectTextMapper, ObjectIconMapper
             {
                 log.error(ex);
                 
-            } finally 
-            {
-                tmpSession.close();     
             }
-           
             
             switch(agent.getAgentType())
             {

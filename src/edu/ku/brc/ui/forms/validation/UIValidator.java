@@ -163,7 +163,7 @@ public class UIValidator
      */
     public boolean validate()
     {
-        System.err.println("ignoreAllValidation "+ignoreAllValidation);
+        log.debug("ignoreAllValidation "+ignoreAllValidation);
         if (ignoreAllValidation)
         {
             return true;

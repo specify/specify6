@@ -17,6 +17,7 @@ import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +56,7 @@ import edu.ku.brc.ui.forms.persist.ViewDefIFace;
 import edu.ku.brc.ui.forms.persist.ViewIFace;
 import edu.ku.brc.ui.forms.validation.FormValidator;
 import edu.ku.brc.util.Orderable;
+import edu.ku.brc.util.OrderableComparator;
 
 /**
  * A Viewable that will display a set of FormDataObjIFace objects in a file
@@ -716,7 +718,22 @@ public class IconViewObj implements Viewable
 
         iconTray.removeAllItems();
         
-        for (Object o: dataSet)
+        Vector<Object> dataObjects = new Vector<Object>();
+        dataObjects.addAll(dataSet);
+        if (this.orderableDataClass)
+        {
+            Vector<Orderable> sortedDataObjects = new Vector<Orderable>();
+            for (Object o: dataObjects)
+            {
+                sortedDataObjects.add((Orderable)o);
+            }
+            Collections.sort(sortedDataObjects, new OrderableComparator());
+            
+            dataObjects.clear();
+            dataObjects.addAll(sortedDataObjects);
+        }
+        
+        for (Object o: dataObjects)
         {
             if (!(o instanceof FormDataObjIFace))
             {
@@ -729,7 +746,8 @@ public class IconViewObj implements Viewable
                 return;
             }
             
-            iconTray.addItem((FormDataObjIFace)o);
+            FormDataObjIFace formDataObj = (FormDataObjIFace)o;
+            iconTray.addItem(formDataObj);
         }
     }
 
