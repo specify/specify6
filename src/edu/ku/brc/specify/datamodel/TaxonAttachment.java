@@ -33,7 +33,10 @@ import edu.ku.brc.util.Orderable;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "taxonattachment")
-public class TaxonAttachment extends DataModelObjBase implements ObjectAttachmentIFace<Taxon>, Orderable, Serializable, Comparable<TaxonAttachment>
+public class TaxonAttachment extends DataModelObjBase implements ObjectAttachmentIFace<Taxon>, 
+                                                                 Orderable, 
+                                                                 Serializable, 
+                                                                 Comparable<TaxonAttachment>
 {
     protected Integer    taxonAttachmentId;
     protected Taxon      taxon;

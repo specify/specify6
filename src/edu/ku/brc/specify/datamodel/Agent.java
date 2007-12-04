@@ -125,6 +125,8 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     protected String                        url;
      
     protected Set<Address>                  addresses;
+    protected Set<AgentVariant>             variants;
+
     
     /*
     protected Set<LoanAgent>                loanAgents;
@@ -144,7 +146,6 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     protected Set<ConservEvent>             treatedByAgentConservEvents;
     protected Set<ConservDescription>       conservDescriptions;
     
-    protected Set<AgentVariant>             variants;
     protected Set<Collection>               collectionContacts;
     protected Set<Collection>               collectionCurators;
     
@@ -224,7 +225,8 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
         organization                   = null;
         addresses                      = new HashSet<Address>();
         agentAttachments               = new HashSet<AgentAttachment>();
-        
+        variants                       = new HashSet<AgentVariant>();
+
         /*
         loanAgents                     = new HashSet<LoanAgent>();
         shipmentsByShipper             = new HashSet<Shipment>();
@@ -243,7 +245,6 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
         
         conservDescriptions            = new HashSet<ConservDescription>();
         
-        variants                       = new HashSet<AgentVariant>();
         
         
         specifyUsers                   = new HashSet<SpecifyUser>();
@@ -876,7 +877,24 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     {
         this.agentAttachments = agentAttachments;
     }
+    
+    /**
+     * @return the variants
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    public Set<AgentVariant> getVariants()
+    {
+        return variants;
+    }
 
+    /**
+     * @param variants the variants to set
+     */
+    public void setVariants(Set<AgentVariant> variants)
+    {
+        this.variants = variants;
+    }
 //
 //    /**
 //     *
@@ -1082,15 +1100,6 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
 //    }
 //
 //
-//    /**
-//     * @return the variants
-//     */
-//    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
-//    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-//    public Set<AgentVariant> getVariants()
-//    {
-//        return variants;
-//    }
 //    
 //    /**
 //     * @return the collectionContacts
@@ -1200,14 +1209,7 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
 //    {
 //        this.lastEditedBys = lastEditedBys;
 //    }
-//
-//    /**
-//     * @param variants the variants to set
-//     */
-//    public void setVariants(Set<AgentVariant> variants)
-//    {
-//        this.variants = variants;
-//    }
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()

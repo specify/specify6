@@ -10,6 +10,7 @@
     <icon name="accessionagent" file="agent.png" sizes="all"/>
     <!-- <icon name="address"        file="address.png" sizes="all"/>  -->
     <icon name="agent"          file="agent.png" sizes="all"/>
+    <icon name="agentvariant"   ile="agent.png" sizes="all"/>
     <icon name="author"         file="author.png" sizes="all"/>
     <icon name="attachment"     file="attachment.png" sizes="all"/>
     <icon name="attribute"      file="attribute.png" sizes="all"/>
@@ -105,6 +106,7 @@
     <icon name="AccessionAgent"         alias="agent"/>
     <icon name="Address"                alias="address"/>
     <icon name="Agent"                  alias="agent"/>
+    <icon name="AgentVariant"           alias="agentvariant"/>
     <icon name="Appraisal"              alias="appraisal"/>
     <icon name="Attachment"             alias="attachment"/>
     <icon name="Author"                 alias="author"/>
@@ -186,6 +188,9 @@
     
     <icon name="TreeDefEditor"           alias="taxon"/>
     <icon name="TreeViewer"			     alias="taxon"/>
-    <icon name="Taxon_Tree"             alias="taxon"/>
+    <icon name="Taxon_Tree"              alias="taxon"/>
+    
+    <icon name="Person"              alias="agent"/>
+    <icon name="People"              alias="agent"/>
     
 </icons>

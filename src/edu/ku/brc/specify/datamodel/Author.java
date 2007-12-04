@@ -42,6 +42,8 @@ import javax.persistence.UniqueConstraint;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.util.Orderable;
+
 /**
 
  */
@@ -49,7 +51,10 @@ import org.apache.commons.lang.StringUtils;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "author", uniqueConstraints = { @UniqueConstraint(columnNames = { "OrderNumber", "ReferenceWorkID" }) })
-public class Author extends DataModelObjBase implements java.io.Serializable {
+public class Author extends DataModelObjBase implements java.io.Serializable,
+                                                        Orderable,
+                                                        Comparable<Author>
+{
 
     // Fields    
 
@@ -211,5 +216,31 @@ public class Author extends DataModelObjBase implements java.io.Serializable {
     {
         return 17;
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.util.Orderable#getOrderIndex()
+     */
+    public int getOrderIndex()
+    {
+        return orderNumber;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.util.Orderable#setOrderIndex(int)
+     */
+    public void setOrderIndex(int order)
+    {
+        orderNumber = (short)order;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(Author obj)
+    {
+        return orderNumber.compareTo(obj.orderNumber);
+    }
+
+
 
 }

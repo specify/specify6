@@ -557,7 +557,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
                 }
             } else
             {
-                config.getTables().remove(stc);
+                config.removeTable(stc);
             }
         }
     }

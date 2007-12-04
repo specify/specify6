@@ -40,6 +40,8 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
+import edu.ku.brc.util.Orderable;
+
 /**
 
  */
@@ -47,7 +49,11 @@ import javax.persistence.UniqueConstraint;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "groupperson", uniqueConstraints = { @UniqueConstraint(columnNames = { "OrderNumber", "GroupID" }) })
-public class GroupPerson extends CollectionMember implements java.io.Serializable {
+public class GroupPerson extends CollectionMember implements java.io.Serializable,
+                                                             Orderable,
+                                                             Comparable<GroupPerson>
+                                                             
+{
 
     // Fields    
 
@@ -190,6 +196,30 @@ public class GroupPerson extends CollectionMember implements java.io.Serializabl
     public static int getClassTableId()
     {
         return 49;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.util.Orderable#getOrderIndex()
+     */
+    public int getOrderIndex()
+    {
+        return orderNumber;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.util.Orderable#setOrderIndex(int)
+     */
+    public void setOrderIndex(int order)
+    {
+        orderNumber = (short)order;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(GroupPerson obj)
+    {
+        return orderNumber.compareTo(obj.orderNumber);
     }
 
 }

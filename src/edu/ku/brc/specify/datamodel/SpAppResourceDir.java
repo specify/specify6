@@ -42,6 +42,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
@@ -367,6 +368,24 @@ public class SpAppResourceDir extends DataModelObjBase implements java.io.Serial
     public int getTableId()
     {
         return getClassTableId();
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
+     */
+    @Override
+    @Transient
+    public String getIdentityTitle()
+    {
+        return (StringUtils.isNotEmpty(userType) ? (userType + " - ") : "") + disciplineType;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#toString()
+     */
+    public String toString()
+    {
+        return getIdentityTitle();
     }
     
     /**

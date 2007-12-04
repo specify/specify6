@@ -301,6 +301,59 @@
             </detailView>
         </table>
         
+        <table id="11" tableid="5" indexed="false" name="AgentFromAgentVariant" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="107">agentvariant.AgentVariantID</join>
+                <join tableid="5">agent.AgentID</join>
+            </joins>
+            <detailView icon="CollectionObject">
+                <sql>
+                    <![CDATA[
+ SELECT agent.AgentID,
+ agentvariant.Name, 
+ agent.LastName,
+ agent.FirstName,
+ agent.Name,
+ agent.AgentType,
+ %s
+ FROM agentvariant INNER JOIN agent ON agentvariant.AgentID = agent.AgentID
+ where %s order by agentvariant.Name asc]]>
+                </sql>
+                <captions>
+                    <caption tableid="5" col="agent.AgentID" visible="false"/>
+                    <caption tableid="5" col="agentvariant.Name"/>
+                    <caption tableid="107" key="Agent" dataobjformatter="Agent">
+                        <col name="agent.LastName"  field="lastName"/>
+                        <col name="agent.FirstName" field="firstName"/>
+                        <col name="agent.Name"      field="name"/>                        
+                        <col name="agent.AgentType" field="agentType"/>                        
+                    </caption>
+                </captions>
+            </detailView>
+        </table>
+        
+        <table id="12" tableid="2" indexed="false" name="AgentFromAgentVariant" priority="1" color="30, 144, 144">
+            <joins>
+                <join tableid="120">localitynamealias.LocalityID</join>
+                <join tableid="2">locality.LocalityID</join>
+            </joins>
+            <detailView icon="CollectionObject">
+                <sql>
+                    <![CDATA[SELECT locality.LocalityID,
+ locality.LocalityName, 
+ localitynamealias.Name, 
+ %s
+ FROM locality INNER JOIN localitynamealias ON locality.LocalityID = localitynamealias.LocalityID
+ where %s]]>
+                </sql>
+                <captions>
+                    <caption tableid="2" col="locality.LocalityID" visible="false"/>
+                    <caption tableid="2" col="locality.LocalityName"/>
+                    <caption tableid="120" col="localitynamealias.Name"/>
+                </captions>
+            </detailView>
+        </table>
+        
     </express>
     
     <!-- ************************************************* -->

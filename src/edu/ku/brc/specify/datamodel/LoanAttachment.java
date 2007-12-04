@@ -33,7 +33,10 @@ import edu.ku.brc.util.Orderable;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "loanattachment")
-public class LoanAttachment extends DataModelObjBase implements ObjectAttachmentIFace<Loan>, Orderable, Serializable
+public class LoanAttachment extends DataModelObjBase implements ObjectAttachmentIFace<Loan>, 
+                                                                Orderable,
+                                                                Serializable,
+                                                                Comparable<LoanAttachment>
 {
     protected Integer    loanAttachmentId;
     protected Loan     loan;
@@ -192,4 +195,14 @@ public class LoanAttachment extends DataModelObjBase implements ObjectAttachment
         String oString = (getObject() != null) ? getObject().getIdentityTitle() : "NULL Object Reference";
         return aString + " : " + oString;
     }
+    
+    
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(LoanAttachment obj)
+    {
+        return ordinal.compareTo(obj.ordinal);
+    }
+
 }

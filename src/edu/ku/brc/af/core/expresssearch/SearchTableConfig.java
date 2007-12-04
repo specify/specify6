@@ -23,7 +23,6 @@ import java.util.Date;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.dbsupport.DBFieldInfo;
@@ -46,7 +45,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
                                           TableNameRendererIFace, 
                                           Comparable<SearchTableConfig>
 {
-    private static final Logger log = Logger.getLogger(SearchTableConfig.class);
+    //private static final Logger log = Logger.getLogger(SearchTableConfig.class);
     
     protected String                     tableName; // This is really the Class name, the table name is 
     protected Integer                    displayOrder;

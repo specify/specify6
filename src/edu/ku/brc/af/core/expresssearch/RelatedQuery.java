@@ -32,7 +32,11 @@ import edu.ku.brc.ui.UIRegistry;
 public class RelatedQuery implements Comparable<RelatedQuery>, DisplayOrderingIFace, TableNameRendererIFace
 {
     protected static boolean          addRealtedQueryTitle = true;
+    protected static boolean          addActiveTitle       = false;
+    
     protected static String           relatedQueryTitle    = UIRegistry.getResourceString("ES_RELATED_QUERY");
+    protected static String           activeTitle          = UIRegistry.getResourceString("ES_RELATED_ACTIVE");
+    
     protected String                  id;
     protected Integer                 displayOrder;
     protected Boolean                 isActive;
@@ -160,13 +164,29 @@ public class RelatedQuery implements Comparable<RelatedQuery>, DisplayOrderingIF
         RelatedQuery.addRealtedQueryTitle = addRealtedQueryTitle;
     }
 
+    /**
+     * @param addActiveTitle the addActiveTitle to set
+     */
+    public static void setAddActiveTitle(boolean addActiveTitle)
+    {
+        RelatedQuery.addActiveTitle = addActiveTitle;
+    }
+    
+    /**
+     * @return just the title from the erti
+     */
+    public String getPlainTitle()
+    {
+        return erti == null ? id : erti.getTitle();
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString()
     {
-        return (erti == null ? id : erti.getTitle()) + (addRealtedQueryTitle ? (" " + relatedQueryTitle) : "");
+        return getPlainTitle() + (addRealtedQueryTitle ? (" " + relatedQueryTitle) : "") + (addActiveTitle && getIsActive() ? (" (" + activeTitle + ")") : "");
     }
 
     /* (non-Javadoc)
@@ -190,7 +210,7 @@ public class RelatedQuery implements Comparable<RelatedQuery>, DisplayOrderingIF
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-    @Override
+    //@Override
     public int compareTo(RelatedQuery o)
     {
         return toString().compareTo(o.toString());

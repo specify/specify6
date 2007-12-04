@@ -42,7 +42,8 @@ import edu.ku.brc.specify.treeutils.TreeOrderSiblingComparator;
     {   @Index (name="LocNameIDX", columnNames={"Name"}),
         @Index (name="LocFullNameIDX", columnNames={"FullName"})
     })
-public class Location extends DataModelObjBase implements Serializable, Treeable<Location,LocationTreeDef,LocationTreeDefItem>{
+public class Location extends DataModelObjBase implements Serializable, Treeable<Location,LocationTreeDef, LocationTreeDefItem>
+{
 
     /**
      * A <code>Logger</code> object used for all log messages eminating from

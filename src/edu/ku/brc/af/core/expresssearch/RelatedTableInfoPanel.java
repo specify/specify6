@@ -20,17 +20,22 @@ package edu.ku.brc.af.core.expresssearch;
 import static edu.ku.brc.ui.UIHelper.createI18NLabel;
 
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Collections;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JToggleButton;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
@@ -41,8 +46,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.ToggleButtonChooserPanel;
-import edu.ku.brc.ui.VerticalSeparator;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author rods
@@ -52,17 +56,22 @@ import edu.ku.brc.ui.VerticalSeparator;
  * Created Date: Nov 27, 2007
  *
  */
-public class RelatedTableInfoPanel extends JPanel implements ChangeListener
+public class RelatedTableInfoPanel extends JPanel
 {
     protected SearchConfig config;
     
     protected JList                relatedTablesList;
     protected DefaultListModel     relatedTablesModel  = new DefaultListModel();
+    protected JLabel               descLbl;
     protected JTextArea            relatedTableDescTA;
+    
+    protected JLabel               activeLbl;
+    protected JCheckBox            activeCBX;
+    protected JButton              selectAllBtn;
+    protected JButton              deselectAllBtn;
     
     protected Vector<RelatedQuery> relatedQueriesInUse = new Vector<RelatedQuery>();
     
-    protected ToggleButtonChooserPanel<RelatedQuery> togPanel;
     protected boolean                                ignoreChanges = false;
     
     /**
@@ -82,27 +91,23 @@ public class RelatedTableInfoPanel extends JPanel implements ChangeListener
     {
         setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
         
-        togPanel = new ToggleButtonChooserPanel<RelatedQuery>(config.getRelatedQueries(), ToggleButtonChooserPanel.Type.Checkbox);
-        togPanel.setUseScrollPane(true);
-        togPanel.setChangeListener(this);
-        togPanel.createUI();
-        
         relatedTablesList = new JList(relatedTablesModel);
         TableNameRenderer nameRender = new TableNameRenderer(IconManager.IconSize.Std24);
         nameRender.setUseIcon("PlaceHolder");
         relatedTablesList.setCellRenderer(nameRender);
         
         CellConstraints cc = new CellConstraints();
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,10px,p,10px,p,4px,f:p:g", "p,2px,t:p:g,f:p:g"), this);
-        pb.add(createI18NLabel("ES_RELATED_ACTIVATE"), cc.xy(1,1));
-        pb.add(togPanel.getUIComponent(), cc.xywh(1, 3, 1, 2));
-        
-        Color color = getBackground();
-        pb.add(new VerticalSeparator(color.brighter(), color.darker()), cc.xywh(3, 1, 1, 4));
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("p:g,8px,p,2px,f:p:g", 
+                                                             "p,2px,p,2px,p,2px,t:p:g,f:p:g,2px,p"), this);
+        //pb.add(createI18NLabel("ES_RELATED_ACTIVATE"), cc.xy(1, 1));
         
         JScrollPane sp = new JScrollPane(relatedTablesList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        pb.add(createI18NLabel("ES_RELATED_SEARCHES"), cc.xy(5, 1));
-        pb.add(sp, cc.xywh(5, 3, 1, 2));
+        pb.add(createI18NLabel("ES_RELATED_SEARCHES"), cc.xy(1, 1));
+        pb.add(sp, cc.xywh(1, 3, 1, 6));
+        
+        activeCBX = new JCheckBox("                      ");
+        pb.add(activeLbl = createI18NLabel("ES_RELATED_ACTIVATE", SwingConstants.RIGHT), cc.xy(3, 3));
+        pb.add(activeCBX, cc.xy(5, 3));
         
         relatedTableDescTA = new JTextArea(8, 40);
         relatedTableDescTA.setEditable(false);
@@ -110,9 +115,31 @@ public class RelatedTableInfoPanel extends JPanel implements ChangeListener
         relatedTableDescTA.setBackground(Color.WHITE);
         relatedTableDescTA.setLineWrap(true);
         sp = new JScrollPane(relatedTableDescTA, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        pb.add(createI18NLabel("ES_RELATED_DESC"), cc.xy(7, 1));
-        pb.add(sp, cc.xy(7, 3));
+        pb.add(descLbl = createI18NLabel("ES_RELATED_DESC", SwingConstants.RIGHT), cc.xy(3, 5));
+        pb.add(sp, cc.xy(5, 5));
+        
+        PanelBuilder btnPB = new PanelBuilder(new FormLayout("p,f:p:g,p", "p"));
+        selectAllBtn = new JButton(UIRegistry.getResourceString("SelectAll"));
+        deselectAllBtn = new JButton(UIRegistry.getResourceString("DeselectAll"));
+        btnPB.add(selectAllBtn, cc.xy(1, 1));
+        btnPB.add(deselectAllBtn, cc.xy(3, 1));
+        pb.add(btnPB.getPanel(), cc.xy(1, 10));
+        
+        activeCBX.addChangeListener(new ChangeListener() {
 
+            /* (non-Javadoc)
+             * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
+             */
+            public void stateChanged(ChangeEvent e)
+            {
+                RelatedQuery rq = (RelatedQuery)relatedTablesList.getSelectedValue();
+                if (rq != null)
+                {
+                    rq.setIsActive(activeCBX.isSelected());
+                    relatedTablesList.repaint();
+                }
+            }
+        });
         
         relatedTablesList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             //@Override
@@ -121,9 +148,53 @@ public class RelatedTableInfoPanel extends JPanel implements ChangeListener
                 if (!e.getValueIsAdjusting())
                 {
                     rtRelatedTableSelected();
+                    updateEnableUI();
                 }
             }
         });
+        
+        selectAllBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                setAllActive(true);
+            }
+            
+        });
+        
+        deselectAllBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                setAllActive(false);
+            }
+            
+        });
+        
+        updateEnableUI();
+    }
+    
+    /**
+     * @param isActive
+     */
+    protected void setAllActive(final boolean isActive)
+    {
+        relatedTablesList.clearSelection();
+        for (RelatedQuery rq : relatedQueriesInUse)
+        {
+            rq.setIsActive(isActive);
+        }
+        relatedTablesList.repaint();
+    }
+    
+    /**
+     * 
+     */
+    protected void updateEnableUI()
+    {
+        boolean enabled = relatedTablesList.getSelectedIndex() > -1;
+        activeCBX.setEnabled(enabled);
+        activeLbl.setEnabled(enabled);
+        descLbl.setEnabled(enabled);
+        relatedTableDescTA.setEnabled(enabled);
     }
     
     /**
@@ -134,6 +205,8 @@ public class RelatedTableInfoPanel extends JPanel implements ChangeListener
         RelatedQuery rq = (RelatedQuery)relatedTablesList.getSelectedValue();
         if (rq != null)
         {
+            activeCBX.setText(rq.getPlainTitle());
+            activeCBX.setSelected(rq.getIsActive());
             ExpressResultsTableInfo erti = ExpressSearchConfigCache.getSearchIdToTableInfoHash().get(rq.getId());
             if (erti != null)
             {
@@ -145,6 +218,8 @@ public class RelatedTableInfoPanel extends JPanel implements ChangeListener
         } else
         {
             relatedTableDescTA.setText("");
+            activeCBX.setText("");
+            activeCBX.setSelected(false);
         }
     }
     
@@ -154,10 +229,10 @@ public class RelatedTableInfoPanel extends JPanel implements ChangeListener
     public void setVisible(final boolean vis)
     {
         RelatedQuery.setAddRealtedQueryTitle(!vis);
+        RelatedQuery.setAddActiveTitle(vis);
         
         if (vis)
         {
-            ignoreChanges = true;
             relatedQueriesInUse.clear();
             relatedTablesModel.clear();
             for (RelatedQuery rq : config.getRelatedQueries())
@@ -169,35 +244,12 @@ public class RelatedTableInfoPanel extends JPanel implements ChangeListener
             }
             
             Collections.sort(relatedQueriesInUse);
-            togPanel.setItems(relatedQueriesInUse);
-            
             for (RelatedQuery rq : relatedQueriesInUse)
             {
-                if (rq.getIsActive())
-                {
-                    togPanel.setSelectedObj(rq);
-                }
                 relatedTablesModel.addElement(rq);
             }
-            ignoreChanges = false;
-            //togPanel.setSelectedObjects(relatedQueriesInUse);
         }
         super.setVisible(vis);
-    }
-
-    /* (non-Javadoc)
-     * @see javax.swing.event.ChangeListener#stateChanged(javax.swing.event.ChangeEvent)
-     */
-    @Override
-    public void stateChanged(ChangeEvent e)
-    {
-        if (!ignoreChanges)
-        {
-            JToggleButton togBtn = (JToggleButton)e.getSource();
-            RelatedQuery  rq     = togPanel.getItemForBtn(togBtn);
-            rq.setIsActive(togBtn.isSelected());
-            rq.setDisplayOrder(Integer.MAX_VALUE);
-        }
     }
     
 }

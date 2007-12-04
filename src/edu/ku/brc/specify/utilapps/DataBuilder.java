@@ -17,6 +17,7 @@ import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.AccessionAuthorization;
 import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.AgentVariant;
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.AttributeDef;
 import edu.ku.brc.specify.datamodel.Author;
@@ -120,6 +121,17 @@ public class DataBuilder
 
     }
 
+    public static AgentVariant createAgentVariant(final Byte varType, final String name, final Agent agentOwner)
+    {
+        AgentVariant av = new AgentVariant();
+        av.initialize();
+        av.setVarType(varType);
+        av.setName(name);
+        av.setAgent(agentOwner);
+        agentOwner.getVariants().add(av);
+        return av;
+    }
+    
     public static Institution createInstitution(final String name)
     {
         // Create Collection Type

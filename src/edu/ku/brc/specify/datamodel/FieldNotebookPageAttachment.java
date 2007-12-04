@@ -25,7 +25,10 @@ import edu.ku.brc.util.Orderable;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "fieldnotebookpageattachment")
-public class FieldNotebookPageAttachment extends DataModelObjBase implements ObjectAttachmentIFace<FieldNotebookPage>, Orderable, Serializable
+public class FieldNotebookPageAttachment extends DataModelObjBase implements ObjectAttachmentIFace<FieldNotebookPage>, 
+                                                                             Orderable, 
+                                                                             Serializable,
+                                                                             Comparable<FieldNotebookPageAttachment>
 {
     protected Integer           fieldNotebookPageAttachmentId;
     protected Integer           ordinal;
@@ -156,4 +159,14 @@ public class FieldNotebookPageAttachment extends DataModelObjBase implements Obj
     {
         return 128;
     }
+    
+    
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(FieldNotebookPageAttachment obj)
+    {
+        return ordinal.compareTo(obj.ordinal);
+    }
+
 }

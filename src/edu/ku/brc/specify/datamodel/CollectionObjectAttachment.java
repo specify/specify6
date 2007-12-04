@@ -33,7 +33,10 @@ import edu.ku.brc.util.Orderable;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "collectionobjectattachment")
-public class CollectionObjectAttachment extends CollectionMember implements ObjectAttachmentIFace<CollectionObject>, Orderable, Serializable
+public class CollectionObjectAttachment extends CollectionMember implements ObjectAttachmentIFace<CollectionObject>, 
+                                                                            Orderable, 
+                                                                            Serializable,
+                                                                            Comparable<CollectionObjectAttachment>
 {
     protected Integer          collectionObjectAttachmentId;
     protected CollectionObject collectionObject;
@@ -207,5 +210,13 @@ public class CollectionObjectAttachment extends CollectionMember implements Obje
         String aString = (attachment != null) ? attachment.getIdentityTitle() : "NULL Attachment";
         String oString = (getObject() != null) ? getObject().getIdentityTitle() : "NULL Object Reference";
         return aString + " : " + oString;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(CollectionObjectAttachment obj)
+    {
+        return ordinal.compareTo(obj.ordinal);
     }
 }

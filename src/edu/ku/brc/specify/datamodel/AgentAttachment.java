@@ -32,7 +32,10 @@ import edu.ku.brc.util.Orderable;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "agentattachment")
-public class AgentAttachment extends DataModelObjBase implements ObjectAttachmentIFace<Agent>, Orderable, Serializable
+public class AgentAttachment extends DataModelObjBase implements ObjectAttachmentIFace<Agent>, 
+                                                                 Orderable, 
+                                                                 Serializable,
+                                                                 Comparable<AgentAttachment>
 {
     protected Integer    agentAttachmentId;
     protected Agent      agent;
@@ -194,5 +197,13 @@ public class AgentAttachment extends DataModelObjBase implements ObjectAttachmen
     public String toString()
     {
         return (attachment != null) ? attachment.getIdentityTitle() : super.toString();
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(AgentAttachment obj)
+    {
+        return ordinal.compareTo(obj.ordinal);
     }
 }

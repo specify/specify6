@@ -33,7 +33,10 @@ import edu.ku.brc.util.Orderable;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "repositoryagreementattachment")
-public class RepositoryAgreementAttachment extends DataModelObjBase implements ObjectAttachmentIFace<RepositoryAgreement>, Orderable, Serializable
+public class RepositoryAgreementAttachment extends DataModelObjBase implements ObjectAttachmentIFace<RepositoryAgreement>, 
+                                                                               Orderable,
+                                                                               Serializable,
+                                                                               Comparable<RepositoryAgreementAttachment>
 {
     protected Integer    repositoryAgreementAttachmentId;
     protected RepositoryAgreement     repositoryAgreement;
@@ -192,4 +195,14 @@ public class RepositoryAgreementAttachment extends DataModelObjBase implements O
         String oString = (getObject() != null) ? getObject().getIdentityTitle() : "NULL Object Reference";
         return aString + " : " + oString;
     }
+    
+    
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(RepositoryAgreementAttachment obj)
+    {
+        return ordinal.compareTo(obj.ordinal);
+    }
+
 }

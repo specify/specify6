@@ -33,7 +33,11 @@ import edu.ku.brc.util.Orderable;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "localityattachment")
-public class LocalityAttachment extends DataModelObjBase implements ObjectAttachmentIFace<Locality>, Orderable, Serializable
+public class LocalityAttachment extends DataModelObjBase implements ObjectAttachmentIFace<Locality>, 
+                                                                    Orderable, 
+                                                                    Serializable,
+                                                                    Comparable<LocalityAttachment>
+
 {
     protected Integer    localityAttachmentId;
     protected Locality     locality;
@@ -192,4 +196,14 @@ public class LocalityAttachment extends DataModelObjBase implements ObjectAttach
         String oString = (getObject() != null) ? getObject().getIdentityTitle() : "NULL Object Reference";
         return aString + " : " + oString;
     }
+    
+    
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(LocalityAttachment obj)
+    {
+        return ordinal.compareTo(obj.ordinal);
+    }
+
 }

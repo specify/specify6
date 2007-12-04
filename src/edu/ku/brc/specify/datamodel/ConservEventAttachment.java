@@ -33,7 +33,9 @@ import edu.ku.brc.util.Orderable;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "conserveventattachment")
-public class ConservEventAttachment extends DataModelObjBase implements ObjectAttachmentIFace<ConservEvent>, Orderable, Serializable
+public class ConservEventAttachment extends DataModelObjBase implements ObjectAttachmentIFace<ConservEvent>, 
+                                                                        Orderable, 
+                                                                        Serializable, Comparable<ConservEventAttachment>
 {
     protected Integer    conservEventAttachmentId;
     protected ConservEvent     conservEvent;
@@ -191,5 +193,13 @@ public class ConservEventAttachment extends DataModelObjBase implements ObjectAt
         String aString = (attachment != null) ? attachment.getIdentityTitle() : "NULL Attachment";
         String oString = (getObject() != null) ? getObject().getIdentityTitle() : "NULL Object Reference";
         return aString + " : " + oString;
+    }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(ConservEventAttachment obj)
+    {
+        return ordinal.compareTo(obj.ordinal);
     }
 }

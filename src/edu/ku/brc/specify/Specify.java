@@ -91,6 +91,7 @@ import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.DebugLoggerDialog;
+import edu.ku.brc.specify.config.FormImportExportDlg;
 import edu.ku.brc.specify.config.LoggerDialog;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.AccessionAttachment;
@@ -186,7 +187,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private String               appName             = "Specify";
     private String               appVersion          = "6.0";
 
-    private String               appBuildVersion     = "200711271330 (SVN: 3158)";
+    private String               appBuildVersion     = "200711291030 (SVN: 3165)";
     
     protected static CacheManager cacheManager        = new CacheManager();
 
@@ -702,6 +703,15 @@ public class Specify extends JPanel implements DatabaseLoginListener
                         }
                     });
 
+            title = getResourceString("FORM_IMEX_MENU");
+            mi = UIHelper.createMenuItem(menu, title, getResourceString("FORM_IMEX_MNU"), title, true, null);
+            mi.addActionListener(new ActionListener()
+                    {
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            doFormImportExport();
+                        }
+                    });
             title = getResourceString("WBSCHEMA_CONFIG");
             mi = UIHelper.createMenuItem(menu, title, getResourceString("WBSCHEMA_CONFIG_MNU"), title, true, null);
             mi.addActionListener(new ActionListener()
@@ -978,6 +988,15 @@ public class Specify extends JPanel implements DatabaseLoginListener
             UIHelper.centerWindow(dialog);
             dialog.setVisible(true);
         }
+    }
+    
+    /**
+     * 
+     */
+    protected void doFormImportExport()
+    {
+        FormImportExportDlg dlg = new FormImportExportDlg();
+        dlg.setVisible(true);
     }
 
     /**

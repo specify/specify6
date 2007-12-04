@@ -391,6 +391,13 @@ public class SearchConfig
             log.error("Couldn't find table by name["+tableName+"]");
         }
     }
+    
+    public void removeTable(final SearchTableConfig stc)
+    {
+        tables.remove(stc);
+        tableIdHash.remove(Integer.toString(stc.getTableId()));
+        tableNameHash.remove(stc.getTableName());
+    }
 
     /**
      * 

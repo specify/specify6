@@ -33,7 +33,10 @@ import edu.ku.brc.util.Orderable;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "permitattachment")
-public class PermitAttachment extends DataModelObjBase implements ObjectAttachmentIFace<Permit>, Orderable, Serializable
+public class PermitAttachment extends DataModelObjBase implements ObjectAttachmentIFace<Permit>, 
+                                                                  Orderable, 
+                                                                  Serializable,
+                                                                  Comparable<PermitAttachment>
 {
     protected Integer    permitAttachmentId;
     protected Permit     permit;
@@ -192,4 +195,14 @@ public class PermitAttachment extends DataModelObjBase implements ObjectAttachme
         String oString = (getObject() != null) ? getObject().getIdentityTitle() : "NULL Object Reference";
         return aString + " : " + oString;
     }
+    
+    
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(PermitAttachment obj)
+    {
+        return ordinal.compareTo(obj.ordinal);
+    }
+
 }

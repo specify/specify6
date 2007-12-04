@@ -11,6 +11,7 @@ import static edu.ku.brc.specify.utilapps.DataBuilder.createAccession;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createAccessionAgent;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createAddress;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createAgent;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createAgentVariant;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createAttachment;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createAttributeDef;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createCatalogNumberingScheme;
@@ -122,6 +123,7 @@ import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AgentAttachment;
+import edu.ku.brc.specify.datamodel.AgentVariant;
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.AttachmentMetadata;
 import edu.ku.brc.specify.datamodel.AttributeDef;
@@ -668,11 +670,12 @@ public class BuildSampleDatabase
         ////////////////////////////////
         log.info("Creating agents and addresses");
 
+        Agent johnByrn = createAgent("Mr.", "John", "D", "Byrn", "jb", "jb@net.edu");
         if (!lastName.equals("Smith")) agents.add(createAgent("Mr.", "David", "D", "Smith", "ds", "ds@whitehouse.gov"));
         if (!lastName.equals("Burk")) agents.add(createAgent("Mr.", "Robert", "H", "Burk", "rb", "beach@net.edu"));
         if (!lastName.equals("Johnson")) agents.add(createAgent("Mrs.", "Margaret", "H", "Johnson", "jm", "jm@net.edu"));
         if (!lastName.equals("Spencer")) agents.add(createAgent("Mr.", "Kip", "C", "Spencer", "kcs", "rods@ku.edu"));
-        if (!lastName.equals("Byrn")) agents.add(createAgent("Mr.", "John", "D", "Byrn", "jb", "jb@net.edu"));
+        if (!lastName.equals("Byrn")) agents.add(johnByrn);
         if (!lastName.equals("Thompson")) agents.add(createAgent("Sir", "Dudley", "X", "Thompson", "dxt", ""));
         if (!lastName.equals("Campbell")) agents.add(createAgent("Mr.", "Joe", "A", "Campbell", "jb", ""));
         if (!lastName.equals("Tester")) agents.add(createAgent("Mr.", "Joe", "A", "Tester", "jb", ""));
@@ -693,6 +696,10 @@ public class BuildSampleDatabase
         agents.get(3).setOrganization(ku);
         agents.get(8).setOrganization(ku);
         
+        List<AgentVariant> agentVariants = new Vector<AgentVariant>();
+        agentVariants.add(createAgentVariant(AgentVariant.VARIANT, "John Variant #1", johnByrn));
+        agentVariants.add(createAgentVariant(AgentVariant.VERNACULAR, "John VERNACULAR #1", johnByrn));
+     
         List<Address> addrs = new Vector<Address>();
         // David Smith
         addrs.add(createAddress(agents.get(1), "1600 Pennsylvania Avenue NW", null, "Washington", "DC", "USA", "20500"));
@@ -718,6 +725,7 @@ public class BuildSampleDatabase
                 
         //startTx();
         persist(agents);
+        persist(agentVariants);
         //commitTx();
         
         frame.setProcess(++createStep);
