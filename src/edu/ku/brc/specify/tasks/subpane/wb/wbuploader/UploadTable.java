@@ -747,11 +747,11 @@ public class UploadTable implements Comparable<UploadTable>
     public Vector<InvalidStructure> validateStructure() throws UploaderException
     {
         Vector<InvalidStructure> result = new Vector<InvalidStructure>();
+        String tblTitle = getTable().getTableInfo().getTitle();
         if (!requiredLocalFldsArePresent())
         {
             for (Field fld : getMissingReqLocalFlds())
             {
-                String tblTitle = getTable().getTableInfo().getTitle();
                 String fldTitle = fld.getFieldInfo().getTitle();
                 String msg = getResourceString("WB_UPLOAD_MISSING_FLD") + ": " + tblTitle + "." + fldTitle;
                 result.add(new InvalidStructure(msg, this));

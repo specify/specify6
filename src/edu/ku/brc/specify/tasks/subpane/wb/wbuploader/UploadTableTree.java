@@ -537,6 +537,44 @@ public class UploadTableTree extends UploadTable
             String msg = getResourceString("WB_UPLOAD_NO_DEFITEM") + " (" + wbLevelName + ")";
             result.add(new InvalidStructure(msg, this));            
         }
+        if (parent == null)
+        {
+            Vector<TreeDefItemIface<?,?,?>> missingDefs = getMissingRequiredDefs();
+            for (TreeDefItemIface<?,?,?> defItem : missingDefs)
+            {
+                String msg = getResourceString("WB_UPLOAD_MISSING_TREE_LEVEL") + " (" + defItem.getName() +")";
+                result.add(new InvalidStructure(msg, this)); 
+            }
+        }
+        return result;
+    }
+    
+    protected Vector<TreeDefItemIface<?,?,?>> getMissingRequiredDefs() throws UploaderException
+    {
+        Vector<TreeDefItemIface<?,?,?>> result = new Vector<TreeDefItemIface<?,?,?>>();
+        for (Object obj : getTreeDef().getTreeDefItems())
+        {
+            TreeDefItemIface<?,?,?> defItem = (TreeDefItemIface<?,?,?>)obj;
+            if (defItem.getRankId() > rank && defItem.getIsEnforced() != null && defItem.getIsEnforced())
+            {
+                UploadTableTree currLevel = this;
+                while (currLevel != null)
+                {
+                    if (!defItem.getRankId().equals(currLevel.rank))
+                    {
+                        currLevel = currLevel.child;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                if (currLevel == null)
+                {
+                    result.add(defItem);            
+                }
+            }
+        }
         return result;
     }
     

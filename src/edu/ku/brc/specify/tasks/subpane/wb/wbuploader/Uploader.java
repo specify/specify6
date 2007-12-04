@@ -546,6 +546,12 @@ public class Uploader implements ActionListener, WindowStateListener
 		orderUploadTables();
         buildUploadTableParents();
         reOrderUploadTables();
+        
+        for (int m = 0; m < uploadData.getCols(); m++)
+        {
+            System.out.println();
+            System.out.println(uploadData.getMapping(m));
+        }
  	}
 
     /**
@@ -1168,20 +1174,134 @@ public class Uploader implements ActionListener, WindowStateListener
         {
             throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
         }
+        
+        errors.addAll(validateConsistency());
+        
         for (UploadTable t : uploadTables)
         {
            errors.addAll(t.validateStructure());
         }
-        
-//        for (UploadMessage msg : errors)
-//        {
-//            addMsg(msg);
-//        }
-        
+                
         return errors;
     }
     
+    /**
+     * @return Vector containing messages for detected inconsistencies.
+     * 
+     * 
+     */
+    public Vector<UploadMessage> validateConsistency()
+    {
+        Vector<UploadMessage>result = new Vector<UploadMessage>();
         
+        //Make sure that the tax tree levels included for each determination are consistent.
+        //All need to include the same levels, for example [Genus 1, Species1, SubSpecies 1, Genus 2, Species 2] is inconsistent because SubSpecies 2 is missing. 
+        //Since, right now, tax trees are the only trees that require this test.
+        //Non-tree 1-manys like Collector are ok (but possibly not desirable?) if inconsistent: [FirstName 1, LastName 1, LastName 2] works.
+        Vector<TreeMapElement> maxTaxSeqLevel = null;
+        for (int m=0; m<uploadData.getCols(); m++)
+        {
+            if (uploadData.getMapping(m).getTable().equalsIgnoreCase("taxon"))
+            {
+                UploadMappingDefTree tmap = (UploadMappingDefTree) uploadData.getMapping(m);
+                boolean seqSizeInconsistent = false;
+                for (Vector<TreeMapElement> tmes : tmap.getLevels())
+                {
+                    if (tmes.size() > 1 || (maxTaxSeqLevel != null && maxTaxSeqLevel.get(0).getRank() < tmes.get(0).getRank()))
+                    {
+                        if (maxTaxSeqLevel == null)
+                        {
+                            maxTaxSeqLevel = tmes;
+                        }
+                        else if (maxTaxSeqLevel.size() != tmes.size())
+                        {
+                            seqSizeInconsistent = true;
+                            if (maxTaxSeqLevel.size() < tmes.size())
+                            {
+                                maxTaxSeqLevel = tmes;
+                            }
+                        }
+                    }
+                }
+                 
+                
+                if (seqSizeInconsistent && maxTaxSeqLevel != null)
+                {
+                    for (Vector<TreeMapElement> tmes : tmap.getLevels())
+                    {
+                        if (tmes.get(0).getRank() > maxTaxSeqLevel.get(0).getRank() && tmes.size() < maxTaxSeqLevel.size())
+                        {
+                            boolean[] seqsPresent = new boolean[maxTaxSeqLevel.size()];
+                            for (int b=0; b<seqsPresent.length; b++) seqsPresent[b] = false;
+                            for (TreeMapElement tme : tmes)
+                            {
+                                seqsPresent[tme.getSequence()] = true;
+                            }
+                            for (int s=0; s<seqsPresent.length; s++)
+                            {
+                                if (!seqsPresent[s])
+                                {
+                                    String levelName = tmes.get(0).getWbFldName();
+                                    //strip off trailing number (assuming we will never allow it to be > 10) and trim.
+                                    levelName = levelName.substring(0, levelName.length()-2).trim();
+                                    String msg = getResourceString("WB_UPLOAD_MISSING_FLD") + ": " + levelName + " " + Integer.toString(s+1);
+                                    result.add(new InvalidStructure(msg, null));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        if (maxTaxSeqLevel != null && maxTaxSeqLevel.size() > 1)
+        {
+            //check to see if Determination.isCurrent is either not present or always present.
+            int isCurrentCount = 0;
+            boolean[] isCurrentPresent = new boolean[maxTaxSeqLevel.size()];
+            for (int b=0; b<isCurrentPresent.length; b++) isCurrentPresent[b] = false;
+            String isCurrentCaptionSample = null;
+            for (int m=0; m<uploadData.getCols(); m++)
+            {
+                if (uploadData.getMapping(m).getTable().equalsIgnoreCase("determination") && uploadData.getMapping(m).getField().equalsIgnoreCase("determinationstatusid"))
+                {
+                    UploadMappingDefRel rMap = (UploadMappingDefRel)uploadData.getMapping(m);
+                    for (ImportMappingRelFld fld : rMap.getRelatedFields())
+                    {
+                        if (fld.getFieldName().equalsIgnoreCase("iscurrent"))
+                        {
+                            isCurrentCount++;
+                            isCurrentPresent[rMap.getSequence()] = true;
+                            isCurrentCaptionSample = rMap.getWbFldName();
+                        }
+                    }
+                }
+            }
+            if (isCurrentCount != 0 && isCurrentCount != maxTaxSeqLevel.size())
+            {
+                for (int c=0; c<isCurrentPresent.length; c++)
+                {
+                    if (!isCurrentPresent[c])
+                    {
+                        String fldName;
+                        //strip off trailing number (assuming we will never allow it to be > 10) and trim.
+                        if (isCurrentCaptionSample != null)
+                        {
+                            fldName = isCurrentCaptionSample.substring(0, isCurrentCaptionSample.length()-2).trim();
+                        }
+                        else
+                        {
+                            fldName = "Is Current"; //i18n (but isCurrentCaptionSample can't be null. Right.)
+                        }
+                        String msg = getResourceString("WB_UPLOAD_MISSING_FLD") + ": " + fldName + " " + Integer.toString(c+1);
+                        result.add(new InvalidStructure(msg, null));
+                    }
+                }
+            }
+        }
+        
+        return result;
+    }
     /**
      * @throws UploaderException
      * 
