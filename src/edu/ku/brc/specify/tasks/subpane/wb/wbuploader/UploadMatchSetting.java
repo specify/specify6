@@ -117,8 +117,7 @@ public class UploadMatchSetting
     public UploadMatchSetting()
     {
         //mode = UploadMatchSetting.ASK_MODE;        
-        mode = UploadMatchSetting.SKIP_ROW_MODE;        
-        log.debug("Setting match mode to skip row");
+        mode = UploadMatchSetting.ASK_MODE;        
         colsToMatch = new Vector<Integer>();
         selections = new Vector<MatchSelection>();
         lookups = new TreeMap<String, MatchSelection>();
