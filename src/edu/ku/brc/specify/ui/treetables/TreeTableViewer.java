@@ -1724,11 +1724,18 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			}
 			
 			TreeNode droppedOnNode = (TreeNode)droppedOn;
+            TreeNode draggedNode   = (TreeNode)dragged;
 			
 			if (droppedOnNode.getAcceptedParentId() == null)
 			{
+                boolean descendant = listModel.isDescendantOfNode(droppedOnNode, draggedNode);
+                if (!descendant)
+                {
+                    // check the other way as well
+                    descendant = listModel.isDescendantOfNode(draggedNode, droppedOnNode);
+                }
 				//log.debug("Synonymization request IS acceptable.");
-				return true;
+				return !descendant;
 			}
 			//log.debug("Synonymization request IS NOT acceptable.  Drop target is not an accepted name.");
 			return false;
