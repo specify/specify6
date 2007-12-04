@@ -152,6 +152,7 @@ public class IconTray extends JPanel
     public synchronized boolean removeItem(FormDataObjIFace item)
     {
         boolean retVal = listModel.remove(item);
+        iconListWidget.clearSelection();
         return retVal;
     }
     

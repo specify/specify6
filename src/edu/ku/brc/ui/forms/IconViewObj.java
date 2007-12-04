@@ -221,15 +221,8 @@ public class IconViewObj implements Viewable
             {
                 if (e.getClickCount() == 1)
                 {
-                    boolean enabled = iconTray.getSelectedValue() != null;
-                    if (editBtn != null)
-                    {
-                        editBtn.setEnabled(enabled);
-                    }
-                    if (viewBtn != null)
-                    {
-                        viewBtn.setEnabled(enabled);
-                    }
+                    updateEnableUI();
+                    
                 } else if (e.getClickCount() > 1)
                 {
                     doDoubleClick(e);
@@ -299,6 +292,26 @@ public class IconViewObj implements Viewable
     public boolean checkForChanges()
     {
         return false;
+    }
+    
+    /**
+     * Enables the Add,Del,Edit/View buttons
+     */
+    protected void updateEnableUI()
+    {
+        boolean enabled = iconTray.getSelectedValue() != null;
+        if (editBtn != null)
+        {
+            editBtn.setEnabled(enabled);
+        }
+        if (delBtn != null)
+        {
+            delBtn.setEnabled(enabled);
+        }
+        if (viewBtn != null)
+        {
+            viewBtn.setEnabled(enabled);
+        } 
     }
 
     /**
@@ -491,6 +504,8 @@ public class IconViewObj implements Viewable
                     topLvl.addDeletedItem(dataObj);
                     rootHasChanged();
                 }
+                iconTray.repaint();
+                updateEnableUI();
             }
         }
     }
