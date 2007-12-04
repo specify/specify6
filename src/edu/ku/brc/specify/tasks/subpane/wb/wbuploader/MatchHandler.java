@@ -42,7 +42,6 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.ui.CustomDialog;
-import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
@@ -137,11 +136,10 @@ public class MatchHandler
         matchedVec.add(row);
         
         JTable matchedTbl = new JTable(matchedVec, headers);
-        JButton cornerBtn = UIHelper.createIconBtn("Blank", IconManager.IconSize.Std16, null, null);
-        //JButton cornerBtn = new JButton(getResourceString("WB_ROW"));
-        cornerBtn.setEnabled(false);
+        JLabel cornerLbl = new JLabel(getResourceString("WB_ROW"));
+        cornerLbl.setHorizontalAlignment(SwingConstants.CENTER);
         JScrollPane scrollPane = new JScrollPane(matchedTbl);
-        scrollPane.setCorner(ScrollPaneConstants.UPPER_LEFT_CORNER, cornerBtn);
+        scrollPane.setCorner(ScrollPaneConstants.UPPER_LEFT_CORNER, cornerLbl);
         
 //following stuff is stolen from SpreadSheet.buildSpreadSheet().
 //Hopefully most of the stuff from SpreadSheet thats not necessary here has been removed.
@@ -165,27 +163,20 @@ public class MatchHandler
 
         int rowHeight = insets.bottom + metrics.getHeight() + insets.top;
 
-        /*
-         * Create the Row Header Panel
-         */
-        JPanel rowHeaderPanel = new JPanel(new BorderLayout());
-        int rowLabelWidth  = metrics.stringWidth("9999") + insets.right + insets.left;
+        int rowLabelWidth  = Math.max(metrics.stringWidth("9999"), metrics.stringWidth(getResourceString("WB_ROW"))) + insets.right + insets.left;
         
         Dimension dim  = new Dimension(rowLabelWidth, rowHeight);
-        rowHeaderPanel.setPreferredSize(dim); // need to call this when no layout manager is used.
-        rowHeaderPanel.setBorder(cellBorder);
-         
+          
         JLabel lbl = new JLabel(Integer.toString(Uploader.getCurrentUpload().rowUploading));
         lbl.setHorizontalAlignment(SwingConstants.CENTER);
-        rowHeaderPanel.add(lbl, BorderLayout.CENTER);
-        
-        rowHeaderPanel.setPreferredSize(dim);
-        rowHeaderPanel.setSize(dim);
+        lbl.setPreferredSize(dim); 
+        lbl.setBorder(cellBorder);
+        lbl.setSize(dim);
 
         JViewport viewPort = new JViewport();
         dim.height = rowHeight;
         viewPort.setViewSize(dim);
-        viewPort.setView(rowHeaderPanel);
+        viewPort.setView(lbl);
         scrollPane.setRowHeader(viewPort);
 //end stolen stuff
         
