@@ -23,6 +23,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionAdapter;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -705,6 +706,46 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         }
         
         UIRegistry.forceTopFrameRepaint();
+        
+        MouseMotionAdapter tooltipRendererListener = new MouseMotionAdapter()
+        {
+            @Override
+            public void mouseMoved(MouseEvent e)
+            {
+                Point p = e.getPoint();
+                JList sourceList = (JList)e.getSource();
+                
+                int cellIndex = sourceList.locationToIndex(p);
+                if (cellIndex == -1)
+                {
+                    return;
+                }
+                
+                TreeNode nodeUnderMouse = listModel.getElementAt(cellIndex);
+                if (nodeUnderMouse == null)
+                {
+                    return;
+                }
+                
+                Pair<Integer,Integer> textBounds = listCellRenderer.getTextBoundsForRank(nodeUnderMouse.getRank());
+                if (textBounds == null)
+                {
+                    return;
+                }
+                
+                if (p.x >= textBounds.first && p.x <= textBounds.second)
+                {
+                    listCellRenderer.setRenderTooltip(true);
+                }
+                else
+                {
+                    listCellRenderer.setRenderTooltip(false);
+                }
+            }
+        };
+        
+        lists[0].addMouseMotionListener(tooltipRendererListener);
+        lists[1].addMouseMotionListener(tooltipRendererListener);
 	}
     
     public void updateAllUI()

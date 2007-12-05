@@ -74,6 +74,8 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
     
     protected TreeTableViewer<?,?,?> treeViewer;
     
+    protected boolean renderTooltip = true;
+    
     /**
      * 
      */
@@ -103,6 +105,11 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         nodeUI = new TreeNodeUI();
     }
     
+    public void setRenderTooltip(boolean renderTooltip)
+    {
+        this.renderTooltip = renderTooltip;
+    }
+
     public Color[] getBackgroundColors()
     {
         return this.bgs;
@@ -129,6 +136,12 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         nodeUI.setNode(node);
         nodeUI.setSelected(isSelected);
         nodeUI.setHasFocus(cellHasFocus);
+        
+        if (!renderTooltip)
+        {
+            nodeUI.setToolTipText(null);
+            return nodeUI;
+        }
         
         // build up the tooltip from the synonym information
         StringBuilder tooltipBuilder = new StringBuilder("<html><div style=\"font-family: sans-serif; font-size: 12pt\">");
