@@ -18,6 +18,7 @@
 package edu.ku.brc.af.core.expresssearch;
 
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Vector;
@@ -28,6 +29,7 @@ import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.ui.DateParser;
 import edu.ku.brc.ui.DateWrapper;
 
 /**
@@ -46,6 +48,8 @@ public class SearchTableConfig implements DisplayOrderingIFace,
                                           Comparable<SearchTableConfig>
 {
     //private static final Logger log = Logger.getLogger(SearchTableConfig.class);
+    
+    protected static SimpleDateFormat dbDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     
     protected String                     tableName; // This is really the Class name, the table name is 
     protected Integer                    displayOrder;
@@ -242,20 +246,29 @@ public class SearchTableConfig implements DisplayOrderingIFace,
      * @param ids
      * @return
      */
-    public String getSQL(final String searchTerm, final boolean idsOnly, final Vector<Integer> ids)
+    public String getSQL(final String searchTermArg, final boolean idsOnly, final Vector<Integer> ids)
     {
         DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
         
+        String searchTerm = searchTermArg;
+        
         // Check to see if it is date
-        boolean isDate = false;
-        try
+        boolean    isDate     = false;
+        DateParser dd         = new DateParser(scrDateFormat.getSimpleDateFormat().toPattern());
+        Date       searchDate = dd.parseDate(searchTermArg);
+        if (searchDate != null)
         {
-            scrDateFormat.getSimpleDateFormat().parse(searchTerm);
-            isDate = true;
-            
-        } catch (Exception ex)
-        {
+            try
+            {
+                searchTerm = dbDateFormat.format(searchDate);
+                isDate = true;
+                
+            } catch (Exception ex)
+            {
+                // should never get here
+            }
         }
+            
         
         StringBuilder sqlStr = new StringBuilder("SELECT ");
         

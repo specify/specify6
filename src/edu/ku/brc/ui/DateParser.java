@@ -22,15 +22,21 @@ import java.util.Date;
 
 
 /**
+ * THis class is used to parse date strings. It can parse and numerical date format string
+ * and works with the common set of separators. It uses the default format to determin whether
+ * the Month comes before the Day.
+ * 
  * @author rods
  *
- * @code_status Alpha
+ * @code_status Beta
  *
  * Created Date: Dec 5, 2007
  *
  */
 public class DateParser
 {
+    public enum DateErrorType  {None, BadYear, BadMonth, BadDay, UnknownFormat, UnknownError}
+    
     protected static char[] standardSeps = {'/', '-', '.'};
     protected static char   defaultSep   = '/';
     
@@ -39,28 +45,37 @@ public class DateParser
     public enum DateFormatType {Unknown, YYYY_AA_BB, YYYY_A_BB, YYYY_AA_B, YYYY_A_B, 
                                          AA_BB_YYYY, A_BB_YYYY, AA_B_YYYY, A_B_YYYY}
     
-    protected String monthFormat  = "MM";
-    protected String dayFormat    = "dd";
+    protected String        monthFormat          = "MM";
+    protected String        dayFormat            = "dd";
     
-    //protected Hashtable<Character, Hashtable<DateFormatType, SimpleDateFormat>> dateFormatters = new Hashtable<Character, Hashtable<DateFormatType, SimpleDateFormat>>();
-    protected String  defaultDateFormatStr = null;
-    protected boolean isMonthFirst         = false;
-    protected boolean isYearFirst          = false;
+    protected String        defaultDateFormatStr = null;
+    protected boolean       isMonthFirst         = false;
+    protected boolean       isYearFirst          = false;
+    protected DateErrorType dateError            = DateErrorType.None;
     
     /**
      * @param defaultDateFormat
      */
     public DateParser(final String defaultDateFormat)
     {
-        this.defaultDateFormatStr = defaultDateFormat;
-        
-        buildFormatterHash();
+        setDefaultDateFormatStr(defaultDateFormat);
     }
     
+    
+    /**
+     * @param defaultDateFormatStr the defaultDateFormatStr to set
+     */
+    public void setDefaultDateFormatStr(String defaultDateFormatStr)
+    {
+        this.defaultDateFormatStr = defaultDateFormatStr;
+        initialize();
+    }
+
+
     /**
      * 
      */
-    public void buildFormatterHash()
+    private void initialize()
     {
         System.out.println(defaultDateFormatStr);
         
@@ -73,65 +88,6 @@ public class DateParser
             inx++;
         }
         defaultSep = defaultDateFormatStr.charAt(inx);
-        
-        /*
-        char[] seps = {defaultSep, ' ', ' '};
-        inx = 1;
-        for (int i=0;i<standardSeps.length;i++)
-        {
-            if (standardSeps[i] != defaultSep)
-            {
-                seps[inx++] = standardSeps[i];
-            }
-        }
-        
-        dateFormatters.clear();
-        DateFormatType[] yearFirstTypes  = {DateFormatType.YYYY_AA_BB, DateFormatType.YYYY_A_BB, DateFormatType.YYYY_AA_B, DateFormatType.YYYY_A_B};
-        DateFormatType[] notYrFirstTypes = {DateFormatType.AA_BB_YYYY, DateFormatType.A_BB_YYYY, DateFormatType.AA_B_YYYY, DateFormatType.A_B_YYYY};
-        for (char sep : seps)
-        {
-            DateFormatType[] types = isYearFirst ? yearFirstTypes : notYrFirstTypes;
-            
-            Hashtable<DateFormatType, SimpleDateFormat> hash = new Hashtable<DateFormatType, SimpleDateFormat>();
-            
-            hash.put(types[0], new SimpleDateFormat(buildFormatString(isYearFirst, 2, isMonthFirst, 2, sep)));
-            hash.put(types[1], new SimpleDateFormat(buildFormatString(isYearFirst, 1, isMonthFirst, 2, sep)));
-            hash.put(types[2], new SimpleDateFormat(buildFormatString(isYearFirst, 2, isMonthFirst, 1, sep)));
-            hash.put(types[3], new SimpleDateFormat(buildFormatString(isYearFirst, 1, isMonthFirst, 1, sep)));
-            
-            types = !isYearFirst ? yearFirstTypes : notYrFirstTypes;
-            hash.put(types[0], new SimpleDateFormat(buildFormatString(!isYearFirst, 2, isMonthFirst, 2, sep)));
-            hash.put(types[1], new SimpleDateFormat(buildFormatString(!isYearFirst, 1, isMonthFirst, 2, sep)));
-            hash.put(types[2], new SimpleDateFormat(buildFormatString(!isYearFirst, 2, isMonthFirst, 1, sep)));
-            hash.put(types[3], new SimpleDateFormat(buildFormatString(!isYearFirst, 1, isMonthFirst, 1, sep)));
-            
-            dateFormatters.put(sep, hash);
-        }
-        */
-        
-        // debug 
-        /*for (DateFormatType typ : dateFormatters.keySet())
-        {
-            System.out.println(typ+" "+dateFormatters.get(typ).toPattern());
-        }*/
-    }
-    
-    /**
-     * @param isYrFirst
-     * @param isMnFirst
-     * @return
-     */
-    protected String buildFormatString(final boolean isYrFirst, 
-                                       final int     mnSize,
-                                       final boolean isMnFirst,
-                                       final int     dySize,
-                                       final char    sep)
-    {
-        if (isYrFirst)
-        {
-            return "yyyy" + sep + (isMnFirst ? monthFormat.substring(0, mnSize) : dayFormat.substring(0, dySize)) + sep + (isMnFirst ? dayFormat.substring(0, dySize) : monthFormat.substring(0, mnSize));
-        }
-        return (isMnFirst ? monthFormat.substring(0, mnSize) : dayFormat.substring(0, dySize)) + sep + (isMnFirst ? dayFormat.substring(0, dySize) : monthFormat.substring(0, mnSize)) + sep + "yyyy";
     }
     
     /**
@@ -153,7 +109,7 @@ public class DateParser
     }
     
     /**
-     * Discovers format not knowning DD or MM.
+     * Discovers format not knowing for either a format or a date string.
      * @param dateStr the string to test
      * @return the type of format
      */
@@ -190,8 +146,9 @@ public class DateParser
     }
     
     /**
-     * @param dateStr
-     * @return
+     * Determines the separator from a set of common separators
+     * @param dateStr the date string
+     * @return the sep char
      */
     protected static char getSep(final String dateStr)
     {
@@ -238,10 +195,10 @@ public class DateParser
      * @param isZeroDyOK
      * @return
      */
-    protected Date isDateValid(final DateFormatType type, 
-                               final String         dateStr, 
-                               final boolean        isZeroMnOK, 
-                               final boolean        isZeroDyOK)
+    protected Date parseForDate(final DateFormatType type, 
+                                final String         dateStr, 
+                                final boolean        isZeroMnOK, 
+                                final boolean        isZeroDyOK)
     {
         String yy = "";
         String aa = "";
@@ -298,6 +255,7 @@ public class DateParser
                 break;
                 
             case Unknown :
+                dateError = DateErrorType.UnknownFormat;
                 return null;
         }
         
@@ -309,6 +267,7 @@ public class DateParser
             
             if (yr < 0 || yr > 2999)
             {
+                dateError = DateErrorType.BadYear;
                 return null;
             }
             
@@ -318,6 +277,7 @@ public class DateParser
                 
             } else if (mn < 1 || mn > 12)
             {
+                dateError = DateErrorType.BadMonth;
                 return null;
             }
             
@@ -334,6 +294,7 @@ public class DateParser
             
             if (dy < 1 || dy > dysInMn)
             {
+                dateError = DateErrorType.BadDay;
                 return null;
             }
             
@@ -346,57 +307,50 @@ public class DateParser
         {
             
         }
+        dateError = DateErrorType.UnknownError;
         return null;
     }
     
     
     /**
-     * @param defaultDateFormat
-     * @param dateStr
-     * @return
+     * Parses any date string and convert it to a date.
+     * @param dateStr the string
+     * @return the date or null
      */
-    public Date parseDate(final String defaultDateFormat, 
-                          final String dateStr)
+    public Date parseDate(final String dateStr)
     {
-        return parseDate(defaultDateFormat, dateStr, false, false);
+        return parseDate(dateStr, false, false);
     }
     
     /**
-     * @param defaultDateFormat
-     * @param dateStr
-     * @return
+     * Parses any date string and convert it to a date. The zero month and/or day is converted to a 1.
+     * @param dateStr the string
+     * @return the date or null
      */
-    public Date parseDate(final String defaultDateFormat, 
-                          final String dateStr, 
+    public Date parseDate(final String dateStr, 
                           final boolean isZeroMnOK, 
                           final boolean isZeroDyOK)
     {
-        if (defaultDateFormatStr == null || !defaultDateFormatStr.equals(defaultDateFormat))
-        {
-            buildFormatterHash();
-        }
+        dateError = DateErrorType.None;
         
         DateFormatType type = getDateFormatType(dateStr);
         if (type != DateFormatType.Unknown)
         {
-            return isDateValid(type, dateStr, isZeroMnOK, isZeroDyOK);
+            return parseForDate(type, dateStr, isZeroMnOK, isZeroDyOK);
             
-            /*try
-            {
-                Hashtable<DateFormatType, SimpleDateFormat> hash = dateFormatters.get(getSep(dateStr));
-                SimpleDateFormat formatter = hash.get(type);
-                if (formatter != null)
-                {
-                    return formatter.parse(dateStr);
-                }
-                
-            } catch (Exception ex)
-            {
-                ex.printStackTrace(); // for debugging only
-            }*/
+        } else
+        {
+            dateError = DateErrorType.UnknownFormat;
         }
-        
         return null;
+    }
+
+    /**
+     * @return the dateError
+     */
+    public DateErrorType getDateError()
+    {
+        return dateError;
     }
     
     

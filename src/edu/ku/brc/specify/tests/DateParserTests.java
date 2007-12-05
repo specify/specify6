@@ -66,7 +66,7 @@ public class DateParserTests extends TestCase
             DateParser dd = new DateParser(defaultFormat);
             for (String dStr : dateStrs)
             {
-                System.out.println(dStr + " " + (dd.parseDate(defaultFormat, dStr) != null));
+                System.out.println(dStr + " " + (dd.parseDate(dStr) != null));
             }
         }
     }
@@ -83,22 +83,22 @@ public class DateParserTests extends TestCase
                              "2001/13/11",  "2001/12/32",  "2001/2/29", "2001/00/00"};
         for (String dateStr : dateStrs)
         {
-            System.out.println(dateStr + " " + dd.parseDate(defaultFormat, dateStr));
+            System.out.println(dateStr + " " + dd.parseDate(dateStr));
             if (dateStr.equals("2001/12/32"))
             {
                 int x = 0;
                 x++;
             }
-            assertTrue(dd.parseDate(defaultFormat, dateStr) == null);
+            assertTrue(dd.parseDate(dateStr) == null);
         }
         
-        assertTrue(dd.parseDate(defaultFormat, "02/29/2000") != null);
-        assertTrue(dd.parseDate(defaultFormat, "02/29/2004") != null);
-        assertTrue(dd.parseDate(defaultFormat, "00/29/2000", true, false) != null);
-        assertTrue(dd.parseDate(defaultFormat, "00/00/2004", true, true) != null);
+        assertTrue(dd.parseDate("02/29/2000") != null);
+        assertTrue(dd.parseDate("02/29/2004") != null);
+        assertTrue(dd.parseDate("00/29/2000", true, false) != null);
+        assertTrue(dd.parseDate("00/00/2004", true, true) != null);
         
-        System.out.println(dd.parseDate(defaultFormat, "00/29/2000", true, true));
-        System.out.println(dd.parseDate(defaultFormat, "00/00/2004", true, true));
+        System.out.println(dd.parseDate("00/29/2000", true, true));
+        System.out.println(dd.parseDate("00/00/2004", true, true));
     }
 
 }
