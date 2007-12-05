@@ -131,7 +131,7 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         nodeUI.setHasFocus(cellHasFocus);
         
         // build up the tooltip from the synonym information
-        StringBuilder tooltipBuilder = new StringBuilder("<html><div style=\"font-family: sans-serif; font-size: 12pt\">");
+        StringBuilder tooltipBuilder = new StringBuilder("<html><div style=\"font-family: sans-serif; font-size: 10pt\">");
         tooltipBuilder.append(node.getFullName());
         
         Set<Pair<Integer,String>> idsAndNames = node.getSynonymIdsAndNames();
