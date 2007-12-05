@@ -742,7 +742,6 @@ public class UploadTable implements Comparable<UploadTable>
         return new Vector<Field>();
     }
     
-    
     @SuppressWarnings("unused")
     public Vector<InvalidStructure> validateStructure() throws UploaderException
     {
@@ -1829,6 +1828,44 @@ public class UploadTable implements Comparable<UploadTable>
                     }
                 }
                 seq++;
+            }
+        }
+        if (tblClass.equals(DeterminationStatus.class))
+        {
+            // check that isCurrent is ok. 1 and only one true.
+            boolean isCurrentPresent = false;
+            int trueCount = 0;
+            UploadField anIsCurrentFld = null;
+            for (int row = 0; row < uploadData.getRows(); row++)
+            {
+                for (Vector<UploadField> flds : uploadFields)
+                {
+                    for (UploadField fld : flds)
+                    {
+                        if (fld.getField().getName().equalsIgnoreCase("iscurrent"))
+                        {
+                            isCurrentPresent = true;
+                            anIsCurrentFld = fld;
+                            fld.setValue(uploadData.get(row, fld.getIndex()));
+                            try
+                            {
+                                Object[] boolVal = getArgForSetter(fld);
+                                if (boolVal[0] != null && (Boolean) boolVal[0])
+                                {
+                                    trueCount++;
+                                }
+                            }
+                            catch (Exception e)
+                            {
+                                // ignore. assuming problem was already caught above.
+                            }
+                        }
+                    }
+                }
+                if (isCurrentPresent && trueCount != 1)
+                {
+                    result.add(new UploadTableInvalidValue(this, anIsCurrentFld, row, new Exception(getResourceString("WB_UPLOAD_ONE_CURRENT_DETERMINATION"))));
+                }
             }
         }
         return result;
