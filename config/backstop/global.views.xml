@@ -167,16 +167,6 @@
             </altviews>
         </view>
         
-        <view name="LithoStrat"
-            class="edu.ku.brc.specify.datamodel.LithoStrat"
-            resourcelabels="false">
-            <desc><![CDATA[The LithoStrat Form.]]></desc>
-            <altviews>
-                <altview name="LithoStrat View" viewdef="LithoStrat" label="View" mode="view" validated="false" default="true"/>                
-                <altview name="LithoStrat Edit" viewdef="LithoStrat" label="Edit" mode="edit" validated="true"/>                
-            </altviews>
-        </view>
-        
         <view name="ReferenceWork"
             class="edu.ku.brc.specify.datamodel.ReferenceWork"
             resourcelabels="false">
@@ -314,6 +304,16 @@
             </altviews>
         </view>
         
+        <view name="LithoStrat"
+            class="edu.ku.brc.specify.datamodel.LithoStrat"
+            resourcelabels="false">
+            <desc><![CDATA[LithoStrat data entry form.]]></desc>
+            <altviews>
+                <altview name="LithoStrat View" viewdef="LithoStrat" label="View" mode="view"/>
+                <altview name="LithoStrat Edit" viewdef="LithoStrat" label="Edit" mode="edit" default="true"/>
+            </altviews>
+        </view>
+        
         <view name="LocationTreeDefItem"
             class="edu.ku.brc.specify.datamodel.LocationTreeDefItem"
             resourcelabels="false">
@@ -368,6 +368,24 @@
             </altviews>
         </view>
         
+        <view name="LithoStratTreeDefItem"
+            class="edu.ku.brc.specify.datamodel.LithoStratTreeDefItem"
+            resourcelabels="false">
+            <desc><![CDATA[LithoStratTreeDefItem Form]]></desc>
+            <altviews>
+                <altview name="Tree Def Item Edit" viewdef="LithoStratTreeDefItem" label="Edit" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+        
+        <view name="RootLithoStratTreeDefItem"
+            class="edu.ku.brc.specify.datamodel.LithoStratTreeDefItem"
+            resourcelabels="false">
+            <desc><![CDATA[Root LithoStratTreeDefItem Form]]></desc>
+            <altviews>
+                <altview name="Root Tree Def Item Edit" viewdef="RootLithoStratTreeDefItem" label="Edit" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+
         <view name="TaxonTreeDefItem"
             class="edu.ku.brc.specify.datamodel.TaxonTreeDefItem"
             resourcelabels="false">
@@ -1013,36 +1031,6 @@
         
         <viewdef
             type="form"
-            name="LithoStrat"
-            class="edu.ku.brc.specify.datamodel.LithoStrat"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
-            <desc><![CDATA[The LithoStrat form]]></desc>
-            <columnDef>100px,3dlu,p:g,3dlu,200px,3dlu,p:g</columnDef>
-            <rowDef auto="true" cell="p" sep="2dlu"/>
-            
-            <rows>
-                <row>
-                    <cell type="label" label="Lithostratigraphy" icon="Stratigraphy" recordobj="true" colspan="7"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="1" label="Name"/>
-                    <cell type="field" id="1" name="name" suitype="text" cols="16" colspan="5"/> 
-                </row>
-                <row>
-                    <cell type="label" labelfor="2" label="GUID"/>
-                    <cell type="field" id="2" name="guid" uitype="text" colspan="5"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="3" label="Remarks"/>
-                    <cell type="field" id="3" name="remarks"  uitype="textarea" colspan="5"/>
-                </row>
-            </rows>
-            
-        </viewdef>
-        
-        <viewdef
-            type="form"
             name="ReferenceWork"
             class="edu.ku.brc.specify.datamodel.ReferenceWork"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
@@ -1449,6 +1437,43 @@
         </viewdef>
         
         <viewdef
+            name="LithoStrat"
+            type="form"
+            class="edu.ku.brc.specify.datamodel.LithoStrat"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[New LithoStrat Node Form]]></desc>
+            <enableRules>
+                <rule id="definitionItem"><![CDATA[parent.getValue() != null]]></rule>
+            </enableRules>
+            <columnDef>100px,3dlu,p:g,3dlu,200px,3dlu,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+
+            <rows>
+                <row>
+                	<cell type="label" label="LithoStrat" icon="LithoStrat" recordobj="true" colspan="7"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="name" label="Name"/>
+                    <cell type="field" id="name" uitype="text" cols="16" name="name" colspan="5" isrequired="true"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="remarks" label="Remarks"/>
+                    <cell type="field" id="remarks" uitype="textarea" name="remarks" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="parent" label="Parent"/>
+                	<cell type="field" id="parent" valtype="Focus" isrequired="true" uitype="querycbx" initialize="name=LithoStrat;title=LithoStrat;editbtn=false;newbtn=false;editoncreate=true" name="parent" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="definitionItem" label="Rank"/>
+                	<cell type="field" id="definitionItem" valtype="Focus" isrequired="true" uitype="combobox" name="definitionItem" colspan="5"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
             name="TaxonSubform"
             type="form"
             class="edu.ku.brc.specify.datamodel.Taxon"
@@ -1633,6 +1658,78 @@
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Root Location Tree Definition Item Form]]></desc>
+            <columnDef>p,3dlu,p,6dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="name" uitype="text" cols="16" isrequired="true"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Remarks"/>
+                    <cell type="field" id="2" name="remarks" uitype="textarea"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="In Full Name?"/>
+                    <cell type="field" id="3" uitype="checkbox" name="isInFullName"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="LithoStratTreeDefItem"
+            class="edu.ku.brc.specify.datamodel.LithoStratTreeDefItem"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[LithoStrat Tree Definition Item Form]]></desc>
+            <columnDef>p,3dlu,p,6dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="field" id="1" name="name" uitype="text" cols="16" isrequired="true"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Remarks"/>
+                    <cell type="field" id="2" name="remarks" uitype="textarea"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="In Full Name?"/>
+                    <cell type="field" id="3" uitype="checkbox" name="isInFullName"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="4" label="Is Enforced?"/>
+                    <cell type="field" id="4" uitype="checkbox" name="isEnforced"/>
+                </row>
+                <!--
+                <row>
+                    <cell type="label" labelfor="5" label="Text Before"/>
+                    <cell type="field" id="5" name="textBefore"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="6" label="Text After"/>
+                    <cell type="field" id="6" name="textAfter"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="7" label="Separator"/>
+                    <cell type="field" id="7" name="fullNameSeparator"/>
+                </row>
+                -->
+            </rows>
+        </viewdef>
+
+        <viewdef
+            type="form"
+            name="RootLithoStratTreeDefItem"
+            class="edu.ku.brc.specify.datamodel.LithoStratTreeDefItem"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Root LithoStrat Tree Definition Item Form]]></desc>
             <columnDef>p,3dlu,p,6dlu,p</columnDef>
             <rowDef>p,2dlu,p,2dlu,p,2dlu,p</rowDef>
             
