@@ -131,13 +131,13 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         nodeUI.setHasFocus(cellHasFocus);
         
         // build up the tooltip from the synonym information
-        StringBuilder tooltipBuilder = new StringBuilder("<html><div style=\"font-family: sans-serif; font-size: 10pt\">");
+        StringBuilder tooltipBuilder = new StringBuilder("<html><div style=\"font-family: sans-serif; font-size: 12pt\">");
         tooltipBuilder.append(node.getFullName());
         
         Set<Pair<Integer,String>> idsAndNames = node.getSynonymIdsAndNames();
         if (idsAndNames.size() > 0)
         {
-            tooltipBuilder.append("<br><br>");
+            tooltipBuilder.append("</div><br><div style=\"font-family: sans-serif; font-size: 10pt\">");
             tooltipBuilder.append(getResourceString("TTV_SYNONYMS"));
             tooltipBuilder.append("<ul>");
             List<String> justNames = new ArrayList<String>();
@@ -156,7 +156,7 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         }
         if (node.getAcceptedParentFullName() != null)
         {
-            tooltipBuilder.append("<br><br>");
+            tooltipBuilder.append("</div><br><div style=\"font-family: sans-serif; font-size: 10pt\">");
             tooltipBuilder.append(getResourceString("TTV_PREFERRED_NAME"));
             tooltipBuilder.append(": ");
             tooltipBuilder.append(node.getAcceptedParentFullName());
