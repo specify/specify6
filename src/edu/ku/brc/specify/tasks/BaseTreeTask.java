@@ -15,6 +15,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
@@ -32,9 +33,12 @@ import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
@@ -44,10 +48,13 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.db.QueryForIdResultsIFace;
+import edu.ku.brc.ui.db.ViewBasedSearchQueryBuilderIFace;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.persist.AltViewIFace.CreationMode;
 import edu.ku.brc.ui.forms.validation.UIValidator;
 import edu.ku.brc.ui.forms.validation.ValComboBox;
+import edu.ku.brc.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.ui.forms.validation.ValidationListener;
 
 /**
@@ -434,6 +441,60 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         final ValComboBox rankComboBox = (ValComboBox)form.getControlByName("definitionItem");
         log.debug("parentComboBox = " + parentComboBox);
         log.debug("rankComboBox   = " + rankComboBox);
+        
+        if (parentComboBox instanceof ValComboBoxFromQuery)
+        {
+            ValComboBoxFromQuery parentCBQ = (ValComboBoxFromQuery)parentComboBox;
+            ViewBasedSearchQueryBuilderIFace sqlBuilder = new ViewBasedSearchQueryBuilderIFace()
+            {
+                public String buildSQL(String searchText)
+                {
+                    int collTypeID = CollectionType.getCurrentCollectionType().getId();
+
+                    // get node table and primary key column names
+                    DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(nodeInForm.getClass().getName());
+                    String tableName = tableInfo.getName();
+                    String idColName = tableInfo.getIdColumnName();
+                    
+                    // get definition table and primary key column names
+                    DBTableInfo defTableInfo = DBTableIdMgr.getInstance().getByClassName(tableInfo.getRelationshipByName("definition").getClassName());
+                    String defTableName = defTableInfo.getName();
+                    String defIdColName = defTableInfo.getIdColumnName();
+                    
+                    String queryFormatStr = "SELECT n.FullName, n.%s from %s n INNER JOIN %s d ON n.%s=d.%s INNER JOIN collectiontype ct ON d.%s=ct.%s WHERE n.FullName LIKE \"%s\" AND ct.CollectionTypeID = %d";
+                    String queryStr = String.format(queryFormatStr, idColName, tableName, defTableName, defIdColName, defIdColName, defIdColName, defIdColName, searchText + "%", collTypeID);
+                    return queryStr;
+                }
+
+                public String buildSQL(Map<String, Object> dataMap)
+                {
+                    String searchText = (String)dataMap.get("fullName");
+                    
+                    int collTypeID = CollectionType.getCurrentCollectionType().getId();
+
+                    // get node table and primary key column names
+                    DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(nodeInForm.getClass().getName());
+                    String tableName = tableInfo.getName();
+                    String idColName = tableInfo.getIdColumnName();
+                    
+                    // get definition table and primary key column names
+                    DBTableInfo defTableInfo = DBTableIdMgr.getInstance().getByClassName(tableInfo.getRelationshipByName("definition").getClassName());
+                    String defTableName = defTableInfo.getName();
+                    String defIdColName = defTableInfo.getIdColumnName();
+                    
+                    String queryFormatStr = "SELECT n.FullName, n.%s from %s n INNER JOIN %s d ON n.%s=d.%s INNER JOIN collectiontype ct ON d.%s=ct.%s WHERE n.FullName LIKE \"%s\" AND ct.CollectionTypeID = %d";
+                    String queryStr = String.format(queryFormatStr, idColName, tableName, defTableName, defIdColName, defIdColName, defIdColName, defIdColName, searchText + "%", collTypeID);
+                    return queryStr;
+                }
+
+                public QueryForIdResultsIFace createQueryForIdResults()
+                {
+                    return null;
+                }
+            };
+            //parentCBQ.registerQueryBuilder(sqlBuilder);
+        }
+        
 
         if (parentComboBox != null && rankComboBox != null)
         {
