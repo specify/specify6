@@ -40,6 +40,10 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
+import org.apache.commons.lang.StringUtils;
+
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+
 /**
 
  */
@@ -225,6 +229,12 @@ public class AccessionAgent extends DataModelObjBase implements java.io.Serializ
     @Transient
     public String getIdentityTitle()
     {
-        return role + ": " + agent.getIdentityTitle();
+        String str = (StringUtils.isNotEmpty(role) ? role : "")  + (agent != null ? (": " + agent.getIdentityTitle()) : "");
+        
+        if (str.length() == 0)
+        {
+            str = DBTableIdMgr.getInstance().getByShortClassName("Agent").getTitle();
+        }
+        return str;
     }
 }

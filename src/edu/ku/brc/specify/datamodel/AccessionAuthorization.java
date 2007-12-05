@@ -39,6 +39,8 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+
 /**
  * 
  */
@@ -216,4 +218,17 @@ public class AccessionAuthorization extends DataModelObjBase implements java.io.
         return 13;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
+     */
+    @Override
+    @Transient
+    public String getIdentityTitle()
+    {
+        if (permit != null)
+        {
+            return permit.getIdentityTitle();
+        }
+        return DBTableIdMgr.getInstance().getByShortClassName(getClass().getSimpleName()).getTitle();
+    }
 }

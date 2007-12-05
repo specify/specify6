@@ -97,7 +97,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
         String str = DataObjFieldFormatMgr.format(this, getDataClass());
         if (StringUtils.isEmpty(str))
         {
-            return getClass().getSimpleName() + ": " + getId();
+            return DBTableIdMgr.getInstance().getByClassName(getClass().getName()).getTitle();
         }
         return str;
     }
