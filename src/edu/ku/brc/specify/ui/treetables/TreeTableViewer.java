@@ -976,8 +976,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         {
             TreeNode parentNode = listModel.getNodeById(parentId);
             // I doubled this call b/c Swing wasn't doing this unless I put it in here twice
-            list.setSelectedValue(parentNode,false);
-            list.setSelectedValue(parentNode,false);
+            list.setSelectedValue(parentNode,true);
+            list.setSelectedValue(parentNode,true);
             
             int listIndex = (list == lists[0]) ? 0 : 1;
             scrollToShowNode(parentNode, listIndex);
@@ -1014,8 +1014,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		if((where & DualViewSearchable.TOPVIEW) != 0)
 		{
             // I doubled this call b/c Swing wasn't doing this unless I put it in here twice
-			lists[0].setSelectedValue(firstMatchNode,false);
-            lists[0].setSelectedValue(firstMatchNode,false);
+			lists[0].setSelectedValue(firstMatchNode,true);
+            lists[0].setSelectedValue(firstMatchNode,true);
             
             scrollToShowNode(firstMatchNode, 0);
 		}
@@ -1026,8 +1026,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 toggleViewMode();
             }
             // I doubled this call b/c Swing wasn't doing this unless I put it in here twice
-            lists[1].setSelectedValue(firstMatchNode,false);
-            lists[1].setSelectedValue(firstMatchNode,false);
+            lists[1].setSelectedValue(firstMatchNode,true);
+            lists[1].setSelectedValue(firstMatchNode,true);
             
             scrollToShowNode(firstMatchNode, 1);
         }
@@ -1057,7 +1057,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.tasks.DualViewSearchable#findNext(java.lang.String, int, boolean)
 	 */
-	public void findNext(String key,int where,boolean wrap)
+	public void findNext(String key, int where, boolean wrap)
 	{
 		if(key != null && !key.equals(findName))
 		{
