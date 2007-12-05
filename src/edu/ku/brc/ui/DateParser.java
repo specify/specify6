@@ -115,32 +115,35 @@ public class DateParser
      */
     public static DateFormatType getDateFormatType(final String dateStr)
     {
-        DateFormatType type        = DateFormatType.Unknown;
-        int            len         = dateStr.length();
-        boolean        isYearFirst = isYearFirstInDateStr(dateStr);
-        char           sep         = getSep(dateStr);
-        
-        if (len == 10)
+        DateFormatType type = DateFormatType.Unknown;
+        int            len  = dateStr.length();
+        if (len > 7 && len < 11)
         {
-            type = isYearFirst ? DateFormatType.YYYY_AA_BB : DateFormatType.AA_BB_YYYY;
+            boolean        isYearFirst = isYearFirstInDateStr(dateStr);
+            char           sep         = getSep(dateStr);
             
-        } else if (len == 9)
-        {
-            int inx = isYearFirst ? 6 : 1;
-                
-            char sepChar = dateStr.charAt(inx);
-            if (sepChar == sep)
+            if (len == 10)
             {
-                type = isYearFirst ? DateFormatType.YYYY_A_BB : DateFormatType.A_BB_YYYY;
+                type = isYearFirst ? DateFormatType.YYYY_AA_BB : DateFormatType.AA_BB_YYYY;
                 
-            } else
+            } else if (len == 9)
             {
-                type = isYearFirst ? DateFormatType.YYYY_AA_B : DateFormatType.AA_B_YYYY;
+                int inx = isYearFirst ? 6 : 1;
+                    
+                char sepChar = dateStr.charAt(inx);
+                if (sepChar == sep)
+                {
+                    type = isYearFirst ? DateFormatType.YYYY_A_BB : DateFormatType.A_BB_YYYY;
+                    
+                } else
+                {
+                    type = isYearFirst ? DateFormatType.YYYY_AA_B : DateFormatType.AA_B_YYYY;
+                }
+                
+            } else if (len == 8)
+            {
+                return isYearFirst ? DateFormatType.YYYY_A_B : DateFormatType.A_B_YYYY;
             }
-            
-        } else if (len == 8)
-        {
-            return isYearFirst ? DateFormatType.YYYY_A_B : DateFormatType.A_B_YYYY;
         }
         return type;
     }
