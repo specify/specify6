@@ -695,6 +695,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                         TreeNode node = listModel.getNodeById(nodeRecord.getTreeId());
                         lists[0].setSelectedValue(node, true);
                         lists[0].setSelectedValue(node, true);
+                        scrollToShowNode(node, 0);
                         log.info("Showing and selecting previously selected node: " + nodeRecord.getFullName());
                     }
                     catch (Exception e)
@@ -1135,6 +1136,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 // I doubled this call b/c Swing wasn't doing this unless I put it in here twice
                 lists[0].setSelectedValue(nextMatchNode,true);
                 lists[0].setSelectedValue(nextMatchNode,true);
+                
+                scrollToShowNode(nextMatchNode, 0);
 			}
 			if((where & DualViewSearchable.BOTTOMVIEW) != 0)
 			{
@@ -1145,7 +1148,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 // I doubled this call b/c Swing wasn't doing this unless I put it in here twice
                 lists[1].setSelectedValue(nextMatchNode,true);
                 lists[1].setSelectedValue(nextMatchNode,true);
-			}
+
+                scrollToShowNode(nextMatchNode, 1);
+            }
 		}
 	}
 	
@@ -1191,6 +1196,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             // I doubled this call b/c Swing wasn't doing this unless I put it in here twice
             lists[0].setSelectedValue(nextMatchNode,true);
             lists[0].setSelectedValue(nextMatchNode,true);
+            
+            scrollToShowNode(nextMatchNode, 0);
 		}
 		if((where & DualViewSearchable.BOTTOMVIEW) != 0)
 		{
@@ -1201,7 +1208,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             // I doubled this call b/c Swing wasn't doing this unless I put it in here twice
             lists[1].setSelectedValue(nextMatchNode,true);
             lists[1].setSelectedValue(nextMatchNode,true);
-		}
+
+            scrollToShowNode(nextMatchNode, 1);
+        }
 	}
 	
 	public void findNext(JList where, boolean wrap, TreeNode currentNode)
