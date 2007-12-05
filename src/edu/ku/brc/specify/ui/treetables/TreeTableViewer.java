@@ -504,7 +504,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		treeListPanels[0].setLayout(new BorderLayout());
 		treeListPanels[0].add(scrollers[0], BorderLayout.CENTER);
 		treeListPanels[0].add(buttonPanel0,BorderLayout.EAST);
-        findPanel = new FindPanel(this, FindPanel.CONTRACTED);
+        findPanel = new FindPanel(this, FindPanel.EXPANDED);
         treeListPanels[0].add(findPanel, BorderLayout.SOUTH);
         
         // button panel for bottom tree list
