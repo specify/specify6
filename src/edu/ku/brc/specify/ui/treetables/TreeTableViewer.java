@@ -1291,7 +1291,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		String nodeNameAfter          = node.getName();
 		Integer parentIdAfter         = (node.getParent() != null) ? node.getParent().getTreeId() : null;
         final boolean acceptedAfter   = (node.getIsAccepted() != null) ? node.getIsAccepted() : true;
-		boolean nameChanged           = !nodeNameBefore.equals(nodeNameAfter);
+		final boolean nameChanged           = !nodeNameBefore.equals(nodeNameAfter);
 		boolean parentChanged         = (parentIdBefore == null && parentIdAfter != null) ||
 		                                (parentIdBefore != null && parentIdAfter == null) ||
 		                                (parentIdBefore != null && parentIdAfter != null && parentIdBefore.longValue() != parentIdAfter.longValue());
@@ -1422,8 +1422,13 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                             listModel.nodeValuesChanged(acceptedParentBefore);
                             listModel.nodeValuesChanged(editedNode);
                         }
-
-
+                        
+                        if (nameChanged)
+                        {
+                            editedNode.setFullName(mergedNode.getFullName());
+                            listModel.nodeValuesChanged(editedNode);
+                        }
+                        
                         if (!afterSaveSuccess)
                         {
                             statusBar.setErrorMessage("The tree metadata was not successfully updated.  Please rebuild the tree metadata.");
