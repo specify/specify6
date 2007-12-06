@@ -620,6 +620,10 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
                 g2d.setColor(list.getSelectionForeground());
             }
             
+            if (treeNode.getAssociatedRecordCount() != 0)
+            {
+                name = name + " (" + treeNode.getAssociatedRecordCount() + ")";
+            }
             String clippedName = GraphicsUtils.clipString(fm, name, stringLength);
             g.drawString(clippedName, stringStartX, stringY);
             
