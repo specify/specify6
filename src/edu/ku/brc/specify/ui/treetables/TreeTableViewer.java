@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
@@ -172,6 +174,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     
     protected String selNodePrefName;
     
+    // tools to help figure the number of "related" records for a node in the background
+    protected ExecutorService countGrabberExecutor;
+    
 	/**
 	 * Build a TreeTableViewer to view/edit the data found.
 	 * 
@@ -201,6 +206,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         restoreTreeState = true;
         
         selNodePrefName = "selected_node:" + treeDef.getClass().getSimpleName() + ":" + treeDef.getTreeDefId();
+        
+        countGrabberExecutor = Executors.newFixedThreadPool(10);
 	}
 	
 	public D getTreeDef()
@@ -790,7 +797,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     	UIRegistry.forceTopFrameRepaint();
 	}
     
-	
 	protected void setViewMode(int newMode)
 	{
 		removeAll();
@@ -1306,11 +1312,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 {
                     Component parentComp = form.getControlByName("parent");
                     
-                    while (!(parentComp instanceof EditViewCompSwitcherPanel) && parentComp != null)
-                    {
-                        parentComp = parentComp.getParent();
-                    }
-                    
                     if (parentComp != null)
                     {
                         while (!(parentComp instanceof EditViewCompSwitcherPanel) && parentComp != null)
@@ -1457,6 +1458,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                         {
                             // this was an existing node being edited
                             editedNode.setName(mergedNode.getName());
+                            editedNode.setFullName(mergedNode.getFullName());
                             editedNode.setRank(mergedNode.getRankId());
                             listModel.nodeValuesChanged(editedNode);
                         }
@@ -1470,12 +1472,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                             editedNode.setAcceptedParentFullName(null);
                             editedNode.setAcceptedParentId(null);
                             listModel.nodeValuesChanged(acceptedParentBefore);
-                            listModel.nodeValuesChanged(editedNode);
-                        }
-                        
-                        if (nameChanged)
-                        {
-                            editedNode.setFullName(mergedNode.getFullName());
                             listModel.nodeValuesChanged(editedNode);
                         }
                         
@@ -2031,6 +2027,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	@Override
 	public void shutdown()
 	{
+        countGrabberExecutor.shutdownNow();
 		super.shutdown();
 	}
 	
@@ -2109,10 +2106,36 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
      * @param dbRecord
      * @return the list of children shown
      */
-    protected synchronized List<TreeNode> showChildren(T dbRecord)
+    protected synchronized List<TreeNode> showChildren(final T dbRecord)
     {
         // get the child nodes
         List<TreeNode> childNodes = dataService.getChildTreeNodes(dbRecord);
+        
+//        for (TreeNode newNode: childNodes)
+//        {
+//            final TreeNode node = newNode;
+//            Runnable getAssocRecCount = new Runnable()
+//            {
+//                public void run()
+//                {
+//                    int relatedRecordCount = 0;
+//                    try
+//                    {
+//                        relatedRecordCount = dataService.getRelatedRecordCount(dbRecord.getClass(), node.getId());
+//                    }
+//                    catch (Exception e)
+//                    {
+//                        log.error(e);
+//                    }
+//                    System.out.println(node.getName() + " has " + relatedRecordCount + " related records");
+//                    node.setAssociatedRecordCount(relatedRecordCount);
+//                    lists[0].repaint();
+//                    lists[1].repaint();
+//                }
+//            };
+//            
+//            countGrabberExecutor.submit(getAssocRecCount);
+//        }
         
         // get the node representing the parent DB record
         TreeNode parentNode = listModel.getNodeById(dbRecord.getTreeId());
