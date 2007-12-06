@@ -112,28 +112,30 @@ public class PrefsPaneLayoutManager implements LayoutManager, LayoutManager2
     /* (non-Javadoc)
      * @see java.awt.LayoutManager#layoutContainer(java.awt.Container)
      */
-    public void layoutContainer(Container arg0)
+    public void layoutContainer(Container target)
     {
-        if (preferredSize.width == 0 || preferredSize.height == 0)
+        synchronized (target.getTreeLock()) 
         {
-            calcPreferredSize(); 
+            if (preferredSize.width == 0 || preferredSize.height == 0)
+            {
+                calcPreferredSize(); 
+            }
+            
+            int x = 0;
+            int y = 0;
+            
+            actualRowSize.width = Math.max(actualRowSize.width, target.getSize().width);
+            
+            for (Component comp : comps)
+            {
+                PrefPanelRow ppr   = (PrefPanelRow)comp;
+                ppr.setActualCellSize(actualCellSize);
+                ppr.setActualRowSize(actualRowSize);
+                ppr.setMaxNumItems(maxNumItems);
+                comp.setBounds(x, y, actualRowSize.width, actualRowSize.height);
+                y += actualRowSize.height;
+            }
         }
-        
-        int x = 0;
-        int y = 0;
-        
-        actualRowSize.width = Math.max(actualRowSize.width, arg0.getSize().width);
-        
-        for (Component comp : comps)
-        {
-            PrefPanelRow ppr   = (PrefPanelRow)comp;
-            ppr.setActualCellSize(actualCellSize);
-            ppr.setActualRowSize(actualRowSize);
-            ppr.setMaxNumItems(maxNumItems);
-            comp.setBounds(x, y, actualRowSize.width, actualRowSize.height);
-            y += actualRowSize.height;
-        }
-
     }
     
     /**

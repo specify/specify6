@@ -103,38 +103,40 @@ public class NavBoxLayoutManager implements LayoutManager2
     /* (non-Javadoc)
      * @see java.awt.LayoutManager#layoutContainer(java.awt.Container)
      */
-    public void layoutContainer(Container arg0)
+    public void layoutContainer(Container target)
     {
-        Dimension parentSize =  arg0.getSize();
-        parentSize.width  -= 2 * borderPadding;
-        parentSize.height -= 2 * borderPadding;
-
-        int x = borderPadding;
-        int y = borderPadding;
-
-        Trash trash = null;
-        
-        for (Component comp: comps)
+        synchronized (target.getTreeLock()) 
         {
-            Dimension size = comp.getPreferredSize();
-            if (comp instanceof Trash)
+            Dimension parentSize =  target.getSize();
+            parentSize.width  -= 2 * borderPadding;
+            parentSize.height -= 2 * borderPadding;
+    
+            int x = borderPadding;
+            int y = borderPadding;
+    
+            Trash trash = null;
+            
+            for (Component comp: comps)
             {
-                trash = (Trash)comp;
-                
-            } else
+                Dimension size = comp.getPreferredSize();
+                if (comp instanceof Trash)
+                {
+                    trash = (Trash)comp;
+                    
+                } else
+                {
+                    comp.setBounds(x, y, parentSize.width, size.height);
+                    y += size.height + ySeparation;
+                }
+            }
+            
+            if (trash != null)
             {
-                comp.setBounds(x, y, parentSize.width, size.height);
-                y += size.height + ySeparation;
+                Dimension size = trash.getPreferredSize();
+                int trashY = parentSize.height - size.height-1;
+                trash.setBounds((parentSize.width - size.width)/2, trashY > y ? trashY : y, size.width, size.height);
             }
         }
-        
-        if (trash != null)
-        {
-            Dimension size = trash.getPreferredSize();
-            int trashY = parentSize.height - size.height-1;
-            trash.setBounds((parentSize.width - size.width)/2, trashY > y ? trashY : y, size.width, size.height);
-        }
-
     }
 
     /**

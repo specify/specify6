@@ -157,28 +157,30 @@ public class PrefPanelRowLayoutManager implements LayoutManager, LayoutManager2
     /* (non-Javadoc)
      * @see java.awt.LayoutManager#layoutContainer(java.awt.Container)
      */
-    public void layoutContainer(Container arg0)
+    public void layoutContainer(Container target)
     {
-        int x = xSeparation;
-        int y = ySeparation;
-        
-        int xSep = (actualRowSize.width - (actualCellSize.width * maxNumItems)) / (maxNumItems+1);
-        
-        Dimension size = title.getPreferredSize();
-        title.setBounds(x, y, size.width, size.height);
-        
-        y += size.height + titleSeparation;
-        //System.out.println("Row Hgt: "+actualRowSize.height+" Y: "+y+"  Cell Hgt: "+actualCellSize.height+"  Space: "+(actualRowSize.height - y));
-        
-        int height = actualRowSize.height - y;
-        y += (height - actualCellSize.height) / 2;
-        
-        for (Component comp : comps)
+        synchronized (target.getTreeLock()) 
         {
-            comp.setBounds(x, y, actualCellSize.width, actualCellSize.height);
-            x += actualCellSize.width + xSep;
+            int x = xSeparation;
+            int y = ySeparation;
+            
+            int xSep = (actualRowSize.width - (actualCellSize.width * maxNumItems)) / (maxNumItems+1);
+            
+            Dimension size = title.getPreferredSize();
+            title.setBounds(x, y, size.width, size.height);
+            
+            y += size.height + titleSeparation;
+            //System.out.println("Row Hgt: "+actualRowSize.height+" Y: "+y+"  Cell Hgt: "+actualCellSize.height+"  Space: "+(actualRowSize.height - y));
+            
+            int height = actualRowSize.height - y;
+            y += (height - actualCellSize.height) / 2;
+            
+            for (Component comp : comps)
+            {
+                comp.setBounds(x, y, actualCellSize.width, actualCellSize.height);
+                x += actualCellSize.width + xSep;
+            }
         }
-
     }
     
     /**
