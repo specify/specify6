@@ -120,7 +120,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     protected boolean            hasBeenVisited = false;
     protected Color              bgColor    = null;
 
-    protected VCBComboBox       comboBox;
+    protected VCBComboBox        comboBox;
     protected JButton            searchBtn  = null;
     protected JButton            createBtn  = null;
     protected JButton            editBtn    = null;
@@ -295,23 +295,23 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
 
         boolean hasSearchBtn = StringUtils.isNotEmpty(searchDialogName);
 
-        PanelBuilder    builder    = new PanelBuilder(new FormLayout("p:g,1px,p,1px,p"+(hasSearchBtn ? ",1px,p" : ""), "c:p"), this);
-        CellConstraints cc         = new CellConstraints();
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("p:g,1px,p,1px,p"+(hasSearchBtn ? ",1px,p" : ""), "c:p"), this);
+        CellConstraints cc = new CellConstraints();
 
-        builder.add(comboBox, cc.xy(1,1));
+        pb.add(comboBox, cc.xy(1,1));
 
         int x = 3;
         if ((btnMask & CREATE_EDIT_BTN) != 0)
         {
             editBtn = createBtn("EditIcon", "EditRecordTT", objTitle);
-            builder.add(editBtn, cc.xy(x,1));
+            pb.add(editBtn, cc.xy(x,1));
             x += 2;
         }
 
         if ((btnMask & CREATE_NEW_BTN) != 0)
         {
             createBtn = createBtn("CreateObj", "NewRecordTT", objTitle); 
-            builder.add(createBtn, cc.xy(x,1));
+            pb.add(createBtn, cc.xy(x,1));
             x += 2;
         }
 
@@ -319,7 +319,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         if (hasSearchBtn && (btnMask & CREATE_SEARCH_BTN) != 0)
         {
             searchBtn = createBtn("Search", "SearchForRecordTT", objTitle); 
-            builder.add(searchBtn, cc.xy(x,1));
+            pb.add(searchBtn, cc.xy(x,1));
             x += 2;
         }
 
@@ -342,6 +342,10 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                 public void actionPerformed(ActionEvent e)
                 {
                     ViewBasedSearchDialogIFace dlg = UIRegistry.getViewbasedFactory().createSearchDialog(UIHelper.getWindow(searchBtn), searchDialogName);
+                    if (builder != null)
+                    {
+                        dlg.registerQueryBuilder(builder);
+                    }
                     dlg.getDialog().setVisible(true);
                     if (!dlg.isCancelled())
                     {
