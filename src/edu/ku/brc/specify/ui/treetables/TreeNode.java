@@ -15,6 +15,14 @@ public class TreeNode
     protected Class<?> dataObjClass;
     protected int rank;
     protected int parentRank;
+    
+    /** This field will hold a number representing the number of associated records for this node.
+     *  For example, if this field represents a Taxon record, the <code>associatedRecordCount</code> would
+     *  be the number of CollectionObject records that refer to this Taxon.  For TreeNodes representing
+     *  Geography records, this number might represent the number of CollectingEvents that were in this
+     *  geographical area.
+     */
+    protected int associatedRecordCount;
     protected Integer acceptedParentId;
     protected String acceptedParentFullName;
     protected Set<Pair<Integer,String>> synonymIdsAndNames;
@@ -32,6 +40,7 @@ public class TreeNode
         this.acceptedParentId = acceptedParentId;
         this.acceptedParentFullName = acceptedParentFullName;
         this.synonymIdsAndNames = synonymIdsAndNames;
+        this.associatedRecordCount = 0;
     }
 
     public Class<?> getDataObjClass()
@@ -118,6 +127,16 @@ public class TreeNode
     public void setRank(int rank)
     {
         this.rank = rank;
+    }
+
+    public int getAssociatedRecordCount()
+    {
+        return associatedRecordCount;
+    }
+
+    public void setAssociatedRecordCount(int associatedRecordCount)
+    {
+        this.associatedRecordCount = associatedRecordCount;
     }
 
     public Integer getAcceptedParentId()
