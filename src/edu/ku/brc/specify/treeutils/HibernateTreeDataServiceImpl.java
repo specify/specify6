@@ -191,8 +191,18 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         TreeNode node = new TreeNode(nodeName,fullName,id,parentId,rank,parentRank, (descCount != 0), acceptedParentId, acceptedParentFullName, synIdsAndNames);
         return node;
     }
-
     
+    public int getRelatedRecordCount(Class<?> clazz, int id)
+    {
+        String queryStr = TreeFactory.getRelatedRecordCountQueryString(clazz);
+        Session session = getNewSession();
+        Query query = session.createQuery(queryStr);
+        query.setParameter("NODEID", id);
+        
+        int recordCount = (Integer)query.uniqueResult();
+        return recordCount;
+    }
+
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.treeutils.TreeDataService#getRootNode(edu.ku.brc.specify.datamodel.TreeDefIface)
 	 */

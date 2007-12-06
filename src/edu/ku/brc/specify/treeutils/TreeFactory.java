@@ -240,6 +240,36 @@ public class TreeFactory
         
         return null;
     }
+    
+    public static String getRelatedRecordCountQueryString(Class<?> clazz)
+    {
+        if (clazz.equals(Taxon.class))
+        {
+            return "SELECT count(*) FROM CollectionObject AS co INNER JOIN co.determinations AS d INNER JOIN d.taxon AS t WHERE t.id=:NODEID";
+        }
+        
+        if (clazz.equals(Geography.class))
+        {
+            return "SELECT count(*) FROM CollectingEvent AS ce INNER JOIN ce.localities AS l INNER JOIN l.geography AS g WHERE g.id=:NODEID";
+        }
+        
+        if (clazz.equals(GeologicTimePeriod.class))
+        {
+            return "SELECT count(*) FROM CollectionObject AS co INNER JOIN co.paleoContext AS pc INNER JOIN pc.chronosStrat as gtp WHERE gtp.id=:NODEID";
+        }
+        
+        if (clazz.equals(Location.class))
+        {
+            return "SELECT count(*) FROM CollectionObject AS co INNER JOIN co..preparations AS prep INNER JOIN prep.location as loc WHERE loc.id=:NODEID";
+        }
+        
+        if (clazz.equals(LithoStrat.class))
+        {
+            return "SELECT count(*) FROM CollectionObject AS co INNER JOIN co.paleoContext AS pc INNER JOIN pc.lithoStrat as ls WHERE ls.id=:NODEID";
+        }
+        
+        return null;
+    }
 
 	/**
 	 * Find and return the names of the formset and view for editing tree nodes of the same class

@@ -83,6 +83,8 @@ public interface TreeDataService <T extends Treeable<T,D,I>,
      */
     public int getDescendantCount(T node);
     
+    public int getRelatedRecordCount(Class<?> clazz, int id);
+    
     /**
      * Deletes the given node from the DB.
      * 

@@ -2111,31 +2111,31 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         // get the child nodes
         List<TreeNode> childNodes = dataService.getChildTreeNodes(dbRecord);
         
-//        for (TreeNode newNode: childNodes)
-//        {
-//            final TreeNode node = newNode;
-//            Runnable getAssocRecCount = new Runnable()
-//            {
-//                public void run()
-//                {
-//                    int relatedRecordCount = 0;
-//                    try
-//                    {
-//                        relatedRecordCount = dataService.getRelatedRecordCount(dbRecord.getClass(), node.getId());
-//                    }
-//                    catch (Exception e)
-//                    {
-//                        log.error(e);
-//                    }
-//                    System.out.println(node.getName() + " has " + relatedRecordCount + " related records");
-//                    node.setAssociatedRecordCount(relatedRecordCount);
-//                    lists[0].repaint();
-//                    lists[1].repaint();
-//                }
-//            };
-//            
-//            countGrabberExecutor.submit(getAssocRecCount);
-//        }
+        for (TreeNode newNode: childNodes)
+        {
+            final TreeNode node = newNode;
+            Runnable getAssocRecCount = new Runnable()
+            {
+                public void run()
+                {
+                    int relatedRecordCount = 0;
+                    try
+                    {
+                        relatedRecordCount = dataService.getRelatedRecordCount(dbRecord.getClass(), node.getId());
+                    }
+                    catch (Exception e)
+                    {
+                        log.error(e);
+                    }
+                    System.out.println(node.getName() + " has " + relatedRecordCount + " related records");
+                    node.setAssociatedRecordCount(relatedRecordCount);
+                    lists[0].repaint();
+                    lists[1].repaint();
+                }
+            };
+            
+            countGrabberExecutor.submit(getAssocRecCount);
+        }
         
         // get the node representing the parent DB record
         TreeNode parentNode = listModel.getNodeById(dbRecord.getTreeId());
