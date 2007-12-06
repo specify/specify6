@@ -205,6 +205,7 @@ public class ERTICaptionInfo
             {
                 log.error("Couldn't find formatter["+dataObjFormatterName+"]");
             }
+            formatter = null;
         }
         
         

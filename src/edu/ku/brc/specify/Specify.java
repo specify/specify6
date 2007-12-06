@@ -187,7 +187,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private String               appName             = "Specify";
     private String               appVersion          = "6.0";
 
-    private String               appBuildVersion     = "200711291030 (SVN: 3165)";
+    private String               appBuildVersion     = "200712040900 (SVN: 3198)";
     
     protected static CacheManager cacheManager        = new CacheManager();
 
@@ -198,6 +198,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     {
         UIRegistry.setRelease(isRelease);
 
+        XMLHelper.setUseChecksum(isRelease); 
     }
     
     /**

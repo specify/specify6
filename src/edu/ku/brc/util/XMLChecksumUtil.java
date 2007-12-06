@@ -17,6 +17,7 @@
  */
 package edu.ku.brc.util;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static org.apache.commons.io.FileUtils.checksumCRC32;
 
 import java.io.File;
@@ -24,6 +25,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
+
+import javax.swing.JOptionPane;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -73,15 +76,23 @@ public class XMLChecksumUtil
     {
         Properties checksumProps = new Properties();
         File       checksumFile  = XMLHelper.getConfigDir(checksumFileName);
-        try
+        if (checksumFile.exists())
         {
-            checksumProps.load(new FileInputStream(checksumFile));
-            return checkSignature(checksumProps, file);
-            
-        } catch (IOException ex)
+            try
+            {
+                checksumProps.load(new FileInputStream(checksumFile));
+                return checkSignature(checksumProps, file);
+                
+            } catch (IOException ex)
+            {
+                throw new RuntimeException("Couldn't locate Checksum file ["+checksumFile.getAbsolutePath()+"]");
+            }
+        } else
         {
-            throw new RuntimeException("Couldn't locate Checksum file ["+checksumFile.getAbsolutePath()+"]");
+            JOptionPane.showMessageDialog(null, getResourceString("CHECKSUM_MSG"), getResourceString("CHECKSUM_TITLE"), JOptionPane.ERROR_MESSAGE);
+            System.exit(0);
         }
+        return false;
     }
     
     /**
@@ -101,7 +112,7 @@ public class XMLChecksumUtil
                 long checkSum = checksumCRC32(file);
                 
                 long newCheckSum = Long.parseLong(checksumStr);
-                System.out.println("["+checkSum+"]["+newCheckSum+"]");
+                System.out.println(file.getName()+" ["+checkSum+"]["+newCheckSum+"]");
                 return checkSum == newCheckSum; 
             }
         } else

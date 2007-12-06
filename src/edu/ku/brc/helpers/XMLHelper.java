@@ -14,6 +14,7 @@
  */
 package edu.ku.brc.helpers;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.io.BufferedReader;
@@ -29,6 +30,8 @@ import java.io.Writer;
 import java.util.List;
 import java.util.Properties;
 
+import javax.swing.JOptionPane;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -38,6 +41,7 @@ import org.dom4j.io.SAXReader;
 
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.util.XMLChecksumUtil;
 
 
 /**
@@ -55,14 +59,34 @@ public class XMLHelper
     private static final Logger log = Logger.getLogger(XMLHelper.class);
     private static final String eol = System.getProperty("line.separator");
     
+    private static boolean useChecksum = false;
+    
     private static File configDir   = null;
 
+    
    /**
+     * @param useChecksum the useChecksum to set
+     */
+    public static void setUseChecksum(boolean useChecksum)
+    {
+        XMLHelper.useChecksum = useChecksum;
+    }
+
+/**
     * Reads a File and return the root element from the DOM
     * @param file the file to be read
     */
     public static org.dom4j.Element readFileToDOM4J(final File file) throws Exception
     {
+        if (useChecksum && 
+            configDir != null && 
+            !file.getName().equals("checksum.ini") && 
+            !XMLChecksumUtil.checkSignature(file))
+        {
+            JOptionPane.showMessageDialog(null, getResourceString("CHECKSUM_MSG"), getResourceString("CHECKSUM_TITLE"), JOptionPane.ERROR_MESSAGE);
+            System.exit(0);
+        }
+
         return readFileToDOM4J(new FileInputStream(file));
     }
 

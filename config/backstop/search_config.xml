@@ -332,7 +332,7 @@
             </detailView>
         </table>
         
-        <table id="12" tableid="2" indexed="false" name="AgentFromAgentVariant" priority="1" color="30, 144, 144">
+        <table id="12" tableid="2" indexed="false" name="LocalityAlias" priority="1" color="30, 144, 144">
             <joins>
                 <join tableid="120">localitynamealias.LocalityID</join>
                 <join tableid="2">locality.LocalityID</join>

@@ -21,14 +21,19 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
 import org.apache.commons.io.FileUtils;
+import org.dom4j.Element;
 
 import com.thoughtworks.xstream.XStream;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.dbsupport.DBFieldInfo;
+import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.helpers.XMLHelper;
 
 /**
  * A singleton service that manages the Search Configuration.
@@ -48,13 +53,15 @@ public class SearchConfigService
     protected SearchConfig                 searchConfig    = null;
     protected SearchTableConfig            searchContext   = null;
     protected List<PropertyChangeListener> changeListeners = new Vector<PropertyChangeListener>();
+    
+    protected Hashtable<String, Hashtable<String, Boolean>> skipFieldHash = new Hashtable<String, Hashtable<String, Boolean>>();
 
     /**
      * Constructor/
      */
     protected SearchConfigService()
     {
-
+        // no op
     }
     
     /**
@@ -104,7 +111,7 @@ public class SearchConfigService
     }
 
     /**
-     * Remoaves a PropertyChangeListener that are notified when the contents of the service changes.
+     * Removes a PropertyChangeListener that are notified when the contents of the service changes.
      * @param pcl the listener
      */
     public void removePropertyChangeListener(final PropertyChangeListener pcl)
@@ -117,6 +124,20 @@ public class SearchConfigService
      */
     protected void loadConfig()
     {
+        Element root = XMLHelper.readDOMFromConfigDir("es_skipfields.xml");
+        for (Object tblObj : root.selectNodes("/tables/table"))
+        {
+            Element tbl = (Element)tblObj;
+            String name = XMLHelper.getAttr(tbl, "name", null);
+            Hashtable<String, Boolean> fields = new Hashtable<String, Boolean>();
+            for (Object fldObj : tbl.selectNodes("field"))
+            {
+                Element fld = (Element)fldObj;
+                fields.put(fld.getTextTrim().toLowerCase(), true);
+            }
+            skipFieldHash.put(name, fields);
+        }
+
         XStream xstream = new XStream();
         SearchConfig.configXStream(xstream);
         
@@ -133,6 +154,35 @@ public class SearchConfigService
         {
             searchConfig.initialize();
         }
+    }
+    
+    /**
+     * @param tblInfo
+     * @return
+     */
+    public List<DBFieldInfo> getPruncedFieldList(final DBTableInfo tblInfo)
+    {
+        List<DBFieldInfo> availFields = tblInfo.getFields();
+        
+        Hashtable<String, Boolean> allHash = skipFieldHash.get("all");
+        Hashtable<String, Boolean> tblHash = skipFieldHash.get(tblInfo.getName());
+        if (allHash != null || tblHash != null)
+        {
+            availFields = new Vector<DBFieldInfo>();
+            for (DBFieldInfo fi : tblInfo.getFields())
+            {
+                if (allHash != null && allHash.get(fi.getName().toLowerCase()) != null)
+                {
+                    continue;
+                }
+                if (tblHash != null && tblHash.get(fi.getName()) != null)
+                {
+                    continue;
+                }
+                availFields.add(fi);
+            }
+        }
+        return availFields;
     }
     
     /**

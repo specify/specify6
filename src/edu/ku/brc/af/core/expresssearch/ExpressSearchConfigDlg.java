@@ -154,9 +154,12 @@ public class ExpressSearchConfigDlg extends CustomDialog
             {
                 continue;
             }
+            
+            List<DBFieldInfo> fieldList = searchConfigService.getPruncedFieldList(ti);
+            
             int     notSortedIndex   = 1000;
             boolean hasIndexedFields = false;
-            for (DBFieldInfo fi : ti.getFields())
+            for (DBFieldInfo fi : fieldList)
             {
                 if (fi.isIndexed())
                 {
@@ -181,7 +184,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
             int displayCnt = 0;
             int searchCnt  = 0;
             
-            for (DBFieldInfo fi : ti.getFields())
+            for (DBFieldInfo fi : fieldList)
             {
                 if (fi.isIndexed())
                 {
