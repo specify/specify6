@@ -37,6 +37,7 @@ import net.sf.jasperreports.engine.JRField;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.expresssearch.TableNameRenderer;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.SwingWorker;
@@ -59,7 +60,6 @@ import edu.ku.brc.specify.tasks.subpane.wb.schema.Relationship;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMappingDefRel.ImportMappingRelFld;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable.DefaultFieldEntry;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable.RelatedClassEntry;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable.UploadTableInvalidValue;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -137,7 +137,7 @@ public class Uploader implements ActionListener, WindowStateListener
     /**
      * Required related classes that are not available in the dataset.
      */
-    protected Vector<UploadTable.RelatedClassEntry> missingRequiredClasses;
+    protected Vector<RelatedClassSetter> missingRequiredClasses;
     /**
      * Required fields not present in the dataset.
      */
@@ -533,7 +533,7 @@ public class Uploader implements ActionListener, WindowStateListener
 		this.uploadData = importData;
         this.wbSS = wbSS;
 		this.uploadFields = new Vector<UploadField>(importData.getCols());
-        this.missingRequiredClasses = new Vector<UploadTable.RelatedClassEntry>();
+        this.missingRequiredClasses = new Vector<RelatedClassSetter>();
         this.missingRequiredFields = new Vector<UploadTable.DefaultFieldEntry>();
         this.skippedRows = new Vector<SkippedRow>();
         this.messages = new Vector<UploadMessage>();
@@ -546,12 +546,6 @@ public class Uploader implements ActionListener, WindowStateListener
 		orderUploadTables();
         buildUploadTableParents();
         reOrderUploadTables();
-        
-        for (int m = 0; m < uploadData.getCols(); m++)
-        {
-            System.out.println();
-            System.out.println(uploadData.getMapping(m));
-        }
  	}
 
     /**
@@ -602,7 +596,6 @@ public class Uploader implements ActionListener, WindowStateListener
             if (genSpPresent)
             {
                 UploadTable det = new UploadTable(db.getSchema().getTable("Determination"), null);
-                det.init();
                 for (int seq = 0; seq < maxSeq; seq++)
                 {
                     UploadField fld = new UploadField(db.getSchema().getField("determination",
@@ -610,6 +603,7 @@ public class Uploader implements ActionListener, WindowStateListener
                     fld.setSequence(seq);
                     det.addField(fld);
                 }
+                det.init();
                 uploadTables.add(det);
             }
         }
@@ -687,7 +681,7 @@ public class Uploader implements ActionListener, WindowStateListener
             uploadTables.remove(fromIdx);
             uploadTables.insertElementAt(move.getSecond(), toIdx);
         }
-    }
+   }
 	/**
 	 * @throws UploaderException
      * builds the uploadGraph.
@@ -1148,10 +1142,14 @@ public class Uploader implements ActionListener, WindowStateListener
         return result;
     }
 	/**
-	 * @return true if the import mapping and graph are OK.
-     * Also saves messages for each problem. 
+	 * @return true if the dataset can be uploaded.
+     * 
+     * Checks that the import mapping and graph are OK.
+     * Checks that all required data (TreeDefs, TreeDefItems, DeterminationStatuses, etc) is present in the database.
+     * 
+     * Saves messages for each problem. 
 	 */
-	public Vector<UploadMessage> validateStructure() throws UploaderException
+	public Vector<UploadMessage> verifyUploadability() throws UploaderException, ClassNotFoundException
 	{
         Vector<UploadMessage> errors = new Vector<UploadMessage>();
         try
@@ -1177,9 +1175,71 @@ public class Uploader implements ActionListener, WindowStateListener
         
         errors.addAll(validateConsistency());
         
+        //now find out what data is not available in the dataset and not available in the database
+        //Considering such issues 'structural' for now. 
+        missingRequiredClasses.clear();
+        missingRequiredFields.clear();
+        Iterator<RelatedClassSetter> rces;
+        Iterator<DefaultFieldEntry> dfes;
         for (UploadTable t : uploadTables)
         {
-           errors.addAll(t.validateStructure());
+            try 
+            {
+                rces = t.getRelatedClassDefaults();
+            }
+            catch (ClassNotFoundException ex)
+            {
+                log.error(ex);
+                return null;
+            }
+            while (rces.hasNext())
+            {
+                missingRequiredClasses.add(rces.next());
+            }
+
+            try
+            {
+                dfes = t.getMissingRequiredFlds();
+            }
+            catch (NoSuchMethodException ex)
+            {
+                log.error(ex);
+                return null;
+            }
+            while (dfes.hasNext())
+            {
+                missingRequiredFields.add(dfes.next());
+            }
+        }
+        resolver = new MissingDataResolver(missingRequiredClasses, missingRequiredFields);
+        for (RelatedClassSetter rcs : missingRequiredClasses)
+        {
+            if (!rcs.isDefined())
+            {
+                //Assume it is undefined because no related data exists in the database.
+                //Also assuming (currently erroneously) that definition problems related to choosing
+                //from multiple existing related data have been resolved through user interaction.
+                String tblName = DBTableIdMgr.getInstance().getByShortClassName(rcs.getRelatedClass().getSimpleName()).getTitle();
+                //a very vague message...
+                String msg = getResourceString("WB_UPLOAD_MISSING_DBDATA") + ": " + tblName;
+                errors.add(new InvalidStructure(msg, this));
+            }
+        }
+        for (DefaultFieldEntry dfe : missingRequiredFields)
+        {
+            if (!dfe.isDefined())
+            {
+                //see note above for missignRequiredClasses iteration
+                //another very vague message...
+                String msg = getResourceString("WB_UPLOAD_MISSING_DBDATA") + ": " + dfe.getUploadTbl().getTable().getTableInfo().getTitle() + 
+                  "." + dfe.getFldName(); //i18n (dfe.getFldName() is not using title nor wb column header)
+                errors.add(new InvalidStructure(msg, this));
+            }
+        }
+        
+        for (UploadTable t : uploadTables)
+        {
+           errors.addAll(t.verifyUploadability());
         }
                 
         return errors;
@@ -1452,7 +1512,7 @@ public class Uploader implements ActionListener, WindowStateListener
                         new Object[] { "" }), WorkbenchTask.GLASSPANE_FONT_SIZE);
                 missingRequiredClasses.clear();
                 missingRequiredFields.clear();
-                Iterator<RelatedClassEntry> rces;
+                Iterator<RelatedClassSetter> rces;
                 Iterator<DefaultFieldEntry> dfes;
                 for (UploadTable t : uploadTables)
                 {

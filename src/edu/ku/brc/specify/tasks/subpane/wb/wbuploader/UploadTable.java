@@ -101,11 +101,11 @@ public class UploadTable implements Comparable<UploadTable>
     /**
      * A vector of the related classes that must be non-null.
      */
-    protected Vector<RelatedClassEntry> requiredRelClasses;
+    protected Vector<RelatedClassSetter> requiredRelClasses;
     /**
      * default objectids for related classes that are not present in the dataset being uploaded.
      */
-    protected Vector<RelatedClassEntry> relatedClassDefaults;
+    protected Vector<RelatedClassSetter> relatedClassDefaults;
     /**
      * The session used for writing records.
      */
@@ -332,9 +332,9 @@ public class UploadTable implements Comparable<UploadTable>
      * @return the related classes which cannot be null.
      * @throws NoSuchMethodException
      */
-    protected Vector<RelatedClassEntry> buildReqRelClasses()  throws NoSuchMethodException
+    protected Vector<RelatedClassSetter> buildReqRelClasses()  throws NoSuchMethodException
     {
-        Vector<RelatedClassEntry> result = new Vector<RelatedClassEntry>();
+        Vector<RelatedClassSetter> result = new Vector<RelatedClassSetter>();
         for (Method m : tblClass.getMethods())
         {
             Annotation a = m.getAnnotation(javax.persistence.JoinColumn.class);
@@ -352,7 +352,8 @@ public class UploadTable implements Comparable<UploadTable>
                     }
                     if (addToReqRelClasses(m.getReturnType()))
                     {
-                        result.add(new RelatedClassEntry(this, m.getReturnType(), fldName, null, null, setter));
+                         result.add(RelatedClassSetter.createRelatedClassSetter(this, m.getReturnType(), fldName, null, null, 
+                                setter, uploadFields.size()));
                     }
                 }
             }
@@ -374,10 +375,10 @@ public class UploadTable implements Comparable<UploadTable>
      * @return the required classes that are not present in the dataset being uploaded.
      * @throws ClassNotFoundException
      */
-/*    public final Vector<RelatedClassEntry> getMissingReqRelClasses() throws ClassNotFoundException
+/*    public final Vector<RelatedClassSetter> getMissingReqRelClasses() throws ClassNotFoundException
     {
-        Vector<RelatedClassEntry> result = new Vector<RelatedClassEntry>();
-        for (RelatedClassEntry rce : this.requiredRelClasses)
+        Vector<RelatedClassSetter> result = new Vector<RelatedClassSetter>();
+        for (RelatedClassSetter rce : this.requiredRelClasses)
         {
             boolean foundEntry = false;
             for (Vector<ParentTableEntry> its : parentTables)
@@ -412,8 +413,8 @@ public class UploadTable implements Comparable<UploadTable>
      */
     protected void bldMissingReqRelClasses() throws ClassNotFoundException
     {
-        relatedClassDefaults = new Vector<RelatedClassEntry>();
-        for (RelatedClassEntry rce : this.requiredRelClasses)
+        relatedClassDefaults = new Vector<RelatedClassSetter>();
+        for (RelatedClassSetter rce : this.requiredRelClasses)
         {
             boolean foundEntry = false;
             for (Vector<ParentTableEntry> its : parentTables)
@@ -441,7 +442,7 @@ public class UploadTable implements Comparable<UploadTable>
         }
     }
     
-    public Iterator<RelatedClassEntry> getRelatedClassDefaults() throws ClassNotFoundException
+    public Iterator<RelatedClassSetter> getRelatedClassDefaults() throws ClassNotFoundException
     {
         if (relatedClassDefaults == null)
         {
@@ -550,183 +551,6 @@ public class UploadTable implements Comparable<UploadTable>
             return uploadTbl;
         }
     }
-    /**
-     * @author timbo
-     *
-     * @code_status Alpha
-     *
-     * Stores info about related tables.
-     */
-    public class RelatedClassEntry
-    {
-        /**
-         * the UploadTable that defined this entry
-         */
-        private final UploadTable uploadTbl;
-        /**
-         * Java class for the related table.
-         */
-        private Class<?>          relatedClass;
-        /**
-         * Name of the foreign key.
-         */
-        private String            fieldName;
-        /**
-         * Default key value for the related date.
-         */
-        private Object      defaultId;
-        /**
-         * Default object of the related class.
-         */
-        private Object            defaultObj;
-        /**
-         * tblClass method to set related class values.
-         */
-        private Method            setter;
-        /**
-         * @param relatedClass
-         * @param fieldName
-         * @param defaultId
-         * @param defaultObj
-         * @param setter
-         */
-        /**
-         * Name of the hibernate property of the foreign key
-         */
-        private String            propertyName;
-
-        RelatedClassEntry(final UploadTable uploadTbl, Class<?> relatedClass, String fieldName, Object defaultId,
-                Object defaultObj, Method setter)
-        {
-            this.uploadTbl = uploadTbl;
-            this.relatedClass = relatedClass;
-            this.fieldName = fieldName;
-            this.defaultId = defaultId;
-            this.defaultObj = defaultObj;
-            this.setter = setter;
-            if (this.setter.getName().startsWith("set"))
-            {
-                this.propertyName = UploadTable.deCapitalize(this.setter.getName().substring(3));
-            }
-            else
-            {
-                this.propertyName = UploadTable.deCapitalize(this.setter.getName());
-            }
-        }
-        /**
-         * @return the defaultValue
-         */
-        public final Object getDefaultId()
-        {
-            return defaultId;
-        }
-        /**
-         * @param defaultId the defaultId to set
-         */
-        public final void setDefaultId(Object defaultId)
-        {
-            this.defaultId = defaultId;
-            this.defaultObj = null;
-        }
-        /**
-         * @return the fieldName
-         */
-        public final String getFieldName()
-        {
-            return fieldName;
-        }
-        /**
-         * @return the relatedClass
-         */
-        public final Class<?> getRelatedClass()
-        {
-            return relatedClass;
-        }
-        /**
-         * @return the setter
-         */
-        public final Method getSetter()
-        {
-            return setter;
-        }
-        private Method getSessionGetMethod()
-        {
-            Method[] meths = DataProviderSessionIFace.class.getMethods();
-            for (Method result : meths)
-            {
-                if (result.getName().equals("get") && result.getParameterTypes().length == 2)
-                {
-                    return result;
-                }                    
-            }
-            return null;
-        }
-        /**
-         * @return the defaultObj
-         */
-        public final Object getDefaultObj() throws UploaderException
-        {
-            if (defaultObj == null && defaultId != null)
-            {
-                DataProviderSessionIFace objSession = DataProviderFactory.getInstance()
-                        .createSession();
-                Method getMethod = getSessionGetMethod();
-                if (getMethod != null)
-                {
-                    Class<?> keyClass = getMethod.getParameterTypes()[1];
-                    try
-                    {
-                        //defaultObj = objSession.get(relatedClass, keyClass.cast(defaultId));
-                        Object[] args = new Object[2];
-                        args[0] = relatedClass;
-                        args[1] = keyClass.cast(defaultId);
-                        defaultObj = getMethod.invoke(objSession, args);
-                        if (defaultObj == null) { throw new UploaderException("Object with id "
-                                + defaultId.toString() + " does not exist.",
-                                UploaderException.ABORT_IMPORT); }
-                    }
-                    catch (IllegalAccessException iaEx)
-                    {
-                        throw new UploaderException(iaEx, UploaderException.ABORT_IMPORT);
-                    }
-                    catch (InvocationTargetException itEx)
-                    {
-                        throw new UploaderException(itEx, UploaderException.ABORT_IMPORT);
-                    }
-                     finally
-                    {
-                        objSession.close();
-                    }
-                }
-                else
-                {
-                    throw new UploaderException(
-                            "Could not find DataProviderSessionIFace.get method.",
-                            UploaderException.ABORT_IMPORT);
-                }
-            }
-            return defaultObj;
-        }
-        /**
-         * @return the propertyName
-         */
-        public final String getPropertyName()
-        {
-            return propertyName;
-        }
-        
-        public boolean isDefined()
-        {
-            return defaultObj != null || defaultId != null;
-        }
-        /**
-         * @return the uploadTbl
-         */
-        public final UploadTable getUploadTbl()
-        {
-            return uploadTbl;
-        }
-    }
      
     /**
      * @return true if all required local (excluding foreign keys) fields for the table are 
@@ -743,7 +567,7 @@ public class UploadTable implements Comparable<UploadTable>
     }
     
     @SuppressWarnings("unused")
-    public Vector<InvalidStructure> validateStructure() throws UploaderException
+    public Vector<InvalidStructure> verifyUploadability() throws UploaderException, ClassNotFoundException
     {
         Vector<InvalidStructure> result = new Vector<InvalidStructure>();
         String tblTitle = getTable().getTableInfo().getTitle();
@@ -756,7 +580,7 @@ public class UploadTable implements Comparable<UploadTable>
                 result.add(new InvalidStructure(msg, this));
             }
         }
-        return result;
+       return result;
     }
     
     /**
@@ -1282,12 +1106,12 @@ public class UploadTable implements Comparable<UploadTable>
      * 
      * Sets values for classes with specified defaults.
      */
-    protected void setRelatedDefaults(DataModelObjBase rec) throws UploaderException, InvocationTargetException, IllegalAccessException
+    protected void setRelatedDefaults(DataModelObjBase rec, int recNum) throws UploaderException, InvocationTargetException, IllegalAccessException
     {
-        for (RelatedClassEntry rce : relatedClassDefaults)
+        for (RelatedClassSetter rce : relatedClassDefaults)
         {
             Object args[] = new Object[1];
-            args[0] = rce.getDefaultObj();
+            args[0] = rce.getDefaultObj(recNum);
             rce.getSetter().invoke(rec, args);
         }
     }
@@ -1564,9 +1388,9 @@ public class UploadTable implements Comparable<UploadTable>
                             addRestriction(critter, pte.getPropertyName(), pte.getImportTable().getCurrentRecord(recNum), false)));
                 }
             }
-            for (RelatedClassEntry rce : relatedClassDefaults)
+            for (RelatedClassSetter rce : relatedClassDefaults)
             {
-                critter.add(Restrictions.eq(rce.getPropertyName(), rce.getDefaultObj()));
+                critter.add(Restrictions.eq(rce.getPropertyName(), rce.getDefaultObj(recNum)));
             }
             for (DefaultFieldEntry dfe : missingRequiredFlds)
             {
@@ -1834,10 +1658,10 @@ public class UploadTable implements Comparable<UploadTable>
         {
             // check that isCurrent is ok. 1 and only one true.
             boolean isCurrentPresent = false;
-            int trueCount = 0;
             UploadField anIsCurrentFld = null;
             for (int row = 0; row < uploadData.getRows(); row++)
             {
+                int trueCount = 0;
                 for (Vector<UploadField> flds : uploadFields)
                 {
                     for (UploadField fld : flds)
@@ -1916,7 +1740,7 @@ public class UploadTable implements Comparable<UploadTable>
                         setFields(rec, seq);
                         setRequiredFldDefaults(rec);
                         setParents(rec, recNum);
-                        setRelatedDefaults(rec);
+                        setRelatedDefaults(rec, recNum);
                         finalizeWrite(rec, recNum);
                         if (!doNotWrite)
                         {

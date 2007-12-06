@@ -74,7 +74,10 @@ import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.SoftBevelBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
@@ -3002,12 +3005,19 @@ public class WorkbenchPaneSS extends BaseSubPane
             DB db = new DB();
             dataSetUploader = new Uploader(db, new UploadData(maps, workbench.getWorkbenchRowsAsList()), this);
             dataSetUploader.prepareToUpload();
-            Vector<UploadMessage> structureErrors = dataSetUploader.validateStructure();
+            Vector<UploadMessage> structureErrors = dataSetUploader.verifyUploadability();
             if (structureErrors.size() > 0) 
             { 
                 JPanel pane = new JPanel(new BorderLayout());
-                pane.add(new JLabel(getResourceString("WB_UPLOAD_BAD_STRUCTURE_MSG") + ":"), BorderLayout.NORTH);
-                pane.add(new JList(structureErrors), BorderLayout.CENTER);
+                JLabel lbl = new JLabel(getResourceString("WB_UPLOAD_BAD_STRUCTURE_MSG") + ":");
+                lbl.setBorder(new EmptyBorder(3, 1, 2, 0));
+                pane.add(lbl, BorderLayout.NORTH);
+                JPanel lstPane = new JPanel(new BorderLayout());
+                JList lst = new JList(structureErrors);
+                lst.setBorder(new SoftBevelBorder(BevelBorder.LOWERED));
+                lstPane.setBorder(new EmptyBorder(1, 1, 10, 1));
+                lstPane.add(lst, BorderLayout.CENTER);
+                pane.add(lstPane, BorderLayout.CENTER);
                 CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(),
                         getResourceString("WB_UPLOAD_BAD_STRUCTURE_DLG"),
                         true,
@@ -3018,7 +3028,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
             else
             {
-                dataSetUploader.getDefaultsForMissingRequirements();
+                dataSetUploader.validateData();
             }
         }
         catch (Exception ex)

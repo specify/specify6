@@ -529,9 +529,9 @@ public class UploadTableTree extends UploadTable
     }
 
     @Override
-    public Vector<InvalidStructure> validateStructure() throws UploaderException
+    public Vector<InvalidStructure> verifyUploadability() throws UploaderException, ClassNotFoundException
     {
-        Vector<InvalidStructure> result = super.validateStructure();
+        Vector<InvalidStructure> result = super.verifyUploadability();
         if (getTreeDefItem() == null)
         {
             String msg = getResourceString("WB_UPLOAD_NO_DEFITEM") + " (" + wbLevelName + ")";

@@ -17,7 +17,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Vector;
 
 import javax.swing.ComboBoxModel;
@@ -47,7 +46,6 @@ import edu.ku.brc.specify.datamodel.CollectionMember;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable.DefaultFieldEntry;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable.RelatedClassEntry;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.util.Pair;
@@ -66,7 +64,7 @@ public class MissingDataResolver implements ActionListener
     /**
      * Foreign keys not provided by the upload dataset.
      */
-    protected Vector<UploadTable.RelatedClassEntry> missingClasses;
+    protected Vector<RelatedClassSetter> missingClasses;
 
     /**
      * Local fields not provided by the upload dataset.
@@ -141,9 +139,9 @@ public class MissingDataResolver implements ActionListener
         {
             ((DefaultFieldEntry)obj).setDefaultValue(valToSet.getSecond());
         }
-        else if (obj.getClass().equals(RelatedClassEntry.class))
+        else if (obj.getClass().equals(RelatedClassSetter.class))
         {
-            ((RelatedClassEntry)obj).setDefaultId(valToSet.getSecond());
+            ((RelatedClassSetter)obj).setDefaultId(valToSet.getSecond());
         }
     }
     
@@ -172,37 +170,10 @@ public class MissingDataResolver implements ActionListener
      */
     protected void setDefaultClasses()
     {
-        for (RelatedClassEntry rce : missingClasses)
+        for (RelatedClassSetter rce : missingClasses)
         {
-            meetRelClassRequirement(rce);
+            rce.defaultSetting();
         }
-    }
-
-    /**
-     * @param rce
-     * @return true if default value can be set for foreign key represented by rce.
-     */
-    protected boolean meetRelClassRequirement(UploadTable.RelatedClassEntry rce) 
-    {
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        try
-        {
-            List<?> data = session.getDataList(rce.getRelatedClass());
-            if (data.size() > 0)
-            {
-                Object id = ((DataModelObjBase) data.get(0)).getId();
-                log.debug("setting " + rce.getRelatedClass().getSimpleName() + " to " + id);
-                rce.setDefaultId(id);
-                return true;
-            }
-        }
-        finally
-        {
-            session.close();
-        }
-        log.debug("unable to meet requirement: " + rce.getUploadTbl().getTblClass().getSimpleName() + "<->"
-                + rce.getRelatedClass().getSimpleName());
-        return false;
     }
 
     
@@ -210,7 +181,7 @@ public class MissingDataResolver implements ActionListener
      * @param missingClasses
      * @param missingFlds
      */
-    public MissingDataResolver(Vector<UploadTable.RelatedClassEntry> missingClasses, Vector<UploadTable.DefaultFieldEntry> missingFlds)
+    public MissingDataResolver(Vector<RelatedClassSetter> missingClasses, Vector<UploadTable.DefaultFieldEntry> missingFlds)
     {
         super();
         this.missingClasses = missingClasses;
@@ -240,7 +211,7 @@ public class MissingDataResolver implements ActionListener
      * @param rce
      * @return values available for foreign key represented by rce.
      */
-    protected Vector<Pair<String, Object>> getReqClassChcs(final RelatedClassEntry rce)
+    protected Vector<Pair<String, Object>> getReqClassChcs(final RelatedClassSetter rce)
     {
         Vector<Pair<String, Object>> result = new Vector<Pair<String, Object>>();
         StringBuilder hql = new StringBuilder("from ");
@@ -482,7 +453,7 @@ public class MissingDataResolver implements ActionListener
         lists = new Vector<ComboBoxModel>();
         
         Vector<Vector<String>> rows = new Vector<Vector<String>>();
-        for (RelatedClassEntry rce : missingClasses)
+        for (RelatedClassSetter rce : missingClasses)
         {
             Vector<String> row = new Vector<String>(4);
             row.add(commaList(rce.getUploadTbl().getWbFldNames()));
@@ -679,7 +650,7 @@ public class MissingDataResolver implements ActionListener
      */
     protected boolean missingClassesResolved()
     {
-        for (RelatedClassEntry rce : missingClasses)
+        for (RelatedClassSetter rce : missingClasses)
         {
             if (!rce.isDefined())
             {

@@ -30,8 +30,10 @@ import javax.swing.JViewport;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.UIManager;
+import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.SoftBevelBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.TableCellRenderer;
@@ -197,6 +199,7 @@ public class MatchHandler
 
         matchVec.addAll(matches);
         matchesList = new JList(matchVec);
+        matchesList.setBorder(new SoftBevelBorder(BevelBorder.LOWERED));
         matchesList.addListSelectionListener(new ListSelectionListener()
         {
             public void valueChanged(ListSelectionEvent e)
