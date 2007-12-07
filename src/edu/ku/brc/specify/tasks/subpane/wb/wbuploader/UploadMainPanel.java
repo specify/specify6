@@ -19,7 +19,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
@@ -30,15 +29,11 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
-import javax.swing.WindowConstants;
 
 import org.apache.log4j.Logger;
 
-import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-
-import edu.ku.brc.ui.CustomFrame;
 
 /**
  * @author timbo
@@ -46,11 +41,12 @@ import edu.ku.brc.ui.CustomFrame;
  * @code_status Alpha
  *
  */
-public class UploadMainForm extends CustomFrame
+public class UploadMainPanel extends JPanel
 {
-    private static final Logger log = Logger.getLogger(UploadMainForm.class);
+    private static final Logger log = Logger.getLogger(UploadMainPanel.class);
 
     //action commands for user actions
+    public static String VALIDATE_CONTENT = "VALIDATE_CONTENT";
     public static String DO_UPLOAD = "DO_UPLOAD";
     public static String VIEW_UPLOAD = "VIEW_UPLOAD";
     public static String VIEW_SETTINGS = "VIEW_SETTINGS";
@@ -66,6 +62,7 @@ public class UploadMainForm extends CustomFrame
     protected JList uploadTbls;
     protected JLabel currOpLbl;
     protected JProgressBar currOpProgress;
+    protected JButton validateContentBtn;
     protected JButton doUploadBtn;
     protected JButton viewSettingsBtn;
     protected JButton viewUploadBtn;
@@ -75,8 +72,8 @@ public class UploadMainForm extends CustomFrame
     protected JButton printBtn;
     protected JPanel msgPane;
     protected JLabel msgLbl;
-    //protected DefaultListModel msgModel;
     protected JList msgList;
+    
     
     /**
      * The object listening to this form. Currently an Uploader object.
@@ -84,9 +81,9 @@ public class UploadMainForm extends CustomFrame
     protected ActionListener listener = null;
     
     
-    public UploadMainForm()
+    public UploadMainPanel()
     {
-        super(getResourceString("WB_UPLOAD_MAINFORM_TITLE"), 0, null);
+        //super(getResourceString("WB_UPLOAD_MAINFORM_TITLE"), 0, null);
         buildUI();
      }
     /**
@@ -213,42 +210,45 @@ public class UploadMainForm extends CustomFrame
         mainPane.add(btnPane);
         
         add(mainPane);
-        pack();
     }
     
     public void buildUI()
     {
         CellConstraints cc = new CellConstraints();
-        PanelBuilder pb = new PanelBuilder(new FormLayout("p:g", "p,2px,p, 10px, p, 2px,p, 4px,p"));
-        pb.getPanel().setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-        
+        setLayout(new FormLayout("3dlu:none, fill:50dlu:grow(0.30), 20dlu:none, fill:50dlu:grow(0.70), 5dlu:none, r:max(50dlu;pref), 3dlu:none", 
+                "t:m:none, 2dlu:none, fill:75dlu:grow, 5dlu:none, b:m:none"));
+        //pb.getPanel().setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        //pb.getLayout().setRowGroups(new int[][]{{1,3}});
         uploadTblLbl = new JLabel(getResourceString("WB_UPLOAD_AFFECTED_TBLS_LIST"));
         //uploadTblLbl.setFont(uploadTblLbl.getFont().deriveFont(Font.BOLD));
-        pb.add(uploadTblLbl, cc.xy(1, 1));
+        add(uploadTblLbl, cc.xy(2, 1));
         
         uploadTbls = new JList();
         JScrollPane sp = new JScrollPane(uploadTbls, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        pb.add(sp, cc.xy(1, 3));
+        //pb.add(sp, cc.xy(1, 3, "r,t"));
+        add(sp, cc.xy(2, 3));
         
         // Invalid Pane
-        
         msgPane = new JPanel(new BorderLayout());
-        PanelBuilder invalidValPanePB = new PanelBuilder(new FormLayout("p:g", "p,2px,p,4px,p"), msgPane);
+        //PanelBuilder invalidValPanePB = new PanelBuilder(new FormLayout("p:g", "p,2px,p,4px,p"), msgPane);
         
         msgLbl  = new JLabel(getResourceString("WB_UPLOAD_MSG_LIST"));
-        invalidValPanePB.add(msgLbl, cc.xy(1, 1));
+        //invalidValPanePB.add(msgLbl, cc.xy(1, 1));
+        add(msgLbl, cc.xy(4, 1));
         
         msgList = new JList(new DefaultListModel());
-        sp = new JScrollPane(msgList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        invalidValPanePB.add(sp, cc.xy(1, 3));
-
-        PanelBuilder rppb = new PanelBuilder(new FormLayout("f:p:g, p", "p"));
+        JScrollPane sp2 = new JScrollPane(msgList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        //invalidValPanePB.add(sp2, cc.xy(1, 3));
+        msgPane.add(sp2, BorderLayout.CENTER);
+        
+        //PanelBuilder rppb = new PanelBuilder(new FormLayout("f:p:g, p", "p"));
         printBtn = new JButton(getResourceString("WB_UPLOAD_PRINT_MESSAGES_BTN")); 
         printBtn.setActionCommand(PRINT_INVALID);
-        rppb.add(printBtn, cc.xy(2, 1));
-        invalidValPanePB.add(rppb.getPanel(), cc.xy(1, 5));
+        //rppb.add(printBtn, cc.xy(2, 1));
+        //invalidValPanePB.add(rppb.getPanel(), cc.xy(1, 5));
+        msgPane.add(printBtn, BorderLayout.SOUTH);
         
-        pb.add(msgPane, cc.xy(1, 5));
+        add(msgPane, cc.xy(4, 3));
         
         // Progress Pane
         
@@ -265,10 +265,13 @@ public class UploadMainForm extends CustomFrame
         currOpProgress = new JProgressBar();
         progPane.add(currOpProgress);
         
-        pb.add(progPane, cc.xy(1, 7));
+        add(progPane, cc.xywh(2, 5, 4, 1));
         
-        FlowLayout btnPaneLayout = new FlowLayout(FlowLayout.RIGHT);
-        JPanel btnPane  = new JPanel(btnPaneLayout);
+        //FlowLayout btnPaneLayout = new FlowLayout(FlowLayout.RIGHT);
+        //JPanel btnPane  = new JPanel(btnPaneLayout);
+        JPanel btnPane = new JPanel(new FormLayout("f:max(50dlu;pref)", "c:m, c:m, c:m, c:m, c:m, c:m"));
+        validateContentBtn = new JButton(getResourceString("WB_UPLOAD_VALIDATE_CONTENT_BTN"));
+        validateContentBtn.setActionCommand(VALIDATE_CONTENT);
         viewSettingsBtn = new JButton(getResourceString("WB_UPLOAD_SETTINGS_BTN")); 
         viewSettingsBtn.setActionCommand(VIEW_SETTINGS);
         doUploadBtn     = new JButton(getResourceString("WB_UPLOAD_BTN"));
@@ -279,12 +282,13 @@ public class UploadMainForm extends CustomFrame
         closeBtn.setActionCommand(CLOSE_UI);
         undoBtn         = new JButton(getResourceString("WB_UPLOAD_UNDO_BTN")); 
         undoBtn.setActionCommand(UNDO_UPLOAD);
-        btnPane.add(doUploadBtn);
-        btnPane.add(viewUploadBtn);
-        btnPane.add(viewSettingsBtn);
-        btnPane.add(undoBtn);
-        btnPane.add(closeBtn);
-        pb.add(btnPane, cc.xy(1, 9));
+        btnPane.add(validateContentBtn, cc.xy(1, 1));
+        btnPane.add(doUploadBtn, cc.xy(1,2));
+        btnPane.add(viewUploadBtn, cc.xy(1, 3));
+        btnPane.add(viewSettingsBtn, cc.xy(1, 4));
+        btnPane.add(undoBtn, cc.xy(1, 5));
+        btnPane.add(closeBtn, cc.xy(1, 6));
+        add(btnPane, cc.xy(6, 3));
         
         uploadTbls.addMouseListener(new MouseListener()
         {
@@ -347,14 +351,12 @@ public class UploadMainForm extends CustomFrame
         });
         
 
-        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        //setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         
         //setContentPane(pb.getPanel());
-        contentPanel = pb.getPanel();
-        createUI();
-        pack();
+        //add(pb.getPanel());
         
-        setSize(600,550);
+        //setSize(600,550);
         //setTitle("WorkBench Upload Validation"); // I18N
     }
 
@@ -394,7 +396,6 @@ public class UploadMainForm extends CustomFrame
     /**
      * @return the cancelBtn
      */
-    @Override
     public JButton getCancelBtn()
     {
         return cancelBtn;
@@ -473,6 +474,13 @@ public class UploadMainForm extends CustomFrame
     }
 
     /**
+     * @return the validateContentBtn
+     */
+    public JButton getValidateContentBtn()
+    {
+        return validateContentBtn;
+    }
+    /**
      * @return the msgLbl
      */
     public JLabel getMsgLbl()
@@ -514,6 +522,7 @@ public class UploadMainForm extends CustomFrame
     public void setActionListener(ActionListener listener)
     {
         this.listener = listener;
+        setBtnListener(validateContentBtn, listener);
         setBtnListener(doUploadBtn, listener);
         setBtnListener(viewSettingsBtn, listener);
         setBtnListener(viewUploadBtn, listener);
@@ -529,7 +538,6 @@ public class UploadMainForm extends CustomFrame
         if (!msgPane.isVisible())
         {
             msgPane.setVisible(true);
-            pack();
         }
         msgList.ensureIndexIsVisible(msgList.getModel().getSize()-1);
     }
@@ -572,40 +580,40 @@ public class UploadMainForm extends CustomFrame
     {
         public void actionPerformed(ActionEvent e)
         {
-            if (e.getActionCommand().equals(UploadMainForm.DO_UPLOAD))
+            if (e.getActionCommand().equals(UploadMainPanel.DO_UPLOAD))
             {
-                System.out.println(UploadMainForm.DO_UPLOAD);
+                System.out.println(UploadMainPanel.DO_UPLOAD);
             }
-            else if (e.getActionCommand().equals(UploadMainForm.VIEW_UPLOAD))
+            else if (e.getActionCommand().equals(UploadMainPanel.VIEW_UPLOAD))
             {
-                System.out.println(UploadMainForm.VIEW_UPLOAD);
+                System.out.println(UploadMainPanel.VIEW_UPLOAD);
             }
-            else if (e.getActionCommand().equals(UploadMainForm.VIEW_SETTINGS))
+            else if (e.getActionCommand().equals(UploadMainPanel.VIEW_SETTINGS))
             {
-                System.out.println(UploadMainForm.VIEW_SETTINGS);
+                System.out.println(UploadMainPanel.VIEW_SETTINGS);
             }
-            else if (e.getActionCommand().equals(UploadMainForm.CLOSE_UI))
+            else if (e.getActionCommand().equals(UploadMainPanel.CLOSE_UI))
             {
-                System.out.println(UploadMainForm.CLOSE_UI);
+                System.out.println(UploadMainPanel.CLOSE_UI);
             }
-            else if (e.getActionCommand().equals(UploadMainForm.CANCEL_OPERATION))
+            else if (e.getActionCommand().equals(UploadMainPanel.CANCEL_OPERATION))
             {
-                System.out.println(UploadMainForm.CANCEL_OPERATION);
+                System.out.println(UploadMainPanel.CANCEL_OPERATION);
             }
-            else if (e.getActionCommand().equals(UploadMainForm.TBL_DBL_CLICK))
+            else if (e.getActionCommand().equals(UploadMainPanel.TBL_DBL_CLICK))
             {
-                System.out.println(UploadMainForm.TBL_DBL_CLICK);
+                System.out.println(UploadMainPanel.TBL_DBL_CLICK);
             }
-            else if (e.getActionCommand().equals(UploadMainForm.MSG_CLICK))
+            else if (e.getActionCommand().equals(UploadMainPanel.MSG_CLICK))
             {
-                System.out.println(UploadMainForm.MSG_CLICK);
+                System.out.println(UploadMainPanel.MSG_CLICK);
             }
        }
     }
     
     public static void main(final String[] args)
     {
-        UploadMainForm tf = new UploadMainForm();
+        UploadMainPanel tf = new UploadMainPanel();
         tf.buildUI();
         DefaultListModel tbls = new DefaultListModel();
         tbls.addElement("CollectingEvent");

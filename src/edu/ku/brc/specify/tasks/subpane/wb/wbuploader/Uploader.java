@@ -5,6 +5,7 @@ package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.Frame;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -49,7 +50,6 @@ import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.tasks.ReportsBaseTask;
-import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
 import edu.ku.brc.specify.tasks.subpane.wb.graph.DirectedGraph;
 import edu.ku.brc.specify.tasks.subpane.wb.graph.DirectedGraphException;
@@ -78,6 +78,7 @@ import edu.ku.brc.util.Pair;
 public class Uploader implements ActionListener, WindowStateListener
 {
     //Phases in the upload process...
+    protected static String INITIAL_STATE = "WB_UPLOAD_INITIAL_STATE";
     protected static String CHECKING_REQS = "WB_UPLOAD_CHECKING_REQS";
     protected static String VALIDATING_DATA = "WB_UPLOAD_VALIDATING_DATA";
     protected static String READY_TO_UPLOAD = "WB_UPLOAD_READY_TO_UPLOAD";
@@ -122,7 +123,7 @@ public class Uploader implements ActionListener, WindowStateListener
     
     boolean dataValidated = false;
     
-    protected UploadMainForm mainForm;
+    protected UploadMainPanel mainPanel;
     
     /**
      * Problems with contents of cells in dataset.
@@ -546,6 +547,7 @@ public class Uploader implements ActionListener, WindowStateListener
 		orderUploadTables();
         buildUploadTableParents();
         reOrderUploadTables();
+        currentUpload = this;
  	}
 
     /**
@@ -1076,10 +1078,10 @@ public class Uploader implements ActionListener, WindowStateListener
 
         };
         validateTask.start();
-        if (mainForm == null)
+        if (mainPanel == null)
         {
             initUI(Uploader.VALIDATING_DATA);
-            UIHelper.centerAndShow(mainForm);
+            //UIHelper.centerAndShow(mainPanel);
         }
         else
         {
@@ -1359,7 +1361,10 @@ public class Uploader implements ActionListener, WindowStateListener
                 }
             }
         }
-        
+        if (result.size() > 0)
+        {
+            currentUpload = null;
+        }
         return result;
     }
     /**
@@ -1396,10 +1401,10 @@ public class Uploader implements ActionListener, WindowStateListener
      * 
      * Puts UI into correct state for current upload phase.
      */
-    protected synchronized void setCurrentOp(final String opName)
+    public synchronized void setCurrentOp(final String opName)
     {
         currentOp = opName;
-        if (mainForm == null)
+        if (mainPanel == null)
         {
             log.error("UI does not exist.");
             return;
@@ -1417,12 +1422,12 @@ public class Uploader implements ActionListener, WindowStateListener
      */
     protected synchronized void initProgressBar(int min, int max)
     {
-        if (mainForm == null)
+        if (mainPanel == null)
         {
             log.error("UI does not exist.");
             return;
         }
-        JProgressBar pb = mainForm.getCurrOpProgress();
+        JProgressBar pb = mainPanel.getCurrOpProgress();
         pb.setVisible(true);
         if (min == 0 && max == 0)
         {
@@ -1449,20 +1454,20 @@ public class Uploader implements ActionListener, WindowStateListener
      */
     protected synchronized void setCurrentOpProgress(int val)
     {
-        if (mainForm == null)
+        if (mainPanel == null)
         {
             log.error("UI does not exist.");
             return;
         }
-        if (!mainForm.getCurrOpProgress().isIndeterminate())
+        if (!mainPanel.getCurrOpProgress().isIndeterminate())
         {
-            mainForm.getCurrOpProgress().setValue(val);
+            mainPanel.getCurrOpProgress().setValue(val);
         }
     }
     
     protected synchronized void showUploadProgress(int val)
     {
-        if (mainForm == null)
+        if (mainPanel == null)
         {
             log.error("UI does not exist.");
             return;
@@ -1470,16 +1475,16 @@ public class Uploader implements ActionListener, WindowStateListener
         setCurrentOpProgress(val);
         for (UploadMessage newMsg : newMessages)
         {
-            mainForm.addMsg(newMsg);
+            mainPanel.addMsg(newMsg);
             messages.add(newMsg);
         }
         newMessages.clear();
-        //mainForm.updateObjectsCreated();
+        //mainPanel.updateObjectsCreated();
     }
     
     protected synchronized void updateObjectsCreated()
     {
-        mainForm.updateObjectsCreated();
+        mainPanel.updateObjectsCreated();
     }
     /**
      * @param initOp
@@ -1490,10 +1495,13 @@ public class Uploader implements ActionListener, WindowStateListener
     {
         buildMainUI();
         setCurrentOp(initOp);
-        //mainForm.pack();
+        //mainPanel.pack();
     }
     
-    
+    public void initUI()
+    {
+        setCurrentOp(Uploader.INITIAL_STATE);
+    }
     
     /**
      * Gets default values for all missing required classes (foreign keys) and local fields. 
@@ -1508,8 +1516,8 @@ public class Uploader implements ActionListener, WindowStateListener
             @Override
             public Object construct()
             {
-                UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_UPLOAD_VALIDATING_DATASET"),
-                        new Object[] { "" }), WorkbenchTask.GLASSPANE_FONT_SIZE);
+                //UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_UPLOAD_VALIDATING_DATASET"),
+                //        new Object[] { "" }), WorkbenchTask.GLASSPANE_FONT_SIZE);
                 missingRequiredClasses.clear();
                 missingRequiredFields.clear();
                 Iterator<RelatedClassSetter> rces;
@@ -1552,7 +1560,7 @@ public class Uploader implements ActionListener, WindowStateListener
             @Override
             public void finished()
             {
-                UIRegistry.clearGlassPaneMsg();
+                //UIRegistry.clearGlassPaneMsg();
                 if (success)
                 {
                     statusBar.setText(getResourceString("WB_REQUIRED_RETRIEVED")); 
@@ -1568,8 +1576,8 @@ public class Uploader implements ActionListener, WindowStateListener
 
         uploadTask.start();
         initUI(Uploader.CHECKING_REQS);
-        mainForm.setAlwaysOnTop(true);
-        UIHelper.centerAndShow(mainForm);
+        //mainPanel.setAlwaysOnTop(true);
+        //UIHelper.centerAndShow(mainPanel);
     }
     
       
@@ -1588,7 +1596,7 @@ public class Uploader implements ActionListener, WindowStateListener
      */
     public void closing()
     {
-        if (mainForm != null)
+        if (mainPanel != null)
         {
             closeMainForm();
         }
@@ -1612,12 +1620,21 @@ public class Uploader implements ActionListener, WindowStateListener
      */
     protected void closeMainForm()
     {
-        mainForm.setVisible(false);
-        mainForm.dispose();
-        mainForm = null;
+        mainPanel.setVisible(false);
+        mainPanel = null;
         closeUploadedDataViewers();
+        currentUpload = null;
+        wbSS.uploadDone();
     }
     
+    public UploadMainPanel getMainPanel()
+    {
+        if (mainPanel == null)
+        {
+            initUI(VALIDATING_DATA);
+        }
+        return mainPanel;
+    }
     
     /**
      * Closes views of uploaded data.
@@ -1639,11 +1656,15 @@ public class Uploader implements ActionListener, WindowStateListener
      */
     public void actionPerformed(ActionEvent e)
     {
-        if (e.getActionCommand().equals(UploadMainForm.DO_UPLOAD))
+        if (e.getActionCommand().equals(UploadMainPanel.VALIDATE_CONTENT))
+        {
+            validateData();
+        }
+        else if (e.getActionCommand().equals(UploadMainPanel.DO_UPLOAD))
         {
             uploadIt();
         }
-        else if (e.getActionCommand().equals(UploadMainForm.VIEW_UPLOAD))
+        else if (e.getActionCommand().equals(UploadMainPanel.VIEW_UPLOAD))
         {
             if (currentOp.equals(Uploader.SUCCESS))
             {
@@ -1657,7 +1678,7 @@ public class Uploader implements ActionListener, WindowStateListener
                 }
             }
         }
-        else if (e.getActionCommand().equals(UploadMainForm.VIEW_SETTINGS))
+        else if (e.getActionCommand().equals(UploadMainPanel.VIEW_SETTINGS))
         {
             showSettings();
             if (currentOp.equals(Uploader.READY_TO_UPLOAD) && !resolver.isResolved())
@@ -1669,7 +1690,7 @@ public class Uploader implements ActionListener, WindowStateListener
                 setCurrentOp(Uploader.READY_TO_UPLOAD);
             }
         }
-        else if (e.getActionCommand().equals(UploadMainForm.CLOSE_UI))
+        else if (e.getActionCommand().equals(UploadMainPanel.CLOSE_UI))
         {
             if (currentUpload != null)
             {
@@ -1678,18 +1699,18 @@ public class Uploader implements ActionListener, WindowStateListener
             closeMainForm();
             wbSS.uploadDone();
         }
-        else if (e.getActionCommand().equals(UploadMainForm.UNDO_UPLOAD))
+        else if (e.getActionCommand().equals(UploadMainPanel.UNDO_UPLOAD))
         {
             undoUpload();
             wbSS.uploadDone();
         }
-        else if (e.getActionCommand().equals(UploadMainForm.CANCEL_OPERATION))
+        else if (e.getActionCommand().equals(UploadMainPanel.CANCEL_OPERATION))
         {
-            //System.out.println(UploadMainForm.CANCEL_OPERATION);
+            //System.out.println(UploadMainPanel.CANCEL_OPERATION);
         }
-        else if (e.getActionCommand().equals(UploadMainForm.TBL_DBL_CLICK))
+        else if (e.getActionCommand().equals(UploadMainPanel.TBL_DBL_CLICK))
         {
-            mainForm.getViewUploadBtn().setEnabled(canViewUpload(currentOp));
+            mainPanel.getViewUploadBtn().setEnabled(canViewUpload(currentOp));
             if (currentOp.equals(Uploader.SUCCESS))
             {
                 if (bogusStorages == null)
@@ -1702,15 +1723,15 @@ public class Uploader implements ActionListener, WindowStateListener
                 }
             }
         }
-        else if (e.getActionCommand().equals(UploadMainForm.TBL_CLICK))
+        else if (e.getActionCommand().equals(UploadMainPanel.TBL_CLICK))
         {
-            mainForm.getViewUploadBtn().setEnabled(canViewUpload(currentOp));
+            mainPanel.getViewUploadBtn().setEnabled(canViewUpload(currentOp));
         }
-        else if (e.getActionCommand().equals(UploadMainForm.MSG_CLICK))
+        else if (e.getActionCommand().equals(UploadMainPanel.MSG_CLICK))
         {
              goToMsgWBCell();
         }
-        else if (e.getActionCommand().equals(UploadMainForm.PRINT_INVALID))
+        else if (e.getActionCommand().equals(UploadMainPanel.PRINT_INVALID))
         {
              printInvalidValReport();
         }
@@ -1725,11 +1746,11 @@ public class Uploader implements ActionListener, WindowStateListener
         CustomDialog cwin;
         if (!readOnly)
         {
-            cwin = new CustomDialog(mainForm, getResourceString("WB_UPLOAD_SETTINGS"), true, usp); 
+            cwin = new CustomDialog((Frame)UIRegistry.getTopWindow(), getResourceString("WB_UPLOAD_SETTINGS"), true, usp); 
         }
         else
         {
-            cwin = new CustomDialog(mainForm, getResourceString("WB_UPLOAD_SETTINGS"), true, CustomDialog.OK_BTN, usp, CustomDialog.OK_BTN); 
+            cwin = new CustomDialog((Frame)UIRegistry.getTopWindow(), getResourceString("WB_UPLOAD_SETTINGS"), true, CustomDialog.OK_BTN, usp, CustomDialog.OK_BTN); 
         }
             
         cwin.setModal(true);
@@ -1837,13 +1858,13 @@ public class Uploader implements ActionListener, WindowStateListener
      */
     protected void goToMsgWBCell()
     {
-        if (mainForm == null)
+        if (mainPanel == null)
         {
             throw new RuntimeException("Upload form does not exist.");
         }
         if (wbSS != null)
         {
-            UploadMessage msg = (UploadMessage)mainForm.getMsgList().getSelectedValue();
+            UploadMessage msg = (UploadMessage)mainPanel.getMsgList().getSelectedValue();
             if (msg.getRow() != -1)
             {
                 if (msg.getCol() == -1)
@@ -1885,7 +1906,7 @@ public class Uploader implements ActionListener, WindowStateListener
      */
     protected void buildMainUI()
     {
-        mainForm = new UploadMainForm();
+        mainPanel = new UploadMainPanel();
          
         SortedSet<UploadInfoRenderable> uts = new TreeSet<UploadInfoRenderable>();
         for (UploadTable ut : uploadTables)
@@ -1909,7 +1930,7 @@ public class Uploader implements ActionListener, WindowStateListener
         }
         
         DefaultListModel tbls = new DefaultListModel();
-        JList tableList = mainForm.getUploadTbls();
+        JList tableList = mainPanel.getUploadTbls();
         TableNameRenderer nameRender = new TableNameRenderer(IconManager.IconSize.Std24);
         nameRender.setUseIcon("PlaceHolder");
         tableList.setCellRenderer(nameRender);
@@ -1918,18 +1939,18 @@ public class Uploader implements ActionListener, WindowStateListener
             tbls.addElement(ut);
         }
         tableList.setModel(tbls);
-        mainForm.setActionListener(this);
-        mainForm.addWindowStateListener(this);
+        mainPanel.setActionListener(this);
+        //mainPanel.addWindowStateListener(this);
     }
     
     /**
      * @param op
      * 
-     * Sets up mainForm for upload phase for op.
+     * Sets up mainPanel for upload phase for op.
      */
     protected synchronized void setupUI(final String op)
     {
-        if (mainForm == null)
+        if (mainPanel == null)
         {
             log.error("UI does not exist.");
             return;
@@ -1937,41 +1958,43 @@ public class Uploader implements ActionListener, WindowStateListener
 
         if (op.equals(Uploader.SUCCESS))
         {
-            if (mainForm.getUploadTbls().getSelectedIndex() == -1)
+            if (mainPanel.getUploadTbls().getSelectedIndex() == -1)
             {
                 //assuming list is not empty
-                mainForm.getUploadTbls().setSelectedIndex(0);
+                mainPanel.getUploadTbls().setSelectedIndex(0);
             }
         }
 
-        mainForm.getCancelBtn().setEnabled(canCancel(op));
-        mainForm.getCancelBtn().setVisible(mainForm.getCancelBtn().isEnabled());
+        mainPanel.getValidateContentBtn().setEnabled(canValidateContent(op));
         
-        mainForm.getDoUploadBtn().setEnabled(canUpload(op));
-        //mainForm.getDoUploadBtn().setVisible(mainForm.getDoUploadBtn().isEnabled());
+        mainPanel.getCancelBtn().setEnabled(canCancel(op));
+        mainPanel.getCancelBtn().setVisible(mainPanel.getCancelBtn().isEnabled());
         
-        mainForm.getViewSettingsBtn().setEnabled(canViewSettings(op));
-        //mainForm.getViewSettingsBtn().setVisible(mainForm.getViewSettingsBtn().isEnabled());
+        mainPanel.getDoUploadBtn().setEnabled(canUpload(op));
+        //mainPanel.getDoUploadBtn().setVisible(mainPanel.getDoUploadBtn().isEnabled());
         
-        mainForm.getViewUploadBtn().setEnabled(canViewUpload(op));
-        mainForm.getViewUploadBtn().setVisible(mainForm.getViewUploadBtn().isEnabled());
+        mainPanel.getViewSettingsBtn().setEnabled(canViewSettings(op));
+        //mainPanel.getViewSettingsBtn().setVisible(mainPanel.getViewSettingsBtn().isEnabled());
         
-        mainForm.getUndoBtn().setEnabled(canUndo(op));
-        mainForm.getUndoBtn().setVisible(mainForm.getUndoBtn().isEnabled());
+        mainPanel.getViewUploadBtn().setEnabled(canViewUpload(op));
+        mainPanel.getViewUploadBtn().setVisible(mainPanel.getViewUploadBtn().isEnabled());
         
-        mainForm.getCloseBtn().setEnabled(canClose(op));
+        mainPanel.getUndoBtn().setEnabled(canUndo(op));
+        mainPanel.getUndoBtn().setVisible(mainPanel.getUndoBtn().isEnabled());
         
-        mainForm.clearMsgs(UploadTableInvalidValue.class);
+        mainPanel.getCloseBtn().setEnabled(canClose(op));
+        
+        mainPanel.clearMsgs(UploadTableInvalidValue.class);
         if (validationIssues != null)
         {
             for (UploadTableInvalidValue invalid : validationIssues)
             {
-                mainForm.addMsg(invalid);
+                mainPanel.addMsg(invalid);
             }
         }
-        mainForm.getPrintBtn().setEnabled(validationIssues != null && validationIssues.size() > 0);
+        mainPanel.getPrintBtn().setEnabled(validationIssues != null && validationIssues.size() > 0);
         
-        mainForm.getCurrOpProgress().setVisible(mainForm.getCancelBtn().isVisible());
+        mainPanel.getCurrOpProgress().setVisible(mainPanel.getCancelBtn().isVisible());
         
         
         String statText = getResourceString(op);
@@ -1979,7 +2002,7 @@ public class Uploader implements ActionListener, WindowStateListener
         {
             statText += ". " + getUploadedObjects().toString() + " " + getResourceString("WB_UPLOAD_OBJECT_COUNT") + ".";
         }
-        mainForm.getCurrOpLbl().setText(statText);
+        mainPanel.getCurrOpLbl().setText(statText);
     }
     
     
@@ -1991,7 +2014,7 @@ public class Uploader implements ActionListener, WindowStateListener
     {
         if (currentOp.equals(Uploader.SUCCESS))
         {
-            if (mainForm.getUploadTbls().getSelectedValue() != null)
+            if (mainPanel.getUploadTbls().getSelectedValue() != null)
             {
                 if (bogusStorages != null)
                 {
@@ -2001,7 +2024,7 @@ public class Uploader implements ActionListener, WindowStateListener
                     }
                     if (bogusViewer != null)
                     {
-                        bogusViewer.viewBogusTbl(((UploadInfoRenderable)mainForm.getUploadTbls().getSelectedValue()).getTableName(), true);
+                        bogusViewer.viewBogusTbl(((UploadInfoRenderable)mainPanel.getUploadTbls().getSelectedValue()).getTableName(), true);
                     }
                 }
             }
@@ -2042,11 +2065,23 @@ public class Uploader implements ActionListener, WindowStateListener
      * @param op
      * @return true if canClose in phase op.
      */
+    protected boolean canValidateContent(final String op)
+    {
+        return op.equals(Uploader.USER_INPUT)
+         || op.equals(Uploader.INITIAL_STATE)
+         || op.equals(Uploader.FAILURE);
+    }
+
+    /**
+     * @param op
+     * @return true if canClose in phase op.
+     */
     protected boolean canClose(final String op)
     {
         return op.equals(Uploader.READY_TO_UPLOAD)
          || op.equals(Uploader.USER_INPUT)
          || op.equals(Uploader.SUCCESS)
+         || op.equals(Uploader.INITIAL_STATE)
          || op.equals(Uploader.FAILURE);
     }
 
@@ -2059,6 +2094,7 @@ public class Uploader implements ActionListener, WindowStateListener
         return op.equals(Uploader.READY_TO_UPLOAD)
         || op.equals(Uploader.USER_INPUT)
         || op.equals(Uploader.SUCCESS)
+        || op.equals(Uploader.INITIAL_STATE)
         || op.equals(Uploader.FAILURE);
     }
 
@@ -2068,7 +2104,7 @@ public class Uploader implements ActionListener, WindowStateListener
      */
     protected boolean canViewUpload(final String op)
     {
-        return op.equals(Uploader.SUCCESS) && mainForm.getUploadTbls().getSelectedIndex() != -1;
+        return op.equals(Uploader.SUCCESS) && mainPanel.getUploadTbls().getSelectedIndex() != -1;
     }
     
     
@@ -2078,7 +2114,7 @@ public class Uploader implements ActionListener, WindowStateListener
     public void uploadIt() 
     {
         buildIdentifier();
-        currentUpload = this;
+        //currentUpload = this;
         
         final SwingWorker uploadTask = new SwingWorker()
         {
@@ -2108,8 +2144,8 @@ public class Uploader implements ActionListener, WindowStateListener
             @Override
             public Object construct()
             {
-                UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_UPLOADING_DATASET"),
-                        new Object[] { "" }), WorkbenchTask.GLASSPANE_FONT_SIZE);
+                //UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_UPLOADING_DATASET"),
+                //       new Object[] { "" }), WorkbenchTask.GLASSPANE_FONT_SIZE);
                 initProgressBar(0, uploadData.getRows());
                 try
                 {
@@ -2164,7 +2200,7 @@ public class Uploader implements ActionListener, WindowStateListener
                 }
                 else 
                 {
-                    mainForm.clearObjectsCreated();
+                    mainPanel.clearObjectsCreated();
                     for (int ut = uploadTables.size()-1; ut >= 0; ut--)
                     {
                         uploadTables.get(ut).undoUpload();
@@ -2180,12 +2216,12 @@ public class Uploader implements ActionListener, WindowStateListener
                         setCurrentOp(Uploader.FAILURE);
                     }
                 }
-                UIRegistry.clearGlassPaneMsg();
+                //UIRegistry.clearGlassPaneMsg();
             }
 
         };
 
-        JButton cancelBtn = mainForm.getCancelBtn();
+        JButton cancelBtn = mainPanel.getCancelBtn();
         cancelBtn.addActionListener(new ActionListener()
         {
             @SuppressWarnings("synthetic-access")
@@ -2197,10 +2233,10 @@ public class Uploader implements ActionListener, WindowStateListener
         });
 
         uploadTask.start();
-        if (mainForm == null)
+        if (mainPanel == null)
         {
             initUI(Uploader.UPLOADING);
-            UIHelper.centerAndShow(mainForm);
+            //UIHelper.centerAndShow(mainPanel);
         }
         else
         {
@@ -2237,8 +2273,8 @@ public class Uploader implements ActionListener, WindowStateListener
             @Override
             public Object construct()
             {
-                UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_UPLOAD_UNDO"),
-                        new Object[] { "" }), WorkbenchTask.GLASSPANE_FONT_SIZE);
+                //UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_UPLOAD_UNDO"),
+                //        new Object[] { "" }), WorkbenchTask.GLASSPANE_FONT_SIZE);
                 initProgressBar(0, 0);
                 for (int ut = uploadTables.size()-1; ut >= 0; ut--)
                 {
@@ -2251,7 +2287,7 @@ public class Uploader implements ActionListener, WindowStateListener
             @Override
             public void finished()
             {
-                UIRegistry.clearGlassPaneMsg();
+                //UIRegistry.clearGlassPaneMsg();
                 if (success)
                 {
                     statusBar.setText(getResourceString("WB_UPLOAD_ROLLEDBACK"));
@@ -2388,14 +2424,14 @@ public class Uploader implements ActionListener, WindowStateListener
                     statusBar.setText(getResourceString("RetrievalWB_UPLOAD_FETCH_CANCELLED cancelled"));
                     //undoUpload();
                 }
-                UIRegistry.clearGlassPaneMsg();
+                //UIRegistry.clearGlassPaneMsg();
             }
 
         };
-        if (mainForm == null)
+        if (mainPanel == null)
         {
             initUI(Uploader.RETRIEVING_UPLOADED_DATA);
-            UIHelper.centerAndShow(mainForm);
+            //UIHelper.centerAndShow(mainPanel);
         }
         else
         {

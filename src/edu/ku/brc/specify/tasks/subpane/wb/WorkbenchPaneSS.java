@@ -68,6 +68,7 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSplitPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
@@ -103,6 +104,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.UsageTracker;
@@ -212,8 +214,8 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected JButton               biogeomancerBtn        = null;
     protected JButton               convertGeoRefFormatBtn = null;
     protected JButton               exportExcelCsvBtn      = null;
-    protected JButton               uploadDatasetBtn     = null;
-    
+    protected JButton               uploadDatasetBtn       = null;
+    protected DropDownButtonStateful ssFormSwitcher        = null;  
     protected List<JButton>         selectionSensativeButtons  = new Vector<JButton>();
     
     protected int                   currentRow                 = 0;
@@ -223,6 +225,8 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected CardLayout            cardLayout                 = null;
     protected JPanel                mainPanel;
     protected PanelType             currentPanelType           = PanelType.Spreadsheet;
+    
+    protected JSplitPane            uploadPane                 = null; 
     
     protected JPanel                controllerPane;
     protected CardLayout            cpCardLayout               = null;
@@ -236,7 +240,11 @@ public class WorkbenchPaneSS extends BaseSubPane
     
     protected WindowListener        minMaxWindowListener       = null; 
     
-    protected Uploader              dataSetUploader            = null; 
+    /**
+     * The currently active Uploader. 
+     * static to help prevent multiple simultaneous uploads.
+     */
+    protected static Uploader       datasetUploader            = null; 
     
     // XXX PREF
     protected int                   mapSize                    = 500;
@@ -541,7 +549,11 @@ public class WorkbenchPaneSS extends BaseSubPane
                 doDatasetUpload();
             }
         });
-        uploadDatasetBtn.setEnabled(true);
+        uploadDatasetBtn.setEnabled(datasetUploader == null);
+        if (!uploadDatasetBtn.isEnabled())
+        {
+            uploadDatasetBtn.setToolTipText(getResourceString("WB_UPLOAD_IN_PROGRESS"));
+        }
         
         // listen to selection changes to enable/disable certain buttons
         spreadSheet.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -656,7 +668,8 @@ public class WorkbenchPaneSS extends BaseSubPane
         ctrlBtns.add(sep1,                cc.xy(5,1));
         ctrlBtns.add(saveBtn,             cc.xy(7,1));
         ctrlBtns.add(sep2,                cc.xy(9,1));
-        ctrlBtns.add(createSwitcher(),    cc.xy(10,1));
+        ssFormSwitcher = createSwitcher();
+        ctrlBtns.add(ssFormSwitcher,    cc.xy(10,1));
         
         add(mainPanel, BorderLayout.CENTER);
         
@@ -2462,6 +2475,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             hasChanged = changed;
             saveBtn.setEnabled(hasChanged);
+            updateUploadBtnState();
         }
     }
     
@@ -2692,10 +2706,6 @@ public class WorkbenchPaneSS extends BaseSubPane
             log.info("Session Saved[ and Flushed "+session.hashCode()+"]");
            
             hasChanged = false;
-            if (dataSetUploader != null)
-            {
-                dataSetUploader.refresh();
-            }
             String msg = String.format(getResourceString("WB_SAVED"), new Object[] { workbench.getName()} );
             UIRegistry.getStatusBar().setText(msg);
         }
@@ -2728,6 +2738,11 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             saveBtn.setEnabled(false);
         }
+        if (datasetUploader != null)
+        {
+            datasetUploader.refresh();
+        }
+        updateUploadBtnState();
 
         session.close();
         session = null;
@@ -2798,10 +2813,10 @@ public class WorkbenchPaneSS extends BaseSubPane
         if (retStatus)
         {
             ((WorkbenchTask)task).closing(this);
-            if (dataSetUploader != null)
+            if (datasetUploader != null)
             {
-                dataSetUploader.closing();
-                dataSetUploader = null;
+                datasetUploader.closing();
+                datasetUploader = null;
             }
             if (spreadSheet != null)
             {
@@ -2997,15 +3012,23 @@ public class WorkbenchPaneSS extends BaseSubPane
     
     protected void doDatasetUpload()
     {        
+        if (datasetUploader != null)
+        {
+            //the button shouldn't be enabled in this case, but just to be sure:
+            return;
+        }
+        
+        
         WorkbenchUploadMapper importMapper = new WorkbenchUploadMapper(workbench
                 .getWorkbenchTemplate());
         try
         {
             Vector<UploadMappingDef> maps = importMapper.getImporterMapping();
             DB db = new DB();
-            dataSetUploader = new Uploader(db, new UploadData(maps, workbench.getWorkbenchRowsAsList()), this);
-            dataSetUploader.prepareToUpload();
-            Vector<UploadMessage> structureErrors = dataSetUploader.verifyUploadability();
+            setAllUploadDatasetBtnEnabled(false);
+            datasetUploader = new Uploader(db, new UploadData(maps, workbench.getWorkbenchRowsAsList()), this);
+            datasetUploader.prepareToUpload();
+            Vector<UploadMessage> structureErrors = datasetUploader.verifyUploadability();
             if (structureErrors.size() > 0) 
             { 
                 JPanel pane = new JPanel(new BorderLayout());
@@ -3025,25 +3048,91 @@ public class WorkbenchPaneSS extends BaseSubPane
                         pane);
                 UIHelper.centerAndShow(dlg);
                 dlg.dispose();
+                uploadDone();
             }
             else
             {
-                dataSetUploader.validateData();
-            }
+                uploadPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, spreadSheet.getScrollPane(), datasetUploader.getMainPanel());
+                mainPanel.remove(spreadSheet.getScrollPane());
+                uploadPane.setOneTouchExpandable(true);
+                uploadPane.setDividerLocation(spreadSheet.getScrollPane().getHeight() * 2 / 3);
+                spreadSheet.getScrollPane().setVisible(true);
+
+                //Provide minimum sizes for the two components in the split pane
+                Dimension minimumSize = new Dimension(200, 200);
+                datasetUploader.getMainPanel().setMinimumSize(minimumSize);
+                spreadSheet.getScrollPane().setMinimumSize(minimumSize);
+                mainPanel.add(uploadPane, PanelType.Spreadsheet.toString());
+                showPanel(PanelType.Spreadsheet);
+                mainPanel.validate();
+                mainPanel.doLayout();
+                ssFormSwitcher.setEnabled(false);
+                //next line causes some weird behavior: when an entire row is selected (highlighted), cells in the row will go into edit mode - sort of ?????
+                spreadSheet.setEnabled(false);
+                datasetUploader.initUI();
+             }
         }
         catch (Exception ex)
         {
             UIRegistry.getStatusBar().setErrorMessage(ex.getMessage());
+            datasetUploader = null;
         }
         finally
         {
-            UIRegistry.clearGlassPaneMsg();
+            setAllUploadDatasetBtnEnabled(datasetUploader == null);
         }
     }
     
     public void uploadDone()
     {
-        dataSetUploader = null;
+        datasetUploader = null;
+        mainPanel.remove(uploadPane);
+        mainPanel.add(spreadSheet.getScrollPane(), PanelType.Spreadsheet.toString());
+        showPanel(PanelType.Spreadsheet);
+        mainPanel.validate();
+        mainPanel.doLayout();        
+        ssFormSwitcher.setEnabled(true);
+        spreadSheet.setEnabled(true);
+        setAllUploadDatasetBtnEnabled(true);
+    }
+    
+    protected void setAllUploadDatasetBtnEnabled(boolean enabled)
+    {
+        for (SubPaneIFace sp : SubPaneMgr.getInstance().getSubPanes())
+        {
+            if (sp.getClass().equals(WorkbenchPaneSS.class))
+            {
+                ((WorkbenchPaneSS)sp).uploadDatasetBtn.setEnabled(enabled);
+                if (enabled)
+                {
+                    ((WorkbenchPaneSS)sp).uploadDatasetBtn.setToolTipText(getResourceString("WB_UPLOAD_DATA"));
+                }
+                else
+                {
+                    ((WorkbenchPaneSS)sp).uploadDatasetBtn.setToolTipText(getResourceString("WB_UPLOAD_IN_PROGRESS"));
+                }
+            }
+        }
+        
+    }
+    
+    /**
+     * Updates uploadDatasetBtn wrt hasChanged
+     */
+    protected void updateUploadBtnState()
+    {
+        if (datasetUploader == null)
+        {
+           uploadDatasetBtn.setEnabled(!hasChanged);
+           if (uploadDatasetBtn.isEnabled())
+           {
+               uploadDatasetBtn.setToolTipText(getResourceString("WB_UPLOAD_DATA"));
+           }
+           else
+           {
+               uploadDatasetBtn.setToolTipText(getResourceString("WB_UPLOAD_UNSAVED_CHANGES_HINT"));
+           }
+        }
     }
 
     //------------------------------------------------------------
