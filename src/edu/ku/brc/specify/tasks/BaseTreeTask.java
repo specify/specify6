@@ -666,7 +666,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
             String defTableName = defTableInfo.getName();
             String defIdColName = defTableInfo.getIdColumnName();
             
-            String queryFormatStr = "SELECT n.FullName, n.%s from %s n INNER JOIN %s d ON n.%s=d.%s INNER JOIN collectiontype ct ON d.%s=ct.%s WHERE n.FullName LIKE \"%s\" AND ct.CollectionTypeID = %d";
+            String queryFormatStr = "SELECT n.FullName, n.%s from %s n INNER JOIN %s d ON n.%s = d.%s INNER JOIN collectiontype ct ON d.%s = ct.%s WHERE lower(n.FullName) LIKE \"%s\" AND ct.CollectionTypeID = %d";
             String queryStr = String.format(queryFormatStr, idColName, tableName, defTableName, defIdColName, defIdColName, defIdColName, defIdColName, searchText + "%", collTypeID);
             return queryStr;
         }
@@ -708,18 +708,18 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                 if (StringUtils.isNotEmpty(data))
                 {
                     if (criCnt > 0) criteria.append(" OR ");
-                    criteria.append("n.");
+                    criteria.append("lower(n.");
                     criteria.append(colName);
-                    criteria.append(" LIKE ");
+                    criteria.append(") LIKE ");
                     criteria.append("\'%");
-                    criteria.append(data);
+                    criteria.append(data.toLowerCase());
                     criteria.append("%\'");
                     
                     criCnt++;
                 }
             }
             
-            String queryFormatStr = "SELECT n.%s, %s from %s n INNER JOIN %s d ON n.%s=d.%s INNER JOIN collectiontype ct ON d.%s=ct.%s WHERE (%s) AND ct.CollectionTypeID = %d";
+            String queryFormatStr = "SELECT n.%s, %s from %s n INNER JOIN %s d ON n.%s = d.%s INNER JOIN collectiontype ct ON d.%s = ct.%s WHERE (%s) AND ct.CollectionTypeID = %d";
             String queryStr = String.format(queryFormatStr, idColName, colNames.toString(), tableName, defTableName, defIdColName, defIdColName, defIdColName, defIdColName, criteria.toString(), collTypeID);
             return queryStr;
         }
