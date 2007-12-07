@@ -44,6 +44,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -205,6 +207,21 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
 
         comboBox = new VCBComboBox(tableName, idColumn, keyColumn, displayColumn, format);
         comboBox.setAllowNewValues(true);
+        
+        comboBox.setPopupMenuListener(new PopupMenuListener() {
+            public void popupMenuCanceled(PopupMenuEvent e)
+            {
+                UIValidator.setIgnoreAllValidation(this, false); 
+            }
+            public void popupMenuWillBecomeInvisible(PopupMenuEvent e)
+            {
+                UIValidator.setIgnoreAllValidation(this, false); 
+            }
+            public void popupMenuWillBecomeVisible(PopupMenuEvent e)
+            {
+                UIValidator.setIgnoreAllValidation(this, true); 
+            } 
+        });
         
         init(objTitle, btns);
         
@@ -711,10 +728,10 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         repaint();
     }
 
-
     //--------------------------------------------------
     //-- UIValidatable Interface
     //--------------------------------------------------
+
 
     /* (non-Javadoc)
      * @see edu.kui.brc.ui.validation.UIValidatable#isInError()
@@ -924,15 +941,25 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         {
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
 
-            List<?> list = session.getDataList(classObj, idName, id, DataProviderSessionIFace.CompareType.Restriction);
-            if (list.size() != 0)
-            {
-                value = list.get(0);
-            } else
-            {
-                log.error("**** Can't find the Object "+classObj+" with ID: "+id);
-            }
-            session.close();
+            //try
+            //{
+                log.debug(classObj+" " +idName+" " +id);
+                List<?> list = session.getDataList(classObj, idName, id, DataProviderSessionIFace.CompareType.Restriction);
+                if (list.size() != 0)
+                {
+                    value = list.get(0);
+                } else
+                {
+                    log.error("**** Can't find the Object "+classObj+" with ID: "+id);
+                }
+                
+            //} catch (Exception ex)
+            //{
+                //ex.printStackTrace();
+            //} finally 
+            //{
+                session.close();    
+            //}
 
         } else
         {

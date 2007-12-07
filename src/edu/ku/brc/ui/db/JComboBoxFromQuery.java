@@ -31,7 +31,6 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
-import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.plaf.basic.BasicComboBoxEditor;
 import javax.swing.text.BadLocationException;
@@ -81,6 +80,7 @@ public class JComboBoxFromQuery extends JComboBox
     protected int                  prevCaretPos = -1;
     
     protected boolean              skipSearch = false;
+    protected PopupMenuListener    popupMenuListener = null;
 
 
 
@@ -122,7 +122,6 @@ public class JComboBoxFromQuery extends JComboBox
         this.displayColumns = displayColumns != null ? displayColumns : keyColumn;
         this.format         = format;
 
-        
         init();
         
         //System.out.println(getUI().getClass().getCanonicalName());
@@ -164,49 +163,34 @@ public class JComboBoxFromQuery extends JComboBox
         this.setEditor(new BasicComboBoxEditor());
         this.setEditable(true);
         setSelectedItem("");
-        
-        addPopupMenuListener(new PopupMenuListener() {
-            public void popupMenuCanceled(PopupMenuEvent e)
-            {
-                
-            }
-            public void popupMenuWillBecomeInvisible(PopupMenuEvent e)
-            {
-
-            }
-            public void popupMenuWillBecomeVisible(PopupMenuEvent e)
-            {
-                /*
-                log.error("skipSearch "+skipSearch);
-                if (!skipSearch)
-                {
-                    String str = tf.getText();
-                    fillBox(str);
-                    lookForMatch();
-                }
-                skipSearch = false;
-                */
-                /*cbx
-                final JPopupMenu pm = (JPopupMenu)e.getSource();
-                SwingUtilities.invokeLater(new Runnable() {
-                    //@Override
-                    public void run()
-                    {
-                        pm.setSize(pm.getPreferredSize());
-                    }
-                });*/
-            }
-            
-        });
     }
     
+    /**
+     * @param popupMenuListener the popupMenuListener to set
+     */
+    public void setPopupMenuListener(PopupMenuListener popupMenuListener)
+    {
+        if (popupMenuListener != null)
+        {
+            addPopupMenuListener(popupMenuListener);
+            
+        } else if (this.popupMenuListener != null)
+        {
+            removePopupMenuListener(this.popupMenuListener);
+        }
+        this.popupMenuListener = popupMenuListener;
+    }
+
+    /**
+     * 
+     */
     public void clearSearch()
     {
         entryStr = null;
     }
 
     /**
-     * Sets wehether the searches for the items are case insensitive or not
+     * Sets whether the searches for the items are case insensitive or not
      * @param caseInsensitve
      */
     public void setCaseInsensitive(final boolean caseInsensitve)
