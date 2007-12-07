@@ -44,6 +44,10 @@
 		<string>$APP_PACKAGE/Contents/Resources/Java</string>
 		<key>VMOptions</key>
 		<string>-Xms512m -Xmx764m</string>
+		<key>Arguments</key>
+		<string>-Xms512m -Xmx764m</string>
+		<key>Arguments</key>
+		<string>-Dappdatadir=../../../.. -Djavadbdir=../../../../DerbyDatabases</string>
 		<key>MainClass</key>
 		<string>edu.ku.brc.specify.Specify</string>
 		<key>JVMVersion</key>

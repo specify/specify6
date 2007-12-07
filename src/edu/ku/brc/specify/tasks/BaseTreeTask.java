@@ -666,8 +666,9 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
             String defTableName = defTableInfo.getName();
             String defIdColName = defTableInfo.getIdColumnName();
             
-            String queryFormatStr = "SELECT n.FullName, n.%s from %s n INNER JOIN %s d ON n.%s = d.%s INNER JOIN collectiontype ct ON d.%s = ct.%s WHERE lower(n.FullName) LIKE \"%s\" AND ct.CollectionTypeID = %d";
-            String queryStr = String.format(queryFormatStr, idColName, tableName, defTableName, defIdColName, defIdColName, defIdColName, defIdColName, searchText + "%", collTypeID);
+            String queryFormatStr = "SELECT n.FullName, n.%s from %s n INNER JOIN %s d ON n.%s = d.%s INNER JOIN collectiontype ct ON d.%s = ct.%s WHERE lower(n.FullName) LIKE \'%s\' AND ct.CollectionTypeID = %d ORDER BY n.FullName asc";
+            String queryStr = String.format(queryFormatStr, idColName, tableName, defTableName, defIdColName, defIdColName, defIdColName, defIdColName, searchText.toLowerCase() + "%", collTypeID);
+            log.debug(queryStr);
             return queryStr;
         }
 
@@ -700,6 +701,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                 dspCnt++;
             }
             
+            StringBuilder orderBy  = new StringBuilder();
             StringBuilder criteria = new StringBuilder();
             int criCnt = 0;
             for (String colName : dataMap.keySet())
@@ -715,12 +717,16 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                     criteria.append(data.toLowerCase());
                     criteria.append("%\'");
                     
+                    if (criCnt > 0) orderBy.append(',');
+                    orderBy.append("n."+colName);
+                    
                     criCnt++;
                 }
             }
             
-            String queryFormatStr = "SELECT n.%s, %s from %s n INNER JOIN %s d ON n.%s = d.%s INNER JOIN collectiontype ct ON d.%s = ct.%s WHERE (%s) AND ct.CollectionTypeID = %d";
-            String queryStr = String.format(queryFormatStr, idColName, colNames.toString(), tableName, defTableName, defIdColName, defIdColName, defIdColName, defIdColName, criteria.toString(), collTypeID);
+            String queryFormatStr = "SELECT n.%s, %s from %s n INNER JOIN %s d ON n.%s = d.%s INNER JOIN collectiontype ct ON d.%s = ct.%s WHERE (%s) AND ct.CollectionTypeID = %d ORDER BY %s";
+            String queryStr = String.format(queryFormatStr, idColName, colNames.toString(), tableName, defTableName, defIdColName, defIdColName, 
+                                            defIdColName, defIdColName, criteria.toString(), collTypeID, orderBy.toString());
             return queryStr;
         }
 

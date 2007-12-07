@@ -17,16 +17,10 @@
  */
 package edu.ku.brc.specify.ui;
 
-import java.io.File;
-
 import javax.swing.ImageIcon;
-
-import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.Agent;
-import edu.ku.brc.specify.datamodel.AgentAttachment;
-import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.BorrowAgent;
 import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.DeaccessionAgent;
@@ -34,7 +28,6 @@ import edu.ku.brc.specify.datamodel.LoanAgent;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
-import edu.ku.brc.util.AttachmentUtils;
 
 /**
  * @author rods
@@ -46,7 +39,7 @@ import edu.ku.brc.util.AttachmentUtils;
  */
 public class AgentIconTextMapper implements ObjectTextMapper, ObjectIconMapper
 {
-    private static final Logger log = Logger.getLogger(AgentIconTextMapper.class);
+    //private static final Logger log = Logger.getLogger(AgentIconTextMapper.class);
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.ObjectTextMapper#getMappedClasses()
@@ -123,7 +116,7 @@ public class AgentIconTextMapper implements ObjectTextMapper, ObjectIconMapper
         Agent agent = getAgent(o);
         if (agent != null)
         {
-            try
+            /*try
             {
                 for (AgentAttachment agentAttach: agent.getAgentAttachments())
                 {
@@ -146,8 +139,7 @@ public class AgentIconTextMapper implements ObjectTextMapper, ObjectIconMapper
             } catch (Exception ex)
             {
                 log.error(ex);
-                
-            }
+            }*/
             
             switch(agent.getAgentType())
             {

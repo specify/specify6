@@ -53,6 +53,8 @@ import edu.ku.brc.af.core.expresssearch.ERTICaptionInfo;
 import edu.ku.brc.af.core.expresssearch.ExpressResultsTableInfo;
 import edu.ku.brc.af.core.expresssearch.ExpressSearchConfigCache;
 import edu.ku.brc.af.core.expresssearch.QueryForIdResultsSQL;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanel;
 import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace;
@@ -194,6 +196,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
             add(pb.getPanel(), BorderLayout.NORTH);
             
             createUI();
+            
         } else
         {
             log.error("ViewSet ["+viewSetName + "] View["+viewName + "] could not be created.");
@@ -471,6 +474,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
         }
         
         panel.add(etrb.getUIComponent(), BorderLayout.CENTER);
+        panel.validate();
         
         /*
         if (etrb instanceof ESResultsTablePanel)
@@ -558,39 +562,30 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
         
         if (idList != null && idList.size() > 0)
         {
-            Session session = null;
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            
             Integer id = idList.get(0);
             try
             {
                 log.debug("getSelectedObject class["+className+"] idFieldName["+idFieldName+"] id["+id+"]");
-                
-                //Class<?> classObj = Class.forName(className);
-                
-                //DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(className);
-                //if (tableInfo != null)
-                //{
-                    session = HibernateUtil.getNewSession();
-                    Query   query   = session.createQuery("FROM "+className+" WHERE "+idFieldName+" = " + id.toString());
-                    List<?> list    = query.list();
+
+                Class<?> classObj = Class.forName(className);
+                List<?> list = session.getDataList(classObj, idFieldName, id, DataProviderSessionIFace.CompareType.Restriction);
+                if (list.size() == 1)
+                {
+                    return list.get(0);
                     
-                    if (list.size() == 1)
-                    {
-                        return list.get(0);
-                        
-                    } else if (list.size() == 0)
-                    {
-                        errMsg = "Why could we load the object with id["+id+"] for class["+className+"]in DBObjSearchDialog?";
-                    } else
-                    {
-                        errMsg = "Why would more than one object be found in DBObjSearchDialog? return size["+list.size()+"]";
-                    }
-                //} else
-                //{
-                //    errMsg = "Could find TableInfo for Class ["+className +"]";
-                //}
+                } else if (list.size() == 0)
+                {
+                    errMsg = "Why could we NOT load the object with id["+id+"] for class["+className+"]in DBObjSearchDialog?";
+                } else
+                {
+                    errMsg = "Why would more than one object be found in DBObjSearchDialog? return size["+list.size()+"]";
+                }
             } catch (Exception ex)
             {
                 errMsg = ex.toString();
+                ex.printStackTrace();
                 
             } finally
             {

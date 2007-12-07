@@ -33,7 +33,6 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -865,7 +864,7 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     }
 
     
-    @OneToMany(mappedBy = "agent", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "agent")
     @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK, CascadeType.DELETE} )
     @OrderBy("ordinal ASC")
     public Set<AgentAttachment> getAgentAttachments()
