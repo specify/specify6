@@ -236,25 +236,26 @@ public class JComboBoxFromQuery extends JComboBox
     @Override
     public void setSelectedIndex(final int index)
     {
+        log.debug(index);
         if (!doingSelection)
         {
-            doingSelection = true;
-            if (index > -1)
-            {
-                super.setSelectedIndex(index);
-    	        tf.setText((String)getItemAt(index));
-    	        tf.setSelectionEnd(caretPos + tf.getText().length());
-    	        tf.moveCaretPosition(Math.min(caretPos, 0));
-            } else
-            {
-                SwingUtilities.invokeLater(new Runnable(){
-                    public void run()
+            SwingUtilities.invokeLater(new Runnable(){
+                public void run()
+                {
+                    doingSelection = true;
+                    if (index > -1)
+                    {
+                        setSelectedIndexSuper(index);
+                        tf.setText((String)getItemAt(index));
+                        tf.setSelectionEnd(caretPos + tf.getText().length());
+                        tf.moveCaretPosition(Math.min(caretPos, 0));
+                    } else
                     {
                         setSelectedIndexSuper(-1);
                     }
-                });
-            }
-            doingSelection = false;
+                    doingSelection = false;
+                }
+            });
         }
     }
 
@@ -487,8 +488,7 @@ public class JComboBoxFromQuery extends JComboBox
     {
         if (true)
         {
-            if (ev.getKeyCode() == JAutoCompComboBox.SEARCH_KEY ||
-                ev.getKeyCode() == KeyEvent.VK_ENTER)
+            if (ev.getKeyCode() == JAutoCompComboBox.SEARCH_KEY)
             {
                 skipSearch = true;
                 String str = tf.getText();
