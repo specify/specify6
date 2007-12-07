@@ -803,6 +803,14 @@ public class IconViewObj implements Viewable
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#getFieldNames(java.util.List)
+     */
+    public void getFieldNames(List<String> fieldNames)
+    {
+        // do nothing
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#aboutToShow(boolean)
      */
     public void aboutToShow(boolean show)

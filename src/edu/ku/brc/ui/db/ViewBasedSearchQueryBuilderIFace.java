@@ -17,6 +17,7 @@
  */
 package edu.ku.brc.ui.db;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -41,11 +42,13 @@ public interface ViewBasedSearchQueryBuilderIFace
     
     /**
      * Builds and returns the query.
-     * @param dataMap the dataMap hdols Named/Value pairs where the name is the name of the control on the form
-     * and the value is the string they typed in for that value.
+     * @param dataMap the dataMap holds Named/Value pairs where the name is the name of the control on the form
+     * and the value is the string they typed in for that value. Note pairs are not added to the dataMap if
+     * the value was empty.
+     * @param fieldNames the list of names of the fields in the form.
      * @return the full SQL String
      */
-    public String buildSQL(Map<String, Object> dataMap);
+    public String buildSQL(Map<String, Object> dataMap, List<String> fieldNames);
     
     /**
      * @return the description of how the results are to be displayed

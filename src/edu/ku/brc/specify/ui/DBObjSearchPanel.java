@@ -49,7 +49,6 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.NavBoxLayoutManager;
 import edu.ku.brc.af.core.expresssearch.ERTICaptionInfo;
 import edu.ku.brc.af.core.expresssearch.ExpressResultsTableInfo;
 import edu.ku.brc.af.core.expresssearch.ExpressSearchConfigCache;
@@ -83,10 +82,11 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
     private static final Logger log  = Logger.getLogger(DBObjSearchDialog.class);
 
     // Form Stuff
-    protected ViewIFace      formView  = null;
-    protected Viewable       form      = null;
-    protected List<String>   fieldIds  = new ArrayList<String>();
-    protected ActionListener doQuery   = null;
+    protected ViewIFace      formView   = null;
+    protected Viewable       form       = null;
+    protected List<String>   fieldIds   = new ArrayList<String>();
+    protected List<String>   fieldNames = new ArrayList<String>();
+    protected ActionListener doQuery    = null;
     
     // Members needed for creating results
     protected String         className;
@@ -183,6 +183,8 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
                 }
             }
             
+            form.getFieldNames(fieldNames);
+            
             createSearchBtn();
     
             pb.add(form.getUIComponent(), cc.xy(1,1));
@@ -211,7 +213,6 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
                             final String className,
                             final String idFieldName) throws HeadlessException
     {
-        //this((Window)parent, viewSetName, viewName, searchName, className, idFieldName);
         super(new BorderLayout());
         
         this.className   = className;
@@ -308,7 +309,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
      */
     public void createUI()
     {
-        panel      = new JPanel(new NavBoxLayoutManager(0, 2));
+        panel      = new JPanel(new BorderLayout());
         scrollPane = new JScrollPane(panel);
         add(scrollPane, BorderLayout.CENTER);
         
@@ -379,8 +380,9 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
         QueryForIdResultsIFace resultsInfo = null;
         if (queryBuilder != null)
         {
-            sqlStr      = queryBuilder.buildSQL(dataMap);
+            sqlStr      = queryBuilder.buildSQL(dataMap, fieldNames);
             resultsInfo = queryBuilder.createQueryForIdResults();
+            resultsInfo.setSQL(sqlStr);
             
         } else
         {
@@ -468,7 +470,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
             etrb.setPropertyChangeListener(this);
         }
         
-        panel.add(etrb.getUIComponent());
+        panel.add(etrb.getUIComponent(), BorderLayout.CENTER);
         
         /*
         if (etrb instanceof ESResultsTablePanel)

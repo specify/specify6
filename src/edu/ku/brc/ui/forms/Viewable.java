@@ -155,10 +155,16 @@ public interface Viewable
     public MultiView getSubView(final String name);
 
     /**
-     * List the List with all the names of the cells of type "field".
+     * List the List with all the ids of the cells of type "field".
      * @param fieldIds the list to be filled
      */
     public void getFieldIds(final List<String> fieldIds);
+
+    /**
+     * List the List with all the names of the cells of type "field".
+     * @param fieldIds the list to be filled
+     */
+    public void getFieldNames(final List<String> fieldNames);
 
     /**
      * Tells the object it is abut to be shown.

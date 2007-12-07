@@ -126,7 +126,7 @@ import edu.ku.brc.ui.forms.validation.ValidationListener;
  * Implements ValidationListener so it can listen to any and all validations so it knows how to show and activate the icon button
  * that enables the user to see what the errors are in a form.<br>
  * <br>
- * Implements ResultSetControllerListener to react to the record control bar for moving forward or backward in a resulset.<br>
+ * Implements ResultSetControllerListener to react to the record control bar for moving forward or backward in a resultset.<br>
  * <br>
  * Implements AppPrefsChangeListener to be notified of changes to the BG Required Field color or the date formatting.
  * 
@@ -3780,7 +3780,29 @@ public class FormViewObj implements Viewable,
                 fieldIds.add(((FormCellField)fieldInfo.getFormCell()).getIdent());
             }
         }
-
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.Viewable#getFieldNames(java.util.List)
+     */
+    public void getFieldNames(final List<String> fieldNames)
+    {
+        ArrayList<FieldInfo> flds = new ArrayList<FieldInfo>();
+        
+        for (FieldInfo fieldInfo : controlsByName.values())
+        {
+            if (fieldInfo.isOfType(FormCellIFace.CellType.field))
+            {
+                flds.add(fieldInfo);
+            }
+        }
+        
+        Collections.sort(flds);
+        
+        for (FieldInfo fieldInfo : flds)
+        {
+            fieldNames.add(fieldInfo.getName());
+        }
     }
     
     //-------------------------------------------------
@@ -3810,13 +3832,13 @@ public class FormViewObj implements Viewable,
     //-------------------------------------------------
     // FieldInfo
     //-------------------------------------------------
-    class FieldInfo
+    class FieldInfo implements Comparable<FieldInfo>
     {
         protected FormCellIFace formCell;
         protected MultiView     subView;
         protected Component     comp;
         protected JScrollPane   fieldScrollPane;
-        protected int           insertPos;
+        protected Integer       insertPos;
 
         public FieldInfo(FormCellIFace formCell, Component comp, JScrollPane scrollPane, int insertPos)
         {
@@ -3893,6 +3915,15 @@ public class FormViewObj implements Viewable,
             comp       = null;
             fieldScrollPane = null;
         }
+
+        /* (non-Javadoc)
+         * @see java.lang.Comparable#compareTo(java.lang.Object)
+         */
+        public int compareTo(FieldInfo o)
+        {
+            return insertPos.compareTo(o.insertPos);
+        }
+        
     }
 
     /**

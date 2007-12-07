@@ -224,22 +224,35 @@ public class JComboBoxFromQuery extends JComboBox
     {
         this.allowNewValues = allowNewValues;
     }
+    
+    protected void setSelectedIndexSuper(final int index)
+    {
+        super.setSelectedIndex(index);
+    }
 
     /* (non-Javadoc)
      * @see javax.swing.JComboBox#setSelectedIndex(int)
      */
     @Override
-    public void setSelectedIndex(int index)
+    public void setSelectedIndex(final int index)
     {
         if (!doingSelection)
         {
             doingSelection = true;
-            super.setSelectedIndex(index);
             if (index > -1)
             {
+                super.setSelectedIndex(index);
     	        tf.setText((String)getItemAt(index));
     	        tf.setSelectionEnd(caretPos + tf.getText().length());
     	        tf.moveCaretPosition(Math.min(caretPos, 0));
+            } else
+            {
+                SwingUtilities.invokeLater(new Runnable(){
+                    public void run()
+                    {
+                        setSelectedIndexSuper(-1);
+                    }
+                });
             }
             doingSelection = false;
         }

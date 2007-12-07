@@ -8,6 +8,7 @@ package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,6 +24,7 @@ import javax.swing.JCheckBox;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.ContextMgr;
@@ -30,6 +32,7 @@ import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
+import edu.ku.brc.af.core.expresssearch.ERTICaptionInfo;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
@@ -445,54 +448,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         if (parentComboBox instanceof ValComboBoxFromQuery)
         {
             ValComboBoxFromQuery parentCBQ = (ValComboBoxFromQuery)parentComboBox;
-            ViewBasedSearchQueryBuilderIFace sqlBuilder = new ViewBasedSearchQueryBuilderIFace()
-            {
-                public String buildSQL(String searchText)
-                {
-                    int collTypeID = CollectionType.getCurrentCollectionType().getId();
-
-                    // get node table and primary key column names
-                    DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(nodeInForm.getClass().getName());
-                    String tableName = tableInfo.getName();
-                    String idColName = tableInfo.getIdColumnName();
-                    
-                    // get definition table and primary key column names
-                    DBTableInfo defTableInfo = DBTableIdMgr.getInstance().getByClassName(tableInfo.getRelationshipByName("definition").getClassName());
-                    String defTableName = defTableInfo.getName();
-                    String defIdColName = defTableInfo.getIdColumnName();
-                    
-                    String queryFormatStr = "SELECT n.FullName, n.%s from %s n INNER JOIN %s d ON n.%s=d.%s INNER JOIN collectiontype ct ON d.%s=ct.%s WHERE n.FullName LIKE \"%s\" AND ct.CollectionTypeID = %d";
-                    String queryStr = String.format(queryFormatStr, idColName, tableName, defTableName, defIdColName, defIdColName, defIdColName, defIdColName, searchText + "%", collTypeID);
-                    return queryStr;
-                }
-
-                public String buildSQL(Map<String, Object> dataMap)
-                {
-                    String searchText = (String)dataMap.get("fullName");
-                    
-                    int collTypeID = CollectionType.getCurrentCollectionType().getId();
-
-                    // get node table and primary key column names
-                    DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(nodeInForm.getClass().getName());
-                    String tableName = tableInfo.getName();
-                    String idColName = tableInfo.getIdColumnName();
-                    
-                    // get definition table and primary key column names
-                    DBTableInfo defTableInfo = DBTableIdMgr.getInstance().getByClassName(tableInfo.getRelationshipByName("definition").getClassName());
-                    String defTableName = defTableInfo.getName();
-                    String defIdColName = defTableInfo.getIdColumnName();
-                    
-                    String queryFormatStr = "SELECT n.FullName, n.%s from %s n INNER JOIN %s d ON n.%s=d.%s INNER JOIN collectiontype ct ON d.%s=ct.%s WHERE n.FullName LIKE \"%s\" AND ct.CollectionTypeID = %d";
-                    String queryStr = String.format(queryFormatStr, idColName, tableName, defTableName, defIdColName, defIdColName, defIdColName, defIdColName, searchText + "%", collTypeID);
-                    return queryStr;
-                }
-
-                public QueryForIdResultsIFace createQueryForIdResults()
-                {
-                    return null;
-                }
-            };
-            //parentCBQ.registerQueryBuilder(sqlBuilder);
+            parentCBQ.registerQueryBuilder(new SearchQueryBuilder(nodeInForm));
         }
         
 
@@ -679,6 +635,227 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
             Object defItem = model.getElementAt(0);
             log.debug("setting rank selected value to the only available option: " + defItem);
             model.setSelectedItem(defItem);
+        }
+    }
+    
+    
+    class SearchQueryBuilder implements ViewBasedSearchQueryBuilderIFace
+    {
+        protected T                     nodeInForm;
+        protected List<ERTICaptionInfo> cols        = new Vector<ERTICaptionInfo>();
+        
+        /**
+         * @param nodeInForm
+         */
+        public SearchQueryBuilder(T nodeInForm)
+        {
+            this.nodeInForm = nodeInForm;
+        }
+        
+        public String buildSQL(String searchText)
+        {
+            int collTypeID = CollectionType.getCurrentCollectionType().getId();
+
+            // get node table and primary key column names
+            DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(nodeInForm.getClass().getName());
+            String tableName = tableInfo.getName();
+            String idColName = tableInfo.getIdColumnName();
+            
+            // get definition table and primary key column names
+            DBTableInfo defTableInfo = DBTableIdMgr.getInstance().getByClassName(tableInfo.getRelationshipByName("definition").getClassName());
+            String defTableName = defTableInfo.getName();
+            String defIdColName = defTableInfo.getIdColumnName();
+            
+            String queryFormatStr = "SELECT n.FullName, n.%s from %s n INNER JOIN %s d ON n.%s=d.%s INNER JOIN collectiontype ct ON d.%s=ct.%s WHERE n.FullName LIKE \"%s\" AND ct.CollectionTypeID = %d";
+            String queryStr = String.format(queryFormatStr, idColName, tableName, defTableName, defIdColName, defIdColName, defIdColName, defIdColName, searchText + "%", collTypeID);
+            return queryStr;
+        }
+
+        public String buildSQL(Map<String, Object> dataMap, final List<String> fieldNames)
+        {
+            int collTypeID = CollectionType.getCurrentCollectionType().getId();
+
+            // get node table and primary key column names
+            DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(nodeInForm.getClass().getName());
+            String tableName = tableInfo.getName();
+            String idColName = tableInfo.getIdColumnName();
+            
+            // get definition table and primary key column names
+            DBTableInfo defTableInfo = DBTableIdMgr.getInstance().getByClassName(tableInfo.getRelationshipByName("definition").getClassName());
+            String defTableName = defTableInfo.getName();
+            String defIdColName = defTableInfo.getIdColumnName();
+            
+            cols.clear();
+            
+            StringBuilder colNames = new StringBuilder();
+            int dspCnt = 0;
+            for (String colName : fieldNames)
+            {
+                if (dspCnt > 0) colNames.append(',');
+                colNames.append("n.");
+                colNames.append(colName);
+
+                ERTICaptionInfo col = new ERTICaptionInfo("n."+colName, colName, true, null, dspCnt+1);
+                cols.add(col);
+                dspCnt++;
+            }
+            
+            StringBuilder criteria = new StringBuilder();
+            int criCnt = 0;
+            for (String colName : dataMap.keySet())
+            {
+                String data = (String)dataMap.get(colName);
+                if (StringUtils.isNotEmpty(data))
+                {
+                    if (criCnt > 0) criteria.append(" OR ");
+                    criteria.append("n.");
+                    criteria.append(colName);
+                    criteria.append(" LIKE ");
+                    criteria.append("\'%");
+                    criteria.append(data);
+                    criteria.append("%\'");
+                    
+                    criCnt++;
+                }
+            }
+            
+            String queryFormatStr = "SELECT n.%s, %s from %s n INNER JOIN %s d ON n.%s=d.%s INNER JOIN collectiontype ct ON d.%s=ct.%s WHERE (%s) AND ct.CollectionTypeID = %d";
+            String queryStr = String.format(queryFormatStr, idColName, colNames.toString(), tableName, defTableName, defIdColName, defIdColName, defIdColName, defIdColName, criteria.toString(), collTypeID);
+            return queryStr;
+        }
+
+        public QueryForIdResultsIFace createQueryForIdResults()
+        {
+            return new TableSearchResults(DBTableIdMgr.getInstance().getByClassName(nodeInForm.getClass().getName()), cols);
+        }
+    }
+    
+    class TableSearchResults implements QueryForIdResultsIFace
+    {
+        protected List<ERTICaptionInfo> cols;
+        protected String      sql;
+        protected DBTableInfo tableInfo;
+        
+        /**
+         * @param tableId
+         */
+        public TableSearchResults(final DBTableInfo tableInfo, 
+                                  final List<ERTICaptionInfo> cols)
+        {
+            this.tableInfo  = tableInfo;
+            this.cols     = cols;
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#cleanUp()
+         */
+        public void cleanUp()
+        {
+            cols = null;
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#getBannerColor()
+         */
+        public Color getBannerColor()
+        {
+            return new Color(30, 144, 255);
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#getDescription()
+         */
+        public String getDescription()
+        {
+            return tableInfo.getDescription();
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#getDisplayOrder()
+         */
+        public Integer getDisplayOrder()
+        {
+            return 0;
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#getIconName()
+         */
+        public String getIconName()
+        {
+            return tableInfo.getName();
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#getRecIds()
+         */
+        public Vector<Integer> getRecIds()
+        {
+            return null;
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#getSearchTerm()
+         */
+        public String getSearchTerm()
+        {
+            return null;
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#getSQL(java.lang.String, java.util.Vector)
+         */
+        public String getSQL(String searchTerm, Vector<Integer> ids)
+        {
+            return sql;
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#getTableId()
+         */
+        public int getTableId()
+        {
+            return tableInfo.getTableId();
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#getTitle()
+         */
+        public String getTitle()
+        {
+            return tableInfo.getTitle();
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#getVisibleCaptionInfo()
+         */
+        public List<ERTICaptionInfo> getVisibleCaptionInfo()
+        {
+            return cols;
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#isExpanded()
+         */
+        public boolean isExpanded()
+        {
+            return false;
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#isHQL()
+         */
+        public boolean isHQL()
+        {
+            return false;
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#setSQL(java.lang.String)
+         */
+        public void setSQL(String sql)
+        {
+            this.sql = sql;
         }
     }
 }
