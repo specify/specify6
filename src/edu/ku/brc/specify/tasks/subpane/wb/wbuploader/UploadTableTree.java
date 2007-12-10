@@ -25,10 +25,8 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
-import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeographyTreeDefItem;
-import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
@@ -40,6 +38,9 @@ import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
  * @author timbo
  *
  * @code_status Alpha
+ * 
+ * Extends UploadTable with functions necessary for Treeable data.
+ * Each rank in a tree is represented by an individual UploadTableTree.
  *
  */
 @SuppressWarnings("unchecked")
@@ -52,8 +53,7 @@ public class UploadTableTree extends UploadTable
     protected final String wbLevelName;
     protected Treeable treeRoot;    
     protected SortedSet<Treeable> defaultParents;
-    private static GeographyTreeDef geoTreeDef = null;
-    private static TaxonTreeDef taxTreeDef = null;
+    protected TreeDefIface<?, ?, ?> treeDef;
     
     
 
@@ -118,79 +118,24 @@ public class UploadTableTree extends UploadTable
      * @throws UploaderException
      */
     @SuppressWarnings("unchecked")
-    protected TreeDefIface getTreeDef() throws UploaderException
+    protected TreeDefIface getTreeDef() 
     {
-        if (tblClass == Taxon.class)
+        if (treeDef == null)
         {
-            return getTaxTreeDef();
+            treeDef = (TreeDefIface<?,?,?>)getTreeDef(tblClass.getSimpleName() + "TreeDef");
         }
-        if (tblClass == Geography.class)
-        {
-            return getGeoTreeDef();
-        }
-        throw new UploaderException("unable to find treedef for " + tblClass.getName(), UploaderException.ABORT_IMPORT);
-    }
+        return treeDef;
+    }    
     
     /**
-     * @return a TreeDef for class Taxon
-     */
-    protected TaxonTreeDef getTaxTreeDef()
-    {
-        if (taxTreeDef == null)
-        {
-            taxTreeDef = (TaxonTreeDef)getTreeDef("TaxonTreeDef");
-        }
-        return taxTreeDef;
-    }
- 
-    /**
-     * @return a TreeDef for class Geography
-     */
-    protected GeographyTreeDef getGeoTreeDef()
-    {
-        if (geoTreeDef == null)
-        {
-            geoTreeDef = (GeographyTreeDef)getTreeDef("GeographyTreeDef");
-        }
-        return geoTreeDef;
-    }
-
-    
-    /**
-     * @return TreeDefItem corresponding to tblClass
+     * @return TreeDefItem corresponding to tblClass and rank.
      * @throws UploaderException
      */
     @SuppressWarnings("unchecked")
-    protected TreeDefItemIface getTreeDefItem() throws UploaderException
+    protected TreeDefItemIface getTreeDefItem() 
     {
-        if (tblClass == Taxon.class)
-        {
-            return getTaxTreeDefItem();
-        }
-        if (tblClass == Geography.class)
-        {
-            return getGeoTreeDefItem();
-        }
-        throw new UploaderException("unable to find treedefitem for " + baseTable.getName(), UploaderException.ABORT_IMPORT);
+        return getTreeDef().getDefItemByRank(rank);
     }
-    
-
-    /**
-     * @return TreeDefItem for class Taxon
-     */
-    protected TaxonTreeDefItem getTaxTreeDefItem()
-    {
-        return getTaxTreeDef().getDefItemByRank(rank);
-    }
- 
-    /**
-     * @return TreeDefItem for class Geography
-     */
-    protected GeographyTreeDefItem getGeoTreeDefItem()
-    {
-        return getGeoTreeDef().getDefItemByRank(rank);
-    }
-
     
     /**
      * @param defName
@@ -225,6 +170,14 @@ public class UploadTableTree extends UploadTable
           && relatedClass != TaxonTreeDef.class && relatedClass != TaxonTreeDefItem.class;
     }
     
+    /**
+     * @param recNum
+     * 
+     * @return the nearest non-null parent, or null.
+     * 
+     * Example: if this object, represented Genus and the Family was not provided for the current row, the Order would be used
+     * as the parent. (Validation would have already detected if Family was required and missing).
+     */
     protected DataModelObjBase getParentRec(int recNum)
     {
         if (parent == null)
@@ -241,14 +194,8 @@ public class UploadTableTree extends UploadTable
         return result;
     }
     
-    /**
-     * @param rec
-     * @param recNum
-     * 
-     * Performs extra tasks to get rec ready to be saved to the database.
-     * The unchecked cast to Treeable is a little scary, but eliminates need to
-     * update this method whenever a new treeable class is implemented.
-     * (But case by case checking of tblClass is still performed in other methods of this class.)
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#finalizeWrite(edu.ku.brc.specify.datamodel.DataModelObjBase, int)
      */
     @SuppressWarnings("unchecked")
     @Override
@@ -270,7 +217,10 @@ public class UploadTableTree extends UploadTable
         }
     }
 
-    protected Treeable getTreeRoot() throws UploaderException
+    /**
+     * @return the root of the tree for this.tblClass.
+     */
+    protected Treeable getTreeRoot() 
     {
         if (treeRoot == null)
         {
@@ -279,6 +229,15 @@ public class UploadTableTree extends UploadTable
         return treeRoot;
     }
     
+    /**
+     * @param defItem
+     * 
+     * @return default, 'placeholder' parent for created objects at this.rank of this.tblClass.
+     * 
+     * See comments for createDefaultParent.
+     * 
+     * @throws UploaderException
+     */
     @SuppressWarnings("unchecked")
     protected Treeable getDefaultParent2(TreeDefItemIface defItem) throws UploaderException
     {
@@ -302,6 +261,16 @@ public class UploadTableTree extends UploadTable
         return getDefaultParent(parentDefItem);
      }
         
+    /**
+     * @param parentDefItem
+     * @return default, 'placeholder' parent for created objects at this.rank of this.tblClass.
+     *      Calls createDefaultParent if necessary.
+     *      
+     * See comments for createDefaultParent.
+     * 
+     *
+     * @throws UploaderException
+     */
     protected Treeable getDefaultParent(TreeDefItemIface parentDefItem) throws UploaderException
     {
         for (Treeable p : defaultParents)
@@ -335,6 +304,20 @@ public class UploadTableTree extends UploadTable
         return createDefaultParent(parentDefItem);
     }
     
+    /**
+     * @param defItem
+     * @return An object of this.tblClass for nearest enforced TreeDefItem to be used as a parent.
+     *   
+     * If this level is the highest present in the dataset. Then for each higher level that is enforced,
+     * a default, placeholder parent is created.
+     * 
+     * For example, if a dataset contained Genus and Species, and the TreeDef specified that Class and Family were required then
+     * all the genera created during an upload would be placed in 'Tree Root' -> 'Default Class' -> 'Default Parent'. (The names of the placeholders 
+     * are derived from the name of the dataset and the time of the upload). If no higher levels are enforced, then the new genera would be 
+     * simply be added as children of 'Tree Root'.
+     *   
+     * @throws UploaderException
+     */
     protected Treeable createDefaultParent(TreeDefItemIface defItem) throws UploaderException
     {
         try
@@ -369,7 +352,10 @@ public class UploadTableTree extends UploadTable
         }
     }
     
-    protected void loadTreeRoot() throws UploaderException
+    /**
+     * Loads the root of the tree for this.tblClass.
+     */
+    protected void loadTreeRoot() 
     {
         String hql = "from " + tblClass.getName() + " where " + getTreeDefFld() + "=" + getTreeDef().getTreeDefId() + " and " + getTreeDefItemFld() + "=" +
             getTreeDef().getDefItemByRank(0).getTreeDefItemId();
@@ -385,56 +371,32 @@ public class UploadTableTree extends UploadTable
         }
     }
     
-    protected String getTreeDefFld() throws UploaderException
+    /**
+     * @return the name of the id field for the TreeDef table for this.tblClass
+     */
+    protected String getTreeDefFld()
     {
-        if (tblClass == Taxon.class)
-        {
-            return "TaxonTreeDefId";
-        }
-        if (tblClass == Geography.class)
-        {
-            return "GeographyTreeDefId";
-        }
-        throw new UploaderException("unable to find TreeDef field for " + baseTable.getName(), UploaderException.ABORT_IMPORT);
-    }
-
-    protected String getTreeDefItemFld() throws UploaderException
-    {
-        if (tblClass == Taxon.class)
-        {
-            return "TaxonTreeDefItemId";
-        }
-        if (tblClass == Geography.class)
-        {
-            return "GeographyTreeDefItemId";
-        }
-        throw new UploaderException("unable to find TreeDefItem field for " + baseTable.getName(), UploaderException.ABORT_IMPORT);
-    }
-
-    protected String getTreeDefItemTbl() throws UploaderException
-    {
-        if (tblClass == Taxon.class)
-        {
-            return "TaxonTreeDefItem";
-        }
-        if (tblClass == Geography.class)
-        {
-            return "GeographyTreeDefItem";
-        }
-        throw new UploaderException("unable to find TreeDefItem table for " + baseTable.getName(), UploaderException.ABORT_IMPORT);
+        return tblClass.getSimpleName() + "TreeDefId";
     }
 
     /**
-     * @return a name for a parent added to hold taxa added during an upload
+     * @return the name of the id field for the TreeDefItem table for this.tblClass
+     */
+    protected String getTreeDefItemFld() 
+    {
+        return tblClass.getSimpleName() + "TreeDefItemId";
+    }
+
+    /**
+     * @return a name for a parent added to hold treeables added during an upload
      */
     protected String getDefaultParentName()
     {
         return Uploader.currentUpload.getIdentifier();
     }
     
-    /**
-     * undoes the most recent upload.
-     * 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#undoUpload()
      */
     @Override
     public void undoUpload()
@@ -484,9 +446,15 @@ public class UploadTableTree extends UploadTable
         defaultParents.clear();
     }
     
+    /**
+     * @author timbo
+     *
+     * @code_status Alpha
+     * 
+     *  sorts in reverse order by rankId
+     */
     protected class RankComparator implements Comparator<Treeable>
     {
-        //sorts in reverse order by rankId
         public int compare(Treeable t1, Treeable t2)
         {
             if (t1.getRankId() < t2.getRankId())
@@ -500,34 +468,28 @@ public class UploadTableTree extends UploadTable
             return -1;
         }
     }
-    /**
-     * @return a name for recordset of uploaded objects.
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#getRecordSetName()
      */
     @Override
     protected String getRecordSetName()
     {
-        try
-        {
-            return getTreeDefItem().getName() + "_" + Uploader.currentUpload.getIdentifier();
-        }
-        catch (UploaderException e)
-        {
-            throw new RuntimeException(e);
-        }
+        return getTreeDefItem().getName() + "_" + Uploader.currentUpload.getIdentifier();
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#toString()
+     */
     @Override
     public String toString()
     {
-        try
-        {
-            return getTreeDefItem().getName();
-        }
-        catch (UploaderException ex)
-        {
-            return super.toString();
-        }
+        return getTreeDefItem().getName();
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#verifyUploadability()
+     */
     @Override
     public Vector<InvalidStructure> verifyUploadability() throws UploaderException, ClassNotFoundException
     {
@@ -549,7 +511,15 @@ public class UploadTableTree extends UploadTable
         return result;
     }
     
-    protected Vector<TreeDefItemIface<?,?,?>> getMissingRequiredDefs() throws UploaderException
+    /**
+     * @return Vector of TreeDefItems that are required (enforced), but whose levels are not
+     * are not included in the dataset. 
+     * Only levels that are 'skipped' are included. 
+     * For example:
+     * If Family is required then for a dataset with mappings for Class Order Genus Species, the Family TreeDefItem would be
+     * considered missing. But for a dataset with mappings for Genus and Species, Family would not be considered missing.
+     */
+    protected Vector<TreeDefItemIface<?,?,?>> getMissingRequiredDefs() 
     {
         Vector<TreeDefItemIface<?,?,?>> result = new Vector<TreeDefItemIface<?,?,?>>();
         for (Object obj : getTreeDef().getTreeDefItems())
