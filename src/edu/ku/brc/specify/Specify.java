@@ -187,7 +187,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private String               appName             = "Specify";
     private String               appVersion          = "6.0";
 
-    private String               appBuildVersion     = "200712071430 (SVN: 3234)";
+    private String               appBuildVersion     = "200712101530 (SVN: 3241)";
     
     protected static CacheManager cacheManager        = new CacheManager();
 
@@ -756,11 +756,14 @@ public class Specify extends JPanel implements DatabaseLoginListener
                         @SuppressWarnings("synthetic-access")
                         public void actionPerformed(ActionEvent ae)
                         {
-                            final JDialog dialog = new JDialog(topFrame, "Local Prefs", true);
-                            dialog.setContentPane(new AppPrefsEditor(false));
-                            dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                            final CustomDialog dialog = new CustomDialog(topFrame, "Local Prefs", true, CustomDialog.OK_BTN, new AppPrefsEditor(false));
+                            dialog.setOkLabel(UIRegistry.getResourceString("Close"));
                             dialog.pack();
                             UIHelper.centerAndShow(dialog);
+                            if (!dialog.isCancelled())
+                            {
+                                CommandDispatcher.dispatch(new CommandAction("Preferences", "Changed", AppPreferences.getLocalPrefs()));
+                            }
                         }
                     });
     
@@ -770,11 +773,14 @@ public class Specify extends JPanel implements DatabaseLoginListener
                         @SuppressWarnings("synthetic-access")
                         public void actionPerformed(ActionEvent ae)
                         {
-                            final JDialog dialog = new JDialog(topFrame, "Remote Prefs", true);
-                            dialog.setContentPane(new AppPrefsEditor(true));
-                            dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+                            final CustomDialog dialog = new CustomDialog(topFrame, "Remote Prefs", true, CustomDialog.OK_BTN, new AppPrefsEditor(true));
+                            dialog.setOkLabel(UIRegistry.getResourceString("Close"));
                             dialog.pack();
                             UIHelper.centerAndShow(dialog);
+                            if (!dialog.isCancelled())
+                            {
+                                CommandDispatcher.dispatch(new CommandAction("Preferences", "Changed", AppPreferences.getRemote()));
+                            }
                         }
                     });
     

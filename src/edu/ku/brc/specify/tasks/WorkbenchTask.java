@@ -135,7 +135,8 @@ public class WorkbenchTask extends BaseTask
 {
 	private static final Logger log = Logger.getLogger(WorkbenchTask.class);
     
-    public static final int        MAX_ROWS              = 2000;
+    public static int              MAX_ROWS              = 2000;
+    
     public static final int        GLASSPANE_FONT_SIZE   = 20;
 
 	public static final DataFlavor DATASET_FLAVOR        = new DataFlavor(WorkbenchTask.class, "DataSet");
@@ -182,7 +183,7 @@ public class WorkbenchTask extends BaseTask
         
 		CommandDispatcher.register(WORKBENCH, this);        
         CommandDispatcher.register(APP_CMD_TYPE, this);
-
+        CommandDispatcher.register("Preferences", this);
 	}
 
     /* (non-Javadoc)
@@ -324,6 +325,16 @@ public class WorkbenchTask extends BaseTask
             
             updateNavBoxUI(dataSetCount);
         }
+        
+        MAX_ROWS = AppPreferences.getRemote().getInt("MAX_ROWS", 2000);
+    }
+    
+    /**
+     * @return the max rows that a WorkBench can have
+     */
+    public static int getMaxRows()
+    {
+        return MAX_ROWS;
     }
     
     
@@ -3132,6 +3143,13 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         {
             //viewsNavBox.clear();
             //initializeViewsNavBox();
+        } else if (cmdAction.isType("Preferences"))
+        {
+            AppPreferences appPrefs = (AppPreferences)cmdAction.getData();
+            if (appPrefs != null)
+            {
+                MAX_ROWS = appPrefs.getInt("MAX_ROWS", 2000);
+            }
         }
     }
 }

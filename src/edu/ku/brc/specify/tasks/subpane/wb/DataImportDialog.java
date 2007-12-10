@@ -960,7 +960,7 @@ public class DataImportDialog extends JDialog implements ActionListener
         
         //The Specify 6 Workbench can only import 2000 rows of data.  The file you tried to import had more than that.  Please reduce the record account and try again.
         builder.add(new JLabel("<html>"
-        		+"<p>The Specify 6 Workbench can only import 2000 rows of data."
+        		+"<p>The Specify 6 Workbench can only import "+WorkbenchTask.getMaxRows()+" rows of data."
         		//+"<br>"
         		+"<br>The file you tried to import had more than that."
         		//+"<br>"

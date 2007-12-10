@@ -29,7 +29,11 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
-import javax.swing.table.TableModel;
+import javax.swing.table.DefaultTableModel;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 /**
  * Allows user to edit a properties file
@@ -48,6 +52,7 @@ public class AppPrefsEditor extends JPanel implements TableModelListener, ListSe
     protected Vector<String>     items = new Vector<String>();
     protected AppPreferences     appPrefs;
     protected JButton            removeBtn;
+    protected JButton            addBtn;
     
     public AppPrefsEditor(final boolean isRemote)
     {
@@ -74,17 +79,31 @@ public class AppPrefsEditor extends JPanel implements TableModelListener, ListSe
         table.setRowSelectionAllowed(true);
         table.setColumnSelectionAllowed(false);
         
+        addBtn    = new JButton("Add Property");
         removeBtn = new JButton("Remove Property");
         removeBtn.setEnabled(false);
-        add(removeBtn, BorderLayout.SOUTH);
+        
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g,p,f:p:g", "p,10px"));
+        CellConstraints cc = new CellConstraints();
+        pb.add(addBtn, cc.xy(2, 1));
+        pb.add(removeBtn, cc.xy(4, 1));
+        
+        add(pb.getPanel(), BorderLayout.SOUTH);
         
         removeBtn.addActionListener(new ActionListener() {
-           public void actionPerformed(ActionEvent e)
-           {
-               removeItem();
-           }
-        });
-        
+            public void actionPerformed(ActionEvent e)
+            {
+                removeItem();
+            }
+         });
+         
+        addBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                addItem();
+            }
+         });
+         
     }
     
     public void removeItem()
@@ -97,6 +116,14 @@ public class AppPrefsEditor extends JPanel implements TableModelListener, ListSe
             removeBtn.setEnabled(false);
             table.repaint();
         }
+    }
+    
+    protected void addItem()
+    {
+        String newKey = "New Item" + items.size();
+        items.add(newKey);
+        model.fireChange();
+        table.repaint();
     }
     
     public void tableChanged(TableModelEvent e)
@@ -115,11 +142,11 @@ public class AppPrefsEditor extends JPanel implements TableModelListener, ListSe
         }
     }
     
-    public class PropertyTableModel implements TableModel
+    public class PropertyTableModel extends DefaultTableModel
     {
         protected Vector<TableModelListener> listeners = new Vector<TableModelListener>();
-        protected Vector<String> rowData;
-        protected String[]       header = {"Property", "Value"};
+        protected Vector<String> rowData = null;
+        protected String[]       header  = {"Property", "Value"};
 
         /**
          * @param rowData
@@ -141,7 +168,7 @@ public class AppPrefsEditor extends JPanel implements TableModelListener, ListSe
 
         public int getRowCount()
         {
-            return rowData.size();
+            return rowData == null ? 0 : rowData.size();
         }
 
         public Object getValueAt(int row, int column)
@@ -152,7 +179,11 @@ public class AppPrefsEditor extends JPanel implements TableModelListener, ListSe
 
         public boolean isCellEditable(int row, int column)
         {
-            return column == 1;
+            if (column == 0)
+            {
+                return rowData.get(row).startsWith("New Item");
+            }
+            return true;
         }
 
         public Class<?> getColumnClass(int columnIndex)
@@ -163,7 +194,14 @@ public class AppPrefsEditor extends JPanel implements TableModelListener, ListSe
         public void setValueAt(Object aValue, int rowIndex, int columnIndex)
         {
             String key = rowData.get(rowIndex);
-            appPrefs.put(key, aValue.toString());
+            if (columnIndex == 0)
+            {
+                rowData.remove(rowIndex);
+                rowData.insertElementAt((String)aValue, rowIndex);
+            } else
+            {
+                appPrefs.put(key, aValue.toString());
+            }
         }
 
         public void addTableModelListener(TableModelListener l)
@@ -176,6 +214,10 @@ public class AppPrefsEditor extends JPanel implements TableModelListener, ListSe
             listeners.remove(l);
         }
 
+        public void fireChange()
+        {
+            this.fireTableDataChanged();
+        }
     }
     
 }
