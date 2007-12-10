@@ -113,7 +113,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
     // relationships with other tables
 	protected Set<Determination>   determinations;
 	protected Set<TaxonCitation>   taxonCitations;
-    protected Set<CommonName>      commonNames;
+    protected Set<CommonNameTx>      commonNames;
 
     // non-user fields
     protected Integer              nodeNumber;
@@ -187,7 +187,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         determinations                = new HashSet<Determination>();
         acceptedTaxon                 = null;
         taxonCitations                = new HashSet<TaxonCitation>();
-        commonNames                   = new HashSet<CommonName>();
+        commonNames                   = new HashSet<CommonNameTx>();
         definition                    = null;
         definitionItem                = null;
         parent                        = null;
@@ -744,7 +744,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
      */
     @OneToMany(mappedBy = "taxon")
     @Cascade( {CascadeType.MERGE, CascadeType.LOCK} )
-    public Set<CommonName> getCommonNames()
+    public Set<CommonNameTx> getCommonNames()
     {
         return commonNames;
     }
@@ -752,7 +752,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
     /**
      * @param commonNames the commonNames to set
      */
-    public void setCommonNames(Set<CommonName> commonNames)
+    public void setCommonNames(Set<CommonNameTx> commonNames)
     {
         this.commonNames = commonNames;
     }

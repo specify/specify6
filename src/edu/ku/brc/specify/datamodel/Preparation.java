@@ -53,7 +53,6 @@ import org.hibernate.annotations.Index;
 
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.AttributeProviderIFace;
-import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 
 /**
 
@@ -558,25 +557,8 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
+     * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentReferences()
      */
-    @Override
-    @Transient
-    public String getIdentityTitle()
-    {
-        /*
-        PrepType pt = this.getPrepType();
-        if (pt != null && StringUtils.isNotEmpty(pt.getName()))
-        {
-          String prepTypeStr = pt.getName();
-          return prepTypeStr + (collectionObject != null ?  (": " + collectionObject.getIdentityTitle()) : "");
-        } 
-        // else
-        return "Prepration " + getPreparationId();
-        */
-        return DataObjFieldFormatMgr.format(this, getClass());
-    }
-    
     @Transient
     public Set<PreparationAttachment> getAttachmentReferences()
     {

@@ -762,7 +762,7 @@ public class DataBuilder
 
         for (String value: values)
         {
-            createPickListItem(pickList,value);
+            createPickListItem(pickList, value, value);
         }
         return pickList;
     }
@@ -776,17 +776,32 @@ public class DataBuilder
 
         for (String value: values)
         {
-            createPickListItem(pickList,value);
+            createPickListItem(pickList, value, value);
         }
         return pickList;
     }
     
-    public static PickListItem createPickListItem(PickList pickList, String value)
+    public static PickList createPickList(final String name,
+                                          boolean readOnly, 
+                                          String[] titles,
+                                          String[] values,
+                                          int maxSize)
+    {
+        PickList pickList = createPickList(name, 0, null, null, null, readOnly, maxSize);
+
+        for (int i=0;i<titles.length;i++)
+        {
+            createPickListItem(pickList, titles[i], values[i]);
+        }
+        return pickList;
+    }
+    
+    public static PickListItem createPickListItem(PickList pickList, String title, String value)
     {
         PickListItem item = new PickListItem();
         item.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
         item.setValue(value);
-        item.setTitle(value);
+        item.setTitle(title);
         pickList.addPickListItem(item);
         item.setPickList(pickList);
         return item;

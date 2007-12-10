@@ -24,8 +24,11 @@ import java.awt.RenderingHints;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 
+import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.JTextComponent;
 import javax.swing.undo.UndoManager;
 
@@ -41,6 +44,7 @@ import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.JAutoCompTextField;
 import edu.ku.brc.ui.db.PickListDBAdapterIFace;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterField;
 
 /**
  * A JTextControl that implements UIValidatable for participating in validation
@@ -58,14 +62,17 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
                                                                 UIRegistry.UndoableTextIFace
 {
     protected UIValidatable.ErrorType valState  = UIValidatable.ErrorType.Valid;
+    
     protected boolean isRequired = false;
     protected boolean isChanged  = false;
     protected boolean isNew      = false;
     protected Color   bgColor;
+    protected int     limit     = Integer.MAX_VALUE;
 
     protected static ColorWrapper valtextcolor       = null;
     protected static ColorWrapper requiredfieldcolor = null;
 
+    protected boolean              doSetText         = false; 
     protected ValPlainTextDocument document;
     protected String               defaultValue      = null;
     
@@ -77,54 +84,59 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
     public ValTextField()
     {
         super();
+        init();
+   }
+
+    /**
+     * Constructor
+     * @param text initial value
+     */
+    public ValTextField(String text)
+    {
+        super(text);
+        init();
+    }
+
+    /**
+     * Constructor
+     * @param numCols initial number of columns
+     */
+    public ValTextField(int numCols)
+    {
+        super(numCols);
+        init();
+    }
+
+    /**
+     * Constructor
+     * @param numCols initial number of columns
+     * @param pickListDBAdapter
+     */
+    public ValTextField(final int numCols, 
+                        final PickListDBAdapterIFace pickListDBAdapter)
+    {
+        super(numCols, pickListDBAdapter);
+        init();
     }
 
     /**
      * Constructor
      * @param arg0 initial value
+     * @param numCols initial number of columns
      */
-    public ValTextField(String arg0)
+    public ValTextField(final String str, 
+                        final int numCols)
     {
-        super(arg0);
+        super(str, numCols);
+        init();
     }
 
     /**
-     * Constructor
-     * @param arg0 initial number of columns
+     * 
      */
-    public ValTextField(int arg0)
+    protected void init()
     {
-        super(arg0);
-    }
-
-    /**
-     * Constructor
-     * @param arg0 initial number of columns
-     */
-    public ValTextField(int arg0, PickListDBAdapterIFace pickListDBAdapter)
-    {
-        super(arg0, pickListDBAdapter);
-    }
-
-    /**
-     * Constructor
-     * @param arg0 initial value
-     * @param arg1 initial number of columns
-     */
-    public ValTextField(String arg0, int arg1)
-    {
-        super(arg0, arg1);
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.db.JAutoCompTextField#init()
-     */
-    @Override
-    public void init()
-    {
-        super.init();
-
-        setDocument(document = new ValPlainTextDocument());
+        setDocument(new ValPlainTextDocument());
 
         bgColor = getBackground();
         if (valtextcolor == null || requiredfieldcolor == null)
@@ -145,7 +157,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
     }
 
     /**
-     * Helper method for validation sripting to see if the text field is empty
+     * Helper method for validation scripting to see if the text field is empty
      * @return whether the text field is empty or not
      */
     public boolean isNotEmpty()
@@ -194,7 +206,9 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
             document.setIgnoreNotify(true);
         }
         
+        doSetText = true;
         super.setText(text);
+        doSetText = false;
         
         if (document != null)
         {
@@ -322,9 +336,12 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
         UIHelper.removeFocusListeners(this);
         UIHelper.removeKeyListeners(this);
 
-        for (DocumentListener l : document.getDocumentListeners())
+        if (document != null)
         {
-            document.removeDocumentListener(l);
+            for (DocumentListener l : document.getDocumentListeners())
+            {
+                document.removeDocumentListener(l);
+            }
         }
         document = null;
         AppPreferences.getRemote().removeChangeListener("ui.formatting.requiredfieldcolor", this);
@@ -450,6 +467,115 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
         if (evt.getKey().equals("requiredfieldcolor"))
         {
             setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
+        }
+    }
+    
+
+    //-------------------------------------------------
+    // JFormattedDoc 
+    //-------------------------------------------------
+    public class JFormattedDoc extends ValPlainTextDocument
+    {
+        protected JTextField                      textField;
+        protected UIFieldFormatterField.FieldType fieldType;
+        protected int                             limit;
+        
+        /**
+         * Create a special formatted document
+         * @param textField the textfield the document is associated with
+         * @param formatter the formatter
+         * @param fieldType type of field
+         * @param limit the length of the format
+         */
+        public JFormattedDoc(final JTextField                      textField, 
+                             final UIFieldFormatterField.FieldType fieldType,
+                             final int                             limit)
+        {
+            super();
+            this.textField    = textField;
+            this.fieldType    = fieldType;
+            this.limit        = limit;
+        }
+
+        /**
+         * Check to see if the input was correct (doesn't check against the separator)
+         * @param field the field info
+         * @param str the str to be checked
+         * @return true char matches the type of input, false it is in error
+         */
+        protected boolean isCharOK(final String text)
+        {
+            int    len = Math.min(text.length(), limit);
+            String str = text.substring(0, len);
+
+            if (fieldType == UIFieldFormatterField.FieldType.alpha && !StringUtils.isAlpha(str))
+            {
+                return false;
+
+            } else if (fieldType == UIFieldFormatterField.FieldType.alphanumeric && !StringUtils.isAlphanumeric(str))
+            {
+                return false;
+
+            } else if (fieldType == UIFieldFormatterField.FieldType.numeric && !StringUtils.isNumeric(str))
+            {
+                return false;
+
+            }
+            return true;
+        }
+
+        /* (non-Javadoc)
+         * @see javax.swing.text.Document#remove(int, int)
+         */
+        @Override
+        public void remove(int offset, int len) throws BadLocationException
+        {
+            super.remove(offset, len);
+        }
+
+        /* (non-Javadoc)
+         * @see javax.swing.text.Document#insertString(int, java.lang.String, javax.swing.text.AttributeSet)
+         */
+        @Override
+        public void insertString(final int offset, final String strArg, final AttributeSet attr) throws BadLocationException
+        {
+            String str = strArg;
+            if (str == null)
+            {
+                return;
+            }
+
+            if (str.length() > 1)
+            {
+                if (isCharOK(str))
+                {
+                    super.insertString(offset, str, attr);
+                }
+                validateState();
+                return;
+            }
+
+            int len = getLength() + 1;
+            if (len <= limit)
+            {
+                if (!isCharOK(str))
+                {
+                    validateState();
+                    return;
+                }
+
+                super.insertString(offset, str, attr);
+                
+                /*String text = textField.getText();
+                if (text != null && text.length() < limit)
+                {
+                    String str2 = text.substring(offset + str.length());
+                    super.insertString(offset + str.length(), str2, attr);
+                }*/
+                
+            }
+
+            validateState();
         }
     }
 }

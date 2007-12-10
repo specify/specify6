@@ -343,17 +343,6 @@ public class PaleoContext extends CollectionMember
         this.lithoStrat = lithoStrat;
     }
 
-   /* (non-Javadoc)
-    * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
-    */
-   @Override
-   @Transient
-   public String getIdentityTitle()
-   {
-       return super.getIdentityTitle();
-   }
-   
-
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getDataClass()
      */

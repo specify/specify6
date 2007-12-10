@@ -1228,10 +1228,14 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
         return 5;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
+     */
     @Override
     @Transient
     public String getIdentityTitle()
     {
+        // XXX I wonder if we should be using the formatter here?
         if (lastName != null)
         {
             if (firstName != null)
@@ -1240,6 +1244,7 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
             }
             return lastName;
         }
+        
         if (name!=null)
         {
             return name;

@@ -593,6 +593,10 @@ public class BuildSampleDatabase
         String[] accTypes = {"Collection","Gift"};
         dataObjects.add(createPickList("AccessionType", true, accTypes));
         
+        String[] agentVariantTypes  = {"Variant","Vernacular"};
+        String[] agentVariantValues = {"0","1"};
+        dataObjects.add(createPickList("AgentVariant", true, agentVariantTypes, agentVariantValues, -1));
+        
         String[] accRoles = {"Collector", "Donor", "Reviewer", "Staff", "Receiver"};
         dataObjects.add(createPickList("AccessionRole", true, accRoles));
         

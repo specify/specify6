@@ -53,7 +53,6 @@ import org.hibernate.annotations.Index;
 
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.AttributeProviderIFace;
-import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 
 /**
 
@@ -538,13 +537,9 @@ public class CollectingEvent extends CollectionMember implements AttachmentOwner
         return 10;
     }
     
-    @Override
-    @Transient
-    public String getIdentityTitle()
-    {
-        return DataObjFieldFormatMgr.format(this, getClass());
-    }
-
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.AttachmentOwnerIFace#getAttachmentReferences()
+     */
     @Transient
     public Set<CollectingEventAttachment> getAttachmentReferences()
     {

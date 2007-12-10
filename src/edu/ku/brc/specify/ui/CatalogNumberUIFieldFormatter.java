@@ -318,9 +318,9 @@ public class CatalogNumberUIFieldFormatter implements UIFieldFormatterIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#isNumericOnly()
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#isNumeric()
      */
-    public boolean isNumericOnly()
+    public boolean isNumeric()
     {
         return isNumericCatalogNumber;
     }

@@ -278,7 +278,7 @@ public class LoanReturnDlg extends JDialog
                                                1, 1, 1, 1, "Changed", null, false);
         fcf.addProperty("name", "Agent");
         fcf.addProperty("title", "Agent doing Return"); // I18N
-        return ViewFactory.getInstance().createQueryComboBox(validator, fcf);
+        return ViewFactory.createQueryComboBox(validator, fcf, true);
     }
     
     

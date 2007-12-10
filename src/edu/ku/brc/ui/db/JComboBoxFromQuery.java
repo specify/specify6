@@ -135,6 +135,7 @@ public class JComboBoxFromQuery extends JComboBox
     @Override
     public void requestFocus()
     {
+        log.debug("requestFocus");
         if (tf != null)
         {
             tf.requestFocus();
@@ -220,7 +221,7 @@ public class JComboBoxFromQuery extends JComboBox
     @Override
     public void setSelectedIndex(final int index)
     {
-        log.debug(index);
+        log.debug("setSelectedIndex "+index);
         if (!doingSelection)
         {
             SwingUtilities.invokeLater(new Runnable(){
@@ -278,6 +279,7 @@ public class JComboBoxFromQuery extends JComboBox
      */
     protected void lookForMatch()
     {
+        log.debug("look ");
         String s   = tf.getText();
         int    len = s.length();
         if (len == 0)
@@ -359,6 +361,7 @@ public class JComboBoxFromQuery extends JComboBox
      */
     protected void fillBox(final String newEntryStr)
     {
+        log.debug("fillbox");
         try
         {
             searchStopLength = Integer.MAX_VALUE;
@@ -472,6 +475,7 @@ public class JComboBoxFromQuery extends JComboBox
     {
         if (true)
         {
+            log.debug("cbxKeyReleased");
             if (ev.getKeyCode() == JAutoCompComboBox.SEARCH_KEY)
             {
                 skipSearch = true;
@@ -483,7 +487,7 @@ public class JComboBoxFromQuery extends JComboBox
                 {
                     public void run()
                     {
-                        showPopup();
+                        //showPopup();
                     }
                 });
             }
@@ -572,6 +576,7 @@ public class JComboBoxFromQuery extends JComboBox
     protected void tfFocusGained(@SuppressWarnings("unused") FocusEvent e)
     {
         searchStopLength = Integer.MAX_VALUE;
+        log.debug("tfFocusGained");
     }
     
     /**
@@ -580,6 +585,7 @@ public class JComboBoxFromQuery extends JComboBox
      */
     protected void tfFocusLost(@SuppressWarnings("unused") FocusEvent e)
     {
+        log.debug("tfFocusLost");
         tf.setSelectionStart(0);
         tf.setSelectionEnd(0);
         tf.moveCaretPosition(0);

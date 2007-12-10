@@ -48,8 +48,6 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Index;
 
-import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
-
 /**
 
  */
@@ -462,17 +460,6 @@ public class Determination extends CollectionMember implements java.io.Serializa
         return 9;
     }
 
-    @Override
-    @Transient
-    public String getIdentityTitle()
-    {
-        //String taxonName = (taxon != null) ? taxon.getIdentityTitle() : "";
-        //String determinerName = (determiner != null) ? determiner.getIdentityTitle() : "";
-        //return "Determination: " + determinerName + " (" + taxonName + ")";
-        
-        return DataObjFieldFormatMgr.format(this, getClass());
-    }
-    
     //----------------------------------------------------------------------
     //-- Comparable Interface
     //----------------------------------------------------------------------

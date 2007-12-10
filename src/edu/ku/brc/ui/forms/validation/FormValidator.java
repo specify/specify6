@@ -1145,7 +1145,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     public void updateValidationBtnUIState()
     {
-        log.debug("updateValidationBtnUIState ["+name+"] "+getState());
+        //log.debug("updateValidationBtnUIState ["+name+"] "+getState());
         if (validationInfoBtn != null)
         {
             boolean                 enable = true;

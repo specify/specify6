@@ -22,6 +22,8 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -394,7 +396,7 @@ public class ViewLoader
                 String viewDefName = ((FormViewDefIFace)viewDef).getDefinitionName();
                 if (viewDefName != null)
                 {
-                    log.debug(viewDefName);
+                    //log.debug(viewDefName);
                     ViewDefIFace actualDef = viewDefs.get(viewDefName);
                     if (actualDef != null)
                     {
@@ -524,7 +526,12 @@ public class ViewLoader
      */
     protected static String getLabel(final Element cellElement)
     {
-        return getResourceLabel(getAttr(cellElement, LABEL, ""));
+        String lbl = getAttr(cellElement, LABEL, null);
+        if (lbl == null)
+        {
+            return "##";
+        }
+        return getResourceLabel(lbl);
     }
 
     /**
@@ -645,6 +652,10 @@ public class ViewLoader
                                     validationRule = getAttr(cellElement, "validation", "formatted"); // XXX Is this OK?
                                     dspUITypeStr   = getAttr(cellElement, "dspuitype", "formattedtext");
                                     
+                                    //-------------------------------------------------------
+                                    // This part should be moved to the ViewFactory
+                                    // because it is the only part that need the Schema Information
+                                    //-------------------------------------------------------
                                     if (isNotEmpty(uiFieldFormatterName))
                                     {
                                         UIFieldFormatterIFace uiFormatter = UIFieldFormatterMgr.getFormatter(uiFieldFormatterName);
@@ -664,7 +675,18 @@ public class ViewLoader
                                             {
                                                 uiFieldFormatterName = fieldInfo.getFormatter().getName();
                                                 
-                                            } else 
+                                            } else if (fieldInfo.getDataClass().isAssignableFrom(Date.class) ||
+                                                       fieldInfo.getDataClass().isAssignableFrom(Calendar.class))
+                                            {
+                                                log.debug("Missing Date Formatter for ["+cellName+"]");
+                                                uiFieldFormatterName = "Date";
+                                                UIFieldFormatterIFace uiFormatter = UIFieldFormatterMgr.getFormatter(uiFieldFormatterName);
+                                                if (uiFormatter == null)
+                                                {
+                                                    uiFieldFormatterName = "";
+                                                    uitype = FormCellFieldIFace.FieldType.text;
+                                                }
+                                            } else
                                             {
                                                 uiFieldFormatterName = "";
                                                 uitype = FormCellFieldIFace.FieldType.text;

@@ -36,16 +36,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
-import javax.swing.ComboBoxModel;
 import javax.swing.JButton;
-import javax.swing.JComboBox;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
-import javax.swing.event.PopupMenuEvent;
-import javax.swing.event.PopupMenuListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -67,6 +64,7 @@ import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.ViewBasedDialogFactoryIFace;
 import edu.ku.brc.ui.db.JComboBoxFromQuery;
+import edu.ku.brc.ui.db.TextFieldWithQuery;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
 import edu.ku.brc.ui.db.ViewBasedSearchQueryBuilderIFace;
@@ -97,7 +95,7 @@ import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
  */
 @SuppressWarnings("serial")
 public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
-                                                            ListDataListener,
+                                                            ListSelectionListener,
                                                             GetSetValueIFace,
                                                             AppPrefsChangeListener
 {
@@ -122,7 +120,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     protected boolean            hasBeenVisited = false;
     protected Color              bgColor    = null;
 
-    protected VCBComboBox        comboBox;
+    protected TextFieldWithQuery textWithQuery;
     protected JButton            searchBtn  = null;
     protected JButton            createBtn  = null;
     protected JButton            editBtn    = null;
@@ -146,7 +144,8 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     protected ViewBasedDisplayIFace frame      = null;
     protected MultiView             multiView  = null;
 
-    protected List<FocusListener> focusListeners = new ArrayList<FocusListener>();
+    protected List<FocusListener>   focusListeners = new ArrayList<FocusListener>();
+    protected ListSelectionListener listSelectionListener = null;
     
     protected ActionListener defaultSearchAction;
     protected ActionListener defaultEditAction;
@@ -205,29 +204,16 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         this.searchDialogName = searchDialogName;
         this.displayInfoDialogName = displayInfoDialogName;
 
-        comboBox = new VCBComboBox(tableName, idColumn, keyColumn, displayColumn, format);
-        comboBox.setAllowNewValues(true);
-        
-        comboBox.setPopupMenuListener(new PopupMenuListener() {
-            public void popupMenuCanceled(PopupMenuEvent e)
-            {
-                UIValidator.setIgnoreAllValidation(this, false); 
-            }
-            public void popupMenuWillBecomeInvisible(PopupMenuEvent e)
-            {
-                UIValidator.setIgnoreAllValidation(this, false); 
-            }
-            public void popupMenuWillBecomeVisible(PopupMenuEvent e)
-            {
-                UIValidator.setIgnoreAllValidation(this, true); 
-            } 
-        });
+        textWithQuery = new TextFieldWithQuery(tableName, idColumn, keyColumn, displayColumn, format);
+        textWithQuery.addListSelectionListener(this);
+        textWithQuery.setAddAddItem(true);
         
         init(objTitle, btns);
         
         setOpaque(false);
     }
 
+    
     /**
      * Sets the "cell" name of this control, this is the name of this control in the form.
      * @param cellName the cell name
@@ -243,7 +229,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     @Override
     public void requestFocus()
     {
-        comboBox.requestFocus();
+        textWithQuery.requestFocus();
     }
 
     /* (non-Javadoc)ValComboBoxFromQuery
@@ -254,7 +240,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     {
         super.setEnabled(enabled);
         
-        comboBox.setEnabled(enabled);
+        textWithQuery.setEnabled(enabled);
         if (searchBtn != null)
         {
             searchBtn.setEnabled(enabled);
@@ -315,7 +301,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         PanelBuilder    pb = new PanelBuilder(new FormLayout("p:g,1px,p,1px,p"+(hasSearchBtn ? ",1px,p" : ""), "c:p"), this);
         CellConstraints cc = new CellConstraints();
 
-        pb.add(comboBox, cc.xy(1,1));
+        pb.add(textWithQuery, cc.xy(1,1));
 
         int x = 3;
         if ((btnMask & CREATE_EDIT_BTN) != 0)
@@ -342,9 +328,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
 
         setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
 
-        comboBox.getModel().addListDataListener(this);
-
-        bgColor = comboBox.getTextField().getBackground();
+        bgColor = textWithQuery.getTextField().getBackground();
         if (valtextcolor == null || requiredfieldcolor == null)
         {
             valtextcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
@@ -358,17 +342,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    ViewBasedSearchDialogIFace dlg = UIRegistry.getViewbasedFactory().createSearchDialog(UIHelper.getWindow(searchBtn), searchDialogName);
-                    if (builder != null)
-                    {
-                        dlg.registerQueryBuilder(builder);
-                    }
-                    dlg.getDialog().setVisible(true);
-                    if (!dlg.isCancelled())
-                    {
-                        setValue(dlg.getSelectedObject(), null);
-                        valueHasChanged();
-                    }
+                    displaySearchDialog();
                 }
             };
             searchBtn.addActionListener(defaultSearchAction);
@@ -402,6 +376,32 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         }
     }
     
+    /**
+     * 
+     */
+    protected void displaySearchDialog()
+    {
+        ViewBasedSearchDialogIFace dlg = UIRegistry.getViewbasedFactory().createSearchDialog(UIHelper.getWindow(searchBtn), searchDialogName);
+        if (builder != null)
+        {
+            dlg.registerQueryBuilder(builder);
+        }
+        dlg.getDialog().setVisible(true);
+        if (!dlg.isCancelled())
+        {
+            setValue(dlg.getSelectedObject(), null);
+            valueHasChanged();
+            
+            if (listSelectionListener != null)
+            {
+                listSelectionListener.valueChanged(null);
+            }
+        }
+    }
+    
+    /**
+     * @param al
+     */
     public void setEditAction(ActionListener al)
     {
         if (editBtn != null)
@@ -414,6 +414,9 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         }
     }
     
+    /**
+     * @param al
+     */
     public void setSearchAction(ActionListener al)
     {
         if (searchBtn != null)
@@ -426,6 +429,9 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         }
     }
     
+    /**
+     * @param al
+     */
     public void setNewAction(final ActionListener al)
     {
         if (createBtn != null)
@@ -438,6 +444,9 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         }
     }
 
+    /**
+     * @param button
+     */
     protected void removeAllActionListeners(final JButton button)
     {
         for (ActionListener al: button.getActionListeners())
@@ -446,6 +455,9 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         }
     }
     
+    /**
+     * @param enabled
+     */
     public void setEditEnabled(boolean enabled)
     {
         if (editBtn != null)
@@ -454,6 +466,9 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         }
     }
     
+    /**
+     * 
+     */
     protected void valueHasChanged()
     {
         if (frame != null)
@@ -464,13 +479,10 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                if (mv.hasChanged())
                {
                    this.setChanged(true);
-                   // TODO: Change this, this is SOOOO lame
-                   // I set and reset it to make the change data listener get activated.
-                   // There has to be a better way!
-                   int inx = comboBox.getSelectedIndex();
-                   comboBox.setSelectedIndex(-1);
-                   comboBox.setSelectedIndex(inx);
                }
+               
+               //!!!!!!!!!!!!!!!!!!!!!!!!!
+               // need to make the change listener fire here!
             }
             
             frame.getMultiView().getDataFromUI();
@@ -504,8 +516,8 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             DataObjectSettable ds = DataObjectSettableFactory.get(classObj.getName(), "edu.ku.brc.ui.forms.DataSetterForObj");
             if (ds != null)
             {
-                log.error(comboBox.getSelectedIndex());
-                String value = comboBox.getSelectedId() == null ? comboBox.getTextField().getText() : "";
+                log.error("ID: "+textWithQuery.getSelectedId());
+                String value = textWithQuery.getSelectedId() == null ? textWithQuery.getTextField().getText() : "";
                 ds.setFieldValue(newDataObj, fieldNames[0], value);
             }
             frame.setData(newDataObj);
@@ -593,34 +605,6 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         this.multiView = multiView;
     }
 
-    /**
-     * Return the JComboBox for this control.
-     * @return the JComboBox for this control
-     */
-    public JComboBox getComboBox()
-    {
-        return comboBox;
-    }
-
-    /**
-     * Returns the model for the combobox.
-     * @return the model for the combobox
-     */
-    public ComboBoxModel getModel()
-    {
-        return comboBox.getModel();
-    }
-
-
-    /* (non-Javadoc)
-     * @see javax.swing.JComboBox#setModel(javax.swing.ComboBoxModel)
-     */
-    public void setModel(ComboBoxModel model)
-    {
-        comboBox.setModel(model);
-        model.addListDataListener(this);
-    }
-
     /* (non-Javadoc)
      * @see java.awt.Component#paint(java.awt.Graphics)
      */
@@ -629,7 +613,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     {
         super.paint(g);
 
-        if ((!isNew || hasBeenVisited) && isInError() && comboBox != null && comboBox.isEnabled())
+        if ((!isNew || hasBeenVisited) && isInError() && textWithQuery != null && textWithQuery.isEnabled())
         {
             Graphics2D g2d = (Graphics2D)g;
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -637,6 +621,24 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             g.setColor(valtextcolor.getColor());
             g.drawRect(0, 0, dim.width-1, dim.height-1);
         }
+    }
+    
+    public void addListSelectionListener(ListSelectionListener listSelectionListener)
+    {
+        this.listSelectionListener = listSelectionListener;
+        textWithQuery.addListSelectionListener(listSelectionListener);
+    }
+
+    /**
+     * @param listChangeListener the listChangeListener to set
+     */
+    public void removeListSelectionListener(ListSelectionListener listSelectionListener)
+    {
+        if (this.listSelectionListener == listSelectionListener)
+        {
+            this.listSelectionListener = null;
+        }
+        textWithQuery.removeListSelectionListener(listSelectionListener);
     }
 
     // Overriding the add/remove of FocusListeners is so we can make sure they get
@@ -665,9 +667,6 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     public void refreshUIFromData()
     {
-        List<String> list = comboBox.getList();
-        list.clear();
-
         if (this.dataObj != null)
         {
             if (getter == null)
@@ -677,7 +676,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
 
             // NOTE: If there was a formatName defined for this then the value coming
             // in will already be correctly formatted.
-            // So just set the cvalue if there is a format name.
+            // So just set the value if there is a format name.
             Object newVal = this.dataObj;
             if (isEmpty(formatName))
             {
@@ -697,9 +696,10 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             if (newVal != null)
             {
                 valState = UIValidatable.ErrorType.Valid;
-                comboBox.getTextField().setCaretPosition(0);
-                list.add(newVal.toString());
-                comboBox.setSelectedIndex(0);
+                textWithQuery.getTextField().setText(newVal.toString());
+                textWithQuery.getTextField().setCaretPosition(0);
+                textWithQuery.setSelectedId(dataObj.getId());
+                
                 if (editBtn != null)
                 {
                     editBtn.setEnabled(true);
@@ -707,22 +707,22 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                 
             } else
             {
-                comboBox.setSelectedIndex(-1);
+                textWithQuery.clearSelection();
                 valState = UIValidatable.ErrorType.Incomplete;
             }
 
         } else
         {
-            comboBox.setSelectedIndex(-1);
+            textWithQuery.clearSelection();
             valState = UIValidatable.ErrorType.Incomplete;
             if (editBtn != null)
             {
                 editBtn.setEnabled(false);
             }
-            if (comboBox.getTextField() != null)
+            if (textWithQuery.getTextField() != null)
             {
-                comboBox.getTextField().setText("");
-                comboBox.getTextField().repaint();
+                textWithQuery.getTextField().setText("");
+                textWithQuery.getTextField().repaint();
             }
         }
         repaint();
@@ -773,7 +773,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     public void setRequired(boolean isRequired)
     {
-        comboBox.getTextField().setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
+        textWithQuery.getTextField().setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
         this.isRequired = isRequired;
     }
 
@@ -806,7 +806,8 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     public UIValidatable.ErrorType validateState()
     {
-        valState = isRequired && comboBox.getSelectedIndex() == -1 ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
+        log.debug("validateState "+(isRequired && textWithQuery.hasItem()));
+        valState = isRequired && !textWithQuery.hasItem() ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
         //log.debug(valState);
         return valState;
     }
@@ -816,10 +817,11 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     public void reset()
     {
-        comboBox.setSelectedIndex(-1);
-        if (comboBox.getTextField() != null)
+        textWithQuery.clearSelection();
+        
+        if (textWithQuery.getTextField() != null)
         {
-            comboBox.getTextField().setText("");
+            textWithQuery.getTextField().setText("");
         }
         valState = isRequired ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
         repaint();
@@ -838,14 +840,13 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     public void cleanUp()
     {
-        if (comboBox.getTextField() != null)
+        if (textWithQuery.getTextField() != null)
         {
-            UIHelper.removeFocusListeners(comboBox.getTextField());
-            UIHelper.removeKeyListeners(comboBox.getTextField());
+            UIHelper.removeFocusListeners(textWithQuery.getTextField());
+            UIHelper.removeKeyListeners(textWithQuery.getTextField());
         }
-        UIHelper.removeFocusListeners(comboBox);
-        comboBox.getModel().removeListDataListener(this);
-        UIHelper.removeFocusListeners(comboBox);
+        UIHelper.removeFocusListeners(textWithQuery);
+        UIHelper.removeFocusListeners(textWithQuery);
         UIHelper.removeKeyListeners(this);
         
         classObj  = null;
@@ -853,11 +854,12 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         dataObj   = null;
         frame     = null;
         multiView = null;
-        comboBox  = null;
+        textWithQuery  = null;
+        listSelectionListener = null;
 
         focusListeners.clear();
 
-        comboBox = null;
+        textWithQuery = null;
         AppPreferences.getRemote().removeChangeListener("ui.formatting.requiredfieldcolor", this);
     }
     
@@ -871,35 +873,28 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     }
 
     // --------------------------------------------------------
-    // ListDataListener (JComboxBox)
+    // ListSelectionListener
     //--------------------------------------------------------
 
     /* (non-Javadoc)
-     * @see javax.swing.event.ListDataListener#contentsChanged(javax.swing.event.ListDataEvent)
+     * @see javax.swing.event.ListSelectionListener#valueChanged(javax.swing.event.ListSelectionEvent)
      */
-    public void contentsChanged(ListDataEvent e)
+    public void valueChanged(ListSelectionEvent e)
     {
+        //log.debug(e != null ? ((JMenuItem)e.getSource()).getText() : "null");
+        if (e != null)
+        {
+            if (((JMenuItem)e.getSource()).getText().equals(UIRegistry.getResourceString("TFWQ_ADD_LABEL")))
+            {
+                displaySearchDialog();
+                return;
+            }
+        }
+        
         isChanged = true;
         validateState();
         repaint();
     }
-
-    /* (non-Javadoc)
-     * @see javax.swing.event.ListDataListener#intervalAdded(javax.swing.event.ListDataEvent)
-     */
-    public void intervalAdded(ListDataEvent e)
-    {
-        // do nothing
-    }
-
-    /* (non-Javadoc)
-     * @see javax.swing.event.ListDataListener#intervalRemoved(javax.swing.event.ListDataEvent)
-     */
-    public void intervalRemoved(ListDataEvent e)
-    {
-        // do nothing
-    }
-
 
     //--------------------------------------------------------
     // GetSetValueIFace
@@ -910,13 +905,10 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     public void setValue(Object value, String defaultValue)
     {
-        
         if (value == null || value instanceof FormDataObjIFace)
         {
             dataObj = (FormDataObjIFace)value;
             refreshUIFromData();
-            
-            comboBox.clearSearch();
             
         } else
         {
@@ -929,20 +921,19 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     public Object getValue()
     {
-        Object selectedObj = comboBox.getSelectedItem();
-        if (selectedObj == null)
+        Object  value = null;
+        Integer id    = textWithQuery.getSelectedId();
+        
+        if (dataObj != null && id != null && dataObj.getId().intValue() == id.intValue())
         {
-            return null;
+            return dataObj;
         }
         
-        Object value = null;
-        Integer id   = comboBox.getSelectedId();
         if (id != null)
         {
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-
-            //try
-            //{
+            try
+            {
                 log.debug(classObj+" " +idName+" " +id);
                 List<?> list = session.getDataList(classObj, idName, id, DataProviderSessionIFace.CompareType.Restriction);
                 if (list.size() != 0)
@@ -953,13 +944,13 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                     log.error("**** Can't find the Object "+classObj+" with ID: "+id);
                 }
                 
-            //} catch (Exception ex)
-            //{
+            } catch (Exception ex)
+            {
                 //ex.printStackTrace();
-            //} finally 
-            //{
+            } finally 
+            {
                 session.close();    
-            //}
+            }
 
         } else
         {
@@ -977,22 +968,22 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     {
         if (evt.getKey().equals("ui.formatting.requiredfieldcolor"))
         {
-            comboBox.setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
+            textWithQuery.setBackground(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
         }
     }
     
     //-------------------------------------------------
     // Inner Classes
     //-------------------------------------------------
-    class VCBComboBox extends JComboBoxFromQuery implements DocumentListener
+    class ValTextWithQuery extends JComboBoxFromQuery implements DocumentListener
     {
         protected boolean hasFocus = false;
         
-        public VCBComboBox(final String tableName,
-                            final String idColumn,
-                            final String keyColumn,
-                            final String displayColumns,
-                            final String format)
+        public ValTextWithQuery(final String tableName,
+                                final String idColumn,
+                                final String keyColumn,
+                                final String displayColumns,
+                                final String format)
         {
             super(tableName, idColumn, keyColumn, displayColumns, format);
             
@@ -1001,6 +992,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                 @Override
                 public void focusGained(FocusEvent arg0)
                 {
+                    log.debug("focusGained");
                     hasFocus = true;
                     super.focusGained(arg0);
                 }
@@ -1008,6 +1000,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                 @Override
                 public void focusLost(FocusEvent arg0)
                 {
+                    log.debug("focusLost");
                     hasFocus = false;
                     super.focusLost(arg0);
                 }
@@ -1021,6 +1014,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         @Override
         protected void tfFocusGained(@SuppressWarnings("unused") FocusEvent e)
         {
+            log.debug("tfFocusGained");
             super.tfFocusGained(e);
             
             hasBeenVisited = true;
@@ -1039,36 +1033,10 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         protected void tfFocusLost(@SuppressWarnings("unused") FocusEvent e)
         {
             super.tfFocusLost(e);
-            
             isNew = false; // hasBeenVisited may remove the need for this being set to false - rods
             
             validateState();
             repaint();
-            
-            /*
-             * CODE FOR SETTING THE CURRENT OBJECT INTO the COMBOXBOX
-             */
-            //Object data = comboBox.getSelectedItem();
-            //if (data != null && data != dataObj)
-            //{
-            //    setValue(data, null);
-            //}
-            
-            if (comboBox.getTextField() != null)
-            {
-                String str = comboBox.getTextField().getText().trim();
-                if (StringUtils.isNotEmpty(str))
-                {
-                    Object selObj = comboBox.getSelectedItem();
-                    if (selObj != null && !selObj.toString().equals(str))
-                    {
-                        comboBox.getTextField().setText(selObj.toString());
-                    }                        
-                } else
-                {
-                    comboBox.setSelectedIndex(-1);
-                }
-            }
             
             for (FocusListener l : focusListeners)
             {
@@ -1094,9 +1062,9 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
          */
         protected void documentChanged()
         {
-            if (hasFocus && comboBox.getSelectedIndex() > -1)
+            if (hasFocus && textWithQuery.hasItem())
             {
-                comboBox.setSelectedIndex(-1);    
+                textWithQuery.clearSelection();    
             }
             
         }
@@ -1124,9 +1092,6 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         {
             documentChanged();
         }
-        
-        
-
     }
 
 }

@@ -94,6 +94,7 @@ import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.JAutoCompComboBox;
 import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
+import edu.ku.brc.ui.forms.MultiView.ViewState;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.ui.forms.persist.AltViewIFace;
 import edu.ku.brc.ui.forms.persist.FormCell;
@@ -215,6 +216,9 @@ public class FormViewObj implements Viewable,
     protected DBTableInfo                   tableInfo         = null;
     
     protected Color                         bgColor           = null;
+    
+    protected Vector<ViewState>            viewStateList        = null;
+
 
     /**
      * Constructor with FormView definition.
@@ -1420,6 +1424,16 @@ public class FormViewObj implements Viewable,
     @SuppressWarnings("unchecked")
     public boolean saveObject()
     {
+        if (mvParent != null && mvParent.isTopLevel())
+        {
+            if (viewStateList == null)
+            {
+                viewStateList = new Vector<ViewState>();
+            }
+            viewStateList.clear();
+            mvParent.collectionViewState(viewStateList, altView.getMode(), 2); 
+        }
+        
         if (session != null && (mvParent == null || mvParent.isTopLevel()))
         {
             session.close();
@@ -1480,6 +1494,12 @@ public class FormViewObj implements Viewable,
             {
                 session.close();
                 session = null;
+            }
+            
+            if (viewStateList != null && viewStateList.size() > 0 && mvParent != null && mvParent.isTopLevel())
+            {
+                mvParent.setViewState(viewStateList, altView.getMode(), 0);
+                viewStateList.clear();
             }
             
             CommandDispatcher.dispatch(new CommandAction("Data_Entry", "Save", dataObj));
@@ -2109,11 +2129,12 @@ public class FormViewObj implements Viewable,
                         label.setFont(boldFont);
                     }
                     
-                    if (labelCell.isDerived())
+                    if (labelCell.isDerived() && fi != null)
                     {
-                        if (fi != null)
+                        String title = fi.getTitle();
+                        if (StringUtils.isNotEmpty(title))
                         {
-                            label.setText(fi.getTitle());
+                            label.setText(title + ":");
                         }
                     }
                 }
@@ -3612,6 +3633,14 @@ public class FormViewObj implements Viewable,
             }
             formViewObj.getValidator().setDataChangeInNotifier(comp);
         }
+    }
+    
+    /**
+     * @return the rsController
+     */
+    public ResultSetController getRsController()
+    {
+        return rsController;
     }
     
     //-----------------------------------------------------

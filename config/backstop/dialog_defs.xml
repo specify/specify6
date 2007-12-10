@@ -18,6 +18,7 @@
     <dialog type="display" viewset="Global"      view="Accession"          name="AccessionDisplay"         title="AccessionTitle"            class="edu.ku.brc.specify.datamodel.Accession"/>
     <dialog type="display" viewset="Global"      view="AccessionAgent"     name="AccessionAgentDisplay"    title="AccessionAgentTitle"       class="edu.ku.brc.specify.datamodel.AccessionAgent"/>
     <dialog type="display" viewset="Global"      view="Agent"              name="AgentDisplay"             title="AgentTitle"                class="edu.ku.brc.specify.datamodel.Agent"/>
+    <dialog type="display" viewset="Global"      view="AgentVariant"       name="AgentVariant"             title="AgentVariantTitle"         class="edu.ku.brc.specify.datamodel.AgentVariant"/>
     <dialog type="display" viewset="Global"      view="AttachmentsForm"    name="AttachmentsForm"          title="Attachment"                class="edu.ku.brc.specify.datamodel.Attachment"/>
     <dialog type="display" viewset="Global"      view="Collector"          name="CollectorDisplay"         title="Collector"                 class="edu.ku.brc.specify.datamodel.Collector"/>
     <dialog type="display" viewset="Global"      view="GeologicTimePeriod" name="GeologicTimePeriodDisplay" title="GeologicTimePeriodTitle"  class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"/>

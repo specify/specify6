@@ -35,6 +35,18 @@
             </altviews>
         </view>
         
+        <view name="AgentVariant"
+            class="edu.ku.brc.specify.datamodel.AgentVariant"
+            resourcelabels="false">
+            <desc><![CDATA[AgentVariant subform within the Agent form.]]></desc>
+            <altviews defaultmode="view">
+                <altview name="AgentVariant View" title="AgentVariant" viewdef="AgentVariant" label="View" mode="view" validated="false"/>
+                <altview name="AgentVariant Edit" title="AgentVariant" viewdef="AgentVariant" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="AgentVariant Table View" viewdef="AgentVariant Table"    label="Table View" mode="view" />
+                <altview name="AgentVariant Table Edit" viewdef="AgentVariant Table"    label="Table Edit" mode="edit"/>
+            </altviews>
+        </view>
+        
         <view name="Determination"
             class="edu.ku.brc.specify.datamodel.Determination"
             resourcelabels="false">
@@ -418,12 +430,12 @@
 			resourcelabels="false">
 			<desc><![CDATA[The Object-Attachment View.]]></desc>
             <altviews>
-                <altview name="ObjectAttachment Icon View"  viewdef="ObjectAttachment IconView" label="Icon View"  mode="view"/>
-                <altview name="ObjectAttachment Icon Edit"  viewdef="ObjectAttachment IconView" label="Icon Edit"  mode="edit"/>
-                <altview name="ObjectAttachment Table View" viewdef="ObjectAttachment Table"    label="Table View" mode="view" />
-                <altview name="ObjectAttachment Table Edit" viewdef="ObjectAttachment Table"    label="Table Edit" mode="edit"/>
-                <altview name="ObjectAttachment Form View"  viewdef="ObjectAttachment Form"     label="Form View"  mode="view" default="true"/>
-                <altview name="ObjectAttachment Form Edit"  viewdef="ObjectAttachment Form"     label="Form Edit"  mode="edit"/>
+                <altview name="ObjectAttachment Icon View"  viewdef="ObjectAttachment IconView" label="Icon"  mode="view"/>
+                <altview name="ObjectAttachment Icon Edit"  viewdef="ObjectAttachment IconView" label="Icon"  mode="edit"/>
+                <altview name="ObjectAttachment Table View" viewdef="ObjectAttachment Table"    label="Grid" mode="view" />
+                <altview name="ObjectAttachment Table Edit" viewdef="ObjectAttachment Table"    label="Grid" mode="edit"/>
+                <altview name="ObjectAttachment Form View"  viewdef="ObjectAttachment Form"     label="Form"  mode="view" default="true"/>
+                <altview name="ObjectAttachment Form Edit"  viewdef="ObjectAttachment Form"     label="Form"  mode="edit"/>
             </altviews>
         </view>
 			
@@ -432,10 +444,10 @@
 			resourecelabels="false">
 			<desc><![CDATA[The AttachmentMetadata Form.]]></desc>
 			<altviews>
-				<altview name="AttachmentMetadata Form View"  viewdef="AttachmentMetadata Form"  label="Form View"  mode="view" default="true"/>
-				<altview name="AttachmentMetadata Table View" viewdef="AttachmentMetadata Table" label="Table View" mode="view"/>
-				<altview name="AttachmentMetadata Form View"  viewdef="AttachmentMetadata Form"  label="Form Edit"  mode="edit"/>
-				<altview name="AttachmentMetadata Table View" viewdef="AttachmentMetadata Table" label="Table Edit" mode="edit"/>
+				<altview name="AttachmentMetadata Form View"  viewdef="AttachmentMetadata Form"  label="Form"  mode="view" default="true"/>
+				<altview name="AttachmentMetadata Table View" viewdef="AttachmentMetadata Table" label="Grid" mode="view"/>
+				<altview name="AttachmentMetadata Form View"  viewdef="AttachmentMetadata Form"  label="Form"  mode="edit"/>
+				<altview name="AttachmentMetadata Table View" viewdef="AttachmentMetadata Table" label="Grid" mode="edit"/>
 			</altviews>
 		</view>
 
@@ -467,14 +479,14 @@
                     <cell type="field" id="1" name="accessionNumber" isrequired="true" uitype="formattedtext" uifieldformatter="AccessionNumber"/>
 
                     <cell type="label" labelfor="2" label="Status"/>
-                    <cell type="field" id="2" name="status"  uitype="combobox" picklist="AccessionStatus" isrequired="true" valtype="Changed"/>
+                    <cell type="field" id="2" name="status"  uitype="combobox" picklist="AccessionStatus" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="3" label="Type"/>
-                    <cell type="field" id="3" name="type" uitype="combobox" picklist="AccessionType" isrequired="true" valtype="Changed"/>
+                    <cell type="field" id="3" name="type" uitype="combobox" picklist="AccessionType" isrequired="true"/>
 
                     <cell type="label" labelfor="4" label="Division"/>
-                    <cell type="field" id="4" name="text1" uitype="combobox" initialize="data=Botany,Entomology,Herpetology,Ichthyology,Invertebrate Paleo,Invertebrate Zoology,Mammalogy,Ornithology,Paleobotany,Vertebrate Paleo" isrequired="true" valtype="Changed"/>
+                    <cell type="field" id="4" name="text1" uitype="combobox" initialize="data=Botany,Entomology,Herpetology,Ichthyology,Invertebrate Paleo,Invertebrate Zoology,Mammalogy,Ornithology,Paleobotany,Vertebrate Paleo" isrequired="true"/>
 
                 </row>
                 <row>
@@ -486,7 +498,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="7" label="Description"/>
-                    <cell type="field" id="7" name="text2" uitype="textarea" cols="30" rows="6" colspan="10" valtype="Changed"/>
+                    <cell type="field" id="7" name="text2" uitype="textarea" cols="30" rows="6" colspan="10"/>
                 </row>
                 
                 <row>
@@ -531,10 +543,10 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="1" label="Agent"/>
-                    <cell type="field" id="1" name="agent" uitype="querycbx" initialize="name=Agent;title=Agent" isrequired="true" valtype="Changed"/>
+                    <cell type="field" id="1" name="agent" uitype="querycbx" initialize="name=Agent;title=Agent" isrequired="true"/>
                     
                     <cell type="label" labelfor="2" label="Role"/>
-                    <cell type="field" id="2" name="role" uitype="combobox" picklist="AccessionRole" isrequired="true" valtype="Changed"/>
+                    <cell type="field" id="2" name="role" uitype="combobox" picklist="AccessionRole" isrequired="true"/>
                 </row>
                 
                 <row>
@@ -543,6 +555,41 @@
                 </row>
                 
             </rows>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="AgentVariant"
+            class="edu.ku.brc.specify.datamodel.AgentVariant"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The AgentVariant form.]]></desc>
+            <enableRules/>
+            
+            <columnDef>100px,3dlu,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            
+            <rows>
+  		        <row>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="varType" uitype="combobox" picklist="AgentVariant" isrequired="true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="name" uitype="text"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            type="formtable"
+            name="AgentVariant Table"
+            class="edu.ku.brc.specify.datamodel.AgentVariant"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[AgentVariant grid view.]]></desc>
+            <definition>AgentVariant</definition>
         </viewdef>
         
         <viewdef
@@ -579,7 +626,8 @@
 
             <desc><![CDATA[Agent subform for Acessions.]]></desc>
             <columnDef>p,3dlu,p,3dlu,p,p:g</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,10px,p:g,5dlu,p:g</rowDef>
+            <!--  <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,10px,p:g,5dlu,p:g</rowDef> -->
+            <rowDef auto="true" cell="p" sep="2dlu"/>
 
             <rows>
                 <row>
@@ -587,31 +635,40 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="1" label="Title"/>
-                    <cell type="field" id="1" name="title" uitype="combobox" initialize="data=Asst. Director, Curator, Mr., Mrs., Ms., Dr." valtype="Changed"/> <!-- Needs to be a PickList -->
+                    <cell type="field" id="1" name="title" uitype="combobox" initialize="data=Asst. Director, Curator, Mr., Mrs., Ms., Dr."/> <!-- Needs to be a PickList -->
                     <!--<cell type="field" id="image" name="imageURL" uitype="image" rowspan="11" initialize="size=128,128;border=true"/>-->
                 </row>
                 <row>
                     <cell type="label" labelfor="3" label="Last Name"/>
-                    <cell type="field" id="3" name="lastName" uitype="text" cols="20"  isrequired="true" valtype="Changed"/>
+                    <cell type="field" id="3" name="lastName" uitype="text" cols="20"  isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="4" label="Middle Initial"/>
-                    <cell type="field" id="4" name="middleInitial" uitype="text" cols="3" valtype="Changed"/>
+                    <cell type="field" id="4" name="middleInitial" uitype="text" cols="3"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="5" label="First Name"/>
-                    <cell type="field" id="5" name="firstName" uitype="text" cols="20" isrequired="true" valtype="Changed"/>
+                    <cell type="field" id="5" name="firstName" uitype="text" cols="20" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="7" label="E-mail"/>
-                    <cell type="field" id="7" name="email" uitype="text" cols="32" valtype="Changed"/>
+                    <cell type="field" id="7" name="email" uitype="text" cols="32"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="8" label="Abbreviation"/>
-                    <cell type="field" id="8" name="abbreviation" uitype="text" cols="20" valtype="Changed"/>
+                    <cell type="field" id="8" name="abbreviation" uitype="text" cols="20"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="Address" id="9" name="addresses" colspan="6" valtype="Changed"/>
+                    <cell type="separator" label="Address Information" collapse="addresses" colspan="6"/>
+                </row>
+			    <row>
+                    <cell type="subview" viewname="Address" id="9" name="addresses" colspan="6"/>
+                </row>
+                <row>
+                    <cell type="separator" label="Variant" collapse="variants" colspan="6"/>
+                </row>
+			    <row>
+                    <cell type="subview" viewname="AgentVariant" id="10" name="variants" colspan="6"/>
                 </row>
 			</rows>
         </viewdef>
@@ -625,26 +682,30 @@
 
             <desc><![CDATA[Agent subform for Acessions.]]></desc>
             <columnDef>p,3dlu,p,p:g</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,10px,p:g</rowDef>
-
+            <!--  <rowDef>p,2dlu,p,2dlu,p,2dlu,p,10px,p:g</rowDef> -->
+			<rowDef auto="true" cell="p" sep="2dlu"/>
+			
             <rows>
                 <row>
                     <cell type="separator" label="Organization Info" colspan="4"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="6" label="Organization"/>
-                    <cell type="field" id="6" name="name" uitype="text" cols="30" isrequired="true" valtype="Changed"/>
+                    <cell type="field" id="6" name="name" uitype="text" cols="30" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="5" label="Contact Name"/>
-                    <cell type="field" id="5" name="firstName" uitype="text" cols="20" isrequired="true" valtype="Changed"/>
+                    <cell type="field" id="5" name="firstName" uitype="text" cols="20" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="7" label="Abbreviation"/>
-                    <cell type="field" id="7" name="abbreviation" uitype="text" cols="20" valtype="Changed"/>
+                    <cell type="field" id="7" name="abbreviation" uitype="text" cols="20"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="Address" id="9" name="addresses" colspan="4" valtype="Changed"/>
+                    <cell type="separator" label="Address Information" collapse="addresses" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="Address" id="9" name="addresses" colspan="4"/>
                 </row>
             </rows>
         </viewdef>
@@ -765,23 +826,23 @@
                 
                 <row>
                     <cell type="label" labelfor="5" label="Date Issued"/>
-                    <cell type="field" id="5" name="issuedDate" uitype="formattedtext" uifieldformatter="Date" valtype="Changed"/>
+                    <cell type="field" id="5" name="issuedDate" uitype="formattedtext" uifieldformatter="Date"/>
                     
                     <cell type="label" labelfor="6" label="Date Renewed"/>
-                    <cell type="field" id="6" name="renewalDate" uitype="formattedtext" uifieldformatter="Date" valtype="Changed"/>
+                    <cell type="field" id="6" name="renewalDate" uitype="formattedtext" uifieldformatter="Date"/>
                 </row>
                 
                 <row>
                     <cell type="label" labelfor="7" label="Start Date"/>
-                    <cell type="field" id="7" name="startDate" uitype="formattedtext" uifieldformatter="Date" valtype="Changed"/>
+                    <cell type="field" id="7" name="startDate" uitype="formattedtext" uifieldformatter="Date"/>
                     
                     <cell type="label" labelfor="8" label="End Date"/>
-                    <cell type="field" id="8" name="endDate" uitype="formattedtext" uifieldformatter="Date" valtype="Changed"/>
+                    <cell type="field" id="8" name="endDate" uitype="formattedtext" uifieldformatter="Date"/>
                 </row>
                 
                 <row>
                     <cell type="label" labelfor="9" label="Remarks"/>
-                    <cell type="field" id="9" name="remarks" uitype="textarea" colspan="10" valtype="Changed"/>
+                    <cell type="field" id="9" name="remarks" uitype="textarea" colspan="10"/>
                 </row>
                 <!--
                 <row>
@@ -811,7 +872,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="2" label="Remarks"/>
-                    <cell type="field" id="2" name="remarks" uitype="textarea" colspan="3"  valtype="Changed"/>
+                    <cell type="field" id="2" name="remarks" uitype="textarea" colspan="3" />
                 </row>
 
             </rows>
@@ -829,9 +890,6 @@
             <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
             
             <rows>
-                <row>
-                    <cell type="separator" label="Address Information" colspan="7"/>
-                </row>
                 <row>
                     <cell type="label" labelfor="1" label=""/>
                     <cell type="field" id="1" name="isPrimary" uitype="checkbox" label="Is Primary Address"/>
@@ -947,11 +1005,11 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="1" label="Original Filename"/>
-                    <cell type="field" id="1" name="origFilename" uitype="browse" cols="50" colspan="1" valtype="Changed"/>
+                    <cell type="field" id="1" name="origFilename" uitype="browse" cols="50" colspan="1"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="3" label="Remarks"/>
-                    <cell type="field" id="3" name="remarks" uitype="textarea" colspan="1"  valtype="Changed"/>
+                    <cell type="field" id="3" name="remarks" uitype="textarea" colspan="1" />
                 </row>
             </rows>
         </viewdef>
@@ -999,7 +1057,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="2" label="Remarks"/>
-                    <cell type="field" id="2" name="remarks" uitype="textarea" colspan="5" cols="40" valtype="Changed"/>
+                    <cell type="field" id="2" name="remarks" uitype="textarea" colspan="5" cols="40"/>
                 </row>
             </rows>
         </viewdef>

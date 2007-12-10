@@ -31,12 +31,12 @@ import org.hibernate.annotations.Index;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
-@Table(name = "commonname")
-@org.hibernate.annotations.Table(appliesTo="commonname", indexes =
-    {   @Index (name="CommonNameNameIDX", columnNames={"Name"}),
-        @Index (name="CommonNameCountryIDX", columnNames={"Country"})
+@Table(name = "commonnametx")
+@org.hibernate.annotations.Table(appliesTo="commonnametx", indexes =
+    {   @Index (name="CommonNameTxNameIDX", columnNames={"Name"}),
+        @Index (name="CommonNameTxCountryIDX", columnNames={"Country"})
     })
-public class CommonName extends DataModelObjBase implements Serializable
+public class CommonNameTx extends DataModelObjBase implements Serializable
 {
     protected Integer            commonNameId;
     protected String             country;    // Java Two Character Code
@@ -45,12 +45,12 @@ public class CommonName extends DataModelObjBase implements Serializable
     protected String             name;
     protected Taxon              taxon;
 
-    public CommonName()
+    public CommonNameTx()
     {
         super();
     }
 
-    public CommonName(Integer commonNameId)
+    public CommonNameTx(Integer commonNameId)
     {
         super();
         this.commonNameId = commonNameId;
@@ -98,7 +98,7 @@ public class CommonName extends DataModelObjBase implements Serializable
     @Override
     public Class<?> getDataClass()
     {
-        return CommonName.class;
+        return CommonNameTx.class;
     }
 
     public void setCommonNameId(Integer commonNameId)
@@ -209,7 +209,7 @@ public class CommonName extends DataModelObjBase implements Serializable
     @Transient
     public String getIdentityTitle()
     {
-        return this.name;
+        return this.name != null ? this.name : super.getIdentityTitle();
     }
 
 }

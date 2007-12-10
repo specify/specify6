@@ -157,20 +157,21 @@ public interface UIFieldFormatterIFace
      */
     public abstract boolean isUserInputNeeded();
     
-    /**
-     * @return whether this supports just numeric formats.
-     */
-    public abstract boolean isNumericOnly();
-
     //-----------------------------------------------------------------------
     // The Data Specific Methods
     //-----------------------------------------------------------------------
     
     /**
-     * Quick way to tfind out if it is a date formatter.
+     * Quick way to find out if it is a date formatter.
      * @return true if date formatter
      */
     public abstract boolean isDate();
+
+    /**
+     * Quick way to find out if it is a numeric formatter.
+     * @return true if numeric formatter
+     */
+    public abstract boolean isNumeric();
 
     /**
      * @return the dateWrapper the DateWrapper object for this formatter.

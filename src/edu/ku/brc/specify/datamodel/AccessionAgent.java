@@ -42,8 +42,6 @@ import javax.persistence.UniqueConstraint;
 
 import org.apache.commons.lang.StringUtils;
 
-import edu.ku.brc.dbsupport.DBTableIdMgr;
-
 /**
 
  */
@@ -231,9 +229,9 @@ public class AccessionAgent extends DataModelObjBase implements java.io.Serializ
     {
         String str = (StringUtils.isNotEmpty(role) ? role : "")  + (agent != null ? (": " + agent.getIdentityTitle()) : "");
         
-        if (str.length() == 0)
+        if (StringUtils.isEmpty(str))
         {
-            str = DBTableIdMgr.getInstance().getByShortClassName("Agent").getTitle();
+            str = super.getIdentityTitle();
         }
         return str;
     }

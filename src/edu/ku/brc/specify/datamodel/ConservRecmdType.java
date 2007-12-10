@@ -29,6 +29,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
@@ -173,9 +174,9 @@ public class ConservRecmdType extends DataModelObjBase implements java.io.Serial
     @Transient
     public String getIdentityTitle()
     {
-        if (title != null) return title;
-        return super.getIdentityTitle();
+        return StringUtils.isNotEmpty(title) ? title : super.getIdentityTitle();
     }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */

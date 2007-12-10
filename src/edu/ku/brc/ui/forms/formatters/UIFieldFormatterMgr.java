@@ -14,6 +14,7 @@
  */
 package edu.ku.brc.ui.forms.formatters;
 
+import java.math.BigDecimal;
 import java.security.AccessController;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -314,6 +315,8 @@ public class UIFieldFormatterMgr
                     String  fType         = formatElement.attributeValue("type");
                     String  fieldName     = XMLHelper.getAttr(formatElement, "fieldname", "*");
                     String  dataClassName = formatElement.attributeValue("class");
+                    int     precision     = XMLHelper.getAttr(formatElement, "precision", 12);
+                    int     scale         = XMLHelper.getAttr(formatElement, "scale", 10);
                     boolean isDefault     = XMLHelper.getAttr(formatElement, "default", true);
                     
                     AutoNumberIFace autoNumberObj     = null;
@@ -396,6 +399,8 @@ public class UIFieldFormatterMgr
                             }
                         }
                         
+                        UIFieldFormatter.FormatterType type = UIFieldFormatter.FormatterType.Generic;
+                        
                         UIFieldFormatter.PartialDateEnum partialDateType = UIFieldFormatter.PartialDateEnum.Full;
                         Class<?> dataClass = null;
                         if (StringUtils.isNotEmpty(dataClassName))
@@ -407,6 +412,12 @@ public class UIFieldFormatterMgr
                             {
                                 log.error("Couldn't load class ["+dataClassName+"] for ["+name+"]");
                             }
+                            
+                            if (StringUtils.isNotEmpty(fType) && fType.equals("numeric"))
+                            {
+                                type = UIFieldFormatter.FormatterType.Numeric;
+                            }
+                            
                         } else if (StringUtils.isNotEmpty(fType) && fType.equals("date"))
                         {
                             dataClass = Date.class;
@@ -414,15 +425,21 @@ public class UIFieldFormatterMgr
                             {
                                 partialDateType = UIFieldFormatter.PartialDateEnum.valueOf(partialDateTypeStr);
                             }
+                            type = UIFieldFormatter.FormatterType.Date;
+                              
                         }
 
-                        boolean isDate = StringUtils.isNotEmpty(fType) && fType.equals("date");
-                        UIFieldFormatter formatter = new UIFieldFormatter(name, fieldName, isDate, partialDateType, dataClass, isDefault, isInc, fields);
-                        if (isDate && fields.size() == 0)
+                        UIFieldFormatter formatter = new UIFieldFormatter(name, fieldName, type, partialDateType, dataClass, isDefault, isInc, fields);
+                        if (type == UIFieldFormatter.FormatterType.Date && fields.size() == 0)
                         {
                             addFieldsForDate(formatter);
+                            
+                        } else if (type == UIFieldFormatter.FormatterType.Numeric)
+                        {
+                            formatter.setPrecision(precision);
+                            formatter.setScale(scale);
+                            addFieldsForNumeric(formatter);
                         }
-                        //System.out.println(formatter.toString());
 
                         formatter.setAutoNumber(autoNumberObj);
                         hash.put(name, formatter);
@@ -540,6 +557,49 @@ public class UIFieldFormatterMgr
             formatter.setDateWrapper(new DateWrapper(new SimpleDateFormat(newFormatStr.toString())));
         }
     }
+    
+
+    /**
+     * Constructs a the fields for a numeric formatter.
+     * @param formatter the formatter to be augmented
+     */
+    protected void addFieldsForNumeric(final UIFieldFormatter formatter)
+    {
+        int len;
+        Class<?> cls = formatter.getDataClass();
+        if (cls == Long.class)
+        {
+            len = Long.toString(Long.MAX_VALUE).length();
+        } else if (cls == Integer.class)
+        {
+            len = Integer.toString(Integer.MAX_VALUE).length();
+        } else if (cls == Short.class)
+        {
+            len = Short.toString(Short.MAX_VALUE).length();
+        } else if (cls == Byte.class)
+        {
+            len = Byte.toString(Byte.MAX_VALUE).length();
+        } else if (cls == Double.class)
+        {
+            len = String.format("%f", Double.MAX_VALUE).length();
+        } else if (cls == Float.class)
+        {
+            len = String.format("%f", Float.MAX_VALUE).length();
+        } else if (cls == BigDecimal.class)
+        {
+            len = formatter.getPrecision() + formatter.getScale() + 1;
+        } else
+        {
+            throw new RuntimeException("Missing case for numeric class ["+cls.getName()+"]");
+        }
+        StringBuilder sb = new StringBuilder(len);
+        for (int i=0;i<len;i++)
+        {
+            sb.append(' ');
+        }
+        formatter.getFields().add(new UIFieldFormatterField(UIFieldFormatterField.FieldType.numeric, len, sb.toString(), false));
+    }
+
     
     /*
     public static void test()

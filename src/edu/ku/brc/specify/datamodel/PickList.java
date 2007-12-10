@@ -41,6 +41,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
@@ -364,6 +365,6 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
     @Transient
     public String getIdentityTitle()
     {
-        return name;
+        return StringUtils.isNotEmpty(name) ? name : super.getIdentityTitle();
     }
 }

@@ -43,7 +43,6 @@ public class TextFieldFromPickListTable extends JTextField implements GetSetValu
     
     protected Object                 dataObj    = null;
     protected PickListDBAdapterIFace adapter;
-    //protected Color                  bgColor    = null;
 
     /**
      * Constructor.
@@ -52,14 +51,15 @@ public class TextFieldFromPickListTable extends JTextField implements GetSetValu
     public TextFieldFromPickListTable(final PickListDBAdapterIFace adapter)
     {
         super();
-        if (adapter.isTabledBased())
-        {
+        
+        //if (adapter.isTabledBased())
+       // {
             this.adapter = adapter; 
             
-        } else
-        {
-           throw new RuntimeException("Wrong type of picklist! Must be table based wher the type is not 0.");
-        }
+        //} else
+        //{
+        //   throw new RuntimeException("Wrong type of picklist! Must be table based wher the type is not 0.");
+        //}
         
         setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
 
@@ -85,42 +85,52 @@ public class TextFieldFromPickListTable extends JTextField implements GetSetValu
         
         if (value != null)
         {
-            String data = null;
-
-            boolean                   isFormObjIFace = value instanceof FormDataObjIFace;
-            Vector<PickListItemIFace> items          = adapter.getList();
-            
-            for (int i=0;i<items.size();i++)
+            if (adapter.isTabledBased())
             {
-                PickListItemIFace pli    = items.get(i);
-                Object       valObj = pli.getValueObject();
+                String data = null;
+    
+                boolean                   isFormObjIFace = value instanceof FormDataObjIFace;
+                Vector<PickListItemIFace> items          = adapter.getList();
                 
-                if (valObj != null)
+                for (int i=0;i<items.size();i++)
                 {
-                    if (isFormObjIFace && valObj instanceof FormDataObjIFace)
+                    PickListItemIFace pli    = items.get(i);
+                    Object       valObj = pli.getValueObject();
+                    
+                    if (valObj != null)
                     {
-                        //System.out.println(((FormDataObjIFace)value).getId().longValue()+"  "+(((FormDataObjIFace)valObj).getId().longValue()));
-                        if (((FormDataObjIFace)value).getId().intValue() == (((FormDataObjIFace)valObj).getId().intValue()))
+                        if (isFormObjIFace && valObj instanceof FormDataObjIFace)
+                        {
+                            //System.out.println(((FormDataObjIFace)value).getId().longValue()+"  "+(((FormDataObjIFace)valObj).getId().longValue()));
+                            if (((FormDataObjIFace)value).getId().intValue() == (((FormDataObjIFace)valObj).getId().intValue()))
+                            {
+                                data = pli.getTitle();
+                                break;                                
+                            }
+                        } else if (pli.getValue().equals(value.toString()))
                         {
                             data = pli.getTitle();
-                            break;                                
+                            break;                            
                         }
-                    } else if (pli.getValue().equals(value.toString()))
+                    }
+                } 
+                
+                if (data == null)
+                {
+                    data = StringUtils.isNotEmpty(defaultValue) ? defaultValue : "";
+                }
+                
+                setText(data);
+            } else
+            {
+                for (PickListItemIFace item : adapter.getList())
+                {
+                    if (item.getValue().equals(value.toString()))
                     {
-                        data = pli.getTitle();
-                        break;                            
+                        setText(item.getTitle());
                     }
                 }
-
-
-            } 
-            
-            if (data == null)
-            {
-                data = StringUtils.isNotEmpty(defaultValue) ? defaultValue : "";
             }
-            
-            setText(data);
 
             repaint();
         }

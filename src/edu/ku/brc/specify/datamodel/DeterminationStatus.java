@@ -34,6 +34,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Index;
 
 /**
@@ -189,7 +190,7 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
     @Transient
     public String getIdentityTitle()
     {
-        return this.name;
+        return StringUtils.isNotEmpty(name) ? name : super.getIdentityTitle();
     }
 
 }

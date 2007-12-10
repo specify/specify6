@@ -99,7 +99,7 @@ public class UIValidator
             }
         } else if (uiv == null || !uiv.isRequired())
         {
-            throw new RuntimeException("Component doesn't have a validation rule AND it isn't required, so why are creating a UIValidator!");
+            //throw new RuntimeException("Component doesn't have a validation rule AND it isn't required, so why are creating a UIValidator!");
         }
 
     }
@@ -163,7 +163,7 @@ public class UIValidator
      */
     public boolean validate()
     {
-        log.debug("ignoreAllValidation "+ignoreAllValidation);
+        //log.debug("ignoreAllValidation "+ignoreAllValidation);
         if (ignoreAllValidation)
         {
             return true;

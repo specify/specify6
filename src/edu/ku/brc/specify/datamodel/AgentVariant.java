@@ -178,11 +178,14 @@ public class AgentVariant extends CollectionMember implements Serializable
         return 107;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
+     */
     @Override
     @Transient
     public String getIdentityTitle()
     {
-        return this.name;
+        return this.name != null ? this.name : super.getIdentityTitle();
     }
 
 }

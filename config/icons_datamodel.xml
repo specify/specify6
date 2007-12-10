@@ -23,7 +23,7 @@
     <icon name="collector"      file="collector.png" sizes="all"/>
     <icon name="collectionobject" file="collection_object.png" sizes="all"/>
     <icon name="collectionobjectcitation" file="citation.png" sizes="all"/>
-    <icon name="commonname"           file="common_name.png" sizes="all"/>
+    <icon name="commonnametx"         file="common_name.png" sizes="all"/>
     <icon name="container"            file="container.png" sizes="all"/>
     <icon name="conservator"          file="conservator.png" sizes="all"/>
     <icon name="conservdescription"   file="conserv_description.png" sizes="all"/>
@@ -121,7 +121,7 @@
     <icon name="Collector"              alias="collector"/>
     <icon name="CollectionName"         alias="collectionname"/>
     <icon name="CollectionObject"       alias="collectionobject"/>
-    <icon name="CommonName"             alias="commonname"/>
+    <icon name="CommonNameTx"           alias="commonnametx"/>
     <icon name="Conservator"            alias="conservator"/>
     <icon name="ConservDescription"     alias="conservdescription"/>
     <icon name="ConservEvent"           alias="conservevent"/>

@@ -33,7 +33,8 @@
 		<plugin class="edu.ku.brc.specify.tasks.SystemSetupTask" addui="true"/>
 		
 		<plugin class="edu.ku.brc.specify.tasks.WorkbenchTask" addui="true"/>
-		<!--  <plugin class="edu.ku.brc.af.tasks.EditorTask" addui="true"/>  -->
+		
+		<plugin class="edu.ku.brc.af.tasks.EditorTask" addui="true"/>
 		
 		<plugin class="edu.ku.brc.specify.tasks.ExportTask" addui="false"/>
 		

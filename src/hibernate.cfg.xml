@@ -70,7 +70,7 @@
 		<mapping class="edu.ku.brc.specify.datamodel.CollectionType"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Collector"/>
 		<mapping class="edu.ku.brc.specify.datamodel.CollectionObjectAttributes"/>
-		<mapping class="edu.ku.brc.specify.datamodel.CommonName"/>
+		<mapping class="edu.ku.brc.specify.datamodel.CommonNameTx"/>
 		<mapping class="edu.ku.brc.specify.datamodel.ConservDescription"/>
 		<mapping class="edu.ku.brc.specify.datamodel.ConservDescriptionAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.ConservEvent"/>

@@ -41,6 +41,7 @@ import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.forms.persist.FormCellSubViewIFace;
 import edu.ku.brc.ui.forms.persist.ViewIFace;
+import edu.ku.brc.ui.forms.validation.FormValidator;
 
 /**
  * @author rods
@@ -214,16 +215,22 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
         multiView.setData(dataObj);
         multiView.setClassToCreate(classToCreate);
         
-        multiView.getCurrentViewAsFormViewObj().getValidator().setEnabled(true);
-        
-        multiView.addCurrentValidator();
+        FormValidator formVal = multiView.getCurrentViewAsFormViewObj().getValidator();
+        if (formVal != null)
+        {
+            formVal.setEnabled(true);
+            multiView.addCurrentValidator();
+        }
         
         dlg.createUI();
         frame.getOkBtn().setEnabled(true);
         
         frame.showDisplay(true);
         
-        mvParent.removeCurrentValidator();
+        if (formVal != null)
+        {
+            mvParent.removeCurrentValidator();
+        }
         
         if (multiView != null && frame.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
         {

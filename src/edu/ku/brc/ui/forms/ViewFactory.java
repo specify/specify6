@@ -23,6 +23,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Insets;
 import java.lang.reflect.Field;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -124,7 +125,8 @@ public class ViewFactory
     protected static ColorWrapper     viewFieldColor = null;
     protected static boolean          doFixLabels    = true;
 
-    protected MultiView               rootMultiView  = null; // transient - is valid only during a build process
+    // transient - is valid only during a build process
+    protected MultiView               rootMultiView    = null; 
 
     /**
      * Constructor.
@@ -232,19 +234,21 @@ public class ViewFactory
      */
     public static JTextField createTextField(final FormValidator validator,
                                              final FormCellField cellField,
+                                             final DBFieldInfo   fieldInfo,
+                                             final boolean       isRequired,
                                              final PickListDBAdapterIFace adapter)
     {
         String validationRule = cellField.getValidationRule();
-
+       
         JTextField txtField;
-        if (validator != null && (cellField.isRequired() || isNotEmpty(validationRule) || cellField.isChangeListenerOnly()))
+        if (validator != null && (isRequired || isNotEmpty(validationRule) || cellField.isChangeListenerOnly()))
         {
             ValTextField textField = new ValTextField(cellField.getTxtCols(), adapter);
-            textField.setRequired(cellField.isRequired());
+            textField.setRequired(isRequired);
 
             validator.hookupTextField(textField,
-                                      cellField.getIdent()+"_text",
-                                      cellField.isRequired(),
+                                      cellField.getIdent(),//+"_text",
+                                      isRequired,
                                       parseValidationType(cellField.getValidationType()),
                                       cellField.getValidationRule(),
                                       cellField.isChangeListenerOnly());
@@ -261,7 +265,7 @@ public class ViewFactory
 
         } else
         {
-            txtField = new JTextField(cellField.getTxtCols());
+            txtField = new ValTextField(cellField.getTxtCols());
         }
         
         return txtField;
@@ -271,23 +275,25 @@ public class ViewFactory
      * Creates a ValPasswordField.
      * @param validator a validator to hook the control up to (may be null)
      * @param cellField the definition of the cell for this control
+     * @param isRequired whether the field is required or not
      * @return a ValPasswordField
      */
     public static JTextField createPasswordField(final FormValidator validator,
-                                                 final FormCellField cellField)
+                                                 final FormCellField cellField,
+                                                 final boolean isRequired)
     {
         String validationRule = cellField.getValidationRule();
         JTextField txt;
 
-        if (validator != null && (cellField.isRequired() || isNotEmpty(validationRule) || cellField.isChangeListenerOnly()))
+        if (validator != null && (isRequired || isNotEmpty(validationRule) || cellField.isChangeListenerOnly()))
         {
             ValPasswordField textField = new ValPasswordField(cellField.getTxtCols());
-            textField.setRequired(cellField.isRequired());
+            textField.setRequired(isRequired);
             textField.setEncrypted(cellField.isEncrypted());
 
             validator.hookupTextField(textField,
                                       cellField.getIdent(),
-                                      cellField.isRequired(),
+                                      isRequired,
                                       parseValidationType(cellField.getValidationType()),
                                       validationRule,
                                       cellField.isChangeListenerOnly());
@@ -307,12 +313,16 @@ public class ViewFactory
      * Creates a ValFormattedTextField.
      * @param validator a validator to hook the control up to (may be null)
      * @param cellField the definition of the cell for this control
+     * @param isViewOnly whether it is in view mode
+     * @param isRequired whether the field is required or not
      * @param allEditOK indicates that all the fields should be editable (event the auto-numbered field)
      * @return ValFormattedTextField
      */
     public static JComponent createFormattedTextField(final FormValidator validator,
                                                       final FormCellField cellField,
+                                                      final String        uiFormatterName,
                                                       final boolean       isViewOnly,
+                                                      final boolean       isRequired,
                                                       final boolean       allEditOK)
     {
         //log.debug(cellField.getName()+"  "+cellField.getUIFieldFormatter());
@@ -325,20 +335,20 @@ public class ViewFactory
 
             
             // THis is the OLD way before the UIFieldFormatter was moved into the DBFieldInfo and also the CellField
-            UIFieldFormatterIFace formatter = UIFieldFormatterMgr.getFormatter(cellField.getUIFieldFormatterName());
+            UIFieldFormatterIFace formatter = UIFieldFormatterMgr.getFormatter(uiFormatterName);
             if (formatter == null)
             {
                 throw new RuntimeException("Missing formatter by name ["+cellField.getUIFieldFormatterName()+"]");
             }
             
-            if (formatter.isDate())
+            if (formatter.isDate() || formatter.isNumeric())
             {
-                ValFormattedTextFieldSingle textField = new ValFormattedTextFieldSingle(cellField.getUIFieldFormatterName(), isViewOnly);
-                textField.setRequired(cellField.isRequired());
+                ValFormattedTextFieldSingle textField = new ValFormattedTextFieldSingle(uiFormatterName, isViewOnly);
+                textField.setRequired(isRequired);
                 
                 validator.hookupTextField(textField,
                                           cellField.getIdent(),
-                                          cellField.isRequired(),
+                                          isRequired,
                                           UIValidator.Type.Changed,  cellField.getValidationRule(), false);
                 
                 if (isViewOnly)
@@ -352,7 +362,7 @@ public class ViewFactory
             }
 
             ValFormattedTextField textField = new ValFormattedTextField(formatter, isViewOnly, allEditOK);
-            textField.setRequired(cellField.isRequired());
+            textField.setRequired(isRequired);
             
             DataChangeNotifier dcn = validator.hookupComponent(textField,
                                                                cellField.getIdent(),
@@ -365,12 +375,12 @@ public class ViewFactory
         
         if (isViewOnly)
         {
-            ValFormattedTextFieldSingle vtfs = new ValFormattedTextFieldSingle(cellField.getUIFieldFormatterName(), isViewOnly);
+            ValFormattedTextFieldSingle vtfs = new ValFormattedTextFieldSingle(uiFormatterName, isViewOnly);
             changeTextFieldUIForDisplay(vtfs, cellField.getPropertyAsBoolean("transparent", false));
             return vtfs;
         }
         // else
-        ValFormattedTextField vtf = new ValFormattedTextField(cellField.getUIFieldFormatterName(), isViewOnly, allEditOK);
+        ValFormattedTextField vtf = new ValFormattedTextField(uiFormatterName, isViewOnly, allEditOK);
         vtf.setEnabled(!cellField.isReadOnly());
         return vtf;
     }
@@ -416,10 +426,12 @@ public class ViewFactory
      * Creates a ValListBox.
      * @param validator a validator to hook the control up to (may be null)
      * @param cellField the definition of the cell for this control
+     * @param isRequired whether the field is required or not
      * @return ValListBox
      */
     public static JList createList(final FormValidator validator,
-                                   final FormCellField cellField)
+                                   final FormCellField cellField,
+                                   final boolean isRequired)
     {
         String[] initArray = null;
         String dataStr = cellField.getProperty("data");
@@ -433,13 +445,13 @@ public class ViewFactory
         }
 
         ValListBox valList = initArray == null ? new ValListBox() : new ValListBox(initArray);
-        if (validator != null && (cellField.isRequired() || isNotEmpty(cellField.getValidationRule())))
+        if (validator != null && (isRequired || isNotEmpty(cellField.getValidationRule())))
         {
             DataChangeNotifier dcn = validator.hookupComponent(valList, cellField.getIdent(), parseValidationType(cellField.getValidationType()), cellField.getValidationRule(), false);
             valList.getModel().addListDataListener(dcn);
             valList.addFocusListener(dcn);
         }
-        valList.setRequired(cellField.isRequired());
+        valList.setRequired(isRequired);
         
         valList.setVisibleRowCount(cellField.getPropertyAsInt("rows", 15));
         
@@ -451,10 +463,12 @@ public class ViewFactory
      * Creates a ValComboBoxFromQuery.
      * @param validator a validator to hook the control up to (may be null)
      * @param cellField the definition of the cell for this control
+     * @param isRequired whether the field is required or not
      * @return ValComboBoxFromQuery
      */
     public static ValComboBoxFromQuery createQueryComboBox(final FormValidator validator,
-                                                           final FormCellField cellField)
+                                                           final FormCellField cellField,
+                                                           final boolean       isRequired)
     {
         //String cbxName = cellField.getInitialize();
         String cbxName = cellField.getProperty("name");
@@ -466,11 +480,11 @@ public class ViewFactory
             btnOpts |= cellField.getPropertyAsBoolean("searchbtn", true) ? ValComboBoxFromQuery.CREATE_SEARCH_BTN : 0;
 
             ValComboBoxFromQuery cbx = TypeSearchForQueryFactory.createValComboBoxFromQuery(cbxName, btnOpts);
-            cbx.setRequired(cellField.isRequired());
+            cbx.setRequired(isRequired);
             if (validator != null)// && (cellField.isRequired() || isNotEmpty(cellField.getValidationRule())))
             {
                 DataChangeNotifier dcn = validator.hookupComponent(cbx, cellField.getIdent(), parseValidationType(cellField.getValidationType()), cellField.getValidationRule(), false);
-                cbx.getComboBox().getModel().addListDataListener(dcn);
+                cbx.addListSelectionListener(dcn);
 
                 //if (dcn.getValidationType() == UIValidator.Type.Focus) // returns None when no Validator
                 //{
@@ -489,11 +503,13 @@ public class ViewFactory
      * Creates a ValComboBox.
      * @param validator a validator to hook the control up to (may be null)
      * @param cellField the definition of the cell for this control
+     * @param isRequired whether the field is required or not
      * @return ValComboBox
      */
     public static ValComboBox createValComboBox(final FormValidator validator,
                                                 final FormCellField cellField,
-                                                final PickListDBAdapterIFace adapter)
+                                                final PickListDBAdapterIFace adapter,
+                                                final boolean isRequired)
     {
         boolean                makeEditable = cellField.getPropertyAsBoolean("editable", false);
         ValComboBox            cbx          = null;
@@ -516,9 +532,9 @@ public class ViewFactory
 
             cbx = initArray == null || initArray.length == 0 ? new ValComboBox(makeEditable) : new ValComboBox(initArray, makeEditable);
         }
-        cbx.setRequired(cellField.isRequired());
+        cbx.setRequired(isRequired);
         
-        if (validator != null && (cellField.isRequired() || cellField.isChangeListenerOnly() || isNotEmpty(cellField.getValidationRule())))
+        if (validator != null && (isRequired || cellField.isChangeListenerOnly() || isNotEmpty(cellField.getValidationRule())))
         {
             DataChangeNotifier dcn = validator.hookupComponent(cbx, 
                                                                cellField.getIdent(), 
@@ -707,12 +723,14 @@ public class ViewFactory
     /**
      * Creates an ImageDisplay control,
      * @param cellField FormCellField info
-     * @param mode indicates whether in Edit or View mode
+     * @param isViewMode indicates whether in Edit or View mode
+     * @param isRequired whether the field is required or not
      * @return the control
      */
     public static JComponent createPlugin(final FormValidator validator, 
                                           final FormCellField cellField,
-                                          final boolean       isViewMode)
+                                          final boolean       isViewMode,
+                                          final boolean       isRequired)
     {
         String pluginName = cellField.getProperty("name");
         if (StringUtils.isEmpty(pluginName))
@@ -732,7 +750,7 @@ public class ViewFactory
                 // This needs to be done before the initialize.
                 if (uip instanceof UIValidatable)
                 {
-                    ((UIValidatable)uip).setRequired(cellField.isRequired());
+                    ((UIValidatable)uip).setRequired(isRequired);
                 }
 
                 // initialize the plugin object
@@ -748,7 +766,7 @@ public class ViewFactory
                 }
                 
                 if (validator != null && (cellField.isChangeListenerOnly() || 
-                        cellField.isRequired() || 
+                        isRequired || 
                         isNotEmpty(cellField.getValidationRule())))
                 {
                     DataChangeNotifier dcn = validator.hookupComponent(pluginUI, 
@@ -806,7 +824,8 @@ public class ViewFactory
     }
 
 
-    protected void createItem(final MultiView                   parent,
+    protected void createItem(final DBFieldInfo                 fieldInfo,
+                              final MultiView                   parent,
                               final FormViewDefIFace            formViewDef,
                               final FormValidator               validator,
                               final ViewBuilderIFace            viewBldObj,
@@ -822,7 +841,6 @@ public class ViewFactory
         bi.compToReg      = null;
         bi.doAddToValidator = true;
         bi.doRegControl     = true;
-        
         
         if (isEditOnCreateOnly)
         {
@@ -913,10 +931,7 @@ public class ViewFactory
         {
             FormCellField cellField = (FormCellField)cell;
             
-            if (cellField.isRequired())
-            {
-                bi.isRequired = true;
-            }
+            bi.isRequired = cellField.isRequired() || (fieldInfo != null && fieldInfo.isRequired());
             
             FormCellField.FieldType uiType = cellField.getUiType();
             
@@ -942,7 +957,7 @@ public class ViewFactory
             {
                 if (uiType == FormCellFieldIFace.FieldType.combobox && cellField.getDspUIType() != FormCellFieldIFace.FieldType.textpl)
                 {
-                    if (adapter != null && adapter.isTabledBased())
+                    if (adapter != null)// && adapter.isTabledBased())
                     {
                         uiType = FormCellFieldIFace.FieldType.textpl;
                         cellField.setDspUIType(uiType);
@@ -957,17 +972,39 @@ public class ViewFactory
                 }
             }
             
+            String uiFormatName = cellField.getUIFieldFormatterName();
+            if (mode == AltViewIFace.CreationMode.EDIT && 
+                uiType == FormCellField.FieldType.text && 
+                fieldInfo != null)
+            {
+                Class<?> cls = fieldInfo.getDataClass();
+                if (cls != String.class &&   // it's usually a string so short circuit
+                    (cls == Integer.class || 
+                     cls == Long.class || 
+                     cls == Byte.class || 
+                     cls == Double.class || 
+                     cls == Float.class || 
+                     cls == BigDecimal.class))
+                {
+                    log.debug(cellField.getName()+"  is being changed to NUMERIC");
+                    uiType =  FormCellField.FieldType.formattedtext;
+                    uiFormatName = "Numeric" + cls.getSimpleName();
+                }
+            }
+
+            
             // Create the UI Component
             
             switch (uiType)
             {
                 case text:
-                    bi.compToAdd = createTextField(validator, cellField, adapter);
+                    
+                    bi.compToAdd = createTextField(validator, cellField, fieldInfo, bi.isRequired, adapter);
                     bi.doAddToValidator = validator == null; // might already added to validator
                     break;
                 
                 case formattedtext:
-                    bi.compToAdd = createFormattedTextField(validator, cellField, mode == AltViewIFace.CreationMode.VIEW, cellField.getPropertyAsBoolean("alledit", false));
+                    bi.compToAdd = createFormattedTextField(validator, cellField, uiFormatName, mode == AltViewIFace.CreationMode.VIEW, bi.isRequired, cellField.getPropertyAsBoolean("alledit", false));
                     bi.doAddToValidator = validator == null; // might already added to validator
                     break;
                     
@@ -984,7 +1021,7 @@ public class ViewFactory
                         bi.compToAdd = text;
                     } else
                     {
-                        bi.compToAdd = createTextField(validator, cellField, adapter);
+                        bi.compToAdd = createTextField(validator, cellField, fieldInfo, bi.isRequired, adapter);
                         bi.doAddToValidator = validator == null; // might already added to validator
                     }
                     break;
@@ -1007,14 +1044,14 @@ public class ViewFactory
                     break;
                 
                 case combobox:
-                    bi.compToAdd = createValComboBox(validator, cellField, adapter);
+                    bi.compToAdd = createValComboBox(validator, cellField, adapter, bi.isRequired);
                     bi.doAddToValidator = validator != null; // might already added to validator
                     break;
                     
                 case checkbox:
                 {
                     ValCheckBox checkbox = new ValCheckBox(cellField.getLabel(), 
-                                                           cellField.isRequired(), 
+                                                           bi.isRequired, 
                                                            cellField.isReadOnly() || mode == AltViewIFace.CreationMode.VIEW);
                     if (validator != null)
                     {
@@ -1033,7 +1070,7 @@ public class ViewFactory
                     String maxStr = cellField.getProperty("max");
                     int    max    = StringUtils.isNotEmpty(maxStr) ? Integer.parseInt(maxStr) : 0; 
                     
-                    ValSpinner spinner = new ValSpinner(min, max, cellField.isRequired(), 
+                    ValSpinner spinner = new ValSpinner(min, max, bi.isRequired, 
                                                            cellField.isReadOnly() || mode == AltViewIFace.CreationMode.VIEW);
                     if (validator != null)
                     {
@@ -1045,7 +1082,7 @@ public class ViewFactory
                 }                            
                  
                 case password:
-                    bi.compToAdd      = createPasswordField(validator, cellField);
+                    bi.compToAdd      = createPasswordField(validator, cellField, bi.isRequired);
                     bi.doAddToValidator = validator == null; // might already added to validator
                     break;
                 
@@ -1068,7 +1105,7 @@ public class ViewFactory
                 
                 case browse:
                 {
-                    JTextField textField = createTextField(validator, cellField, null);
+                    JTextField textField = createTextField(validator, cellField, null, bi.isRequired, null);
                     if (textField instanceof ValTextField)
                     {
                         ValBrowseBtnPanel bbp = new ValBrowseBtnPanel((ValTextField)textField, 
@@ -1088,7 +1125,7 @@ public class ViewFactory
                     
                 case querycbx:
                 {
-                    ValComboBoxFromQuery cbx = createQueryComboBox(validator, cellField);
+                    ValComboBoxFromQuery cbx = createQueryComboBox(validator, cellField, bi.isRequired);
                     cbx.setMultiView(parent);
                     cbx.setFrameTitle(cellField.getProperty("title"));
                     
@@ -1099,7 +1136,7 @@ public class ViewFactory
                 
                 case list:
                 {
-                    JList list = createList(validator, cellField);
+                    JList list = createList(validator, cellField, bi.isRequired);
                     
                     JScrollPane scrollPane = new JScrollPane(list);
                     scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -1135,7 +1172,7 @@ public class ViewFactory
                     break;
                 
                 case plugin:
-                    bi.compToAdd = createPlugin(validator, cellField, mode == AltViewIFace.CreationMode.VIEW);
+                    bi.compToAdd = createPlugin(validator, cellField, mode == AltViewIFace.CreationMode.VIEW, bi.isRequired);
                     break;
 
                 case textpl:
@@ -1345,7 +1382,9 @@ public class ViewFactory
                     
                     AltViewIFace     altView        = subView.getDefaultAltView();
                     FormViewDefIFace subFormViewDef = (FormViewDefIFace)altView.getViewDef();
-                    processRows(parent, formViewDef, validator, viewBldObj, altView.getMode(), labelsForHash, currDataObj, subFormViewDef.getRows());
+                    DBTableInfo      sbTableInfo    = DBTableIdMgr.getInstance().getByClassName(subView.getClassName());  
+
+                    processRows(sbTableInfo, parent, formViewDef, validator, viewBldObj, altView.getMode(), labelsForHash, currDataObj, subFormViewDef.getRows());
                     viewBldObj.closeSubView(cellSubView);
                     bi.colInx += 2;
                 }
@@ -1372,7 +1411,7 @@ public class ViewFactory
             {
                 PanelViewable panelViewable = new PanelViewable(viewBldObj, cellPanel);
 
-                processRows(parent, formViewDef, validator, panelViewable, mode, labelsForHash, currDataObj, cellPanel.getRows());
+                processRows(null, parent, formViewDef, validator, panelViewable, mode, labelsForHash, currDataObj, cellPanel.getRows());
 
                 bi.compToAdd = panelViewable;
 
@@ -1394,6 +1433,7 @@ public class ViewFactory
     
     /**
      * Processes the rows in a definition.
+     * @param tableInfo table info for current form (may be null)
      * @param parent MultiView parent
      * @param formViewDef the FormViewDef (Viewdef)
      * @param validator optional validator
@@ -1405,7 +1445,8 @@ public class ViewFactory
      * @param currDataObj the current data object
      * @param formRows the list of rows to be processed
      */
-    protected void processRows(final MultiView                 parent,
+    protected void processRows(final DBTableInfo               tableInfo,
+                               final MultiView                 parent,
                                final FormViewDefIFace          formViewDef,
                                final FormValidator             validator,
                                final ViewBuilderIFace          viewBldObj,
@@ -1425,6 +1466,12 @@ public class ViewFactory
 
             for (FormCellIFace cell : row.getCells())
             {
+                DBFieldInfo fieldInfo = null;
+                if (tableInfo != null)
+                {
+                    fieldInfo = tableInfo.getFieldByName(cell.getName());
+                }
+                
                 boolean isEditOnCreateOnly = false;
                 if (mode == AltViewIFace.CreationMode.EDIT && cell.getType() == FormCellIFace.CellType.field)
                 {
@@ -1432,7 +1479,8 @@ public class ViewFactory
                     ((FormCellField)cell).setEditOnCreate(true);
                 }
                 
-                createItem(parent, formViewDef, validator, viewBldObj, mode, labelsForHash, currDataObj, cell, isEditOnCreateOnly, rowInx, bi);
+                createItem(fieldInfo, parent, formViewDef, validator, viewBldObj, mode, labelsForHash, currDataObj, cell, isEditOnCreateOnly, rowInx, bi);
+                
                 //log.debug(cell.getType()+" "+cell.getName());
                 if (bi.compToAdd != null)
                 {
@@ -1448,12 +1496,12 @@ public class ViewFactory
                     bi2.curMaxRow  = 1;
                     bi2.colInx     = 1;
                     
-                    createItem(parent, formViewDef, evcsp.getValidator(), viewBldObj, AltViewIFace.CreationMode.EDIT, 
+                    createItem(fieldInfo, parent, formViewDef, evcsp.getValidator(), viewBldObj, AltViewIFace.CreationMode.EDIT, 
                                labelsForHash, currDataObj, cell, false, rowInx, bi2);
                     Component editCompReg = bi2.compToReg;
                     Component editCompAdd = bi2.compToAdd;
                     
-                    createItem(parent, formViewDef, null, viewBldObj, AltViewIFace.CreationMode.VIEW, 
+                    createItem(fieldInfo, parent, formViewDef, null, viewBldObj, AltViewIFace.CreationMode.VIEW, 
                                labelsForHash, currDataObj, cell, false, rowInx, bi2);
                     Component viewCompReg = bi2.compToReg;
                     Component viewCompAdd = bi2.compToAdd;
@@ -1759,9 +1807,10 @@ public class ViewFactory
             FormViewObj formViewObj = new FormViewObj(view, altView, parentView, validator, options, bgColor);
 
             Object currDataObj = formViewObj.getCurrentDataObj();
+            
+            DBTableInfo tableInfo  = DBTableIdMgr.getInstance().getByClassName(view.getClassName());  
 
-            processRows(parentView, formViewDef, validator, formViewObj, altView.getMode(), labelsForHash, currDataObj, formViewDef.getRows());
-
+            processRows(tableInfo, parentView, formViewDef, validator, formViewObj, altView.getMode(), labelsForHash, currDataObj, formViewDef.getRows());
 
             if (validatedPanel != null)
             {
@@ -1839,6 +1888,8 @@ public class ViewFactory
                 validator.setDataChangeNotification(true);
             }
             
+            DBTableInfo tableInfo  = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
+            
             // Special situation where we create a table from a Form Definition
             if (viewDef instanceof FormViewDef)
             {
@@ -1846,7 +1897,8 @@ public class ViewFactory
                 Hashtable<String, JLabel> labelsForHash = new Hashtable<String, JLabel>();
                 TableViewObj              tableViewObj  = new TableViewObj(view, altView, parentView, validator, options, bgColor);
 
-                processRows(parentView, formViewDef, null, tableViewObj, altView.getMode(), labelsForHash, validator, formViewDef.getRows());
+
+                processRows(tableInfo, parentView, formViewDef, null, tableViewObj, altView.getMode(), labelsForHash, validator, formViewDef.getRows());
                 return tableViewObj;
                 
             }
@@ -1870,7 +1922,7 @@ public class ViewFactory
             
             //Object currDataObj = tableViewObj.getCurrentDataObj();
 
-            processRows(parentView, formViewDef, null, tableViewObj, altView.getMode(), labelsForHash, validator, formViewDef.getRows());
+            processRows(tableInfo, parentView, formViewDef, null, tableViewObj, altView.getMode(), labelsForHash, validator, formViewDef.getRows());
 
         /*
         if (validatedPanel != null)
@@ -1947,8 +1999,10 @@ public class ViewFactory
                 Hashtable<String, JLabel> labelsForHash = new Hashtable<String, JLabel>();
                 
                 rsTableViewObj  = new RecordSetTableViewObj(view, altView, parentView, null, 0, bgColor);
-
-                processRows(parentView, formViewDef, null, rsTableViewObj, altView.getMode(), labelsForHash, null, formViewDef.getRows());
+                
+                DBTableInfo tableInfo  = DBTableIdMgr.getInstance().getByClassName(view.getClassName());  
+                
+                processRows(tableInfo, parentView, formViewDef, null, rsTableViewObj, altView.getMode(), labelsForHash, null, formViewDef.getRows());
                 return rsTableViewObj;
             }
 

@@ -40,6 +40,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
@@ -167,8 +168,7 @@ public class PrepType extends DataModelObjBase implements java.io.Serializable
     @Transient
     public String getIdentityTitle()
     {
-        if (name != null) return name;
-        return super.getIdentityTitle();
+        return StringUtils.isNotEmpty(name) ? name : super.getIdentityTitle();
     }
 
     /**

@@ -42,6 +42,7 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.forms.persist.AltViewIFace;
+import edu.ku.brc.ui.forms.persist.ViewDefIFace;
 import edu.ku.brc.ui.forms.persist.ViewIFace;
 import edu.ku.brc.ui.forms.validation.FormValidator;
 
@@ -72,7 +73,7 @@ public class MultiView extends JPanel
     public static final int NO_SCROLLBARS          =  64; // Whether the form should be scrollable
     public static final int ADD_SEARCH_BTN         = 128; // Whether a special search btn should be added
     public static final int DONT_ADD_ALL_ALTVIEWS  = 256; // Whether it is OK to add all the AltView to the Switcher
-    public static final int USE_ONLY_CREATION_MODE = 512; // Crate only the AltViews that have the same creation mode
+    public static final int USE_ONLY_CREATION_MODE = 512; // Create only the AltViews that have the same creation mode
 
     // Statics
     private static final Logger log = Logger.getLogger(MultiView.class);
@@ -201,7 +202,7 @@ public class MultiView extends JPanel
         boolean isUsingOnlyCreationMode = MultiView.isOptionOn(createOptions, MultiView.USE_ONLY_CREATION_MODE);
         boolean isUsingSelector         = StringUtils.isNotEmpty(view.getSelectorName());
         
-        //log.debug("isUsingOnlyCreationMode "+isUsingOnlyCreationMode + " " + createWithMode + "  defaultAltViewType: "+defaultAltViewType);
+        log.debug("isUsingOnlyCreationMode "+isUsingOnlyCreationMode + " " + createWithMode + "  defaultAltViewType: "+defaultAltViewType);
         
         AltViewIFace defaultAltView = createDefaultViewable(defaultAltViewType);
         
@@ -215,12 +216,12 @@ public class MultiView extends JPanel
                     // temporarily set this for creation, because it gets asked via getMode()
                     this.createWithMode = av.getMode();
                     
-                    //log.debug("CREATING: createWithMode "+createWithMode+"  "+av.getName()+" "+av.getMode());
+                    log.debug("CREATING: createWithMode "+createWithMode+"  "+av.getName()+" "+av.getMode());
                     createViewable(av.getName());
                     
                 } else
                 {
-                    //log.debug("SKIPPED:  createWithMode "+createWithMode+"  "+av.getName()+" "+av.getMode());
+                    log.debug("SKIPPED:  createWithMode "+createWithMode+"  "+av.getName()+" "+av.getMode());
                 }
             }
         } else if (isUsingSelector && defaultAltView.getMode() == AltViewIFace.CreationMode.EDIT) // Special situation for selectors in edit mode
@@ -1269,6 +1270,76 @@ public class MultiView extends JPanel
             mv.updateAutoNumbers();
         }
     }
+    
+    /**
+     * Increments to the next number in the series.
+     */
+    public void setViewState(final Vector<ViewState> viewStateList, 
+                             final AltViewIFace.CreationMode mode,
+                             final int vsInx)
+    {
+        ViewState viewState = viewStateList.get(vsInx);
+        
+        if (vsInx > 0)
+        {
+            int inx = viewState.getInx();
+            if (inx > -1)
+            {
+                FormViewObj formViewObj = getCurrentViewAsFormViewObj();
+                if (formViewObj != null)
+                {
+                    formViewObj.getRsController().setIndex(inx);
+                }
+            }
+        }
+        
+        for (MultiView mv : kids)
+        {
+            if (mv.createWithMode == mode)
+            {
+                mv.setViewState(viewStateList, mode, vsInx+1);
+            }
+        }
+    }
+    
+    /**
+     * Increments to the next number in the series.
+     */
+    public void collectionViewState(final Vector<ViewState> viewStateList, 
+                                    final AltViewIFace.CreationMode mode, 
+                                    final int level)
+    {
+        String spaces = "                                                          ";
+        AltViewIFace altView = currentViewable.getAltView();
+        
+        System.out.print(spaces.substring(0, level)+"Current AltView: "+altView.getName()+"  Num: "+getViewables().size()+"  "+altView.getViewDef().getName());
+        
+        ViewState viewState = new ViewState(this, currentViewable, altView, altView.getViewDef());
+        viewStateList.add(viewState);
+        
+        FormViewObj formViewObj = getCurrentViewAsFormViewObj();
+        if (formViewObj != null)
+        {
+            int curInx = formViewObj.getRsController().getCurrentIndex();
+            System.out.print("  curInx: "+curInx);
+            viewState.setInx(curInx);
+        }
+        
+        if (currentViewable.getDataObj() instanceof FormDataObjIFace)
+        {
+            viewState.setIdentity(((FormDataObjIFace)currentViewable.getDataObj()).getIdentityTitle());
+        }
+        
+        System.out.println();
+        
+        for (MultiView mv : kids)
+        {
+            if (mv.createWithMode == mode)
+            {
+                mv.collectionViewState(viewStateList, mode, level+2);
+            }
+        }
+    }
 
     /**
      * Tells the MultiView the MV that it is being shutdown to be disposed.
@@ -1342,5 +1413,100 @@ public class MultiView extends JPanel
         log.debug("ADD_SEARCH_BTN        ["+((options & MultiView.ADD_SEARCH_BTN) == MultiView.ADD_SEARCH_BTN ? "true" : "false")+"]");
         log.debug("DONT_ADD_ALL_ALTVIEWS ["+((options & MultiView.DONT_ADD_ALL_ALTVIEWS) == MultiView.DONT_ADD_ALL_ALTVIEWS ? "true" : "false")+"]");
         log.debug(" ");        
+    }
+    
+    
+    class ViewState 
+    {
+        protected MultiView      mv;
+        protected Viewable       viewable;
+        protected AltViewIFace   altView;
+        protected ViewDefIFace   viewDef;
+        protected int            inx;
+        protected String         identity = null;
+        
+        /**
+         * @param mv
+         * @param altView
+         * @param viewDef
+         * @param inx
+         */
+        public ViewState(MultiView mv, Viewable viewable, AltViewIFace altView, ViewDefIFace viewDef)
+        {
+            super();
+            this.mv       = mv;
+            this.viewable = viewable;
+            this.altView  = altView;
+            this.viewDef  = viewDef;
+            this.inx      = -1;
+            this.identity = null;
+        }
+
+        /**
+         * @return the identity
+         */
+        public String getIdentity()
+        {
+            return identity;
+        }
+
+        /**
+         * @param identity the identity to set
+         */
+        public void setIdentity(String identity)
+        {
+            this.identity = identity;
+        }
+
+        /**
+         * @return the mv
+         */
+        public MultiView getMv()
+        {
+            return mv;
+        }
+
+        /**
+         * @return the altView
+         */
+        public AltViewIFace getAltView()
+        {
+            return altView;
+        }
+
+        /**
+         * @return the viewDef
+         */
+        public ViewDefIFace getViewDef()
+        {
+            return viewDef;
+        }
+
+        /**
+         * @return the inx
+         */
+        public int getInx()
+        {
+            return inx;
+        }
+
+        /**
+         * @param inx the inx to set
+         */
+        public void setInx(int inx)
+        {
+            this.inx = inx;
+        }
+        
+        /**
+         * @return the viewable
+         */
+        public Viewable getViewable()
+        {
+            return viewable;
+        }
+
+        
+        
     }
 }

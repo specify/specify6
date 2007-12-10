@@ -38,18 +38,22 @@ import edu.ku.brc.util.Pair;
 public class UIFieldFormatter implements UIFieldFormatterIFace
 {
     public enum PartialDateEnum {None, Full, Month, Year}
+    public enum FormatterType {Generic, Date, Numeric}
     
     protected String               name;
     protected String               title;
     protected String               fieldName;
     protected Class<?>             dataClass;
-    protected boolean              isDate;
+    protected FormatterType        type;
     protected PartialDateEnum      partialDateType;
     protected boolean              isDefault;
     protected List<UIFieldFormatterField> fields;
     protected boolean              isIncrementer;
     protected DateWrapper          dateWrapper = null;
     protected AutoNumberIFace      autoNumber  = null;
+    
+    protected int                  precision = 0;
+    protected int                  scale     = 0;
 
     /**
      * Constructor.
@@ -63,7 +67,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
      */
     public UIFieldFormatter(final String          name, 
                             final String          fieldName, 
-                            final boolean         isDate, 
+                            final FormatterType   type, 
                             final PartialDateEnum partialDateType,
                             final Class<?>        dataClass,
                             final boolean         isDefault,
@@ -74,7 +78,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
         this.fieldName       = fieldName;
         this.dataClass       = dataClass;
         this.partialDateType = partialDateType;
-        this.isDate          = isDate;
+        this.type            = type;
         this.isDefault       = isDefault;
         this.fields          = fields;
         this.isIncrementer   = isIncrementer;
@@ -161,7 +165,15 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
      */
     public boolean isDate()
     {
-        return isDate;
+        return type == FormatterType.Date;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#isNumeric()
+     */
+    public boolean isNumeric()
+    {
+        return type == FormatterType.Numeric;
     }
 
     /* (non-Javadoc)
@@ -376,7 +388,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
         if (false)
         {
             StringBuilder s = new StringBuilder();
-            s.append( "Name["+name+"] isDate["+isDate+"]  dataClass["+dataClass.getSimpleName()+"] isDefault["+isDefault+"] isIncrementor["+isIncrementer+"]");
+            s.append( "Name["+name+"] isDate["+(type == FormatterType.Date)+"]  isNumeric["+(type == FormatterType.Numeric)+"]  dataClass["+dataClass.getSimpleName()+"] isDefault["+isDefault+"] isIncrementor["+isIncrementer+"]");
             for (UIFieldFormatterField f : fields)
             {
                 s.append("\n  "+f.toString());
@@ -407,15 +419,45 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#isNumericOnly()
+    /**
+     * @return the type
      */
-    public boolean isNumericOnly()
+    public FormatterType getType()
     {
-        return false;
+        return type;
     }
-    
-    
+
+    /**
+     * @return the scale
+     */
+    public int getScale()
+    {
+        return scale;
+    }
+
+    /**
+     * @param scale the scale to set
+     */
+    public void setScale(int scale)
+    {
+        this.scale = scale;
+    }
+
+    /**
+     * @return the precision
+     */
+    public int getPrecision()
+    {
+        return precision;
+    }
+
+    /**
+     * @param precision the precision to set
+     */
+    public void setPrecision(int precision)
+    {
+        this.precision = precision;
+    }
 }
 
 

@@ -65,49 +65,45 @@ public class JAutoCompTextField extends JTextField
     public JAutoCompTextField()
     {
         super();
-        init();
     }
     
     /**
      * Constructor.
-     * @param arg0 initial value
+     * @param numCols initial value
      */    
-    public JAutoCompTextField(final String arg0)
+    public JAutoCompTextField(final String numCols)
     {
-        super(arg0);       
-        init();
+        super(numCols);       
     }
     
     /**
      * Constructor.
-     * @param arg0 initial number of columns
+     * @param numCols initial number of columns
      */
-    public JAutoCompTextField(final int arg0)
+    public JAutoCompTextField(final int numCols)
     {
-        super(arg0);     
-        init();
+        super(numCols);     
     }
     
     /**
      * Constructor.
-     * @param arg0 initial number of columns
+     * @param numCols initial number of columns
      */
-    public JAutoCompTextField(final int arg0, final PickListDBAdapterIFace pickListDBAdapter)
+    public JAutoCompTextField(final int numCols, final PickListDBAdapterIFace pickListDBAdapter)
     {
-        super(arg0);
+        super(numCols);
         dbAdapter = pickListDBAdapter;
-        init();
+        initAdapter();
     }
    
     /**
      * Constructor.
-     * @param arg0 initial value
-     * @param arg1 initial number of columns
+     * @param text initial value
+     * @param numCols initial number of columns
      */
-    public JAutoCompTextField(final String arg0,final int arg1)
+    public JAutoCompTextField(final String text,final int numCols)
     {
-        super(arg0, arg1);   
-        init();
+        super(text, numCols);   
     }
     
     /**
@@ -118,9 +114,12 @@ public class JAutoCompTextField extends JTextField
     {
         super();
         this.dbAdapter = dbAdapter;
-        init();
+        initAdapter();
     }
     
+    /**
+     * @param str
+     */
     protected void lookup(final String str)
     {
         foundMatch = true;
@@ -256,7 +255,7 @@ public class JAutoCompTextField extends JTextField
     /**
      * Initializes the TextField by setting up all the listeners for auto-complete.
      */
-    protected void init()
+    protected void initAdapter()
     {
         if (dbAdapter != null)
         {

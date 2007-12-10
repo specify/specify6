@@ -15,6 +15,7 @@
 package edu.ku.brc.ui.forms;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.apache.commons.lang.StringUtils.split;
 
 import java.awt.BorderLayout;
@@ -70,6 +71,7 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
+import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBRelationshipInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
@@ -82,10 +84,14 @@ import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.db.PickListDBAdapterFactory;
+import edu.ku.brc.ui.db.PickListDBAdapterIFace;
+import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.ui.forms.persist.AltViewIFace;
 import edu.ku.brc.ui.forms.persist.FormCellField;
+import edu.ku.brc.ui.forms.persist.FormCellFieldIFace;
 import edu.ku.brc.ui.forms.persist.FormCellIFace;
 import edu.ku.brc.ui.forms.persist.FormCellLabel;
 import edu.ku.brc.ui.forms.persist.FormCellSubView;
@@ -225,11 +231,7 @@ public class TableViewObj implements Viewable,
         dataGetter       = altView.getViewDef().getDataGettable();
         this.formViewDef = (FormViewDefIFace)altView.getViewDef();
         
-        //MultiView.printCreateOptions("Creating Form "+altView.getName(), options);
-
-
         scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
-
 
         AppPreferences.getRemote().addChangeListener("ui.formatting.viewfieldcolor", this);
 
@@ -1453,7 +1455,26 @@ public class TableViewObj implements Viewable,
      */
     public void fixUpRequiredDerivedLabels()
     {
-        // no op
+        // NOTE: The forms can contain object that are not in our data model
+        DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(formViewDef.getClassName());
+        if (ti != null)
+        {
+            for (ColumnInfo colInfo : controlsById.values())
+            {
+                if (colInfo.getLabel().equals("##"))
+                {
+                    FormCellIFace formCell = colInfo.getFormCell();
+                    if (formCell.getType() == FormCellIFace.CellType.field)
+                    {
+                        DBFieldInfo   fi   = ti.getFieldByName(formCell.getName());
+                        if (fi != null)
+                        {
+                            colInfo.setLabel(fi.getTitle());
+                        }
+                    }
+                }
+            }
+        }
     }
 
     
@@ -1610,7 +1631,7 @@ public class TableViewObj implements Viewable,
      */
     class ColumnInfo
     {
-        protected FormCellIFace    formCell;
+        protected FormCellIFace formCell;
         protected String      parentClassName;
         protected String      fullCompName;
         protected String      label;
@@ -1620,18 +1641,15 @@ public class TableViewObj implements Viewable,
         protected boolean     isSet;
         protected String      dataObjFormatName = null;
         protected boolean     hasDataObjFormatter = false;
+        
+        protected PickListDBAdapterIFace adaptor = null;
 
-        public ColumnInfo(String       parentClassName,
-                          FormCellIFace     formCell, 
-                          String       fullCompName, 
-                          Component    comp, 
-                          JScrollPane  scrollPane)
+        public ColumnInfo(String        parentClassName,
+                          FormCellIFace formCell, 
+                          String        fullCompName, 
+                          Component     comp, 
+                          JScrollPane   scrollPane)
         {
-            if (parentClassName == null)
-            {
-                int x = 0;
-                x++;
-            }
             this.formCell       = formCell;
             this.parentClassName = parentClassName;
             this.fullCompName   = fullCompName;
@@ -1639,7 +1657,6 @@ public class TableViewObj implements Viewable,
             this.scrollPane     = scrollPane;
             this.fieldNames     = split(StringUtils.deleteWhitespace(fullCompName), ".");
             this.isSet          = false;
-            
 
             checkForDataObjFormatter();
             checkForSet();
@@ -1758,6 +1775,16 @@ public class TableViewObj implements Viewable,
         public void setHasDataObjFormatter(boolean hasDataObjFormatter)
         {
             this.hasDataObjFormatter = hasDataObjFormatter;
+        }
+
+        public PickListDBAdapterIFace getAdaptor()
+        {
+            return adaptor;
+        }
+
+        public void setAdaptor(PickListDBAdapterIFace adaptor)
+        {
+            this.adaptor = adaptor;
         }
 
         /**
@@ -1880,11 +1907,86 @@ public class TableViewObj implements Viewable,
                     }
                     return "";
                     
-                } 
+                }
+                
+                if (colInfo.getFormCell() instanceof FormCellFieldIFace)
+                {
+                    FormCellFieldIFace fcf = (FormCellFieldIFace)colInfo.getFormCell();
+                    if (fcf.getDspUIType() == FormCellFieldIFace.FieldType.textpl)
+                    {
+                        PickListDBAdapterIFace adapter = colInfo.getAdaptor();
+                        if (adapter == null)
+                        {
+                            String pickListName = fcf.getPickListName();
+                            if (isNotEmpty(pickListName))
+                            {
+                                adapter = PickListDBAdapterFactory.getInstance().create(pickListName, false);
+                                
+                                if (adapter == null || adapter.getPickList() == null)
+                                {
+                                    throw new RuntimeException("PickList Adapter ["+pickListName+"] cannot be null!");
+                                }
+                                colInfo.setAdaptor(adapter);
+                            }
+                        }
+                        return getPickListValue(adapter, dataVal);
+                    }
+                }
                 return dataVal;
-                //return dataGetter.getFieldValue(rowObj, colInfo.getFullCompName());
             }
             return null;
+        }
+        
+        protected Object getPickListValue(final PickListDBAdapterIFace adapter, final Object value)
+        {
+            if (value != null)
+            {
+                if (adapter.isTabledBased())
+                {
+                    String data = null;
+        
+                    boolean                   isFormObjIFace = value instanceof FormDataObjIFace;
+                    Vector<PickListItemIFace> items          = adapter.getList();
+                    
+                    for (int i=0;i<items.size();i++)
+                    {
+                        PickListItemIFace pli    = items.get(i);
+                        Object       valObj = pli.getValueObject();
+                        
+                        if (valObj != null)
+                        {
+                            if (isFormObjIFace && valObj instanceof FormDataObjIFace)
+                            {
+                                if (((FormDataObjIFace)value).getId().intValue() == (((FormDataObjIFace)valObj).getId().intValue()))
+                                {
+                                    data = pli.getTitle();
+                                    break;                                
+                                }
+                            } else if (pli.getValue().equals(value.toString()))
+                            {
+                                data = pli.getTitle();
+                                break;                            
+                            }
+                        }
+                    } 
+                    
+                    if (data == null)
+                    {
+                        data = "";
+                    }
+                    
+                    return data;
+                }
+
+                for (PickListItemIFace item : adapter.getList())
+                {
+                    if (item.getValue().equals(value.toString()))
+                    {
+                        return item.getTitle();
+                    }
+                }
+            }
+            return "";
         }
 
         @Override

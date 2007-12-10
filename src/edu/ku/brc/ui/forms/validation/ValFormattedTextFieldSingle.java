@@ -26,6 +26,7 @@ import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
@@ -173,6 +174,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             if (!formatter.isUserInputNeeded())
             {
                 ViewFactory.changeTextFieldUIForDisplay(this, false);
+                bgStr = "";
                 
             } else
             {
@@ -456,6 +458,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
         if (isViewOnly)
         {
             valState = UIValidatable.ErrorType.Valid;
+            
         } else if (formatter != null && formatter.isUserInputNeeded())
         {
             String data = getText();
@@ -463,6 +466,10 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             {
                 valState = isRequired ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
     
+            } else if (formatter.isNumeric())
+            {
+                valState = validateNumeric(data);
+                
             } else
             {
                 valState = data.length() != requiredLength ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
@@ -473,6 +480,63 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
         }
             //System.out.println("#### validateState "+ getText()+"  "+data.length() +"  "+ requiredLength+"  "+valState);
         return valState;
+    }
+    
+    
+    /**
+     * @param value
+     * @return
+     */
+    protected UIValidatable.ErrorType validateNumeric(final String value)
+    {
+        Class<?> cls = formatter.getDataClass();
+        try
+        {
+            if (cls == Long.class)
+            {
+                Long val  = Long.parseLong(value);
+                return val > Long.MAX_VALUE || val < Long.MIN_VALUE ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
+                
+            } else if (cls == Integer.class)
+            {
+                Integer val  = Integer.parseInt(value);
+                return val > Integer.MAX_VALUE || val < Integer.MIN_VALUE ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
+    
+            } else if (cls == Short.class)
+            {
+                Short val  = Short.parseShort(value);
+                return val > Short.MAX_VALUE || val < Short.MIN_VALUE ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
+    
+            } else if (cls == Byte.class)
+            {
+                Byte val  = Byte.parseByte(value);
+                return val > Byte.MAX_VALUE || val < Byte.MIN_VALUE ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
+    
+            } else if (cls == Double.class)
+            {
+                Double val  = Double.parseDouble(value);
+                return val > Double.MAX_VALUE || val < Double.MIN_VALUE ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
+    
+            } else if (cls == Float.class)
+            {
+                Float val  = Float.parseFloat(value);
+                return val > Float.MAX_VALUE || val < Float.MIN_VALUE ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
+    
+            } else if (cls == BigDecimal.class)
+            {
+                // XXX This needs to be redone
+                Double val  = Double.parseDouble(value);
+                return val > Double.MAX_VALUE || val < Double.MIN_VALUE ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
+    
+            } else
+            {
+                throw new RuntimeException("Missing case for numeric class ["+cls.getName()+"]");        
+            }
+        } catch (Exception ex)
+        {
+            
+        }
+        return UIValidatable.ErrorType.Error;
     }
 
 
@@ -631,7 +695,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
 
 
     //-------------------------------------------------
-    // AppPrefsChangeListener
+    // JFormattedDoc
     //-------------------------------------------------
 
     public class JFormattedDoc extends ValPlainTextDocument
@@ -668,7 +732,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
          * Check to see if the input was correct (doesn't check against the separator)
          * @param field the field info
          * @param str the str to be checked
-         * @returntrue char matches the type of input, false it is in error
+         * @return true char matches the type of input, false it is in error
          */
         protected boolean isCharOK(final UIFieldFormatterField field, final String str)
         {
@@ -680,16 +744,17 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             {
                 return false;
 
-            } else if (field.getType() == UIFieldFormatterField.FieldType.numeric && !StringUtils.isNumeric(str))
+            } else if (field.getType() == UIFieldFormatterField.FieldType.numeric)
             {
-                return false;
+                // we really need to check to make sure this is a Double, Float or BigDecimal
+                return StringUtils.isNumeric(StringUtils.remove(str, '.'));
 
             }
             return true;
         }
 
         /**
-         * Checks to see if the icoming string maps correctly to the format and ll the chars match the appropriate type
+         * Checks to see if the incoming string maps correctly to the format and ll the chars match the appropriate type
          * @param str the string
          * @return true - ok, false there was an error
          */
@@ -707,7 +772,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
                     }
                 }
                 String s = "";
-                c += c;
+                s += c;
                 if (!isCharOK(docFields[i], s))
                 {
                     return false;

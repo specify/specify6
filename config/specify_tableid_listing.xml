@@ -38,7 +38,9 @@
             <display objtitle="ObjectAttachment" view="AgentAttachment" newobjdlg="AgentAttachmentDisplay"/>
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
-        <table name="edu.ku.brc.specify.datamodel.AgentVariant" abbrev="av" id="107" workbench="false" searchable="true"/>
+        <table name="edu.ku.brc.specify.datamodel.AgentVariant" abbrev="av" id="107" workbench="false" searchable="true">
+        	<display objtitle="Agent Variant" view="AgentVariant" newobjdlg="AgentVariant"/>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.Appraisal" abbrev="aps" id="67" workbench="false" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.Attachment" abbrev="att" id="41" searchable="true">
         	<display objtitle="Attachment" view="AttachmentsForm" newobjdlg="AttachmentsForm"/>
@@ -93,7 +95,7 @@
         <table name="edu.ku.brc.specify.datamodel.Collector" abbrev="ctr" id="30" searchable="true">
             <display objtitle="Collector" view="Collector" dataobjformatter=""  searchdlg="CollectorSearch" newobjdlg="CollectorDisplay"/>            
         </table>
-        <table name="edu.ku.brc.specify.datamodel.CommonName" abbrev="cn" id="106" searchable="true"/>
+        <table name="edu.ku.brc.specify.datamodel.CommonNameTx" abbrev="cn" id="106" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.ConservDescription" abbrev="csd" id="103" searchable="true">
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.ConservDescriptionBusRules</businessrule>
         </table>

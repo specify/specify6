@@ -29,6 +29,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Index;
 
 
@@ -407,16 +408,14 @@ public class Institution extends DataModelObjBase implements java.io.Serializabl
         return 94;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
+     */
     @Override
     @Transient
     public String getIdentityTitle()
     {
-        if (name!=null)
-        {
-            return name;
-        }
-        
-        return super.getIdentityTitle();
+        return StringUtils.isNotEmpty(name) ? name : super.getIdentityTitle();
     }
 
 }

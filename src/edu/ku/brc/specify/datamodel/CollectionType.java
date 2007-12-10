@@ -415,8 +415,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     @Transient
     public String getIdentityTitle()
     {
-        if (name != null) return name;
-        return super.getIdentityTitle();
+        return name != null ? name : super.getIdentityTitle();
     }
     
     /* (non-Javadoc)
