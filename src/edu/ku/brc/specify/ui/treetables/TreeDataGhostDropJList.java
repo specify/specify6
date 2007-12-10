@@ -47,11 +47,8 @@ public class TreeDataGhostDropJList extends DragDropJList
 		clickOnText = onText;
 	}
 	
-	/**
-	 *
-	 *
+	/* (non-Javadoc)
 	 * @see javax.swing.JList#setSelectedIndices(int[])
-	 * @param indices
 	 */
 	@Override
 	public void setSelectedIndices(int[] indices)
@@ -62,12 +59,8 @@ public class TreeDataGhostDropJList extends DragDropJList
 		}
 	}
 
-	/**
-	 *
-	 *
+	/* (non-Javadoc)
 	 * @see javax.swing.JList#setSelectedValue(java.lang.Object, boolean)
-	 * @param anObject
-	 * @param shouldScroll
 	 */
 	@Override
 	public void setSelectedValue(Object anObject, boolean shouldScroll)
@@ -78,12 +71,8 @@ public class TreeDataGhostDropJList extends DragDropJList
 		}
 	}
 
-	/**
-	 *
-	 *
+	/* (non-Javadoc)
 	 * @see javax.swing.JList#setSelectionInterval(int, int)
-	 * @param anchor
-	 * @param lead
 	 */
 	@Override
 	public void setSelectionInterval(int anchor, int lead)
@@ -94,11 +83,8 @@ public class TreeDataGhostDropJList extends DragDropJList
 		}
 	}
 
-	/**
-	 *
-	 *
+	/* (non-Javadoc)
 	 * @see javax.swing.JList#setSelectedIndex(int)
-	 * @param index
 	 */
 	@Override
 	public void setSelectedIndex(int index)
