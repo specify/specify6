@@ -134,7 +134,7 @@ public class MissingDataResolver implements ActionListener
     protected void setFldOrClass(Object lblObj)
     {
         Object obj = tblObjects.get(uiTbl.getSelectedRow());
-        LabelledObject<?, ?> valToSet = (LabelledObject)lblObj;
+        LabelledObject<?, ?> valToSet = (LabelledObject<?,?>)lblObj;
         if (obj.getClass().equals(DefaultFieldEntry.class))
         {
             ((DefaultFieldEntry)obj).setDefaultValue(valToSet.getSecond());

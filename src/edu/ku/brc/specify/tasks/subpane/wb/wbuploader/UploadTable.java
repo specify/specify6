@@ -2110,7 +2110,7 @@ public class UploadTable implements Comparable<UploadTable>
     /**
      * @return a name for recordset of uploaded objects.
      */
-    protected String getRecordSetName()
+    protected String getRecordSetName() 
     {
         return DBTableIdMgr.getInstance().getByShortClassName(tblClass.getSimpleName()).getTitle() + "_" + Uploader.currentUpload.getIdentifier();
     }
@@ -2118,7 +2118,7 @@ public class UploadTable implements Comparable<UploadTable>
     /**
      * @return a recordset containing the the objects created during last upload.
      */
-    public RecordSet getRecordSet()
+    public RecordSet getRecordSet() 
     {
         RecordSet result = new RecordSet(getRecordSetName(), DBTableIdMgr.getInstance().getByShortClassName(tblClass.getSimpleName()).getTableId());
         result.initialize();

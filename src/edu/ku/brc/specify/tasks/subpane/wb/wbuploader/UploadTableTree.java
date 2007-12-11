@@ -13,8 +13,8 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Comparator;
-import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -24,6 +24,8 @@ import org.hibernate.NonUniqueResultException;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
+import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeographyTreeDefItem;
@@ -118,11 +120,11 @@ public class UploadTableTree extends UploadTable
      * @throws UploaderException
      */
     @SuppressWarnings("unchecked")
-    protected TreeDefIface getTreeDef() 
+    protected TreeDefIface getTreeDef() throws UploaderException 
     {
         if (treeDef == null)
         {
-            treeDef = (TreeDefIface<?,?,?>)getTreeDef(tblClass.getSimpleName() + "TreeDef");
+            treeDef = getTreeDef(tblClass.getSimpleName() + "TreeDef");
         }
         return treeDef;
     }    
@@ -132,7 +134,7 @@ public class UploadTableTree extends UploadTable
      * @throws UploaderException
      */
     @SuppressWarnings("unchecked")
-    protected TreeDefItemIface getTreeDefItem() 
+    protected TreeDefItemIface getTreeDefItem() throws UploaderException
     {
         return getTreeDef().getDefItemByRank(rank);
     }
@@ -142,20 +144,24 @@ public class UploadTableTree extends UploadTable
      * @return TreeDef loaded from table named defName.
      */
     @SuppressWarnings("unchecked")
-    public DataModelObjBase getTreeDef(final String defName)
+    public TreeDefIface<?,?,?> getTreeDef(final String defName) throws UploaderException
     {
-        String hql = "from " + defName;
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();        
         try
         {
-            QueryIFace q = session.createQuery(hql);
-            List<?> matches = q.list();
-            if (matches.size() == 0) { return null; }
-                return (DataModelObjBase)matches.get(0);
+            Method getter = CollectionType.class.getMethod("get" + capitalize(defName), (Class<?>[])null);
+            return (TreeDefIface<?,?,?>)getter.invoke(Collection.getCurrentCollection().getCollectionType(),  (Object[])null);
         }
-        finally
+        catch (NoSuchMethodException ex)
         {
-            session.close();
+            throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
+        }
+        catch (InvocationTargetException ex)
+        {
+            throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
+        }
+        catch (IllegalAccessException ex)
+        {
+            throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
         }
     }
     
@@ -220,7 +226,7 @@ public class UploadTableTree extends UploadTable
     /**
      * @return the root of the tree for this.tblClass.
      */
-    protected Treeable getTreeRoot() 
+    protected Treeable getTreeRoot()  throws UploaderException
     {
         if (treeRoot == null)
         {
@@ -355,7 +361,7 @@ public class UploadTableTree extends UploadTable
     /**
      * Loads the root of the tree for this.tblClass.
      */
-    protected void loadTreeRoot() 
+    protected void loadTreeRoot() throws UploaderException
     {
         String hql = "from " + tblClass.getName() + " where " + getTreeDefFld() + "=" + getTreeDef().getTreeDefId() + " and " + getTreeDefItemFld() + "=" +
             getTreeDef().getDefItemByRank(0).getTreeDefItemId();
@@ -473,18 +479,32 @@ public class UploadTableTree extends UploadTable
      * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#getRecordSetName()
      */
     @Override
-    protected String getRecordSetName()
+    protected String getRecordSetName() 
     {
-        return getTreeDefItem().getName() + "_" + Uploader.currentUpload.getIdentifier();
+        try
+        {
+            return getTreeDefItem().getName() + "_" + Uploader.currentUpload.getIdentifier();
+        }
+        catch (UploaderException ux)
+        {
+            return tblClass.getSimpleName() + "_" + Uploader.currentUpload.getIdentifier();
+        }
     }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#toString()
      */
     @Override
-    public String toString()
+    public String toString() 
     {
-        return getTreeDefItem().getName();
+        try
+        {
+            return getTreeDefItem().getName();
+        }
+        catch (UploaderException ux)
+        {
+            return tblClass.getSimpleName();
+        }
     }
 
     /* (non-Javadoc)
@@ -519,7 +539,7 @@ public class UploadTableTree extends UploadTable
      * If Family is required then for a dataset with mappings for Class Order Genus Species, the Family TreeDefItem would be
      * considered missing. But for a dataset with mappings for Genus and Species, Family would not be considered missing.
      */
-    protected Vector<TreeDefItemIface<?,?,?>> getMissingRequiredDefs() 
+    protected Vector<TreeDefItemIface<?,?,?>> getMissingRequiredDefs() throws UploaderException
     {
         Vector<TreeDefItemIface<?,?,?>> result = new Vector<TreeDefItemIface<?,?,?>>();
         for (Object obj : getTreeDef().getTreeDefItems())
