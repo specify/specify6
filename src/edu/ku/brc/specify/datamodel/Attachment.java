@@ -605,5 +605,7 @@ public class Attachment extends DataModelObjBase implements Serializable
             thumbFile = null;
         }
         attachmentMgr.storeAttachmentFile(this, origFile, thumbFile);
+        
+        this.storeFile = false;
     }
 }
