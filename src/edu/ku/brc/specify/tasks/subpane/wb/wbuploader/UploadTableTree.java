@@ -126,7 +126,11 @@ public class UploadTableTree extends UploadTable
         {
             treeDef = getTreeDef(tblClass.getSimpleName() + "TreeDef");
         }
-        return treeDef;
+        if (treeDef != null)
+        {
+            return treeDef;
+        }
+        throw new UploaderException(getResourceString("WB_UPLOAD_MISSING_TREE_DEF") + " (" + tblClass.getSimpleName() + ")", UploaderException.ABORT_IMPORT);
     }    
     
     /**
