@@ -189,6 +189,7 @@
         </table>
         <table name="edu.ku.brc.specify.datamodel.LithoStrat" abbrev="ls" id="100" workbench="true" searchable="true">
             <display objtitle="Lithostratigraphy" view="LithoStrat" dataobjformatter="" searchdlg="LithoStratSearch" newobjdlg="LithoStratDisplay"/>
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.LithoStratBusRules</businessrule>            
         </table>
         <table name="edu.ku.brc.specify.datamodel.LithoStratTreeDef" abbrev="lstd" id="101"/>
         <table name="edu.ku.brc.specify.datamodel.LithoStratTreeDefItem" abbrev="lstdi" id="102"/>

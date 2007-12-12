@@ -377,8 +377,8 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
     /**
      * @return the paleoContexts
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "lithoStrat")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @OneToMany(mappedBy = "lithoStrat")
+    @Cascade( {CascadeType.ALL} )
     public Set<PaleoContext> getPaleoContexts()
     {
         return paleoContexts;
