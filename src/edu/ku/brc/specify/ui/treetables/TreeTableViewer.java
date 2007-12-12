@@ -1542,6 +1542,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         boolean canAddChild      = (selectedNode != null) ? (selectedNode.getRank() < getHighestPossibleNodeRank()) : false;
         boolean isVisibleRoot    = (selectedNode != null) ? (selectedNode.getId() == listModel.getVisibleRoot().getId()) : false;
 
+        popupMenu.setSelectionSensativeButtonsEnabled(nonNullSelection);
+        
         // disable the buttons so the user can't click them until the background task verifies if they should be enabled
         if (sourceList == lists[0])
         {

@@ -10,7 +10,10 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
+import java.util.Vector;
 
+import javax.swing.AbstractButton;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -33,6 +36,7 @@ public class TreeNodePopupMenu extends JPopupMenu
     protected JMenuItem edit;
     protected JMenuItem newChild;
     protected JMenuItem subtree;
+    protected List<AbstractButton> selectionSensativeButtons;
 	
 	/**
 	 *
@@ -48,6 +52,13 @@ public class TreeNodePopupMenu extends JPopupMenu
         edit = new JMenuItem("Edit...");
         delete = new JMenuItem("Delete");
         newChild = new JMenuItem("New child...");
+        
+        selectionSensativeButtons = new Vector<AbstractButton>();
+        selectionSensativeButtons.add(subtree);
+        selectionSensativeButtons.add(find);
+        selectionSensativeButtons.add(edit);
+        selectionSensativeButtons.add(newChild);
+        selectionSensativeButtons.add(delete);
         
         subtree.addActionListener(new ActionListener()
 		{
@@ -120,5 +131,38 @@ public class TreeNodePopupMenu extends JPopupMenu
     public void setNewEnabled(boolean enable)
     {
         newChild.setEnabled(enable);
+    }
+    
+    public void setEditEnabled(boolean enable)
+    {
+        edit.setEnabled(enable);
+    }
+    
+    public void setFindEnabled(boolean enable)
+    {
+        find.setEnabled(enable);
+    }
+    
+    public void setSubtreeEnabled(boolean enable)
+    {
+        subtree.setEnabled(enable);
+    }
+    
+    public void setSelectionSensativeButtonsEnabled(boolean enable)
+    {
+        for (AbstractButton ab: selectionSensativeButtons)
+        {
+            ab.setEnabled(enable);
+        }
+    }
+
+    public JMenuItem add(JMenuItem menuItem, boolean selectionSensative)
+    {
+        JMenuItem mi =  super.add(menuItem);
+        if (selectionSensative)
+        {
+            selectionSensativeButtons.add(menuItem);
+        }
+        return mi;
     }
 }

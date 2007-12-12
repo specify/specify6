@@ -109,7 +109,7 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
                     }
                 }
             });
-            popup.add(getITIS);
+            popup.add(getITIS, true);
 
             JMenuItem getDeters = new JMenuItem(getResourceString("TTV_TAXON_ASSOC_COS"));
             getDeters.addActionListener(new ActionListener()
@@ -140,7 +140,7 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
                     CommandDispatcher.dispatch(cmd);
                 }
             });
-            popup.add(getDeters);
+            popup.add(getDeters, true);
         }
         
         return ttv;
