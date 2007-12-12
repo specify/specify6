@@ -1037,6 +1037,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 */
 	public void find(String nodeName,int where,boolean wrap)
 	{
+        setStatusBarText(null);
 		findName = nodeName;
 		findResults = dataService.findByName(treeDef, nodeName);
 		if(findResults.isEmpty())
@@ -1107,6 +1108,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 */
 	public void findNext(String key, int where, boolean wrap)
 	{
+        setStatusBarText(null);
+
 		if(key != null && !key.equals(findName))
 		{
 			find(key,where,wrap);
@@ -1162,6 +1165,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	
 	public void findNext(int where, boolean wrap, T current)
 	{
+        setStatusBarText(null);
+
 		List<T> matches = dataService.findByName(treeDef, current.getName());
 		if(matches.size()==1)
 		{
@@ -1221,6 +1226,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	
 	public void findNext(JList where, boolean wrap, TreeNode currentNode)
 	{
+        setStatusBarText(null);
+
         T currentRecord = getRecordForNode(currentNode);
         
 		if(where == lists[0])
@@ -1630,6 +1637,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	@SuppressWarnings("unchecked")
 	public boolean dropOccurred( Object dragged, Object droppedOn, int dropAction )
 	{
+        setStatusBarText(null);
+
 		if(dragged == droppedOn)
 		{
 			return false;
