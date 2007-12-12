@@ -71,7 +71,7 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
 		isInFullName = null;
         textBefore = null;
         textAfter = null;
-        fullNameSeparator = null;
+        fullNameSeparator = " ";
 		treeDef = null;
 		treeEntries = new HashSet<Taxon>();
 		parent = null;

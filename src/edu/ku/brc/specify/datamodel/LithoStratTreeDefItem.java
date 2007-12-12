@@ -100,7 +100,7 @@ public class LithoStratTreeDefItem extends DataModelObjBase implements Serializa
 		isInFullName = null;
         textBefore = null;
         textAfter = null;
-        fullNameSeparator = null;
+        fullNameSeparator = ", ";
 		treeDef = null;
 		treeEntries = new HashSet<LithoStrat>();
 		parent = null;

@@ -93,7 +93,7 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
 		isInFullName = null;
         textBefore = null;
         textAfter = null;
-        fullNameSeparator = null;
+        fullNameSeparator = ", ";
 		treeDef = null;
 		treeEntries = new HashSet<Location>();
 		parent = null;

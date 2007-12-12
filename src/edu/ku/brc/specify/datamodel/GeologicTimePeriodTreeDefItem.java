@@ -100,7 +100,7 @@ public class GeologicTimePeriodTreeDefItem extends DataModelObjBase implements S
 		isInFullName = null;
         textBefore = null;
         textAfter = null;
-        fullNameSeparator = null;
+        fullNameSeparator = ", ";
 		treeDef = null;
 		treeEntries = new HashSet<GeologicTimePeriod>();
 		parent = null;

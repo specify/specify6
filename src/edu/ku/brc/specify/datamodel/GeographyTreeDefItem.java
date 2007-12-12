@@ -98,7 +98,7 @@ public class GeographyTreeDefItem extends DataModelObjBase implements Serializab
 		isInFullName = null;
         textBefore = null;
         textAfter = null;
-        fullNameSeparator = null;
+        fullNameSeparator = ", ";
 		treeDef = null;
 		treeEntries = new HashSet<Geography>();
 		parent = null;
