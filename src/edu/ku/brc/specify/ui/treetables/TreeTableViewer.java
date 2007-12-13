@@ -174,6 +174,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     
     protected String selNodePrefName;
     
+    protected Icon icon_split;
+    protected Icon icon_single;
+
+    
     // tools to help figure the number of "related" records for a node in the background
     protected ExecutorService countGrabberExecutor;
     
@@ -371,7 +375,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         Icon icon_editNode   = IconManager.getIcon("TTV_EditNode",  IconManager.IconSize.Std16);
         Icon icon_delNode    = IconManager.getIcon("TTV_DelNode",   IconManager.IconSize.Std16);
         Icon icon_toParent   = IconManager.getIcon("TTV_ToParent",  IconManager.IconSize.Std16);
-        Icon icon_toggle     = IconManager.getIcon("TTV_ToggleViewMode", IconManager.IconSize.Std16);
+        icon_split      = IconManager.getIcon("TTV_SplitViewMode",  IconManager.IconSize.Std16);
+        icon_single     = IconManager.getIcon("TTV_SingleViewMode", IconManager.IconSize.Std16);
         
         // button panel for top tree list
         JPanel buttonPanel0 = new JPanel();
@@ -424,7 +429,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         });
         syncViews0.setEnabled(false);
         
-        toggle0 = new JButton(icon_toggle);
+        toggle0 = new JButton(icon_split);
         toggle0.setSize(20,20);
         toggle0.setToolTipText(getResourceString("TTV_SPLIT_VIEW"));
         toggle0.addActionListener(new ActionListener()
@@ -565,7 +570,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             }
         });
         
-        toggle1 = new JButton(icon_toggle);
+        toggle1 = new JButton(icon_single);
         toggle1.setSize(20,20);
         toggle1.setToolTipText(getResourceString("TTV_SINGLE_VIEW"));
         toggle1.addActionListener(new ActionListener()
@@ -806,12 +811,14 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			// set to single view mode
 			this.add(treeListPanels[0],BorderLayout.CENTER);
             toggle0.setToolTipText(getResourceString("TTV_SPLIT_VIEW"));
+            toggle0.setIcon(icon_split);
 		}
 		else
 		{
 			// set to dual view mode
 			this.add(new JSplitPane(JSplitPane.VERTICAL_SPLIT,treeListPanels[0],treeListPanels[1]),BorderLayout.CENTER);
             toggle0.setToolTipText(getResourceString("TTV_SINGLE_VIEW"));
+            toggle0.setIcon(icon_single);
 		}
         updateAllUI();
 	}

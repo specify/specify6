@@ -152,7 +152,8 @@
     <icon name="TTV_EditNode"       alias="EditIcon"/>
     <icon name="TTV_DelNode"        alias="MinusSign"/>
     <icon name="TTV_ToParent"       file="undo.png"       sizes="16"/>
-    <icon name="TTV_ToggleViewMode" file="SplitWindow32x32.png" sizes="all"/>
+    <icon name="TTV_SplitViewMode"  file="SplitWindow32x32.png" sizes="all"/>
+    <icon name="TTV_SingleViewMode" file="SingleView32x32.png"  sizes="all"/>
     
     <!-- MIME type icons -->
     <icon name="audio"              file="audio.png"    sizes="all"/>
