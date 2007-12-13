@@ -1091,23 +1091,23 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     
 	protected void scrollToShowNode(final TreeNode node, final int listIndex)
 	{
-	    int nodeIndex = listModel.indexOf(node);
-	    if (nodeIndex != -1)
-	    {
-	        Rectangle listCellBounds = lists[listIndex].getCellBounds(nodeIndex, nodeIndex);
-	        Pair<Integer, Integer> textBounds = listCellRenderer.getTextBoundsForRank(node.getRank());
-	        if (textBounds != null)
-	        {
-	            Rectangle textRectangle = new Rectangle();
-	            textRectangle.x = textBounds.first;
-	            textRectangle.y = listCellBounds.y;
-	            textRectangle.width = textBounds.second - textBounds.first;
-	            textRectangle.height = listCellBounds.height;
-
-	            scrollers[listIndex].scrollRectToVisible(textRectangle);
-	            scrollers[listIndex].getViewport().scrollRectToVisible(textRectangle);
-	        }
-	    }
+//	    int nodeIndex = listModel.indexOf(node);
+//	    if (nodeIndex != -1)
+//	    {
+//	        Rectangle listCellBounds = lists[listIndex].getCellBounds(nodeIndex, nodeIndex);
+//	        Pair<Integer, Integer> textBounds = listCellRenderer.getTextBoundsForRank(node.getRank());
+//	        if (textBounds != null)
+//	        {
+//	            Rectangle textRectangle = new Rectangle();
+//	            textRectangle.x = textBounds.first;
+//	            textRectangle.y = listCellBounds.y;
+//	            textRectangle.width = textBounds.second - textBounds.first;
+//	            textRectangle.height = listCellBounds.height;
+//
+//	            scrollers[listIndex].scrollRectToVisible(textRectangle);
+//	            scrollers[listIndex].getViewport().scrollRectToVisible(textRectangle);
+//	        }
+//	    }
 	}
 	
 	/* (non-Javadoc)
@@ -1632,7 +1632,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         };
         
         log.debug("starting background task to see if new selected node is deleteable");
-        bgWork.start();
+        //bgWork.start();
 	}
 
 	/**
@@ -1942,12 +1942,12 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             else
             {
                 List<TreeNode> childrenShown = showChildren(treeNode);
-//                if (childrenShown.size() > 0)
-//                {
-//                    TreeNode firstChild = childrenShown.get(0);
-//                    int listIndex = (list == lists[0]) ? 0 : 1;
-//                    scrollToShowNode(firstChild, listIndex);
-//                }
+                if (childrenShown.size() > 0)
+                {
+                    TreeNode firstChild = childrenShown.get(0);
+                    int listIndex = (list == lists[0]) ? 0 : 1;
+                    scrollToShowNode(firstChild, listIndex);
+                }
             }
 		}
         // otherwise, ignore the click
@@ -2132,27 +2132,26 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         for (TreeNode newNode: childNodes)
         {
             final TreeNode node = newNode;
-            Runnable getAssocRecCount = new Runnable()
-            {
-                public void run()
-                {
-                    int relatedRecordCount = 0;
-                    try
-                    {
-                        relatedRecordCount = dataService.getRelatedRecordCount(dbRecord.getClass(), node.getId());
-                    }
-                    catch (Exception e)
-                    {
-                        log.error(e);
-                    }
-                    System.out.println(node.getName() + " has " + relatedRecordCount + " related records");
-                    node.setAssociatedRecordCount(relatedRecordCount);
-                    lists[0].repaint();
-                    lists[1].repaint();
-                }
-            };
-            
-            countGrabberExecutor.submit(getAssocRecCount);
+//            Runnable getAssocRecCount = new Runnable()
+//            {
+//                public void run()
+//                {
+//                    int relatedRecordCount = 0;
+//                    try
+//                    {
+//                        relatedRecordCount = dataService.getRelatedRecordCount(dbRecord.getClass(), node.getId());
+//                    }
+//                    catch (Exception e)
+//                    {
+//                        log.error(e);
+//                    }
+//                    node.setAssociatedRecordCount(relatedRecordCount);
+//                    lists[0].repaint();
+//                    lists[1].repaint();
+//                }
+//            };
+//            
+//            countGrabberExecutor.submit(getAssocRecCount);
         }
         
         // get the node representing the parent DB record
