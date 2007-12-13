@@ -25,10 +25,10 @@ public class UploadMatchSetting
 {
     protected static final Logger log = Logger.getLogger(UploadMatchSetting.class);
 
-    public static int ASK_MODE = 0;
-    public static int ADD_NEW_MODE = 1;
-    public static int PICK_FIRST_MODE = 2;
-    public static int SKIP_ROW_MODE = 3;
+    public final static int ASK_MODE = 0;
+    public final static int ADD_NEW_MODE = 1;
+    public final static int PICK_FIRST_MODE = 2;
+    public final static int SKIP_ROW_MODE = 3;
     
     /**
      * one of the 'MODE' statics above 

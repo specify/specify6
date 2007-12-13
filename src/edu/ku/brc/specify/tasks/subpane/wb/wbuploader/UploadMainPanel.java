@@ -46,17 +46,17 @@ public class UploadMainPanel extends JPanel
     private static final Logger log = Logger.getLogger(UploadMainPanel.class);
 
     //action commands for user actions
-    public static String VALIDATE_CONTENT = "VALIDATE_CONTENT";
-    public static String DO_UPLOAD = "DO_UPLOAD";
-    public static String VIEW_UPLOAD = "VIEW_UPLOAD";
-    public static String VIEW_SETTINGS = "VIEW_SETTINGS";
-    public static String CLOSE_UI = "CLOSE_UI";
-    public static String CANCEL_OPERATION = "CANCEL_OPERATION";
-    public static String TBL_CLICK = "TBL_CLICK";
-    public static String TBL_DBL_CLICK = "TBL_DBL_CLICK";
-    public static String MSG_CLICK = "MSG_CLICK";
-    public static String UNDO_UPLOAD = "UNDO_UPLOAD";
-    public static String PRINT_INVALID = "PRINT_INVALID";
+    public final static String VALIDATE_CONTENT = "VALIDATE_CONTENT";
+    public final static String DO_UPLOAD = "DO_UPLOAD";
+    public final static String VIEW_UPLOAD = "VIEW_UPLOAD";
+    public final static String VIEW_SETTINGS = "VIEW_SETTINGS";
+    public final static String CLOSE_UI = "CLOSE_UI";
+    public final static String CANCEL_OPERATION = "CANCEL_OPERATION";
+    public final static String TBL_CLICK = "TBL_CLICK";
+    public final static String TBL_DBL_CLICK = "TBL_DBL_CLICK";
+    public final static String MSG_CLICK = "MSG_CLICK";
+    public final static String UNDO_UPLOAD = "UNDO_UPLOAD";
+    public final static String PRINT_INVALID = "PRINT_INVALID";
     
     protected JLabel uploadTblLbl;
     protected JList uploadTbls;

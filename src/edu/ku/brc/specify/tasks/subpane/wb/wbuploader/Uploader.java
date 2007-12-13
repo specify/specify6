@@ -78,16 +78,16 @@ import edu.ku.brc.util.Pair;
 public class Uploader implements ActionListener, WindowStateListener
 {
     //Phases in the upload process...
-    protected static String INITIAL_STATE = "WB_UPLOAD_INITIAL_STATE";
-    protected static String CHECKING_REQS = "WB_UPLOAD_CHECKING_REQS";
-    protected static String VALIDATING_DATA = "WB_UPLOAD_VALIDATING_DATA";
-    protected static String READY_TO_UPLOAD = "WB_UPLOAD_READY_TO_UPLOAD";
-    protected static String UPLOADING = "WB_UPLOAD_UPLOADING";
-    protected static String SUCCESS = "WB_UPLOAD_SUCCESS";
-    protected static String RETRIEVING_UPLOADED_DATA = "WB_RETRIEVING_UPLOADED_DATA";
-    protected static String FAILURE = "WB_UPLOAD_FAILURE";
-    protected static String USER_INPUT = "WB_UPLOAD_USER_INPUT";
-    protected static String UNDOING_UPLOAD = "WB_UPLOAD_UNDO";
+    protected final static String INITIAL_STATE = "WB_UPLOAD_INITIAL_STATE";
+    protected final static String CHECKING_REQS = "WB_UPLOAD_CHECKING_REQS";
+    protected final static String VALIDATING_DATA = "WB_UPLOAD_VALIDATING_DATA";
+    protected final static String READY_TO_UPLOAD = "WB_UPLOAD_READY_TO_UPLOAD";
+    protected final static String UPLOADING = "WB_UPLOAD_UPLOADING";
+    protected final static String SUCCESS = "WB_UPLOAD_SUCCESS";
+    protected final static String RETRIEVING_UPLOADED_DATA = "WB_RETRIEVING_UPLOADED_DATA";
+    protected final static String FAILURE = "WB_UPLOAD_FAILURE";
+    protected final static String USER_INPUT = "WB_UPLOAD_USER_INPUT";
+    protected final static String UNDOING_UPLOAD = "WB_UPLOAD_UNDO";
     
     /**
      * one of above statics
@@ -1598,7 +1598,7 @@ public class Uploader implements ActionListener, WindowStateListener
     {
         if (mainPanel != null)
         {
-            closeMainForm();
+            closeMainForm(false);
         }
     }
     
@@ -1618,13 +1618,16 @@ public class Uploader implements ActionListener, WindowStateListener
     /**
      * Shuts down upload UI.
      */
-    protected void closeMainForm()
+    protected void closeMainForm(boolean notifyWB)
     {
         mainPanel.setVisible(false);
         mainPanel = null;
         closeUploadedDataViewers();
         currentUpload = null;
-        wbSS.uploadDone();
+        if (notifyWB)
+        {
+            wbSS.uploadDone();
+        }
     }
     
     public UploadMainPanel getMainPanel()
@@ -1696,7 +1699,7 @@ public class Uploader implements ActionListener, WindowStateListener
             {
                 saveRecordSets();
             }
-            closeMainForm();
+            closeMainForm(true);
             wbSS.uploadDone();
         }
         else if (e.getActionCommand().equals(UploadMainPanel.UNDO_UPLOAD))
@@ -2298,7 +2301,7 @@ public class Uploader implements ActionListener, WindowStateListener
                         statusBar.setText(getResourceString("WB_UPLOAD_ROLLBACK_FAILURE")); 
                         setCurrentOp(Uploader.FAILURE);
                 }
-                closeMainForm();
+                closeMainForm(true);
             }
 
         };

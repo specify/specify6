@@ -3090,7 +3090,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         mainPanel.add(spreadSheet.getScrollPane(), PanelType.Spreadsheet.toString());
         showPanel(PanelType.Spreadsheet);
         mainPanel.validate();
-        mainPanel.doLayout();        
+        mainPanel.doLayout();
         ssFormSwitcher.setEnabled(true);
         spreadSheet.setEnabled(true);
         setAllUploadDatasetBtnEnabled(true);
