@@ -6,7 +6,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.Properties;
+import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -134,8 +136,9 @@ public class WebLinkLauncherButton extends JButton implements UIPluginable, GetS
         return url.toString();
     }
     
-    protected boolean allFieldsValidAndNonNull()
+    protected List<String> getMissingFieldNames()
     {
+        List<String> missing = new Vector<String>();
         String url = urlFormat;
         int lastIndex = 0;
         
@@ -152,17 +155,17 @@ public class WebLinkLauncherButton extends JButton implements UIPluginable, GetS
                 stringFieldVal = BeanUtils.getProperty(dataObj, fieldName);
                 if (stringFieldVal == null)
                 {
-                    return false;
+                    missing.add(fieldName);
                 }
             }
             catch (Exception e)
             {
                 log.warn("Cannot find field '" + fieldName + "' in " + dataObj.getClass().getName() + ".  Removing that field from URL.", e);
-                return false;
+                missing.add(fieldName);
             }
             lastIndex = endIndex+1;
         }
-        return true;
+        return missing;
     }
     
     //--------------------------------------------------------
@@ -205,10 +208,22 @@ public class WebLinkLauncherButton extends JButton implements UIPluginable, GetS
             dataObj = (FormDataObjIFace)value;
         }
         
-        if (dataObj == null || !allFieldsValidAndNonNull())
+        if (dataObj == null)
         {
             this.setEnabled(false);
-            this.setToolTipText("A required data field is missing or null");
+        }
+        else if (!getMissingFieldNames().isEmpty())
+        {
+            List<String> missingFields = getMissingFieldNames();
+            this.setEnabled(false);
+            StringBuilder tooltip = new StringBuilder("Missing fields: ");
+            for (String m: missingFields)
+            {
+                tooltip.append(m);
+                tooltip.append(", ");
+            }
+            tooltip.delete(tooltip.length()-2, tooltip.length());
+            this.setToolTipText(tooltip.toString());
         }
     }
 
