@@ -134,6 +134,37 @@ public class WebLinkLauncherButton extends JButton implements UIPluginable, GetS
         return url.toString();
     }
     
+    protected boolean allFieldsValidAndNonNull()
+    {
+        String url = urlFormat;
+        int lastIndex = 0;
+        
+        while (url.indexOf("$", lastIndex) != -1)
+        {
+            int startIndex = url.indexOf("$", lastIndex);
+            int endIndex = url.indexOf("$", startIndex+1);
+            
+            String fieldName = url.substring(startIndex+1, endIndex);
+            String stringFieldVal = "";
+            
+            try
+            {
+                stringFieldVal = BeanUtils.getProperty(dataObj, fieldName);
+                if (stringFieldVal == null)
+                {
+                    return false;
+                }
+            }
+            catch (Exception e)
+            {
+                log.warn("Cannot find field '" + fieldName + "' in " + dataObj.getClass().getName() + ".  Removing that field from URL.", e);
+                return false;
+            }
+            lastIndex = endIndex+1;
+        }
+        return true;
+    }
+    
     //--------------------------------------------------------
     //-- UIPluginable
     //--------------------------------------------------------
@@ -172,6 +203,12 @@ public class WebLinkLauncherButton extends JButton implements UIPluginable, GetS
         if (value != null && value instanceof FormDataObjIFace)
         {
             dataObj = (FormDataObjIFace)value;
+        }
+        
+        if (dataObj == null || !allFieldsValidAndNonNull())
+        {
+            this.setEnabled(false);
+            this.setToolTipText("A required data field is missing or null");
         }
     }
 
