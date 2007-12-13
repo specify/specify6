@@ -1942,12 +1942,12 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             else
             {
                 List<TreeNode> childrenShown = showChildren(treeNode);
-                if (childrenShown.size() > 0)
-                {
-                    TreeNode firstChild = childrenShown.get(0);
-                    int listIndex = (list == lists[0]) ? 0 : 1;
-                    scrollToShowNode(firstChild, listIndex);
-                }
+//                if (childrenShown.size() > 0)
+//                {
+//                    TreeNode firstChild = childrenShown.get(0);
+//                    int listIndex = (list == lists[0]) ? 0 : 1;
+//                    scrollToShowNode(firstChild, listIndex);
+//                }
             }
 		}
         // otherwise, ignore the click
