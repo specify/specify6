@@ -249,7 +249,10 @@ public class MultiView extends JPanel
         showView(defaultAltView.getName());
         
         //log.debug( "*** Parent " + (mvParent != null ? "NOT NULL" : "NULL"));
-        currentValidator = currentViewable.getValidator();
+        if (currentViewable != null)
+        {
+            currentValidator = currentViewable.getValidator();
+        }
         
         if (false)
         {
@@ -1297,7 +1300,7 @@ public class MultiView extends JPanel
         {
             if (mv.createWithMode == mode)
             {
-                mv.setViewState(viewStateList, mode, vsInx+1);
+                //mv.setViewState(viewStateList, mode, vsInx+1);
             }
         }
     }
@@ -1336,7 +1339,7 @@ public class MultiView extends JPanel
         {
             if (mv.createWithMode == mode)
             {
-                mv.collectionViewState(viewStateList, mode, level+2);
+                //mv.collectionViewState(viewStateList, mode, level+2);
             }
         }
     }

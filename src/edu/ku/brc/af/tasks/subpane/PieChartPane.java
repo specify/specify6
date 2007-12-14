@@ -112,11 +112,10 @@ public class PieChartPane extends ChartPane
     // QueryResultsListener
     //--------------------------------------
 
-    /*
-     *  (non-Javadoc)
-     * @see edu.ku.brc.af.dbsupport.QueryResultsListener#allResultsBack()
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.subpane.ChartPane#allResultsBack(edu.ku.brc.dbsupport.QueryResultsContainerIFace)
      */
-    public synchronized void allResultsBack()
+    public synchronized void allResultsBack(final QueryResultsContainerIFace qrc)
     {
         // create a dataset...
         DefaultPieDataset dataset = new DefaultPieDataset();

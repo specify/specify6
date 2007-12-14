@@ -49,7 +49,7 @@ public class TreeViewerListModel extends AbstractListModel
     {
         int visibleRootIndex = nodes.indexOf(visibleRoot);
         TreeNode node = nodes.get(visibleRootIndex + index);
-        log.debug("getElementAt(" + index + ") = " + node);
+        //log.debug("getElementAt(" + index + ") = " + node);
         return node;
     }
 
@@ -75,11 +75,11 @@ public class TreeViewerListModel extends AbstractListModel
 		if (dropLocationNode instanceof TreeNode)
 		{
 			this.dropLocationNode = (TreeNode)dropLocationNode;
-            log.debug("Setting drop location node to " + this.dropLocationNode.getName());
+            //log.debug("Setting drop location node to " + this.dropLocationNode.getName());
 		}
 		else
 		{
-            log.debug("Setting drop location node to NULL");
+            //log.debug("Setting drop location node to NULL");
 			this.dropLocationNode = null;
 		}
         
@@ -199,12 +199,12 @@ public class TreeViewerListModel extends AbstractListModel
         {
             if (n.getParentId() == ancestor.getId())
             {
-                log.debug("isDescendantOfNode( " + node + ", " + ancestor + " ) = true");
+                //log.debug("isDescendantOfNode( " + node + ", " + ancestor + " ) = true");
                 return true;
             }
             n = getNodeById(n.getParentId());
         }
-        log.debug("isDescendantOfNode( " + node + ", " + ancestor + " ) = false");
+        //log.debug("isDescendantOfNode( " + node + ", " + ancestor + " ) = false");
         return false;
     }
     
@@ -236,7 +236,7 @@ public class TreeViewerListModel extends AbstractListModel
      */
     public synchronized void showChildNodes(List<TreeNode> childNodes, TreeNode parent)
     {
-        log.debug("performing addChildNodes( " + childNodes + ", " + parent + ")");
+        //log.debug("performing addChildNodes( " + childNodes + ", " + parent + ")");
         
         if (parent == null || childNodes == null)
         {
@@ -287,7 +287,7 @@ public class TreeViewerListModel extends AbstractListModel
     
     public synchronized void removeChildNodes(TreeNode parent)
     {
-        log.debug("performing removeChildNodes( " + parent + ")");
+        //log.debug("performing removeChildNodes( " + parent + ")");
      
         if (parent == null)
         {

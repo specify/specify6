@@ -44,7 +44,34 @@ public class SpecifyExpressSearchSQLAdjuster extends ExpressSearchSQLAdjuster
             Integer id = user.getId();
             if (id != null)
             {
-                return StringUtils.replace(sql, "SPECIFYUSERID", Integer.toString(id));
+                String adjSQL = sql;
+                if (StringUtils.contains(adjSQL, "SPECIFYUSERID"))
+                {
+                    adjSQL = StringUtils.replace(adjSQL, "SPECIFYUSERID", Integer.toString(id));
+                }
+                
+                if (StringUtils.contains(adjSQL, "DIVISIONID"))
+                {
+                    Integer divId = user.getAgent().getDivision() != null ? user.getAgent().getDivision().getDivisionId() : null;
+                    if (divId != null)
+                    {
+                        adjSQL = StringUtils.replace(adjSQL, "DIVSIONID", Integer.toString(divId));
+                    }
+                }
+                
+                System.out.println(adjSQL);
+                if (StringUtils.contains(adjSQL, "COLMEMID"))
+                {
+                    Collection collection = Collection.getCurrentCollection();
+                    if (collection != null)
+                    {
+                        adjSQL = StringUtils.replace(adjSQL, "COLMEMID", Integer.toString(collection.getCollectionId()));
+                    }
+                }
+                return adjSQL;
+            } else
+            {
+                throw new RuntimeException("The SpecifyUser cannot be null!");
             }
         }
         return super.adjustSQL(sql);

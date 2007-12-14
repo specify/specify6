@@ -222,7 +222,7 @@ public class BuildSampleDatabase
     protected boolean            hideFrame = false;
     
     protected boolean            copyToUserDir      = true;
-    protected boolean            doShallowTaxonTree = true;
+    protected boolean            doShallowTaxonTree = false;
     
     /**
      * 

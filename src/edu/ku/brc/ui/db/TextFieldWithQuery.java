@@ -10,14 +10,21 @@
 package edu.ku.brc.ui.db;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Point;
+import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -26,6 +33,7 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -46,6 +54,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.dbsupport.SQLExecutionListener;
 import edu.ku.brc.dbsupport.SQLExecutionProcessor;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -137,7 +146,8 @@ public class TextFieldWithQuery extends JPanel implements SQLExecutionListener
         setLayout(new BorderLayout());
         
         textField = new JTextField(10);
-        dbBtn     = new JButton(IconManager.getIcon("DownArrow", IconManager.IconSize.NonStd));
+        ImageIcon img = IconManager.getIcon("DropDownArrow", IconManager.IconSize.NonStd);
+        dbBtn     = UIHelper.isMacOS() ? new MacGradiantBtn(img) : new JButton(img);
         dbBtn.setFocusable(false);
         
         PanelBuilder    pb = new PanelBuilder(new FormLayout("f:d:g,p", "f:p:g"), this);
@@ -160,7 +170,6 @@ public class TextFieldWithQuery extends JPanel implements SQLExecutionListener
             @Override
             public void focusGained(FocusEvent arg0)
             {
-                log.debug("**************************************************** focusGained");
                 int len = textField.getText().length();
                 if (len > 0)
                 {
@@ -174,10 +183,8 @@ public class TextFieldWithQuery extends JPanel implements SQLExecutionListener
             @Override
             public void focusLost(FocusEvent arg0)
             {
-                log.debug("**************************************************** focusLost");
                 if (selectedId == null)
                 {
-                    log.debug("xxxxxxxxxxxxxxxxxxxxx *************** focusLost");
                     textField.setText("");
                 }
                 super.focusLost(arg0);
@@ -189,7 +196,6 @@ public class TextFieldWithQuery extends JPanel implements SQLExecutionListener
 
             public void actionPerformed(ActionEvent e)
             {
-                //log.debug("isPopupShowing "+isPopupShowing);
                 if (!popupFromBtn)
                 {
                     fillBox(currentText);
@@ -209,6 +215,8 @@ public class TextFieldWithQuery extends JPanel implements SQLExecutionListener
      */
     public void setEnabled(final boolean enabled)
     {
+        super.setEnabled(enabled);
+        
         textField.setEnabled(enabled);
         dbBtn.setEnabled(enabled);
     }
@@ -561,6 +569,98 @@ public class TextFieldWithQuery extends JPanel implements SQLExecutionListener
     public JTextField getTextField()
     {
         return textField;
+    }
+    
+    class MacGradiantBtn extends JButton
+    {
+        protected ImageIcon imgIcon;
+        protected boolean   isPressed = false;
+        
+        protected Color top1 = new Color(184, 217, 250);
+        protected Color top2  = new Color(120, 180, 241);
+        
+        protected Color bot1 = new Color(74, 155, 236);
+        protected Color bot2 = new Color(179, 248, 255);
+        
+        protected Color topDarker1;
+        protected Color topDarker2;
+        protected Color botDarker1;
+        protected Color botDarker2;
+        
+        
+        
+        /**
+         * @param arg0
+         */
+        public MacGradiantBtn(ImageIcon imgIcon)
+        {
+            super(imgIcon);
+            this.imgIcon = imgIcon;
+            
+            topDarker1 = UIHelper.changeColorBrightness(top1, 0.95);
+            topDarker2 = UIHelper.changeColorBrightness(top2, 0.95);
+            botDarker1 = UIHelper.changeColorBrightness(bot1, 0.95);
+            botDarker2 = UIHelper.changeColorBrightness(bot2, 0.95);
+            
+            addMouseListener(new MouseAdapter() {
+
+                @Override
+                public void mousePressed(MouseEvent e)
+                {
+                    super.mousePressed(e);
+                    isPressed = true;
+                }
+
+                @Override
+                public void mouseReleased(MouseEvent e)
+                {
+                    super.mouseReleased(e);
+                    isPressed = false;
+                }
+                
+            });
+        }
+
+        public void paint(Graphics g)
+        {
+            super.paint(g);
+            
+            if (isEnabled())
+            {
+                Graphics2D g2 = (Graphics2D)g;
+                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                
+                int w = this.getWidth() - 6;
+                int h = this.getHeight() - 6;
+                
+                int x = 3;
+                int y = 3;
+          
+                drawButtonBody(g2, x, y, w, (h/2)+4,   isPressed ? topDarker1 : top1, isPressed ? topDarker2 : top2);
+                drawButtonBody(g2, x, y+(h/2), w, h/2, isPressed ? botDarker1 : bot1, isPressed ? botDarker2 : bot2);
+                
+                x = (this.getWidth() - imgIcon.getIconWidth()) / 2;
+                y = (this.getHeight() - imgIcon.getIconHeight()) / 2;
+                g.drawImage(imgIcon.getImage(), x, y, imgIcon.getIconWidth(), imgIcon.getIconHeight(), null);
+            }
+            
+        }
+        
+        /**
+         * Draws the button body
+         * @param g2 the graphics to be painted into
+         * @param w the width of the control
+         * @param h the height of the control
+         * @param color the of the background
+         */
+        protected void drawButtonBody(Graphics2D g2, int x, int y, int w, int h, Color color, Color color2) 
+        {
+            // draw the button body
+            GradientPaint bg = new GradientPaint(new Point(x,y), color,
+                                                 new Point(x,y+h), color2);
+            g2.setPaint(bg);
+            g2.fillRoundRect(x, y, w, h, 6, 6);
+        }
     }
     
 }

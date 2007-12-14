@@ -262,7 +262,7 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
     
     public synchronized void computeMissingColumnWidths( Graphics g )
     {
-        log.debug("Computing missing column widths");
+        //log.debug("Computing missing column widths");
         int defaultColumnWidth =  g.getFontMetrics().stringWidth("WWWWWWWWWWWWW");
         for (Integer rank: model.getVisibleRanks())
         {
@@ -408,7 +408,7 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         @Override
         public Dimension getPreferredSize()
         {
-            log.debug("TreeViewerNodeRenderer.getPreferredSize() called.  " + treeNode);
+            //log.debug("TreeViewerNodeRenderer.getPreferredSize() called.  " + treeNode);
             // ensure that the lengths are valid
             if( !widthsValid )
             {
@@ -416,7 +416,7 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
             }
             
             Dimension prefSize = new Dimension(getSumOfColumnWidths(),list.getFixedCellHeight());
-            log.debug("getPreferredSize() = " + prefSize);
+            //log.debug("getPreferredSize() = " + prefSize);
             return prefSize;
         }
         

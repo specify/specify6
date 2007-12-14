@@ -909,7 +909,7 @@ public class FieldItemPanel extends LocalizerBasePanel
             fieldLengthTxt.setText("");
         }
         
-        fieldInfo = tableInfo.getFieldByName(fld.getName());
+        fieldInfo = fld != null ? tableInfo.getFieldByName(fld.getName()) : null;
         
         fillFormatBox();
         
@@ -918,7 +918,6 @@ public class FieldItemPanel extends LocalizerBasePanel
         fieldNameText.setEnabled(ok);
         fieldNameLbl.setEnabled(ok);
         fieldDescLbl.setEnabled(ok);
-        
         
         setIgnoreChanges(ignoreChanges);
 
@@ -939,6 +938,10 @@ public class FieldItemPanel extends LocalizerBasePanel
         fldSpellChkBtn.setEnabled(ok && checker != null && spellCheckLoaded);
     }
 
+    
+    //------------------------------------------------------
+    //
+    //------------------------------------------------------
     class LengthWatcher extends KeyAdapter
     {
         protected int maxLength;
@@ -975,9 +978,12 @@ public class FieldItemPanel extends LocalizerBasePanel
         }
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizerBasePanel#localeChanged(java.util.Locale)
+     */
     @Override
     public void localeChanged(Locale newLocale)
     {
-        // mothing
+        // do nothing
     }
 }

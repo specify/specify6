@@ -20,7 +20,7 @@
     <icon name="Workbench16"      file="Workbench16x16.png" sizes="16"/>
     <icon name="Workbench"        file="Workbench32x32.png" sizes="all"/>
     <icon name="Interactions"     file="interactions.png" sizes="all"/>
-    <icon name="Statistics"       file="BarGraph32x32.png" sizes="all"/>
+    <icon name="Statistics"       file="Statistics32x32.png" sizes="all"/>
     <icon name="Pie_Chart"        file="PieChart32x32.png" sizes="all"/>
     <icon name="Bar_Chart"        file="BarGraph32x32.png" sizes="all"/>
     <icon name="Record_Set"       file="bundle.png" sizes="all"/>
@@ -128,8 +128,8 @@
     <icon name="Linked"           file="linked.png"          sizes="NonStd"/>
     <icon name="LinkedRight"      file="linked_right.png"     sizes="NonStd"/>
     
-    <icon name="Down"             file="down.png" sizes="NonStd"/>
-    <icon name="Forward"          file="forward.png" sizes="NonStd"/>
+    <icon name="Down"             file="Down16x16.png" sizes="16"/>
+    <icon name="Forward"          file="Forward16x16.png" sizes="16"/>
     
     <icon name="Minimize"         file="minimize.gif" sizes="16"/>
     <icon name="Maximize"         file="maximize.gif" sizes="16"/>
@@ -138,14 +138,16 @@
     <icon name="ReorderUp"        file="ReorderUp16x16.png" sizes="16"/>
     <icon name="ReorderDown"      file="ReorderDown16x16.png" sizes="16"/>
     
-    <icon name="Checkmark" file="stock-apply.png" sizes="all"/>
+    <icon name="Checkmark"        file="Checkmark32x32.png" sizes="all"/>
+    <icon name="Attach"           file="attachicon.png" sizes="all"/>
+    <icon name="Attach16"         file="attachicon16.png" sizes="16"/>
     
     <!-- Preferences -->
 
     
     <!-- TreeTableViewer icons -->
-    <icon name="TTV_Subtree"        file="ZoomIn32x32.png"    sizes="32"/>
-    <icon name="TTV_WholeTree"      file="ZoomOut32x32.png"   sizes="32"/>
+    <icon name="TTV_Subtree"        file="ExpandChildren32x32.png"    sizes="all"/>
+    <icon name="TTV_WholeTree"      file="ExpandParent32x32.png"   sizes="all"/>
     <icon name="TTV_AllDescend"     file="expand.png"     sizes="16"/>
     <icon name="TTV_SyncViews"      file="sync.png"       sizes="16"/>
     <icon name="TTV_NewChild"       alias="PlusSign"/>
@@ -178,12 +180,12 @@
     
     <!-- LatLon PluginUI -->
     <icon name="LatLonPoint"           file="LatLonPoint32x32.png"      sizes="all"/>
-    <icon name="LatLonLine"            file="LatLonLine.gif"            sizes="all"/>
-    <icon name="LatLonRect"            file="LatLonRect.gif"            sizes="all"/>
+    <icon name="LatLonLine"            file="LatLonLine32x32.png"       sizes="all"/>
+    <icon name="LatLonRect"            file="LatLonRect32x32.png"       sizes="all"/>
     <icon name="LatLonLineLeft"        file="LatLonLineLeft32x32.png"   sizes="all"/>
-    <icon name="LatLonLineRight"       file="LatLonLineRight.gif"       sizes="all"/>
-    <icon name="LatLonRectTopLeft"     file="LatLonRectLeft32x32.png"       sizes="all"/>
-    <icon name="LatLonRectBottomRight" file="LatLonRectRight32x32.png"      sizes="all"/>
+    <icon name="LatLonLineRight"       file="LatLonLineRight32x32.png"  sizes="all"/>
+    <icon name="LatLonRectTopLeft"     file="LatLonRectLeft32x32.png"   sizes="all"/>
+    <icon name="LatLonRectBottomRight" file="LatLonRectRight32x32.png"  sizes="all"/>
     
     <!-- Tree Node Find Widget -->
     <icon name="Top"				file="RightSideUp.png"		sizes="all"/>

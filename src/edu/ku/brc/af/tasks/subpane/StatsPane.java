@@ -37,6 +37,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.Taskable;
+import edu.ku.brc.af.core.expresssearch.ExpressSearchSQLAdjuster;
 import edu.ku.brc.dbsupport.JPAQuery;
 import edu.ku.brc.stats.BarChartPanel;
 import edu.ku.brc.stats.StatDataItem;
@@ -316,7 +317,8 @@ public class StatsPane extends BaseSubPane
                                         
                                         if (statements.size() == 1)
                                         {
-                                            statItem.add(((Element)statements.get(0)).getText(), 1, 1, StatDataItem.VALUE_TYPE.Value, formatStr);
+                                            String sql = ExpressSearchSQLAdjuster.getInstance().adjustSQL(((Element)statements.get(0)).getText());
+                                            statItem.add(sql, 1, 1, StatDataItem.VALUE_TYPE.Value, formatStr);
         
                                         } else if (statements.size() > 0)
                                         {
@@ -342,7 +344,8 @@ public class StatsPane extends BaseSubPane
                                     case JPA :
                                     {
                                         List<?> statements = itemElement.selectNodes("sql/statement");
-                                        statItem.addCustomQuery(new JPAQuery(((Element)statements.get(0)).getText()), StatDataItem.VALUE_TYPE.Value, formatStr);
+                                        String sql = ExpressSearchSQLAdjuster.getInstance().adjustSQL(((Element)statements.get(0)).getText());
+                                        statItem.addCustomQuery(new JPAQuery(sql), StatDataItem.VALUE_TYPE.Value, formatStr);
 
                                     } break;
                                     

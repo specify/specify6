@@ -13,6 +13,7 @@ import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.layout.CellConstraints;
 
+import edu.ku.brc.af.core.expresssearch.ExpressSearchSQLAdjuster;
 import edu.ku.brc.dbsupport.SQLExecutionListener;
 import edu.ku.brc.dbsupport.SQLExecutionProcessor;
 
@@ -96,8 +97,10 @@ public class StatGroupTableFromQuery extends StatGroupTable implements SQLExecut
 
         StatDataItem statItem = new StatDataItem("RetrievingData", null , false);
         model.addDataItem(statItem);
+        
+        String adjustedSQL = ExpressSearchSQLAdjuster.getInstance().adjustSQL(sql);
 
-        sqle = new SQLExecutionProcessor(this, sql);
+        sqle = new SQLExecutionProcessor(this, adjustedSQL);
         sqle.start();
     }
 

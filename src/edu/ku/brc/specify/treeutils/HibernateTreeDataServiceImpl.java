@@ -105,10 +105,10 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         Set<T> children = parent.getChildren();
         // to force Set loading
         int childCount = children.size();
-        log.debug("getChildNodes( " + parent + " ): " + childCount + " child(ren) of " + parent.getName() + " loaded");
+        //log.debug("getChildNodes( " + parent + " ): " + childCount + " child(ren) of " + parent.getName() + " loaded");
         for (T child: children)
         {
-            log.debug("\t" + nodeDebugInfo(child));
+            //log.debug("\t" + nodeDebugInfo(child));
         }
         session.close();
         return children;
@@ -224,11 +224,11 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         session.close();
         if (root!=null)
         {
-            log.debug("Root node: " + nodeDebugInfo(root));
+            //log.debug("Root node: " + nodeDebugInfo(root));
         }
         else
         {
-            log.debug("No root node");
+            //log.debug("No root node");
         }
 		return root;
 	}
@@ -236,7 +236,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
     @SuppressWarnings("unchecked")
     public synchronized T getNodeById(Class<?> clazz, int id)
     {
-        log.debug("getNodeById( " + clazz.getSimpleName() + ", " + id + " )");
+        //log.debug("getNodeById( " + clazz.getSimpleName() + ", " + id + " )");
         Session session = getNewSession();
         T record = (T)session.load(clazz, id);
         session.close();
@@ -546,7 +546,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
     @SuppressWarnings("unchecked")
     public synchronized boolean moveTreeNode(T node, T newParent)
     {
-        log.debug("Moving ["+nodeDebugInfo(node)+"] to ["+nodeDebugInfo(newParent)+"]");
+        //log.debug("Moving ["+nodeDebugInfo(node)+"] to ["+nodeDebugInfo(newParent)+"]");
         
         if (node==null || newParent==null)
         {
@@ -570,9 +570,9 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         T mergedOldParent = (T)mergeIntoSession(session, oldParent);
         Transaction tx = session.beginTransaction();
         
-        log.debug("refreshing " + nodeDebugInfo(mergedNode));
+        //log.debug("refreshing " + nodeDebugInfo(mergedNode));
         session.refresh(mergedNode);
-        log.debug("refreshing " + nodeDebugInfo(mergedNewParent));
+        //log.debug("refreshing " + nodeDebugInfo(mergedNewParent));
         session.refresh(mergedNewParent);
         
         // fix up the parent/child pointers for the effected nodes
@@ -916,7 +916,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 //        public boolean onLoad(Object entity, Serializable id, Object[] state, String[] propertyNames, Type[] types)
 //        {
 //            String className = entity.getClass().getSimpleName();
-//            log.debug("loaded " + className + " (" + id + ") at 0x" + entity.hashCode());
+//            //log.debug("loaded " + className + " (" + id + ") at 0x" + entity.hashCode());
 //            return false;
 //        }
 //    }

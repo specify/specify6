@@ -8,6 +8,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -25,6 +27,7 @@ import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.tasks.DualViewSearchable;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.MultiStateToggleButton;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.IconManager.IconSize;
 
 public class FindPanel extends JPanel implements TimingTarget
@@ -63,18 +66,33 @@ public class FindPanel extends JPanel implements TimingTarget
         Icon up    = IconManager.getIcon("Top",IconSize.Std16);
         Icon down  = IconManager.getIcon("Bottom",IconSize.Std16);
         Icon both  = IconManager.getIcon("Both",IconSize.Std16);
-        Icon close = IconManager.getIcon("Close");
         
-        closeButton = new JButton();
-        closeButton.setIcon(close);
-        closeButton.addActionListener(new ActionListener()
+        closeButton = UIHelper.createIconBtn("Close", IconManager.IconSize.NonStd, "", false, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
                 contract();
             }
         });
-        closeButton.setBorder(null);
+        closeButton.setEnabled(true);
+        closeButton.setFocusable(false);
+        closeButton.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseEntered(MouseEvent e)
+            {
+                ((JButton)e.getSource()).setIcon(IconManager.getIcon("CloseHover"));
+                super.mouseEntered(e);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e)
+            {
+                ((JButton)e.getSource()).setIcon(IconManager.getIcon("Close"));
+                super.mouseExited(e);
+            }
+            
+        });
         
         findLabel = new JLabel(find + ": ");
         entryField = new JTextField(32);

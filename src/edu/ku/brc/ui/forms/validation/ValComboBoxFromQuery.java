@@ -886,7 +886,8 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         {
             if (((JMenuItem)e.getSource()).getText().equals(UIRegistry.getResourceString("TFWQ_ADD_LABEL")))
             {
-                displaySearchDialog();
+                //displaySearchDialog();
+                defaultEditAction.actionPerformed(null);
                 return;
             }
         }

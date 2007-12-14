@@ -3,17 +3,17 @@
 
   <row>
       <box title="Task List" desccol="1" valcol="1">
-		<sql><![CDATA[Select name from workbench]]></sql>
+		<sql><![CDATA[SELECT name FROM workbench WHERE SpecifyUserID = SPECIFYUSERID]]></sql>
       </box>
       <box title="Pre-Catalog Works Benches" desccol="1" valcol="1">
-		<sql><![CDATA[Select name from workbench]]></sql>
+		<sql><![CDATA[SELECT name FROM workbench WHERE SpecifyUserID = SPECIFYUSERID]]></sql>
       </box>
   </row>
 
    <row>
       <box title="Loans">
         <item title="Items On Loan">
-            <sql><statement><![CDATA[select count(loanpreparationid) AS ItemsOnLoanCount from loanpreparation as lpo inner join loan on loan.loanid = lpo.loanid where loan.IsGift = false and quantityresolved < quantity and (IsClosed = false or IsClosed is null)]]></statement></sql>
+            <sql><statement><![CDATA[SELECT count(loanpreparationid) AS ItemsOnLoanCount FROM loanpreparation AS lpo INNER JOIN loan ON loan.loanid = lpo.loanid where loan.IsGift = false and quantityresolved < quantity and loan.CollectioMemeberId = COLMEMID AND (IsClosed = false or IsClosed is null)]]></statement></sql>
             <link>ListOnLoan</link>
         </item>
         <item title="Overdue Loans">

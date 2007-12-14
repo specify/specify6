@@ -88,6 +88,8 @@
     
     <icon name="habitatattributes"      alias="attribute"/>
     <icon name="preparationattributes"  alias="attribute"/>
+  	<icon name="collectionobjectattributes"     alias="attribute"/>
+    
     
     <icon name="Accession Agent"        alias="accessionagent"/>
     <icon name="Collecting Event"       alias="collectingevent"/>

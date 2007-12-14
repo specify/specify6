@@ -2163,4 +2163,18 @@ public final class UIHelper
     {
         return new JLabel(getResourceString(key), align);
     }
+    
+    /**
+     * @param color
+     * @param delta
+     * @return
+     */
+    public static Color changeColorBrightness(final Color color, final double delta)
+    {
+        int r = (int)Math.min(color.getRed()*delta, 255.0);
+        int g = (int)Math.min(color.getGreen()*delta, 255.0);
+        int b = (int)Math.min(color.getBlue()*delta, 255.0);
+        
+        return new Color(r, g, b);
+    }
 }

@@ -23,6 +23,7 @@ import java.util.Properties;
 import java.util.Set;
 
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.apache.commons.lang.StringUtils;
@@ -36,6 +37,8 @@ import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.GetSetValueIFace;
+import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
@@ -70,6 +73,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
     protected Class<?>              classToCreate = null;
     
     protected JButton               subViewBtn;
+    protected JLabel                label;
     
     protected Object                dataObj;
     protected Object                newDataObj;
@@ -118,23 +122,46 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
         String colDef;
         if (align.equals("center"))
         {
-            colDef = "f:p:g,p,f:p:g";
+            colDef = "f:p:g,p,2px,p,f:p:g";
             
         } else if (align.equals("right"))
         {
-            colDef = "f:p:g, p";
+            colDef = "f:p:g, p,2px,p";
             
         } else // defaults to left
         {
-            colDef = "p,f:p:g";
+            colDef = "p,2px,p,f:p:g";
             x = 1;  
         }
         
-        subViewBtn = new JButton(baseLabel);
+        if (false)
+        {
+            subViewBtn = UIHelper.createIconBtn("Attach", IconManager.IconSize.Std16, "", false, new ActionListener() {
+                //@Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    showForm();
+                }
+            });
+        } else
+        {
+            subViewBtn = new JButton(IconManager.getIcon("Attach", IconManager.IconSize.Std16));
+            subViewBtn.addActionListener(new ActionListener() {
+                //@Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    showForm();
+                }
+            });
+        }
+        subViewBtn.setEnabled(true);
+        
+        label      = new JLabel(baseLabel);
         PanelBuilder    pb = new PanelBuilder(new FormLayout(colDef, "p"), this);
         CellConstraints cc = new CellConstraints();
         pb.add(subViewBtn, cc.xy(x,1));
-        
+        pb.add(label, cc.xy(x+2,1));
+               
         try
         {
             classObj = Class.forName(view.getClassName());
@@ -144,18 +171,6 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
            log.error(ex);
            throw new RuntimeException(ex);
         }
-        
-        subViewBtn.addActionListener(new ActionListener() {
-
-            /* (non-Javadoc)
-             * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
-             */
-            //@Override
-            public void actionPerformed(ActionEvent e)
-            {
-                showForm();
-            }
-        });
     }
     
     /* (non-Javadoc)
@@ -166,6 +181,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
         super.setEnabled(enabled);
         
         subViewBtn.setEnabled(enabled);
+        label.setEnabled(enabled);
     }
     
     /**
@@ -282,7 +298,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
             {
                 format = "%s (%s) ...";
             }
-            subViewBtn.setText(String.format(format, baseLabel, size));
+            label.setText(String.format(format, baseLabel, size));
         }
     }
     
