@@ -1980,19 +1980,27 @@ public class UploadTable implements Comparable<UploadTable>
             {
                 if (key != null)
                 {
+                    boolean committed = false;
+                    boolean opened = true;
                     try
                     {
                         q.setParameter("theKey", key);
                         DataModelObjBase obj = (DataModelObjBase) q.uniqueResult();
                         session.beginTransaction();
+                        opened = true;
                         session.delete(obj);
                         session.commit();
+                        committed = true;
                     }
                     catch (Exception ex)
                     {
                         // the delete may fail if another user has used or deleted uploaded
                         // records...
                         log.info(ex);
+                        if (opened && !committed)
+                        {
+                            session.rollback();
+                        }
                     }
                 }
             }
