@@ -683,7 +683,7 @@ public class BuildSampleDatabase
         if (!lastName.equals("Thompson")) agents.add(createAgent("Sir", "Dudley", "X", "Thompson", "dxt", ""));
         if (!lastName.equals("Campbell")) agents.add(createAgent("Mr.", "Joe", "A", "Campbell", "jb", ""));
         if (!lastName.equals("Tester")) agents.add(createAgent("Mr.", "Joe", "A", "Tester", "jb", ""));
-        if (!lastName.equals("Stewart")) agents.add(createAgent("Mr.", "Joshua", "D", "Stewart", "jds", "jds@ku.edu"));
+        if (!lastName.equals("Smyth")) agents.add(createAgent("Mr.", "Mitch", "A", "Smyth", "mas", "mas@ku.edu"));
         agents.add(userAgent);
         
         Agent ku = new Agent();
@@ -719,8 +719,8 @@ public class BuildSampleDatabase
         // Rod Carew
         addrs.add(createAddress(agents.get(6), "1212 Apple Street", null, "Chicago", "IL", "USA", "01010"));
         // no address for agent 7 (Joe Tester)
-        // Josh
-        addrs.add(createAddress(agents.get(8), "11911 S Redbud Ln", null, "Olathe", "KS", "USA", "66061"));
+        // Smyth
+        addrs.add(createAddress(agents.get(8), "11911 Oak Ln", null, "Orion", "KS", "USA", "66061"));
         // KU
         addrs.add(createAddress(ku, null, null, "Lawrence", "KS", "USA", "66045"));
         
@@ -738,9 +738,9 @@ public class BuildSampleDatabase
         // collecting events (collectors, collecting trip)
         ////////////////////////////////
         log.info("Creating collecting events, collectors and a collecting trip");
-        Collector collectorJosh = createCollector(agents.get(8), 2);
+        Collector collectorMitch = createCollector(agents.get(8), 2);
         Collector collectorJim = createCollector(agents.get(1), 1);
-        CollectingEvent ce1 = createCollectingEvent(forestStream, new Collector[]{collectorJosh,collectorJim});
+        CollectingEvent ce1 = createCollectingEvent(forestStream, new Collector[]{collectorMitch,collectorJim});
         calendar.set(1993, 3, 19, 11, 56, 00);
         ce1.setStartDate(calendar);
         ce1.setStartDateVerbatim("19 Mar 1993, 11:56 AM");
@@ -775,7 +775,7 @@ public class BuildSampleDatabase
         dataObjects.add(ce1);
         dataObjects.add(cevAttr);
         dataObjects.add(ce2);
-        dataObjects.add(collectorJosh);
+        dataObjects.add(collectorMitch);
         dataObjects.add(collectorJim);
         dataObjects.add(collectorMeg);
         dataObjects.add(collectorRod);
@@ -1382,8 +1382,8 @@ public class BuildSampleDatabase
 //                Attachment bigEye = createAttachment(bigEyeFilePath, "image/jpeg", 0);
 //                bigEye.setLoan(closedLoan);
                 
-                String[] names  = {"Beach",     "Stewart",  "Spears",  "Kumin",   "Bentley"};
-                String[] photos = {"beach.jpg", "josh.jpg", "rod.jpg", "meg.jpg", "andy.jpg"};
+                String[] names  = {"Beach",     "Smyth",  "Spears",  "Kumin",   "Bentley"};
+                String[] photos = {"beach.jpg", "rod.jpg", "rod.jpg", "meg.jpg", "andy.jpg"};
                 for (Agent agent : agents)
                 {
                     for (int i=0;i<names.length;i++)
