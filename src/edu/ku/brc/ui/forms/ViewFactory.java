@@ -1458,7 +1458,8 @@ public class ViewFactory
         BuildInfoStruct bi = new BuildInfoStruct();
         bi.curMaxRow  = 1;
         
-        int rowInx = 1;
+        int     rowInx = 1;
+        boolean hasRequiredOrDerivedField = false;
         
         for (FormRowIFace row : formRows)
         {
@@ -1511,6 +1512,11 @@ public class ViewFactory
                 }
 
             }
+            
+            if  (bi.isRequired || bi.isDerivedLabel)
+            {
+                hasRequiredOrDerivedField = true;
+            }
             rowInx += 2;
         }
 
@@ -1528,7 +1534,7 @@ public class ViewFactory
         }
         
         // Check to see if there is at least one required field
-        if (doFixLabels && (bi.isRequired || bi.isDerivedLabel))
+        if (doFixLabels && hasRequiredOrDerivedField)
         {
             viewBldObj.fixUpRequiredDerivedLabels();
         }
