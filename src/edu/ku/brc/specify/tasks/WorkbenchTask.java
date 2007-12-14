@@ -327,6 +327,7 @@ public class WorkbenchTask extends BaseTask
         }
         
         MAX_ROWS = AppPreferences.getRemote().getInt("MAX_ROWS", 2000);
+        isShowDefault = true;
     }
     
     /**

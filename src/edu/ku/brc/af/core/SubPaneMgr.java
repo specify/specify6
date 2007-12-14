@@ -277,7 +277,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
      */
     public boolean removePane(final SubPaneIFace pane, final boolean askForSave)
     {
-        return removePane(pane, askForSave, true);
+        return removePane(pane, askForSave, askForSave);
     }
 
 

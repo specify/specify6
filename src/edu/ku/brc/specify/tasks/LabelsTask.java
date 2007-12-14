@@ -86,13 +86,14 @@ public class LabelsTask extends ReportsBaseTask
     @Override
     public void initialize()
     {
-        super.initialize();
-        
-        CommandAction cmdAction = new CommandAction(REPORTS, PRINT_TABLE);
-        ContextMgr.registerService(PRINT_TABLE, -1, cmdAction, this, "Print", getResourceString("PRINT_GRID_TT"));
-
+        if (!isInitialized)
+        {
+            super.initialize();
+            
+            CommandAction cmdAction = new CommandAction(REPORTS, PRINT_TABLE);
+            ContextMgr.registerService(PRINT_TABLE, -1, cmdAction, this, "Print", getResourceString("PRINT_GRID_TT"));
+        }
     }
-
 
     /**
      * Adds a WorkbenchTemplate to the Left Pane NavBox
