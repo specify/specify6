@@ -15,6 +15,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Comparator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -412,45 +414,19 @@ public class UploadTableTree extends UploadTable
     public void undoUpload()
     {
         super.undoUpload();
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        String hql = "from " + getWriteTable().getName() + " where id =:theKey";
-        QueryIFace q = session.createQuery(hql);
-        try
+        List<Object> keys = new LinkedList<Object>();
+        for (Treeable defParent : defaultParents)
         {
-            for (Treeable defParent : defaultParents)
-            {
-                Object key = ((DataModelObjBase)defParent).getId();
-                if (key != null)
-                {
-                    try
-                    {
-                        q.setParameter("theKey", key);
-                        DataModelObjBase obj = (DataModelObjBase) q.uniqueResult();
-                        session.beginTransaction();
-                        session.delete(obj);
-                        session.commit();
-                    }
-                    catch (Exception ex)
-                    {
-                        // the delete may fail if another user has used or deleted uploaded
-                        // records...
-                        // or if another UploadTreeTable has deleted the parent.
-                        log.info(ex);
-                    }
-                }
-            }
+            keys.add(((DataModelObjBase)defParent).getId());
         }
-        finally
-        {
-            session.close();
-        }
+        deleteObjects(keys.iterator());
     }
 
     /**
      * Gets ready for an upload.
      */
     @Override
-    public void prepareToUpload() throws NoSuchMethodException, ClassNotFoundException
+    public void prepareToUpload() 
     {
         super.prepareToUpload();
         defaultParents.clear();

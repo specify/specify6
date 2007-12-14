@@ -3027,7 +3027,6 @@ public class WorkbenchPaneSS extends BaseSubPane
             DB db = new DB();
             setAllUploadDatasetBtnEnabled(false);
             datasetUploader = new Uploader(db, new UploadData(maps, workbench.getWorkbenchRowsAsList()), this);
-            datasetUploader.prepareToUpload();
             Vector<UploadMessage> structureErrors = datasetUploader.verifyUploadability();
             if (structureErrors.size() > 0) 
             { 

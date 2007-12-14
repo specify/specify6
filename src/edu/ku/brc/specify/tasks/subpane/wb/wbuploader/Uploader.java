@@ -70,113 +70,115 @@ import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 
-
 /**
  * @author timo
  * 
  */
 public class Uploader implements ActionListener, WindowStateListener
 {
-    //Phases in the upload process...
-    protected final static String INITIAL_STATE = "WB_UPLOAD_INITIAL_STATE";
-    protected final static String CHECKING_REQS = "WB_UPLOAD_CHECKING_REQS";
-    protected final static String VALIDATING_DATA = "WB_UPLOAD_VALIDATING_DATA";
-    protected final static String READY_TO_UPLOAD = "WB_UPLOAD_READY_TO_UPLOAD";
-    protected final static String UPLOADING = "WB_UPLOAD_UPLOADING";
-    protected final static String SUCCESS = "WB_UPLOAD_SUCCESS";
-    protected final static String RETRIEVING_UPLOADED_DATA = "WB_RETRIEVING_UPLOADED_DATA";
-    protected final static String FAILURE = "WB_UPLOAD_FAILURE";
-    protected final static String USER_INPUT = "WB_UPLOAD_USER_INPUT";
-    protected final static String UNDOING_UPLOAD = "WB_UPLOAD_UNDO";
-    protected final static String CLEANING_UP = "WB_UPLOAD_CLEANUP";
-    
+    // Phases in the upload process...
+    protected final static String                   INITIAL_STATE            = "WB_UPLOAD_INITIAL_STATE";
+    protected final static String                   CHECKING_REQS            = "WB_UPLOAD_CHECKING_REQS";
+    protected final static String                   VALIDATING_DATA          = "WB_UPLOAD_VALIDATING_DATA";
+    protected final static String                   READY_TO_UPLOAD          = "WB_UPLOAD_READY_TO_UPLOAD";
+    protected final static String                   UPLOADING                = "WB_UPLOAD_UPLOADING";
+    protected final static String                   SUCCESS                  = "WB_UPLOAD_SUCCESS";
+    protected final static String                   RETRIEVING_UPLOADED_DATA = "WB_RETRIEVING_UPLOADED_DATA";
+    protected final static String                   FAILURE                  = "WB_UPLOAD_FAILURE";
+    protected final static String                   USER_INPUT               = "WB_UPLOAD_USER_INPUT";
+    protected final static String                   UNDOING_UPLOAD           = "WB_UPLOAD_UNDO";
+    protected final static String                   CLEANING_UP              = "WB_UPLOAD_CLEANUP";
+
     /**
      * one of above statics
      */
-    protected String currentOp;
-    
+    protected String                                currentOp;
+
     /**
      * the exception that killed the most recent op. null if most recent op was not murdered.
      */
-    protected Exception opKiller;
+    protected Exception                             opKiller;
 
     /**
      * used by bogusViewer
      */
-    Map<String, Vector<Vector<String>>> bogusStorages = null;    
+    Map<String, Vector<Vector<String>>>             bogusStorages            = null;
     /**
      * Displays uploaded data. Roughly.
      */
-    protected DB.BogusViewer bogusViewer = null;
-    
-    protected DB db;
+    protected DB.BogusViewer                        bogusViewer              = null;
 
-	protected UploadData uploadData;
-    
+    protected DB                                    db;
+
+    protected UploadData                            uploadData;
+
     /**
-     * The WorkbenchPane for the uploading dataset. 
+     * The WorkbenchPane for the uploading dataset.
      */
-    protected WorkbenchPaneSS wbSS;
+    protected WorkbenchPaneSS                       wbSS;
 
-	protected Vector<UploadField> uploadFields;
+    protected Vector<UploadField>                   uploadFields;
 
-	protected Vector<UploadTable> uploadTables;
+    protected Vector<UploadTable>                   uploadTables;
 
-	protected DirectedGraph<Table, Relationship> uploadGraph;
-    
-    boolean verbose = false;
-    
-    boolean dataValidated = false;
-    
-    protected UploadMainPanel mainPanel;
-    
+    protected DirectedGraph<Table, Relationship>    uploadGraph;
+
+    boolean                                         verbose                  = false;
+
+    boolean                                         dataValidated            = false;
+
+    protected UploadMainPanel                       mainPanel;
+
     /**
      * Problems with contents of cells in dataset.
      */
-    protected Vector<UploadTableInvalidValue> validationIssues = null;
+    protected Vector<UploadTableInvalidValue>       validationIssues         = null;
     /**
-     * This object assigns default values for missing required fields and foreign keys.
-     * And provides UI for viewing and changing the defaults.
+     * This object assigns default values for missing required fields and foreign keys. And provides
+     * UI for viewing and changing the defaults.
      */
-    MissingDataResolver resolver;
-    
+    MissingDataResolver                             resolver;
+
     /**
      * Required related classes that are not available in the dataset.
      */
-    protected Vector<RelatedClassSetter> missingRequiredClasses;
+    protected Vector<RelatedClassSetter>            missingRequiredClasses;
     /**
      * Required fields not present in the dataset.
      */
     protected Vector<UploadTable.DefaultFieldEntry> missingRequiredFields;
-        
+
     /**
-     *  While an upload is underway, this member will be provide access to the uploader.
+     * While an upload is underway, this member will be provide access to the uploader.
      */
-    protected static Uploader currentUpload = null;
-    
+    protected static Uploader                       currentUpload            = null;
+
     /**
-     *  A unique identifier currently used to identify the upload. Currently not used.
-     *  NOTE: Would it be desirable to store info on imports - dataset imported, date, user, basic stats ??? 
+     * A unique identifier currently used to identify the upload. Currently not used. NOTE: Would it
+     * be desirable to store info on imports - dataset imported, date, user, basic stats ???
      * 
      */
-    protected String identifier;
+    protected String                                identifier;
 
-    protected static final Logger log = Logger.getLogger(Uploader.class);
-   
-   private class SkippedRow extends BaseUploadMessage
+    protected static final Logger                   log                      = Logger
+                                                                                     .getLogger(Uploader.class);
+
+    private class SkippedRow extends BaseUploadMessage
     {
         protected UploaderException cause;
-        protected int row;
+        protected int               row;
+
         /**
          * @param cause
          * @param row
          */
-        public SkippedRow(UploaderException cause, int row) 
+        public SkippedRow(UploaderException cause, int row)
         {
             super(null);
             this.cause = cause;
             this.row = row;
         }
+
         /**
          * @return the cause
          */
@@ -185,7 +187,9 @@ public class Uploader implements ActionListener, WindowStateListener
             return cause;
         }
 
-        /* (non-Javadoc)
+        /*
+         * (non-Javadoc)
+         * 
          * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMessage#getRow()
          */
         @Override
@@ -193,8 +197,10 @@ public class Uploader implements ActionListener, WindowStateListener
         {
             return row;
         }
-                
-        /* (non-Javadoc)
+
+        /*
+         * (non-Javadoc)
+         * 
          * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMessage#getMsg()
          */
         @Override
@@ -202,8 +208,10 @@ public class Uploader implements ActionListener, WindowStateListener
         {
             return cause.getMessage();
         }
-        
-        /* (non-Javadoc)
+
+        /*
+         * (non-Javadoc)
+         * 
          * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMessage#getData()
          */
         @Override
@@ -211,14 +219,13 @@ public class Uploader implements ActionListener, WindowStateListener
         {
             return cause;
         }
-}
-    
-    protected Vector<SkippedRow> skippedRows;
-    
+    }
+
+    protected Vector<SkippedRow>    skippedRows;
+
     protected Vector<UploadMessage> messages;
     protected Vector<UploadMessage> newMessages;
-    
-    
+
     /**
      * @return dataValidated
      */
@@ -226,7 +233,7 @@ public class Uploader implements ActionListener, WindowStateListener
     {
         return dataValidated;
     }
-    
+
     /**
      * @return the currentUpload;
      */
@@ -234,12 +241,12 @@ public class Uploader implements ActionListener, WindowStateListener
     {
         return currentUpload;
     }
-    
+
     /**
-     * the index of the currently processing row in the dataset. 
+     * the index of the currently processing row in the dataset.
      */
     protected int rowUploading;
-    
+
     /**
      * @return rowUploading
      */
@@ -247,6 +254,7 @@ public class Uploader implements ActionListener, WindowStateListener
     {
         return rowUploading;
     }
+
     /**
      * @return the identifier.
      */
@@ -254,7 +262,7 @@ public class Uploader implements ActionListener, WindowStateListener
     {
         return identifier;
     }
-    
+
     /**
      * creates an identifier for an importer
      * 
@@ -262,37 +270,38 @@ public class Uploader implements ActionListener, WindowStateListener
     protected void buildIdentifier()
     {
         Calendar now = new GregorianCalendar();
-        identifier =  uploadData.getWbRow(0).getWorkbench().getName() + "_"+ now.get(Calendar.YEAR) + "-" + (now.get(Calendar.MONTH)+1) + "-"
-            + now.get(Calendar.DAY_OF_MONTH) + "_" + now.get(Calendar.HOUR_OF_DAY) + ":" + now.get(Calendar.SECOND);
+        identifier = uploadData.getWbRow(0).getWorkbench().getName() + "_" + now.get(Calendar.YEAR)
+                + "-" + (now.get(Calendar.MONTH) + 1) + "-" + now.get(Calendar.DAY_OF_MONTH) + "_"
+                + now.get(Calendar.HOUR_OF_DAY) + ":" + now.get(Calendar.SECOND);
     }
-    
+
     /**
      * @param f
      * @return an existing importTable that contains f
      */
     protected UploadTable getUploadTable(UploadField f)
-	{
-		for (UploadTable result : uploadTables)
-		{
-			if (result.getTable().getName().equals(f.getField().getTable().getName()) 
-					&& (result.getRelationship() == null && f.getRelationship() == null || (result.getRelationship() != null && f.getRelationship() != null && result.getRelationship().equals(f.getRelationship()))))
-			{
-				return result;
-			}
-		}
-		return null;
-	}
+    {
+        for (UploadTable result : uploadTables)
+        {
+            if (result.getTable().getName().equals(f.getField().getTable().getName())
+                    && (result.getRelationship() == null && f.getRelationship() == null || (result
+                            .getRelationship() != null
+                            && f.getRelationship() != null && result.getRelationship().equals(
+                            f.getRelationship())))) { return result; }
+        }
+        return null;
+    }
 
-	/**
-	 * @throws UploaderException
+    /**
+     * @throws UploaderException
      * 
      * builds uploadTables member based on uploadFields' contents
-	 */
-	protected void buildUploadTables() throws UploaderException
-	{
-		uploadTables = new Vector<UploadTable>();
-		for (UploadField f : uploadFields)
-		{
+     */
+    protected void buildUploadTables() throws UploaderException
+    {
+        uploadTables = new Vector<UploadTable>();
+        for (UploadField f : uploadFields)
+        {
             if (f.getField() != null)
             {
                 UploadTable it = getUploadTable(f);
@@ -300,9 +309,13 @@ public class Uploader implements ActionListener, WindowStateListener
                 if (addIt)
                 {
                     it = new UploadTable(f.getField().getTable(), f.getRelationship());
-                    it.init();
+                    if (it != null) // ??
+                    {
+                        it.init();
+                    }
                 }
-                if (it == null) { throw new UploaderException("failed to construct import table.",
+                if (it == null) { throw new UploaderException(
+                        getResourceString("WB_UPLOAD_UPLOADTBL_BUILD_FAIL"),
                         UploaderException.ABORT_IMPORT); }
                 it.addField(f);
                 if (addIt)
@@ -310,127 +323,128 @@ public class Uploader implements ActionListener, WindowStateListener
                     uploadTables.add(it);
                 }
             }
- 		}
-	}
+        }
+    }
 
-
-	/**
-	 * @param mapping
-	 * @throws UploaderException
+    /**
+     * @param mapping
+     * @throws UploaderException
      * 
-     * Adds elements to uploadFields as required for relationship described in mapping. 
-	 */
-	protected void addMappingRelFlds(UploadMappingDefRel mapping) throws UploaderException
-	{
-		if (mapping.getSequenceFld() != null)
-		{
-			Field fld = db.getSchema().getField(mapping.getTable(), mapping.getSequenceFld());
+     * Adds elements to uploadFields as required for relationship described in mapping.
+     */
+    protected void addMappingRelFlds(UploadMappingDefRel mapping) throws UploaderException
+    {
+        if (mapping.getSequenceFld() != null)
+        {
+            Field fld = db.getSchema().getField(mapping.getTable(), mapping.getSequenceFld());
             if (fld == null)
             {
-                log.debug("could not find field in db: " + mapping.getTable() + "." + mapping.getField());
+                log.debug("could not find field in db: " + mapping.getTable() + "."
+                        + mapping.getField());
             }
             UploadField newFld = new UploadField(fld, -1, mapping.getWbFldName(), null);
-			newFld.setSequence(mapping.getSequence());
-			newFld.setValue(mapping.getSequence().toString());
-			uploadFields.add(newFld);
-		}
-		Table t1 = db.getSchema().getTable(mapping.getTable());
-		Table t2 = db.getSchema().getTable(mapping.getRelatedTable());
-		for (ImportMappingRelFld fld : mapping.getLocalFields())
-		{
-			Field dbFld = t1.getField(fld.getFieldName());
+            newFld.setSequence(mapping.getSequence());
+            newFld.setValue(mapping.getSequence().toString());
+            uploadFields.add(newFld);
+        }
+        Table t1 = db.getSchema().getTable(mapping.getTable());
+        Table t2 = db.getSchema().getTable(mapping.getRelatedTable());
+        for (ImportMappingRelFld fld : mapping.getLocalFields())
+        {
+            Field dbFld = t1.getField(fld.getFieldName());
             if (dbFld == null)
             {
                 log.debug("could not find field in db: " + t1.getName() + "." + fld.getFieldName());
             }
             UploadField newFld = new UploadField(dbFld, fld.getFldIndex(), fld.getWbFldName(), null);
-			newFld.setSequence(mapping.getSequence());
-			uploadFields.add(newFld);
-		}
-		if (mapping.getRelatedFields().size() > 0)
-		{
-			Relationship r = null;
+            newFld.setSequence(mapping.getSequence());
+            uploadFields.add(newFld);
+        }
+        if (mapping.getRelatedFields().size() > 0)
+        {
+            Relationship r = null;
             Vector<Relationship> rs;
-			try
-			{
-				rs = db.getGraph().getAllEdgeData(t1, t2);
-				if (rs.size() == 0)
-				{
-					rs = db.getGraph().getAllEdgeData(t2, t1);
-				}
-			} catch (DirectedGraphException ex)
-			{
-				throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
-			}
-            //find the 'right' rel. ie: discard Agent ->> ModifiedByAgentID/CreatedByAgentID
+            try
+            {
+                rs = db.getGraph().getAllEdgeData(t1, t2);
+                if (rs.size() == 0)
+                {
+                    rs = db.getGraph().getAllEdgeData(t2, t1);
+                }
+            }
+            catch (DirectedGraphException ex)
+            {
+                throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
+            }
+            // find the 'right' rel. ie: discard Agent ->> ModifiedByAgentID/CreatedByAgentID
             for (Relationship rel : rs)
             {
-                if (!rel.getRelatedField().getName().equalsIgnoreCase("modifiedbyagentid") && !rel.getRelatedField().getName().equalsIgnoreCase("createdbyagentid")) 
+                if (!rel.getRelatedField().getName().equalsIgnoreCase("modifiedbyagentid")
+                        && !rel.getRelatedField().getName().equalsIgnoreCase("createdbyagentid"))
                 {
                     r = rel;
                     break;
                 }
             }
-			if (r != null)
-			{
-				Vector<ImportMappingRelFld> relFlds = mapping
-						.getRelatedFields();
-				for (int relF = 0; relF < relFlds.size(); relF++)
-				{
-					Field fld = db.getSchema().getField(t2.getName(),relFlds.get(relF).getFieldName());
+            if (r != null)
+            {
+                Vector<ImportMappingRelFld> relFlds = mapping.getRelatedFields();
+                for (int relF = 0; relF < relFlds.size(); relF++)
+                {
+                    Field fld = db.getSchema().getField(t2.getName(),
+                            relFlds.get(relF).getFieldName());
                     int fldIdx = relFlds.get(relF).getFldIndex();
                     String wbFldName = relFlds.get(relF).getWbFldName();
                     UploadField newFld = new UploadField(fld, fldIdx, wbFldName, r);
-					newFld.setSequence(mapping.getSequence());
-					uploadFields.add(newFld);
-				}
-			} else
-			{
-				throw new UploaderException(
-						"could not find relationship for mapping.", UploaderException.ABORT_IMPORT);
-			}
-		}
-	}
-    
-	
-	
+                    newFld.setSequence(mapping.getSequence());
+                    uploadFields.add(newFld);
+                }
+            }
+            else
+            {
+                throw new UploaderException("could not find relationship for mapping.",
+                        UploaderException.ABORT_IMPORT);
+            }
+        }
+    }
+
     /**
      * @throws UploaderException
      * 
-     * builds ImportFields required for import and adds them to uploadFields member. 
+     * builds ImportFields required for import and adds them to uploadFields member.
      */
     protected void buildUploadFields() throws UploaderException
-	{
-		for (int f = 0; f < uploadData.getCols(); f++)
-		{
-			UploadMappingDef m = uploadData.getMapping(f);
-			if (m.getClass() != UploadMappingDefTree.class)
-			{
-				Field fld = this.db.getSchema().getField(m.getTable(), m.getField());
+    {
+        for (int f = 0; f < uploadData.getCols(); f++)
+        {
+            UploadMappingDef m = uploadData.getMapping(f);
+            if (m.getClass() != UploadMappingDefTree.class)
+            {
+                Field fld = this.db.getSchema().getField(m.getTable(), m.getField());
                 if (fld == null)
                 {
                     log.debug("could not find field in db: " + m.getTable() + "." + m.getField());
                 }
-                UploadField newFld = new UploadField(fld, m.getIndex(), m.getWbFldName(),
-						null);
-				uploadFields.add(newFld);
-				if (m.getClass() == UploadMappingDefRel.class)
-				{
-					UploadMappingDefRel relM = (UploadMappingDefRel) m;
-					newFld.setSequence(relM.getSequence());
-					try
-					{
-						addMappingRelFlds(relM);
-						newFld.setIndex(-1);
-					} catch (UploaderException ex)
-					{
-						throw ex;
-					}
-				}
-			}
-		}
-	}
-    
+                UploadField newFld = new UploadField(fld, m.getIndex(), m.getWbFldName(), null);
+                uploadFields.add(newFld);
+                if (m.getClass() == UploadMappingDefRel.class)
+                {
+                    UploadMappingDefRel relM = (UploadMappingDefRel) m;
+                    newFld.setSequence(relM.getSequence());
+                    try
+                    {
+                        addMappingRelFlds(relM);
+                        newFld.setIndex(-1);
+                    }
+                    catch (UploaderException ex)
+                    {
+                        throw ex;
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * @return a "printout" of the uploadFields member.
      */
@@ -439,18 +453,19 @@ public class Uploader implements ActionListener, WindowStateListener
         Vector<String> lines = new Vector<String>();
         for (UploadField impF : uploadFields)
         {
-            lines.add(impF.getField().getTable().getName()
-                    + "."
-                    + impF.getField().getName()
-                    + " ["
-                    + Integer.toString(impF.getIndex())
-                    + "] "
-                    + (impF.getSequence() == null ? "" : " (" + impF.getSequence().toString()
-                            + ")"));
+            lines
+                    .add(impF.getField().getTable().getName()
+                            + "."
+                            + impF.getField().getName()
+                            + " ["
+                            + Integer.toString(impF.getIndex())
+                            + "] "
+                            + (impF.getSequence() == null ? "" : " ("
+                                    + impF.getSequence().toString() + ")"));
         }
         return lines;
     }
-    
+
     /**
      * @return a printout of info about the uploadGraph
      * 
@@ -459,37 +474,37 @@ public class Uploader implements ActionListener, WindowStateListener
     public Vector<String> printGraphInfo() throws DirectedGraphException
     {
         Vector<String> lines = new Vector<String>();
-            lines.add("vertices:");
-            for (Vertex<Table> v : uploadGraph.getVertices())
-            {
-                lines.add("   " + v.getLabel());
-            }
-            Vector<String> graphEdges = uploadGraph.listEdges();
-            lines.add("");
-            lines.add("edges:");
-            for (String e : graphEdges)
-            {
-                lines.add(e);
-            }
-            lines.add("");
-            lines.add("Graph sources:");
-            Set<Vertex<Table>> sources = uploadGraph.sources();
-            for (Vertex<Table> tbl : sources)
-            {
-                lines.add("   " + tbl.getLabel());
-            }
-            lines.add("");
-            if (uploadGraph.isStronglyConnected())
-            {
-                lines.add("graph is strongly connected.");
-            }
-            else
-            {
-                lines.add("graph is not strongly connected.");
-            }
-         return lines;
+        lines.add("vertices:");
+        for (Vertex<Table> v : uploadGraph.getVertices())
+        {
+            lines.add("   " + v.getLabel());
+        }
+        Vector<String> graphEdges = uploadGraph.listEdges();
+        lines.add("");
+        lines.add("edges:");
+        for (String e : graphEdges)
+        {
+            lines.add(e);
+        }
+        lines.add("");
+        lines.add("Graph sources:");
+        Set<Vertex<Table>> sources = uploadGraph.sources();
+        for (Vertex<Table> tbl : sources)
+        {
+            lines.add("   " + tbl.getLabel());
+        }
+        lines.add("");
+        if (uploadGraph.isStronglyConnected())
+        {
+            lines.add("graph is strongly connected.");
+        }
+        else
+        {
+            lines.add("graph is not strongly connected.");
+        }
+        return lines;
     }
-	
+
     /**
      * @return a "printout" of the uploadTables member.
      */
@@ -512,38 +527,42 @@ public class Uploader implements ActionListener, WindowStateListener
         }
         return lines;
     }
-    
-	/**
-	 * @param db
-	 * @param uploadData
-	 * @throws UploaderException
-	 */
-	public Uploader(DB db, UploadData importData, final WorkbenchPaneSS wbSS) throws UploaderException
-	{
-		this.db = db;
-		this.uploadData = importData;
+
+    /**
+     * @param db
+     * @param uploadData
+     * @throws UploaderException
+     */
+    public Uploader(DB db, UploadData importData, final WorkbenchPaneSS wbSS)
+            throws UploaderException
+    {
+        this.db = db;
+        this.uploadData = importData;
         this.wbSS = wbSS;
-		this.uploadFields = new Vector<UploadField>(importData.getCols());
+        this.uploadFields = new Vector<UploadField>(importData.getCols());
         this.missingRequiredClasses = new Vector<RelatedClassSetter>();
         this.missingRequiredFields = new Vector<UploadTable.DefaultFieldEntry>();
         this.skippedRows = new Vector<SkippedRow>();
         this.messages = new Vector<UploadMessage>();
         this.newMessages = new Vector<UploadMessage>();
-		buildUploadFields();
-		buildUploadTables();
+        buildUploadFields();
+        buildUploadTables();
         addEmptyUploadTables();
-		buildUploadGraph();
-		processTreeMaps();
-		orderUploadTables();
+        buildUploadGraph();
+        processTreeMaps();
+        for (UploadTable ut : uploadTables)
+        {
+            ut.assignFldSetters();
+        }
+        orderUploadTables();
         buildUploadTableParents();
         reOrderUploadTables();
         currentUpload = this;
- 	}
+    }
 
     /**
-     * Adds extra upload tables.
-     * Currently only adds Determination if necessary when Genus/Species are selected.
-     * Also should add CollectingEvent if Locality and CollectionObject are present.
+     * Adds extra upload tables. Currently only adds Determination if necessary when Genus/Species
+     * are selected. Also should add CollectingEvent if Locality and CollectionObject are present.
      * And others???
      */
     protected void addEmptyUploadTables() throws UploaderException
@@ -603,50 +622,43 @@ public class Uploader implements ActionListener, WindowStateListener
         {
             UploadTable ce = new UploadTable(db.getSchema().getTable("CollectingEvent"), null);
             ce.init();
-            ce.addField(new UploadField(db.getSchema().getField("collectingevent", "stationfieldnumber"), -1, null, null));
+            ce.addField(new UploadField(db.getSchema().getField("collectingevent",
+                    "stationfieldnumber"), -1, null, null));
             uploadTables.add(ce);
         }
     }
-    
+
     /**
      * Imposes additional ordering constraints created by the matchChildren property of UploadTable.
      * I.e. if A precedes B and B is in C.matchChildren, then A must precede C.
      */
     protected void reOrderUploadTables() throws UploaderException
     {
-        SortedSet<Pair<UploadTable, UploadTable>> moves = new TreeSet<Pair<UploadTable, UploadTable>>(new Comparator<Pair<UploadTable,UploadTable>>(){
-            private boolean isAncestorOf(UploadTable t1, UploadTable t2)
-            {
-                log.debug("isAncestorOf(" + t1 + ", " + t2 + ")");
-                if (t1.equals(t2))
+        SortedSet<Pair<UploadTable, UploadTable>> moves = new TreeSet<Pair<UploadTable, UploadTable>>(
+                new Comparator<Pair<UploadTable, UploadTable>>()
                 {
-                    return true;
-                }
-                for (Vector<ParentTableEntry> ptes : t2.getParentTables())
-                {
-                    for (ParentTableEntry pte : ptes)
+                    private boolean isAncestorOf(UploadTable t1, UploadTable t2)
                     {
-                        if (isAncestorOf(t1, pte.getImportTable()))
+                        log.debug("isAncestorOf(" + t1 + ", " + t2 + ")");
+                        if (t1.equals(t2)) { return true; }
+                        for (Vector<ParentTableEntry> ptes : t2.getParentTables())
                         {
-                            return true;
+                            for (ParentTableEntry pte : ptes)
+                            {
+                                if (isAncestorOf(t1, pte.getImportTable())) { return true; }
+                            }
                         }
+                        return false;
                     }
-                }
-                return false;
-            }
-            public int compare(Pair<UploadTable, UploadTable> p1, Pair<UploadTable, UploadTable> p2)
-            {
-                if (isAncestorOf(p1.getSecond(), p2.getSecond()))
-                {
-                    return -1;
-                }
-                if (isAncestorOf(p2.getSecond(), p1.getSecond()))
-                {
-                    return 1;
-                }
-                return 0;
-            }
-        });
+
+                    public int compare(Pair<UploadTable, UploadTable> p1,
+                                       Pair<UploadTable, UploadTable> p2)
+                    {
+                        if (isAncestorOf(p1.getSecond(), p2.getSecond())) { return -1; }
+                        if (isAncestorOf(p2.getSecond(), p1.getSecond())) { return 1; }
+                        return 0;
+                    }
+                });
         for (UploadTable ut : uploadTables)
         {
             for (UploadTable mc : ut.getMatchChildren())
@@ -657,7 +669,7 @@ public class Uploader implements ActionListener, WindowStateListener
                     {
                         moves.add(new Pair<UploadTable, UploadTable>(ut, pte.getImportTable()));
                     }
-                    
+
                 }
             }
         }
@@ -667,217 +679,215 @@ public class Uploader implements ActionListener, WindowStateListener
             int toIdx = uploadTables.indexOf(move.getFirst());
             if (toIdx > fromIdx)
             {
-                log.error("Can't meet ordering constraints: " + move.getSecond().getTable().getName() + "," + move.getFirst().getTable().getName());
-                throw new UploaderException("The Dataset is not uploadable.", UploaderException.ABORT_IMPORT);
+                log.error("Can't meet ordering constraints: "
+                        + move.getSecond().getTable().getName() + ","
+                        + move.getFirst().getTable().getName());
+                throw new UploaderException("The Dataset is not uploadable.",
+                        UploaderException.ABORT_IMPORT);
             }
             uploadTables.remove(fromIdx);
             uploadTables.insertElementAt(move.getSecond(), toIdx);
         }
-   }
-	/**
-	 * @throws UploaderException
-     * builds the uploadGraph.
-	 */
-	protected void buildUploadGraph() throws UploaderException
-	{
-		uploadGraph = new DirectedGraph<Table, Relationship>();
-		try
-		{
-			for (UploadTable t : uploadTables)
-			{
-				String label = t.getTable().getName();
-				if (uploadGraph.getVertexByLabel(label) == null)
-				{
-					uploadGraph.addVertex(new Vertex<Table>(label, t.getTable()));
-				}
-			}
+    }
+
+    /**
+     * @throws UploaderException builds the uploadGraph.
+     */
+    protected void buildUploadGraph() throws UploaderException
+    {
+        uploadGraph = new DirectedGraph<Table, Relationship>();
+        try
+        {
+            for (UploadTable t : uploadTables)
+            {
+                String label = t.getTable().getName();
+                if (uploadGraph.getVertexByLabel(label) == null)
+                {
+                    uploadGraph.addVertex(new Vertex<Table>(label, t.getTable()));
+                }
+            }
             for (Edge<Table, Relationship> edge : db.getGraph().getEdges())
             {
                 Vector<UploadTable> its1 = getUploadTable(edge.getPointA().getData());
                 Vector<UploadTable> its2 = getUploadTable(edge.getPointB().getData());
                 if (its1.size() > 0 && its2.size() > 0)
                 {
-                    uploadGraph.addEdge(edge.getPointA().getLabel(), edge.getPointB().getLabel(), edge.getData());
+                    uploadGraph.addEdge(edge.getPointA().getLabel(), edge.getPointB().getLabel(),
+                            edge.getData());
                 }
             }
-		} catch (DirectedGraphException e)
-		{
+        }
+        catch (DirectedGraphException e)
+        {
             log.debug(e);
             throw new UploaderException(e, UploaderException.ABORT_IMPORT);
-		}
-	}
-    
-   /**
+        }
+    }
+
+    /**
      * @param treeMap
      * @param level
      * @return a name for table representing data with rank represented by level param.
      */
     protected String getTreeTableName(final UploadMappingDefTree treeMap, final int level)
-	{
-		return treeMap.getTable() + Integer.toString(treeMap.getLevels().get(level).get(0).getRank());
-	}
-		
-	/**
-	 * @param treeMap
-	 * @throws UploaderException
-     * adds Tables, ImportTables, ImportFields required by heirarchy represented by treeMap param.
-	 */
-	protected void processTreeMap(UploadMappingDefTree treeMap) throws UploaderException
-	{
-		Table baseTbl = db.getSchema().getTable(treeMap.getTable());
-		if (baseTbl == null)
-		{
-			throw new UploaderException(
-					"Could not find base table for tree mapping.",
-					UploaderException.ABORT_IMPORT);
-		}
-		Table parentTbl = null;
-		UploadTableTree parentImpTbl = null;
-		for (int level = 0; level < treeMap.getLevels().size(); level++)
-		{
-			// add new table to import graph for rank
+    {
+        return treeMap.getTable()
+                + Integer.toString(treeMap.getLevels().get(level).get(0).getRank());
+    }
+
+    /**
+     * @param treeMap
+     * @throws UploaderException adds Tables, ImportTables, ImportFields required by heirarchy
+     *             represented by treeMap param.
+     */
+    protected void processTreeMap(UploadMappingDefTree treeMap) throws UploaderException
+    {
+        Table baseTbl = db.getSchema().getTable(treeMap.getTable());
+        if (baseTbl == null) { throw new UploaderException(
+                "Could not find base table for tree mapping.", UploaderException.ABORT_IMPORT); }
+        Table parentTbl = null;
+        UploadTableTree parentImpTbl = null;
+        for (int level = 0; level < treeMap.getLevels().size(); level++)
+        {
+            // add new table to import graph for rank
             Table rankTbl = new Table(getTreeTableName(treeMap, level), baseTbl);
-			try
-			{
-				uploadGraph.addVertex(new Vertex<Table>(rankTbl.getName(),
-						rankTbl));
-				if (parentTbl != null)
-				{
-					Relationship rankRel = new Relationship(parentTbl.getKey(),
-							rankTbl.getField(treeMap.getParentField()),
-							"OneToMany");
-					uploadGraph.addEdge(parentTbl.getName(), rankTbl.getName(),
-							rankRel);
-				}
-			} catch (DirectedGraphException ex)
-			{
-				throw new UploaderException(ex);
-			}
-			parentTbl = rankTbl;
+            try
+            {
+                uploadGraph.addVertex(new Vertex<Table>(rankTbl.getName(), rankTbl));
+                if (parentTbl != null)
+                {
+                    Relationship rankRel = new Relationship(parentTbl.getKey(), rankTbl
+                            .getField(treeMap.getParentField()), "OneToMany");
+                    uploadGraph.addEdge(parentTbl.getName(), rankTbl.getName(), rankRel);
+                }
+            }
+            catch (DirectedGraphException ex)
+            {
+                throw new UploaderException(ex);
+            }
+            parentTbl = rankTbl;
 
-			// create UploadTable for new table
+            // create UploadTable for new table
 
-			UploadTableTree it = new UploadTableTree(rankTbl, baseTbl,
-					parentImpTbl, treeMap.getLevels().get(level).get(0).isRequired(),
-                    treeMap.getLevels().get(level).get(0).getRank(), 
-                    treeMap.getLevels().get(level).get(0).getWbFldName());
+            UploadTableTree it = new UploadTableTree(rankTbl, baseTbl, parentImpTbl, treeMap
+                    .getLevels().get(level).get(0).isRequired(), treeMap.getLevels().get(level)
+                    .get(0).getRank(), treeMap.getLevels().get(level).get(0).getWbFldName());
             it.init();
-			
-			// add ImportFields for new table
-			for (int seq = 0; seq < treeMap.getLevels().get(level).size(); seq++)
-			{
+
+            // add ImportFields for new table
+            for (int seq = 0; seq < treeMap.getLevels().get(level).size(); seq++)
+            {
                 Field fld = rankTbl.getField(treeMap.getField());
                 int fldIdx = treeMap.getLevels().get(level).get(seq).getIndex();
                 String wbFldName = treeMap.getLevels().get(level).get(seq).getWbFldName();
                 UploadField newFld1 = new UploadField(fld, fldIdx, wbFldName, null);
-				newFld1.setRequired(true);
-				newFld1.setSequence(seq);
-				uploadFields.add(newFld1);
-				UploadField newFld2 = new UploadField(rankTbl.getField("rankId"),
-						-1, null, null);
-				newFld2.setRequired(true);
-				newFld2.setValue(Integer.toString(treeMap.getLevels()
-						.get(level).get(0).getRank()));
-				newFld2.setSequence(seq);
-				uploadFields.add(newFld2);
+                newFld1.setRequired(true);
+                newFld1.setSequence(seq);
+                uploadFields.add(newFld1);
+                UploadField newFld2 = new UploadField(rankTbl.getField("rankId"), -1, null, null);
+                newFld2.setRequired(true);
+                newFld2.setValue(Integer.toString(treeMap.getLevels().get(level).get(0).getRank()));
+                newFld2.setSequence(seq);
+                uploadFields.add(newFld2);
 
-				// add UploadTable for new table
+                // add UploadTable for new table
 
-				it.addField(newFld1);
-				it.addField(newFld2);
-			}
-			uploadTables.add(it);
-			parentImpTbl = it;
-		}
+                it.addField(newFld1);
+                it.addField(newFld2);
+            }
+            uploadTables.add(it);
+            parentImpTbl = it;
+        }
 
-		// add relationships from base table to other tables
+        // add relationships from base table to other tables
 
-		if (parentTbl != null)
-		{
+        if (parentTbl != null)
+        {
             for (Edge<Table, Relationship> e : db.getGraph().getEdges())
             {
                 if (e.getPointA().getData().equals(baseTbl))
                 {
-                    Vertex<Table> relTblVertex = uploadGraph.getVertexByLabel(e.getPointB().getLabel());
+                    Vertex<Table> relTblVertex = uploadGraph.getVertexByLabel(e.getPointB()
+                            .getLabel());
                     if (relTblVertex != null)
                     {
                         String relFld1Name = e.getData().getField().getName();
-                        Relationship rel = new Relationship(parentTbl.getField(relFld1Name), e.getData().getRelatedField(), e.getData().getRelType());
+                        Relationship rel = new Relationship(parentTbl.getField(relFld1Name), e
+                                .getData().getRelatedField(), e.getData().getRelType());
                         try
                         {
                             uploadGraph.addEdge(parentTbl.getName(), relTblVertex.getLabel(), rel);
-                        } catch (DirectedGraphException ex)
+                        }
+                        catch (DirectedGraphException ex)
                         {
                             throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
                         }
                     }
                 }
             }
-		}
-	}
-    
-	
-	/**
-	 * @throws UploaderException
+        }
+    }
+
+    /**
+     * @throws UploaderException
      * 
      * processes UploadMappingDefTree objects in uploadData.
-	 */
-	protected void processTreeMaps() throws UploaderException
-	{
-		for (int m = 0; m < uploadData.getCols(); m++)
-		{
-			if (uploadData.getMapping(m).getClass() == UploadMappingDefTree.class)
-			{
-				UploadMappingDefTree treeMap = (UploadMappingDefTree) uploadData
-						.getMapping(m);
-				processTreeMap(treeMap);
-			}
-		}
-	}
-    
-	
-	/**
-	 * @param t
-	 * @return ImportTables with Table equal to t.
-	 */
-	protected Vector<UploadTable> getUploadTable(Table t)
-	{
-		SortedSet<UploadTable> its = new TreeSet<UploadTable>();
-		for (UploadTable it : uploadTables)
-		{
-			if (it.getTable().equals(t))
-			{
-				its.add(it);
-			}
-		}
-		return new Vector<UploadTable>(its);
-	}
-    
+     */
+    protected void processTreeMaps() throws UploaderException
+    {
+        for (int m = 0; m < uploadData.getCols(); m++)
+        {
+            if (uploadData.getMapping(m).getClass() == UploadMappingDefTree.class)
+            {
+                UploadMappingDefTree treeMap = (UploadMappingDefTree) uploadData.getMapping(m);
+                processTreeMap(treeMap);
+            }
+        }
+    }
+
+    /**
+     * @param t
+     * @return ImportTables with Table equal to t.
+     */
+    protected Vector<UploadTable> getUploadTable(Table t)
+    {
+        SortedSet<UploadTable> its = new TreeSet<UploadTable>();
+        for (UploadTable it : uploadTables)
+        {
+            if (it.getTable().equals(t))
+            {
+                its.add(it);
+            }
+        }
+        return new Vector<UploadTable>(its);
+    }
+
     /**
      * @author timbo
-     *
+     * 
      * @code_status Alpha
-     *
-     *Handles 'parent-child' relationships between UploadTables
+     * 
+     * Handles 'parent-child' relationships between UploadTables
      */
     public class ParentTableEntry
     {
         /**
          * The parent UploadTable
          */
-        protected UploadTable importTable;
+        protected UploadTable  importTable;
         /**
          * The relationship to the parent
          */
-        protected Relationship  parentRel;
-         /**
+        protected Relationship parentRel;
+        /**
          * The hibernate property name of the foreign key.
          */
-        protected String propertyName;
+        protected String       propertyName;
         /**
          * the setXXX method used to set objects of importTable's class to children.
          */
-        protected Method setter;
+        protected Method       setter;
+
         /**
          * @param importTable
          * @param parentRel
@@ -888,6 +898,7 @@ public class Uploader implements ActionListener, WindowStateListener
             this.importTable = importTable;
             this.parentRel = parentRel;
         }
+
         /**
          * @return the importTable
          */
@@ -895,6 +906,7 @@ public class Uploader implements ActionListener, WindowStateListener
         {
             return importTable;
         }
+
         /**
          * @return the parentRel
          */
@@ -902,6 +914,7 @@ public class Uploader implements ActionListener, WindowStateListener
         {
             return parentRel;
         }
+
         /**
          * @return the setter
          */
@@ -909,9 +922,9 @@ public class Uploader implements ActionListener, WindowStateListener
         {
             return setter;
         }
+
         /**
-         * @param setter the setter to set
-         * Also sets the propertyName.
+         * @param setter the setter to set Also sets the propertyName.
          */
         public final void setSetter(Method setter)
         {
@@ -925,14 +938,13 @@ public class Uploader implements ActionListener, WindowStateListener
                 this.propertyName = UploadTable.deCapitalize(this.setter.getName());
             }
         }
+
         public final String getForeignKey()
         {
-            if (parentRel == null)
-            {
-                return importTable.getTblClass().getSimpleName();
-            }
+            if (parentRel == null) { return importTable.getTblClass().getSimpleName(); }
             return parentRel.getRelatedField().getName();
         }
+
         /**
          * @return the propertyName
          */
@@ -941,7 +953,6 @@ public class Uploader implements ActionListener, WindowStateListener
             return propertyName;
         }
     }
-    
 
     /**
      * @throws UploaderException
@@ -958,7 +969,8 @@ public class Uploader implements ActionListener, WindowStateListener
             {
                 try
                 {
-                    Vector<Relationship> rs = uploadGraph.getAllEdgeData(tv.getData(), it.getTable());
+                    Vector<Relationship> rs = uploadGraph.getAllEdgeData(tv.getData(), it
+                            .getTable());
                     for (Relationship r : rs)
                     {
                         Vector<UploadTable> impTs = getUploadTable(tv.getData());
@@ -979,63 +991,73 @@ public class Uploader implements ActionListener, WindowStateListener
                     throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
                 }
             }
-            it.setParentTables(parentTables);
+            try
+            {
+                it.setParentTables(parentTables);
+            }
+            catch (ClassNotFoundException ex)
+            {
+                throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
+            }
+            catch (NoSuchMethodException ex)
+            {
+                throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
+            }
         }
     }
-    
-    
-	/**
+
+    /**
      * @throws UploaderException
      * 
      * Orders uploadTables according to dependencies in uploadGraph.
      */
-	protected void orderUploadTables() throws UploaderException
-	{
-		try
-		{
-			Vector<Vertex<Table>> topoSort = uploadGraph.getTopoSort();
-			Vector<UploadTable> newTables = new Vector<UploadTable>();
-			for (Vertex<Table> v : topoSort)
-			{
-				Vector<UploadTable> its = getUploadTable(v.getData());
-				for (UploadTable it : its)
-				{
-					newTables.add(it);
-					uploadTables.remove(it);
-				}
-				if (uploadTables.size() == 0)
-				{
-					break;
-				}
-			}
-			uploadTables = newTables;
-		} catch (DirectedGraphException ex)
-		{
-			throw new UploaderException(ex);
-		}
-	}
-    
+    protected void orderUploadTables() throws UploaderException
+    {
+        try
+        {
+            Vector<Vertex<Table>> topoSort = uploadGraph.getTopoSort();
+            Vector<UploadTable> newTables = new Vector<UploadTable>();
+            for (Vertex<Table> v : topoSort)
+            {
+                Vector<UploadTable> its = getUploadTable(v.getData());
+                for (UploadTable it : its)
+                {
+                    newTables.add(it);
+                    uploadTables.remove(it);
+                }
+                if (uploadTables.size() == 0)
+                {
+                    break;
+                }
+            }
+            uploadTables = newTables;
+        }
+        catch (DirectedGraphException ex)
+        {
+            throw new UploaderException(ex);
+        }
+    }
 
     /**
-     *  Validates contents of all cells in dataset.
+     * Validates contents of all cells in dataset.
      */
     public void validateData()
-    {       
+    {
         dataValidated = false;
         opKiller = null;
-        
+
         final Vector<UploadTableInvalidValue> issues = new Vector<UploadTableInvalidValue>();
-        
+
         final SwingWorker validateTask = new SwingWorker()
         {
             final JStatusBar statusBar = UIRegistry.getStatusBar();
- 
+
             @Override
             public void interrupt()
             {
                 super.interrupt();
             }
-                        
+
             @SuppressWarnings("synthetic-access")
             @Override
             public Object construct()
@@ -1059,7 +1081,7 @@ public class Uploader implements ActionListener, WindowStateListener
                     return false;
                 }
             }
-            
+
             @Override
             public void finished()
             {
@@ -1067,7 +1089,7 @@ public class Uploader implements ActionListener, WindowStateListener
                 statusBar.setText("");
                 if (dataValidated && resolver.isResolved())
                 {
-                    statusBar.setText(getResourceString("WB_DATASET_VALIDATED")); 
+                    statusBar.setText(getResourceString("WB_DATASET_VALIDATED"));
                     setCurrentOp(Uploader.READY_TO_UPLOAD);
                 }
                 else
@@ -1088,71 +1110,69 @@ public class Uploader implements ActionListener, WindowStateListener
             setCurrentOp(Uploader.VALIDATING_DATA);
         }
     }
-        
 
-	/**
-	 * @return a set of tables for which no fields are being imported, but which provide foreign keys for tables that do have fields being imported.
-	 * 
-	 * lots more to do here i think re agents (can occur in so many roles) and recursive tables.
-	 * also needs to distinguish between collectionObject -> CollectingEvent (missing) -> Locality 
-	 * which is kind of bad and CollectionObject -> CollectingEvent (missing) -> Locality (missing) which is useless but maybe ok.
-	 */
-	public Set<Table> checkForMissingTables()
-	{
-		Set<Table> result = new HashSet<Table>();
-		for (UploadTable t : uploadTables)
-		{
-			Set<Vertex<Table>> ins = uploadGraph.into(t.getTable());
-			for (Vertex<Table> in : ins)
-			{
-				if (!uploadTableIsPresent(in.getData()))
-				{
-					result.add(in.getData());
-				}
-			}
-		}
-		return result;
-	}
-    
-	
-	/**
-	 * @param t
-	 * @return true if there is an UploadTable defined for t.
-	 */
-	protected boolean uploadTableIsPresent(final Table t)
-	{
-		for (UploadTable it : uploadTables)
-		{
-			if (it.getTable() == t)
-			{
-				return true;
-			}
-		}
-		return false;
-	}
-    
-	
     /**
-     * @return (eventually) tables that, if added to the dataset, will
-     * probably make the dataset stucturally sufficient for upload. 
+     * @return a set of tables for which no fields are being imported, but which provide foreign
+     *         keys for tables that do have fields being imported.
+     * 
+     * lots more to do here i think re agents (can occur in so many roles) and recursive tables.
+     * also needs to distinguish between collectionObject -> CollectingEvent (missing) -> Locality
+     * which is kind of bad and CollectionObject -> CollectingEvent (missing) -> Locality (missing)
+     * which is useless but maybe ok.
+     */
+    public Set<Table> checkForMissingTables()
+    {
+        Set<Table> result = new HashSet<Table>();
+        for (UploadTable t : uploadTables)
+        {
+            Set<Vertex<Table>> ins = uploadGraph.into(t.getTable());
+            for (Vertex<Table> in : ins)
+            {
+                if (!uploadTableIsPresent(in.getData()))
+                {
+                    result.add(in.getData());
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * @param t
+     * @return true if there is an UploadTable defined for t.
+     */
+    protected boolean uploadTableIsPresent(final Table t)
+    {
+        for (UploadTable it : uploadTables)
+        {
+            if (it.getTable() == t) { return true; }
+        }
+        return false;
+    }
+
+    /**
+     * @return (eventually) tables that, if added to the dataset, will probably make the dataset
+     *         stucturally sufficient for upload.
      */
     protected Vector<Table> getMissingTbls()
     {
         Vector<Table> result = new Vector<Table>();
-        //just add dummy value for now
+        // just add dummy value for now
         result.add(null);
         return result;
     }
-	/**
-	 * @return true if the dataset can be uploaded.
+
+    /**
+     * @return true if the dataset can be uploaded.
      * 
-     * Checks that the import mapping and graph are OK.
-     * Checks that all required data (TreeDefs, TreeDefItems, DeterminationStatuses, etc) is present in the database.
+     * Checks that the import mapping and graph are OK. Checks that all required data (TreeDefs,
+     * TreeDefItems, DeterminationStatuses, etc) is present in the database.
      * 
-     * Saves messages for each problem. 
-	 */
-	public Vector<UploadMessage> verifyUploadability() throws UploaderException, ClassNotFoundException
-	{
+     * Saves messages for each problem.
+     */
+    public Vector<UploadMessage> verifyUploadability() throws UploaderException,
+            ClassNotFoundException
+    {
         Vector<UploadMessage> errors = new Vector<UploadMessage>();
         try
         {
@@ -1167,25 +1187,25 @@ public class Uploader implements ActionListener, WindowStateListener
                     }
                     errors.add(new InvalidStructure(msg, tbl));
                 }
-                
+
             }
         }
         catch (DirectedGraphException ex)
         {
             throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
         }
-        
+
         errors.addAll(validateConsistency());
-        
-        //now find out what data is not available in the dataset and not available in the database
-        //Considering such issues 'structural' for now. 
+
+        // now find out what data is not available in the dataset and not available in the database
+        // Considering such issues 'structural' for now.
         missingRequiredClasses.clear();
         missingRequiredFields.clear();
         Iterator<RelatedClassSetter> rces;
         Iterator<DefaultFieldEntry> dfes;
         for (UploadTable t : uploadTables)
         {
-            try 
+            try
             {
                 rces = t.getRelatedClassDefaults();
             }
@@ -1218,11 +1238,13 @@ public class Uploader implements ActionListener, WindowStateListener
         {
             if (!rcs.isDefined())
             {
-                //Assume it is undefined because no related data exists in the database.
-                //Also assuming (currently erroneously) that definition problems related to choosing
-                //from multiple existing related data have been resolved through user interaction.
-                String tblName = DBTableIdMgr.getInstance().getByShortClassName(rcs.getRelatedClass().getSimpleName()).getTitle();
-                //a very vague message...
+                // Assume it is undefined because no related data exists in the database.
+                // Also assuming (currently erroneously) that definition problems related to
+                // choosing
+                // from multiple existing related data have been resolved through user interaction.
+                String tblName = DBTableIdMgr.getInstance().getByShortClassName(
+                        rcs.getRelatedClass().getSimpleName()).getTitle();
+                // a very vague message...
                 String msg = getResourceString("WB_UPLOAD_MISSING_DBDATA") + ": " + tblName;
                 errors.add(new InvalidStructure(msg, this));
             }
@@ -1231,22 +1253,24 @@ public class Uploader implements ActionListener, WindowStateListener
         {
             if (!dfe.isDefined())
             {
-                //see note above for missignRequiredClasses iteration
-                //another very vague message...
-                String msg = getResourceString("WB_UPLOAD_MISSING_DBDATA") + ": " + dfe.getUploadTbl().getTable().getTableInfo().getTitle() + 
-                  "." + dfe.getFldName(); //i18n (dfe.getFldName() is not using title nor wb column header)
+                // see note above for missignRequiredClasses iteration
+                // another very vague message...
+                String msg = getResourceString("WB_UPLOAD_MISSING_DBDATA") + ": "
+                        + dfe.getUploadTbl().getTable().getTableInfo().getTitle() + "."
+                        + dfe.getFldName(); // i18n (dfe.getFldName() is not using title nor wb
+                                            // column header)
                 errors.add(new InvalidStructure(msg, this));
             }
         }
-        
+
         for (UploadTable t : uploadTables)
         {
-           errors.addAll(t.verifyUploadability());
+            errors.addAll(t.verifyUploadability());
         }
-                
+
         return errors;
     }
-    
+
     /**
      * @return Vector containing messages for detected inconsistencies.
      * 
@@ -1254,14 +1278,16 @@ public class Uploader implements ActionListener, WindowStateListener
      */
     public Vector<UploadMessage> validateConsistency()
     {
-        Vector<UploadMessage>result = new Vector<UploadMessage>();
-        
-        //Make sure that the tax tree levels included for each determination are consistent.
-        //All need to include the same levels, for example [Genus 1, Species1, SubSpecies 1, Genus 2, Species 2] is inconsistent because SubSpecies 2 is missing. 
-        //Since, right now, tax trees are the only trees that require this test.
-        //Non-tree 1-manys like Collector are ok (but possibly not desirable?) if inconsistent: [FirstName 1, LastName 1, LastName 2] works.
+        Vector<UploadMessage> result = new Vector<UploadMessage>();
+
+        // Make sure that the tax tree levels included for each determination are consistent.
+        // All need to include the same levels, for example [Genus 1, Species1, SubSpecies 1, Genus
+        // 2, Species 2] is inconsistent because SubSpecies 2 is missing.
+        // Since, right now, tax trees are the only trees that require this test.
+        // Non-tree 1-manys like Collector are ok (but possibly not desirable?) if inconsistent:
+        // [FirstName 1, LastName 1, LastName 2] works.
         Vector<TreeMapElement> maxTaxSeqLevel = null;
-        for (int m=0; m<uploadData.getCols(); m++)
+        for (int m = 0; m < uploadData.getCols(); m++)
         {
             if (uploadData.getMapping(m).getTable().equalsIgnoreCase("taxon"))
             {
@@ -1269,7 +1295,9 @@ public class Uploader implements ActionListener, WindowStateListener
                 boolean seqSizeInconsistent = false;
                 for (Vector<TreeMapElement> tmes : tmap.getLevels())
                 {
-                    if (tmes.size() > 1 || (maxTaxSeqLevel != null && maxTaxSeqLevel.get(0).getRank() < tmes.get(0).getRank()))
+                    if (tmes.size() > 1
+                            || (maxTaxSeqLevel != null && maxTaxSeqLevel.get(0).getRank() < tmes
+                                    .get(0).getRank()))
                     {
                         if (maxTaxSeqLevel == null)
                         {
@@ -1285,28 +1313,32 @@ public class Uploader implements ActionListener, WindowStateListener
                         }
                     }
                 }
-                 
-                
+
                 if (seqSizeInconsistent && maxTaxSeqLevel != null)
                 {
                     for (Vector<TreeMapElement> tmes : tmap.getLevels())
                     {
-                        if (tmes.get(0).getRank() > maxTaxSeqLevel.get(0).getRank() && tmes.size() < maxTaxSeqLevel.size())
+                        if (tmes.get(0).getRank() > maxTaxSeqLevel.get(0).getRank()
+                                && tmes.size() < maxTaxSeqLevel.size())
                         {
                             boolean[] seqsPresent = new boolean[maxTaxSeqLevel.size()];
-                            for (int b=0; b<seqsPresent.length; b++) seqsPresent[b] = false;
+                            for (int b = 0; b < seqsPresent.length; b++)
+                                seqsPresent[b] = false;
                             for (TreeMapElement tme : tmes)
                             {
                                 seqsPresent[tme.getSequence()] = true;
                             }
-                            for (int s=0; s<seqsPresent.length; s++)
+                            for (int s = 0; s < seqsPresent.length; s++)
                             {
                                 if (!seqsPresent[s])
                                 {
                                     String levelName = tmes.get(0).getWbFldName();
-                                    //strip off trailing number (assuming we will never allow it to be > 10) and trim.
-                                    levelName = levelName.substring(0, levelName.length()-2).trim();
-                                    String msg = getResourceString("WB_UPLOAD_MISSING_FLD") + ": " + levelName + " " + Integer.toString(s+1);
+                                    // strip off trailing number (assuming we will never allow it to
+                                    // be > 10) and trim.
+                                    levelName = levelName.substring(0, levelName.length() - 2)
+                                            .trim();
+                                    String msg = getResourceString("WB_UPLOAD_MISSING_FLD") + ": "
+                                            + levelName + " " + Integer.toString(s + 1);
                                     result.add(new InvalidStructure(msg, null));
                                 }
                             }
@@ -1315,19 +1347,22 @@ public class Uploader implements ActionListener, WindowStateListener
                 }
             }
         }
-        
+
         if (maxTaxSeqLevel != null && maxTaxSeqLevel.size() > 1)
         {
-            //check to see if Determination.isCurrent is either not present or always present.
+            // check to see if Determination.isCurrent is either not present or always present.
             int isCurrentCount = 0;
             boolean[] isCurrentPresent = new boolean[maxTaxSeqLevel.size()];
-            for (int b=0; b<isCurrentPresent.length; b++) isCurrentPresent[b] = false;
+            for (int b = 0; b < isCurrentPresent.length; b++)
+                isCurrentPresent[b] = false;
             String isCurrentCaptionSample = null;
-            for (int m=0; m<uploadData.getCols(); m++)
+            for (int m = 0; m < uploadData.getCols(); m++)
             {
-                if (uploadData.getMapping(m).getTable().equalsIgnoreCase("determination") && uploadData.getMapping(m).getField().equalsIgnoreCase("determinationstatusid"))
+                if (uploadData.getMapping(m).getTable().equalsIgnoreCase("determination")
+                        && uploadData.getMapping(m).getField().equalsIgnoreCase(
+                                "determinationstatusid"))
                 {
-                    UploadMappingDefRel rMap = (UploadMappingDefRel)uploadData.getMapping(m);
+                    UploadMappingDefRel rMap = (UploadMappingDefRel) uploadData.getMapping(m);
                     for (ImportMappingRelFld fld : rMap.getRelatedFields())
                     {
                         if (fld.getFieldName().equalsIgnoreCase("iscurrent"))
@@ -1341,21 +1376,25 @@ public class Uploader implements ActionListener, WindowStateListener
             }
             if (isCurrentCount != 0 && isCurrentCount != maxTaxSeqLevel.size())
             {
-                for (int c=0; c<isCurrentPresent.length; c++)
+                for (int c = 0; c < isCurrentPresent.length; c++)
                 {
                     if (!isCurrentPresent[c])
                     {
                         String fldName;
-                        //strip off trailing number (assuming we will never allow it to be > 10) and trim.
+                        // strip off trailing number (assuming we will never allow it to be > 10)
+                        // and trim.
                         if (isCurrentCaptionSample != null)
                         {
-                            fldName = isCurrentCaptionSample.substring(0, isCurrentCaptionSample.length()-2).trim();
+                            fldName = isCurrentCaptionSample.substring(0,
+                                    isCurrentCaptionSample.length() - 2).trim();
                         }
                         else
                         {
-                            fldName = "Is Current"; //i18n (but isCurrentCaptionSample can't be null. Right.)
+                            fldName = "Is Current"; // i18n (but isCurrentCaptionSample can't be
+                                                    // null. Right.)
                         }
-                        String msg = getResourceString("WB_UPLOAD_MISSING_FLD") + ": " + fldName + " " + Integer.toString(c+1);
+                        String msg = getResourceString("WB_UPLOAD_MISSING_FLD") + ": " + fldName
+                                + " " + Integer.toString(c + 1);
                         result.add(new InvalidStructure(msg, null));
                     }
                 }
@@ -1367,35 +1406,24 @@ public class Uploader implements ActionListener, WindowStateListener
         }
         return result;
     }
+
     /**
      * @throws UploaderException
      * 
      * Sets up for upload.
      */
-    public void prepareToUpload() throws UploaderException
+    protected void prepareToUpload()
     {
-        try
+        for (UploadTable t : uploadTables)
         {
-            for (UploadTable t : uploadTables)
-            {
-                t.prepareToUpload();
-            }
+            t.prepareToUpload();
         }
-        catch (ClassNotFoundException cnfEx)
-        {
-            throw new UploaderException(cnfEx, UploaderException.ABORT_IMPORT);
-        }
-        catch (NoSuchMethodException nsmeEx)
-        {
-            throw new UploaderException(nsmeEx, UploaderException.ABORT_IMPORT);
-        }
-        //But may want option to ONLY upload rows that were skipped...
+        // But may want option to ONLY upload rows that were skipped...
         skippedRows.clear();
         messages.clear();
         newMessages.clear();
     }
-        
-    
+
     /**
      * @param opName
      * 
@@ -1411,18 +1439,20 @@ public class Uploader implements ActionListener, WindowStateListener
         }
         setupUI(currentOp);
     }
-    
-    
+
     /**
      * @param min
      * @param max
      * @param paintString - true if the progress bar should display string description of progress
      * @param itemName - string description will be: "itemName x of max" (using English resource).
      * 
-     * Initializes progress bar for upload actions. 
-     * If min and max = 0, sets progress bar is indeterminate.
+     * Initializes progress bar for upload actions. If min and max = 0, sets progress bar is
+     * indeterminate.
      */
-    protected synchronized void initProgressBar(int min, int max, boolean paintString, String itemName)
+    protected synchronized void initProgressBar(int min,
+                                                int max,
+                                                boolean paintString,
+                                                String itemName)
     {
         if (mainPanel == null)
         {
@@ -1452,8 +1482,7 @@ public class Uploader implements ActionListener, WindowStateListener
             pb.setValue(min);
         }
     }
-        
-    
+
     /**
      * @param val
      * 
@@ -1472,12 +1501,13 @@ public class Uploader implements ActionListener, WindowStateListener
             pb.setValue(val);
             if (pb.isStringPainted())
             {
-                pb.setString(String.format(getResourceString("WB_UPLOAD_PROGRESSBAR_TEXT"), 
-                    new Object[] {pb.getName(), Integer.toString(val),  Integer.toString(pb.getMaximum())}));
+                pb.setString(String.format(getResourceString("WB_UPLOAD_PROGRESSBAR_TEXT"),
+                        new Object[] { pb.getName(), Integer.toString(val),
+                                Integer.toString(pb.getMaximum()) }));
             }
         }
     }
-    
+
     protected synchronized void showUploadProgress(int val)
     {
         if (mainPanel == null)
@@ -1493,11 +1523,12 @@ public class Uploader implements ActionListener, WindowStateListener
         }
         newMessages.clear();
     }
-    
+
     protected synchronized void updateObjectsCreated()
     {
         mainPanel.updateObjectsCreated();
     }
+
     /**
      * @param initOp
      * 
@@ -1507,24 +1538,25 @@ public class Uploader implements ActionListener, WindowStateListener
     {
         buildMainUI();
         setCurrentOp(initOp);
-        //mainPanel.pack();
+        // mainPanel.pack();
     }
-    
+
     public void initUI()
     {
         setCurrentOp(Uploader.INITIAL_STATE);
     }
-    
+
     /**
-     * Gets default values for all missing required classes (foreign keys) and local fields. 
+     * Gets default values for all missing required classes (foreign keys) and local fields.
      */
     public void getDefaultsForMissingRequirements()
-    {        
+    {
         opKiller = null;
         final SwingWorker uploadTask = new SwingWorker()
         {
             final JStatusBar statusBar = UIRegistry.getStatusBar();
-            boolean success = false;                        
+            boolean          success   = false;
+
             @SuppressWarnings("synthetic-access")
             @Override
             public Object construct()
@@ -1576,14 +1608,14 @@ public class Uploader implements ActionListener, WindowStateListener
                     return false;
                 }
             }
-            
+
             @Override
             public void finished()
             {
-                //UIRegistry.clearGlassPaneMsg();
+                // UIRegistry.clearGlassPaneMsg();
                 if (success)
                 {
-                    statusBar.setText(getResourceString("WB_REQUIRED_RETRIEVED")); 
+                    statusBar.setText(getResourceString("WB_REQUIRED_RETRIEVED"));
                     validateData();
                 }
                 else
@@ -1597,18 +1629,16 @@ public class Uploader implements ActionListener, WindowStateListener
         uploadTask.start();
         initUI(Uploader.CHECKING_REQS);
     }
-    
-      
+
     /**
-     * Called when dataset is saved. 
+     * Called when dataset is saved.
      */
     public void refresh()
     {
         wbSS.getWorkbench().forceLoad();
         validateData();
     }
-    
-    
+
     /**
      * Called when dataset is closing.
      */
@@ -1619,7 +1649,7 @@ public class Uploader implements ActionListener, WindowStateListener
             closeMainForm(false);
         }
     }
-    
+
     /**
      * @return count of total number of objects uploaded
      */
@@ -1632,7 +1662,7 @@ public class Uploader implements ActionListener, WindowStateListener
         }
         return result;
     }
-    
+
     /**
      * Shuts down upload UI.
      */
@@ -1647,7 +1677,7 @@ public class Uploader implements ActionListener, WindowStateListener
             wbSS.uploadDone();
         }
     }
-    
+
     public UploadMainPanel getMainPanel()
     {
         if (mainPanel == null)
@@ -1656,7 +1686,7 @@ public class Uploader implements ActionListener, WindowStateListener
         }
         return mainPanel;
     }
-    
+
     /**
      * Closes views of uploaded data.
      */
@@ -1668,9 +1698,10 @@ public class Uploader implements ActionListener, WindowStateListener
             bogusViewer = null;
         }
     }
-    
-    
-    /* (non-Javadoc)
+
+    /*
+     * (non-Javadoc)
+     * 
      * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
      * 
      * Responds to user actions in UI.
@@ -1726,7 +1757,7 @@ public class Uploader implements ActionListener, WindowStateListener
         }
         else if (e.getActionCommand().equals(UploadMainPanel.CANCEL_OPERATION))
         {
-            //System.out.println(UploadMainPanel.CANCEL_OPERATION);
+            // System.out.println(UploadMainPanel.CANCEL_OPERATION);
         }
         else if (e.getActionCommand().equals(UploadMainPanel.TBL_DBL_CLICK))
         {
@@ -1749,30 +1780,35 @@ public class Uploader implements ActionListener, WindowStateListener
         }
         else if (e.getActionCommand().equals(UploadMainPanel.MSG_CLICK))
         {
-             goToMsgWBCell();
+            goToMsgWBCell();
         }
         else if (e.getActionCommand().equals(UploadMainPanel.PRINT_INVALID))
         {
-             printInvalidValReport();
+            printInvalidValReport();
         }
-        else log.error("Unrecognized action: " + e.getActionCommand());
+        else
+            log.error("Unrecognized action: " + e.getActionCommand());
     }
-    
+
     protected void showSettings()
     {
-        boolean readOnly = !currentOp.equals(Uploader.READY_TO_UPLOAD) && !currentOp.equals(Uploader.USER_INPUT);
+        boolean readOnly = !currentOp.equals(Uploader.READY_TO_UPLOAD)
+                && !currentOp.equals(Uploader.USER_INPUT);
         UploadSettingsPanel usp = new UploadSettingsPanel(uploadTables);
         usp.buildUI(resolver, readOnly);
         CustomDialog cwin;
         if (!readOnly)
         {
-            cwin = new CustomDialog((Frame)UIRegistry.getTopWindow(), getResourceString("WB_UPLOAD_SETTINGS"), true, usp); 
+            cwin = new CustomDialog((Frame) UIRegistry.getTopWindow(),
+                    getResourceString("WB_UPLOAD_SETTINGS"), true, usp);
         }
         else
         {
-            cwin = new CustomDialog((Frame)UIRegistry.getTopWindow(), getResourceString("WB_UPLOAD_SETTINGS"), true, CustomDialog.OK_BTN, usp, CustomDialog.OK_BTN); 
+            cwin = new CustomDialog((Frame) UIRegistry.getTopWindow(),
+                    getResourceString("WB_UPLOAD_SETTINGS"), true, CustomDialog.OK_BTN, usp,
+                    CustomDialog.OK_BTN);
         }
-            
+
         cwin.setModal(true);
         UIHelper.centerAndShow(cwin);
         if (!cwin.isCancelled())
@@ -1793,63 +1829,49 @@ public class Uploader implements ActionListener, WindowStateListener
 
     /**
      * @author timbo
-     *
+     * 
      * @code_status Alpha
      * 
      * Datasource for printing validation issues for current upload.
-     *
+     * 
      */
     class InvalidValueJRDataSource implements JRDataSource
     {
-        protected int rowIndex;
+        protected int                                   rowIndex;
         protected final Vector<UploadTableInvalidValue> rows;
-        
+
         public InvalidValueJRDataSource(final Vector<UploadTableInvalidValue> rows)
         {
             this.rows = rows;
             rowIndex = -1;
         }
-        
+
         /*
          * (non-Javadoc)
+         * 
          * @see net.sf.jasperreports.engine.JRDataSource#getFieldValue(net.sf.jasperreports.engine.JRField)
          */
         public Object getFieldValue(final JRField field) throws JRException
         {
-            if (field.getName().equals("row"))
-            {
-                return String.valueOf(rows.get(rowIndex).getRow());
-            }
-            if (field.getName().equals("col"))
-            {
-                return String.valueOf(rows.get(rowIndex).getUploadFld().getWbFldName());
-            }
-            if (field.getName().equals("description"))
-            {
-                return rows.get(rowIndex).getDescription();
-            }
-            if (field.getName().equals("datasetName"))
-            {
-                return wbSS.getWorkbench().getName();
-            }
-            if (field.getName().equals("cellData"))
-            {
-                return uploadData.get(rows.get(rowIndex).getRow(), rows.get(rowIndex).getUploadFld().getIndex());                
-            }
+            if (field.getName().equals("row")) { return String.valueOf(rows.get(rowIndex).getRow()); }
+            if (field.getName().equals("col")) { return String.valueOf(rows.get(rowIndex)
+                    .getUploadFld().getWbFldName()); }
+            if (field.getName().equals("description")) { return rows.get(rowIndex).getDescription(); }
+            if (field.getName().equals("datasetName")) { return wbSS.getWorkbench().getName(); }
+            if (field.getName().equals("cellData")) { return uploadData.get(rows.get(rowIndex)
+                    .getRow(), rows.get(rowIndex).getUploadFld().getIndex()); }
             log.error("Unrecognized field Name: " + field.getName());
             return null;
         }
-        
+
         /*
          * (non-Javadoc)
+         * 
          * @see net.sf.jasperreports.engine.JRDataSource#next()
          */
         public boolean next() throws JRException
         {
-            if (rowIndex >= rows.size() - 1)
-            {
-                return false;
-            }
+            if (rowIndex >= rows.size() - 1) { return false; }
             rowIndex++;
             return true;
         }
@@ -1862,40 +1884,40 @@ public class Uploader implements ActionListener, WindowStateListener
     {
         if (validationIssues == null || validationIssues.size() == 0)
         {
-            //this should never be called but just in case.
+            // this should never be called but just in case.
             log.error("no validationIssues");
             return;
         }
         InvalidValueJRDataSource src = new InvalidValueJRDataSource(validationIssues);
-        final CommandAction cmd = new CommandAction(ReportsBaseTask.REPORTS, ReportsBaseTask.PRINT_REPORT, src);
+        final CommandAction cmd = new CommandAction(ReportsBaseTask.REPORTS,
+                ReportsBaseTask.PRINT_REPORT, src);
         cmd.setProperty("title", "Validation Issues");
         cmd.setProperty("file", "upload_problem_report.jrxml");
         CommandDispatcher.dispatch(cmd);
     }
-    
+
     /**
      * Moves to dataset cell corresponding to currently selected validation issue and starts editor.
      */
     protected void goToMsgWBCell()
     {
-        if (mainPanel == null)
-        {
-            throw new RuntimeException("Upload form does not exist.");
-        }
+        if (mainPanel == null) { throw new RuntimeException("Upload form does not exist."); }
         if (wbSS != null)
         {
-            UploadMessage msg = (UploadMessage)mainPanel.getMsgList().getSelectedValue();
+            UploadMessage msg = (UploadMessage) mainPanel.getMsgList().getSelectedValue();
             if (msg.getRow() != -1)
             {
                 if (msg.getCol() == -1)
                 {
                     wbSS.getSpreadSheet().scrollToRow(msg.getRow());
                     wbSS.getSpreadSheet().getSelectionModel().clearSelection();
-                    wbSS.getSpreadSheet().getSelectionModel().setSelectionInterval(msg.getRow()-1, msg.getRow()-1);
+                    wbSS.getSpreadSheet().getSelectionModel().setSelectionInterval(
+                            msg.getRow() - 1, msg.getRow() - 1);
                 }
                 else
                 {
-                    Rectangle rect = wbSS.getSpreadSheet().getCellRect(msg.getRow(), msg.getCol(), false);
+                    Rectangle rect = wbSS.getSpreadSheet().getCellRect(msg.getRow(), msg.getCol(),
+                            false);
                     wbSS.getSpreadSheet().scrollRectToVisible(rect);
                     if (msg instanceof UploadTableInvalidValue && msg.getCol() != -1)
                     {
@@ -1906,8 +1928,7 @@ public class Uploader implements ActionListener, WindowStateListener
             }
         }
     }
-    
-    
+
     public void windowStateChanged(WindowEvent e)
     {
         if (e.getNewState() == WindowEvent.WINDOW_CLOSING)
@@ -1919,15 +1940,14 @@ public class Uploader implements ActionListener, WindowStateListener
             System.out.println("Activated");
         }
     }
-    
-    
+
     /**
      * Builds form for upload UI.
      */
     protected void buildMainUI()
     {
         mainPanel = new UploadMainPanel();
-         
+
         SortedSet<UploadInfoRenderable> uts = new TreeSet<UploadInfoRenderable>();
         for (UploadTable ut : uploadTables)
         {
@@ -1948,7 +1968,7 @@ public class Uploader implements ActionListener, WindowStateListener
                 uts.add(new UploadInfoRenderable(ut));
             }
         }
-        
+
         DefaultListModel tbls = new DefaultListModel();
         JList tableList = mainPanel.getUploadTbls();
         TableNameRenderer nameRender = new TableNameRenderer(IconManager.IconSize.Std24);
@@ -1960,9 +1980,9 @@ public class Uploader implements ActionListener, WindowStateListener
         }
         tableList.setModel(tbls);
         mainPanel.setActionListener(this);
-        //mainPanel.addWindowStateListener(this);
+        // mainPanel.addWindowStateListener(this);
     }
-    
+
     /**
      * @param op
      * 
@@ -1980,28 +2000,28 @@ public class Uploader implements ActionListener, WindowStateListener
         {
             if (mainPanel.getUploadTbls().getSelectedIndex() == -1)
             {
-                //assuming list is not empty
+                // assuming list is not empty
                 mainPanel.getUploadTbls().setSelectedIndex(0);
             }
         }
 
         mainPanel.getValidateContentBtn().setEnabled(canValidateContent(op));
-        
+
         mainPanel.getCancelBtn().setEnabled(canCancel(op));
         mainPanel.getCancelBtn().setVisible(mainPanel.getCancelBtn().isEnabled());
-        
+
         mainPanel.getDoUploadBtn().setEnabled(canUpload(op));
-        
+
         mainPanel.getViewSettingsBtn().setEnabled(canViewSettings(op));
-        
+
         mainPanel.getViewUploadBtn().setEnabled(canViewUpload(op));
         mainPanel.getViewUploadBtn().setVisible(mainPanel.getViewUploadBtn().isEnabled());
-        
+
         mainPanel.getUndoBtn().setEnabled(canUndo(op));
         mainPanel.getUndoBtn().setVisible(mainPanel.getUndoBtn().isEnabled());
-        
+
         mainPanel.getCloseBtn().setEnabled(canClose(op));
-        
+
         mainPanel.clearMsgs(UploadTableInvalidValue.class);
         if (validationIssues != null)
         {
@@ -2011,13 +2031,14 @@ public class Uploader implements ActionListener, WindowStateListener
             }
         }
         mainPanel.getPrintBtn().setEnabled(validationIssues != null && validationIssues.size() > 0);
-        
+
         UIRegistry.getStatusBar().getProgressBar().setVisible(mainPanel.getCancelBtn().isVisible());
-        
+
         String statText = getResourceString(op);
         if (op.equals(Uploader.SUCCESS))
         {
-            statText += ". " + getUploadedObjects().toString() + " " + getResourceString("WB_UPLOAD_OBJECT_COUNT") + ".";
+            statText += ". " + getUploadedObjects().toString() + " "
+                    + getResourceString("WB_UPLOAD_OBJECT_COUNT") + ".";
         }
         else if (op.equals(Uploader.FAILURE) && opKiller != null)
         {
@@ -2032,11 +2053,9 @@ public class Uploader implements ActionListener, WindowStateListener
         }
         mainPanel.addMsg(new BaseUploadMessage(statText));
     }
-    
-    
+
     /**
-     * Opens view of uploaded data for selected table.
-     * Initializes viewer object if necessary. 
+     * Opens view of uploaded data for selected table. Initializes viewer object if necessary.
      */
     protected void viewSelectedTable()
     {
@@ -2052,14 +2071,14 @@ public class Uploader implements ActionListener, WindowStateListener
                     }
                     if (bogusViewer != null)
                     {
-                        bogusViewer.viewBogusTbl(((UploadInfoRenderable)mainPanel.getUploadTbls().getSelectedValue()).getTableName(), true);
+                        bogusViewer.viewBogusTbl(((UploadInfoRenderable) mainPanel.getUploadTbls()
+                                .getSelectedValue()).getTableName(), true);
                     }
                 }
             }
         }
     }
-    
-    
+
     /**
      * @param op
      * @return true if canUndo in phase op.
@@ -2068,18 +2087,17 @@ public class Uploader implements ActionListener, WindowStateListener
     {
         return op.equals(Uploader.SUCCESS);
     }
-    
+
     /**
      * @param op
      * @return true if canCancel in phase op.
      */
     protected boolean canCancel(final String op)
     {
-        return op.equals(Uploader.UPLOADING)
-          || op.equals(Uploader.CHECKING_REQS)
-          || op.equals(Uploader.VALIDATING_DATA);
+        return op.equals(Uploader.UPLOADING) || op.equals(Uploader.CHECKING_REQS)
+                || op.equals(Uploader.VALIDATING_DATA);
     }
-    
+
     /**
      * @param op
      * @return true if canUpload in phase op.
@@ -2088,16 +2106,15 @@ public class Uploader implements ActionListener, WindowStateListener
     {
         return op.equals(Uploader.READY_TO_UPLOAD);
     }
-    
+
     /**
      * @param op
      * @return true if canClose in phase op.
      */
     protected boolean canValidateContent(final String op)
     {
-        return op.equals(Uploader.USER_INPUT)
-         || op.equals(Uploader.INITIAL_STATE)
-         || op.equals(Uploader.FAILURE);
+        return op.equals(Uploader.USER_INPUT) || op.equals(Uploader.INITIAL_STATE)
+                || op.equals(Uploader.FAILURE);
     }
 
     /**
@@ -2106,11 +2123,9 @@ public class Uploader implements ActionListener, WindowStateListener
      */
     protected boolean canClose(final String op)
     {
-        return op.equals(Uploader.READY_TO_UPLOAD)
-         || op.equals(Uploader.USER_INPUT)
-         || op.equals(Uploader.SUCCESS)
-         || op.equals(Uploader.INITIAL_STATE)
-         || op.equals(Uploader.FAILURE);
+        return op.equals(Uploader.READY_TO_UPLOAD) || op.equals(Uploader.USER_INPUT)
+                || op.equals(Uploader.SUCCESS) || op.equals(Uploader.INITIAL_STATE)
+                || op.equals(Uploader.FAILURE);
     }
 
     /**
@@ -2119,11 +2134,10 @@ public class Uploader implements ActionListener, WindowStateListener
      */
     protected boolean canViewSettings(final String op)
     {
-        return op.equals(Uploader.READY_TO_UPLOAD)
-        || op.equals(Uploader.USER_INPUT)
-        //|| op.equals(Uploader.SUCCESS)
-        //|| op.equals(Uploader.INITIAL_STATE)
-        || op.equals(Uploader.FAILURE);
+        return op.equals(Uploader.READY_TO_UPLOAD) || op.equals(Uploader.USER_INPUT)
+        // || op.equals(Uploader.SUCCESS)
+                // || op.equals(Uploader.INITIAL_STATE)
+                || op.equals(Uploader.FAILURE);
     }
 
     /**
@@ -2134,41 +2148,39 @@ public class Uploader implements ActionListener, WindowStateListener
     {
         return op.equals(Uploader.SUCCESS) && mainPanel.getUploadTbls().getSelectedIndex() != -1;
     }
-    
-    
+
     /**
      * Uploads dataset.
      */
-    public void uploadIt() 
+    public void uploadIt()
     {
         buildIdentifier();
         opKiller = null;
-        //currentUpload = this;
-        
+        prepareToUpload();
+        // currentUpload = this;
+
         final SwingWorker uploadTask = new SwingWorker()
         {
             final JStatusBar statusBar = UIRegistry.getStatusBar();
-            boolean success = false;
-            boolean cancelled = false;
-            boolean holdIt = false;
-            
+            boolean          success   = false;
+            boolean          cancelled = false;
+            boolean          holdIt    = false;
+
             @Override
             public void interrupt()
             {
-                //this will hold the upload process until the confirm dlg is closed
+                // this will hold the upload process until the confirm dlg is closed
                 holdIt = true;
-                if (UIRegistry.displayConfirm(getResourceString("WB_CANCEL_UPLOAD_TITLE"), 
-                        getResourceString("WB_CANCEL_UPLOAD_MSG"), 
-                        getResourceString("Yes"),
-                        getResourceString("No"), 
-                        JOptionPane.QUESTION_MESSAGE))
+                if (UIRegistry.displayConfirm(getResourceString("WB_CANCEL_UPLOAD_TITLE"),
+                        getResourceString("WB_CANCEL_UPLOAD_MSG"), getResourceString("Yes"),
+                        getResourceString("No"), JOptionPane.QUESTION_MESSAGE))
                 {
                     super.interrupt();
                     cancelled = true;
                 }
                 holdIt = false;
             }
-                        
+
             @SuppressWarnings("synthetic-access")
             @Override
             public Object construct()
@@ -2184,7 +2196,7 @@ public class Uploader implements ActionListener, WindowStateListener
                             break;
                         }
                         log.debug("uploading row " + String.valueOf(rowUploading));
-                        setCurrentOpProgress(rowUploading+1);
+                        setCurrentOpProgress(rowUploading + 1);
                         if (!holdIt)
                         {
                             for (UploadTable t : uploadTables)
@@ -2222,7 +2234,7 @@ public class Uploader implements ActionListener, WindowStateListener
                 success = !cancelled;
                 return success;
             }
-            
+
             @Override
             public void finished()
             {
@@ -2231,7 +2243,7 @@ public class Uploader implements ActionListener, WindowStateListener
                 {
                     setCurrentOp(Uploader.SUCCESS);
                 }
-                else 
+                else
                 {
                     mainPanel.clearObjectsCreated();
                     undoUpload(false);
@@ -2269,33 +2281,34 @@ public class Uploader implements ActionListener, WindowStateListener
             setCurrentOp(Uploader.UPLOADING);
         }
     }
-    
+
     protected void abortRow(UploaderException cause, int row)
     {
         log.debug("NOT undoing writes which have already occurred while processing aborted row");
-        SkippedRow sr = new SkippedRow(cause, row+1);
+        SkippedRow sr = new SkippedRow(cause, row + 1);
         skippedRows.add(sr);
         newMessages.add(sr);
     }
-    
+
     public void addMsg(final UploadMessage msg)
     {
         newMessages.add(msg);
     }
-    
-	/**
+
+    /**
      * Undoes the most recent upload.
      * 
-     * Called in response to undo command from user, and by the program when an upload is cancelled or fails.
+     * Called in response to undo command from user, and by the program when an upload is cancelled
+     * or fails.
      */
-	public void undoUpload(final boolean isUserCmd)
+    public void undoUpload(final boolean isUserCmd)
     {
         opKiller = null;
-	    final SwingWorker undoTask = new SwingWorker()
+        final SwingWorker undoTask = new SwingWorker()
         {
             final JStatusBar statusBar = UIRegistry.getStatusBar();
-            boolean success = false;
-                                    
+            boolean          success   = false;
+
             @SuppressWarnings("synthetic-access")
             @Override
             public Object construct()
@@ -2319,7 +2332,7 @@ public class Uploader implements ActionListener, WindowStateListener
                     return false;
                 }
             }
-            
+
             @Override
             public void finished()
             {
@@ -2328,9 +2341,9 @@ public class Uploader implements ActionListener, WindowStateListener
                 {
                     setCurrentOp(Uploader.READY_TO_UPLOAD);
                 }
-                else 
+                else
                 {
-                        setCurrentOp(Uploader.FAILURE);
+                    setCurrentOp(Uploader.FAILURE);
                 }
             }
 
@@ -2338,8 +2351,7 @@ public class Uploader implements ActionListener, WindowStateListener
         undoTask.start();
         setCurrentOp(isUserCmd ? Uploader.UNDOING_UPLOAD : Uploader.CLEANING_UP);
     }
-    
-    
+
     /**
      * @throws IllegalAccessException
      * @throws InvocationTargetException
@@ -2362,31 +2374,29 @@ public class Uploader implements ActionListener, WindowStateListener
             }
         }
     }
-    
 
     /**
      * Builds viewer for uploaded data.
      */
-    public void retrieveUploadedData() 
+    public void retrieveUploadedData()
     {
         bogusStorages = new HashMap<String, Vector<Vector<String>>>();
         opKiller = null;
-        
+
         final SwingWorker retrieverTask = new SwingWorker()
         {
             final JStatusBar statusBar = UIRegistry.getStatusBar();
-            boolean cancelled = false;
-            boolean holdIt = false;
-            
+            boolean          cancelled = false;
+            boolean          holdIt    = false;
+
             @Override
             public void interrupt()
             {
-                //this will hold the display process until the confirm dlg is closed
+                // this will hold the display process until the confirm dlg is closed
                 holdIt = true;
-                if (UIRegistry.displayConfirm(getResourceString("WB_CANCEL_UPLOAD_RETRIEVE_TITLE"), 
-                        getResourceString("WB_CANCEL_UPLOAD_RETRIEVE_MSG"), 
-                        getResourceString("OK"),
-                        getResourceString("Cancel"), 
+                if (UIRegistry.displayConfirm(getResourceString("WB_CANCEL_UPLOAD_RETRIEVE_TITLE"),
+                        getResourceString("WB_CANCEL_UPLOAD_RETRIEVE_MSG"),
+                        getResourceString("OK"), getResourceString("Cancel"),
                         JOptionPane.QUESTION_MESSAGE))
                 {
                     super.interrupt();
@@ -2394,7 +2404,7 @@ public class Uploader implements ActionListener, WindowStateListener
                 }
                 holdIt = false;
             }
-                        
+
             @SuppressWarnings("synthetic-access")
             @Override
             public Object construct()
@@ -2450,7 +2460,7 @@ public class Uploader implements ActionListener, WindowStateListener
                     return false;
                 }
             }
-            
+
             @Override
             public void finished()
             {
@@ -2459,12 +2469,13 @@ public class Uploader implements ActionListener, WindowStateListener
                 if (!cancelled)
                 {
                     viewSelectedTable();
-                    statusBar.setText(getResourceString("WB_UPLOAD_DATA_FETCHED")); 
+                    statusBar.setText(getResourceString("WB_UPLOAD_DATA_FETCHED"));
                 }
                 else
                 {
                     bogusStorages = null;
-                    statusBar.setText(getResourceString("RetrievalWB_UPLOAD_FETCH_CANCELLED cancelled"));
+                    statusBar
+                            .setText(getResourceString("RetrievalWB_UPLOAD_FETCH_CANCELLED cancelled"));
                 }
             }
 
@@ -2480,63 +2491,63 @@ public class Uploader implements ActionListener, WindowStateListener
         retrieverTask.start();
     }
 
-    
-	/**
+    /**
      * @param t
      * @param row
      * @throws UploaderException
      * 
      * imports data in row belonging to t's Table.
      */
-	protected void uploadRow(final UploadTable t, int row) throws UploaderException
-	{
-		for (UploadField field : uploadFields)
-		{
+    protected void uploadRow(final UploadTable t, int row) throws UploaderException
+    {
+        for (UploadField field : uploadFields)
+        {
             if (field.getField().getTable().equals(t.getTable()))
-			{
-				if (field.getIndex() != -1)
-				{
+            {
+                if (field.getIndex() != -1)
+                {
                     uploadCol(field, uploadData.get(row, field.getIndex()));
-				}
-			}
-		}
-		try
-		{
-			writeRow(t);
-		} catch (UploaderException ex)
-		{
-			log.debug(ex.getMessage() + " (" + t.getTable().getName() + ", row " + Integer.toString(row) + ")");
+                }
+            }
+        }
+        try
+        {
+            writeRow(t);
+        }
+        catch (UploaderException ex)
+        {
+            log.debug(ex.getMessage() + " (" + t.getTable().getName() + ", row "
+                    + Integer.toString(row) + ")");
             throw ex;
-		}
-	}
-    
+        }
+    }
 
-	/**
-	 * @param f
-	 * @param val
-	 * 
+    /**
+     * @param f
+     * @param val
+     * 
      * imports val to f.
-	 */
-	protected void uploadCol(final UploadField f, final String val)
-	{
-		if (f != null)
-		{
-			f.setValue(val);
-		}
-	}
+     */
+    protected void uploadCol(final UploadField f, final String val)
+    {
+        if (f != null)
+        {
+            f.setValue(val);
+        }
+    }
 
-	/**
-	 * @param t
-	 * @throws UploaderException
+    /**
+     * @param t
+     * @throws UploaderException
      * 
      * writes data (if necessary) for t.
-	 */
-	protected void writeRow(final UploadTable t) throws UploaderException
+     */
+    protected void writeRow(final UploadTable t) throws UploaderException
     {
         t.writeRow();
     }
-            
-	protected void saveRecordSets()
+
+    protected void saveRecordSets()
     {
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
@@ -2570,4 +2581,3 @@ public class Uploader implements ActionListener, WindowStateListener
         }
     }
 }
-

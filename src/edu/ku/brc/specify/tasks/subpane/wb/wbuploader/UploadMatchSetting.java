@@ -268,5 +268,9 @@ public class UploadMatchSetting
         this.matchEmptyValues = matchEmptyValues;
     }
     
-    
+    public void clear()
+    {
+        lookups.clear();
+        selections.clear();
+    }
 }
