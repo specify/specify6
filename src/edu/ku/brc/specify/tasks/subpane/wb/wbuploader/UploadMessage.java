@@ -6,6 +6,19 @@
      */
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
+/**
+ * @author timbo
+ *
+ * @code_status Alpha
+ * 
+ * Interface for messages that appear in the uploader's message box.
+ * 
+ * getRow and getCol are intended to return the workbench row and col associated with the message.
+ * Implementors should return -1 if there not is an associated row or col.
+ * 
+ * Implementors also will probably need to override Object.toString(). Or extend the class BaseUploadMessage.
+ *
+ */
 public interface UploadMessage
 {
     /**

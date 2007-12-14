@@ -1487,7 +1487,7 @@ public class UploadTable implements Comparable<UploadTable>
         //do nothing for now
     }
     
-    public class UploadTableInvalidValue implements UploadMessage
+    public class UploadTableInvalidValue extends BaseUploadMessage
     {
         protected UploadTable uploadTbl;
         protected UploadField uploadFld;
@@ -1502,7 +1502,7 @@ public class UploadTable implements Comparable<UploadTable>
          */
         public UploadTableInvalidValue(UploadTable uploadTbl, UploadField uploadFld, int rowNum, Exception cause)
         {
-            super();
+            super(null);
             this.uploadTbl = uploadTbl;
             this.uploadFld = uploadFld;
             this.rowNum = new Integer(rowNum);
@@ -1535,6 +1535,7 @@ public class UploadTable implements Comparable<UploadTable>
         /**
          * @return the rowNum
          */
+        @Override
         public int getRow()
         {
             return rowNum;
@@ -1575,22 +1576,28 @@ public class UploadTable implements Comparable<UploadTable>
             this.uploadTbl = uploadTbl;
         }
         
+        /* (non-Javadoc)
+         * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.BaseUploadMessage#getMsg()
+         */
+        @Override
         public String getMsg()
         {
             return uploadFld.getWbFldName() + " (row " + rowNum.toString() + "): " + getDescription();
         }
-
-        @Override
-        public String toString()
-        {
-            return getMsg();
-        }
         
+        /* (non-Javadoc)
+         * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.BaseUploadMessage#getCol()
+         */
+        @Override
         public int getCol()
         {
             return getUploadFld().getIndex();
         }
         
+        /* (non-Javadoc)
+         * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.BaseUploadMessage#getData()
+         */
+        @Override
         public Object getData()
         {
             return cause;
@@ -2154,7 +2161,7 @@ public class UploadTable implements Comparable<UploadTable>
         return matchSetting;
     }
     
-    public class PartialMatchMsg implements UploadMessage
+    public class PartialMatchMsg extends BaseUploadMessage
     {
         protected String matchVals;
         protected String matchedText;
@@ -2168,6 +2175,8 @@ public class UploadTable implements Comparable<UploadTable>
          */
         public PartialMatchMsg(Vector<Pair<String,String>> cellVals, String matchedText, int row, UploadTable uploadTable)
         {
+            
+            super(null);
             StringBuilder sb = new StringBuilder();
             for (Pair<String,String> p : cellVals)
             {
@@ -2188,22 +2197,16 @@ public class UploadTable implements Comparable<UploadTable>
         /* (non-Javadoc)
          * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMessage#getData()
          */
+        @Override
         public Object getData()
         {
             return uploadTable;
         }
-        
-        /* (non-Javadoc)
-         * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMessage#getCol()
-         */
-        public int getCol()
-        {
-            return -1;
-        }
-        
+                
         /* (non-Javadoc)
          * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMessage#getRow()
          */
+        @Override
         public int getRow()
         {
             return row;
@@ -2212,6 +2215,7 @@ public class UploadTable implements Comparable<UploadTable>
         /* (non-Javadoc)
          * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMessage#getMsg()
          */
+        @Override
         public String getMsg()
         {
             StringBuilder result = new StringBuilder(getResourceString("Row"));
@@ -2228,13 +2232,5 @@ public class UploadTable implements Comparable<UploadTable>
             return result.toString();
         }
         
-        /* (non-Javadoc)
-         * @see java.lang.Object#toString()
-         */
-        @Override
-        public String toString()
-        {
-            return getMsg();
-        }
     }
 }

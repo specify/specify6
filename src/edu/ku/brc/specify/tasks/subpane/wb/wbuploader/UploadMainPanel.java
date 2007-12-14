@@ -12,14 +12,11 @@ package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -86,190 +83,54 @@ public class UploadMainPanel extends JPanel
         //super(getResourceString("WB_UPLOAD_MAINFORM_TITLE"), 0, null);
         buildUI();
      }
-    /**
-     * Builds the form.
-     */
-    public void buildUIOld()
-    {
-        Box mainPane = new Box(BoxLayout.Y_AXIS);
-        
-        JPanel uploadTblPane = new JPanel(new BorderLayout());
-        uploadTblLbl = new JLabel(getResourceString("WB_UPLOAD_AFFECTED_TBLS_LIST"));
-        uploadTblLbl.setFont(uploadTblLbl.getFont().deriveFont(Font.BOLD));
-        uploadTblPane.add(uploadTblLbl, BorderLayout.NORTH);
-        uploadTbls = new JList();
-        uploadTbls.addMouseListener(new MouseListener()
-        {
-            public void mouseClicked(MouseEvent me)
-            {
-                if (me.getClickCount() == 2)
-                {
-                    uploadTblDblClick();
-                }
-                uploadTblClick();
-            }
-
-            public void mouseEntered(MouseEvent me)
-            {
-                // no comment.
-            }
-
-            public void mouseExited(MouseEvent me)
-            {
-                // no comment.
-            }
-
-            public void mousePressed(MouseEvent me)
-            {
-                // no comment.
-            }
-
-            public void mouseReleased(MouseEvent me)
-            {
-                // no comment.
-            }
-        });
-        
-        JScrollPane sp = new JScrollPane(uploadTbls, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        uploadTblPane.add(sp, BorderLayout.CENTER);
-        mainPane.add(uploadTblPane);
-        mainPane.add(Box.createVerticalStrut(10));
-        
-        msgPane = new JPanel(new BorderLayout());
-        msgLbl = new JLabel(getResourceString("WB_UPLOAD_MESSAGES"));
-        msgPane.add(msgLbl, BorderLayout.NORTH);
-        msgList = new JList();
-        msgList.addMouseListener(new MouseListener()
-        {
-            public void mouseClicked(MouseEvent me)
-            {
-               msgClick();
-            }
-
-            public void mouseEntered(MouseEvent me)
-            {
-                // no comment.
-            }
-
-            public void mouseExited(MouseEvent me)
-            {
-                // no comment.
-            }
-
-            public void mousePressed(MouseEvent me)
-            {
-                // no comment.
-            }
-
-            public void mouseReleased(MouseEvent me)
-            {
-                // no comment.
-            }
-        });
-        
-        sp = new JScrollPane(msgList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        msgPane.add(sp, BorderLayout.CENTER);
-        printBtn = new JButton(getResourceString("WB_UPLOAD_PRINT_INVALID_BTN")); 
-        printBtn.setActionCommand(PRINT_INVALID);
-        msgPane.add(printBtn, BorderLayout.SOUTH);
-        mainPane.add(msgPane);
-        
-        mainPane.add(Box.createVerticalStrut(20));
-        
-        JPanel progPane = new JPanel();
-        progPane.setLayout(new BoxLayout(progPane, BoxLayout.Y_AXIS));
-        JPanel progSubPane = new JPanel(new FlowLayout());
-        currOpLbl = new JLabel("");
-        progSubPane.add(currOpLbl);
-        cancelBtn = new JButton(getResourceString("Cancel")); 
-        cancelBtn.setActionCommand(CANCEL_OPERATION);
-        progSubPane.add(cancelBtn);
-        progPane.add(progSubPane);
-        currOpProgress = new JProgressBar();
-        progPane.add(currOpProgress);
-        mainPane.add(progPane);
-        mainPane.add(Box.createVerticalStrut(20));
-        
-        FlowLayout btnPaneLayout = new FlowLayout(FlowLayout.RIGHT);
-        JPanel btnPane = new JPanel(btnPaneLayout);
-        viewSettingsBtn = new JButton(getResourceString("WB_UPLOAD_SETTINGS_BTN")); 
-        viewSettingsBtn.setActionCommand(VIEW_SETTINGS);
-        doUploadBtn = new JButton(getResourceString("WB_UPLOAD_BTN"));
-        doUploadBtn.setActionCommand(DO_UPLOAD);
-        viewUploadBtn = new JButton(getResourceString("WB_UPLOAD_VIEW_BTN"));
-        viewUploadBtn.setActionCommand(VIEW_UPLOAD);
-        closeBtn = new JButton(getResourceString("Close")); 
-        closeBtn.setActionCommand(CLOSE_UI);
-        undoBtn = new JButton(getResourceString("WB_UPLOAD_UNDO_BTN")); 
-        undoBtn.setActionCommand(UNDO_UPLOAD);
-        btnPane.add(doUploadBtn);
-        btnPane.add(viewUploadBtn);
-        btnPane.add(viewSettingsBtn);
-        btnPane.add(undoBtn);
-        btnPane.add(closeBtn);
-        mainPane.add(btnPane);
-        
-        add(mainPane);
-    }
     
     public void buildUI()
     {
         CellConstraints cc = new CellConstraints();
         setLayout(new FormLayout("3dlu:none, fill:50dlu:grow(0.30), 20dlu:none, fill:50dlu:grow(0.70), 5dlu:none, r:max(50dlu;pref), 3dlu:none", 
-                "t:m:none, 2dlu:none, fill:75dlu:grow, 5dlu:none, b:m:none"));
-        //pb.getPanel().setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
-        //pb.getLayout().setRowGroups(new int[][]{{1,3}});
+                "t:m:none, 2dlu:none, fill:75dlu:grow, 5dlu:none"));
         uploadTblLbl = new JLabel(getResourceString("WB_UPLOAD_AFFECTED_TBLS_LIST"));
-        //uploadTblLbl.setFont(uploadTblLbl.getFont().deriveFont(Font.BOLD));
         add(uploadTblLbl, cc.xy(2, 1));
         
         uploadTbls = new JList();
         JScrollPane sp = new JScrollPane(uploadTbls, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        //pb.add(sp, cc.xy(1, 3, "r,t"));
         add(sp, cc.xy(2, 3));
         
-        // Invalid Pane
         msgPane = new JPanel(new BorderLayout());
-        //PanelBuilder invalidValPanePB = new PanelBuilder(new FormLayout("p:g", "p,2px,p,4px,p"), msgPane);
         
         msgLbl  = new JLabel(getResourceString("WB_UPLOAD_MSG_LIST"));
-        //invalidValPanePB.add(msgLbl, cc.xy(1, 1));
         add(msgLbl, cc.xy(4, 1));
         
         msgList = new JList(new DefaultListModel());
         JScrollPane sp2 = new JScrollPane(msgList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        //invalidValPanePB.add(sp2, cc.xy(1, 3));
         msgPane.add(sp2, BorderLayout.CENTER);
         
-        //PanelBuilder rppb = new PanelBuilder(new FormLayout("f:p:g, p", "p"));
         printBtn = new JButton(getResourceString("WB_UPLOAD_PRINT_MESSAGES_BTN")); 
         printBtn.setActionCommand(PRINT_INVALID);
-        //rppb.add(printBtn, cc.xy(2, 1));
-        //invalidValPanePB.add(rppb.getPanel(), cc.xy(1, 5));
         msgPane.add(printBtn, BorderLayout.SOUTH);
         
         add(msgPane, cc.xy(4, 3));
         
         // Progress Pane
         
-        JPanel progPane = new JPanel();
-        progPane.setLayout(new BoxLayout(progPane, BoxLayout.Y_AXIS));
         
-        JPanel progSubPane = new JPanel(new FlowLayout());
-        currOpLbl = new JLabel("");
-        progSubPane.add(currOpLbl);
-        cancelBtn = new JButton(getResourceString("Cancel")); 
-        cancelBtn.setActionCommand(CANCEL_OPERATION);
-        progSubPane.add(cancelBtn);
-        progPane.add(progSubPane);
-        currOpProgress = new JProgressBar();
-        progPane.add(currOpProgress);
         
-        add(progPane, cc.xywh(2, 5, 4, 1));
+        //JPanel progPane = new JPanel();
+        //progPane.setLayout(new BoxLayout(progPane, BoxLayout.Y_AXIS));
         
-        //FlowLayout btnPaneLayout = new FlowLayout(FlowLayout.RIGHT);
-        //JPanel btnPane  = new JPanel(btnPaneLayout);
-        JPanel btnPane = new JPanel(new FormLayout("f:max(50dlu;pref)", "c:m, c:m, c:m, c:m, c:m, c:m"));
+        //JPanel progSubPane = new JPanel(new FlowLayout());
+       // currOpLbl = new JLabel("");
+        //progSubPane.add(currOpLbl);
+        //cancelBtn = new JButton(getResourceString("Cancel")); 
+        //cancelBtn.setActionCommand(CANCEL_OPERATION);
+        //progSubPane.add(cancelBtn);
+        //progPane.add(progSubPane);
+        //currOpProgress = new JProgressBar();
+        //progPane.add(currOpProgress);
+        
+        //add(progPane, cc.xywh(2, 5, 4, 1));
+        
+        JPanel btnPane = new JPanel(new FormLayout("f:max(50dlu;pref)", "c:m, c:m, c:m, c:m, c:m, c:m, c:m"));
         validateContentBtn = new JButton(getResourceString("WB_UPLOAD_VALIDATE_CONTENT_BTN"));
         validateContentBtn.setActionCommand(VALIDATE_CONTENT);
         viewSettingsBtn = new JButton(getResourceString("WB_UPLOAD_SETTINGS_BTN")); 
@@ -282,12 +143,15 @@ public class UploadMainPanel extends JPanel
         closeBtn.setActionCommand(CLOSE_UI);
         undoBtn         = new JButton(getResourceString("WB_UPLOAD_UNDO_BTN")); 
         undoBtn.setActionCommand(UNDO_UPLOAD);
+        cancelBtn = new JButton(getResourceString("Cancel")); 
+        cancelBtn.setActionCommand(CANCEL_OPERATION);
         btnPane.add(validateContentBtn, cc.xy(1, 1));
         btnPane.add(doUploadBtn, cc.xy(1,2));
         btnPane.add(viewUploadBtn, cc.xy(1, 3));
         btnPane.add(viewSettingsBtn, cc.xy(1, 4));
         btnPane.add(undoBtn, cc.xy(1, 5));
         btnPane.add(closeBtn, cc.xy(1, 6));
+        btnPane.add(cancelBtn, cc.xy(1, 7));
         add(btnPane, cc.xy(6, 3));
         
         uploadTbls.addMouseListener(new MouseListener()
@@ -349,15 +213,6 @@ public class UploadMainPanel extends JPanel
                 // no comment.
             }
         });
-        
-
-        //setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        
-        //setContentPane(pb.getPanel());
-        //add(pb.getPanel());
-        
-        //setSize(600,550);
-        //setTitle("WorkBench Upload Validation"); // I18N
     }
 
     

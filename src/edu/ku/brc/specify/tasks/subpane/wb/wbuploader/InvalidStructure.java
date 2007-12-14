@@ -15,9 +15,8 @@ package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
  * @code_status Alpha
  *
  */
-public class InvalidStructure implements UploadMessage
+public class InvalidStructure extends BaseUploadMessage
 {
-    protected String      msg;
     protected Object data;
 
     /**
@@ -25,19 +24,8 @@ public class InvalidStructure implements UploadMessage
      */
     public InvalidStructure(String msg, final Object data)
     {
-        super();
-        this.msg = msg;
+        super(msg);
         this.data = data;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMessage#getCol()
-     */
-    public int getCol()
-    {
-        return -1;
     }
 
     /*
@@ -45,37 +33,9 @@ public class InvalidStructure implements UploadMessage
      * 
      * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMessage#getData()
      */
+    @Override
     public Object getData()
     {
         return data;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMessage#getMsg()
-     */
-    public String getMsg()
-    {
-        return msg;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMessage#getRow()
-     */
-    public int getRow()
-    {
-        return -1;
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString()
-    {
-        return getMsg();
     }
 }
