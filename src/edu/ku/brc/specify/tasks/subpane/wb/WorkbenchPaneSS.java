@@ -3068,7 +3068,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 ssFormSwitcher.setEnabled(false);
                 //next line causes some weird behavior: when an entire row is selected (highlighted), cells in the row will go into edit mode - sort of ?????
                 spreadSheet.setEnabled(false);
-                datasetUploader.initUI();
+                datasetUploader.startUI();
              }
         }
         catch (Exception ex)

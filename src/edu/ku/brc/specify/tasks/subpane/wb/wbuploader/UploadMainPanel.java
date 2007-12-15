@@ -12,20 +12,23 @@ package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 
 import org.apache.log4j.Logger;
 
@@ -80,7 +83,6 @@ public class UploadMainPanel extends JPanel
     
     public UploadMainPanel()
     {
-        //super(getResourceString("WB_UPLOAD_MAINFORM_TITLE"), 0, null);
         buildUI();
      }
     
@@ -88,18 +90,34 @@ public class UploadMainPanel extends JPanel
     {
         CellConstraints cc = new CellConstraints();
         setLayout(new FormLayout("3dlu:none, fill:50dlu:grow(0.30), 20dlu:none, fill:50dlu:grow(0.70), 5dlu:none, r:max(50dlu;pref), 3dlu:none", 
-                "t:m:none, 2dlu:none, fill:75dlu:grow, 5dlu:none"));
+                "2dlu:none, fill:m:none, 4dlu:none, t:m:none, 2dlu:none, fill:75dlu:grow, 5dlu:none"));
+        
+        JLabel title = new JLabel(getResourceString("WB_UPLOAD_FORM_TITLE"));
+        title.setFont(title.getFont().deriveFont(Font.BOLD));
+        title.setHorizontalAlignment(SwingConstants.LEFT);
+        add(title, cc.xywh(2,2,5,1));
+        
+        JPanel pPane = new JPanel(new BorderLayout());
+        currOpProgress = new JProgressBar();
+        pPane.add(currOpProgress, BorderLayout.CENTER);
+        cancelBtn = new JButton(getResourceString("Cancel")); 
+        cancelBtn.setActionCommand(CANCEL_OPERATION);
+        pPane.add(cancelBtn, BorderLayout.EAST);
+        add(pPane, cc.xywh(4, 2, 3, 1));
+
+        add(new JSeparator(SwingConstants.HORIZONTAL), cc.xywh(2,3,5,1));
+        
         uploadTblLbl = new JLabel(getResourceString("WB_UPLOAD_AFFECTED_TBLS_LIST"));
-        add(uploadTblLbl, cc.xy(2, 1));
+        add(uploadTblLbl, cc.xy(2, 4));
         
         uploadTbls = new JList();
         JScrollPane sp = new JScrollPane(uploadTbls, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        add(sp, cc.xy(2, 3));
+        add(sp, cc.xy(2, 6));
         
         msgPane = new JPanel(new BorderLayout());
         
         msgLbl  = new JLabel(getResourceString("WB_UPLOAD_MSG_LIST"));
-        add(msgLbl, cc.xy(4, 1));
+        add(msgLbl, cc.xy(4, 4));
         
         msgList = new JList(new DefaultListModel());
         JScrollPane sp2 = new JScrollPane(msgList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
@@ -107,30 +125,13 @@ public class UploadMainPanel extends JPanel
         
         printBtn = new JButton(getResourceString("WB_UPLOAD_PRINT_MESSAGES_BTN")); 
         printBtn.setActionCommand(PRINT_INVALID);
-        msgPane.add(printBtn, BorderLayout.SOUTH);
+        JPanel pbtnPane = new JPanel(new FormLayout("fill:m:grow, right:max(50dlu;pref)", "c:m"));
+        pbtnPane.add(printBtn, cc.xy(2, 1));
+        msgPane.add(pbtnPane, BorderLayout.SOUTH);
         
-        add(msgPane, cc.xy(4, 3));
-        
-        // Progress Pane
-        
-        
-        
-        //JPanel progPane = new JPanel();
-        //progPane.setLayout(new BoxLayout(progPane, BoxLayout.Y_AXIS));
-        
-        //JPanel progSubPane = new JPanel(new FlowLayout());
-       // currOpLbl = new JLabel("");
-        //progSubPane.add(currOpLbl);
-        //cancelBtn = new JButton(getResourceString("Cancel")); 
-        //cancelBtn.setActionCommand(CANCEL_OPERATION);
-        //progSubPane.add(cancelBtn);
-        //progPane.add(progSubPane);
-        //currOpProgress = new JProgressBar();
-        //progPane.add(currOpProgress);
-        
-        //add(progPane, cc.xywh(2, 5, 4, 1));
-        
-        JPanel btnPane = new JPanel(new FormLayout("f:max(50dlu;pref)", "c:m, c:m, c:m, c:m, c:m, c:m, c:m"));
+        add(msgPane, cc.xy(4, 6));
+                
+        JPanel btnPane = new JPanel(new FormLayout("f:max(50dlu;pref)", "c:m, c:m, c:m, c:m, c:m, c:m"));
         validateContentBtn = new JButton(getResourceString("WB_UPLOAD_VALIDATE_CONTENT_BTN"));
         validateContentBtn.setActionCommand(VALIDATE_CONTENT);
         viewSettingsBtn = new JButton(getResourceString("WB_UPLOAD_SETTINGS_BTN")); 
@@ -143,16 +144,13 @@ public class UploadMainPanel extends JPanel
         closeBtn.setActionCommand(CLOSE_UI);
         undoBtn         = new JButton(getResourceString("WB_UPLOAD_UNDO_BTN")); 
         undoBtn.setActionCommand(UNDO_UPLOAD);
-        cancelBtn = new JButton(getResourceString("Cancel")); 
-        cancelBtn.setActionCommand(CANCEL_OPERATION);
         btnPane.add(validateContentBtn, cc.xy(1, 1));
         btnPane.add(doUploadBtn, cc.xy(1,2));
         btnPane.add(viewUploadBtn, cc.xy(1, 3));
         btnPane.add(viewSettingsBtn, cc.xy(1, 4));
         btnPane.add(undoBtn, cc.xy(1, 5));
         btnPane.add(closeBtn, cc.xy(1, 6));
-        btnPane.add(cancelBtn, cc.xy(1, 7));
-        add(btnPane, cc.xy(6, 3));
+        add(btnPane, cc.xy(6, 6));
         
         uploadTbls.addMouseListener(new MouseListener()
         {
@@ -397,14 +395,17 @@ public class UploadMainPanel extends JPanel
         msgList.ensureIndexIsVisible(msgList.getModel().getSize()-1);
     }
     
-    public void clearMsgs(Class<?> toClear)
+    public void clearMsgs(final Class<?>[] toClear)
     {
         DefaultListModel model = (DefaultListModel)msgList.getModel();
         for (int i = model.getSize()-1; i >= 0; i--)
         {
-            if (model.getElementAt(i).getClass().equals(toClear))
+            for (int c=0; c<toClear.length; c++)
             {
-                model.remove(i);
+                if (model.getElementAt(i).getClass().equals(toClear[c]))
+                {
+                    model.remove(i);
+                }
             }
         }
     }
@@ -487,6 +488,11 @@ public class UploadMainPanel extends JPanel
         tf.setActionListener(tf.new TesterThingy());
         
         tf.setVisible(true);
+        
+        JFrame frm = new JFrame();
+        frm.setContentPane(tf);
+        frm.pack();
+        frm.setVisible(true);
     }
 
     /**
