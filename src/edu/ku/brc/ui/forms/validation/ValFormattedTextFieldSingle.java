@@ -69,7 +69,8 @@ import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 public class ValFormattedTextFieldSingle extends JTextField implements UIValidatable,
                                                                        GetSetValueIFace,
                                                                        DocumentListener, 
-                                                                       UIRegistry.UndoableTextIFace
+                                                                       UIRegistry.UndoableTextIFace,
+                                                                       AutoNumberableIFace
 {
     private static final Logger log  = Logger.getLogger(ValFormattedTextFieldSingle.class);
 
@@ -174,7 +175,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             if (!formatter.isUserInputNeeded())
             {
                 ViewFactory.changeTextFieldUIForDisplay(this, false);
-                bgStr = "";
+                //bgStr = "";
                 
             } else
             {
@@ -202,7 +203,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
     
             if (requiredLength > oldReqLen) // don't let the field shrink
             {
-                this.setColumns(requiredLength);
+                this.setColumns(Math.min(10, requiredLength));
             }
     
             document = new JFormattedDoc(this, formatter, requiredLength);
@@ -312,6 +313,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
         super.setText(text);
         doSetText = false;
         document.setIgnoreNotify(notify);
+        repaint();
     }
 
     /* (non-Javadoc)
@@ -331,26 +333,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
     {
         return valState == UIValidatable.ErrorType.Valid;
     }
- 
-    /**
-     * Increments to the next number in the series.
-     */
-    public void updateAutoNumbers()
-    {
-        String nextNum = formatter.getNextNumber(getText());
-        if (StringUtils.isNotEmpty(nextNum))
-        {
-            try
-            {
-                setValue(nextNum, nextNum);
-                bgStr = "";
-                
-            } catch (Exception ex)
-            {
-                ex.printStackTrace();
-            }
-        }
-    }
+
 
     /**
      * @param isViewOnly the isViewOnly to set
@@ -361,8 +344,45 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
     }
     
     //--------------------------------------------------
+    //-- AutoNumberableIFace Interface
+    //--------------------------------------------------
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.validation.AutoNumberableIFace#updateAutoNumbers()
+     */
+    public void updateAutoNumbers()
+    {
+        if (formatter.getAutoNumber() != null)
+        {
+            String nextNum = formatter.getNextNumber(getText());
+            if (StringUtils.isNotEmpty(nextNum))
+            {
+                try
+                {
+                    setValue(nextNum, nextNum);
+                    bgStr = "";
+                    
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                }
+            }
+        }
+    }
+    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.validation.AutoNumberableIFace#isFormatterAutoNumber()
+     */
+    public boolean isFormatterAutoNumber()
+    {
+        return formatter != null && formatter.getAutoNumber() != null;
+    }
+    
+    //--------------------------------------------------
     //-- UIValidatable Interface
     //--------------------------------------------------
+
 
     /* (non-Javadoc)
      * @see edu.kui.brc.ui.validation.UIValidatable#valState()

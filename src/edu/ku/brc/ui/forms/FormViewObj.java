@@ -107,13 +107,13 @@ import edu.ku.brc.ui.forms.persist.FormCellSubViewIFace;
 import edu.ku.brc.ui.forms.persist.FormViewDef;
 import edu.ku.brc.ui.forms.persist.ViewDef;
 import edu.ku.brc.ui.forms.persist.ViewIFace;
+import edu.ku.brc.ui.forms.validation.AutoNumberableIFace;
 import edu.ku.brc.ui.forms.validation.DataChangeNotifier;
 import edu.ku.brc.ui.forms.validation.FormValidator;
 import edu.ku.brc.ui.forms.validation.FormValidatorInfo;
 import edu.ku.brc.ui.forms.validation.UIValidatable;
 import edu.ku.brc.ui.forms.validation.UIValidator;
 import edu.ku.brc.ui.forms.validation.ValComboBoxFromQuery;
-import edu.ku.brc.ui.forms.validation.ValFormattedTextField;
 import edu.ku.brc.ui.forms.validation.ValidationListener;
 
 /**
@@ -477,7 +477,16 @@ public class FormViewObj implements Viewable,
         if (!ignoreSelection)
         {
             AltViewIFace selectedAV = (AltViewIFace)((JComboBox)ev.getSource()).getSelectedItem();
+            
+            // Transfer the data from old form to the new form. 
+            traverseToGetDataFromForms(mvParent);
+            
+            Object dObj = mv.getData();
+            
             mv.showView(selectedAV.getName());
+            
+            mv.setData(dObj);
+            mv.validateAll();
         }
     }
     
@@ -1089,9 +1098,9 @@ public class FormViewObj implements Viewable,
         for (FieldInfo fieldInfo : controlsById.values())
         {
             Component comp = fieldInfo.getComp();
-            if (comp instanceof ValFormattedTextField)
+            if (comp instanceof AutoNumberableIFace)
             {
-                ((ValFormattedTextField)comp).updateAutoNumbers();
+                ((AutoNumberableIFace)comp).updateAutoNumbers();
             }
         }
     }
@@ -2926,7 +2935,7 @@ public class FormViewObj implements Viewable,
                     
                     String id = fieldInfo.getFormCell().getIdent();
                     
-                    //log.debug(fieldInfo.getName()+"  "+fieldInfo.getFormCell().getName()+"   hasChanged: "+(!isReadOnly && hasFormControlChanged(id)));
+                    log.debug(fieldInfo.getName()+"\t"+fieldInfo.getFormCell().getName()+"\t   hasChanged: "+(!isReadOnly && hasFormControlChanged(id)));
                     
                     if (!isReadOnly && hasFormControlChanged(id))
                     {
@@ -2971,7 +2980,12 @@ public class FormViewObj implements Viewable,
             {
                 if (comp instanceof UIValidatable)
                 {
-                    return ((UIValidatable)comp).isChanged();
+                    boolean hasChanged = ((UIValidatable)comp).isChanged();
+                    if (!hasChanged && comp instanceof AutoNumberableIFace)
+                    {
+                        hasChanged = true;
+                    }
+                    return hasChanged;
                 }
             }
         }

@@ -708,6 +708,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
     public ViewIFace getView(final String viewSetName, final String viewName)
     {
 
+        Boolean reloadViews = AppPreferences.getLocalPrefs().getBoolean("reload_backstop_views", false);
+        if (reloadViews)
+        {
+            backStopViewSetMgr = new ViewSetMgr("BackStop", XMLHelper.getConfigDir("backstop"));
+        }
+        
         if (StringUtils.isEmpty(viewName))
         {
             throw new RuntimeException("Sorry the View Name cannot be empty.");

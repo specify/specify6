@@ -15,7 +15,9 @@
     <row>
         <box title="Loans">
             <item title="Items On Loan">
-                <sql><statement><![CDATA[SELECT count(loanpreparationid) AS ItemsOnLoanCount FROM loanpreparation AS lpo INNER JOIN loan ON loan.loanid = lpo.loanid where loan.IsGift = false and quantityresolved < quantity AND loan.CollectionMemberId = COLMEMID AND (IsClosed = false or IsClosed is null)]]></statement></sql>
+                <sql><statement><![CDATA[SELECT count(loanpreparationid) AS ItemsOnLoanCount FROM loanpreparation AS lpo 
+                INNER JOIN loan ON loan.loanid = lpo.loanid where loan.IsGift = false and quantityresolved < quantity AND 
+                loan.CollectionMemberId = COLMEMID AND (IsClosed = false or IsClosed is null)]]></statement></sql>
                 <link>ListOnLoan</link>
             </item>
             <!--
@@ -29,7 +31,9 @@
                 <link>OverdueLoansList</link>
             </item>
             <item title="Open Loans">
-                <sql type="jpa" name="OpenLoans"><statement><![CDATA[SELECT count(loanId) as OpenLoanCount FROM Loan l WHERE l.isGift = 0 AND (isClosed = 0 OR isClosed is null) AND l.collectionMemberId = COLMEMID ]]></statement></sql>
+                <sql type="jpa" name="OpenLoans">
+                	<statement><![CDATA[SELECT count(loanId) as OpenLoanCount FROM Loan l WHERE l.isGift = 0 AND (isClosed = 0 OR isClosed is null) AND 
+ l.collectionMemberId = COLMEMID ]]></statement></sql>
                 <link>OpenLoans</link>
             </item>
         </box>

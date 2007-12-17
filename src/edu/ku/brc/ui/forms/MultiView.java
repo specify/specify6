@@ -717,9 +717,13 @@ public class MultiView extends JPanel
      * Show a Viewable by name.
      * @param name the registered name of the component (In this case it is the name of the Viewable)
      */
-    public Viewable createViewable(final AltViewIFace altView)
+    protected Viewable createViewable(final AltViewIFace altView)
     {
         ViewIFace newView = AppContextMgr.getInstance().getView(view.getViewSetName(), altView.getView().getName());
+        // 12/14/07 - rods
+        // Commented out the line above, I can't figure out why we need to go get a new copy of the View
+        // each time this is called
+        //ViewIFace newView = view;
         if (newView != null)
         {
             if (false)

@@ -135,12 +135,6 @@ public class SpecifySchemaI18NService extends SchemaI18NService
                     boolean isUIFmt = p.get(3) == null ? false : !p.get(3).equals("0");
                     
                     DBFieldInfo fieldInfo = (DBFieldInfo)fi;
-                    if (fieldInfo.getName().equals("countAmt"))
-                    {
-                        int x = 0;
-                        x++;
-                    }
-                    
                     if (isUIFmt)
                     {
                         UIFieldFormatterIFace formatter = UIFieldFormatterMgr.getFormatter(format);

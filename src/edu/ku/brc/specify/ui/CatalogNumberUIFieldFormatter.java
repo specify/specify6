@@ -284,11 +284,19 @@ public class CatalogNumberUIFieldFormatter implements UIFieldFormatterIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getNextNumber(java.lang.String)
      */
-    public String getNextNumber(String value)
+    public String getNextNumber(final String value)
     {
         if (autoNumber != null)
         {
-            return autoNumber.getNextNumber(this, value);
+            String val = value;
+            if (StringUtils.isEmpty(val))
+            {
+                for (int i=0;i<getLength();i++)
+                {
+                    val += ' ';
+                }
+            }
+            return autoNumber.getNextNumber(this, val);
         }
         return null;
     }

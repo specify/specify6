@@ -73,7 +73,8 @@ import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 @SuppressWarnings("serial")
 public class ValFormattedTextField extends JPanel implements UIValidatable,
                                                              GetSetValueIFace,
-                                                             DocumentListener
+                                                             DocumentListener,
+                                                             AutoNumberableIFace
 {
     //private static final Logger log  = Logger.getLogger(ValFormattedTextField.class);
 
@@ -565,7 +566,19 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
     }
     
     /**
-     * Increments to the next number in the series.
+     * @param isViewOnly the isViewOnly to set
+     */
+    public void setViewOnly(boolean isViewOnly)
+    {
+        this.isViewOnly = isViewOnly;
+    }
+    
+    //--------------------------------------------------
+    //-- AutoNumberableIFace Interface
+    //--------------------------------------------------
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.validation.AutoNumberableIFace#updateAutoNumbers()
      */
     public void updateAutoNumbers()
     {
@@ -586,13 +599,13 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
             needsUpdating = false;
         }
     }
-
-    /**
-     * @param isViewOnly the isViewOnly to set
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.validation.AutoNumberableIFace#isFormatterAutoNumber()
      */
-    public void setViewOnly(boolean isViewOnly)
+    public boolean isFormatterAutoNumber()
     {
-        this.isViewOnly = isViewOnly;
+        return formatter != null && formatter.getAutoNumber() != null;
     }
     
     //--------------------------------------------------

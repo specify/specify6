@@ -785,15 +785,28 @@ public class Specify extends JPanel implements DatabaseLoginListener
                     });
     
             menu.addSeparator();
+            
+            final String reloadViews = "reload_views";
             JCheckBoxMenuItem cbMenuItem = new JCheckBoxMenuItem("Reload Views");
             menu.add(cbMenuItem);
-            //mi = UIHelper.createMenuItem(menu, "Reload Views", "V", "Reload Views", false, null);
-            cbMenuItem.setSelected(AppPreferences.getLocalPrefs().getBoolean("reload_views", false));
+            cbMenuItem.setSelected(AppPreferences.getLocalPrefs().getBoolean(reloadViews, false));
             cbMenuItem.addActionListener(new ActionListener() {
                         public void actionPerformed(ActionEvent ae)
                         {
-                            boolean isReload = !AppPreferences.getLocalPrefs().getBoolean("reload_views", false);                       
-                            AppPreferences.getLocalPrefs().putBoolean("reload_views", isReload);
+                            boolean isReload = !AppPreferences.getLocalPrefs().getBoolean(reloadViews, false);                       
+                            AppPreferences.getLocalPrefs().putBoolean(reloadViews, isReload);
+                            ((JMenuItem)ae.getSource()).setSelected(isReload);
+                        }});
+    
+            final String reloadBackViews = "reload_backstop_views";
+            cbMenuItem = new JCheckBoxMenuItem("Reload Backstop Views");
+            menu.add(cbMenuItem);
+            cbMenuItem.setSelected(AppPreferences.getLocalPrefs().getBoolean(reloadBackViews, false));
+            cbMenuItem.addActionListener(new ActionListener() {
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            boolean isReload = !AppPreferences.getLocalPrefs().getBoolean(reloadBackViews, false);                       
+                            AppPreferences.getLocalPrefs().putBoolean(reloadBackViews, isReload);
                             ((JMenuItem)ae.getSource()).setSelected(isReload);
                         }});
     

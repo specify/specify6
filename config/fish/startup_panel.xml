@@ -26,7 +26,12 @@
         </item>
       </box>
        <box title="Overdue Loans" desccol="1" valcol="5" desctitle="Loan Number" valtitle="Agent">
-          <sql><![CDATA[Select distinct loan.LoanNumber as LoanNumber, loan.LoanDate, loan.CurrentDueDate, agent.FirstName, agent.LastName, loan.loanid, loan.OriginalDueDate, loanpreparation.Quantity, loanpreparation.DescriptionOfMaterial, address.Address, address.City, address.State, address.Country From loan Inner Join loanpreparation ON loan.LoanID =  loanpreparation.LoanID Inner Join loanagent ON loan.LoanID = loanagent.LoanID Inner Join agent ON loanagent.AgentID = agent.AgentID Inner Join address ON agent.AgentID = address.AgentID where loan.loanid in (select loanid from loan where (not  (currentduedate is null)) and loan.IsGift = false and (IsClosed = false or IsClosed is null) and datediff(CURDATE(), currentduedate) > 0)  group by LoanNumber]]></sql>
+          <sql><![CDATA[SELECT distinct loan.LoanNumber as LoanNumber, loan.LoanDate, loan.CurrentDueDate, agent.FirstName, agent.LastName, 
+          loan.loanid, loan.OriginalDueDate, loanpreparation.Quantity, loanpreparation.DescriptionOfMaterial, address.Address, address.City, 
+          address.State, address.Country From loan Inner Join loanpreparation ON loan.LoanID =  loanpreparation.LoanID 
+          Inner Join loanagent ON loan.LoanID = loanagent.LoanID Inner Join agent ON loanagent.AgentID = agent.AgentID 
+          Inner Join address ON agent.AgentID = address.AgentID where loan.loanid in (select loanid FROM loan WHERE (not (currentduedate is null)) AND 
+          loan.IsGift = false AND (IsClosed = false or IsClosed is null) AND datediff(CURDATE(), currentduedate) > 0)  GROUP BY LoanNumber]]></sql>
 		  <link colid="6">OverdueLookup</link>
       </box>
    </row>

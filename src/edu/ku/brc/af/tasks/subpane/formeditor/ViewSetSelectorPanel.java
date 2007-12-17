@@ -1291,6 +1291,15 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
             }
         }
         
+        for (AltViewIFace av : view.getAltViews())
+        {
+            if (av.getViewDef() == viewDef && mode == av.getMode())
+            {
+                selectedAltView = av;
+                break;
+            }
+        }
+        
         buildTreeModel(viewDef);
         
         for (int i=0;i<tree.getRowCount();i++)
