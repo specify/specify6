@@ -32,10 +32,10 @@
        
        <tr><td align="center" width="33%"><b>Name</b></td><td align="center" width="34%"><b>Type</b></td><td align="center" width="33%"><b>Is Required</b></td></tr>
        
-       <xsl:apply-templates select="attr"/>
+       <xsl:apply-templates select="attrs/attr"/>
   
   
-      <xsl:if test="count( param ) > 0">
+      <xsl:if test="count( params/param ) > 0">
         <tr>
           <td colspan="3"><br/><b>Parameters</b></td>
         </tr>
@@ -46,7 +46,7 @@
                 <td align="center"><b>Name</b></td><td align="center"><b>Type</b></td>
                 <td align="center"><b>Is Required</b></td><td align="center"><b>Default</b></td><td align="center"><b>Description</b></td>
               </tr>
-              <xsl:apply-templates select="param"/>
+              <xsl:apply-templates select="params/param"/>
             </table>
           </td>
         </tr>
@@ -114,17 +114,17 @@
        <xsl:value-of select="desc"/>
        </td></tr>
        
-       <xsl:if test="(count( attr ) > 0) or (count( param ) > 0)">
+       <xsl:if test="(count( attrs/attr ) > 0) or (count( params/param ) > 0)">
        </xsl:if>
        
-       <xsl:if test="count( attr ) > 0">
+       <xsl:if test="count( attrs/attr ) > 0">
 	       <tr>
 	       	   <td align="center" width="33%"><b>Name</b></td><td align="center" width="34%"><b>Type</b></td><td align="center" width="33%"><b>Is Required</b></td>
 	       </tr>
-	       <xsl:apply-templates select="attr"/>
+	       <xsl:apply-templates select="attrs/attr"/>
        </xsl:if>
        
-       <xsl:if test="count( param ) > 0">
+       <xsl:if test="count( params/param ) > 0">
        <tr>
        <td colspan="3"><br/><b>Parameters</b></td>
        </tr>
@@ -135,7 +135,7 @@
                <td align="center"><b>Name</b></td><td align="center"><b>Type</b></td>
                <td align="center"><b>Is Required</b></td><td align="center"><b>Default</b></td><td align="center"><b>Description</b></td>
            </tr>
-       <xsl:apply-templates select="param"/>
+           <xsl:apply-templates select="params/param"/>
 
          </table>
          </td>
