@@ -81,7 +81,7 @@ public class ScrollablePopupMenu extends JPopupMenu implements ActionListener
                 this.getToolkit().getScreenSize().height
                 - this.getToolkit().getScreenInsets(frame.getGraphicsConfiguration()).top
                 - this.getToolkit().getScreenInsets(frame.getGraphicsConfiguration()).bottom - 4);
-        System.err.println(maxSize);
+        //System.err.println(maxSize);
         scroll.setMaximumSize(maxSize);
         scroll.setFocusable(false);
         panelMenus.setFocusable(false);
@@ -131,7 +131,7 @@ public class ScrollablePopupMenu extends JPopupMenu implements ActionListener
         scroll.setPreferredSize(new Dimension(scroll.getPreferredSize().width + sizescroll + 20,
                                               scroll.getPreferredSize().height));
         
-        System.err.println(panelMenus.getPreferredSize());
+        //System.err.println(panelMenus.getPreferredSize());
         this.pack();
         this.setInvoker(invoker);
         if (sizescroll != 0)

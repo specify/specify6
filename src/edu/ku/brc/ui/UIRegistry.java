@@ -827,19 +827,24 @@ public class UIRegistry
     }
 
     /**
-     * Displays a message in the status bar.
+     * Displays a message in the status bar (Note: this updates on the SwingThread via SwingUtilities)
      * @param text the text to be displayed
      */
     public static void displayStatusBarText(final String text)
     {
-        if (instance.statusBar != null)
-        {
-            instance.statusBar.setText(text == null ? "" : text);
-        }
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run()
+            {
+                if (instance.statusBar != null)
+                {
+                    instance.statusBar.setText(text == null ? "" : text);
+                }                
+            }
+        });
     }
 
     /**
-     * Displays a message in the status bar.
+     * Displays a message in the status bar. (Note: this updates on the SwingThread via SwingUtilities)
      * @param key the key of the string that is to appear in the status bar. The resource string will be looked up
      */
     public static void displayLocalizedStatusBarText(final String key)

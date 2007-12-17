@@ -26,6 +26,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyDescriptor;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -78,6 +79,8 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
+import edu.ku.brc.dbsupport.SQLExecutionListener;
+import edu.ku.brc.dbsupport.SQLExecutionProcessor;
 import edu.ku.brc.dbsupport.StaleObjectException;
 import edu.ku.brc.ui.ColorChooser;
 import edu.ku.brc.ui.ColorWrapper;
@@ -142,6 +145,9 @@ public class FormViewObj implements Viewable,
                                     AppPrefsChangeListener
 {
     private static final Logger log = Logger.getLogger(FormViewObj.class);
+    
+    protected enum SAVE_STATE {Initial, NewObjSaveerror, StaleRecovery, SaveOK}
+    
 
     // Static Data Members
     protected static Object[]               formattedValues = new Object[2];
@@ -153,7 +159,6 @@ public class FormViewObj implements Viewable,
     protected DataProviderSessionIFace      session        = null;
     protected boolean                       isEditting     = false;
     protected boolean                       isNewlyCreatedDataObj = false;
-    protected boolean                       formIsInNewDataMode = false; // when this is true it means the form was cleared and new data is expected
     protected MultiView                     mvParent       = null;
     protected ViewIFace                     view;
     protected AltViewIFace                  altView;
@@ -190,7 +195,6 @@ public class FormViewObj implements Viewable,
     protected boolean                       wasNull         = false;
     protected MenuSwitcherPanel             switcherUI;
     protected int                           mainCompRowInx   = 1;
-    protected List<UIValidatable>           defaultValueList = new ArrayList<UIValidatable>();
     
     
     protected String                        searchName      = null;
@@ -289,11 +293,9 @@ public class FormViewObj implements Viewable,
         boolean isSingleObj                = MultiView.isOptionOn(options, MultiView.IS_SINGLE_OBJ);
         boolean createResultSetController  = MultiView.isOptionOn(options, MultiView.RESULTSET_CONTROLLER);
         boolean createViewSwitcher         = MultiView.isOptionOn(options, MultiView.VIEW_SWITCHER);
-        boolean isNewObject                = MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT);
+        //boolean isNewObject                = MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT);
         boolean hideSaveBtn                = MultiView.isOptionOn(options, MultiView.HIDE_SAVE_BTN);
         
-        
-        formIsInNewDataMode = isNewObject;
         
         //MultiView.printCreateOptions("Creating Form "+altView.getName(), options);
 
@@ -706,6 +708,7 @@ public class FormViewObj implements Viewable,
         if (selectorCBX != null)
         {
             ignoreSelection = true;
+            selectorCBX.setEnabled(true);
             selectorCBX.setSelectedIndex(0);
             ignoreSelection = false;
         }
@@ -1179,8 +1182,7 @@ public class FormViewObj implements Viewable,
         }
         
         // Not calling setHasNewData because we need to traverse and setHasNewData doesn't
-        formIsInNewDataMode = true;
-        traverseToToSetAsNew(mvParent, formIsInNewDataMode, false); // don't traverse deeper than our immediate children
+        traverseToToSetAsNew(mvParent, true, false); // don't traverse deeper than our immediate children
         
         updateControllerUI();
 
@@ -1196,6 +1198,11 @@ public class FormViewObj implements Viewable,
                 formValidator.validateForm();
             }
         }
+        
+        if (selectorCBX != null)
+        {
+            selectorCBX.setEnabled(true);
+        }
     }
     
     /**
@@ -1205,37 +1212,40 @@ public class FormViewObj implements Viewable,
     {
         JOptionPane.showMessageDialog(null, getResourceString(msgResStr), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); 
 
-        if (session != null && (mvParent == null || mvParent.isTopLevel()))
+        if (!isNewlyCreatedDataObj)
         {
-            session.close();
-        }
-        
-        session = DataProviderFactory.getInstance().createSession();
-        //DataProviderFactory.getInstance().evict(dataObj.getClass()); 
-        
-        if (dataObj instanceof FormDataObjIFace)
-        {
-            Integer id = ((FormDataObjIFace)dataObj).getId();
-            Class<?> cls = dataObj.getClass();
-            dataObj = session.get(cls, id);
+            if (session != null && (mvParent == null || mvParent.isTopLevel()))
+            {
+                session.close();
+            }
             
+            session = DataProviderFactory.getInstance().createSession();
+            //DataProviderFactory.getInstance().evict(dataObj.getClass()); 
             
-        } else
-        {
-            dataObj = session.get(dataObj.getClass(), FormHelper.getId(dataObj));
-        }
-        
-        if (mvParent != null)
-        {
-            mvParent.setSession(session);
-            mvParent.setData(dataObj);
+            if (dataObj instanceof FormDataObjIFace)
+            {
+                Integer id = ((FormDataObjIFace)dataObj).getId();
+                Class<?> cls = dataObj.getClass();
+                dataObj = session.get(cls, id);
+                
+                
+            } else
+            {
+                dataObj = session.get(dataObj.getClass(), FormHelper.getId(dataObj));
+            }
             
-        } else
-        {
-            setSession(session);
-            this.setDataObj(dataObj);
+            if (mvParent != null)
+            {
+                mvParent.setSession(session);
+                mvParent.setData(dataObj);
+                
+            } else
+            {
+                setSession(session);
+                this.setDataObj(dataObj);
+            }
+            this.setDataIntoUI();
         }
-        this.setDataIntoUI();
     }
     
     /* (non-Javadoc)
@@ -1251,8 +1261,10 @@ public class FormViewObj implements Viewable,
      * @param dataObj the data object to be saved
      * @return the merged object, or null if there was an error.
      */
-    protected Object saveToDB(final Object dataObjArg)
+    protected SAVE_STATE saveToDB(final Object dataObjArg)
     {
+        SAVE_STATE saveState = SAVE_STATE.Initial;
+        
         boolean isDuplicateError = false;
         boolean tryAgain         = false;
         int     numTries         = 0;
@@ -1340,14 +1352,7 @@ public class FormViewObj implements Viewable,
                     businessRules.beforeMerge(dataObjArg, session);
                 }
                 
-                //if (dataObjArg != null && ((FormDataObjIFace)dataObjArg).getId() != null)
-                //{
-                    dObj = session.merge(dataObjArg);
-                //} else
-                //{
-                //    dObj = dataObjArg;
-                //}
-                //log.debug("CurrentDO "+(dataObjArg != null ? dataObjArg.getClass().getSimpleName()+" "+dataObjArg.hashCode() : "N/A")+"  Merged: "+dObj.getClass().getSimpleName()+" "+dObj.hashCode());
+                dObj = session.merge(dataObjArg);
 
                 if (businessRules != null)
                 {
@@ -1369,6 +1374,10 @@ public class FormViewObj implements Viewable,
                 
                 isNewlyCreatedDataObj = false; // shouldn't be needed, but just in case
                 
+                saveState = SAVE_STATE.SaveOK;
+                
+                dataObj = dObj;
+                
                 for (FieldInfo fi : controlsByName.values())
                 {
                     if (fi.getComp() instanceof EditViewCompSwitcherPanel)
@@ -1381,6 +1390,9 @@ public class FormViewObj implements Viewable,
             {
                 session.rollback();
                 recoverFromStaleObject("UPDATE_DATA_STALE");
+                tryAgain = false;
+                dObj     = dataObj;
+                saveState = SAVE_STATE.StaleRecovery;
                 
             } catch (ConstraintViolationException e)
             {
@@ -1409,7 +1421,11 @@ public class FormViewObj implements Viewable,
                 // Ok, we tried a couple of times and have decided to give up.
                 if (!tryAgain)
                 {
+                    session.rollback();
+                    
                     recoverFromStaleObject("DUPLICATE_KEY_ERROR");
+                    dObj      = dataObj;
+                    saveState = SAVE_STATE.StaleRecovery;
                 }
 
             }
@@ -1420,11 +1436,12 @@ public class FormViewObj implements Viewable,
                 session.rollback();
                 
                 recoverFromStaleObject("UNRECOVERABLE_DB_ERROR");
+                saveState = SAVE_STATE.StaleRecovery;
             }
             
         } while (tryAgain);
         
-        return dObj;
+        return saveState;
     }
 
     /**
@@ -1440,7 +1457,7 @@ public class FormViewObj implements Viewable,
                 viewStateList = new Vector<ViewState>();
             }
             viewStateList.clear();
-            mvParent.collectionViewState(viewStateList, altView.getMode(), 2); 
+            // XXX For now mvParent.collectionViewState(viewStateList, altView.getMode(), 2); 
         }
         
         if (session != null && (mvParent == null || mvParent.isTopLevel()))
@@ -1452,28 +1469,32 @@ public class FormViewObj implements Viewable,
         
         //log.info("saveObject "+hashCode() + " Session ["+(session != null ? session.hashCode() : "null")+"]");
 
-        Object dObj = saveToDB(dataObj);
-        if (dObj != null)
+        Object beforeSaveDataObj = dataObj;
+        
+        SAVE_STATE saveState = saveToDB(dataObj);
+        if (saveState == SAVE_STATE.StaleRecovery)
+        {
+            int x = 0;
+            x++;
+        }
+        
+        if (saveState == SAVE_STATE.SaveOK)
         {
             if (businessRules != null)
             {
-                businessRules.afterSaveCommit(dObj);
+                businessRules.afterSaveCommit(dataObj);
             }
-            session.refresh(dObj);
+            session.refresh(dataObj);
             
-            replaceDataObjInList(dataObj, dObj);
+            replaceDataObjInList(beforeSaveDataObj, dataObj);
             
             if (origDataSet != null)
             {
-                origDataSet.remove(dataObj);
-                origDataSet.add(dObj);
+                origDataSet.remove(beforeSaveDataObj);
+                origDataSet.add(dataObj);
             }
             
-            dataObj = dObj;
-        
             log.info("Session Saved[ and Flushed "+session.hashCode()+"]");
-            
-            formIsInNewDataMode = false;
             
             CommandDispatcher.dispatch(new CommandAction("Data_Entry", "SaveBeforeSetData", dataObj));
             
@@ -1499,6 +1520,11 @@ public class FormViewObj implements Viewable,
                 saveControl.setEnabled(false);
             }
             
+            if (selectorCBX != null)
+            {
+                selectorCBX.setEnabled(false);
+            }
+            
             if (session != null && (mvParent == null || mvParent.isTopLevel()))
             {
                 session.close();
@@ -1507,7 +1533,7 @@ public class FormViewObj implements Viewable,
             
             if (viewStateList != null && viewStateList.size() > 0 && mvParent != null && mvParent.isTopLevel())
             {
-                mvParent.setViewState(viewStateList, altView.getMode(), 0);
+                // XXX For now mvParent.setViewState(viewStateList, altView.getMode(), 0);
                 viewStateList.clear();
             }
             
@@ -1751,7 +1777,6 @@ public class FormViewObj implements Viewable,
      */
     public void setHasNewData(final boolean isNewForm)
     {
-        formIsInNewDataMode = isNewForm;
         updateControllerUI();
     }
 
@@ -2194,27 +2219,110 @@ public class FormViewObj implements Viewable,
      */
     public void setRecordSet(final RecordSetIFace recordSet)
     {
-        recordSetItemList = new Vector<RecordSetItemIFace>(recordSet.getItems());
-        
         tableInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
         // XXX Check for Error here
         
-        Object       firstDataObj = getDataObjectViaRecordSet(0);
-        Vector<Object> tmpList      = new Vector<Object>(recordSetItemList.size()+5);
-        tmpList.add(firstDataObj);
-        for (int i=1;i<recordSetItemList.size();i++)
+        StringBuilder sql = new StringBuilder("SELECT " + tableInfo.getIdColumnName() + " FROM " + tableInfo.getName() + " WHERE " + tableInfo.getIdColumnName() + " IN (");
+        int cnt = 0;
+        for (RecordSetItemIFace rsi : recordSet.getItems())
         {
-            tmpList.add(null); 
+            if (cnt > 0) sql.append(',');
+            sql.append(rsi.getRecordId());
+            cnt++;
         }
+        sql.append(')');
         
-        if (mvParent != null)
+        log.debug(sql.toString());
+        
+        SQLExecutionListener listener = new SQLExecutionListener()
         {
-            mvParent.setData(tmpList);
+            public void exectionDone(final SQLExecutionProcessor process, final java.sql.ResultSet resultSet)
+            {
+                countResultsBack(recordSet, resultSet);
+            }
             
-        } else
+            public void executionError(final SQLExecutionProcessor process, final Exception ex)
+            {
+                // Display dlg with error message
+            }
+        };
+        SQLExecutionProcessor sqlProc = new SQLExecutionProcessor(listener, sql.toString());
+        sqlProc.start();
+    }
+    
+    
+    /**
+     * @param rs
+     * @param resultSet
+     */
+    protected void countResultsBack(final RecordSetIFace rs, final java.sql.ResultSet resultSet)
+    {
+        try
         {
-            setDataObj(tmpList);
+            if (resultSet.next())
+            {
+                Hashtable<Integer, Boolean> availableIdList = new Hashtable<Integer, Boolean>();
+                do
+                {
+                    availableIdList.put(resultSet.getInt(1), true);
+                    
+                } while (resultSet.next());
+                
+                if (availableIdList.size() != rs.getItems().size())
+                {
+                    UIRegistry.displayLocalizedStatusBarText("NOT_ALL_RECS_FOUND");
+                }
+                
+                recordSetItemList = new Vector<RecordSetItemIFace>(availableIdList.size());
+                for (RecordSetItemIFace rsi : rs.getItems())
+                {
+                    if (availableIdList.get(rsi.getRecordId().intValue()) != null)
+                    {
+                        recordSetItemList.add(rsi);
+                    }
+                }
+                Object         firstDataObj = getDataObjectViaRecordSet(0);
+                Vector<Object> tmpList      = new Vector<Object>(availableIdList.size()+5);
+                tmpList.add(firstDataObj);
+                for (int i=1;i<recordSetItemList.size();i++)
+                {
+                    tmpList.add(null); 
+                }
+                
+                if (mvParent != null)
+                {
+                    mvParent.setData(tmpList);
+                    
+                } else
+                {
+                    setDataObj(tmpList);
+                }
+                
+            } else
+            {
+                SwingUtilities.invokeLater( new Runnable() {
+                    @Override
+                    public void run()
+                    {
+                        JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
+                                getResourceString("NO_RECORD_FOUND"), 
+                                getResourceString("NO_RECORD_FOUND_TITLE"), JOptionPane.WARNING_MESSAGE);
+                    }
+                });
+            }
+        } catch (SQLException ex)
+        {
+            SwingUtilities.invokeLater( new Runnable() {
+                @Override
+                public void run()
+                {
+                    JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
+                            getResourceString("ERROR_LOADING_FORM_DATA"), 
+                            getResourceString("ERROR_LOADING_FORM_DATA_TITLE"), JOptionPane.WARNING_MESSAGE);
+                }
+            });
         }
+
     }
     
     /**
@@ -2262,7 +2370,7 @@ public class FormViewObj implements Viewable,
                 enableNewBtn = formValidator.isFormValid();
             }
             
-            //log.debug("enableNewBtn "+enableNewBtn);
+            log.debug("enableNewBtn "+enableNewBtn);
             newRecBtn.setEnabled(enableNewBtn);
             
             if (switcherUI != null)
@@ -2312,6 +2420,11 @@ public class FormViewObj implements Viewable,
         if (formValidator != null && dataObj != null)
         {
             formValidator.addRuleObjectMapping("dataObj", dataObj);
+        }
+        
+        if (selectorCBX != null)
+        {
+            selectorCBX.setEnabled(true);
         }
 
         boolean isList;
@@ -2541,15 +2654,34 @@ public class FormViewObj implements Viewable,
                     mvParent.setSession(session);   
                 }
                 
-                session.attach(dataObj);
+                if (true)
+                {
+                    session.attach(dataObj);
+                } else
+                {
+                    try
+                    {
+                        Object beforeSaveDataObj = dataObj;
+                        dataObj = session.merge(dataObj);
+                        replaceDataObjInList(beforeSaveDataObj, dataObj);
+                        if (origDataSet != null)
+                        {
+                            origDataSet.remove(beforeSaveDataObj);
+                            origDataSet.add(dataObj);
+                        }
+                    } catch (Exception ex)
+                    {
+                        new RuntimeException(ex);
+                    }
+                }
                 
-                if (origDataSet != null)
+                /*if (origDataSet != null)
                 {
                     for (Object o : origDataSet)
                     {
                         session.attach(o);
                     }
-                } 
+                } */
             }
         }
         
@@ -2633,12 +2765,6 @@ public class FormViewObj implements Viewable,
             FormDataObjIFace formDataObj = (FormDataObjIFace)this.dataObj;
             draggableRecIdentifier.setFormDataObj(formDataObj);
         }
-        
-        // This is used to keep track of all the Controls that have had there default value set
-        // when there is a validator all the fields get reset back to false to we can't call "setChanged"
-        // when we set the data into the control, we wait until after the fact.
-        // this clear right here should need to be called but is for insurance
-        defaultValueList.clear();
         
         if (weHaveData)
         {
@@ -2739,10 +2865,6 @@ public class FormViewObj implements Viewable,
                         } else
                         {
                             setDataIntoUIComp(comp, null, defaultValue);
-                            if (formIsInNewDataMode && isEditting && comp instanceof UIValidatable && StringUtils.isNotEmpty(defaultValue))
-                            {
-                                defaultValueList.add((UIValidatable)comp);
-                            }
                         }
                     }
 
@@ -2802,8 +2924,6 @@ public class FormViewObj implements Viewable,
             log.debug("******************* No Data!");
         }*/
         
-        formIsInNewDataMode = false;
-        
         //log.debug(formViewDef.getName());
 
         // Adjust the formValidator now that all the data is in the controls
@@ -2826,22 +2946,12 @@ public class FormViewObj implements Viewable,
             saveControl.setEnabled(false);
         }
         
-        // Now set all the controls with default values as having been changed
-        // this is done because "resetFields" has just set them all to false
-        if (defaultValueList.size() > 0)
+        // See comment above where I turn this on
+        if (formValidator != null)
         {
-            if (formValidator != null)
-            {
-                formValidator.setHasChanged(true);
-                formValidator.validateForm();
-            }
-            for (UIValidatable uiv : defaultValueList)
-            {
-                uiv.setChanged(true);
-            }
-            defaultValueList.clear();
+            UIValidator.setIgnoreAllValidation(this, false);
         }
-
+        
         updateControllerUI();
         
         if (session != null && (mvParent == null || mvParent.isTopLevel()))
@@ -2854,12 +2964,7 @@ public class FormViewObj implements Viewable,
                 mvParent.setSession(session);  
             }
         }
-        
-        // See comment above where I turn this on
-        if (formValidator != null)
-        {
-            UIValidator.setIgnoreAllValidation(this, false);
-        }
+
     }
 
     /* (non-Javadoc)
@@ -2927,15 +3032,9 @@ public class FormViewObj implements Viewable,
                         useThisData = false;
                     }
                     
-                    if (fieldInfo.getComp() instanceof EditViewCompSwitcherPanel)
-                    {
-                        int x = 0;
-                        x++;
-                    }
-                    
                     String id = fieldInfo.getFormCell().getIdent();
                     
-                    log.debug(fieldInfo.getName()+"\t"+fieldInfo.getFormCell().getName()+"\t   hasChanged: "+(!isReadOnly && hasFormControlChanged(id)));
+                    //log.debug(fieldInfo.getName()+"\t"+fieldInfo.getFormCell().getName()+"\t   hasChanged: "+(!isReadOnly && hasFormControlChanged(id)));
                     
                     if (!isReadOnly && hasFormControlChanged(id))
                     {
@@ -2949,7 +3048,8 @@ public class FormViewObj implements Viewable,
                             
                        //log.debug(fieldInfo.getName()+"  "+fieldInfo.getFormCell().getName() +"  HAS CHANGED!");
                         Object uiData = getDataFromUIComp(id); // if ID is null then we have huge problems
-                        if (uiData != null && dataObj != null)
+                        // if (uiData != null && dataObj != null) Changed for Bug 4994
+                        if (dataObj != null && (uiData != null || !(fieldInfo.getFormCell() instanceof FormCellSubViewIFace)))
                         {
                             //log.info(fieldInfo.getFormCell().getName()+" "+(dataObj != null ? dataObj.getClass().getSimpleName() : "dataObj was null"));
                             FormHelper.setFieldValue(fieldInfo.getFormCell().getName(), dataObj, uiData, dg, ds);
@@ -2984,8 +3084,15 @@ public class FormViewObj implements Viewable,
                     if (!hasChanged && comp instanceof AutoNumberableIFace)
                     {
                         hasChanged = true;
+                        return hasChanged;
                     }
-                    return hasChanged;
+                    
+                    boolean hasDefaultData = false;
+                    if (fieldInfo.getFormCell() instanceof FormCellFieldIFace)
+                    {
+                        hasDefaultData = StringUtils.isNotEmpty(((FormCellFieldIFace)fieldInfo.getFormCell()).getDefaultValue());
+                    }
+                    return ((UIValidatable)comp).isChanged() || hasDefaultData;
                 }
             }
         }

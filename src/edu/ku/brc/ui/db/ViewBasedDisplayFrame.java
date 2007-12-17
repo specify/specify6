@@ -86,7 +86,7 @@ public class ViewBasedDisplayFrame extends CustomFrame implements ViewBasedDispl
      * @see edu.ku.brc.ui.CustomDialog#createUI()
      */
     @Override
-    protected void createUI()
+    public void createUI()
     {
         super.createUI();
         

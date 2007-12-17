@@ -632,13 +632,13 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     /**
      * @param listChangeListener the listChangeListener to set
      */
-    public void removeListSelectionListener(ListSelectionListener listSelectionListener)
+    public void removeListSelectionListener(ListSelectionListener listSelectionListenerArg)
     {
-        if (this.listSelectionListener == listSelectionListener)
+        if (this.listSelectionListener == listSelectionListenerArg)
         {
             this.listSelectionListener = null;
         }
-        textWithQuery.removeListSelectionListener(listSelectionListener);
+        textWithQuery.removeListSelectionListener(listSelectionListenerArg);
     }
 
     // Overriding the add/remove of FocusListeners is so we can make sure they get

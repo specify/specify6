@@ -79,6 +79,7 @@ public class IconViewObj implements Viewable
     protected Vector<AltViewIFace>          altViewsList;
     protected int                           viewOptions;
     protected Class<?>                      classToCreate = null;
+    protected boolean                       ignoreChanges = false;
     
     protected FormDataObjIFace              parentDataObj;
     protected Set<Object>                   dataSet;
@@ -97,7 +98,8 @@ public class IconViewObj implements Viewable
     protected MenuSwitcherPanel             switcherUI;
     protected JButton                       validationInfoBtn = null;
     protected FormValidator                 validator         = null;
-    protected boolean                       isEditing; 
+    protected FormValidator                 parentValidator   = null;
+    protected boolean                       isEditing;
     
     protected BusinessRulesIFace            businessRules;
     
@@ -128,6 +130,8 @@ public class IconViewObj implements Viewable
         
         if (isEditing)
         {
+            parentValidator = mvParent.getMultiViewParent().getCurrentValidator();
+            
             // We need a form validator that always says it's valid
             validator = new FormValidator(null)
             {
@@ -205,7 +209,6 @@ public class IconViewObj implements Viewable
                 {
                     if (evt.getPropertyName().equalsIgnoreCase("item order"))
                     {
-                        // TODO: figure out how to enable the save button in the parent form
                         rootHasChanged();
                     }
                 }
@@ -227,7 +230,7 @@ public class IconViewObj implements Viewable
                     
                 } else if (e.getClickCount() > 1)
                 {
-                    doDoubleClick(e);
+                    doDoubleClick();
                 }
             }
         });
@@ -319,11 +322,11 @@ public class IconViewObj implements Viewable
     /**
      * @param e mouse event
      */
-    protected void doDoubleClick(@SuppressWarnings("unused") MouseEvent e)
+    protected void doDoubleClick()
     {
         FormDataObjIFace selection = iconTray.getSelectedValue();
         ActionListener listener = DefaultClassActionHandler.getInstance().getDefaultClassActionHandler(selection.getClass());
-        if (listener!=null)
+        if (listener != null)
         {
             listener.actionPerformed(new IconViewActionEvent(selection, 0, "double-click", this));
         }
@@ -341,7 +344,15 @@ public class IconViewObj implements Viewable
      */
     protected void addActionListenerToViewButton()
     {
-        
+        if (viewBtn != null)
+        {
+            viewBtn.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    doDoubleClick();
+                }
+            });
+        }
     }
     
     /**
@@ -406,9 +417,20 @@ public class IconViewObj implements Viewable
      */
     protected void rootHasChanged()
     {
-        if (validator != null)
+        if (!ignoreChanges)
         {
-            validator.setHasChanged(true);
+            if (validator != null)
+            {
+                validator.setHasChanged(true);
+                validator.validateForm();
+            }
+            
+            MultiView realParent = mvParent.getMultiViewParent();
+            if (realParent != null)
+            {
+                realParent.getCurrentValidator().setHasChanged(true);
+                realParent.getCurrentValidator().validateForm();
+            }
         }
     }
     
@@ -437,36 +459,25 @@ public class IconViewObj implements Viewable
                     log.error("Unable to create a dialog for data entry.  [" + newObject.getClass().getName() + "]");
                     return;
                 }
+                
                 if (mvParent != null)
                 {
                     mvParent.registerDisplayFrame(dialog);
                 }
                 
-                // Now we need to get the MultiView and add it into the MV tree
-                MultiView multiView = dialog.getMultiView();
-                
-                // Note: The 'real' parent is the parent of the current MultiView
-                // this is because the table's MultiView doesn;t have a validator.
-                MultiView realParent = mvParent.getMultiViewParent();
-                
-                realParent.addChildMV(multiView);
-                
-                multiView.addCurrentValidator();
-
                 dialog.setData(newObject);
                 dialog.showDisplay(true);
-                
-                // OK, now unhook everything (MVs and the validators)
-                multiView.removeCurrentValidator();
-                realParent.removeChildMV(multiView);
                 
                 if (dialog.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
                 {
                     dialog.getMultiView().getDataFromUI();
+                    
                     log.warn("User clicked OK.  Adding " + newObject.getIdentityTitle() + " into " + dataSetFieldName + ".");
                     parentDataObj.addReference(newObject, dataSetFieldName);
                     iconTray.addItem(newObject);
+
                     rootHasChanged();
+                    
                 } else if (dialog.getBtnPressed() == ViewBasedDisplayIFace.CANCEL_BTN)
                 {
                     if (mvParent.getMultiViewParent() != null && mvParent.getMultiViewParent().getCurrentValidator() != null)
@@ -508,6 +519,8 @@ public class IconViewObj implements Viewable
                 }
                 iconTray.repaint();
                 updateEnableUI();
+                
+                rootHasChanged();
             }
         }
     }
@@ -564,7 +577,7 @@ public class IconViewObj implements Viewable
      */
     public synchronized Component getUIComponent()
     {
-        if (mainComp==null)
+        if (mainComp == null)
         {
             initMainComp();
         }
@@ -690,26 +703,7 @@ public class IconViewObj implements Viewable
      */
     public synchronized void setDataIntoUI()
     {
-        /*
-        if (mvParent == null || mvParent.isRoot())
-        {
-            if (session != null)
-            {
-                session.close();
-            }
-            session = DataProviderFactory.getInstance().createSession();
-            
-            if (mvParent != null && mvParent.isTopLevel())
-            {
-                mvParent.setSession(session);   
-            }
-        } else if (session != null && dataSet != null)
-        {
-            for (Object o: dataSet)
-            {
-                session.attach(o);
-            }
-        }*/
+        ignoreChanges = true;
         
         if (mainComp == null)
         {
@@ -749,6 +743,8 @@ public class IconViewObj implements Viewable
             FormDataObjIFace formDataObj = (FormDataObjIFace)o;
             iconTray.addItem(formDataObj);
         }
+        ignoreChanges = false;
+
     }
 
     /* (non-Javadoc)

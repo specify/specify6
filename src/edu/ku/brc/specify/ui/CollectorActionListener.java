@@ -69,10 +69,10 @@ public class CollectorActionListener implements ActionListener
         Agent agent = collector.getAgent();
 
         // if we use agent.getClass().getName() it might fail if the agent object is a Hibernate-generated proxy, which is common
-        String classname = Agent.class.getName();
-        DBTableInfo setTI = DBTableIdMgr.getInstance().getByClassName(classname);
-        String defFormName = setTI.getEditObjDialog();
-        if (defFormName==null)
+        String      classname   = Agent.class.getName();
+        DBTableInfo setTI       = DBTableIdMgr.getInstance().getByClassName(classname);
+        String      defFormName = setTI.getEditObjDialog();
+        if (defFormName == null)
         {
             log.error("Cannot find default form for " + collector.getClass().getSimpleName() + " records");
             return;
@@ -83,14 +83,21 @@ public class CollectorActionListener implements ActionListener
         String  title      = (MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT) && isEditting) ? 
                                 getResourceString("Edit") : collector.getIdentityTitle();
                                 
+        if (!isEditting)
+        {
+            options ^= MultiView.VIEW_SWITCHER;
+            options ^= MultiView.RESULTSET_CONTROLLER;
+        }
         ViewBasedDisplayIFace dialog = UIRegistry.getViewbasedFactory().createDisplay(UIHelper.getWindow(iconViewObj.getUIComponent()),
                                                                     defFormName,
                                                                     title,
-                                                                    getResourceString("OK"),
+                                                                    isEditting ? getResourceString("OK") : getResourceString("Close"),
                                                                     isEditting,
                                                                     options,
                                                                     FRAME_TYPE.DIALOG);
         dialog.setData(agent);
+        dialog.createUI();
+        dialog.getOkBtn().setEnabled(!isEditting);
         dialog.showDisplay(true);
         dialog.dispose();
     }

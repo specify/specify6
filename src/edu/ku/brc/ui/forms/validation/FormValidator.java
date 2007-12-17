@@ -1247,7 +1247,6 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     public void dataChanged(final String dcName, final Component comp, DataChangeNotifier dcn)
     {
-
         if (!okToDataChangeNotification || UIValidator.isIgnoreAllValidation())
         {
             return;

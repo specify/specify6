@@ -132,7 +132,7 @@ public class CustomFrame extends JFrame
     /**
      * Create the UI for the frame.
      */
-    protected void createUI()
+    public void createUI()
     {
         mainPanel = new JPanel(new BorderLayout());
         mainPanel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));

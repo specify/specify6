@@ -498,7 +498,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
         {
             valState = UIValidatable.ErrorType.Valid;
         }
-            //System.out.println("#### validateState "+ getText()+"  "+data.length() +"  "+ requiredLength+"  "+valState);
+        //System.out.println("#### validateState "+ getText()+"  "+data.length() +"  "+ requiredLength+"  "+valState);
         return valState;
     }
     

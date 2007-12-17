@@ -314,7 +314,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         defClassActionHandler.registerActionHandler(RepositoryAgreementAttachment.class,  attachmentDisplayer);
         defClassActionHandler.registerActionHandler(TaxonAttachment.class,                attachmentDisplayer);
         
-        defClassActionHandler.registerActionHandler(Collector.class, new CollectorActionListener());
+        //defClassActionHandler.registerActionHandler(Collector.class, new CollectorActionListener());
         
         
         // Load Local Prefs

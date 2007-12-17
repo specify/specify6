@@ -31,6 +31,7 @@ import java.awt.image.BufferedImage;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -42,6 +43,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -97,8 +99,9 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
     
     protected String                      currCachedValue = null;
 
-    protected JFormattedDoc               document;
+    protected List<JFormattedDoc>         documents      = new Vector<JFormattedDoc>();
     protected String                      defaultValue   = null;
+    protected DocumentListener            documentListener = null;
 
     protected UIFieldFormatterIFace       formatter;
     protected List<UIFieldFormatterField> fields         = null;
@@ -226,9 +229,10 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
         {
             viewtextField = new JTextField();
             
-            document = new JFormattedDoc(viewtextField, formatter, formatter.getFields().get(0));
+            JFormattedDoc document = new JFormattedDoc(viewtextField, formatter, formatter.getFields().get(0));
             viewtextField.setDocument(document);
             document.addDocumentListener(this);
+            documents.add(document);
             
             ViewFactory.changeTextFieldUIForDisplay(viewtextField, false);
             PanelBuilder    builder = new PanelBuilder(new FormLayout("1px,P,1px", "1px,P,1px"), this);
@@ -282,10 +286,11 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
                 } else
                 {
                     JTextField tf = new BGTextField(f.getSize(), f.getValue());
-                    document = new JFormattedDoc(tf, formatter, f);
+                    JFormattedDoc document = new JFormattedDoc(tf, formatter, f);
                     tf.setDocument(document);
                     document.addDocumentListener(this);
-                    
+                    documents.add(document);
+
                     tf.addFocusListener(new FocusAdapter()
                     {
                         @Override
@@ -393,8 +398,8 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
             return viewtextField.getText();
         }
         
-        if (currCachedValue == null)
-        {
+        //if (currCachedValue == null)
+        //{
             StringBuilder sb = new StringBuilder();
             int inx = 0;
             for (JComponent c : comps)
@@ -417,7 +422,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
                 inx++;
             }
             currCachedValue = sb.toString();
-        }
+        //}
         return currCachedValue;
     }
 
@@ -524,7 +529,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
             inx++;
         }
         
-        shouldIgnoreNotifyDoc = notify;
+        shouldIgnoreNotifyDoc = false;
         
         repaint();
     }
@@ -700,12 +705,15 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
      */
     public UIValidatable.ErrorType validateState()
     {
+        UIValidatable.ErrorType oldState = valState;
+        
         if (isViewOnly)
         {
             valState = UIValidatable.ErrorType.Valid;
             
         } else if (formatter != null && formatter.isUserInputNeeded())
         {
+            
             String data = getText();
             if (StringUtils.isEmpty(data))
             {
@@ -719,7 +727,13 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
         {
             valState = UIValidatable.ErrorType.Valid;
         }
-        //System.out.println("#### validateState "+ getText()+"  "+data.length() +"  "+ requiredLength+"  "+valState);
+        
+        if (oldState != valState)
+        {
+            repaint();
+        }
+        //System.err.println("#### validateState "+ getText()+"  "+ requiredLength+"  "+valState);
+       
         return valState;
     }
 
@@ -732,11 +746,15 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
         UIHelper.removeFocusListeners(this);
         UIHelper.removeKeyListeners(this);
 
-        for (DocumentListener l : document.getDocumentListeners())
+        for (JFormattedDoc document : documents)
         {
-            document.removeDocumentListener(l);
+            for (DocumentListener l : document.getDocumentListeners())
+            {
+                document.removeDocumentListener(l);
+            }
         }
-        document  = null;
+        documents.clear();
+        documents = null;
         formatter = null;
         fields    = null;
         UIHelper.removeFocusListeners(this);
@@ -832,7 +850,18 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
             }
         }
         return val;
-
+    }
+    
+    /**
+     * @param dl
+     */
+    public void addDocumentListener(final DocumentListener dl)
+    {
+        documentListener = dl;
+        //for (JFormattedDoc document : documents)
+        //{
+        //    document.addDocumentListener(dl);
+        //}
     }
 
     //--------------------------------------------------------
@@ -844,7 +873,9 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
         isChanged = true;
         if (changeListener != null && !shouldIgnoreNotifyDoc)
         {
+            //validateState();
             changeListener.stateChanged(new ChangeEvent(this));
+            documentListener.changedUpdate(null);
         }
         currCachedValue = null;
     }
@@ -885,6 +916,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
          */
         public void setText(final String text)
         {
+            JFormattedDoc document = (JFormattedDoc)getDocument();
             document.setIgnoreNotify(shouldIgnoreNotifyDoc);
             super.setText(text);
             document.setIgnoreNotify(false);
@@ -969,11 +1001,14 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
          */
         protected boolean okToInsertText(final String str)
         {
-            if (str.length() == limit && str.charAt(0) == '#')
+            String contentStr = textField.getText();
+            int    newLen     = contentStr.length() + str.length();
+            
+            if (newLen == limit && str.charAt(0) == '#')
             {
                 return true;
             }
-            return str.length() <= limit && isCharOK(docField, str);
+            return newLen <= limit && isCharOK(docField, str);
         }
 
         /* (non-Javadoc)

@@ -611,7 +611,7 @@ public class MultiView extends JPanel
     {
         if (hasChanged())
         {
-            if (currentViewable.checkForChanges())
+            if (!currentViewable.checkForChanges())
             {
                 showView(altView.getName());         
             }
@@ -638,8 +638,10 @@ public class MultiView extends JPanel
             if (currentViewable != null)
             {
                 currentViewable.aboutToShow(false);
-                
-                currentViewable.getDataFromUI();
+                if (currentViewable.getAltView().getMode() == AltViewIFace.CreationMode.EDIT)
+                {
+                    currentViewable.getDataFromUI();
+                }
                 
                 if (currentValidator != null)
                 {
@@ -1316,10 +1318,10 @@ public class MultiView extends JPanel
                                     final AltViewIFace.CreationMode mode, 
                                     final int level)
     {
-        String spaces = "                                                          ";
         AltViewIFace altView = currentViewable.getAltView();
         
-        System.out.print(spaces.substring(0, level)+"Current AltView: "+altView.getName()+"  Num: "+getViewables().size()+"  "+altView.getViewDef().getName());
+        //String spaces = "                                                          ";
+        //log.debug(spaces.substring(0, level)+"Current AltView: "+altView.getName()+"  Num: "+getViewables().size()+"  "+altView.getViewDef().getName());
         
         ViewState viewState = new ViewState(this, currentViewable, altView, altView.getViewDef());
         viewStateList.add(viewState);
@@ -1328,7 +1330,7 @@ public class MultiView extends JPanel
         if (formViewObj != null)
         {
             int curInx = formViewObj.getRsController().getCurrentIndex();
-            System.out.print("  curInx: "+curInx);
+            log.debug("  curInx: "+curInx);
             viewState.setInx(curInx);
         }
         
@@ -1337,13 +1339,11 @@ public class MultiView extends JPanel
             viewState.setIdentity(((FormDataObjIFace)currentViewable.getDataObj()).getIdentityTitle());
         }
         
-        System.out.println();
-        
         for (MultiView mv : kids)
         {
             if (mv.createWithMode == mode)
             {
-                //mv.collectionViewState(viewStateList, mode, level+2);
+                mv.collectionViewState(viewStateList, mode, level+2);
             }
         }
     }

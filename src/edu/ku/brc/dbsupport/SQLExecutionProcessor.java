@@ -230,13 +230,19 @@ public class SQLExecutionProcessor implements Runnable
         {
             //ex.printStackTrace();
             log.error("Error in run["+sqlStr+"]", ex);
-            listener.executionError(this, ex);
+            if (listener != null)
+            {
+                listener.executionError(this, ex);
+            }
 
         } catch (Exception ex)
         {
             //ex.printStackTrace();
             log.error("Error in run["+sqlStr+"]", ex);
-            listener.executionError(this, ex);
+            if (listener != null)
+            {
+                listener.executionError(this, ex);
+            }
 
         }
     }

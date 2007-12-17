@@ -64,14 +64,21 @@ public class DataSetterForObj implements DataObjectSettable
                 // This typically happens when we have a TextField with a number and it needs to be converted from a 
                 // String representation of the number to the actually numeric type like from String to Integer or Short
                 Object dataVal = data;
+                Class<?> fieldClass = descr.getPropertyType();
                 if (data != null)
                 {
-                    Class<?> fieldClass = descr.getPropertyType();
+                    
                     if (dataVal.getClass() != fieldClass && !fieldClass.isAssignableFrom(dataVal.getClass()))
                     {
                         dataVal = UIHelper.convertDataFromString(dataVal.toString(), fieldClass);
                     }
-                }
+                } /*else // Data is Null
+                {
+                    if (fieldClass.isAssignableFrom(Collection.class) || fieldClass.isAssignableFrom(Set.class))
+                    {
+                        return;
+                    }
+                }*/
                 Method setter = PropertyUtils.getWriteMethod(descr);
                 if (setter != null)
                 {

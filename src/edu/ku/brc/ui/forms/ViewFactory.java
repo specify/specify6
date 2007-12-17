@@ -367,6 +367,10 @@ public class ViewFactory
             DataChangeNotifier dcn = validator.hookupComponent(textField,
                                                                cellField.getIdent(),
                                                                UIValidator.Type.Changed,  cellField.getValidationRule(), false);
+            if (cellField.isRequired())
+            {
+                textField.addDocumentListener(dcn);
+            }
 
             textField.setChangeListener(dcn);
             return textField;

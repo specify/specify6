@@ -71,6 +71,11 @@ public interface ViewBasedDisplayIFace
     public abstract void shutdown();
     
     /**
+     * Creates the UI before the call to showDisplay.
+     */
+    public void createUI();
+    
+    /**
      * @return the ok btn
      */
     public abstract JButton getOkBtn();

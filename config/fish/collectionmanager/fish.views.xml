@@ -346,7 +346,7 @@
                     <cell type="separator" label="Attachments" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="accessionAttachments" colspan="12" initialize="addsearch=true"/>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="accessionAttachments" colspan="12" initialize="addsearch=true;btn=true"/>
                 </row>
                 <row>
                     <cell type="separator" label="" colspan="12"/>
@@ -556,7 +556,7 @@
                     <cell type="separator" label="Attachments" collapse="collectingEventAttachments" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectingEventAttachments" colspan="12"/>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectingEventAttachments" colspan="12" initialize="btn=true"/>
                 </row>
                 <!--
                 <row>
@@ -937,7 +937,7 @@
                     <cell type="separator" label="Attachments" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="loanAttachments" colspan="12"/>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="loanAttachments" colspan="12" initialize="btn=true"/>
                 </row>
                 <row>
                     <cell type="panel" id="16" name="outerPanel" coldef="p,5px,p" rowdef="p" colspan="12">
@@ -1075,7 +1075,7 @@
                     <cell type="separator" label="Attachments" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="localityAttachments" colspan="12"/>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="localityAttachments" colspan="12" initialize="btn=true"/>
                 </row>
             </rows>
         </viewdef>
@@ -1209,7 +1209,7 @@
                     <cell type="field" id="9" name="remarks" uitype="textarea" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="ObjectAttachment" id="10" name="permitAttachments" colspan="10"/>
+                    <cell type="subview" viewname="ObjectAttachment" id="10" name="permitAttachments" colspan="10" initialize="btn=true"/>
                 </row>
             </rows>
         </viewdef>

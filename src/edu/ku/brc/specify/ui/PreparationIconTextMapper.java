@@ -50,22 +50,7 @@ public class PreparationIconTextMapper implements ObjectTextMapper, ObjectIconMa
         Preparation prep = (Preparation)o;
         if (prep != null)
         {
-            DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
-            try
-            {
-                tmpSession.attach(prep);
-
-            } catch (Exception ex)
-            {
-                //log.error(ex);
-                
-            } finally 
-            {
-                tmpSession.close();     
-            }
-
             return DataObjFieldFormatMgr.format(prep, "Preparation");
-            
         }
         return null;
     }
