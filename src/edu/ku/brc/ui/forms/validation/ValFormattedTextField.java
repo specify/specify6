@@ -43,7 +43,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -285,7 +284,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
                     
                 } else
                 {
-                    JTextField tf = new BGTextField(f.getSize(), f.getValue());
+                    JTextField tf = new BGTextField(f.getSize(), isViewOnly ? "" : f.getValue());
                     JFormattedDoc document = new JFormattedDoc(tf, formatter, f);
                     tf.setDocument(document);
                     document.addDocumentListener(this);

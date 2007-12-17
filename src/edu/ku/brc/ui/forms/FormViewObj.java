@@ -2370,7 +2370,7 @@ public class FormViewObj implements Viewable,
                 enableNewBtn = formValidator.isFormValid();
             }
             
-            log.debug("enableNewBtn "+enableNewBtn);
+            //log.debug("enableNewBtn "+enableNewBtn);
             newRecBtn.setEnabled(enableNewBtn);
             
             if (switcherUI != null)

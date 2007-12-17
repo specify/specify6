@@ -143,7 +143,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
      */
     protected void init(final UIFieldFormatterIFace formatter, final boolean isViewOnly)
     {
-        this.isViewOnly = isViewOnly;
+        this.isViewOnly = isViewOnly || !formatter.isUserInputNeeded();
         
         initColors();
         
@@ -170,7 +170,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             }
         });
 
-        if (!isViewOnly)
+        if (!isViewOnly) // NOTE: This is checking the method argument NOT the class member!
         {
             if (!formatter.isUserInputNeeded())
             {
@@ -190,7 +190,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
      */
     protected void setFormatterInternal(final UIFieldFormatterIFace formatterArg)
     {
-        if (formatter != formatterArg && formatterArg != null)
+        if (formatterArg != null && formatter != formatterArg)
         {
             int oldReqLen = requiredLength;
             
@@ -352,7 +352,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
      */
     public void updateAutoNumbers()
     {
-        if (formatter.getAutoNumber() != null)
+        if (formatter.getAutoNumber() != null && !isViewOnly)
         {
             String nextNum = formatter.getNextNumber(getText());
             if (StringUtils.isNotEmpty(nextNum))
