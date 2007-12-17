@@ -2301,7 +2301,7 @@ public class FormViewObj implements Viewable,
             } else
             {
                 SwingUtilities.invokeLater( new Runnable() {
-                    @Override
+                    //@Override
                     public void run()
                     {
                         JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
@@ -2313,7 +2313,7 @@ public class FormViewObj implements Viewable,
         } catch (SQLException ex)
         {
             SwingUtilities.invokeLater( new Runnable() {
-                @Override
+                //@Override
                 public void run()
                 {
                     JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
