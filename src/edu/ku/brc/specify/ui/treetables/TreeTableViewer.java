@@ -14,7 +14,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.dnd.DnDConstants;
 import java.awt.event.ActionEvent;
@@ -232,8 +231,28 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			{
 				if (!isInitialized)
 				{
-					isInitialized=true;
-					initTreeLists();
+					isInitialized = true;
+					
+					UIRegistry.writeGlassPaneMsg(getResourceString("TTV_OpeningTreeViewer"), 24);
+		            SwingWorker bgThread = new SwingWorker()
+		            {
+		                @SuppressWarnings({ "unchecked", "synthetic-access" })
+		                @Override
+		                public Object construct()
+		                {
+		                    initTreeLists();
+		                    
+		                    return true;
+		                }
+
+		                @Override
+		                public void finished()
+		                {
+		                    UIRegistry.clearGlassPaneMsg();
+		                }
+		            };
+		            
+		            bgThread.start();
 				}
 			}
 		}
