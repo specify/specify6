@@ -1652,7 +1652,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         };
         
         //log.debug("starting background task to see if new selected node is deleteable");
-        //bgWork.start();
+        bgWork.start();
 	}
 
 	/**
