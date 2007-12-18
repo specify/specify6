@@ -42,6 +42,7 @@ import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Field;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Relationship;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
@@ -1827,7 +1828,14 @@ public class UploadTable implements Comparable<UploadTable>
             {
                 busRule.afterSaveCommit(rec);
             }
-            tblSession.refresh(rec);
+            //The refresh line slows performance hugely so only calling it when necessary.
+            //This may be risky. At this time the refresh is required bacause
+            //of changes made in business rule process of treeables.
+            //But if business rules change...
+            if (rec instanceof Treeable)
+            {
+                tblSession.refresh(rec);
+            }
         }
         catch (Exception ex)
         {
