@@ -852,7 +852,7 @@ public class DataImportDialog extends JDialog implements ActionListener
 
                             default:
                                 value = "";
-                                System.out.println("unsuported cell type");
+                                log.error("unsuported cell type");
                                 break;
                         }
                     }

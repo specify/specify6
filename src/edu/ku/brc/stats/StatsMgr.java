@@ -15,7 +15,7 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.tasks.StatsTask;
-import edu.ku.brc.dbsupport.CustomQuery;
+import edu.ku.brc.dbsupport.CustomQueryIFace;
 import edu.ku.brc.dbsupport.CustomQueryFactory;
 import edu.ku.brc.dbsupport.PairsMultipleQueryResultsHandler;
 import edu.ku.brc.dbsupport.PairsSingleQueryResultsHandler;
@@ -214,7 +214,7 @@ public class StatsMgr
             } else if (sqlType.equals("custom"))
             {
 
-                CustomQuery customQuery   = CustomQueryFactory.getInstance().getQuery(sqlElement.attributeValue("name"));
+                CustomQueryIFace customQuery   = CustomQueryFactory.getInstance().getQuery(sqlElement.attributeValue("name"));
                 PairsMultipleQueryResultsHandler multiplePairs = new PairsMultipleQueryResultsHandler();
                 qrProcessable.setHandler(multiplePairs);
 

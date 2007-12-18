@@ -59,7 +59,7 @@ public class SpecifyExpressSearchSQLAdjuster extends ExpressSearchSQLAdjuster
                     }
                 }
                 
-                System.out.println(adjSQL);
+                //System.out.println(adjSQL);
                 if (StringUtils.contains(adjSQL, "COLMEMID"))
                 {
                     Collection collection = Collection.getCurrentCollection();
@@ -69,6 +69,7 @@ public class SpecifyExpressSearchSQLAdjuster extends ExpressSearchSQLAdjuster
                     }
                 }
                 return adjSQL;
+                
             } else
             {
                 throw new RuntimeException("The SpecifyUser cannot be null!");

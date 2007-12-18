@@ -83,6 +83,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
     protected boolean                     isNew          = false;
     protected boolean                     isViewOnly     = false;
     protected Color                       bgColor        = null;
+    protected boolean                     needsUpdating  = false;
 
     protected int                         requiredLength = 0;
     protected boolean                     doSetText      = false; 
@@ -143,7 +144,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
      */
     protected void init(final UIFieldFormatterIFace formatter, final boolean isViewOnly)
     {
-        this.isViewOnly = isViewOnly || !formatter.isUserInputNeeded();
+        this.isViewOnly = isViewOnly;
         
         initColors();
         
@@ -227,7 +228,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
 
 
     /**
-     * Inits the control
+     * Initializes the control.
      */
     public void initColors()
     {
@@ -259,7 +260,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
 
         String text = getText();
 
-        if (!isViewOnly && isEnabled() && text != null && text.length() < bgStr.length() )
+        if (isNew && !isViewOnly && isEnabled() && text != null && text.length() < bgStr.length() )
         {
             FontMetrics fm   = g.getFontMetrics();
             int          w   = fm.stringWidth(text);
@@ -352,7 +353,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
      */
     public void updateAutoNumbers()
     {
-        if (formatter.getAutoNumber() != null && !isViewOnly)
+        if (needsUpdating && formatter.getAutoNumber() != null && !isViewOnly)
         {
             String nextNum = formatter.getNextNumber(getText());
             if (StringUtils.isNotEmpty(nextNum))
@@ -361,6 +362,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
                 {
                     setValue(nextNum, nextNum);
                     bgStr = "";
+                    needsUpdating = false;
                     
                 } catch (Exception ex)
                 {
@@ -449,7 +451,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
      */
     public void setAsNew(boolean isNew)
     {
-        this.isNew = isRequired ? isNew : false;
+        this.isNew = isRequired || !formatter.isUserInputNeeded() ? isNew : false;
     }
 
     /* (non-Javadoc)
@@ -631,6 +633,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
         {
 
             data = StringUtils.isNotEmpty(defaultValue) ? defaultValue : "";
+            needsUpdating = true;
         }
         
         if (origValue == null)
@@ -638,9 +641,11 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             origValue = value;
         }
         
-        if (formatter != null && formatter.isInBoundFormatter())
+        if (formatter.isInBoundFormatter())
         {
             setText((String)formatter.formatInBound(data));
+            needsUpdating = StringUtils.isEmpty(data) && formatter.getAutoNumber() != null && formatter.isIncrementer();
+            
         } else
         {
             setText(data);

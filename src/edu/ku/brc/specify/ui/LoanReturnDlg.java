@@ -416,7 +416,7 @@ public class LoanReturnDlg extends JDialog
                     {
                         pp.setEnabled(checkBox.isSelected());
                     }
-                    System.out.println(getReturnCount());
+                    //System.out.println(getReturnCount());
                     repaint();
                 }
             });

@@ -57,7 +57,7 @@ import edu.ku.brc.af.core.expresssearch.SearchTableConfig;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
-import edu.ku.brc.dbsupport.CustomQuery;
+import edu.ku.brc.dbsupport.CustomQueryIFace;
 import edu.ku.brc.dbsupport.CustomQueryListener;
 import edu.ku.brc.dbsupport.JPAQuery;
 import edu.ku.brc.dbsupport.SQLExecutionListener;
@@ -279,10 +279,13 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
             if (context == null)
             {
                 SearchConfig config = SearchConfigService.getInstance().getSearchConfig();
+                
+                Vector<JPAQuery> queryList = new Vector<JPAQuery>();
+                
                 for (SearchTableConfig table : config.getTables())
                 {
-                    log.debug("**************> " +table.getTableName() );
-                    startSearchJPA(esrPane, table, searchTerm);
+                    //log.debug("**************> " +table.getTableName() );
+                    queryList.add(startSearchJPA(esrPane, table, searchTerm));
                 }
                 
             } else
@@ -414,6 +417,12 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         if (queryResults.getRecIds().size() > 0)//|| tableInfo.getNumIndexes() > 0)
         {
             esrPane.addSearchResults(queryResults);
+        }
+        
+        if (resultsForJoinsMap.size() == 0)
+        {
+            int x= 0;
+            x++;
         }
         
         for (Enumeration<QueryForIdResultsSQL> e=resultsForJoinsMap.elements();e.hasMoreElements();)
@@ -705,10 +714,6 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                         {
                             QueryForIdResultsSQL queryResults = new QueryForIdResultsSQL(searchIdStr, null, tblInfo, searchTableConfig.getDisplayOrder(), searchTerm);
                             displayResults(esrPane, queryResults, resultsForJoinsHash);
-                        } else
-                        {
-                            int x = 0;
-                            x++;
                         }
                     }
                 } catch (SQLException ex)
@@ -775,7 +780,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
      * @see edu.ku.brc.dbsupport.CustomQueryListener#exectionDone(edu.ku.brc.dbsupport.CustomQuery)
      */
     //@Override
-    public void exectionDone(final CustomQuery customQuery)
+    public void exectionDone(final CustomQueryIFace customQuery)
     {
         boolean addPane = false;
         JPAQuery jpaQuery = (JPAQuery)customQuery;
@@ -817,7 +822,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                 QueryForIdResultsHQL results = new QueryForIdResultsHQL(searchTableConfig, new Color(30, 144, 255), searchTerm, list);
                 displayResults(esrPane, results, resultsForJoinsHash);
                 
-                joinIdToTableInfoHash.clear();
+                //joinIdToTableInfoHash.clear();
             }
            
         } else
@@ -832,7 +837,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
      * @see edu.ku.brc.dbsupport.CustomQueryListener#executionError(edu.ku.brc.dbsupport.CustomQuery)
      */
     //@Override
-    public void executionError(final CustomQuery customQuery)
+    public void executionError(final CustomQueryIFace customQuery)
     {
         completionUIHelper(true);
     }

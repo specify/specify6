@@ -8,7 +8,7 @@ package edu.ku.brc.specify.dbsupport;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.dbsupport.CustomQuery;
+import edu.ku.brc.dbsupport.CustomQueryIFace;
 import edu.ku.brc.dbsupport.CustomQueryFactory;
 import edu.ku.brc.specify.dbsupport.customqueries.CustomStatQueries;
 
@@ -48,7 +48,7 @@ public class SpecifyCustomQueryFactory extends CustomQueryFactory
      * @see edu.ku.brc.dbsupport.CustomQueryFactory#getQuery(java.lang.String)
      */
     @Override
-    public CustomQuery getQuery(final String queryName)
+    public CustomQueryIFace getQuery(final String queryName)
     {
         if (queryName.equals("CatalogedLast7Days"))
         {
@@ -70,7 +70,7 @@ public class SpecifyCustomQueryFactory extends CustomQueryFactory
         {
             try
             {
-                return (CustomQuery)Class.forName("edu.ku.brc.specify.dbsupport.customqueries." + queryName).newInstance();
+                return (CustomQueryIFace)Class.forName("edu.ku.brc.specify.dbsupport.customqueries." + queryName).newInstance();
                 
             } catch(Exception ex)
             {

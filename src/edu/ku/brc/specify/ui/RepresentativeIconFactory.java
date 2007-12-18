@@ -15,6 +15,7 @@ import javax.swing.ListCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -34,6 +35,8 @@ import edu.ku.brc.ui.IconManager.IconSize;
  */
 public class RepresentativeIconFactory implements ObjectIconMapper
 {
+    private static final Logger log = Logger.getLogger(RepresentativeIconFactory.class);
+    
 	/** a mapping from a Class to its registered ImageIcon. */
 	protected Hashtable<Class<?>, ImageIcon> classToIconMap;
     
@@ -75,7 +78,7 @@ public class RepresentativeIconFactory implements ObjectIconMapper
             catch (Exception e)
             {
                 e.printStackTrace();
-                System.out.println("An error occurred while configuring RepresentativeIconFactory.");
+                log.error("An error occurred while configuring RepresentativeIconFactory.");
             }
         }
         

@@ -143,7 +143,7 @@
                     <cell type="field" id="sizeLimit" name="sizeLimit" uitype="text" cols="5" isrequired="true"/>
                 </row>
                 <row>
-           birds         <cell type="label" labelfor="items" label="Items"/>
+                    <cell type="label" labelfor="items" label="Items"/>
                     <cell type="panel" id="outerPanel" name="outerPanel" coldef="max(120px;p),5px,p" rowdef="p">
                         <rows>
                             <row>

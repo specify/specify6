@@ -386,7 +386,7 @@ public class LoanSelectPrepsDlg extends JDialog
                     {
                         pp.setEnabled(checkBox.isSelected());
                     }
-                    System.out.println(getNewLoanCount());
+                    //System.out.println(getNewLoanCount());
                     repaint();
                 }
             });

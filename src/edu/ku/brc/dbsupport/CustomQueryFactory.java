@@ -28,7 +28,7 @@ public abstract class CustomQueryFactory
      * @param queryName the name of the query
      * @return the CustomQuery
      */
-    public abstract CustomQuery getQuery(final String queryName);
+    public abstract CustomQueryIFace getQuery(final String queryName);
     
     
     /**

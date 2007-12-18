@@ -37,7 +37,7 @@ public class CustomQueryResultsContainer implements QueryResultsContainerIFace
     //private static final Logger log = Logger.getLogger(CustomQueryResultsContainer.class);
     
     // Data Members
-    protected CustomQuery                 customQuery;
+    protected CustomQueryIFace                 customQuery;
     protected List<QueryResultsDataObj>   qrdos         = new Vector<QueryResultsDataObj>();
     
     protected QRCProcessorListener        listener      = null;
@@ -57,7 +57,7 @@ public class CustomQueryResultsContainer implements QueryResultsContainerIFace
      * Constructs it with the Custom Query to be executed.
      * @param customQuery the Custom Query to be executed
      */
-    public CustomQueryResultsContainer(final CustomQuery customQuery)
+    public CustomQueryResultsContainer(final CustomQueryIFace customQuery)
     {
         this.customQuery = customQuery;
     }

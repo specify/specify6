@@ -419,7 +419,7 @@ public class QueryFieldPanel extends JPanel
         {
             labels[i] = new JLabel(labelStrs[i], SwingConstants.CENTER);
             labelWidths[i] = Math.max(widths[i], labels[i].getPreferredSize().width);
-            System.out.println(labelStrs[i]+"  "+labelWidths[i]);
+            //System.out.println(labelStrs[i]+"  "+labelWidths[i]);
         }
         
         for (int i=0;i<labels.length;i++)
@@ -433,7 +433,7 @@ public class QueryFieldPanel extends JPanel
             sb.append(",4px");
         }
 
-        System.out.println(sb.toString());
+        //System.out.println(sb.toString());
         columnDefStr = sb.toString();
         
         

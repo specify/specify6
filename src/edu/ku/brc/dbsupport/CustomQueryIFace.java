@@ -25,11 +25,9 @@ import java.util.List;
  * @author rods
  * 
  */
-public interface CustomQuery
+public interface CustomQueryIFace
 {
 
-    public boolean isExecutable();
-    
     /**
      * Synchronous execution of the query
      * @return true if executed correctly
@@ -37,8 +35,8 @@ public interface CustomQuery
     public boolean execute();
     
     /**
-     * Aysnchronous execution of a query callback notification is on  (It uses SwingWorker)
-     * @param cql the listener for the results of the exectute
+     * Asynchronous execution of a query callback notification is on  (It uses SwingWorker)
+     * @param cql the listener for the results of the execute
      * @return
      */
     public void execute(CustomQueryListener cql);
@@ -60,6 +58,9 @@ public interface CustomQuery
      */
     public List<QueryResultsContainerIFace> getQueryDefinition();
     
+    /**
+     * @return the name
+     */
     public String getName();
     
     //public void clear();

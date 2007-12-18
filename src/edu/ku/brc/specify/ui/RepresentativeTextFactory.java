@@ -14,6 +14,7 @@ import javax.swing.ListCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -31,6 +32,8 @@ import edu.ku.brc.ui.forms.FormDataObjIFace;
  */
 public class RepresentativeTextFactory implements ObjectTextMapper
 {
+    private static final Logger log = Logger.getLogger(RepresentativeTextFactory.class);
+    
     /** a mapping from a Class to its registered {@link ObjectTextMapper}. */
     protected Hashtable<Class<?>, ObjectTextMapper> subMappers;
 
@@ -69,7 +72,7 @@ public class RepresentativeTextFactory implements ObjectTextMapper
             catch (Exception e)
             {
                 e.printStackTrace();
-                System.out.println("An error occurred while configuring RepresentativeTextFactory.");
+                log.error("An error occurred while configuring RepresentativeTextFactory.");
             }
         }
         

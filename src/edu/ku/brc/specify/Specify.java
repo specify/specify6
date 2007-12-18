@@ -46,7 +46,6 @@ import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBoxMenuItem;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -87,6 +86,7 @@ import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.dbsupport.QueryExecutor;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
@@ -102,7 +102,6 @@ import edu.ku.brc.specify.datamodel.CollectingEventAttachment;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttachment;
 import edu.ku.brc.specify.datamodel.CollectionType;
-import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.ConservDescriptionAttachment;
 import edu.ku.brc.specify.datamodel.ConservEventAttachment;
 import edu.ku.brc.specify.datamodel.DNASequenceAttachment;
@@ -120,7 +119,6 @@ import edu.ku.brc.specify.datamodel.TaxonAttachment;
 import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
 import edu.ku.brc.specify.tests.SpecifyAppPrefs;
 import edu.ku.brc.specify.tools.schemalocale.SchemaToolsDlg;
-import edu.ku.brc.specify.ui.CollectorActionListener;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -187,7 +185,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private String               appName             = "Specify";
     private String               appVersion          = "6.0";
 
-    private String               appBuildVersion     = "200712101530 (SVN: 3243)";
+    private String               appBuildVersion     = "200712171300 (SVN: 3277)";
     
     protected static CacheManager cacheManager        = new CacheManager();
 
@@ -1090,6 +1088,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
             {
                 topFrame.setVisible(false);
             }
+            QueryExecutor.shutdown();
             System.exit(0);
         }
     }

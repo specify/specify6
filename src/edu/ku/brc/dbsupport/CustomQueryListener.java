@@ -20,11 +20,11 @@ public interface CustomQueryListener
      * Notification that the process is done and has finished without exception.
      * @param customQuery the custom query being executed
      */
-    public void exectionDone(CustomQuery customQuery);
+    public void exectionDone(CustomQueryIFace customQuery);
     
     /**
      * Notification that the process was done and completed with an exception.
      * @param customQuery the custom query being executed
      */
-    public void executionError(CustomQuery customQuery);
+    public void executionError(CustomQueryIFace customQuery);
 }

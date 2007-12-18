@@ -21,7 +21,7 @@ import java.util.Vector;
 
 import org.apache.commons.lang.NotImplementedException;
 
-import edu.ku.brc.dbsupport.CustomQuery;
+import edu.ku.brc.dbsupport.CustomQueryIFace;
 import edu.ku.brc.dbsupport.CustomQueryListener;
 import edu.ku.brc.dbsupport.QueryResultsContainer;
 import edu.ku.brc.dbsupport.QueryResultsContainerIFace;
@@ -35,7 +35,7 @@ import edu.ku.brc.dbsupport.QueryResultsDataObj;
  * @author rods
  *
  */
-public class CatByPrev10YearsCustomQuery implements CustomQuery
+public class CatByPrev10YearsCustomQuery implements CustomQueryIFace
 {
 
     public CatByPrev10YearsCustomQuery()
@@ -50,14 +50,6 @@ public class CatByPrev10YearsCustomQuery implements CustomQuery
     //-------------------------------------------
     // CustomQuery Interface
     //-------------------------------------------
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.dbsupport.CustomQuery#isExecutable()
-     */
-    public boolean isExecutable()
-    {
-        return false;
-    }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQuery#execute()

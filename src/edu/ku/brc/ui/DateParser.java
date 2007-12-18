@@ -77,8 +77,6 @@ public class DateParser
      */
     private void initialize()
     {
-        System.out.println(defaultDateFormatStr);
-        
         isYearFirst = isYearFirstInDateStr(defaultDateFormatStr);
         int inx = isYearFirst ? 5 : 0;
         isMonthFirst = defaultDateFormatStr.charAt(inx) == 'M';

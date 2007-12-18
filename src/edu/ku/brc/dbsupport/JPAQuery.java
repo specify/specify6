@@ -24,29 +24,27 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.exception.JDBCConnectionException;
 
-import edu.ku.brc.helpers.SwingWorker;
-
 /**
+ * This class is used to execute JPA or Hibernate queries and notify the listener when done.
+ *  <br>The start method asks a thread pool service
+ * to execute the query. (It used to execute on its own thread).
  * @author rods
  *
- * @code_status Alpha
+ * @code_status Beta
  *
  * Created Date: Mar 5, 2007
  *
  */
-public class JPAQuery implements CustomQuery, Runnable
+public class JPAQuery implements CustomQueryIFace
 {
     private static final Logger log = Logger.getLogger(JPAQuery.class);
     
     protected String                    sqlStr;
-    //protected List<QueryResultsDataObj> qrdoResults = null;
     protected boolean                   inError     = false;
     protected List<?>                   resultsList = null;
     
     protected CustomQueryListener       cql         = null;
-    protected Thread                    thread      = null;
     protected Object                    data        = null;
-
     
     /**
      * Constructor.
@@ -62,7 +60,8 @@ public class JPAQuery implements CustomQuery, Runnable
      * @param sqlStr the query string
      * @param cql the listener
      */
-    public JPAQuery(final CustomQueryListener cql, final String sqlStr)
+    public JPAQuery(final CustomQueryListener cql, 
+                    final String sqlStr)
     {
         this.sqlStr = sqlStr;
         this.cql    = cql;
@@ -91,11 +90,38 @@ public class JPAQuery implements CustomQuery, Runnable
     {
         this.data = data;
     }
-
+    
+    /**
+     * Starts the thread to make the SQL call.
+     *
+     */
+    public void start()
+    {
+        QueryExecutor.executeQuery(this);
+    }
+    
     /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.CustomQuery#getListener()
+     */
+    public CustomQueryListener getListener()
+    {
+        return cql;
+    }
+    
+   /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQuery#execute()
      */
     public boolean execute()
+    {
+        execute(cql); // sets inError
+        
+        return !inError;
+    }
+
+    /**
+     * @return
+     */
+    private boolean runQuery()
     {
         // NOTE: This return true if it executed correctly
         inError = false;
@@ -146,31 +172,31 @@ public class JPAQuery implements CustomQuery, Runnable
      */
     public void execute(final CustomQueryListener cqlArg)
     {
-        final JPAQuery thisItem = this;
-
-        final SwingWorker worker = new SwingWorker()
+        runQuery();
+        
+        if (cqlArg != null)
         {
-             public Object construct()
+            if (inError)
             {
-                inError = execute();
-                return null;
-            }
-
-            //Runs on the event-dispatching thread.
-            public void finished()
+                cqlArg.executionError(this);
+                
+            } else
             {
-                if (inError)
-                {
-                    cqlArg.executionError(thisItem);
-                    
-                } else
-                {
-                    cqlArg.exectionDone(thisItem);
-                }
+                cqlArg.exectionDone(this);
             }
-        };
-        worker.start();
-
+        }
+        
+        if (cql != null && cql != cqlArg)
+        {
+            if (inError)
+            {
+                cqlArg.executionError(this);
+                
+            } else
+            {
+                cqlArg.exectionDone(this);
+            }
+        }
     }
 
     /* (non-Javadoc)
@@ -203,60 +229,5 @@ public class JPAQuery implements CustomQuery, Runnable
     public List<QueryResultsDataObj> getResults()
     {
         throw new RuntimeException("Not Implemented");
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.dbsupport.CustomQuery#isExecutable()
-     */
-    public boolean isExecutable()
-    {
-        return true;
-    }
-    
-    //-------------------------------------------------------------------
-    //-- Runnable Interface
-    //-------------------------------------------------------------------
-    
-    /**
-     * Starts the thread to make the SQL call.
-     *
-     */
-    public void start()
-    {
-        thread = new Thread(this);
-        thread.start();
-    }
-
-    /**
-     * Stops the thread making the call.
-     *
-     */
-    public synchronized void stop()
-    {
-        if (thread != null)
-        {
-            thread.interrupt();
-        }
-        thread = null;
-        notifyAll();
-    }
-
-    /* (non-Javadoc)
-     * @see java.lang.Runnable#run()
-     */
-    public void run()
-    {
-        inError = !execute();
-       
-        if (cql != null)
-        {
-            if (inError)
-            {
-                cql.executionError(this);
-            } else
-            {
-                cql.exectionDone(this);
-            }                
-        }
     }
 }

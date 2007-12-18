@@ -19,7 +19,6 @@ import it.businesslogic.ireport.gui.MainFrame;
 
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
-import java.io.File;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -521,7 +520,7 @@ public class ReportsBaseTask extends BaseTask
                 if (StringUtils.isNotEmpty(labelFileName))
                 {
                     Taskable originatingTask = (Taskable)cmdAction.getProperty(NavBoxAction.ORGINATING_TASK);
-                    System.out.println("************** "+(new File("/home/rods/Specify/reportsCache_Linux/fish_label.jrxml").lastModified()));
+                    //System.out.println("************** "+(new File("/home/rods/Specify/reportsCache_Linux/fish_label.jrxml").lastModified()));
                     doLabels(labelFileName, cmdAction.getPropertyAsString("title"), recordSet, params, originatingTask, (ImageIcon)cmdAction.getProperty("icon"));
                 }
             }

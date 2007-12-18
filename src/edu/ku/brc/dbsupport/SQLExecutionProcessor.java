@@ -24,18 +24,18 @@ import org.apache.log4j.Logger;
 
 
 /**
- * Constructs a an object to execute an SQL staement and then notify the listener and it is done. Any exception in the
- * SQL processing are passed back to the listener instead of being thrown. This class is running in its own thread.
- 
+ * Constructs a an object to execute an SQL statement and then notify the listener and it is done. Any exception in the
+ * SQL processing are passed back to the listener instead of being thrown. <br>The start method asks a thread pool service
+ * to execute the query. (It used to execute on its own thread).
+ *
  * @code_status Complete
- **
+ *
  * @author rods
  */
-public class SQLExecutionProcessor implements Runnable
+public class SQLExecutionProcessor
 {
     private static final Logger log = Logger.getLogger(SQLExecutionProcessor.class);
 
-    protected Thread               thread;
     protected SQLExecutionListener listener;
     protected String               sqlStr;
 
@@ -44,9 +44,10 @@ public class SQLExecutionProcessor implements Runnable
     protected boolean              isAutoCloseConnection = true;
     
     protected Object               data                  = null;
+    protected boolean              inError               = false;
 
     /**
-     * Constructs a an object to execute an SQL staement and then notify the listener. Sets isAutoCloseConnection to true, override with "setAutoCloseConnection".
+     * Constructs a an object to execute an SQL statement and then notify the listener. Sets isAutoCloseConnection to true, override with "setAutoCloseConnection".
      * @param listener the listener
      * @param sqlStr the SQL statement to be executed.
      */
@@ -56,8 +57,8 @@ public class SQLExecutionProcessor implements Runnable
     }
 
     /**
-     * Constructs a an object to execute an SQL staement and then notify the listener. 
-     * Sets isAutoCloseConnection to true if there is a conection, false is connection is null which means it will create one; override with "setAutoCloseConnection".
+     * Constructs a an object to execute an SQL statement and then notify the listener. 
+     * Sets isAutoCloseConnection to true if there is a connection, false is connection is null which means it will create one; override with "setAutoCloseConnection".
      * @param listener the listener
      * @param sqlStr the SQL statement to be executed.
      */
@@ -68,6 +69,14 @@ public class SQLExecutionProcessor implements Runnable
         this.sqlStr       = trimStr(sqlStr);
         
         this.isAutoCloseConnection = dbConnection == null;
+    }
+    
+    /**
+     * @return the listener
+     */
+    public SQLExecutionListener getListener()
+    {
+        return listener;
     }
 
     /**
@@ -168,28 +177,13 @@ public class SQLExecutionProcessor implements Runnable
      */
     public void start()
     {
-        thread = new Thread(this);
-        thread.start();
-    }
-
-    /**
-     * Stops the thread making the call.
-     *
-     */
-    public synchronized void stop()
-    {
-        if (thread != null)
-        {
-            thread.interrupt();
-        }
-        thread = null;
-        notifyAll();
+        QueryExecutor.executeQuery(this);
     }
 
     /**
      * Creates a connection, makes the call and returns the results.
      */
-    public void run()
+    public void execute()
     {
         try
         {
@@ -213,12 +207,16 @@ public class SQLExecutionProcessor implements Runnable
                     ResultSet rs = dbStatement.executeQuery(sqlStr);
                     log.debug("SQL*%["+sqlStr+"]");
                     listener.exectionDone(this, rs);
+                    inError = true;
+                    
                 } else
                 {
                     dbStatement.executeUpdate(sqlStr); // int result return is ignored (probably shouldn't be)
                     log.debug("SQL**["+sqlStr+"]");
                     listener.exectionDone(this, null);
                 }
+                
+                
 
                 if (isAutoCloseConnection)
                 {
@@ -228,7 +226,6 @@ public class SQLExecutionProcessor implements Runnable
 
         } catch (java.sql.SQLException ex)
         {
-            //ex.printStackTrace();
             log.error("Error in run["+sqlStr+"]", ex);
             if (listener != null)
             {
@@ -237,13 +234,11 @@ public class SQLExecutionProcessor implements Runnable
 
         } catch (Exception ex)
         {
-            //ex.printStackTrace();
             log.error("Error in run["+sqlStr+"]", ex);
             if (listener != null)
             {
                 listener.executionError(this, ex);
             }
-
         }
     }
 
@@ -271,6 +266,4 @@ public class SQLExecutionProcessor implements Runnable
     {
         this.data = data;
     }
-    
-    
 }

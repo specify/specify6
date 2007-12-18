@@ -1622,7 +1622,7 @@ public class UIRegistry
                 }
             } catch (CannotRedoException ex)
             {
-                System.out.println("Unable to redo: " + ex);
+                log.error("Unable to redo: " + ex);
                 ex.printStackTrace();
             }
             updateRedoState();

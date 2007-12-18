@@ -17,7 +17,7 @@ package edu.ku.brc.stats;
 import java.awt.Color;
 import java.util.Vector;
 
-import edu.ku.brc.dbsupport.CustomQuery;
+import edu.ku.brc.dbsupport.CustomQueryIFace;
 import edu.ku.brc.dbsupport.CustomQueryResultsContainer;
 import edu.ku.brc.dbsupport.QueryResultsContainer;
 import edu.ku.brc.dbsupport.QueryResultsContainerIFace;
@@ -132,7 +132,7 @@ public class StatDataItem implements QueryResultsListener
      * Adds Custom Query for Stat instead of Query String
      * @param customQuery the custom query
      */
-    public void addCustomQuery(final CustomQuery customQuery,
+    public void addCustomQuery(final CustomQueryIFace customQuery,
                                final VALUE_TYPE  valType,
                                final String      formatStr)
     {

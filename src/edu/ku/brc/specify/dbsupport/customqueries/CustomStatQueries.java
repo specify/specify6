@@ -19,7 +19,7 @@ import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Projections;
 
-import edu.ku.brc.dbsupport.CustomQuery;
+import edu.ku.brc.dbsupport.CustomQueryIFace;
 import edu.ku.brc.dbsupport.CustomQueryListener;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.QueryResultsContainerIFace;
@@ -36,7 +36,7 @@ import edu.ku.brc.specify.datamodel.Loan;
  * Mar 4, 2007
  *
  */
-public class CustomStatQueries implements CustomQuery
+public class CustomStatQueries implements CustomQueryIFace
 {
     public enum Type {CatalogedLast7Days, CatalogedLast30Days, CatalogedLastYear, OverdueLoans};
 
@@ -229,14 +229,6 @@ public class CustomStatQueries implements CustomQuery
     public List<QueryResultsDataObj> getResults()
     {
         return qrdoResults;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.dbsupport.CustomQuery#isExecutable()
-     */
-    public boolean isExecutable()
-    {
-        return true;
     }
 
     /* (non-Javadoc)
