@@ -123,12 +123,13 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
         if (fromDB == null)
         {
             // this node is new and hasn't yet been flushed to the DB, so we don't need to worry about updating fullnames
-            return;
+            //return;
+            fromDB = node;
         }
 
-        T origParent = fromDB.getParent();
+        T       origParent    = fromDB.getParent();
         boolean parentChanged = false;
-        T currentParent = node.getParent();
+        T       currentParent = node.getParent();
         if ((currentParent == null && origParent != null) || (currentParent != null && origParent == null))
         {
             // I can't imagine how this would ever happen, but just in case
@@ -166,6 +167,9 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
             {
                 updateDescFullNames = true;
             }
+        } else if (fromDB == node)
+        {
+            updateNodeFullName = true;
         }
 
         if (updateNodeFullName)
