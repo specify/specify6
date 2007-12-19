@@ -8,10 +8,16 @@ package edu.ku.brc.specify.datamodel.busrules;
 
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 
+import org.apache.log4j.Logger;
+
+import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem;
+import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.specify.treeutils.TreeDataService;
+import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 
 /**
  * A business rules class that handles various safety checking and housekeeping tasks
@@ -23,6 +29,9 @@ import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem;
  */
 public class GeologicTimePeriodBusRules extends BaseTreeBusRules<GeologicTimePeriod, GeologicTimePeriodTreeDef, GeologicTimePeriodTreeDefItem>
 {
+    
+    private static final Logger log = Logger.getLogger(GeologicTimePeriodBusRules.class);
+    
     /**
      * Constructor.
      */
@@ -127,5 +136,48 @@ public class GeologicTimePeriodBusRules extends BaseTreeBusRules<GeologicTimePer
     protected void beforeSaveGeologicTimePeriod(@SuppressWarnings("unused") GeologicTimePeriod gtp)
     {
         // nothing specific to GeologicTimePeriod
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#afterSaveCommit(java.lang.Object)
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public boolean beforeSaveCommit(final Object dataObj, final DataProviderSessionIFace session) throws Exception
+    {
+        boolean success = true;
+        
+        // compare the dataObj values to the nodeBeforeSave values to determine if a node was moved or added
+        if (dataObj instanceof Treeable)
+        {
+            // NOTE: the instanceof check can't check against 'T' since T isn't a class
+            //       this has a SMALL amount of risk to it
+            GeologicTimePeriod node = (GeologicTimePeriod)dataObj;
+            
+            // if the node doesn't have any assigned node number, it must be new
+            boolean added = (node.getNodeNumber() == null);
+
+            if (added)
+            {
+                log.info("Saved tree node was added.  Updating node numbers appropriately.");
+                TreeDataService dataServ = TreeDataServiceFactory.createService();
+                
+                // This is quite bad that we need to start up a new session here
+                // because if fails updating the nodes then we don't get to roll everything back
+                DataProviderSessionIFace tempInnerSession = DataProviderFactory.getInstance().createSession();
+                try
+                {
+                    success = dataServ.updateNodeNumbersAfterNodeAddition(node, tempInnerSession);
+                } catch (Exception ex)
+                {
+                    
+                } finally 
+                {
+                    tempInnerSession.close();  
+                }
+            }
+        }
+        
+        return success;
     }
 }

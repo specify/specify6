@@ -618,27 +618,35 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
         
         public HibernateQuery(String hql)
         {
+            //log.debug("hql["+hql+"]");
             queryDelegate = session.createQuery(hql);
+            if (queryDelegate == null)
+            {
+                log.error("queryDelegate is null for query for hql["+hql+"]");
+            }
         }
 
         public int executeUpdate()
         {
-            return queryDelegate.executeUpdate();
+            return queryDelegate != null ? queryDelegate.executeUpdate() : 0;
         }
 
         public List<?> list()
         {
-            return queryDelegate.list();
+            return queryDelegate != null ? queryDelegate.list() : null;
         }
 
         public void setParameter(String name, Object value)
         {
-            queryDelegate.setParameter(name, value);
+            if (queryDelegate != null)
+            {
+                queryDelegate.setParameter(name, value);
+            }
         }
 
         public Object uniqueResult()
         {
-            return queryDelegate.uniqueResult();
+            return queryDelegate != null ? queryDelegate.uniqueResult() : null;
         }
     }
     

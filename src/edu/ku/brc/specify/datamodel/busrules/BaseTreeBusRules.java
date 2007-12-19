@@ -238,9 +238,13 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
      */
     @SuppressWarnings("unchecked")
     @Override
-    public boolean beforeSaveCommit(Object dataObj, DataProviderSessionIFace session) throws Exception
+    public boolean beforeSaveCommit(final Object dataObj, final DataProviderSessionIFace session) throws Exception
     {
-        if (super.beforeSaveCommit(dataObj,session) == false)
+        
+        // PLEASE NOTE!
+        // If any changes are made to this check to make sure no one (Like GeologicTimePeriod) is overriding this method
+        // and make the appropriate changes there also.
+        if (!super.beforeSaveCommit(dataObj, session))
         {
             return false;
         }
@@ -261,7 +265,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
             {
                 log.info("Saved tree node was added.  Updating node numbers appropriately.");
                 TreeDataService dataServ = TreeDataServiceFactory.createService();
-                success = dataServ.updateNodeNumbersAfterNodeAddition(node,session);
+                success = dataServ.updateNodeNumbersAfterNodeAddition(node, session);
             }
         }
         
