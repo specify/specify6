@@ -1259,7 +1259,8 @@ public class BuildSampleDatabase
             
             WorkbenchRowImage wbRowImage = null;
             
-            File f = new File("demo_files" + File.separator + "card" + i + (i == 2 ? ".png" : ".jpg"));
+            
+            File f = new File(UIRegistry.getDefaultWorkingPath() +File.separator + "demo_files" + File.separator + "card" + i + (i == 2 ? ".png" : ".jpg"));
             if (f.exists())
             {
                 try
@@ -1376,7 +1377,7 @@ public class BuildSampleDatabase
             log.info("Creating attachments and attachment metadata");
             try
             {
-                String attachmentFilesLoc = "demo_files" + File.separator;
+                String attachmentFilesLoc = UIRegistry.getDefaultWorkingPath() + File.separator + "demo_files" + File.separator;
 
 //                String bigEyeFilePath = attachmentFilesLoc + "bigeye.jpg";
 //                Attachment bigEye = createAttachment(bigEyeFilePath, "image/jpeg", 0);
@@ -2392,7 +2393,8 @@ public class BuildSampleDatabase
             });
             
             Thumbnailer thumb = new Thumbnailer();
-            thumb.registerThumbnailers("config/thumbnail_generators.xml");
+            File thumbFile = XMLHelper.getConfigDir("thumbnail_generators.xml");
+            thumb.registerThumbnailers(thumbFile);
             thumb.setQuality(.5f);
             thumb.setMaxHeight(128);
             thumb.setMaxWidth(128);
@@ -2570,7 +2572,8 @@ public class BuildSampleDatabase
                 try
                 {
                     Thumbnailer thumb = new Thumbnailer();
-                    thumb.registerThumbnailers("config/thumbnail_generators.xml");
+                    File thumbFile = XMLHelper.getConfigDir("thumbnail_generators.xml");
+                    thumb.registerThumbnailers(thumbFile);
                     thumb.setQuality(.5f);
                     thumb.setMaxHeight(128);
                     thumb.setMaxWidth(128);
@@ -3001,6 +3004,20 @@ public class BuildSampleDatabase
     
     public static void main(final String[] args)
     {
+        
+        try
+        {
+            if (!System.getProperty("os.name").equals("Mac OS X"))
+            {
+                UIManager.setLookAndFeel(new Plastic3DLookAndFeel());
+                PlasticLookAndFeel.setPlasticTheme(new DesertBlue());
+            }
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
+        
         if (args != null && args.length > 0)
         {
             System.out.println("BuildSampleDatabase ");
@@ -3033,19 +3050,6 @@ public class BuildSampleDatabase
             {
                 public void run()
                 {
-                    
-                    try
-                    {
-                        if (!System.getProperty("os.name").equals("Mac OS X"))
-                        {
-                            UIManager.setLookAndFeel(new Plastic3DLookAndFeel());
-                            PlasticLookAndFeel.setPlasticTheme(new DesertBlue());
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        e.printStackTrace();
-                    }
                     
                     BuildSampleDatabase builder = new BuildSampleDatabase();
                     builder.buildSetup(null);

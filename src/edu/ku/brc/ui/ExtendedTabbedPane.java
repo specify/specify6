@@ -1,15 +1,23 @@
 package edu.ku.brc.ui;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 import javax.swing.Icon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingConstants;
 import javax.swing.event.MouseInputAdapter;
+
+import edu.ku.brc.af.core.SubPaneIFace;
+import edu.ku.brc.af.core.SubPaneMgr;
 
 import org.apache.log4j.Logger;
 
@@ -120,7 +128,7 @@ public class ExtendedTabbedPane extends JTabbedPane
      */
     protected void adjustTab(final String title, final Icon icon, Component comp, final int index)
     {
-        /*
+        
         final JLabel closeBtn = new JLabel(IconManager.getIcon("Close"));
         closeBtn.setBorder(null);
         
@@ -165,7 +173,7 @@ public class ExtendedTabbedPane extends JTabbedPane
         tabPanel.add(closeBtn, BorderLayout.EAST);
         
         setTabComponentAt(index, tabPanel);
-        */
+        
     }
     
     /* (non-Javadoc)

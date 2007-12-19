@@ -64,9 +64,9 @@ public class Thumbnailer
 	 * @throws InstantiationException a class listed in the registry couldn't be instantiated
 	 * @throws IllegalAccessException a security violation occured while instantiating a class
 	 */
-	public void registerThumbnailers(String generatorRegistryFile) throws SAXException, IOException, ParserConfigurationException, ClassNotFoundException, InstantiationException, IllegalAccessException
+	public void registerThumbnailers(final File generatorRegistryFile) throws SAXException, IOException, ParserConfigurationException, ClassNotFoundException, InstantiationException, IllegalAccessException
 	{
-		Document registry = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new File(generatorRegistryFile));
+		Document registry = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(generatorRegistryFile);
 		NodeList generatorNodes = registry.getElementsByTagName("generator");
 		for(int i = 0; i < generatorNodes.getLength(); ++i )
 		{
@@ -198,7 +198,7 @@ public class Thumbnailer
 	 * @param args ignored
 	 * @throws Exception all sorts of reasons
 	 */
-	public static void main(String[] args) throws Exception
+	/*public static void main(String[] args) throws Exception
 	{
 		Thumbnailer thumb = new Thumbnailer();
 		thumb.registerThumbnailers("config\\thumbnail_generators.xml");
@@ -212,5 +212,5 @@ public class Thumbnailer
 		
 		String origTxt = "C:\\Documents and Settings\\jstewart\\Desktop\\test.txt";
 		thumb.generateThumbnail(origTxt,thumbnail);
-	}
+	}*/
 }

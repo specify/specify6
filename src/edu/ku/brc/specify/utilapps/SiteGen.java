@@ -187,7 +187,8 @@ public class SiteGen
         try
         {
             Thumbnailer thumb = new Thumbnailer();
-            thumb.registerThumbnailers("config/thumbnail_generators.xml");
+            File thumbFile = XMLHelper.getConfigDir("thumbnail_generators.xml");
+            thumb.registerThumbnailers(thumbFile);
             thumb.setQuality(.5f);
             thumb.setMaxHeight(128);
             thumb.setMaxWidth(128);

@@ -185,7 +185,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private String               appName             = "Specify";
     private String               appVersion          = "6.0";
 
-    private String               appBuildVersion     = "200712171300 (SVN: 3277)";
+    private String               appBuildVersion     = "200712190930 (SVN: 3289)";
     
     protected static CacheManager cacheManager        = new CacheManager();
 
@@ -264,7 +264,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         try
         {
             thumbnailDir = XMLHelper.getConfigDir("thumbnail_generators.xml");
-            thumb.registerThumbnailers(thumbnailDir.getAbsolutePath());
+            thumb.registerThumbnailers(thumbnailDir);
         }
         catch (Exception e1)
         {

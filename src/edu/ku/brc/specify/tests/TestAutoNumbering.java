@@ -27,6 +27,7 @@ import static edu.ku.brc.specify.utilapps.DataBuilder.createSpecifyUser;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createTaxonTreeDef;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createUserGroup;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Calendar;
@@ -256,7 +257,8 @@ public class TestAutoNumbering extends TestCase
         try
         {
             Thumbnailer thumb = new Thumbnailer();
-            thumb.registerThumbnailers("config/thumbnail_generators.xml");
+            File thumbFile = XMLHelper.getConfigDir("thumbnail_generators.xml");
+            thumb.registerThumbnailers(thumbFile);
             thumb.setQuality(.5f);
             thumb.setMaxHeight(128);
             thumb.setMaxWidth(128);

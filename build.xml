@@ -742,7 +742,7 @@
 		<mkdir dir="${appdir}/libs" />
 		<mkdir dir="${dist-win}/examples" />
 		
-		<antcall target="build-empty-derby-db"/>
+		<!-- <antcall target="build-empty-derby-db"/> -->
 		<antcall target="basic-non-mac-dist"/>
 
 		<antcall target="build-help-index"/>
@@ -756,6 +756,16 @@
 		<copy file="demo_files/workbench/FishCollectingTrip.csv" todir="${dist-win}/examples" />
 		<copy file="demo_files/workbench/JohsonCountyTrip.csv" todir="${dist-win}/examples" />
 	    <copy file="demo_files/workbench/SaipanTrip.xls" todir="${dist-win}/examples" />
+		
+		<!-- This is NOT for the release -->
+		<!-- Copy demo_files dir -->
+		<copy todir="${appdir}/demo_files">
+			<fileset dir="demo_files">
+				<exclude name="**/.svn" />
+				<exclude name="**/.csv" />
+				<include name="**/*.jpg" />
+			</fileset>
+		</copy>
 
 	</target>
 
