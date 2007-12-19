@@ -522,32 +522,32 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             if (cls == Long.class)
             {
                 Long val  = Long.parseLong(value);
-                return val > Long.MAX_VALUE || val < Long.MIN_VALUE ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
+                return val > Long.MAX_VALUE || val < -(Long.MAX_VALUE) ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
                 
             } else if (cls == Integer.class)
             {
                 Integer val  = Integer.parseInt(value);
-                return val > Integer.MAX_VALUE || val < Integer.MIN_VALUE ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
+                return val > Integer.MAX_VALUE || val < -(Integer.MAX_VALUE) ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
     
             } else if (cls == Short.class)
             {
                 Short val  = Short.parseShort(value);
-                return val > Short.MAX_VALUE || val < Short.MIN_VALUE ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
+                return val > Short.MAX_VALUE || val < -(Short.MAX_VALUE) ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
     
             } else if (cls == Byte.class)
             {
                 Byte val  = Byte.parseByte(value);
-                return val > Byte.MAX_VALUE || val < Byte.MIN_VALUE ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
+                return val > Byte.MAX_VALUE || val < -(Byte.MAX_VALUE) ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
     
             } else if (cls == Double.class)
             {
                 Double val  = Double.parseDouble(value);
-                return val > Double.MAX_VALUE || val < Double.MIN_VALUE ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
+                return val > Double.MAX_VALUE || val < -(Double.MAX_VALUE) ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
     
             } else if (cls == Float.class)
             {
                 Float val  = Float.parseFloat(value);
-                return val > Float.MAX_VALUE || val < Float.MIN_VALUE ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
+                return val.floatValue() > Float.MAX_VALUE || val < -(Float.MAX_VALUE) ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
     
             } else if (cls == BigDecimal.class)
             {
@@ -776,7 +776,9 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             } else if (field.getType() == UIFieldFormatterField.FieldType.numeric)
             {
                 // we really need to check to make sure this is a Double, Float or BigDecimal
-                return StringUtils.isNumeric(StringUtils.remove(str, '.'));
+                String s = StringUtils.remove(str, ".");
+                s = StringUtils.remove(str, "-");
+                return StringUtils.isNumeric(s);
 
             }
             return true;
