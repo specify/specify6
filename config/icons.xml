@@ -19,7 +19,7 @@
     
     <icon name="Workbench16"      file="Workbench16x16.png" sizes="16"/>
     <icon name="Workbench"        file="Workbench32x32.png" sizes="all"/>
-    <icon name="Interactions"     file="Interactions.png" sizes="all"/>
+    <icon name="Interactions"     file="interactions.png" sizes="all"/>
     <icon name="Statistics"       file="Statistics32x32.png" sizes="all"/>
     <icon name="Pie_Chart"        file="PieChart32x32.png" sizes="all"/>
     <icon name="Bar_Chart"        file="BarGraph32x32.png" sizes="all"/>
