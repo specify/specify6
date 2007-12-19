@@ -1120,8 +1120,8 @@ public class Uploader implements ActionListener, WindowStateListener
                 }
                 else
                 {
-                    setCurrentOp(Uploader.USER_INPUT);
                     mainPanel.addMsg(new BaseUploadMessage(getResourceString("WB_INVALID_DATASET")));
+                    setCurrentOp(Uploader.USER_INPUT);
                 }
             }
 
@@ -1904,7 +1904,7 @@ public class Uploader implements ActionListener, WindowStateListener
             JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), getResourceString("WB_UPLOAD_BUSY_CANNOT_CLOSE"));
             return false;
         }
-        if (currentOp.equals(Uploader.SUCCESS))
+        if (currentOp.equals(Uploader.SUCCESS) && getUploadedObjects() > 0)
         {
             String msg = String.format(getResourceString("WB_UPLOAD_CONFIRM_SAVE"), wbSS.getWorkbench().getName());
             JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
@@ -2160,16 +2160,6 @@ public class Uploader implements ActionListener, WindowStateListener
 
         mainPanel.getCloseBtn().setEnabled(canClose(op));
 
-        mainPanel.clearMsgs(new Class<?>[]{UploadTableInvalidValue.class});
-        if (validationIssues != null)
-        {
-            for (UploadTableInvalidValue invalid : validationIssues)
-            {
-                mainPanel.addMsg(invalid);
-            }
-        }
-        mainPanel.getPrintBtn().setEnabled(validationIssues != null && validationIssues.size() > 0);
-
         //UIRegistry.getStatusBar().getProgressBar().setVisible(mainPanel.getCancelBtn().isVisible());
         mainPanel.getCurrOpProgress().setVisible(mainPanel.getCancelBtn().isVisible());
         
@@ -2178,6 +2168,10 @@ public class Uploader implements ActionListener, WindowStateListener
         {
             statText += ". " + getUploadedObjects().toString() + " "
                     + getResourceString("WB_UPLOAD_OBJECT_COUNT") + ".";
+            if (opKiller != null)
+            {
+                log.debug("Hey. Wait a minute. The operation succeeded while dead. Is that not creepy?");
+            }
         }
         else if (op.equals(Uploader.FAILURE) && opKiller != null)
         {
@@ -2195,6 +2189,16 @@ public class Uploader implements ActionListener, WindowStateListener
             statText += "...";
         }
         mainPanel.addMsg(new BaseUploadMessage(statText));
+        
+        mainPanel.clearMsgs(new Class<?>[]{UploadTableInvalidValue.class});
+        if (validationIssues != null)
+        {
+            for (UploadTableInvalidValue invalid : validationIssues)
+            {
+                mainPanel.addMsg(invalid);
+            }
+        }
+        mainPanel.getPrintBtn().setEnabled(validationIssues != null && validationIssues.size() > 0);
     }
 
     /**
@@ -2229,6 +2233,7 @@ public class Uploader implements ActionListener, WindowStateListener
           || op.equals(Uploader.CLEANING_UP)
           || op.equals(Uploader.RETRIEVING_UPLOADED_DATA)
           || op.equals(Uploader.VALIDATING_DATA)
+          || op.equals(Uploader.USER_INPUT)
           || op.equals(Uploader.UNDOING_UPLOAD);
     }
     /**
@@ -2445,6 +2450,8 @@ public class Uploader implements ActionListener, WindowStateListener
                                             : "WB_UPLOAD_CLEANUP")), wbSS.getWorkbench().getName(),
                                     wbSS.getWorkbench().getName() }), getResourceString("Warning"),
                             JOptionPane.WARNING_MESSAGE);
+                    opKiller = ex; //probably doesn't matter if shuttingDown but..
+                    return;
                 }
             }
             finally
