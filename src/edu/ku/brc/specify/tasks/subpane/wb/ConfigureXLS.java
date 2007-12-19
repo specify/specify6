@@ -21,6 +21,8 @@ import java.util.Iterator;
 import java.util.Properties;
 import java.util.Vector;
 
+import javax.swing.JOptionPane;
+
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -28,6 +30,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
 import edu.ku.brc.specify.exporters.ExportFileConfigurationFactory;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author timbo
@@ -124,7 +127,7 @@ public class ConfigureXLS extends ConfigureExternalDataBase
                                 break;
 
                             case HSSFCell.CELL_TYPE_STRING:
-                                value   = cell.getStringCellValue();
+                                value   = cell.getStringCellValue().trim();
                                 colType = ImportColumnInfo.ColumnType.String;
                                 break;
 
@@ -155,6 +158,14 @@ public class ConfigureXLS extends ConfigureExternalDataBase
                             //System.out.println("Cell #" + cellNum + " " + type+"  "+value);
                             if (firstRowHasHeaders)
                             {
+                                if (value == null || value.equals(""))
+                                {
+                                    status = ConfigureExternalDataIFace.Status.Error;
+                                    JOptionPane.showMessageDialog(UIRegistry.getTopWindow(),
+                                            String.format(getResourceString("WB_IMPORT_INVALID_COL_HEAD"), Integer.toString(cellNum)),
+                                            getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
+                                    return;
+                                }
                                 colInfo.add(new ImportColumnInfo(cellNum, colType, value, value, null));
                                 colTracker.put(cellNum, true);
 
