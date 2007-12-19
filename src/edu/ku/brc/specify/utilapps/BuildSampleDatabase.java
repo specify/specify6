@@ -2126,12 +2126,6 @@ public class BuildSampleDatabase
         boolean doEmptyBuild = false;
         String  derbyPath    = null;
         
-        log.debug("---------- Args ------------");
-        for (String arg : args)
-        {
-            log.debug(arg);
-        }
-        
         boolean wasJavaDBSet = false;
         if (args != null && args.length > 0)
         {
@@ -2744,7 +2738,7 @@ public class BuildSampleDatabase
                 properties.load(new FileInputStream(initFile));
                 return properties;
             } 
-            System.err.println("Couldn't find ["+initFile.getAbsolutePath()+"]");
+            System.err.println("Couldn't find Init Prefs ["+initFile.getAbsolutePath()+"]");
             
         } catch (Exception ex)
         {

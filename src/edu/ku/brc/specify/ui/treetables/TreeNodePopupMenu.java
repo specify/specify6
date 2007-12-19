@@ -47,11 +47,11 @@ public class TreeNodePopupMenu extends JPopupMenu
 	{
 		this.ttv = owner;
 		
-		subtree = new JMenuItem(getResourceString("TTV_ZOOM_IN"));
-        find = new JMenuItem("Find next"); // I18N
-        edit = new JMenuItem("Edit...");
-        delete = new JMenuItem("Delete");
-        newChild = new JMenuItem("New child...");
+		subtree  = new JMenuItem(getResourceString("TTV_ZOOM_IN"));
+        find     = new JMenuItem(getResourceString("TTV_FIND_NEXT"));
+        edit     = new JMenuItem(getResourceString("TTV_EDITING"));
+        delete   = new JMenuItem(getResourceString("TTV_DELETE"));
+        newChild = new JMenuItem(getResourceString("TTV_NEW_CHILD"));
         
         selectionSensativeButtons = new Vector<AbstractButton>();
         selectionSensativeButtons.add(subtree);
