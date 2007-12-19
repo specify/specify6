@@ -107,6 +107,7 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
         initialize();
         this.name = name;
         this.dbTableId = dbTableId;
+        this.type = GLOBAL;
     }
 
     /** constructor with name, id, type */
@@ -131,7 +132,7 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
     {
         super.init();
         recordSetId = null;
-        type        = GLOBAL;
+        //type        = GLOBAL;
         //name = null;
         //tableId = null;
         remarks = null;

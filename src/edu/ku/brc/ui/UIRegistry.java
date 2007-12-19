@@ -1199,9 +1199,10 @@ public class UIRegistry
             
             glassPane.setVisible(true);
             mainComp.setVisible(false);
-            mainComp.repaint();
-            glassPane.repaint();
-
+            //Using paintImmediately fixes problems with glass pane not showing, such as for workbench saves initialed
+            //during workbench or app shutdown. Don't know if there is a better way to fix it.
+            //glassPane.repaint();
+            glassPane.paintImmediately(glassPane.getBounds());
         }
     }
     

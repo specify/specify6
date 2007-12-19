@@ -14,6 +14,7 @@ import java.awt.event.WindowStateListener;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -41,6 +42,7 @@ import edu.ku.brc.af.core.expresssearch.TableNameRenderer;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
@@ -2423,17 +2425,27 @@ public class Uploader implements ActionListener, WindowStateListener
         
         if (shuttingDown)
         {
-            //The glass pane WILL NOT display!!
-            //even if it did, this process needs some kind of progress indication, because it can take a long time.
-            UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_UPLOAD_CLEANING_UP"), 
+            //This process can take a long time and needs some kind of progress indication.
+            UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_UPLOAD_CLEANING_UP") + "...", 
                     wbSS.getWorkbench().getName()), WorkbenchTask.GLASSPANE_FONT_SIZE);
             try
             {
-                for (int ut = uploadTables.size() - 1; ut >= 0; ut--)
+                try
                 {
-                    uploadTables.get(ut).undoUpload();
+                    for (int ut = uploadTables.size() - 1; ut >= 0; ut--)
+                    {
+                        uploadTables.get(ut).undoUpload();
+                    }
                 }
-
+                catch (Exception ex)
+                {
+                    JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), String.format(
+                            getResourceString("WB_UPLOAD_CLEANUP_FAILED"), new Object[] {
+                                    getResourceString((isUserCmd ? "WB_UPLOAD_UNDO_BTN"
+                                            : "WB_UPLOAD_CLEANUP")), wbSS.getWorkbench().getName(),
+                                    wbSS.getWorkbench().getName() }), getResourceString("Warning"),
+                            JOptionPane.WARNING_MESSAGE);
+                }
             }
             finally
             {
@@ -2484,6 +2496,16 @@ public class Uploader implements ActionListener, WindowStateListener
                     super.finished();
                     statusBar.setText("");
                     statusBar.getProgressBar().setVisible(false);
+                    if (opKiller != null)
+                    {
+                        JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
+                                String.format(getResourceString("WB_UPLOAD_CLEANUP_FAILED"),
+                                        new Object[] {getResourceString((isUserCmd ? "WB_UPLOAD_UNDO_BTN" : "WB_UPLOAD_CLEANUP")),
+                                                        wbSS.getWorkbench().getName(), wbSS.getWorkbench().getName()
+                                }),
+                                getResourceString("Warning"), JOptionPane.WARNING_MESSAGE);
+
+                    }
                     if (mainPanel != null)
                     {
                         mainPanel.clearObjectsCreated();
@@ -2575,7 +2597,7 @@ public class Uploader implements ActionListener, WindowStateListener
             currentTask = null;
             done = true;
             endTime = System.nanoTime();
-            System.out.println("UploaderTask time: " + Long.toString((endTime-startTime)/1000000000L));
+            log.debug("UploaderTask time elapsed: " + Long.toString((endTime-startTime)/1000000000L));
         }
         
         public synchronized boolean isDone()
@@ -2776,6 +2798,27 @@ public class Uploader implements ActionListener, WindowStateListener
                 recordSets.add(rs);
             }
         }
+        //combine recordSets with identical names...
+        Collections.sort(recordSets, new Comparator<RecordSet>()
+                {
+                    public int compare(RecordSet rs1, RecordSet rs2)
+                    {
+                        return rs1.getName().compareTo(rs2.getName());
+                    }
+                });
+        for (int rs=recordSets.size()-1; rs>0; rs--)
+        {
+            if (recordSets.get(rs).getName().equals(recordSets.get(rs-1).getName()))
+            {
+                recordSets.get(rs-1).getItems().addAll(recordSets.get(rs).getItems());
+                for (RecordSetItemIFace rsi : recordSets.get(rs).getItems())
+                {
+                    recordSets.get(rs-1).addItem(rsi);
+                }
+                recordSets.remove(rs);
+            }
+        }
+        //...end combine recordSets.
     }
 
 
@@ -2785,7 +2828,7 @@ public class Uploader implements ActionListener, WindowStateListener
      */
     protected void saveRecordSets()
     {
-        if (recordSets == null || recordSets.size() == 0 /*just to be sure*/)
+        if (recordSets == null || recordSets.size() == 0)
         {
             createRecordSets();
         }
