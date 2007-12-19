@@ -91,6 +91,7 @@ import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Workbench;
+import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchRowImage;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
@@ -2461,6 +2462,13 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                             //log.debug("del ["+wbtmi.getCaption()+"]["+wbtmi.getWorkbenchTemplateMappingItemId().longValue()+"]");
                             //wbtmi.setWorkbenchTemplate(null);
                             items.remove(wbtmi);
+                            if (wbtmi.getWorkbenchDataItems() != null)
+                            {
+                                for (WorkbenchDataItem wbdi : wbtmi.getWorkbenchDataItems())
+                                {
+                                    session.delete(wbdi);
+                                }
+                            }
                             session.delete(wbtmi);
                             break;
                         }
