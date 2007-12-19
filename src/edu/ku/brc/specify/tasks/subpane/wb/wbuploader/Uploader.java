@@ -26,6 +26,7 @@ import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JProgressBar;
@@ -49,6 +50,7 @@ import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.tasks.ReportsBaseTask;
+import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
 import edu.ku.brc.specify.tasks.subpane.wb.graph.DirectedGraph;
 import edu.ku.brc.specify.tasks.subpane.wb.graph.DirectedGraphException;
@@ -1083,10 +1085,10 @@ public class Uploader implements ActionListener, WindowStateListener
                 {
                     int progress = 0;
                     initProgressBar(0, uploadTables.size(), true, 
-                            getResourceString("WB_UPLOAD_VALIDATING") + " " + getResourceString("ERD_TABLE"));
+                            getResourceString("WB_UPLOAD_VALIDATING") + " " + getResourceString("ERD_TABLE"), false);
                     for (UploadTable tbl : uploadTables)
                     {
-                        setCurrentOpProgress(++progress);
+                        setCurrentOpProgress(++progress, false);
                         issues.addAll(tbl.validateValues(uploadData));
                     }
                     dataValidated = issues.size() == 0;
@@ -1502,15 +1504,22 @@ public class Uploader implements ActionListener, WindowStateListener
     protected synchronized void initProgressBar(int min,
                                                 int max,
                                                 boolean paintString,
-                                                String itemName)
+                                                String itemName, boolean useAppStatBar)
     {
         if (mainPanel == null)
         {
             log.error("UI does not exist.");
             return;
         }
-        //JProgressBar pb = UIRegistry.getStatusBar().getProgressBar();
-        JProgressBar pb = mainPanel.getCurrOpProgress();
+        JProgressBar pb;
+        if (useAppStatBar)
+        {
+            pb = UIRegistry.getStatusBar().getProgressBar();
+        }
+        else
+        {
+            pb = mainPanel.getCurrOpProgress();
+        }
         pb.setVisible(true);
         if (min == 0 && max == 0)
         {
@@ -1539,18 +1548,24 @@ public class Uploader implements ActionListener, WindowStateListener
      * 
      * Sets progress bar progress.
      */
-    protected synchronized void setCurrentOpProgress(int val)
+    protected synchronized void setCurrentOpProgress(int val, boolean useAppStatBar)
     {
-        if (mainPanel == null)
+        if (mainPanel == null && !useAppStatBar)
         {
             log.error("UI does not exist.");
             return;
         }
-        //if (!UIRegistry.getStatusBar().getProgressBar().isIndeterminate())
-        if (!mainPanel.getCurrOpProgress().isIndeterminate())
+        JProgressBar pb;
+        if (useAppStatBar)
         {
-            //JProgressBar pb = UIRegistry.getStatusBar().getProgressBar();
-            JProgressBar pb = mainPanel.getCurrOpProgress();
+            pb = UIRegistry.getStatusBar().getProgressBar();
+        }
+        else
+        {
+            pb = mainPanel.getCurrOpProgress();
+        }
+        if (!pb.isIndeterminate())
+        {
             pb.setValue(val);
             if (pb.isStringPainted())
             {
@@ -1568,7 +1583,7 @@ public class Uploader implements ActionListener, WindowStateListener
             log.error("UI does not exist.");
             return;
         }
-        setCurrentOpProgress(val);
+        setCurrentOpProgress(val, false);
         for (UploadMessage newMsg : newMessages)
         {
             mainPanel.addMsg(newMsg);
@@ -1585,7 +1600,7 @@ public class Uploader implements ActionListener, WindowStateListener
     /**
      * @param initOp
      * 
-     * builds upload ui witn initial phase of initOp
+     * builds upload ui with initial phase of initOp
      */
     protected void initUI(final String initOp)
     {
@@ -1698,14 +1713,24 @@ public class Uploader implements ActionListener, WindowStateListener
     }
 
     /**
-     * Called when dataset is closing.
+     * Called when dataset is closing. If shutter is not the WorkbenchPane for the dataSet
+     * being uploaded, the call is ignored.
+     * 
+     * @param shutter
+     * 
+     * @return true if closed, else false.
      */
-    public void closing()
+    public boolean closing(final WorkbenchPaneSS shutter)
     {
+        if (shutter != wbSS)
+        {
+            return false;
+        }
         if (mainPanel != null)
         {
             closeMainForm(false);
         }
+        return true;
     }
 
     /**
@@ -1723,6 +1748,7 @@ public class Uploader implements ActionListener, WindowStateListener
 
     /**
      * Shuts down upload UI.
+     * @param notifyWB - If true, notify this Uploader's WorkBench.
      */
     protected void closeMainForm(boolean notifyWB)
     {
@@ -1802,24 +1828,9 @@ public class Uploader implements ActionListener, WindowStateListener
         }
         else if (e.getActionCommand().equals(UploadMainPanel.CLOSE_UI))
         {
-            boolean closeIt = true;
-            if (currentOp.equals(Uploader.SUCCESS))
-            {
-                if (UIRegistry.displayConfirm(getResourceString("WB_UPLOAD_FORM_TITLE"),
-                        getResourceString("WB_ACCEPT_UPLOAD_MSG"), getResourceString("OK"),
-                        getResourceString("Cancel"), JOptionPane.QUESTION_MESSAGE))
-                {
-                    saveRecordSets();
-                }
-                else
-                {
-                    closeIt = false;
-                }
-            }
-            if (closeIt)
+            if (aboutToShutdown(wbSS))
             {
                 closeMainForm(true);
-                wbSS.uploadDone();
             }
         }
         else if (e.getActionCommand().equals(UploadMainPanel.UNDO_UPLOAD))
@@ -1828,7 +1839,7 @@ public class Uploader implements ActionListener, WindowStateListener
                     getResourceString("WB_UNDO_UPLOAD_MSG"), getResourceString("OK"),
                     getResourceString("Cancel"), JOptionPane.QUESTION_MESSAGE))
             {
-                undoUpload(true);
+                undoUpload(true, false);
             }
         }
         else if (e.getActionCommand().equals(UploadMainPanel.TBL_DBL_CLICK))
@@ -1873,6 +1884,48 @@ public class Uploader implements ActionListener, WindowStateListener
             log.error("Unrecognized action: " + e.getActionCommand());
     }
 
+    /**
+     * Called when the WorkbenchPaneSS for the uploaded dataset is shutting down, and when
+     * the Upload UI 'Close' button is clicked.
+     * 
+     * @param shuttingDownSS - the dataset that is shutting down.
+     * @return true if the Uploader can be closed, otherwise false.
+     */
+    public boolean aboutToShutdown(final WorkbenchPaneSS shuttingDownSS)
+    {
+        if (shuttingDownSS != wbSS)
+        {
+            return true;
+        }
+        if (currentTask != null)
+        {
+            JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), getResourceString("WB_UPLOAD_BUSY_CANNOT_CLOSE"));
+            return false;
+        }
+        if (currentOp.equals(Uploader.SUCCESS))
+        {
+            String msg = String.format(getResourceString("WB_UPLOAD_CONFIRM_SAVE"), wbSS.getWorkbench().getName());
+            JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
+            int rv = JOptionPane.showConfirmDialog(topFrame,
+                                                   msg,
+                                                   getResourceString("WB_UPLOAD_FORM_TITLE"),
+                                                   JOptionPane.YES_NO_CANCEL_OPTION);
+            
+            if (rv == JOptionPane.YES_OPTION)
+            {
+                saveRecordSets();
+                return true;
+            }
+            if (rv == JOptionPane.NO_OPTION)
+            {
+                undoUpload(false, true);
+                return true;
+            }
+            return false;
+        }
+        return true;
+    }
+    
     protected void showSettings()
     {
         boolean readOnly = !currentOp.equals(Uploader.READY_TO_UPLOAD)
@@ -2217,7 +2270,7 @@ public class Uploader implements ActionListener, WindowStateListener
 
     /**
      * @param op
-     * @return true if canClose in phase op.
+     * @return true if Close button is applicable in phase op.
      */
     protected boolean canClose(final String op)
     {
@@ -2265,7 +2318,7 @@ public class Uploader implements ActionListener, WindowStateListener
             public Object construct()
             {
                 initProgressBar(0, uploadData.getRows(), true, 
-                        getResourceString("WB_UPLOAD_UPLOADING") + " " + getResourceString("Row"));
+                        getResourceString("WB_UPLOAD_UPLOADING") + " " + getResourceString("Row"), false);
                 try
                 {
                     for (rowUploading = 0; rowUploading < uploadData.getRows();)
@@ -2275,7 +2328,7 @@ public class Uploader implements ActionListener, WindowStateListener
                             break;
                         }
                         log.debug("uploading row " + String.valueOf(rowUploading));
-                        setCurrentOpProgress(rowUploading + 1);
+                        setCurrentOpProgress(rowUploading + 1, false);
                         for (UploadTable t : uploadTables)
                         {
                             if (cancelled)
@@ -2323,7 +2376,7 @@ public class Uploader implements ActionListener, WindowStateListener
                 else
                 {
                     mainPanel.clearObjectsCreated();
-                    undoUpload(false);
+                    undoUpload(false, false);
                     if (!cancelled)
                     {
                         setCurrentOp(Uploader.FAILURE);
@@ -2364,70 +2417,100 @@ public class Uploader implements ActionListener, WindowStateListener
      * Called in response to undo command from user, and by the program when an upload is cancelled
      * or fails.
      */
-    public void undoUpload(final boolean isUserCmd)
+    public void undoUpload(final boolean isUserCmd, final boolean shuttingDown)
     {
         opKiller = null;
-        final UploaderTask undoTask = new UploaderTask(false, "")
+        
+        if (shuttingDown)
         {
-            boolean          success   = false;
-
-            @SuppressWarnings("synthetic-access")
-            @Override
-            public Object construct()
+            //The glass pane WILL NOT display!!
+            //even if it did, this process needs some kind of progress indication, because it can take a long time.
+            UIRegistry.writeGlassPaneMsg(String.format(getResourceString("WB_UPLOAD_CLEANING_UP"), 
+                    wbSS.getWorkbench().getName()), WorkbenchTask.GLASSPANE_FONT_SIZE);
+            try
             {
-                try
+                for (int ut = uploadTables.size() - 1; ut >= 0; ut--)
                 {
-                    if (isUserCmd)
-                    {
-                        initProgressBar(0, uploadTables.size(), true, 
-                            getResourceString("WB_UPLOAD_UNDOING") + " " + getResourceString("ERD_TABLE"));
-                    }
-                    else
-                    {
-                        initProgressBar(0, uploadTables.size(), true, 
-                                getResourceString("WB_UPLOAD_CLEANING_UP") + " " + getResourceString("ERD_TABLE"));
-                    }
-                    for (int ut = uploadTables.size() - 1; ut >= 0; ut--)
-                    {
-                        setCurrentOpProgress(uploadTables.size() - ut);
-                        uploadTables.get(ut).undoUpload();
-                    }
-                    success = true;
-                    return success;
+                    uploadTables.get(ut).undoUpload();
                 }
-                catch (Exception ex)
-                {
-                    opKiller = ex;
-                    return false;
-                }
-            }
 
-            @Override
-            public void finished()
+            }
+            finally
             {
-                super.finished();
-                statusBar.setText("");
-                mainPanel.clearObjectsCreated();
-                if (success)
-                {
-                    setCurrentOp(Uploader.READY_TO_UPLOAD);
-                }
-                else
-                {
-                    setCurrentOp(Uploader.FAILURE);
-                }
+                UIRegistry.clearGlassPaneMsg();
             }
-
-        };
-        if (recordSets != null)
-        {
-            recordSets.clear();
-            recordSets = null;
         }
-        UIRegistry.getStatusBar().setText(getResourceString((isUserCmd ? Uploader.UNDOING_UPLOAD
-                : Uploader.CLEANING_UP)));
-        undoTask.start();
-        setCurrentOp(isUserCmd ? Uploader.UNDOING_UPLOAD : Uploader.CLEANING_UP);
+        else
+        {
+            final UploaderTask undoTask = new UploaderTask(false, "")
+            {
+                boolean success = false;
+
+                @Override
+                public Object construct()
+                {
+                    try
+                    {
+                        if (isUserCmd)
+                        {
+                            initProgressBar(0, uploadTables.size(), true,
+                                    getResourceString("WB_UPLOAD_UNDOING") + " "
+                                            + getResourceString("ERD_TABLE"), false);
+                        }
+                        else
+                        {
+                            initProgressBar(0, uploadTables.size(), true,
+                                    getResourceString("WB_UPLOAD_CLEANING_UP") + " "
+                                            + getResourceString("ERD_TABLE"), false);
+                        }
+                        for (int ut = uploadTables.size() - 1; ut >= 0; ut--)
+                        {
+                            setCurrentOpProgress(uploadTables.size() - ut, false);
+                            uploadTables.get(ut).undoUpload();
+                        }
+                        success = true;
+                        return success;
+                    }
+                    catch (Exception ex)
+                    {
+                        opKiller = ex;
+                        return false;
+                    }
+                }
+
+                @Override
+                public void finished()
+                {
+                    super.finished();
+                    statusBar.setText("");
+                    statusBar.getProgressBar().setVisible(false);
+                    if (mainPanel != null)
+                    {
+                        mainPanel.clearObjectsCreated();
+                        if (success)
+                        {
+                            setCurrentOp(Uploader.READY_TO_UPLOAD);
+                        }
+                        else
+                        {
+                            setCurrentOp(Uploader.FAILURE);
+                        }
+                    }
+                }
+
+            };
+            if (recordSets != null)
+            {
+                recordSets.clear();
+                recordSets = null;
+            }
+            UIRegistry.getStatusBar()
+                    .setText(
+                            getResourceString((isUserCmd ? Uploader.UNDOING_UPLOAD
+                                    : Uploader.CLEANING_UP)));
+            undoTask.start();
+            setCurrentOp(isUserCmd ? Uploader.UNDOING_UPLOAD : Uploader.CLEANING_UP);
+        }
     }
 
     /**
@@ -2460,6 +2543,8 @@ public class Uploader implements ActionListener, WindowStateListener
         protected boolean done = false;
         protected String cancelMsg = null;
         protected boolean cancellable = false;
+        protected long startTime;
+        protected long endTime;
         
         public UploaderTask(boolean cancellable, String cancelMsg)
         {
@@ -2467,6 +2552,13 @@ public class Uploader implements ActionListener, WindowStateListener
             this.cancellable = cancellable;
             this.cancelMsg = cancelMsg;
             currentTask = this;
+        }
+        
+        @Override
+        public void start()
+        {
+            startTime = System.nanoTime();
+            super.start();
         }
         
         @Override
@@ -2482,6 +2574,8 @@ public class Uploader implements ActionListener, WindowStateListener
             super.finished();
             currentTask = null;
             done = true;
+            endTime = System.nanoTime();
+            System.out.println("UploaderTask time: " + Long.toString((endTime-startTime)/1000000000L));
         }
         
         public synchronized boolean isDone()
@@ -2525,7 +2619,7 @@ public class Uploader implements ActionListener, WindowStateListener
                 try
                 {
                     initProgressBar(0, uploadTables.size(), true, 
-                            getResourceString("WB_UPLOAD_RETRIEVING") + " " + getResourceString("ERD_TABLE"));
+                            getResourceString("WB_UPLOAD_RETRIEVING") + " " + getResourceString("ERD_TABLE"), false);
                     for (int progress = 0; progress < uploadTables.size();)
                     {
                         if (cancelled)
@@ -2533,7 +2627,7 @@ public class Uploader implements ActionListener, WindowStateListener
                             break;
                         }
                         UploadTable ut = uploadTables.get(progress);
-                        setCurrentOpProgress(progress + 1);
+                        setCurrentOpProgress(progress + 1, false);
                         try
                         {
                             Vector<Vector<String>> vals = ut.printUpload();

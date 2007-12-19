@@ -2808,15 +2808,23 @@ public class WorkbenchPaneSS extends BaseSubPane
             {
                 // nothing
             }
+            
         }
         
+        if (datasetUploader != null && !datasetUploader.aboutToShutdown(this))
+        {
+            return false;
+        }
+
         if (retStatus)
         {
             ((WorkbenchTask)task).closing(this);
             if (datasetUploader != null)
             {
-                datasetUploader.closing();
-                datasetUploader = null;
+                if (datasetUploader.closing(this))
+                {
+                    datasetUploader = null;
+                }
             }
             if (spreadSheet != null)
             {

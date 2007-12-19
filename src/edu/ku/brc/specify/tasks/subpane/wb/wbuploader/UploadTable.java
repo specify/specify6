@@ -1828,9 +1828,9 @@ public class UploadTable implements Comparable<UploadTable>
             {
                 busRule.afterSaveCommit(rec);
             }
-            //The refresh line slows performance hugely so only calling it when necessary.
-            //This may be risky. At this time the refresh is required bacause
-            //of changes made in business rule process of treeables.
+            //The refresh call slows performance hugely so only calling it when necessary.
+            //This may be risky. At this time the refresh is required only because
+            //of changes made in business rule processing of treeables.
             //But if business rules change...
             if (rec instanceof Treeable)
             {

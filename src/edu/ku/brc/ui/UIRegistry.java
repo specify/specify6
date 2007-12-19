@@ -1199,6 +1199,7 @@ public class UIRegistry
             
             glassPane.setVisible(true);
             mainComp.setVisible(false);
+            mainComp.repaint();
             glassPane.repaint();
 
         }
