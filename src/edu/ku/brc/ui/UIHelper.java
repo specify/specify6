@@ -500,39 +500,39 @@ public final class UIHelper
         log.debug("Trying to convertDataFromString dataStr [" + dataStr + "] of class[" + cls + "]");
         if (cls == Integer.class)
         {
-            return Integer.parseInt(dataStr);
+            return StringUtils.isNotEmpty(dataStr) ? Integer.parseInt(dataStr) : null;
             
         } else if (cls == Float.class)
         {
-            return Float.parseFloat(dataStr);
+            return StringUtils.isNotEmpty(dataStr) ? Float.parseFloat(dataStr) : null;
             
         } else if (cls == Double.class)
         {
-            return Double.parseDouble(dataStr);
+            return StringUtils.isNotEmpty(dataStr) ? Double.parseDouble(dataStr) : null;
             
         } else if (cls == Long.class)
         {
-            return Long.parseLong(dataStr);
+            return StringUtils.isNotEmpty(dataStr) ? Long.parseLong(dataStr) : null;
             
         } else if (cls == Short.class)
         {
-            return Short.parseShort(dataStr);
+            return StringUtils.isNotEmpty(dataStr) ? Short.parseShort(dataStr) : null;
             
         } else if (cls == Byte.class)
         {
-            return Byte.parseByte(dataStr);
+            return StringUtils.isNotEmpty(dataStr) ? Byte.parseByte(dataStr) : null;
             
         } else if (cls == Calendar.class)
         {
-            return getCalendar(dataStr, scrDateFormat);
+            return StringUtils.isNotEmpty(dataStr) ? getCalendar(dataStr, scrDateFormat) : null;
             
         } else if (cls == Date.class)
         {
-            return getDate(dataStr, scrDateFormat);
+            return StringUtils.isNotEmpty(dataStr) ? getDate(dataStr, scrDateFormat) : null;
             
         } else if (cls == Timestamp.class)
         {
-            return getDate(dataStr, scrDateFormat);
+            return StringUtils.isNotEmpty(dataStr) ? getDate(dataStr, scrDateFormat) : null;
             
         } else
         {
