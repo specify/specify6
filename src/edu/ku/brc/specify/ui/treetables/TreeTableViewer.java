@@ -1749,8 +1749,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             boolean changed = dataService.moveTreeNode(child, newParent);
             if (!changed)
             {
-                // TODO: i18n
-                statusBar.setErrorMessage("Unknown error occurred while moving tree node");
+                statusBar.setErrorMessage(getResourceString("TTV_UNKOWN_MOVE_ERROR"));
             }
             
             // reshow the nodes' children, if the nodes are still in the tree (see comment above in this method)
