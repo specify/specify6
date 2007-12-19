@@ -1324,12 +1324,6 @@
                 	<cell type="field" id="hybridParent2" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false" name="hybridParent2" colspan="3"/>
                 </row>
                 <row>
-                    <cell type="separator" label="Attachments" colspan="5"/>
-                </row>
-                <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="taxonAttachments" colspan="5"/>
-                </row>
-                <row>
                     <cell type="separator" label="Children" colspan="5"/>
                 </row>
                 <row>
@@ -1340,6 +1334,9 @@
                 </row>
                 <row>
                     <cell type="subview" viewname="TaxonSubform" id="acceptedChildren" name="acceptedChildren" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="taxonAttachments" colspan="5" initialize="btn=true"/>
                 </row>
             </rows>
         </viewdef>

@@ -100,9 +100,9 @@ public class AutoNumberGeneric implements AutoNumberIFace
         StringBuilder sb = new StringBuilder(" FROM "+classObj.getSimpleName());
         if (yearVal != null && yearPos != null)
         {
-            sb.append(" WHERE ");
+            sb.append(" WHERE '");
             sb.append(yearVal);
-            sb.append(" = substring("+fieldName+","+(yearPos.first+1)+","+yearPos.second+")");
+            sb.append("' = substring("+fieldName+","+(yearPos.first+1)+","+yearPos.second+")");
         }
         sb.append(" ORDER BY");
         
@@ -123,7 +123,7 @@ public class AutoNumberGeneric implements AutoNumberIFace
                 sb.append(" substring("+fieldName+","+(pos.first+1)+","+pos.second+") desc");
             }
             
-            //System.out.println(sb.toString());
+            //System.err.println(sb.toString());
             List<?> list = session.createQuery(sb.toString()).setMaxResults(1).list();
             if (list.size() == 1)
             {

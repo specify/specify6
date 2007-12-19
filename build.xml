@@ -152,15 +152,11 @@
 		<delete file="${jar.name}.jar" />
 	</target>
 	
-
 	<!-- *************************************************************
-	     Mac Distribution for the Builder
+	     Mac Common Components Build
 	     ************************************************************* -->
-	<target name="dist-mac-bld" depends="">
+	<target name="dist-mac-common" depends="">
 		
-		<property name="appdir" value="${dist-mac}/SpecifyBuilder.app" />
-		<property name="derby.data.path" value="${dist-mac}" />
-
 		<mkdir dir="${dist-mac}" />
 		<mkdir dir="${appdir}" />
 		<mkdir dir="${appdir}/Contents" />
@@ -172,88 +168,157 @@
 		<mkdir dir="${appdir}/Contents/Resources/Java/demo_files" />
 		<mkdir dir="${appdir}/Contents/Resources/Java/system_dep_libs" />
 		<mkdir dir="${appdir}/Contents/Resources/Java/system_dep_libs/mac" />
-
+		
 		<!-- Copy Application Stub Compile the java source of the project -->
 		<copy file="${packaging}/JavaApplicationStub" todir="${appdir}/Contents/MacOS" />
 		<exec command="chmod 755 ${appdir}/Contents/MacOS/JavaApplicationStub" />
 
-		<!-- Copy info list -->
-		<copy file="${packaging}/builder/Info.plist" todir="${appdir}/Contents" />
-
-		<!-- Copy PkgInfo -->
-		<copy file="${packaging}/builder/PkgInfo" todir="${appdir}/Contents" />
-
-		<!-- Copy hibernate.cfg.xml -->
-		<copy file="src/hibernate.cfg.xml" todir="${appdir}/Contents/Resources/Java/src" />
-
-		<!-- Copy config demo_files -->
-		<!-- <copy todir="${appdir}/Contents/Resources/Java/demo_files">
-			<fileset dir="demo_files">
-				<include name="**/*.*" />
-			</fileset>
-		</copy> -->
-		
 		<!-- Copy config dir -->
 		<copy todir="${appdir}/Contents/Resources/Java/config">
 			<fileset dir="config">
-				<include name="**/*.xml" />
+				<exclude name="**/*.svn" />
 			</fileset>
 		</copy>
 		
 		<!-- Copy the main app jar -->
 		<copy file="${jar.name}.jar" todir="${appdir}/Contents/Resources/Java" />
 
-		<!-- Copy the build.xml -->
-		<copy file="build.xml" todir="${appdir}/Contents/Resources/Java" />
-
 		<!-- Copy Icons -->
-		<copy file="${packaging}/builder/specifybldr.icns" todir="${appdir}/Contents/Resources" />
+		<copy file="${packaging}/specify.icns" todir="${appdir}/Contents/Resources" />
 
-		<copy todir="${appdir}/Contents/Resources/Java/libs">
+		<!-- Libraries / Jars -->
+		<copy todir="${appdir}/Contents/Resources/Java">
 			<fileset dir="libs">
 				<include name="*.jar" />
 			</fileset>
-		</copy>
-		
-		<copy todir="${appdir}/Contents/Resources/Java/hibernate_libs">
 			<fileset dir="${hibernatelib.dir}">
 				<include name="*.jar" />
 			</fileset>
-		</copy>
-		
-		<copy todir="${appdir}/Contents/Resources/Java/external_libs">
-			<fileset dir="external_libs">
-				<include name="*.jar" />
+			<fileset dir="${ireport.dir}">
+				<include name="iReport.jar" />
 			</fileset>
-		</copy>
-		
-		<copy todir="${appdir}/Contents/Resources/Java/system_dep_libs">
-			<fileset dir="system_dep_libs">
-				<include name="*.jar" />
-			</fileset>
-		</copy>
-
-		<copy todir="${appdir}/Contents/Resources/Java/system_dep_libs/mac">
-			<fileset dir="system_dep_libs/mac">
-				<include name="*.jar" />
-			</fileset>
-		</copy>
-
-		<copy todir="${appdir}/Contents/Resources/Java">
 			<fileset dir="${macnative.dir}">
 				<include name="*.jar" />
+				<include name="**/*.jnilib" />
 			</fileset>
 		</copy>
 
 		<!-- Tell OS the dir is an App -->
 		<exec command="/Developer/Tools/SetFile -a B ${appdir}" />
 
+		<!-- Copy Help -->
+		<copy todir="${appdir}/Contents/Resources/Java/help">
+			<fileset dir="help">
+				<exclude name="**/.svn" />
+			</fileset>
+		</copy>
+		
+		<antcall target="build-help-index"/>
+		<antcall target="build-help-fulltext-mac"/>
+
+    </target>
+	
+		
+	<!-- *************************************************************
+	     Mac Distribution for the Builder
+	     ************************************************************* -->
+	<target name="dist-mac-bld" depends="">
+		
+		<property name="appdir" value="${dist-mac}/SpecifyBuilder.app" />
+		<property name="derby.data.path" value="${dist-mac}" />
+
+		<antcall target="clean-jar"/>
+		
+		<antcall target="dist-jar-mac"/>
+		<antcall target="dist-mac-common"/>
+		
+		<!-- Copy and Rename Info List -->
+		<copy file="${packaging}/builder/Info.plist" todir="${appdir}/Contents" />
+		
+		<!-- Copy and Rename PkgInfo -->
+		<copy file="${packaging}/builder/PkgInfo" todir="${appdir}/Contents" />
+		
+		<!-- Copy Icons -->
+		<!-- <copy file="${packaging}/builder/specifybldr.icns" todir="${appdir}/Contents/Resources" /> -->
+		<rename src="${appdir}/Contents/Resources/specify.icns" dest="${appdir}/Contents/Resources/specifybldr.icns"/>
+
 	</target>
 
 	<!-- *************************************************************
-	    Mac Distribution
+	    Mac Distribution (Main Specify Application)
 	    ************************************************************* -->
 	<target name="dist-mac" depends="">
+		
+		<property name="appdir" value="${dist-mac}/${app.name}.app" />
+		<property name="derby.data.path" value="${dist-mac}" />
+
+		<antcall target="clean-jar"/>
+		<delete dir="${dist-mac}"/>
+		
+		<antcall target="dist-jar-mac"/>
+		<antcall target="dist-mac-common"/>
+
+		<!-- Copy info list -->
+		<copy file="${packaging}/Info.plist" todir="${appdir}/Contents" />
+
+		<!-- Copy PkgInfo -->
+		<copy file="${packaging}/PkgInfo" todir="${appdir}/Contents" />
+
+		<!-- Copy demo_files dir -->
+		<copy todir="${appdir}/Contents/Resources/Java/demo_files">
+			<fileset dir="demo_files">
+				<exclude name="**/.svn" />
+				<exclude name="**/.csv" />
+				<include name="**/topbrc195x68.png" />
+			</fileset>
+		</copy>
+		
+		<!-- Testing Alt Help 
+		<property name="alt.help.img.dir" value="AltHelpImages/Windows"/>
+		<antcall target="copy-alt-help-images"/> -->
+
+		<!-- Demo Files -->
+		<copy file="demo_files/workbench/FishCollectingTrip.csv" todir="${dist-mac}/examples" />
+		<copy file="demo_files/workbench/JohsonCountyTrip.csv" todir="${dist-mac}/examples" />
+	    <copy file="demo_files/workbench/SaipanTrip.xls" todir="${dist-mac}/examples" />
+		
+	</target>
+	
+	
+	<!-- *************************************************************
+	     Mac Schema Localizer Application Build
+	     ************************************************************* -->
+	<target name="dist-mac-sl" depends="">
+		
+		<property name="appdir" value="${dist-mac}/SpecifySchema.app" />
+		<property name="derby.data.path" value="${dist-mac}/DerbyDatabases" />
+		
+		<antcall target="clean-jar"/>
+		<antcall target="dist-jar-mac-ls"/>
+		<antcall target="dist-mac-common"/>
+		
+		<!-- Copy and Rename Info List -->
+		<copy file="${packaging}/schemaloc/Info.plist" todir="${appdir}/Contents" />
+		
+		<!-- Copy and Rename PkgInfo -->
+		<copy file="${packaging}/schemaloc/PkgInfo" todir="${appdir}/Contents" />
+		
+	</target>
+	
+
+	<!-- *************************************************************
+	     Mac Builds All the Mac Applications
+	     ************************************************************* -->
+	<target name="dist-mac-all" depends="">
+		<antcall target="dist-mac"/>
+		<antcall target="dist-mac-sl"/>
+		<antcall target="dist-mac-bld"/>
+	</target>
+	
+	<!-- *************************************************************
+	    Mac Distribution OLD (Main Specify Application)
+	    ************************************************************* -->
+	<target name="dist-mac-old" depends="">
 		
 		<property name="appdir" value="${dist-mac}/${app.name}.app" />
 		<property name="derby.data.path" value="${dist-mac}" />
@@ -261,7 +326,6 @@
 		<antcall target="clean-jar"/>
 		<antcall target="dist-jar-mac"/>
 		<antcall target="dist-mac-clean"/>
-		
 		
 		<antcall target="build-empty-derby-db"/>
 				
@@ -347,6 +411,10 @@
 
 	</target>
 
+		
+	<!-- *************************************************************
+	     Mac WorkBench Application Build
+	     ************************************************************* -->
 	<target name="dist-mac-wb" depends="">
 		
 		<property name="appdir" value="${dist-mac}/${app.name}.app" />
@@ -425,7 +493,10 @@
 
 	</target>
 
-	<target name="dist-mac-sl" depends="">
+	<!-- *************************************************************
+	     Mac Schema Localizer Application Build
+	     ************************************************************* -->
+	<target name="dist-mac-sl-old" depends="">
 		
 		<property name="appdir" value="${dist-mac}/SpecifySchema.app" />
 		<property name="derby.data.path" value="${dist-mac}/DerbyDatabases" />
@@ -495,7 +566,23 @@
 		
 	</target>
 
-		
+	<!-- *************************************************************
+	     Schema Export (Doesn't work at the moment)
+	     ************************************************************* -->
+	<target name="schemaexport" description="Generates the database schema with hbm2ddl to a file" depends="">
+			<taskdef name="schemaexport" classname="org.hibernate.tool.hbm2ddl.SchemaExportTask">
+				<classpath refid="project.class.path" />
+				</taskdef>
+				<!-- Use the Hibernate configuration from source directory. -->
+				 <schemaexport 
+				
+				     config="src/hibernate.cfg.xml"
+				     quiet="yes"
+				     text="no"
+				     drop="no" 
+				     delimiter=";"
+			         output="${build.dir}/schema-export.sql"/>
+	</target>
 	<!-- *************************************************************
 	     Build Empty Derby DB
 	     ************************************************************* -->

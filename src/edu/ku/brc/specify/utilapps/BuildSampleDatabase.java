@@ -2091,6 +2091,33 @@ public class BuildSampleDatabase
     }
     
     /**
+     * Makes sure the Derby Directory gets created to hold the database. 
+     */
+    protected void ensureDerbyDirectory(final String driver)
+    {
+        if (StringUtils.isNotEmpty(driver) && 
+            StringUtils.contains(driver, "Derby") && 
+            StringUtils.isNotEmpty(UIRegistry.getJavaDBPath()))
+        {
+            File derbyDir = new File(UIRegistry.getJavaDBPath());
+            if (!derbyDir.exists())
+            {
+                if (!derbyDir.mkdirs())
+                {
+                    try
+                    {
+                        log.error("Couldn't create Derby Path["+derbyDir.getCanonicalPath()+"]");
+                        
+                    } catch (IOException ex)
+                    {
+                        log.error(ex);
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
      * Creates the dialog to find out what database and what database driver to use. 
      */
     protected void buildSetup(final String[] args)
@@ -2098,33 +2125,55 @@ public class BuildSampleDatabase
         boolean doEmptyBuild = false;
         String  derbyPath    = null;
         
+        log.debug("---------- Args ------------");
+        for (String arg : args)
+        {
+            log.debug(arg);
+        }
+        
+        boolean wasJavaDBSet = false;
         if (args != null && args.length > 0)
         {
-            if (args.length == 2)
+            for (String arg : args)
             {
-                doEmptyBuild = args[0].equals("build_empty");
-                derbyPath    = StringUtils.isNotEmpty(args[1]) ? args[1] : null;
-                hideFrame    = true;
-                //System.out.println("doEmptyBuild [ "+doEmptyBuild+" ]");
-                
-            } else
-            {
-                throw new RuntimeException("The args MUST be \"empty <derby path>\"");
+                String[] pair = StringUtils.split(arg, "=");
+                if (pair.length == 2)
+                {
+                    String option = pair[0];
+                    String value  = pair[1];
+                    
+                    if (option.equals("-Dappdir"))
+                    {
+                        UIRegistry.setDefaultWorkingPath(value);
+                        
+                    } else if (option.equals("-Dappdatadir"))
+                    {
+                        UIRegistry.setBaseAppDataDir(value);
+                        
+                    } else if (option.equals("-Djavadbdir"))
+                    {
+                        UIRegistry.setJavaDBDir(value);
+                        derbyPath = UIRegistry.getJavaDBPath();
+                        wasJavaDBSet = true;
+                    }
+                }
             }
             
-            File derbyDir = new File(derbyPath);
-            if (!derbyDir.exists())
+            if (args.length == 2 && !args[0].startsWith("-D") && !args[1].startsWith("-D"))
             {
-                if (derbyDir.mkdirs())
-                {
-                    System.err.println("Couldn't create Derby Path["+derbyDir.getAbsolutePath()+"]");
-                }
+                doEmptyBuild = args[0].equals("build_empty");
+                derbyPath    = StringUtils.isNotEmpty(args[1]) ? args[1] : derbyPath;
+                hideFrame    = true;
+                log.debug("doEmptyBuild [ "+doEmptyBuild+" ]");
             }
         }
         
         UIRegistry.setAppName("Specify");
         
-        UIRegistry.setJavaDBDir(derbyPath != null ? derbyPath : UIRegistry.getDefaultWorkingPath() + File.separator + "DerbyDatabases");
+        if (!wasJavaDBSet)
+        {
+            UIRegistry.setJavaDBDir(derbyPath != null ? derbyPath : UIRegistry.getDefaultWorkingPath() + File.separator + "DerbyDatabases");
+        }
         
         if (hideFrame)
         {
@@ -2137,12 +2186,14 @@ public class BuildSampleDatabase
         backstopPrefs = getInitializePrefs(null);
         
         String driverName   = backstopPrefs.getProperty("initializer.drivername",   "MySQL");
-        String databaseName = backstopPrefs.getProperty("initializer.databasename", "testfish");        
+        String databaseName = backstopPrefs.getProperty("initializer.databasename", "testfish");    
             
         if (doEmptyBuild)
         {
+            ensureDerbyDirectory(driverName);
+            
             Discipline         discipline = Discipline.getDiscipline("fish");
-            DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver("Derby");
+            DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver(driverName);
             buildEmptyDatabase(driverInfo, "localhost", "WorkBench", "guest", "guest", "guest", "guest", "guest@ku.edu", discipline);
 
         } else
@@ -2196,11 +2247,11 @@ public class BuildSampleDatabase
      * @throws SQLException
      * @throws IOException
      */
-    protected void startBuild(final String dbName, 
-                              final String driverName, 
+    protected void startBuild(final String     dbName, 
+                              final String     driverName, 
                               final Discipline discipline,
-                              final String username, 
-                              final String password)
+                              final String     username, 
+                              final String     password)
     {
         final SwingWorker worker = new SwingWorker()
         {
@@ -2396,15 +2447,16 @@ public class BuildSampleDatabase
      * 
      * @throws SQLException
      */
-    protected void build(final String dbName, 
-                         final String driverName, 
+    protected void build(final String     dbName, 
+                         final String     driverName, 
                          final Discipline discipline) throws SQLException
     {
         boolean doingDerby = StringUtils.contains(driverName, "Derby");
+        
+        ensureDerbyDirectory(driverName);
 
-        frame = new ProgressFrame("Building sample DB");
+        frame = new ProgressFrame("Building Sample DB");
         frame.setSize(new Dimension(500,125));
-        frame.setTitle("Building Test Database");
         UIHelper.centerAndShow(frame);
         frame.setProcessPercent(true);
         frame.setOverall(0, 5+(doingDerby ? 1 : 0));
@@ -2425,6 +2477,8 @@ public class BuildSampleDatabase
         String userName     = initPrefs.getProperty("initializer.username", "rods");
         String password     = initPrefs.getProperty("initializer.password", "rods");
         String databaseHost = initPrefs.getProperty("initializer.host",     "localhost");
+        
+        frame.setTitle("Building -> Database: "+ dbName + " Driver: "+ driverName + " User: "+userName);
 
         steps = 0;
         SwingUtilities.invokeLater(new Runnable()
@@ -2687,7 +2741,7 @@ public class BuildSampleDatabase
                 properties.load(new FileInputStream(initFile));
                 return properties;
             } 
-            System.out.println("Couldn't find ["+initFile.getAbsolutePath()+"]");
+            System.err.println("Couldn't find ["+initFile.getAbsolutePath()+"]");
             
         } catch (Exception ex)
         {
@@ -2816,11 +2870,13 @@ public class BuildSampleDatabase
                         String password = new String(passwdTxtFld.getPassword());
                         startBuild(databaseName, dbDriver.getName(), (Discipline)disciplines.getSelectedItem(), username, password);
                         
-                        
                     } catch (Exception ex)
                     {
                         ex.printStackTrace();
                     }
+                } else
+                {
+                    System.exit(0);
                 }
                 wasClosed = true;
                 setupDlg.dispose();
@@ -2954,6 +3010,25 @@ public class BuildSampleDatabase
    
         } else
         {
+            // Now check the System Properties
+            String appDir = System.getProperty("appdir");
+            if (StringUtils.isNotEmpty(appDir))
+            {
+                UIRegistry.setDefaultWorkingPath(appDir);
+            }
+            
+            String appdatadir = System.getProperty("appdatadir");
+            if (StringUtils.isNotEmpty(appdatadir))
+            {
+                UIRegistry.setBaseAppDataDir(appdatadir);
+            }
+            
+            String javadbdir = System.getProperty("javadbdir");
+            if (StringUtils.isNotEmpty(javadbdir))
+            {
+                UIRegistry.setJavaDBDir(javadbdir);
+            }
+            
             SwingUtilities.invokeLater(new Runnable()
             {
                 public void run()

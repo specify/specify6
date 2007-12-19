@@ -260,7 +260,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
 
         String text = getText();
 
-        if (isNew && !isViewOnly && isEnabled() && text != null && text.length() < bgStr.length() )
+        if (!isViewOnly && needsUpdating && isEnabled() && text != null && text.length() < bgStr.length() )
         {
             FontMetrics fm   = g.getFontMetrics();
             int          w   = fm.stringWidth(text);
@@ -451,6 +451,11 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
      */
     public void setAsNew(boolean isNew)
     {
+        // Now that we now we know it is a new Object then set the default value
+        if (isNew && origValue == null)
+        {
+            setText(StringUtils.isNotEmpty(defaultValue) ? defaultValue : "");
+        }
         this.isNew = isRequired || !formatter.isUserInputNeeded() ? isNew : false;
     }
 
@@ -608,7 +613,6 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
     {
         this.defaultValue = defaultValue;
 
-
         String data;
 
         if (value != null)
@@ -632,7 +636,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
         } else
         {
 
-            data = StringUtils.isNotEmpty(defaultValue) ? defaultValue : "";
+            data = "";//StringUtils.isNotEmpty(defaultValue) ? defaultValue : "";
             needsUpdating = true;
         }
         

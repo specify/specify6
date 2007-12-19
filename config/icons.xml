@@ -6,20 +6,20 @@
         <icon name="SpecifyLargeIcon" file="specify_large_icon.gif" sizes="NonStd"/>
     -->
     
-    <icon name="AppIcon"    file="specify32.png" sizes="32"/>
-    <icon name="Specify16"  file="specify16.png" sizes="16"/>
+    <icon name="AppIcon"          file="specify32.png" sizes="32"/>
+    <icon name="Specify16"        file="specify16.png" sizes="16"/>
     <icon name="SpecifyLargeIcon" file="specify128.png" sizes="NonStd"/>
-    <icon name="SpecifySplash" file="SpecifyBigSplash.png" sizes="NonStd"/>
+    <icon name="SpecifySplash"    file="SpecifyBigSplash.png" sizes="NonStd"/>
     
-    <icon name="Save"           file="Save32x32.png" sizes="all"/>
-    <icon name="Import"         file="ImportData16x16.png" sizes="16"/>
-    <icon name="ImportImages"   file="ImportImages16x16.png" sizes="16"/>
-    <icon name="Export16"       file="ExportDataSet16x16.png" sizes="16"/>
-    <icon name="ExportExcel16"  file="ExportExcelTemplate16x16.png" sizes="16"/>
+    <icon name="Save"             file="Save32x32.png" sizes="all"/>
+    <icon name="Import"           file="ImportData16x16.png" sizes="16"/>
+    <icon name="ImportImages"     file="ImportImages16x16.png" sizes="16"/>
+    <icon name="Export16"         file="ExportDataSet16x16.png" sizes="16"/>
+    <icon name="ExportExcel16"    file="ExportExcelTemplate16x16.png" sizes="16"/>
     
     <icon name="Workbench16"      file="Workbench16x16.png" sizes="16"/>
     <icon name="Workbench"        file="Workbench32x32.png" sizes="all"/>
-    <icon name="Interactions"     file="interactions.png" sizes="all"/>
+    <icon name="Interactions"     file="Interactions.png" sizes="all"/>
     <icon name="Statistics"       file="Statistics32x32.png" sizes="all"/>
     <icon name="Pie_Chart"        file="PieChart32x32.png" sizes="all"/>
     <icon name="Bar_Chart"        file="BarGraph32x32.png" sizes="all"/>

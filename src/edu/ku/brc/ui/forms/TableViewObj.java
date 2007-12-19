@@ -595,7 +595,7 @@ public class TableViewObj implements Viewable,
             }
         }
         
-        final ViewBasedDisplayIFace dialog = UIHelper.createDataObjectDialog(altView, mainComp, dObj, isEditting, false);
+        final ViewBasedDisplayIFace dialog = UIHelper.createDataObjectDialog(altView, mainComp, dObj, isEditting, isNew);
         if (dialog != null)
         {
             // Now we need to get the MultiView and add it into the MV tree

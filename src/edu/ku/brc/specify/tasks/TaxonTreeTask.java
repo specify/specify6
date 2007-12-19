@@ -13,7 +13,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.net.URI;
-import java.util.Set;
 
 import javax.persistence.Transient;
 import javax.swing.JCheckBox;

@@ -1841,7 +1841,7 @@ public class FormViewObj implements Viewable,
                 {
                     if (comp instanceof ValComboBoxFromQuery)
                     {
-                        continue;
+                        //continue;
                     }
                     boolean override = focusable instanceof JTextField && !(comp instanceof JTextField);
                     

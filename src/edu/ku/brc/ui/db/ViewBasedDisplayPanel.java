@@ -304,6 +304,19 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
         if (multiView != null)
         {
             multiView.setData(dataObj);
+            
+            // This was added 12/18/07 - rods for pop up Taxon form
+            // Tells it is is a new form and all the validator painting should be supressed
+            // on required fields until the user inputs something
+            if (MultiView.isOptionOn(multiView.getOptions(), MultiView.IS_NEW_OBJECT))
+            {
+                multiView.setIsNewForm(true, false); // traverse immediate children only
+            }
+
+            if (multiView.getCurrentView().getValidator() != null)
+            {
+                multiView.getCurrentView().getValidator().validateForm();
+            }
         }
     }
     

@@ -1368,6 +1368,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		Integer parentIdBefore              = (node.getParent() != null) ? node.getParent().getTreeId() : null;
         final Integer acceptedNodeIdBefore  = (node.getAcceptedParent() != null) ? node.getAcceptedParent().getTreeId() : null;
 		
+        // NOTE: Because of when the combobox gets set we need to call the validatSr here
+        // so the it all get validated correctly.
+        dialog.getMultiView().getCurrentView().getValidator().validateForm();
+        
 		dialog.pack();
 		// show the dialog (which allows all user edits to happen)
 		dialog.setVisible(true);
