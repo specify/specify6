@@ -101,6 +101,18 @@ import edu.ku.brc.ui.UIRegistry;
  * Created Date: Mar 26, 2007
  *
  */
+/**
+ * @author timbo
+ *
+ * @code_status Alpha
+ *
+ */
+/**
+ * @author timbo
+ *
+ * @code_status Alpha
+ *
+ */
 @SuppressWarnings("serial")
 public class DataImportDialog extends JDialog implements ActionListener
 {
@@ -152,6 +164,8 @@ public class DataImportDialog extends JDialog implements ActionListener
    
     private int highestColumnCount;
     
+    private boolean ignoreActions = false;
+    
     private short geoDataCol = -1;
     private Vector<Short> imageDataCols = new Vector<Short>();
 
@@ -199,7 +213,7 @@ public class DataImportDialog extends JDialog implements ActionListener
         this.file = config.getFile();
         this.fileName = file.getAbsolutePath().toString();
         this.doesFirstRowHaveHeaders = doesHaveHeaders;
-        myDisplayTable = new JTable();
+        myDisplayTable = null;
         model = new PreviewTableModel();
         createUiForXLS();
 	}
@@ -763,11 +777,85 @@ public class DataImportDialog extends JDialog implements ActionListener
     }
   
     /**
-     * Parses the given import xls file according to the users selection and creates/updates the Preview table,
-     * showing the user how the import options effect the way the data will be imported into the spreadsheet.
+     * Fills badHeads with indexes for columns that contain data but don't have a header or have an non-string header (because it makes things difficult with HSSF).
+     * Fills emptyCols with indexes for columns that are totally empty.
+     * Assumes that badHeads and emptyCols are not null and empty.
+     * 
+     */
+    private void checkHeadsAndCols(final HSSFSheet sheet, Vector<Integer> badHeads, Vector<Integer> emptyCols) 
+    {
+        boolean firstRow = true;
+        Vector<Boolean> firstRowCells = new Vector<Boolean>();
+        Vector<Boolean> restCells = new Vector<Boolean>();
+        
+        // Iterate over each row in the sheet
+        Iterator<?> rows = sheet.rowIterator();
+        while (rows.hasNext())
+        {
+            HSSFRow row = (HSSFRow) rows.next();
+            int maxSize = Math.max(row.getPhysicalNumberOfCells(), row.getLastCellNum());
+            for (short col = 0; col < maxSize; col++)
+            {
+                if (firstRow)
+                {
+                    if (row.getCell(col) == null)
+                    {
+                        firstRowCells.add(false);
+                    }
+                    else if (row.getCell(col).getCellType() == HSSFCell.CELL_TYPE_STRING)
+                    {
+                        firstRowCells.add(true);
+                    }
+                    else
+                    {
+                        firstRowCells.add(null);
+                    }
+                }
+                else
+                {
+                    if (col == restCells.size())
+                    {
+                        restCells.add(false);
+                    }
+                    if (!restCells.get(col))
+                    {
+                        restCells.set(col, row.getCell(col) != null);
+                    }
+                }
+            }
+            firstRow = false;
+        }
+        
+        //pad smaller vector with false if necessary.
+        while (restCells.size() < firstRowCells.size())
+        {
+            restCells.add(false);
+        }
+        while (firstRowCells.size() < restCells.size())
+        {
+            firstRowCells.add(false);
+        }
+                
+        for (int c = 0; c < firstRowCells.size(); c++)
+        {
+            if (firstRowCells.get(c) == null || (!firstRowCells.get(c) && restCells.get(c)))
+            {
+                badHeads.add(c);
+            }
+            if (firstRowCells.get(c) != null && !firstRowCells.get(c) && !restCells.get(c))
+            {
+                emptyCols.add(c);
+            }
+        }
+    }
+    
+    /**
+     * Parses the given import xls file according to the users selection and creates/updates the
+     * Preview table, showing the user how the import options effect the way the data will be
+     * imported into the spreadsheet.
+     * 
      * @param t - the table to display the data
-     * @return
-     * JTable - the table to display the data
+     * @return JTable - the table to display the data
      */
     private JTable setXLSTableData(JTable t)
     {
@@ -787,6 +875,49 @@ public class DataImportDialog extends JDialog implements ActionListener
             HSSFWorkbook    workBook = new HSSFWorkbook(fs);
             HSSFSheet       sheet    = workBook.getSheetAt(0);
 
+            Vector<Integer> badHeads = new Vector<Integer>();
+            Vector<Integer> emptyCols = new Vector<Integer>();
+            checkHeadsAndCols(sheet, badHeads, emptyCols);
+            if (badHeads.size() > 0 && doesFirstRowHaveHeaders)
+            {
+                if (t != null)
+                {
+                    String colStr = "";
+                    for (int c=0; c<badHeads.size(); c++)
+                    {
+                        if (c > 0)
+                        {
+                            colStr += c == badHeads.size()-1 ? " and " : ", ";
+                        }
+                        int adjust = 1;
+                        for (Integer ec : emptyCols)
+                        {
+                            if (ec <= badHeads.get(c))
+                            {
+                                adjust--;
+                            }
+                        }
+                        colStr += badHeads.get(c)+adjust;
+                    }
+                    JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
+                            String.format(getResourceString((badHeads.size() == 1 ? "WB_IMPORT_INVALID_COL_HEADER" : "WB_IMPORT_INVALID_COL_HEADERS")), colStr), 
+                            getTitle(), JOptionPane.ERROR_MESSAGE);
+                }
+                this.doesFirstRowHaveHeaders = false;
+                try
+                {
+                    ignoreActions = true;
+                    this.containsHeaders.setSelected(false);
+                }
+                finally
+                {
+                    ignoreActions = false;
+                }
+                if (t != null)
+                {
+                    return t;
+                }
+            }
             boolean firstRow = true;
 
             //quick fix to prevent ".0" at end of catalog numbers etc
@@ -794,6 +925,8 @@ public class DataImportDialog extends JDialog implements ActionListener
             nf.setMinimumFractionDigits(0);
             nf.setMaximumFractionDigits(20);
             nf.setGroupingUsed(false); //gets rid of commas
+            
+            int maxCols = 0;
             
             // Iterate over each row in the sheet
             Iterator<?> rows = sheet.rowIterator();
@@ -804,65 +937,81 @@ public class DataImportDialog extends JDialog implements ActionListener
                 HSSFRow row = (HSSFRow) rows.next();
                 //log.debug(row.getLastCellNum()+"  "+row.getPhysicalNumberOfCells());
                 int maxSize = Math.max(row.getPhysicalNumberOfCells(), row.getLastCellNum());
+                if (maxSize > maxCols)
+                {
+                    maxCols = maxSize;
+                }
                 while (numCols < maxSize)
                 {
-                    HSSFCell cell = row.getCell(numCols);
-                    String value = null;
-                    //if cell is blank, set value to ""
-                    if (cell == null)
+                    if (emptyCols.indexOf(new Integer(numCols)) == -1)
                     {
-                        value = "";
-                    }
-                    else
-                    {
-                        switch (cell.getCellType())
+                        HSSFCell cell = row.getCell(numCols);
+                        String value = null;
+                        // if cell is blank, set value to ""
+                        if (cell == null)
                         {
-                            case HSSFCell.CELL_TYPE_NUMERIC:
-                                //The best I can do at this point in the app is to guess if a cell is a date.
-                                //Handle dates carefully while using HSSF. Excel stores all dates as numbers, internally. 
-                                //The only way to distinguish a date is by the formatting of the cell. (If you
-                                //have ever formatted a cell containing a date in Excel, you will know what I mean.)
-                                //Therefore, for a cell containing a date, cell.getCellType() will return 
-                                //HSSFCell.CELL_TYPE_NUMERIC. However, you can use a utility function, 
-                                //HSSFDateUtil.isCellDateFormatted(cell), to check if the cell can be a date. 
-                                //This function checks the format against a few internal formats to decide the issue, 
-                                //but by its very nature it is prone to false negatives. 
-                                if (HSSFDateUtil.isCellDateFormatted(cell))
-                                {
-                                    value = scrDateFormat.getSimpleDateFormat().format(
-                                            cell.getDateCellValue());
-                                } else
-                                {
-                                    double numeric = cell.getNumericCellValue();
-                                    value = nf.format(numeric);
-                                }
-                                break;
-
-                            case HSSFCell.CELL_TYPE_STRING:
-                                value = cell.getStringCellValue();
-                                break;
-
-                            case HSSFCell.CELL_TYPE_BLANK:
-                                value = "";
-                                break;
-
-                            case HSSFCell.CELL_TYPE_BOOLEAN:
-                                value = Boolean.toString(cell.getBooleanCellValue());
-                                break;
-
-                            default:
-                                value = "";
-                                log.error("unsuported cell type");
-                                break;
+                            value = "";
                         }
-                    }
-                    if (firstRow && doesFirstRowHaveHeaders)
-                    {
-                        checkUserColInfo(value, numCols);
-                    }
-                    if (isUserCol(numCols))
-                    {
-                        rowData.add(value.toString());
+                        else
+                        {
+                            switch (cell.getCellType())
+                            {
+                                case HSSFCell.CELL_TYPE_NUMERIC:
+                                    // The best I can do at this point in the app is to guess if a
+                                    // cell is a date.
+                                    // Handle dates carefully while using HSSF. Excel stores all
+                                    // dates as numbers, internally.
+                                    // The only way to distinguish a date is by the formatting of
+                                    // the cell. (If you
+                                    // have ever formatted a cell containing a date in Excel, you
+                                    // will know what I mean.)
+                                    // Therefore, for a cell containing a date, cell.getCellType()
+                                    // will return
+                                    // HSSFCell.CELL_TYPE_NUMERIC. However, you can use a utility
+                                    // function,
+                                    // HSSFDateUtil.isCellDateFormatted(cell), to check if the cell
+                                    // can be a date.
+                                    // This function checks the format against a few internal
+                                    // formats to decide the issue,
+                                    // but by its very nature it is prone to false negatives.
+                                    if (HSSFDateUtil.isCellDateFormatted(cell))
+                                    {
+                                        value = scrDateFormat.getSimpleDateFormat().format(
+                                                cell.getDateCellValue());
+                                    }
+                                    else
+                                    {
+                                        double numeric = cell.getNumericCellValue();
+                                        value = nf.format(numeric);
+                                    }
+                                    break;
+
+                                case HSSFCell.CELL_TYPE_STRING:
+                                    value = cell.getStringCellValue();
+                                    break;
+
+                                case HSSFCell.CELL_TYPE_BLANK:
+                                    value = "";
+                                    break;
+
+                                case HSSFCell.CELL_TYPE_BOOLEAN:
+                                    value = Boolean.toString(cell.getBooleanCellValue());
+                                    break;
+
+                                default:
+                                    value = "";
+                                    log.error("unsuported cell type");
+                                    break;
+                            }
+                        }
+                        if (firstRow && doesFirstRowHaveHeaders)
+                        {
+                            checkUserColInfo(value, numCols);
+                        }
+                        if (isUserCol(numCols))
+                        {
+                            rowData.add(value.toString());
+                        }
                     }
                     numCols++;
                 }
@@ -873,8 +1022,6 @@ public class DataImportDialog extends JDialog implements ActionListener
                 }
                 else if (!doesFirstRowHaveHeaders && firstRow){
                     //headers = createDummyHeaders(rowData.size());
-                    headerVector = createDummyHeadersAsVector(rowData.size());
-                    headers = new String[rowData.size()];
                     tableDataVector.add(rowData);
                 }
                 else
@@ -883,16 +1030,17 @@ public class DataImportDialog extends JDialog implements ActionListener
                 }
                 firstRow = false;
                 numRows++;
-
             }
+            maxCols -= emptyCols.size();
+            headerVector = createDummyHeadersAsVector(maxCols);
+            headers = new String[maxCols];
             for (int i = 0; i < headerVector.size(); i++)
             {
                 headers[i] = headerVector.elementAt(i);
-
             }
             printArray(headers);
 
-            String[][] tableData = new String[tableDataVector.size()][headers.length];
+            String[][] tableData = new String[tableDataVector.size()][maxCols];
             for (int i = 0; i < tableDataVector.size(); i++)
             {
                 Vector<String> v = tableDataVector.get(i);
@@ -917,18 +1065,22 @@ public class DataImportDialog extends JDialog implements ActionListener
             log.debug(headers);
             log.debug(tableData);
             model = new PreviewTableModel(headers, tableData);
+            if (t == null)
+            {
+                t = new JTable();
+                t.setColumnSelectionAllowed(false);
+                t.setRowSelectionAllowed(false);
+                t.setCellSelectionEnabled(false);
+                t.getTableHeader().setReorderingAllowed(false);
+                t.setPreferredScrollableViewportSize(new Dimension(500, 100));
+                t.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+            }
             t.setModel(model);
-            t.setColumnSelectionAllowed(false);
-            t.setRowSelectionAllowed(false);
-            t.setCellSelectionEnabled(false);
-            t.getTableHeader().setReorderingAllowed(false);
-            t.setPreferredScrollableViewportSize(new Dimension(500, 100));
-            t.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
             model.fireTableDataChanged();
             model.fireTableStructureChanged();
             return t;
-
-        } catch (IOException ex)
+        } 
+        catch (IOException ex)
         {
         	String[] columnNames = {};
         	String[][] blankData = {{}};
@@ -1400,26 +1552,29 @@ public class DataImportDialog extends JDialog implements ActionListener
 		 */
         public void itemStateChanged(ItemEvent e)
         {
-            Object source = e.getItemSelectable();
-            log.debug("itemStateChanged");
-            if (!(source == containsHeaders)) 
+            if (!ignoreActions)
             {
-            	log.error("Unexpected checkbox source");
+                Object source = e.getItemSelectable();
+                log.debug("itemStateChanged");
+                if (!(source == containsHeaders))
+                {
+                    log.error("Unexpected checkbox source");
+                }
+                log.debug("itemStateChange for first row has header checkbox");
+                if (e.getStateChange() == ItemEvent.SELECTED)
+                {
+                    log.debug("itemStateChanges - SELECTED");
+                    doesFirstRowHaveHeaders = true;
+                    config.setFirstRowHasHeaders(true);
+                }
+                else
+                {
+                    log.debug("itemStateChanges - UNSELECTED");
+                    doesFirstRowHaveHeaders = false;
+                    config.setFirstRowHasHeaders(false);
+                }
+                updateTableDisplay();
             }
-        	log.debug("itemStateChange for first row has header checkbox");
-            if (e.getStateChange() == ItemEvent.SELECTED)
-            {
-            	log.debug("itemStateChanges - SELECTED");
-            	doesFirstRowHaveHeaders = true;
-            	config.setFirstRowHasHeaders(true);
-            }
-            else
-            {
-            	log.debug("itemStateChanges - UNSELECTED");
-            	doesFirstRowHaveHeaders = false;
-            	config.setFirstRowHasHeaders(false);
-            }
-            updateTableDisplay();
         }
     }  
     
