@@ -841,22 +841,28 @@ public class WorkbenchPaneSS extends BaseSubPane
     public void addRowAfter()
     {
         spreadSheet.clearSorter();
-        
+
         checkCurrentEditState();
-        
+
         int curSelInx = getCurrentIndexFromFormOrSS();
-        model.insertAfterRow(curSelInx);
-        
+        int rowsToInsert = 1;
+        if (currentPanelType == PanelType.Spreadsheet && spreadSheet.getSelectedRowCount() != 0)
+        {
+            rowsToInsert += spreadSheet.getSelectedRowCount() - 1;
+            curSelInx += rowsToInsert - 1;
+        }
+        for (int r = 0; r < rowsToInsert && curSelInx < WorkbenchTask.MAX_ROWS-1; r++, curSelInx++)
+            model.insertAfterRow(curSelInx);
         int count = model.getRowCount();
         resultsetController.setLength(count);
-        
-        adjustSelectionAfterAdd(count == 1 ? 0 : curSelInx+1);
-        
+
+        adjustSelectionAfterAdd(count == 1 ? 0 : curSelInx);
+
         updateBtnUI();
     }
     
     /**
-     * Inserts a Row above the selection. 
+     * Inserts a Row above the selection.
      */
     protected void insertRowAbove()
     {
