@@ -836,7 +836,9 @@ public class WorkbenchPaneSS extends BaseSubPane
     }
     
     /**
-     * Adds a row after the selection. 
+     * In form view, adds a row after the current row. 
+     * 
+     * In spreadsheet view adds getSelectedRowCount() new rows after the last selected row.
      */
     public void addRowAfter()
     {
@@ -848,11 +850,13 @@ public class WorkbenchPaneSS extends BaseSubPane
         int rowsToInsert = 1;
         if (currentPanelType == PanelType.Spreadsheet && spreadSheet.getSelectedRowCount() != 0)
         {
-            rowsToInsert += spreadSheet.getSelectedRowCount() - 1;
-            curSelInx += rowsToInsert - 1;
+            int[] sels = spreadSheet.getSelectedRows();
+            rowsToInsert += sels.length - 1;            
+            curSelInx = sels[sels.length-1];
         }
         for (int r = 0; r < rowsToInsert && curSelInx < WorkbenchTask.MAX_ROWS-1; r++, curSelInx++)
             model.insertAfterRow(curSelInx);
+        
         int count = model.getRowCount();
         resultsetController.setLength(count);
 
