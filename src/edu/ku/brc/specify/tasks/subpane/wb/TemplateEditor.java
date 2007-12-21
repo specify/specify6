@@ -30,8 +30,10 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -909,7 +911,7 @@ public class TemplateEditor extends CustomDialog
      * @param fieldNameArg the field name
      * @return the Table Field Pair
      */
-    protected FieldInfo autoMapFieldName(final String fieldNameArg, List<Pair<String,TableFieldPair>> automappings)
+    protected FieldInfo autoMapFieldName(final String fieldNameArg, List<Pair<String,TableFieldPair>> automappings, Set<FieldInfo> previouslyMapped)
     {
         String fieldNameLower     = fieldNameArg.toLowerCase();
         String fieldNameLowerNoWS = StringUtils.deleteWhitespace(fieldNameLower);
@@ -936,38 +938,45 @@ public class TemplateEditor extends CustomDialog
                         if (fi.getFieldInfo() == tblFldPair.getFieldInfo())
                         {
                             //System.out.println("["+fi.hashCode()+"]["+tblFldPair.getTableinfo().hashCode()+"]["+tblFldPair.getFieldInfo().hashCode()+"]");
-                            return fi;
+                            fieldInfo = fi;
+                            break;
                         }
                     }
+                    if (fieldInfo != null) break;
                 }
             }
+            if (fieldInfo != null) break;
         }
         
         // If we had no luck then just loop through everything looking for it.
-        for (int i=0;i<tableModel.size();i++)
+        if (fieldInfo == null)
         {
-            TableInfo tblInfo = tableModel.getElementAt(i);
-            for (FieldInfo fi : tblInfo.getFieldItems())
+            for (int i = 0; i < tableModel.size(); i++)
             {
-                DBFieldInfo dbFieldInfo = fi.getFieldInfo();
-                
-                String    tblFieldName  = dbFieldInfo.getName().toLowerCase();
-                String    tblColumnName = dbFieldInfo.getColumn().toLowerCase();
-                
-                //System.out.println("["+tblFieldName+"]["+fieldNameLower+"]");
-                if (tblFieldName.equals(fieldNameLower)      ||
-                    tblColumnName.equals(fieldNameLower)     ||
-                    tblColumnName.equals(fieldNameLowerNoWS) ||
-                    tblFieldName.equals(fieldNameLowerNoWS)  ||
-                    tblFieldName.startsWith(fieldNameLower)  ||
-                    tblColumnName.startsWith(fieldNameLower))
+                TableInfo tblInfo = tableModel.getElementAt(i);
+                for (FieldInfo fi : tblInfo.getFieldItems())
                 {
-                    return fi;
+                    DBFieldInfo dbFieldInfo = fi.getFieldInfo();
+
+                    String tblFieldName = dbFieldInfo.getName().toLowerCase();
+                    String tblColumnName = dbFieldInfo.getColumn().toLowerCase();
+
+                    // System.out.println("["+tblFieldName+"]["+fieldNameLower+"]");
+                    if (tblFieldName.equals(fieldNameLower) || tblColumnName.equals(fieldNameLower)
+                            || tblColumnName.equals(fieldNameLowerNoWS)
+                            || tblFieldName.equals(fieldNameLowerNoWS)
+                            || tblFieldName.startsWith(fieldNameLower)
+                            || tblColumnName.startsWith(fieldNameLower)) { return fi; }
                 }
             }
         }
         
-        return fieldInfo;
+        //check to see if a mapping to fieldInfo has already been made.
+        if (fieldInfo != null && previouslyMapped.add(fieldInfo))
+        {
+            return fieldInfo;
+        }
+        return null;
     }
     
     /**
@@ -1025,13 +1034,13 @@ public class TemplateEditor extends CustomDialog
             }
         }
         
-        
         boolean notAllMapped = false;  // assume we can auto map everything
+        Set<FieldInfo> mappedFlds = new HashSet<FieldInfo>();
         for (ImportColumnInfo colInfo: colInfos)
         {
             if (!colInfo.getIsSystemCol())
             {
-                FieldInfo fieldInfo = autoMapFieldName(colInfo.getColTitle(), automappings);
+                FieldInfo fieldInfo = autoMapFieldName(colInfo.getColTitle(), automappings, mappedFlds);
                 if (fieldInfo != null)
                 {
                     TableInfo tblInfo = null;
