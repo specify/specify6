@@ -776,78 +776,6 @@ public class DataImportDialog extends JDialog implements ActionListener
         return geoDataCol != colNum && !imageDataCols.contains(colNum);
     }
   
-    /**
-     * Fills badHeads with indexes for columns that contain data but don't have a header or have an non-string header (because it makes things difficult with HSSF).
-     * Fills emptyCols with indexes for columns that are totally empty.
-     * Assumes that badHeads and emptyCols are not null and empty.
-     * 
-     */
-    private void checkHeadsAndCols(final HSSFSheet sheet, Vector<Integer> badHeads, Vector<Integer> emptyCols) 
-    {
-        boolean firstRow = true;
-        Vector<Boolean> firstRowCells = new Vector<Boolean>();
-        Vector<Boolean> restCells = new Vector<Boolean>();
-        
-        // Iterate over each row in the sheet
-        Iterator<?> rows = sheet.rowIterator();
-        while (rows.hasNext())
-        {
-            HSSFRow row = (HSSFRow) rows.next();
-            int maxSize = Math.max(row.getPhysicalNumberOfCells(), row.getLastCellNum());
-            for (short col = 0; col < maxSize; col++)
-            {
-                if (firstRow)
-                {
-                    if (row.getCell(col) == null)
-                    {
-                        firstRowCells.add(false);
-                    }
-                    else if (row.getCell(col).getCellType() == HSSFCell.CELL_TYPE_STRING)
-                    {
-                        firstRowCells.add(true);
-                    }
-                    else
-                    {
-                        firstRowCells.add(null);
-                    }
-                }
-                else
-                {
-                    if (col == restCells.size())
-                    {
-                        restCells.add(false);
-                    }
-                    if (!restCells.get(col))
-                    {
-                        restCells.set(col, row.getCell(col) != null);
-                    }
-                }
-            }
-            firstRow = false;
-        }
-        
-        //pad smaller vector with false if necessary.
-        while (restCells.size() < firstRowCells.size())
-        {
-            restCells.add(false);
-        }
-        while (firstRowCells.size() < restCells.size())
-        {
-            firstRowCells.add(false);
-        }
-                
-        for (int c = 0; c < firstRowCells.size(); c++)
-        {
-            if (firstRowCells.get(c) == null || (!firstRowCells.get(c) && restCells.get(c)))
-            {
-                badHeads.add(c);
-            }
-            if (firstRowCells.get(c) != null && !firstRowCells.get(c) && !restCells.get(c))
-            {
-                emptyCols.add(c);
-            }
-        }
-    }
     
     /**
      * Parses the given import xls file according to the users selection and creates/updates the
@@ -877,31 +805,12 @@ public class DataImportDialog extends JDialog implements ActionListener
 
             Vector<Integer> badHeads = new Vector<Integer>();
             Vector<Integer> emptyCols = new Vector<Integer>();
-            checkHeadsAndCols(sheet, badHeads, emptyCols);
+            ((ConfigureXLS)config).checkHeadsAndCols(sheet, badHeads, emptyCols);
             if (badHeads.size() > 0 && doesFirstRowHaveHeaders)
             {
                 if (t != null)
                 {
-                    String colStr = "";
-                    for (int c=0; c<badHeads.size(); c++)
-                    {
-                        if (c > 0)
-                        {
-                            colStr += c == badHeads.size()-1 ? " and " : ", ";
-                        }
-                        int adjust = 1;
-                        for (Integer ec : emptyCols)
-                        {
-                            if (ec <= badHeads.get(c))
-                            {
-                                adjust--;
-                            }
-                        }
-                        colStr += badHeads.get(c)+adjust;
-                    }
-                    JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
-                            String.format(getResourceString((badHeads.size() == 1 ? "WB_IMPORT_INVALID_COL_HEADER" : "WB_IMPORT_INVALID_COL_HEADERS")), colStr), 
-                            getTitle(), JOptionPane.ERROR_MESSAGE);
+                    ((ConfigureXLS)config).showBadHeadingsMsg(badHeads, emptyCols, getTitle());
                 }
                 this.doesFirstRowHaveHeaders = false;
                 try
@@ -1032,8 +941,11 @@ public class DataImportDialog extends JDialog implements ActionListener
                 numRows++;
             }
             maxCols -= emptyCols.size();
-            headerVector = createDummyHeadersAsVector(maxCols);
-            headers = new String[maxCols];
+            if (!doesFirstRowHaveHeaders)
+            {
+                headerVector = createDummyHeadersAsVector(maxCols);
+                headers = new String[maxCols];
+            }
             for (int i = 0; i < headerVector.size(); i++)
             {
                 headers[i] = headerVector.elementAt(i);

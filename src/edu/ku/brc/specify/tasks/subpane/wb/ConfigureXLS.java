@@ -56,6 +56,80 @@ public class ConfigureXLS extends ConfigureExternalDataBase
         super(props);
     }
     
+    
+    /**
+     * Fills badHeads with indexes for columns that contain data but don't have a header or have an non-string header (because it makes things difficult with HSSF).
+     * Fills emptyCols with indexes for columns that are totally empty.
+     * Assumes that badHeads and emptyCols are not null and empty.
+     * 
+     */
+    public void checkHeadsAndCols(final HSSFSheet sheet, Vector<Integer> badHeads, Vector<Integer> emptyCols) 
+    {
+        boolean firstRow = true;
+        Vector<Boolean> firstRowCells = new Vector<Boolean>();
+        Vector<Boolean> restCells = new Vector<Boolean>();
+        
+        // Iterate over each row in the sheet
+        Iterator<?> rows = sheet.rowIterator();
+        while (rows.hasNext())
+        {
+            HSSFRow row = (HSSFRow) rows.next();
+            int maxSize = Math.max(row.getPhysicalNumberOfCells(), row.getLastCellNum());
+            for (short col = 0; col < maxSize; col++)
+            {
+                if (firstRow)
+                {
+                    if (row.getCell(col) == null)
+                    {
+                        firstRowCells.add(false);
+                    }
+                    else if (row.getCell(col).getCellType() == HSSFCell.CELL_TYPE_STRING)
+                    {
+                        firstRowCells.add(true);
+                    }
+                    else
+                    {
+                        firstRowCells.add(null);
+                    }
+                }
+                else
+                {
+                    if (col == restCells.size())
+                    {
+                        restCells.add(false);
+                    }
+                    if (!restCells.get(col))
+                    {
+                        restCells.set(col, row.getCell(col) != null);
+                    }
+                }
+            }
+            firstRow = false;
+        }
+        
+        //pad smaller vector with false if necessary.
+        while (restCells.size() < firstRowCells.size())
+        {
+            restCells.add(false);
+        }
+        while (firstRowCells.size() < restCells.size())
+        {
+            firstRowCells.add(false);
+        }
+                
+        for (int c = 0; c < firstRowCells.size(); c++)
+        {
+            if (firstRowCells.get(c) == null || (!firstRowCells.get(c) && restCells.get(c)))
+            {
+                badHeads.add(c);
+            }
+            if (firstRowCells.get(c) != null && !firstRowCells.get(c) && !restCells.get(c))
+            {
+                emptyCols.add(c);
+            }
+        }
+    }
+
     @Override
     protected void interactiveConfig()
     {
@@ -74,6 +148,33 @@ public class ConfigureXLS extends ConfigureExternalDataBase
         //nonInteractiveConfig();
     }
 
+    public void showBadHeadingsMsg(final Vector<Integer> badHeadingIdxs, final Vector<Integer> emptyCols, final String title)
+    {
+        String colStr = "";
+        for (int c=0; c<badHeadingIdxs.size(); c++)
+        {
+            if (c > 0)
+            {
+                colStr += c == badHeadingIdxs.size()-1 ? " and " : ", ";
+            }
+            int adjust = 1;
+            if (emptyCols != null)
+            {
+                for (Integer ec : emptyCols)
+                {
+                    if (ec <= badHeadingIdxs.get(c))
+                    {
+                        adjust--;
+                    }
+                }
+                colStr += badHeadingIdxs.get(c)+adjust;
+            }
+        }
+        JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
+                String.format(getResourceString((badHeadingIdxs.size() == 1 ? "WB_IMPORT_INVALID_COL_HEADER" : "WB_IMPORT_INVALID_COL_HEADERS")), colStr), 
+                title, JOptionPane.ERROR_MESSAGE);
+
+    }
     /* (non-Javadoc)
      * Sets up colInfo for externalFile.
      * @see edu.ku.brc.specify.tasks.subpane.wb.ConfigureExternalDataIFace#getConfig(java.lang.String)
@@ -97,102 +198,101 @@ public class ConfigureXLS extends ConfigureExternalDataBase
             short   col      = 0;
             colTracker.clear();
 
+            Vector<Integer> badHeads = new Vector<Integer>();
+            Vector<Integer> emptyCols = new Vector<Integer>();
+            checkHeadsAndCols(sheet, badHeads, emptyCols);
+            
+            if (firstRowHasHeaders && badHeads.size() > 0)
+            {
+                status = ConfigureExternalDataIFace.Status.Error;
+                showBadHeadingsMsg(badHeads, null, getResourceString("Error"));
+                return;
+            }
+            
             // Iterate over each row in the sheet
             @SuppressWarnings("unchecked") Iterator<HSSFRow> rows =  sheet.rowIterator();
             while (rows.hasNext())
             {
                 HSSFRow row = rows.next();
-
-                //System.out.println("Row #" + row.getRowNum());
-
                 if (firstRow || numRows == 1)
                 {
                     // Iterate over each cell in the row and print out the cell's content
-                    @SuppressWarnings("unchecked") Iterator<HSSFCell> cells = row.cellIterator();
-                    while (cells.hasNext())
+                    short colNum = 0;
+                    int maxSize = Math.max(row.getPhysicalNumberOfCells(), row.getLastCellNum());
+                    while (colNum < maxSize)
                     {
-                        HSSFCell cell = cells.next();
-                        //System.out.println("Cell #" + cell.getCellNum());
-                        ImportColumnInfo.ColumnType colType = ImportColumnInfo.ColumnType.Integer;
-                        String  value   = null;
-                        boolean skip    = false;
-                        short   cellNum = cell.getCellNum();
-
-                        switch (cell.getCellType())
+                        if (emptyCols.indexOf(new Integer(colNum)) == -1)
                         {
-                            case HSSFCell.CELL_TYPE_NUMERIC:
-                                double numeric = cell.getNumericCellValue();
-                                value   = Double.toString(numeric);
-                                colType = ImportColumnInfo.ColumnType.Double;
-                                break;
-
-                            case HSSFCell.CELL_TYPE_STRING:
-                                value   = cell.getStringCellValue().trim();
-                                colType = ImportColumnInfo.ColumnType.String;
-                                break;
-
-                            case HSSFCell.CELL_TYPE_BLANK:
+                            ImportColumnInfo.ColumnType colType = ImportColumnInfo.ColumnType.Integer;
+                            String value = null;
+                            boolean skip = false;
+                            HSSFCell cell = row.getCell(colNum);
+                            if (cell == null)
+                            {
+                                //assuming numRows == 1 or not firstRowHasHeaders.
+                                //the call to checkHeadsAndCols would have already blank headers.
                                 value = "";
                                 colType = ImportColumnInfo.ColumnType.String;
-                                break;
-
-                            case HSSFCell.CELL_TYPE_BOOLEAN:
-                                boolean bool = cell.getBooleanCellValue();
-                                value   = Boolean.toString(bool);
-                                colType = ImportColumnInfo.ColumnType.Boolean;
-                                break;
-
-                            default:
-                                //System.out.println("unsuported cell type");
-                                skip = true;
-                                break;
-                        }
-
-                        if (numRows == 1)
-                        {
-                            colInfo.get(cellNum).setData(value);
-                            col++;
-
-                        } else if (!skip)
-                        {
-                            //System.out.println("Cell #" + cellNum + " " + type+"  "+value);
-                            if (firstRowHasHeaders)
-                            {
-                                if (value == null || value.equals(""))
-                                {
-                                    status = ConfigureExternalDataIFace.Status.Error;
-                                    JOptionPane.showMessageDialog(UIRegistry.getTopWindow(),
-                                            String.format(getResourceString("WB_IMPORT_INVALID_COL_HEAD"), Integer.toString(cellNum)),
-                                            getResourceString("Error"), JOptionPane.ERROR_MESSAGE);
-                                    return;
-                                }
-                                colInfo.add(new ImportColumnInfo(cellNum, colType, value, value, null));
-                                colTracker.put(cellNum, true);
-
-                            } else
-                            {
-                                //colInfo.add(new ImportColumnInfo(cellNum, type, null, value));
-                                String colName = getResourceString("DEFAULT_COLUMN_NAME") + " " + (cellNum + 1);
-                                colInfo.add(new ImportColumnInfo(cellNum, colType, colName, colName, null));
-                                colTracker.put(cellNum, true);
-
                             }
-                            numCols++;
+                            else switch (cell.getCellType())
+                            {
+                                case HSSFCell.CELL_TYPE_NUMERIC:
+                                    double numeric = cell.getNumericCellValue();
+                                    value = Double.toString(numeric);
+                                    colType = ImportColumnInfo.ColumnType.Double;
+                                    break;
+                                case HSSFCell.CELL_TYPE_STRING:
+                                    value = cell.getStringCellValue().trim();
+                                    colType = ImportColumnInfo.ColumnType.String;
+                                    break;
+                                case HSSFCell.CELL_TYPE_BLANK:
+                                    value = "";
+                                    colType = ImportColumnInfo.ColumnType.String;
+                                    break;
+                                case HSSFCell.CELL_TYPE_BOOLEAN:
+                                    boolean bool = cell.getBooleanCellValue();
+                                    value = Boolean.toString(bool);
+                                    colType = ImportColumnInfo.ColumnType.Boolean;
+                                    break;
+                                default:
+                                    skip = true;
+                                    break;
+                            }
+
+                            if (numRows == 1 && !skip)
+                            {
+                                colInfo.get(col).setData(value);
+                                col++;
+                            }
+                            else if (!skip)
+                            {
+                                if (firstRowHasHeaders)
+                                {
+                                    colInfo.add(new ImportColumnInfo(colNum, colType, value, value,
+                                            null));
+                                    colTracker.put(col, true);
+                                }
+                                else
+                                {
+                                    String colName = getResourceString("DEFAULT_COLUMN_NAME") + " "
+                                            + (colNum + 1);
+                                    colInfo.add(new ImportColumnInfo(colNum, colType, colName,
+                                            colName, null));
+                                    colTracker.put(colNum, true);
+                                }
+                                numCols++;
+                            }
                         }
+                        colNum++;
                     }
                     firstRow = false;
                 }
                 numRows++;
             }
-
-            //System.out.println("Rows["+numRows+"]  Cols["+numCols+"]");
             Collections.sort(colInfo);
-            
             status = Status.Valid;
-            
         } catch (IOException ex)
         {
-            //ex.printStackTrace();
             status = Status.Error;
         }
     }

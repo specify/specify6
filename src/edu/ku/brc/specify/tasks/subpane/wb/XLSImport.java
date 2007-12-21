@@ -67,7 +67,6 @@ public class XLSImport extends DataImport implements DataImportIFace
                         geoCol = c;
                     }
                 }
-                
             }
         }
     }
