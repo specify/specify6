@@ -39,7 +39,7 @@ jaxen									1.1
 forms (JGoodies)						1.1.1
 looks (JGoodies)						2.1.4
 log4j									1.2.15
-poi										2.5.1 final 20040804
+poi										3.0.1 final 20070705
 
 jfreechart								1.0.6
 	jcommon								1.0.12 dist w/ jfreechart
