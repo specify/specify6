@@ -581,6 +581,7 @@ public class TemplateEditor extends CustomDialog
                     // ZZZ addBtn.setEnabled(unusedList.getSelectedIndex() == -1 && !allChecked);
                 } else
                 {
+                    //OK. empty block.
                 }
                 
                 upBtn.setEnabled(mapInx > 0 && !fmp.isNew());
@@ -820,6 +821,8 @@ public class TemplateEditor extends CustomDialog
                                                             ImportColumnInfo.getType(tableClass), 
                                                             fieldInfo.getFieldInfo().getColumn(), 
                                                             fieldInfo.getText(), 
+                                                            null,
+                                                            null,
                                                             null);
         FieldMappingPanel fmp = addMappingItem(colInfo, IconManager.getIcon(fieldInfo.getTableinfo().getTitle(), IconManager.IconSize.Std24), wbtmi);
         fmp.setFieldInfo(fieldInfo);
@@ -903,6 +906,38 @@ public class TemplateEditor extends CustomDialog
                 }
             }
         }
+        return null;
+    }
+    
+    /**
+     * @param tbl
+     * @param fld
+     * @return FieldInfo where Table is tbl and Field is fld.
+     */
+    protected FieldInfo findFieldInfo(final String tbl, final String fld)
+    {
+        if (tbl == null || fld == null)
+            return null;
+        
+        TableInfo tblInfo = null;
+        for (int i=0; i<tableModel.size(); i++)
+        {
+            if (tableModel.getElementAt(i).getTableInfo().getShortClassName().equalsIgnoreCase(tbl))
+            {
+                tblInfo = tableModel.getElementAt(i);
+                break;
+            }
+        }
+        
+        if (tblInfo == null)
+            return null;
+        
+        for (FieldInfo fi : tblInfo.getFieldItems())
+        {
+            if (fi.getFieldInfo().getName().equalsIgnoreCase(fld))
+                    return fi;
+        }
+        
         return null;
     }
     
@@ -1035,12 +1070,16 @@ public class TemplateEditor extends CustomDialog
         }
         
         boolean notAllMapped = false;  // assume we can auto map everything
-        Set<FieldInfo> mappedFlds = new HashSet<FieldInfo>();
+        Set<FieldInfo> mappedFlds = new HashSet<FieldInfo>();  //used to prevent duplicate mappings.
         for (ImportColumnInfo colInfo: colInfos)
         {
             if (!colInfo.getIsSystemCol())
             {
-                FieldInfo fieldInfo = autoMapFieldName(colInfo.getColTitle(), automappings, mappedFlds);
+                //Try to find FieldInfo from mapping stored in colInfo. Automap if not found.
+                FieldInfo fieldInfo = findFieldInfo(colInfo.getMapToTbl(), colInfo.getMapToFld()); 
+                if (fieldInfo == null) 
+                    fieldInfo = autoMapFieldName(colInfo.getColTitle(), automappings, mappedFlds);
+                
                 if (fieldInfo != null)
                 {
                     TableInfo tblInfo = null;

@@ -9,14 +9,21 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.poi.hpsf.CustomProperties;
+import org.apache.poi.hpsf.DocumentSummaryInformation;
+import org.apache.poi.hpsf.PropertySetFactory;
 import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRichTextString;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
@@ -67,7 +74,7 @@ public class XLSExport implements DataExport
         short col = 0;
         for (String head : headers)
         {
-            hssfRow.createCell(col++).setCellValue(head);
+            hssfRow.createCell(col++).setCellValue(new HSSFRichTextString(head));
         }
     }
 
@@ -79,10 +86,10 @@ public class XLSExport implements DataExport
     {
         HSSFRow hssfRow = workSheet.getRow(0);
         short cellNum = hssfRow.getLastCellNum();
-        hssfRow.createCell(++cellNum).setCellValue(DataImport.GEO_DATA_HEADING);
+        hssfRow.createCell(++cellNum).setCellValue(new HSSFRichTextString(DataImport.GEO_DATA_HEADING));
         for (int c = 0; c < imgCols; c++)
         {
-            hssfRow.createCell(++cellNum).setCellValue(DataImport.IMAGE_PATH_HEADING);
+            hssfRow.createCell(++cellNum).setCellValue(new HSSFRichTextString(DataImport.IMAGE_PATH_HEADING));
         }
     }
 
@@ -183,12 +190,26 @@ public class XLSExport implements DataExport
         
         if (!valueSet)
         {
-            //if (type != HSSFCell.CELL_TYPE_STRING)
-            //{
-            //    cell.setCellType(HSSFCell.CELL_TYPE_STRING);
-            //}
-            cell.setCellValue(value);
+            cell.setCellValue(new HSSFRichTextString(value));
         }
+    }
+    
+    /**
+     * @param wbt
+     * @return DocumentSummaryInformation containing the mappings for wbt.
+     * 
+     * Each mapping is stored as a property, using the column heading as the key.
+     */
+    protected DocumentSummaryInformation writeMappings(final WorkbenchTemplate wbt)
+    {
+        DocumentSummaryInformation dsi = PropertySetFactory.newDocumentSummaryInformation();
+        CustomProperties cps = new CustomProperties();
+        for (WorkbenchTemplateMappingItem wbmi : wbt.getWorkbenchTemplateMappingItems())
+        {
+            cps.put(wbmi.getCaption(), wbmi.getTableName() + "\t" + wbmi.getFieldName());
+        }
+        dsi.setCustomProperties(cps);
+        return dsi;
     }
     /*
      * (non-Javadoc)
@@ -199,6 +220,8 @@ public class XLSExport implements DataExport
     {
         HSSFWorkbook workBook  = new HSSFWorkbook();
         HSSFSheet    workSheet = workBook.createSheet();
+        DocumentSummaryInformation mappings = null;
+        
         int rowNum = 0;
 
         if (config.getFirstRowHasHeaders() && !config.getAppendData())
@@ -211,6 +234,8 @@ public class XLSExport implements DataExport
             {
                 workSheet.setColumnWidth(i, (short)(StringUtils.isNotEmpty(headers[i]) ? (256 * headers[i].length()) : 2560));
             }
+            
+            mappings = writeMappings(((WorkbenchRow)data.get(0)).getWorkbench().getWorkbenchTemplate());
         }
         
         if (data.size() > 0)
@@ -286,9 +311,26 @@ public class XLSExport implements DataExport
         }
         try
         {
+            //write the workbook
             FileOutputStream fos = new FileOutputStream(getConfig().getFileName());
             workBook.write(fos);
-        } catch (Exception e)
+            fos.close();
+            
+            //Now write the mappings.
+            //NOT (hopefully) the best way to write the mappings, but (sadly) the easiest way. 
+            //May need to do this another way if this slows performance for big wbs.
+            if (mappings != null)
+            {
+                InputStream is = new FileInputStream(getConfig().getFileName());
+                POIFSFileSystem poifs = new POIFSFileSystem(is);
+                is.close();
+                mappings.write(poifs.getRoot(), DocumentSummaryInformation.DEFAULT_STREAM_NAME);
+                fos = new FileOutputStream(getConfig().getFileName());
+                poifs.writeFilesystem(fos);
+                fos.close();
+            }
+        } 
+        catch (Exception e)
         {
             throw(e);
         }

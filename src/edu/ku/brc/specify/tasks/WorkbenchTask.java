@@ -99,6 +99,7 @@ import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.exporters.ExportFileConfigurationFactory;
 import edu.ku.brc.specify.exporters.ExportToFile;
 import edu.ku.brc.specify.tasks.subpane.wb.ConfigureExternalDataIFace;
+import edu.ku.brc.specify.tasks.subpane.wb.ConfigureXLS;
 import edu.ku.brc.specify.tasks.subpane.wb.DataImportIFace;
 import edu.ku.brc.specify.tasks.subpane.wb.ImageFrame;
 import edu.ku.brc.specify.tasks.subpane.wb.ImportColumnInfo;
@@ -1334,7 +1335,11 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         String[] heads = new String[colHeads.size()];
         for (int h = 0; h < colHeads.size(); h++)
         {
-            heads[h] = colHeads.get(h).getFieldName();
+            /*fieldNames were being used to allow auto-mapping if the exported wb was re-imported (I think).
+             *But since mappings are exported for xls exports, and auto-mapping seems to work just as
+             *well, now using getCaption() instead of getFieldName()
+            */
+            heads[h] = colHeads.get(h).getCaption();
         }
         config.setHeaders(heads);
         

@@ -24,17 +24,21 @@ public class ImportColumnInfo  implements Comparable<ImportColumnInfo>
 {
     public enum ColumnType {Integer, Float, Double, Short, Boolean, Date, String}
     
-    protected Short      colInx;
-    protected ColumnType colType;
-    protected String     colName; // the name of the column (this may include the table name in parens)
-    protected String     colTitle; // name without parens
+    protected final Short      colInx;
+    protected final ColumnType colType;
+    protected final String     colName; // the name of the column (this may include the table name in parens)
+    protected final String     colTitle; // name without parens
     protected String     data;
-    protected boolean    isSystemCol = false;
+    protected String     mapToTbl = null; //mapping read from XLS document properties
+    protected String     mapToFld = null; //mappint read from XLS document properties
+    protected final boolean    isSystemCol;
     
     public ImportColumnInfo(final short      colInx, 
                             final ColumnType colType, 
                             final String     colName,
                             final String     colTitle,
+                            final String     mapToTbl,
+                            final String     mapToFld,
                             final String     data)
     {
         super();
@@ -44,6 +48,8 @@ public class ImportColumnInfo  implements Comparable<ImportColumnInfo>
         this.colName = colName;
         this.isSystemCol = this.colName.equals(DataImport.GEO_DATA_HEADING) || this.colName.equals(DataImport.IMAGE_PATH_HEADING);
         this.colTitle = colTitle;
+        this.mapToTbl = mapToTbl;
+        this.mapToFld = mapToFld;
         this.data    = data;
     }
 
@@ -137,6 +143,38 @@ public class ImportColumnInfo  implements Comparable<ImportColumnInfo>
             }
         }
         return ImportColumnInfo.ColumnType.String;
+    }
+
+    /**
+     * @return the mapToTbl
+     */
+    public String getMapToTbl()
+    {
+        return mapToTbl;
+    }
+
+    /**
+     * @return the mapToFld
+     */
+    public String getMapToFld()
+    {
+        return mapToFld;
+    }
+
+    /**
+     * @param mapToTbl the mapToTbl to set
+     */
+    public void setMapToTbl(String mapToTbl)
+    {
+        this.mapToTbl = mapToTbl;
+    }
+
+    /**
+     * @param mapToFld the mapToFld to set
+     */
+    public void setMapToFld(String mapToFld)
+    {
+        this.mapToFld = mapToFld;
     }
     
 }
