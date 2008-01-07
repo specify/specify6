@@ -29,6 +29,7 @@ import java.awt.Window;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
@@ -2176,5 +2177,41 @@ public final class UIHelper
         int b = (int)Math.min(color.getBlue()*delta, 255.0);
         
         return new Color(r, g, b);
+    }
+    
+    /**
+     * Adds a special key listener to process a RETURN key for selecting and item
+     * in the popup list. This is installed only for Windows and Linux.
+     * @param popupMenu the popup menu to be altered.
+     */
+    public static void addSpecialKeyListenerForPopup(final JPopupMenu popupMenu)
+    {
+        if (!UIHelper.isMacOS())
+        {
+            popupMenu.addKeyListener(new KeyAdapter() {
+                //@Override 
+                public void keyPressed(KeyEvent e)
+                {
+                    super.keyPressed(e);
+                    
+                    if (e.getKeyCode() == KeyEvent.VK_ENTER)
+                    {
+                        for (int i=0;i<popupMenu.getComponentCount();i++)
+                        {
+                            Component c = popupMenu.getComponent(i);
+                            if (c instanceof JMenuItem)
+                            {
+                                JMenuItem mi = (JMenuItem)c;
+                                if (mi.isArmed())
+                                {
+                                    mi.doClick();
+                                    popupMenu.setVisible(false);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
     }
 }

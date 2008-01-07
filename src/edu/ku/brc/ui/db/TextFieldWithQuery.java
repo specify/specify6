@@ -394,6 +394,8 @@ public class TextFieldWithQuery extends JPanel implements SQLExecutionListener
         
         if (popupMenu != null)
         {
+            UIHelper.addSpecialKeyListenerForPopup(popupMenu);
+            
             final Point     location = getLocation();
             final Dimension size     = getSize();
             
@@ -571,6 +573,7 @@ public class TextFieldWithQuery extends JPanel implements SQLExecutionListener
         return textField;
     }
     
+    // Special class for the right visual appearence on the Mac.
     class MacGradiantBtn extends JButton
     {
         protected ImageIcon imgIcon;
@@ -590,7 +593,7 @@ public class TextFieldWithQuery extends JPanel implements SQLExecutionListener
         
         
         /**
-         * @param arg0
+         * @param imgIcon the icon image for the dropdown
          */
         public MacGradiantBtn(ImageIcon imgIcon)
         {
@@ -621,6 +624,9 @@ public class TextFieldWithQuery extends JPanel implements SQLExecutionListener
             });
         }
 
+        /* (non-Javadoc)
+         * @see javax.swing.JComponent#paint(java.awt.Graphics)
+         */
         public void paint(Graphics g)
         {
             super.paint(g);
@@ -647,7 +653,7 @@ public class TextFieldWithQuery extends JPanel implements SQLExecutionListener
         }
         
         /**
-         * Draws the button body
+         * Draws the button body.
          * @param g2 the graphics to be painted into
          * @param w the width of the control
          * @param h the height of the control
