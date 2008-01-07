@@ -103,7 +103,7 @@ public class PickListTableAdapter extends PickListDBAdapter
                         for (Object dataObj : dataList)
                         {
                             String title = DataObjFieldFormatMgr.format(dataObj, pickList.getFormatter());
-                            items.add(pickList.addPickListItem(title, dataObj));
+                            items.add(pickList.addItem(title, dataObj));
                         }
                         
                     } else
@@ -150,7 +150,7 @@ public class PickListTableAdapter extends PickListDBAdapter
                     {
                         array[0] = dataObj;
                         String valStr = hasFormatter ? String.format(formatterStr, array) : dataObj.toString();
-                        items.add(pickList.addPickListItem(valStr, valStr));
+                        items.add(pickList.addItem(valStr, valStr));
                     }
                     
                 } else

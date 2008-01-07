@@ -128,7 +128,7 @@ public class ExtendedTabbedPane extends JTabbedPane
      */
     protected void adjustTab(final String title, final Icon icon, Component comp, final int index)
     {
-        
+        /*
         final JLabel closeBtn = new JLabel(IconManager.getIcon("Close"));
         closeBtn.setBorder(null);
         
@@ -173,7 +173,7 @@ public class ExtendedTabbedPane extends JTabbedPane
         tabPanel.add(closeBtn, BorderLayout.EAST);
         
         setTabComponentAt(index, tabPanel);
-        
+        */
     }
     
     /* (non-Javadoc)

@@ -135,6 +135,7 @@ import edu.ku.brc.ui.db.DatabaseLoginListener;
 import edu.ku.brc.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.ui.forms.FormViewObj;
+import edu.ku.brc.ui.forms.ResultSetController;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
@@ -687,12 +688,18 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 });
         */
         
+        // Data Menu
+        String title;
+        JMenu dataMenu = UIHelper.createMenu(mb, "DataMenu", "DataMneu");
+        ResultSetController.addMenuItems(dataMenu);
+        mb.add(dataMenu);
+        
         if (!isWorkbenchOnly)
         {
             menu = UIHelper.createMenu(mb, "AdvMenu", "AdvMneu");
             menu.add(UIHelper.createMenu(mb, "SystemMenu", "SystemMneu"));
             
-            String title = getResourceString("SCHEMA_CONFIG");
+            title = getResourceString("SCHEMA_CONFIG");
             mi = UIHelper.createMenuItem(menu, title, getResourceString("SCHEMA_CONFIG_MNU"), title, true, null);
             mi.addActionListener(new ActionListener()
                     {
@@ -919,6 +926,25 @@ public class Specify extends JPanel implements DatabaseLoginListener
                     });
         }
         return mb;
+    }
+    
+    /**
+     * @param name
+     * @param type
+     * @param action
+     * @return
+     */
+    protected Action createAction(final String name, final String type, final String action)
+    {
+        AbstractAction actionObj = new AbstractAction(getResourceString(name)) 
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                //CommandDispatcher.dispatch(new CommandAction(type, action, null));
+            }
+        };
+        UIRegistry.registerAction(name, actionObj);
+        return actionObj;
     }
     
     /**

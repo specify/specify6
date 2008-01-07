@@ -392,6 +392,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
             box.remove(nbi);
             
             // XXX this is pathetic and needs to be made generic
+            NavBoxMgr.getInstance().validate();
             NavBoxMgr.getInstance().invalidate();
             NavBoxMgr.getInstance().doLayout();
             NavBoxMgr.getInstance().repaint();

@@ -18,20 +18,32 @@ package edu.ku.brc.ui.forms;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Insets;
+import java.awt.KeyboardFocusManager;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.List;
 
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
 import org.apache.commons.lang.StringUtils;
+
+import sun.util.logging.resources.logging;
 
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -39,6 +51,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.validation.FormValidator;
 import edu.ku.brc.ui.forms.validation.UIValidator;
 import edu.ku.brc.ui.forms.validation.ValidationListener;
@@ -79,6 +92,28 @@ public class ResultSetController implements ValidationListener
     protected int     currentInx = 0;
     protected int     lastInx    = 0;
     protected int     numRecords = 0;
+    
+    
+    // Global Key Actions
+    private enum CommandTypes { First, Previous, Next, Last, Save, NewItem, DelItem}
+    private Hashtable<CommandTypes, JButton> btnsHash = new Hashtable<CommandTypes, JButton>();
+    
+    // Static Members
+    private static Hashtable<CommandTypes, RSAction<CommandTypes>> commandsHash     = null;
+    private static ResultSetController  currentFocusedRS = null;
+    
+    static 
+    {
+        registerFocusListener();
+    }
+    
+    /**
+     * 
+     */
+    private ResultSetController()
+    {
+        
+    }
     
     /**
      * Constructor.
@@ -149,7 +184,9 @@ public class ResultSetController implements ValidationListener
         
         firstBtn = UIHelper.createIconBtn("FirstRec", null, null);
         prevBtn  = UIHelper.createIconBtn("PrevRec", null, null);
-        
+        btnsHash.put(CommandTypes.Previous, prevBtn);
+        btnsHash.put(CommandTypes.First, firstBtn);
+
         recDisp  = new JLabel("  ");
         recDisp.setHorizontalAlignment(SwingConstants.CENTER);
         recDisp.setOpaque(true);
@@ -159,6 +196,8 @@ public class ResultSetController implements ValidationListener
         
         nextBtn  = UIHelper.createIconBtn("NextRec", null, null);
         lastBtn  = UIHelper.createIconBtn("LastRec", null, null);
+        btnsHash.put(CommandTypes.Next, nextBtn);
+        btnsHash.put(CommandTypes.Last, lastBtn);
         
         firstBtn.setToolTipText(createTooltip("GotoFirstRecordTT", objTitle));
         prevBtn.setToolTipText(createTooltip("GotoPreviousRecordTT", objTitle));
@@ -180,18 +219,49 @@ public class ResultSetController implements ValidationListener
         
         if (addNewBtn)
         {
-            newRecBtn = UIHelper.createIconBtn("NewRecord", null, new ActionListener() {
-                public void actionPerformed(ActionEvent ae)
+            if (true)
+            {
+                newRecBtn = new JButton("+")
                 {
-                    for (ResultSetControllerListener rscl : listeners)
+                    public void setEnabled(boolean enable)
                     {
-                        rscl.newRecordAdded();
+                        if (!enable)
+                        {
+                            int x = 0;
+                            x++;
+                        }
+                        super.setEnabled(enable);
                     }
-                }
-             });
+                };
+                ActionListener l = new ActionListener() {
+                    public void actionPerformed(ActionEvent ae)
+                    {
+                        for (ResultSetControllerListener rscl : listeners)
+                        {
+                            rscl.newRecordAdded();
+                        }
+                    }
+                 };
+                newRecBtn.addActionListener(l);
+
+            } else
+            {
+                newRecBtn = UIHelper.createIconBtn("NewRecord", null, new ActionListener() {
+                    public void actionPerformed(ActionEvent ae)
+                    {
+                        for (ResultSetControllerListener rscl : listeners)
+                        {
+                            rscl.newRecordAdded();
+                        }
+                    }
+                });
+            }
+            
             newRecBtn.setToolTipText(createTooltip("NewRecordTT", objTitle));
             newRecBtn.setEnabled(true);
             newRecBtn.setMargin(insets);
+            btnsHash.put(CommandTypes.NewItem, newRecBtn);
+
             rowBuilder.add(newRecBtn, cc.xy(row,1));
             row += 2;
         }
@@ -201,6 +271,8 @@ public class ResultSetController implements ValidationListener
             delRecBtn = UIHelper.createIconBtn("DeleteRecord", null, null);
             delRecBtn.setToolTipText(createTooltip("RemoveRecordTT", objTitle));
             delRecBtn.setMargin(insets);
+            btnsHash.put(CommandTypes.DelItem, delRecBtn);
+            
             rowBuilder.add(delRecBtn, cc.xy(row,1));
             row += 2;
         }
@@ -394,7 +466,7 @@ public class ResultSetController implements ValidationListener
 
     /**
      * Adds a listener.
-     * @param l thelistener
+     * @param l the listener
      */
     public void addListener(ResultSetControllerListener l)
     {
@@ -402,7 +474,7 @@ public class ResultSetController implements ValidationListener
     }
     
     /**
-     * Remoave a listener.
+     * Remove a listener.
      * @param l the listener
      */
     public void removeListener(ResultSetControllerListener l)
@@ -467,6 +539,202 @@ public class ResultSetController implements ValidationListener
         } else
         {
            updateUI(); 
+        }
+    }
+    
+    protected void createRSActions()
+    {
+        if (commandsHash == null)
+        {
+            commandsHash = new Hashtable<CommandTypes, RSAction<CommandTypes>>();
+            for (CommandTypes cmdType : CommandTypes.values())
+            {
+                RSAction<CommandTypes> action = new RSAction<CommandTypes>(cmdType);
+                commandsHash.put(cmdType, action);
+            }
+        }
+    }
+    
+    private static void registerFocusListener()
+    {
+        final KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager(); 
+        focusManager.addPropertyChangeListener( 
+            new PropertyChangeListener() { 
+                public void propertyChange(PropertyChangeEvent e) 
+                {
+                    Component permanentFocusOwner = null;
+                    String propName = e.getPropertyName(); 
+                    if (propName.equals("permanentFocusOwner"))
+                    {
+                        permanentFocusOwner = focusManager.getFocusOwner();
+                    }
+                    Component comp = permanentFocusOwner;
+                    while (comp != null && !(comp instanceof MultiView))
+                    {
+                        comp = comp.getParent();
+                    }
+                    
+                    ResultSetController rsc = null;
+                    boolean             fnd = false;
+                    if (comp instanceof MultiView)
+                    {
+                        FormViewObj fvo = ((MultiView)comp).getCurrentViewAsFormViewObj();
+                        if (fvo != null && fvo.getRsController() != null)
+                        {
+                            rsc = fvo.getRsController();
+                            System.err.println(fvo.getRsController());
+                            if (commandsHash == null)
+                            {
+                                rsc.createRSActions();
+                            }
+                            
+                            if (currentFocusedRS == null || currentFocusedRS != rsc)
+                            {
+                                currentFocusedRS = rsc;
+                                fnd              = true;
+                            }
+                        } 
+                    }
+                    
+                    if (!fnd)
+                    {
+                        currentFocusedRS = null;
+                    }
+                    
+                    for (RSAction<CommandTypes> rsca : commandsHash.values())
+                    {
+                        rsca.setRs(currentFocusedRS);
+                        
+                        if (rsc != null)
+                        {
+                            rsca.setBtn(rsc.btnsHash.get(rsca.getType()));
+                        }
+                    }
+                    
+                } 
+            } 
+        );
+    }
+    
+    public static void addMenuItems(final JMenuItem mi)
+    {
+        ResultSetController rsc = new ResultSetController();
+        rsc.createRSActions();
+        
+        JMenuItem prev = new JMenuItem(UIRegistry.getInstance().makeAction(commandsHash.get(CommandTypes.Previous), "Previous", null, "", 
+                new Integer(KeyEvent.VK_P),
+                KeyStroke.getKeyStroke(KeyEvent.VK_P, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())));
+        mi.add(prev);
+        
+        JMenuItem next = new JMenuItem(UIRegistry.getInstance().makeAction(commandsHash.get(CommandTypes.Next), "Next", null, "", 
+                new Integer(KeyEvent.VK_N),
+                KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())));
+        mi.add(next);
+    }
+    
+    
+    class RSAction<T> extends AbstractAction implements PropertyChangeListener
+    {
+        protected CommandTypes        type;
+        protected ResultSetController rs  = null;
+        protected JButton             btn = null;
+        
+        public RSAction(final CommandTypes type)
+        {
+            super();
+            this.type = type;
+        }
+
+        /* (non-Javadoc)
+         * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+         */
+        public void actionPerformed(ActionEvent e)
+        {
+            if (rs != null)
+            {
+                if (btn != null)
+                {
+                    btn.doClick();
+                }
+            }
+        }
+        
+        public void setEnabled(final boolean enabled)
+        {
+            if (!enabled || rs == null)
+            {
+                super.setEnabled(false);
+                
+            } else if (btn != null)
+            {
+                super.setEnabled(btn.isEnabled());
+            } else
+            {
+                super.setEnabled(false);
+            }
+        }
+
+        /**
+         * @return the btn
+         */
+        public JButton getBtn()
+        {
+            return btn;
+        }
+
+        /**
+         * @param btn the btn to set
+         */
+        public void setBtn(JButton btn)
+        {
+            if (this.btn != null)
+            {
+                this.btn.removePropertyChangeListener(this);
+            }
+            
+            this.btn = btn;
+            
+            if (this.btn != null)
+            {
+                super.setEnabled(this.btn.isEnabled());
+                this.btn.addPropertyChangeListener(this);
+            }
+        }
+
+        /**
+         * @return the type
+         */
+        public CommandTypes getType()
+        {
+            return type;
+        }
+
+        /**
+         * @return the rs
+         */
+        public ResultSetController getRs()
+        {
+            return rs;
+        }
+
+        /**
+         * @param rs the rs to set
+         */
+        public void setRs(ResultSetController rs)
+        {
+            this.rs = rs;
+            setEnabled(rs != null);
+        }
+
+        /* (non-Javadoc)
+         * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
+         */
+        public void propertyChange(PropertyChangeEvent evt)
+        {
+            if (evt.getPropertyName().equals("enabled"))
+            {
+                super.setEnabled((Boolean)evt.getNewValue());
+            }
         }
         
     }

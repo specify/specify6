@@ -37,7 +37,9 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
@@ -601,6 +603,24 @@ public class MultiView extends JPanel
         viewMapByName.put(name, viewable);
         add(viewable.getUIComponent(), name);
         return true;
+    }
+    
+    /**
+     * @param fvo
+     * @param tableInfo
+     * @param recordSetItemList
+     */
+    public void setRecordSetItemList(final FormViewObj              fvo,
+                                     final DBTableInfo              tableInfo, 
+                                     final List<RecordSetItemIFace> recordSetItemList)
+    {
+        for (Viewable viewable : viewMapByName.values())
+        {
+            if (viewable != fvo && viewable instanceof FormViewObj)
+            {
+                ((FormViewObj)viewable).setRecordSetItemList(tableInfo, recordSetItemList);
+            }
+        }
     }
 
     /**

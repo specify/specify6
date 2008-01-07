@@ -36,9 +36,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
-
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 
@@ -105,14 +102,16 @@ public class RecordSetItem implements java.io.Serializable, RecordSetItemIFace {
      * @see edu.ku.brc.specify.datamodel.RecordSetItemIFace#getRecordId()
      */
     @Column(name = "RecordId", unique = false, nullable = false, insertable = true, updatable = true)
-    public Integer getRecordId() {
+    public Integer getRecordId() 
+    {
         return this.recordId;
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.RecordSetItemIFace#setRecordId(java.lang.Integer)
      */
-    public void setRecordId(final Integer recordId) {
+    public void setRecordId(final Integer recordId) 
+    {
         this.recordId = recordId;
     }
     
@@ -122,20 +121,33 @@ public class RecordSetItem implements java.io.Serializable, RecordSetItemIFace {
     }
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.LOCK, CascadeType.MERGE})
     @JoinColumn(name = "RecordSetID", unique = false, nullable = false, insertable = true, updatable = true)
     public RecordSet getRecordSet()
     {
         return recordSet;
     }
 
+    /**
+     * @param recordSet
+     */
     public void setRecordSet(RecordSet recordSet)
     {
         this.recordSet = recordSet;
     }
     
+    /**
+     * @param recordSet
+     */
     public void setRecordSet(RecordSetIFace recordSet)
     {
         setRecordSet((RecordSet)recordSet);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.RecordSetItemIFace#clearParentReference()
+     */
+    public void clearParentReference()
+    {
+        recordSet = null;
     }
 }

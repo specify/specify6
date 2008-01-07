@@ -2800,7 +2800,7 @@ public class Uploader implements ActionListener, WindowStateListener
         for (UploadTable ut : uploadTables)
         {
             RecordSet rs = ut.getRecordSet();
-            if (rs.getItems().size() > 0)
+            if (rs.getNumItems() > 0)
             {
                 recordSets.add(rs);
             }
@@ -2817,7 +2817,7 @@ public class Uploader implements ActionListener, WindowStateListener
         {
             if (recordSets.get(rs).getName().equals(recordSets.get(rs-1).getName()))
             {
-                recordSets.get(rs-1).getItems().addAll(recordSets.get(rs).getItems());
+                recordSets.get(rs-1).addAll(recordSets.get(rs).getItems());
                 for (RecordSetItemIFace rsi : recordSets.get(rs).getItems())
                 {
                     recordSets.get(rs-1).addItem(rsi);

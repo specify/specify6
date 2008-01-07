@@ -38,7 +38,6 @@ import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.Viewable;
-import edu.ku.brc.ui.forms.validation.ValFormattedTextField;
 
 /**
  * Business rules for validating a Loan.
@@ -171,7 +170,7 @@ public class ShipmentBusRules extends BaseBusRules
             } else if (data instanceof RecordSetIFace)
             {
                 RecordSetIFace rs = (RecordSetIFace)data;
-                rs.getItems().clear();
+                rs.clearItems();
                 rs.addItem(shipment.getId());
             }
         }

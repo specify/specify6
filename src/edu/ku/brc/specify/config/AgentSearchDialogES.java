@@ -12,7 +12,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.io.File;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
@@ -37,7 +36,6 @@ import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
-import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanel;
 import edu.ku.brc.specify.ui.DBObjSearchDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -224,7 +222,7 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
      */
     protected void updateUI()
     {
-        okBtn.setEnabled(recordSet != null && recordSet.getItems().size() == 1);
+        okBtn.setEnabled(recordSet != null && recordSet.getNumItems() == 1);
     }
 
     /**

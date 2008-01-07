@@ -118,6 +118,16 @@ public class SearchConfig
     }
     
     /**
+     * Search's for SearchTableConfig by id and returns it.
+     * @param id the table id
+     * @return the config info.
+     */
+    public SearchTableConfig getSearchTableConfigById(final int id)
+    {
+        return tableIdHash.get(Integer.toString(id));
+    }
+    
+    /**
      * @param id
      * @return
      */
@@ -138,8 +148,9 @@ public class SearchConfig
     }
     
     /**
-     * @param id
-     * @return
+     * Returns the order number (ordinal) for the table with the ID.
+     * @param id the id of the table
+     * @return the ordinal (order) in the display list.
      */
     public Integer getOrderForTableId(final String id)
     {
@@ -148,9 +159,10 @@ public class SearchConfig
     }
     
     /**
-     * @param tableName
-     * @param fieldName
-     * @return
+     * Finds a field's DisplayFieldConfig info in a table.
+     * @param tableName the table name
+     * @param fieldName the field name the config info
+     * @return the info
      */
     public DisplayFieldConfig findDisplayField(final String tableName, 
                                                final String fieldName)
@@ -173,9 +185,10 @@ public class SearchConfig
     }
 
     /**
-     * @param tableName
-     * @param fieldName
-     * @return
+     * Finds a field's SearchFieldConfig info in a table.
+     * @param tableName the table name
+     * @param fieldName the field name the config info    
+     * @return the config info
      */
     public SearchFieldConfig findSearchField(final String tableName, 
                                              final String fieldName)
@@ -198,17 +211,19 @@ public class SearchConfig
     }
 
     /**
-     * @param table
-     * @param fieldName
-     * @return
+     * Finds the DisplayFieldConfig info for a SearchTableConfig object, and possibly creates it if it isn't found.
+     * @param searchTableConfig the table config object
+     * @param fieldName the field name
+     * @param createWhenNotFound true - creates a new when one isn't found, false doesn't
+     * @return the display field config info
      */
-    public DisplayFieldConfig findDisplayField(final SearchTableConfig table, 
+    public DisplayFieldConfig findDisplayField(final SearchTableConfig searchTableConfig, 
                                                final String            fieldName,
                                                final boolean           createWhenNotFound)
     {
-        if (table != null)
+        if (searchTableConfig != null)
         {
-            for (DisplayFieldConfig dfc : table.getDisplayFields())
+            for (DisplayFieldConfig dfc : searchTableConfig.getDisplayFields())
             {
                 if (fieldName.equals(dfc.getFieldName()))
                 {
@@ -222,9 +237,9 @@ public class SearchConfig
         {
             DisplayFieldConfig dfc =  new DisplayFieldConfig(fieldName, "", Integer.MAX_VALUE);
             dfc.setInUse(false);
-            if (table != null)
+            if (searchTableConfig != null)
             {
-                table.getDisplayFields().add(dfc);
+                searchTableConfig.getDisplayFields().add(dfc);
             }
             return dfc;
         }

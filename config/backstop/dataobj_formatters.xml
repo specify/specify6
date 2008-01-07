@@ -45,6 +45,18 @@
     </format>
     
     <format
+        name="Accession"
+        class="edu.ku.brc.specify.datamodel.Accession"
+        default="true"
+        >
+        <switch single="true">
+            <fields>
+                <field>accessionNumber</field>
+            </fields>
+        </switch>
+    </format>
+    
+    <format
         name="AccessionAuthorization"
         class="edu.ku.brc.specify.datamodel.AccessionAuthorization"
         default="true"

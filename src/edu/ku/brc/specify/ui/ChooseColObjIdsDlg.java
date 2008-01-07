@@ -92,7 +92,7 @@ public class ChooseColObjIdsDlg extends JDialog implements ActionListener
         JPanel panel = new JPanel(new BorderLayout());
         //panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         
-        panel.add(new JLabel(getResourceString("ChooseRecordSet"), IconManager.getImage(RecordSetTask.RECORD_SET, IconManager.IconSize.Std24), SwingConstants.LEFT), BorderLayout.NORTH);
+        panel.add(new JLabel(getResourceString("RECORDSET_CHOOSE"), IconManager.getImage(RecordSetTask.RECORD_SET, IconManager.IconSize.Std24), SwingConstants.LEFT), BorderLayout.NORTH);
 
         try
         {

@@ -20,6 +20,11 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,7 +33,9 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -71,7 +78,7 @@ import edu.ku.brc.ui.forms.FormHelper;
  * @author rods
  *
  */
-public class RecordSetTask extends BaseTask
+public class RecordSetTask extends BaseTask implements PropertyChangeListener
 {
     private static final Logger log = Logger.getLogger(RecordSetTask.class);
             
@@ -154,6 +161,7 @@ public class RecordSetTask extends BaseTask
                                                                    new CommandAction(RECORD_SET, DELETE_CMD_ACT, recordSet), 
                                                                    true, true);// true means make it draggable
         roc.setData(recordSet);
+        addPopMenu(roc);
         
         NavBoxItemIFace nbi = (NavBoxItemIFace)roc;
         
@@ -174,6 +182,76 @@ public class RecordSetTask extends BaseTask
         
         return nbi;
     }
+    
+    /**
+     * Adds the Context PopupMenu for the RecordSet.
+     * @param roc the RolloverCommand btn to add the pop to
+     */
+    public void addPopMenu(final RolloverCommand roc)
+    {
+        if (roc.getLabelText() != null)
+        {
+            final JPopupMenu popupMenu = new JPopupMenu();
+            
+            JMenuItem renameMenuItem = new JMenuItem(UIRegistry.getResourceString("Rename"));
+            renameMenuItem.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent actionEvent) {
+                    roc.startEditting(RecordSetTask.this);
+                }
+              });
+            popupMenu.add(renameMenuItem);
+            
+            JMenuItem delMenuItem = new JMenuItem(UIRegistry.getResourceString("Delete"));
+            delMenuItem.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent actionEvent) {
+                    CommandDispatcher.dispatch(new CommandAction(RECORD_SET, DELETE_CMD_ACT, roc));
+                }
+              });
+            popupMenu.add(delMenuItem);
+            
+            JMenuItem viewMenuItem = new JMenuItem(UIRegistry.getResourceString("View"));
+            viewMenuItem.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent actionEvent) {
+                    CommandDispatcher.dispatch(new CommandAction("Express_Search", "ViewRecordSet", roc));
+                }
+              });
+            popupMenu.add(viewMenuItem);
+            
+            MouseListener mouseListener = new MouseAdapter() 
+            {
+                  private boolean showIfPopupTrigger(MouseEvent mouseEvent) {
+                      if (roc.isEnabled() && 
+                          mouseEvent.isPopupTrigger() && 
+                          popupMenu.getComponentCount() > 0) 
+                      {
+                          popupMenu.show(mouseEvent.getComponent(),
+                                  mouseEvent.getX(),
+                                  mouseEvent.getY());
+                          return true;
+                      }
+                      return false;
+                  }
+                  @Override
+                  public void mousePressed(MouseEvent mouseEvent) 
+                  {
+                      if (roc.isEnabled())
+                      {
+                          showIfPopupTrigger(mouseEvent);
+                      }
+                  }
+                  @Override
+                  public void mouseReleased(MouseEvent mouseEvent) 
+                  {
+                      if (roc.isEnabled())
+                      {
+                          showIfPopupTrigger(mouseEvent);
+                      }
+                  }
+            };
+            roc.addMouseListener(mouseListener);
+        }
+    }
+
 
     /**
      * Adds the appropriate flavors to make it draggable
@@ -361,6 +439,62 @@ public class RecordSetTask extends BaseTask
     {
         return this.getClass();
     }
+    
+    /**
+     * Checks to see if the recordset AND the NavBtn can be renamed. The scope is the 'user' space.
+     * @param roc the roolover navbtn
+     * @param rs the recordset
+     * @param oldName the old name
+     * @param newName the new name
+     */
+    protected void renameRecordSet(final RolloverCommand roc, final RecordSetIFace rs, final String oldName, final String newName)
+    {
+        String sqlStr = "select count(rs.name) From RecordSet as rs Inner Join rs.specifyUser as user where rs.name = '"+newName+"' AND user.specifyUserId = "+SpecifyUser.getCurrentUser().getSpecifyUserId();
+        
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        int                      count   = -1;
+        try
+        {
+            Object result = session.getData(sqlStr);
+            count =  result != null ? (Integer)result : 0;
+            
+        } catch (Exception ex)
+        {
+            
+        } finally 
+        {
+            session.close();
+        }
+         
+        if (count == 0)
+        {
+            rs.setName(roc.getLabelText());
+            persistRecordSet(rs);    
+        } else
+        {
+            String msg = String.format(UIRegistry.getResourceString("RECORDSET_RENAMING_ERROR"), newName);
+            UIRegistry.getStatusBar().setErrorMessage(msg);
+            rs.setName(oldName);
+            roc.setLabelText(oldName);
+            roc.repaint();
+        }
+    }
+
+    //-------------------------------------------------------
+    // PropertyChangeListener Interface
+    //-------------------------------------------------------
+    
+    /* (non-Javadoc)
+     * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
+     */
+    public void propertyChange(PropertyChangeEvent evt)
+    {
+        if (evt.getSource() instanceof RolloverCommand)
+        {
+            RolloverCommand roc = (RolloverCommand)evt.getSource();
+            renameRecordSet(roc, (RecordSetIFace)roc.getData(), (String)evt.getOldValue(), (String)evt.getNewValue());
+        }
+    }
 
     //-------------------------------------------------------
     // CommandListener Interface
@@ -382,7 +516,7 @@ public class RecordSetTask extends BaseTask
                 // pre-sets the name in the dialog.
                 String intialName = "";
                 RecordSetIFace recordSet = (RecordSetIFace)cmdAction.getData();
-                if (recordSet.getItems().size() == 1)
+                if (recordSet.getNumItems() == 1)
                 {
                     RecordSetItemIFace item = recordSet.getItems().iterator().next();
                     DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
@@ -398,7 +532,7 @@ public class RecordSetTask extends BaseTask
                     session.close();
                 }
                 String rsName  = JOptionPane.showInputDialog(UIRegistry.get(UIRegistry.FRAME), 
-                                                             getResourceString("AskForRSName"), intialName);
+                                                             getResourceString("RECORDSET_ASKFORNAME"), intialName);
                 if (isNotEmpty(rsName))
                 {
                     RecordSet rs = (RecordSet)data;
@@ -407,11 +541,35 @@ public class RecordSetTask extends BaseTask
                     saveNewRecordSet(rs);
                 }
             }
-        } else if (cmdAction.isAction(DELETE_CMD_ACT) && cmdAction.getData() instanceof RecordSet)
+        } else if (cmdAction.isAction(DELETE_CMD_ACT))
         {
-            RecordSetIFace recordSet = (RecordSetIFace)cmdAction.getData();
-            deleteRecordSet(recordSet);
-            deleteRecordSetFromUI(null, recordSet);
+            RecordSetIFace recordSet = null;
+            if (cmdAction.getData() instanceof RecordSet)
+            {
+                recordSet = (RecordSetIFace)cmdAction.getData();
+                
+            } else if (cmdAction.getData() instanceof RolloverCommand)
+            {
+                RolloverCommand roc = (RolloverCommand)cmdAction.getData();
+                if (roc.getData() instanceof RecordSet)
+                {
+                    recordSet = (RecordSetIFace)roc.getData();
+                }
+            }
+            
+            if (recordSet != null)
+            {
+                int option = JOptionPane.showOptionDialog(UIRegistry.getMostRecentWindow(), 
+                        String.format(UIRegistry.getResourceString("RECORDSET_CONFIRM_DELETE"), recordSet.getName()),
+                        UIRegistry.getResourceString("RECORDSET_CONFIRM_DELETE_TITLE"), 
+                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, JOptionPane.NO_OPTION); // I18N
+                
+                if (option == JOptionPane.YES_OPTION)
+                {
+                    deleteRecordSet(recordSet);
+                    deleteRecordSetFromUI(null, recordSet);
+                }
+            }
 
         } else if (cmdAction.isAction("Dropped"))
         {
@@ -428,7 +586,7 @@ public class RecordSetTask extends BaseTask
                 RecordSetIFace dstRecordSet = (RecordSetIFace)dstObj;
                 if (srcRecordSet.getDbTableId().intValue() == dstRecordSet.getDbTableId().intValue())
                 {
-                    int oldSize = dstRecordSet.getItems().size();
+                    int oldSize = dstRecordSet.getNumItems();
                     Vector<RecordSetItemIFace> dstList  = new Vector<RecordSetItemIFace>(dstRecordSet.getItems());
                     log.debug("Source:");
                     for (RecordSetItemIFace rsi : srcRecordSet.getItems())
@@ -446,7 +604,7 @@ public class RecordSetTask extends BaseTask
                         if (Collections.binarySearch(dstList, rsi) < 0)
                         {
                             RecordSetItem newrsi = new RecordSetItem(rsi.getRecordId());
-                            dstRecordSet.getItems().add(newrsi);
+                            dstRecordSet.addItem(newrsi);
                             newrsi.setRecordSet(dstRecordSet);
                         }
                     }
@@ -458,7 +616,7 @@ public class RecordSetTask extends BaseTask
                     }                
                     log.debug("");
                     
-                    if (dstRecordSet.getItems().size() > oldSize)
+                    if (dstRecordSet.getNumItems() > oldSize)
                     {
                         persistRecordSet(dstRecordSet);
                     }
@@ -489,7 +647,8 @@ public class RecordSetTask extends BaseTask
         {
             isInitialized = false;
             this.initialize();
-        }
+            
+        } 
     }
     
     //--------------------------------------------------------------
@@ -570,4 +729,5 @@ public class RecordSetTask extends BaseTask
             rst.droppableFlavors.add(df);
         }
     }
+
 }

@@ -31,47 +31,48 @@ import java.util.Set;
  */
 public interface PickListIFace
 {
-    public String getName();
+    public abstract String getName();
 
-    public void setName(String name);
+    public abstract void setName(String name);
     
-    public String getFieldName();
+    public abstract String getFieldName();
 
-    public void setFieldName(String fieldName);
+    public abstract void setFieldName(String fieldName);
 
-    public String getTableName();
+    public abstract String getTableName();
 
-    public void setTableName(String tableName);
+    public abstract void setTableName(String tableName);
 
-    public String getFormatter();
+    public abstract String getFormatter();
 
-    public void setFormatter(String formatter);
+    public abstract void setFormatter(String formatter);
 
-    public Integer getType();
+    public abstract Integer getType();
 
-    public void setType(Integer type);
+    public abstract void setType(Integer type);
 
-    public Boolean getReadOnly();
+    public abstract Boolean getReadOnly();
 
-    public void setReadOnly(Boolean readOnly);
+    public abstract void setReadOnly(Boolean readOnly);
 
-    public Integer getSizeLimit();
+    public abstract Integer getSizeLimit();
 
-    public void setSizeLimit(Integer sizeLimit);
+    public abstract void setSizeLimit(Integer sizeLimit);
 
-    public Timestamp getTimestampCreated();
+    public abstract Timestamp getTimestampCreated();
 
-    public void setTimestampCreated(Timestamp created);
+    public abstract void setTimestampCreated(Timestamp created);
+    
+    public abstract int getNumItems();
 
-    public Set<PickListItemIFace> getItems();
+    public abstract Set<PickListItemIFace> getItems();
 
-    public PickListItemIFace addPickListItem(final String title, final String value);
+    public abstract PickListItemIFace addItem(final String title, final String value);
 
-    public PickListItemIFace addPickListItem(final String title, final Object value);
+    public abstract PickListItemIFace addItem(final String title, final Object value);
 
-    public PickListItemIFace addPickListItem(final PickListItemIFace item);
-
-    public void removePickListItem(final PickListItemIFace item);
-
+    public abstract PickListItemIFace addItem(final PickListItemIFace item);
+    
+    public abstract void removeItem(final PickListItemIFace item);
 
 }

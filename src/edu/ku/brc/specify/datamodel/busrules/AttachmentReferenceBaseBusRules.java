@@ -106,9 +106,13 @@ public class AttachmentReferenceBaseBusRules extends BaseBusRules
         super.afterDeleteCommit(dataObj);
     }
     
+    /**
+     * @param attachment
+     * @return
+     */
     protected boolean askUserToApproveDelete(Attachment attachment)
     {
-        JOptionPane pane = new JOptionPane("Delete the associated files from the attachment storage system?  " + attachment.getOrigFilename());
+        JOptionPane pane = new JOptionPane("Delete the associated files from the attachment storage system?  " + attachment.getOrigFilename()); // I18N
         pane.setOptionType(JOptionPane.YES_NO_OPTION);
         AttachmentManagerIface attachMgr = AttachmentUtils.getAttachmentManager();
         File thumbnail = attachMgr.getThumbnail(attachment);

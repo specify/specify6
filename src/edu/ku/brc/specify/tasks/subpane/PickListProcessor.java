@@ -22,7 +22,6 @@ import java.awt.event.ActionListener;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import javax.swing.AbstractListModel;
@@ -42,6 +41,7 @@ import edu.ku.brc.specify.datamodel.PickListItem;
 import edu.ku.brc.specify.tasks.SystemSetupTask;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.validation.FormValidator;
 
@@ -141,7 +141,7 @@ public class PickListProcessor implements FormProcessor
                         public void actionPerformed(ActionEvent ae)
                         {
                             PickListItem pli = new PickListItem(title.getText(), null, new Timestamp(System.currentTimeMillis()));
-                            pickList.getItems().add(pli);
+                            pickList.addItem(pli);
                             pli.setPickList(pickList);
                             title.setText("");
                             value.setText("");
@@ -166,7 +166,7 @@ public class PickListProcessor implements FormProcessor
                             Object[] objs = list.getSelectedValues();
                             for (Object o : objs)
                             {
-                                pickList.getItems().remove(o);
+                                pickList.removeItem((PickListItemIFace)o);
                                 ListModel lm = list.getModel();
                                 if (lm instanceof DefaultListModel)
                                 {

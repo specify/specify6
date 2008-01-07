@@ -106,7 +106,7 @@ public class PropertiesPickListAdapter implements PickListDBAdapterIFace
             {
                 for (int i=0;i<strs.length;i++)
                 {
-                    PickListItemIFace pli = pickList.addPickListItem(strs[i], strs[i]);
+                    PickListItemIFace pli = pickList.addItem(strs[i], strs[i]);
                     items.add(pli);
                 }
             }
@@ -186,7 +186,7 @@ public class PropertiesPickListAdapter implements PickListDBAdapterIFace
                     }
                 }
                 items.remove(oldest);
-                pickList.getItems().remove(oldest);
+                pickList.removeItem(oldest);
             }
             
             PickListItemIFace item = PickListDBAdapterFactory.getInstance().createPickListItem();
@@ -197,8 +197,7 @@ public class PropertiesPickListAdapter implements PickListDBAdapterIFace
             
             if (pickList != null)
             {
-                pickList.getItems().add(item);
-                item.setPickList(pickList);
+                pickList.addItem(item);
             }
 
             save();

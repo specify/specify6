@@ -223,7 +223,7 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
             } else if (data instanceof RecordSetIFace)
             {
                 RecordSetIFace rs = (RecordSetIFace)data;
-                rs.getItems().clear();
+                rs.clearItems();
                 rs.addItem(loan.getLoanId());
             }
         }

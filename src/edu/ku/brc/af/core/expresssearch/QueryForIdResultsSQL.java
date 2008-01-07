@@ -294,12 +294,36 @@ public class QueryForIdResultsSQL implements QueryForIdResultsIFace
         overrideSQL = sql;
     }
 
-    /**
-     * @return the isExpanded
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#isExpanded()
      */
     public boolean isExpanded()
     {
         return isExpanded;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#shouldInstallServices()
+     */
+    public boolean shouldInstallServices()
+    {
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#enableEditing()
+     */
+    public boolean enableEditing()
+    {
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#removeIds(java.util.List)
+     */
+    public void removeIds(List<Integer> ids)
+    {
+        // no op
     }
 
     /**

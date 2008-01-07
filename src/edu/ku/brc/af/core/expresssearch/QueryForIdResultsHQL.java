@@ -23,7 +23,12 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.ui.db.QueryForIdResultsIFace;
+import edu.ku.brc.ui.forms.FormHelper;
 
 /**
  * @author rods
@@ -43,6 +48,8 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
     protected String                overrideSQL  = null;
     protected List<ERTICaptionInfo> captions     = null; 
     protected boolean               isExpanded   = false;
+    protected boolean               shouldInstallServices = true;
+    protected RecordSetIFace        recordSet;
     
     @SuppressWarnings("unchecked")
     public QueryForIdResultsHQL(final SearchTableConfig searchTableConfig,
@@ -53,10 +60,31 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
         this.searchTableConfig = searchTableConfig;
         this.bannerColor       = bannerColor;
         this.searchTerm        = searchTerm;
+        this.recordSet         = null;
         
         for (Integer id : (List<Integer>)listOfIds)
         {
             recIds.add(id);
+        }
+    }
+
+    /**
+     * @param searchTableConfig
+     * @param bannerColor
+     * @param recordSet
+     */
+    public QueryForIdResultsHQL(final SearchTableConfig searchTableConfig,
+                                final Color             bannerColor,
+                                final RecordSetIFace    recordSet)
+    {
+        this.searchTableConfig = searchTableConfig;
+        this.bannerColor       = bannerColor;
+        this.searchTerm        = "";
+        this.recordSet         = recordSet;
+
+        for (RecordSetItemIFace item : recordSet.getItems())
+        {
+            recIds.add(item.getRecordId());
         }
     }
 
@@ -124,7 +152,7 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
         {
             return overrideSQL;
         }
-        return searchTableConfig.getSQL(searchTermArg, false, ids);
+        return searchTableConfig.getSQL(searchTermArg, false, ids == null && recIds != null ? recIds : ids);
     }
 
     /* (non-Javadoc)
@@ -173,6 +201,75 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
     public boolean isExpanded()
     {
         return isExpanded;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#shouldInstallServices()
+     */
+    public boolean shouldInstallServices()
+    {
+        return shouldInstallServices;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#enableEditing()
+     */
+    public boolean enableEditing()
+    {
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#removeIds(java.util.List)
+     */
+    public void removeIds(List<Integer> ids)
+    {
+        // TODO Add StaleObject Code from FormView
+        
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+            FormHelper.updateLastEdittedInfo(recordSet);
+            
+            session.beginTransaction();
+
+            Vector<RecordSetItemIFace> items = new Vector<RecordSetItemIFace>(recordSet.getItems());
+            for (Integer id : ids)
+            {
+                for (RecordSetItemIFace rsi : items)
+                {
+                    if (rsi.getRecordId().intValue() == id.intValue())
+                    {
+                        System.out.println(recordSet.getItems().contains(rsi));
+                        recordSet.removeItem(rsi);
+                        session.delete(rsi);
+                        System.out.println(recordSet.getItems().contains(rsi));
+                    }
+                }
+            }
+            
+            items.clear();
+            session.saveOrUpdate(recordSet);
+            session.commit();
+            session.flush();
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            //log.error(ex);
+            
+        } finally
+        {
+            session.close();    
+        }
+    }
+    
+    /**
+     * @param shouldInstallServices the shouldInstallServices to set
+     */
+    public void setShouldInstallServices(boolean shouldInstallServices)
+    {
+        this.shouldInstallServices = shouldInstallServices;
     }
 
     /**

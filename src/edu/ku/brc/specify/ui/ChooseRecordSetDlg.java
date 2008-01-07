@@ -93,7 +93,7 @@ public class ChooseRecordSetDlg extends JDialog implements ActionListener
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
 
-        panel.add(new JLabel(getResourceString("ChooseRecordSet"), SwingConstants.CENTER), BorderLayout.NORTH);
+        panel.add(new JLabel(getResourceString("RECORDSET_CHOOSE"), SwingConstants.CENTER), BorderLayout.NORTH);
 
         try
         {

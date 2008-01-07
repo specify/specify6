@@ -36,7 +36,6 @@ import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
-import edu.ku.brc.ui.forms.Viewable;
 
 /**
  *Business rules for validating a Accession.
@@ -209,7 +208,7 @@ public class AccessionBusRules extends AttachmentOwnerBaseBusRules
             } else if (data instanceof RecordSetIFace)
             {
                 RecordSetIFace rs = (RecordSetIFace)data;
-                rs.getItems().clear();
+                rs.clearItems();
                 rs.addItem(accession.getAccessionId());
             }
         }

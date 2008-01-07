@@ -231,11 +231,11 @@ public class ReportsBaseTask extends BaseTask
     protected boolean checkForALotOfLabels(final RecordSetIFace recordSet)
     {
         //
-        if (recordSet.getItems().size() > 200) // XXX Pref
+        if (recordSet.getNumItems() > 200) // XXX Pref
         {
             Object[] options = {getResourceString("Create_New_Report"), getResourceString("Cancel")};
             int n = JOptionPane.showOptionDialog(UIRegistry.get(UIRegistry.FRAME),
-                                                String.format(getResourceString("LotsOfLabels"), new Object[] {(recordSet.getItems().size())}),
+                                                String.format(getResourceString("LotsOfLabels"), new Object[] {(recordSet.getNumItems())}),
                                                 getResourceString("LotsOfLabelsTitle"),
                                                 JOptionPane.YES_NO_OPTION,
                                                 JOptionPane.QUESTION_MESSAGE,

@@ -140,10 +140,9 @@ public class DraggableRecordIdentifier extends JComponent implements GhostAction
      */
     protected void calcPreferredSize()
     {
-        if (sizeBufImg == null)
+        if (sizeBufImg == null || generateImgBuf)
         {
             Insets ins = getBorder() != null ? getBorder().getBorderInsets(this) : new Insets(0,0,0,0);
-            //Insets ins = new Insets(0,0,0,0);
             sizeBufImg = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB);
             
             Graphics2D g = sizeBufImg.createGraphics();
@@ -316,6 +315,8 @@ public class DraggableRecordIdentifier extends JComponent implements GhostAction
         g2.setColor(Color.BLACK);
         g2.drawString(label, left+1+imgIcon.getIconWidth()+1, top+((height-fm.getHeight())/2)+fm.getAscent());
         g2.dispose();
+        
+        generateImgBuf = false;
     }
 
     /**

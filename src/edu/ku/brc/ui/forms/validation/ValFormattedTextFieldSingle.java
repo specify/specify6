@@ -464,6 +464,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
      */
     public void reset()
     {
+        origValue = null;
         setText( StringUtils.isNotEmpty(defaultValue) ? defaultValue : "");
         validateState();
         repaint();

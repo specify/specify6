@@ -42,8 +42,6 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 import edu.ku.brc.ui.db.PickListIFace;
@@ -78,7 +76,10 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
     protected String            formatter; // dataobj_formatter or uiformatter
     protected Boolean           readOnly;
     protected Integer           sizeLimit;
-    protected Set<PickListItemIFace> items;
+    protected Set<PickListItem> pickListItems;
+    
+    // Transient
+    protected Set<PickListItemIFace> items = null;
 
     // Constructors
 
@@ -107,7 +108,8 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
         formatter  = null;
         readOnly   = false;
         sizeLimit  = 50;
-        items      = new HashSet<PickListItemIFace>();
+        
+        pickListItems = new HashSet<PickListItem>();
     }
 
     // Property accessors
@@ -282,13 +284,59 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
         this.type = type;
     }
 
+    /**
+     * @return
+     */
+    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.EAGER, mappedBy = "pickList")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<PickListItem> getPickListItems()
+    {
+        return this.pickListItems;
+    }
+
+    /**
+     * @param items
+     */
+    public void setPickListItems(Set<PickListItem> items)
+    {
+        this.pickListItems = items;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.PickListIFace#getNumItems()
+     */
+    @Transient
+    public int getNumItems()
+    {
+        return pickListItems.size();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.PickListIFace#removeItem(edu.ku.brc.ui.db.PickListItemIFace)
+     */
+    public void removeItem(PickListItemIFace item)
+    {
+        if (items != null)
+        {
+            items.remove(item);
+        }
+        pickListItems.remove((PickListItem)item);
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.PickListIFace#getItems()
      */
-    @OneToMany(cascade = {}, targetEntity=PickListItem.class, fetch = FetchType.EAGER, mappedBy = "pickList")
-    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    @Transient
     public Set<PickListItemIFace> getItems()
     {
+        if (this.items == null)
+        {
+            items = new HashSet<PickListItemIFace>();
+            for (PickListItem rsi : pickListItems)
+            {
+                this.items.add(rsi);
+            }
+        }
         return this.items;
     }
 
@@ -301,45 +349,52 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.db.PickListIFace#addPickListItem(java.lang.String, java.lang.String)
+     * @see edu.ku.brc.ui.db.PickListIFace#addItem(java.lang.String, java.lang.String)
      */
-    public PickListItemIFace addPickListItem(final String title, final String value)
+    public PickListItemIFace addItem(final String title, final String value)
     {
+        if (items == null)
+        {
+            items = new HashSet<PickListItemIFace>();
+        }
         PickListItem pli = new PickListItem(title, value, new Timestamp(System.currentTimeMillis()));
         items.add(pli);
+        pickListItems.add(pli);
         pli.setPickList(this);
         return pli;
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.db.PickListIFace#addPickListItem(java.lang.String, java.lang.Object)
+     * @see edu.ku.brc.ui.db.PickListIFace#addItem(java.lang.String, java.lang.Object)
      */
-    public PickListItemIFace addPickListItem(final String title, final Object value)
+    public PickListItemIFace addItem(final String title, final Object value)
     {
+        if (items == null)
+        {
+            items = new HashSet<PickListItemIFace>();
+        }
         PickListItem pli = new PickListItem(title, value, new Timestamp(System.currentTimeMillis()));
         items.add(pli);
+        pickListItems.add(pli);
         pli.setPickList(this);
         return pli;
        
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.db.PickListIFace#addPickListItem(edu.ku.brc.ui.db.PickListItemIFace)
+     * @see edu.ku.brc.ui.db.PickListIFace#addItem(edu.ku.brc.ui.db.PickListItemIFace)
      */
-    public PickListItemIFace addPickListItem(final PickListItemIFace item)
+    public PickListItemIFace addItem(final PickListItemIFace item)
     {
+        if (items == null)
+        {
+            items = new HashSet<PickListItemIFace>();
+        }
         items.add(item);
+        pickListItems.add((PickListItem)item);
         return item;
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.db.PickListIFace#removePickListItem(edu.ku.brc.ui.db.PickListItemIFace)
-     */
-    public void removePickListItem(final PickListItemIFace item)
-    {
-        items.remove(item);
-    }
-    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */

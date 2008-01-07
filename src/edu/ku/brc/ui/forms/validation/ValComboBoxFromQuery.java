@@ -574,6 +574,10 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                     } 
                 }
                 valueHasChanged();
+                if (listSelectionListener != null)
+                {
+                    listSelectionListener.valueChanged(null);
+                }
             }
 
             currentMode = MODE.Unknown;

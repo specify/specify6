@@ -91,8 +91,8 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
      * @param task the owning task
      */
     public ESResultsSubPane(final String name,
-                                    final Taskable task,
-                                    final boolean includeExplainPane)
+                            final Taskable task,
+                            final boolean includeExplainPane)
     {
         super(name, task, false);
 
@@ -132,7 +132,7 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
     }
 
     /**
-     * Add serach results box to UI.
+     * Add search results box to UI.
      * @param tableInfo the information about the table being added
      * @param hits the "hits" results of the search
      */
@@ -142,7 +142,7 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
         // This will start itself up and if there are results from the query 
         // it will add itself to the pane (So it is OK that it isn't referenced)
         @SuppressWarnings("unused")
-        ESResultsTablePanel resultsTable = new ESResultsTablePanel(this, results, true, results.isExpanded());
+        ESResultsTablePanel resultsTable = new ESResultsTablePanel(this, results, results.shouldInstallServices(), results.isExpanded());
     }
 
     

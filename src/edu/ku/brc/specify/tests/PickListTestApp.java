@@ -456,7 +456,7 @@ public class PickListTestApp
             
             for (int i=0;i<states.length;i++)
             {
-                pl.addPickListItem(states[i], states[i+1]);
+                pl.addItem(states[i], states[i+1]);
                 i++;
                 System.out.println("["+states[i]+"]["+states[i+1]+"]");
             }

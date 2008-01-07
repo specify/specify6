@@ -12,11 +12,16 @@ package edu.ku.brc.specify.tasks.subpane.qb;
 import java.awt.BorderLayout;
 import java.awt.Component;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.ui.IconManager;
 
@@ -48,10 +53,22 @@ public class QryListRenderer implements ListCellRenderer
         this.label     = new JLabel("  ");
         this.kidLabel  = new JLabel(blankIcon);
         
-        panel = new JPanel(new BorderLayout());
-        panel.add(iconLabel, BorderLayout.WEST);
-        panel.add(label, BorderLayout.CENTER);
-        panel.add(kidLabel, BorderLayout.EAST);
+        if (true)
+        {
+            panel = new JPanel(new BorderLayout());
+            panel.add(iconLabel, BorderLayout.WEST);
+            panel.add(label, BorderLayout.CENTER);
+            panel.add(kidLabel, BorderLayout.EAST);
+        } else
+        {
+            PanelBuilder pb = new PanelBuilder(new FormLayout("p,2px,f:p:g,1px,p", "p"));
+            CellConstraints cc = new CellConstraints();
+            pb.add(iconLabel, cc.xy(1,1));
+            pb.add(label, cc.xy(3,1));
+            pb.add(kidLabel, cc.xy(5,1));
+            panel = pb.getPanel();
+        }
+        panel.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
         iconLabel.setOpaque(false);
         label.setOpaque(false);
         kidLabel.setOpaque(false);
@@ -88,7 +105,7 @@ public class QryListRenderer implements ListCellRenderer
             panel.setForeground(list.getForeground());
         }
 
-        label.setText(qri.getTitle());
+        label.setText(" "+qri.getTitle());
         panel.doLayout();
         return panel;
     }

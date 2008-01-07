@@ -6,6 +6,7 @@
  */
 package edu.ku.brc.dbsupport;
 
+import java.util.Collection;
 import java.util.Set;
 
 import javax.swing.ImageIcon;
@@ -38,12 +39,20 @@ public interface RecordSetIFace
     public abstract String getRemarks();
 
     public abstract void setRemarks(String remarks);
+    
+    public abstract int getNumItems();
 
     public abstract RecordSetItemIFace addItem(final Integer recordId);
 
     public abstract RecordSetItemIFace addItem(final String recordId);
 
     public abstract RecordSetItemIFace addItem(final RecordSetItemIFace item);
+    
+    public abstract void removeItem(final RecordSetItemIFace rsi);
+    
+    public abstract void clearItems();
+    
+    public abstract void addAll(Collection<RecordSetItemIFace> list);
 
     public abstract ImageIcon getDataSpecificIcon();
 

@@ -16,7 +16,6 @@ package edu.ku.brc.specify.ui.db;
 
 import java.sql.Timestamp;
 import java.util.Collections;
-import java.util.Date;
 import java.util.Vector;
 
 import javax.swing.AbstractListModel;
@@ -171,7 +170,7 @@ public class PickListDBAdapter extends AbstractListModel implements PickListDBAd
                     }
                 }
                 items.remove(oldest);
-                pickList.getItems().remove(oldest);
+                pickList.removeItem(oldest);
             }
             
             PickListItem item = new PickListItem(title, value, new Timestamp(System.currentTimeMillis()));
@@ -180,8 +179,7 @@ public class PickListDBAdapter extends AbstractListModel implements PickListDBAd
             
             if (pickList != null)
             {
-                pickList.getItems().add(item);
-                item.setPickList(pickList);
+                pickList.addItem(item);
             }
 
             save();

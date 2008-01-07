@@ -221,7 +221,7 @@ public class FormViewObj implements Viewable,
     
     protected Color                         bgColor           = null;
     
-    protected Vector<ViewState>            viewStateList        = null;
+    protected Vector<ViewState>             viewStateList        = null;
 
 
     /**
@@ -296,7 +296,12 @@ public class FormViewObj implements Viewable,
         //boolean isNewObject                = MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT);
         boolean hideSaveBtn                = MultiView.isOptionOn(options, MultiView.HIDE_SAVE_BTN);
         
-        
+        isNewlyCreatedDataObj = MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT);
+        if (formValidator != null)
+        {
+            formValidator.setNewObj(isNewlyCreatedDataObj);
+        }
+
         //MultiView.printCreateOptions("Creating Form "+altView.getName(), options);
 
         setValidator(formValidator);
@@ -410,7 +415,7 @@ public class FormViewObj implements Viewable,
             }
         }
         
-        // This here because the Seach mode shouldn't be combined with other modes
+        // This here because the Search mode shouldn't be combined with other modes
         if (altView.getMode() == AltViewIFace.CreationMode.SEARCH)
         {
             if (!hideSaveBtn)
@@ -929,7 +934,7 @@ public class FormViewObj implements Viewable,
      * it should have the children walk there children (a deep recurse).
      * that the form is new
      * @param parentMV the parent MultiView
-     * @param isNewForm wheather the form is now in "new data input" mode
+     * @param isNewForm whether the form is now in "new data input" mode
      * @param traverseKids whether the MultiView should traverse into the children MultiViews (deep recurse)
      */
     protected void traverseToToSetAsNew(final MultiView parentMV, 
@@ -1009,7 +1014,7 @@ public class FormViewObj implements Viewable,
         
         //if ((formValidator != null && formValidator.hasChanged()) ||
         //    (mvParent != null && mvParent.isTopLevel() && mvParent.hasChanged()))
-        if (mvParent.isTopLevel() && mvParent.hasChanged())
+        if (mvParent != null && mvParent.isTopLevel() && mvParent.hasChanged())
         {
             String title = null;
             if (dataObj != null)
@@ -1120,6 +1125,20 @@ public class FormViewObj implements Viewable,
             return;
         }
         
+        if (true)
+        {
+            UIValidator.setIgnoreAllValidation(this, true);
+            for (FieldInfo fieldInfo : controlsById.values())
+            {
+                Component comp = fieldInfo.getComp();
+                if (comp != null && comp instanceof UIValidatable)
+                {
+                    ((UIValidatable)comp).reset();
+                }
+            }
+            UIValidator.setIgnoreAllValidation(this, false);
+        }
+        
         for (FieldInfo fi : controlsByName.values())
         {
             if (fi.getComp() instanceof EditViewCompSwitcherPanel)
@@ -1148,6 +1167,7 @@ public class FormViewObj implements Viewable,
         }
         
         isNewlyCreatedDataObj = true;
+        formValidator.setNewObj(isNewlyCreatedDataObj);
 
         if (carryFwdDataObj == null && dataObj != null)
         {
@@ -1373,7 +1393,8 @@ public class FormViewObj implements Viewable,
                 tryAgain = false;
                 
                 isNewlyCreatedDataObj = false; // shouldn't be needed, but just in case
-                
+                formValidator.setNewObj(isNewlyCreatedDataObj);
+
                 saveState = SAVE_STATE.SaveOK;
                 
                 dataObj = dObj;
@@ -2250,6 +2271,27 @@ public class FormViewObj implements Viewable,
         sqlProc.start();
     }
     
+    /**
+     * @param fvo
+     * @param availableIdList
+     */
+    public void setRecordSetItemList(final DBTableInfo              tableInfo,
+                                     final List<RecordSetItemIFace> availableIdList)
+    {
+        if (availableIdList != null)
+        {
+            this.tableInfo = tableInfo;
+            if (this.recordSetItemList == null)
+            {
+                recordSetItemList = new Vector<RecordSetItemIFace>(availableIdList.size());
+                
+            } else
+            {
+                recordSetItemList.clear();
+            }
+            recordSetItemList.addAll(availableIdList);
+        }
+    }
     
     /**
      * @param rs
@@ -2268,7 +2310,7 @@ public class FormViewObj implements Viewable,
                     
                 } while (resultSet.next());
                 
-                if (availableIdList.size() != rs.getItems().size())
+                if (availableIdList.size() != rs.getNumItems())
                 {
                     UIRegistry.displayLocalizedStatusBarText("NOT_ALL_RECS_FOUND");
                 }
@@ -2292,6 +2334,7 @@ public class FormViewObj implements Viewable,
                 if (mvParent != null)
                 {
                     mvParent.setData(tmpList);
+                    mvParent.setRecordSetItemList(this, tableInfo, recordSetItemList);
                     
                 } else
                 {
@@ -2370,8 +2413,8 @@ public class FormViewObj implements Viewable,
                 enableNewBtn = formValidator.isFormValid();
             }
             
-            //log.debug("enableNewBtn "+enableNewBtn);
-            newRecBtn.setEnabled(enableNewBtn);
+            log.debug(view.getName()+"  enableNewBtn "+enableNewBtn+"  isNewlyCreatedDataObj "+isNewlyCreatedDataObj()+" ("+(enableNewBtn && (dataObj == null || !isNewlyCreatedDataObj()))+")");
+            newRecBtn.setEnabled(enableNewBtn && (dataObj == null || !isNewlyCreatedDataObj()));
             
             if (switcherUI != null)
             {
@@ -2626,6 +2669,22 @@ public class FormViewObj implements Viewable,
         {
             compFI.setEnabled(true);
         }
+    }
+    
+    /**
+     * @return the actual value of isNewlyCreatedDataObj
+     */
+    public boolean getNewlyCreatedDataObj()
+    {
+        return isNewlyCreatedDataObj;
+    }
+
+    /**
+     * @return the the top-levels value of isNewlyCreatedDataObj or it's own isNewlyCreatedDataObj if it is the top-level ro one doesn't exist.
+     */
+    public boolean isNewlyCreatedDataObj()
+    {
+        return (mvParent != null && mvParent.isTopLevel()) ?  mvParent.getCurrentViewAsFormViewObj().getNewlyCreatedDataObj() : isNewlyCreatedDataObj;
     }
 
     /* (non-Javadoc)
@@ -3034,7 +3093,7 @@ public class FormViewObj implements Viewable,
                     
                     String id = fieldInfo.getFormCell().getIdent();
                     
-                    //log.debug(fieldInfo.getName()+"\t"+fieldInfo.getFormCell().getName()+"\t   hasChanged: "+(!isReadOnly && hasFormControlChanged(id)));
+                    log.debug(fieldInfo.getName()+"\t"+fieldInfo.getFormCell().getName()+"\t   hasChanged: "+(!isReadOnly && hasFormControlChanged(id)));
                     
                     if (!isReadOnly && hasFormControlChanged(id))
                     {

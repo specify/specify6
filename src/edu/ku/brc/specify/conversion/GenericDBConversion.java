@@ -2009,7 +2009,7 @@ public class GenericDBConversion
                     if (values.get(lowerStr) == null)
                     {
                         log.info("["+val+"]");
-                        pl.addPickListItem(val, val);
+                        pl.addItem(val, val);
                         values.put(lowerStr, val);
                         count++;
                     } else

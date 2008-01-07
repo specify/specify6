@@ -1212,9 +1212,6 @@ public class ViewFactory
             bi.doRegControl     = false;
             bi.doAddToValidator = false;
             
-            //curMaxRow = rowInx;
-            //colInx += 2;
-
         } else if (cell.getType() == FormCellIFace.CellType.command)
         {
             FormCellCommand cellCmd = (FormCellCommand)cell;
@@ -1250,10 +1247,11 @@ public class ViewFactory
                     parent.addChildMV(multiView);
                     multiView.setClassToCreate(getClassToCreate(parent, cell));
 
+                    log.debug("["+cell.getType()+"] ["+cell.getName()+"] col: "+bi.colInx+" row: "+rowInx+" colspan: "+cell.getColspan()+" rowspan: "+cell.getRowspan());
                     viewBldObj.addSubView(cellSubView, multiView, bi.colInx, rowInx, cellSubView.getColspan(), 1);
                     viewBldObj.closeSubView(cellSubView);
                     bi.curMaxRow = rowInx;
-
+                    bi.colInx += cell.getColspan() + 1;
                 }
                 else
                 {
@@ -1358,6 +1356,7 @@ public class ViewFactory
                             
                             parent.addChildMV(multiView);
                             
+                            log.debug("["+cell.getType()+"] ["+cell.getName()+"] col: "+bi.colInx+" row: "+rowInx+" colspan: "+cell.getColspan()+" rowspan: "+cell.getRowspan());
                             viewBldObj.addSubView(cellSubView, multiView, bi.colInx, rowInx, cellSubView.getColspan(), 1);
                             viewBldObj.closeSubView(cellSubView);
                             
@@ -1366,7 +1365,7 @@ public class ViewFactory
                             {
                                 ((TableViewObj)viewable).setVisibleRowCount(cellSubView.getTableRows());
                             }
-                            bi.colInx += 2;
+                            bi.colInx += cell.getColspan() + 1;
                         }
                         bi.curMaxRow = rowInx;
                         
@@ -1382,6 +1381,7 @@ public class ViewFactory
                     }
                 } else
                 {
+                    log.debug("["+cell.getType()+"] ["+cell.getName()+"] col: "+bi.colInx+" row: "+rowInx+" colspan: "+cell.getColspan()+" rowspan: "+cell.getRowspan());
                     viewBldObj.addSubView(cellSubView, parent, bi.colInx, rowInx, cellSubView.getColspan(), 1); 
                     
                     AltViewIFace     altView        = subView.getDefaultAltView();
@@ -1390,7 +1390,7 @@ public class ViewFactory
 
                     processRows(sbTableInfo, parent, formViewDef, validator, viewBldObj, altView.getMode(), labelsForHash, currDataObj, subFormViewDef.getRows());
                     viewBldObj.closeSubView(cellSubView);
-                    bi.colInx += 2;
+                    bi.colInx += cell.getColspan() + 1;
                 }
 
             } else
@@ -1402,7 +1402,7 @@ public class ViewFactory
 
         } else if (cell.getType() == FormCellIFace.CellType.statusbar)
         {
-            bi.compToAdd      = new JStatusBar();
+            bi.compToAdd        = new JStatusBar();
             bi.doRegControl     = true;
             bi.doAddToValidator = false;
             
@@ -1486,7 +1486,7 @@ public class ViewFactory
                 
                 createItem(fieldInfo, parent, formViewDef, validator, viewBldObj, mode, labelsForHash, currDataObj, cell, isEditOnCreateOnly, rowInx, bi);
                 
-                //log.debug(cell.getType()+" "+cell.getName());
+                //log.debug(cell.getType()+" "+cell.getName()+" col: "+bi.colInx);
                 if (bi.compToAdd != null)
                 {
                     addControl(validator, viewBldObj, rowInx, cell, bi);
@@ -1560,6 +1560,7 @@ public class ViewFactory
         int colspan = cell.getColspan();
         int rowspan = cell.getRowspan();
         
+        log.debug("["+cell.getType()+"] ["+cell.getName()+"] col: "+bi.colInx+" row: "+rowInx+" colspan: "+colspan+" rowspan: "+rowspan);
         viewBldObj.addControlToUI(bi.compToAdd, bi.colInx, rowInx, colspan, rowspan);
 
         if (bi.doRegControl)

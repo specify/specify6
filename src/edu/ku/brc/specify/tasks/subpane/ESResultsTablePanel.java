@@ -21,6 +21,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -31,11 +32,14 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
+import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingConstants;
@@ -93,6 +97,8 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
     protected int                      rowCount       = 0;
     protected boolean                  showingAllRows = false;
     protected boolean                  hasResults     = false;
+    protected boolean                  enableEditing  = false;
+    protected JPopupMenu               popupMenu      = null;
     
     protected Hashtable<ServiceInfo, JButton> serviceBtns = null;
 
@@ -111,6 +117,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
      * @param esrPane the parent
      * @param tableInfo the info describing the results
      * @param installServices indicates whether services should be installed
+     * @param isExpandedAtStartUp
      */
     public ESResultsTablePanel(final ExpressSearchResultsPaneIFace esrPane,
                                final QueryForIdResultsIFace    results,
@@ -119,15 +126,21 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
     {
         super(new BorderLayout());
 
-        this.esrPane     = esrPane;
-        this.results     = results;
-        this.bannerColor = results.getBannerColor();
+        this.esrPane       = esrPane;
+        this.results       = results;
+        this.bannerColor   = results.getBannerColor();
+        this.enableEditing = results.enableEditing();
         
         table = new JTable();
         table.setShowVerticalLines(false);
         table.setRowSelectionAllowed(true);
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         setBackground(table.getBackground());
+        
+        //if (enableEditing)
+        {
+            addContextMenu();
+        }
 
         topTitleBar = new GradiantLabel(results.getTitle(), SwingConstants.LEFT);
         topTitleBar.setForeground(bannerColor);
@@ -136,6 +149,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
             @Override
             public void mouseClicked(MouseEvent e)
             {
+                
                 if (e.getClickCount() == 2)
                 {
                     expandBtn.doClick();
@@ -303,7 +317,8 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         {
             public void mouseClicked(MouseEvent e) 
             {
-                if (e.getClickCount() == 2)
+                System.out.println(e.getButton());
+                if (e.getClickCount() == 2 && e.getButton() == 1)
                 {
                     if (propChangeListener != null) 
                     {
@@ -327,6 +342,68 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
                 }
             }
         });
+    }
+    
+    
+    
+    protected void addContextMenu()
+    {
+        MouseAdapter mouseAdapter = new MouseAdapter()
+        {
+            
+            /* (non-Javadoc)
+             * @see java.awt.event.MouseAdapter#mousePressed(java.awt.event.MouseEvent)
+             */
+            @Override
+            public void mousePressed(MouseEvent e)
+            {
+                super.mousePressed(e);
+                
+                if (e.isPopupTrigger())
+                {
+                    if (table.getSelectedColumnCount() > 0)
+                    {
+                        if (popupMenu != null && popupMenu.isVisible())
+                        {
+                            popupMenu.setVisible(false);
+                        }
+                        
+                        if (popupMenu == null)
+                        {
+                            popupMenu = new JPopupMenu();
+                            JMenuItem mi = popupMenu.add(new JMenuItem(UIRegistry.getResourceString("Remove")));
+                            mi.addActionListener(new ActionListener() {
+                                public void actionPerformed(ActionEvent ae)
+                                {
+                                    removeRows(table.getSelectedRows());
+                                    popupMenu.setVisible(false);
+                                }
+                            });
+                        }
+                        Point p = table.getLocationOnScreen();
+                        popupMenu.setLocation(p.x + e.getX() + 1, p.y + e.getY() + 1);
+                        popupMenu.setVisible(true); 
+                    }
+                }
+            }
+        };
+        table.addMouseListener(mouseAdapter);
+    }
+    
+    /**
+     * @param rows
+     */
+    protected void removeRows(int[] rows)
+    {
+        ResultSetTableModel model = (ResultSetTableModel)table.getModel();
+        Vector<Integer> ids = new Vector<Integer>();
+        for (int i=0;i<rows.length;i++)
+        {
+            ids.add(model.getRowId(rows[i]-i));
+            model.removeRow(rows[i]-i);
+        }
+        results.removeIds(ids);
+        table.clearSelection();
     }
     
     /**

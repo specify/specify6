@@ -68,7 +68,6 @@ import edu.ku.brc.specify.datamodel.LocationTreeDefItem;
 import edu.ku.brc.specify.datamodel.OtherIdentifier;
 import edu.ku.brc.specify.datamodel.Permit;
 import edu.ku.brc.specify.datamodel.PickList;
-import edu.ku.brc.specify.datamodel.PickListItem;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.PreparationAttr;
@@ -728,6 +727,16 @@ public class DataBuilder
         return location;
     }
 
+    /**
+     * @param name
+     * @param type
+     * @param tableName
+     * @param fieldName
+     * @param formatter
+     * @param readOnly
+     * @param sizeLimit
+     * @return
+     */
     public static PickList createPickList(final String  name,
                                           final Integer type,
                                           final String  tableName,
@@ -749,11 +758,22 @@ public class DataBuilder
         return pickList;
     }
     
+    /**
+     * @param name
+     * @param readOnly
+     * @return
+     */
     public static PickList createPickList(final String name, boolean readOnly)
     {
         return createPickList(name, 0, null, null, null, readOnly, -1);
     }
     
+    /**
+     * @param name
+     * @param readOnly
+     * @param values
+     * @return
+     */
     public static PickList createPickList(final String name,
                                           boolean readOnly, 
                                           String[] values)
@@ -762,11 +782,18 @@ public class DataBuilder
 
         for (String value: values)
         {
-            createPickListItem(pickList, value, value);
+            pickList.addItem(value, value);
         }
         return pickList;
     }
     
+    /**
+     * @param name
+     * @param readOnly
+     * @param values
+     * @param maxSize
+     * @return
+     */
     public static PickList createPickList(final String name,
                                           boolean readOnly, 
                                           String[] values,
@@ -776,11 +803,19 @@ public class DataBuilder
 
         for (String value: values)
         {
-            createPickListItem(pickList, value, value);
+            pickList.addItem(value, value);
         }
         return pickList;
     }
     
+    /**
+     * @param name
+     * @param readOnly
+     * @param titles
+     * @param values
+     * @param maxSize
+     * @return
+     */
     public static PickList createPickList(final String name,
                                           boolean readOnly, 
                                           String[] titles,
@@ -791,20 +826,9 @@ public class DataBuilder
 
         for (int i=0;i<titles.length;i++)
         {
-            createPickListItem(pickList, titles[i], values[i]);
+            pickList.addItem(titles[i], values[i]);
         }
         return pickList;
-    }
-    
-    public static PickListItem createPickListItem(PickList pickList, String title, String value)
-    {
-        PickListItem item = new PickListItem();
-        item.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        item.setValue(value);
-        item.setTitle(title);
-        pickList.addPickListItem(item);
-        item.setPickList(pickList);
-        return item;
     }
     
     /**

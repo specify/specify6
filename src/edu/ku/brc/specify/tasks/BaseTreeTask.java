@@ -863,5 +863,29 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         {
             this.sql = sql;
         }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#shouldInstallServices()
+         */
+        public boolean shouldInstallServices()
+        {
+            return true;
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#enableEditing()
+         */
+        public boolean enableEditing()
+        {
+            return false;
+        }
+
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#removeIds(java.util.List)
+         */
+        public void removeIds(List<Integer> ids)
+        {
+            // no op
+        }
     }
 }

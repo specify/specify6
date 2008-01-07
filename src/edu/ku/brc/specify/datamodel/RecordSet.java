@@ -28,6 +28,7 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -44,8 +45,6 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.swing.ImageIcon;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 import edu.ku.brc.dbsupport.RecordSetIFace;
@@ -74,7 +73,7 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
      protected String                  name;
      protected Integer                 dbTableId;
      protected String                  remarks;
-     protected Set<RecordSetItemIFace> items;
+     protected Set<RecordSetItem>      recordSetItems;
      protected SpecifyUser             specifyUser;
      protected Integer                 ownerPermissionLevel;
      protected Integer                 groupPermissionLevel;
@@ -82,9 +81,12 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
      protected UserGroup               group;
      
      protected Set<InfoRequest>        infoRequests;
+     
+     // Transient
+     protected Set<RecordSetItemIFace> items = null;
 
 
-     // Non-Database Memebers
+     // Non-Database Members
      protected ImageIcon dataSpecificIcon = null;
      
     // Constructors
@@ -92,12 +94,13 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
     /** default constructor */
     public RecordSet() 
     {
-        //
+        initialize();
     }
 
     /** constructor with id */
     public RecordSet(Integer recordSetId) 
     {
+        initialize();
         this.recordSetId = recordSetId;
     }
 
@@ -139,7 +142,7 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
         ownerPermissionLevel = null;
         groupPermissionLevel = null;
         allPermissionLevel   = null;
-        items                = new HashSet<RecordSetItemIFace>();
+        recordSetItems       = new HashSet<RecordSetItem>();
         specifyUser          = null;
         group                = null;
         infoRequests         = new HashSet<InfoRequest>();
@@ -245,27 +248,31 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
         this.dbTableId = tableId;
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.RecordSetIFace#getItems()
+    /**
+     * @return
      */
-    @OneToMany(cascade = {}, targetEntity=RecordSetItem.class, fetch = FetchType.EAGER, mappedBy = "recordSet")
-    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public Set<RecordSetItemIFace> getItems() {
-        return this.items;
+    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.EAGER, mappedBy = "recordSet")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<RecordSetItem> getRecordSetItems() 
+    {
+        return this.recordSetItems;
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.RecordSetIFace#setItems(java.util.Set)
+    /**
+     * @param recordSetItems
      */
-    public void setItems(Set<RecordSetItemIFace> items) {
-        this.items = items;
+    public void setRecordSetItems(Set<RecordSetItem> recordSetItems) 
+    {
+        this.recordSetItems = recordSetItems;
     }
 
     /**
      * @return the infoRequests
      */
-    @OneToMany(cascade = {}, targetEntity=RecordSetItem.class, fetch = FetchType.EAGER, mappedBy = "recordSet")
-    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    //@OneToMany(cascade = {}, targetEntity=RecordSetItem.class, fetch = FetchType.EAGER, mappedBy = "recordSet")
+    //@Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.EAGER, mappedBy = "recordSet")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     public Set<InfoRequest> getInfoRequests()
     {
         return infoRequests;
@@ -284,11 +291,13 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "SpecifyUserID", unique = false, nullable = false, insertable = true, updatable = true)
-    public SpecifyUser getSpecifyUser() {
+    public SpecifyUser getSpecifyUser() 
+    {
         return this.specifyUser;
     }
     
-    public void setSpecifyUser(SpecifyUser owner) {
+    public void setSpecifyUser(SpecifyUser owner) 
+    {
         this.specifyUser = owner;
     }
     
@@ -298,6 +307,9 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
         return getSpecifyUser();
     }
     
+    /**
+     * @param owner
+     */
     public void setOwner(SpecifyUser owner)
     {
         setSpecifyUser(owner);
@@ -317,11 +329,13 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "UserGroupID", unique = false, nullable = true, insertable = true, updatable = true)
-    public UserGroup getGroup() {
+    public UserGroup getGroup() 
+    {
         return this.group;
     }
     
-    public void setGroup(UserGroup group) {
+    public void setGroup(UserGroup group) 
+    {
         this.group = group;
     }
     /* (non-Javadoc)
@@ -335,11 +349,13 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
      * 
      */
     @Column(name = "OwnerPermissionLevel", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getOwnerPermissionLevel() {
+    public Integer getOwnerPermissionLevel() 
+    {
         return this.ownerPermissionLevel;
     }
     
-    public void setOwnerPermissionLevel(Integer ownerPermissionLevel) {
+    public void setOwnerPermissionLevel(Integer ownerPermissionLevel) 
+    {
         this.ownerPermissionLevel = ownerPermissionLevel;
     }
 
@@ -351,7 +367,8 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
         return this.groupPermissionLevel;
     }
     
-    public void setGroupPermissionLevel(Integer groupPermissionLevel) {
+    public void setGroupPermissionLevel(Integer groupPermissionLevel) 
+    {
         this.groupPermissionLevel = groupPermissionLevel;
     }
 
@@ -359,23 +376,111 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
      * 
      */
     @Column(name = "AllPermissionLevel", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getAllPermissionLevel() {
+    public Integer getAllPermissionLevel() 
+    {
         return this.allPermissionLevel;
     }
     
-    public void setAllPermissionLevel(Integer allPermissionLevel) {
+    public void setAllPermissionLevel(Integer allPermissionLevel) 
+    {
         this.allPermissionLevel = allPermissionLevel;
     }
-    // Add Methods
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.RecordSetIFace#getNumItems()
+     */
+    @Transient
+    public int getNumItems()
+    {
+        return recordSetItems.size();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.RecordSetIFace#addAll(java.util.Collection)
+     */
+    public void addAll(Collection<RecordSetItemIFace> list)
+    {
+        if (items == null)
+        {
+            items = new HashSet<RecordSetItemIFace>();
+        }
+        
+        for (RecordSetItemIFace rsi : list)
+        {
+            items.add(rsi);
+            recordSetItems.add((RecordSetItem)rsi);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.RecordSetIFace#clearItems()
+     */
+    public void clearItems()
+    {
+        if (items != null)
+        {
+            items.clear();
+        }
+        
+        recordSetItems.clear();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.RecordSetIFace#getItems()
+     */
+    @Transient
+    public Set<RecordSetItemIFace> getItems() 
+    {
+        if (items == null)
+        {
+            items = new HashSet<RecordSetItemIFace>();
+            for (RecordSetItem rsi : recordSetItems)
+            {
+                this.items.add(rsi);
+            }
+        }
+        return this.items;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.RecordSetIFace#removeItem(edu.ku.brc.dbsupport.RecordSetItemIFace)
+     */
+    public void removeItem(final RecordSetItemIFace rsi)
+    {
+        if (items != null)
+        {
+            items.remove(rsi);
+        }
+        
+        recordSetItems.remove((RecordSetItem)rsi);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.RecordSetIFace#setItems(java.util.Set)
+     */
+    public void setItems(Set<RecordSetItemIFace> items) 
+    {
+        this.items = items;
+        
+        recordSetItems.clear();
+        for (RecordSetItemIFace rsi : items)
+        {
+            recordSetItems.add((RecordSetItem)rsi);
+        }
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.RecordSetIFace#addItem(java.lang.Integer)
      */
     public RecordSetItemIFace addItem(final Integer recordId)
     {
+        if (items == null)
+        {
+            items = new HashSet<RecordSetItemIFace>();
+        }
         RecordSetItem rsi = new RecordSetItem(recordId);
         this.items.add(rsi);
+        this.recordSetItems.add(rsi);
         rsi.setRecordSet(this);
         return rsi;
     }
@@ -385,8 +490,13 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
      */
     public RecordSetItemIFace addItem(final String recordId)
     {
+        if (items == null)
+        {
+            items = new HashSet<RecordSetItemIFace>();
+        }
         RecordSetItem rsi = new RecordSetItem(recordId);
         this.items.add(rsi);
+        this.recordSetItems.add(rsi);
         rsi.setRecordSet(this);
         return rsi;
     }
@@ -396,16 +506,16 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
      */
     public RecordSetItemIFace addItem(final RecordSetItemIFace item)
     {
+        if (items == null)
+        {
+            items = new HashSet<RecordSetItemIFace>();
+        }
         this.items.add(item);
+        this.recordSetItems.add((RecordSetItem)item);
         ((RecordSetItem)item).setRecordSet(this);
         return item;
     }
 
-    // Done Add Methods
-
-    // Delete Methods
-
-    
     //--------------------------------------------------------------
     //-- Non-Database Methods
     //--------------------------------------------------------------

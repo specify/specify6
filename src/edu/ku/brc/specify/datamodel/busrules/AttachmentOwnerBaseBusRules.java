@@ -44,7 +44,9 @@ public abstract class AttachmentOwnerBaseBusRules extends BaseBusRules
                 Attachment attach = attachRef.getAttachment();
                 boolean canDelete = attachBusRules.okToEnableDelete(attach);
                 
-                int option = JOptionPane.showOptionDialog(UIRegistry.getMostRecentWindow(), "Delete the attachment file from disk?", "Confirm file deletion", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, JOptionPane.NO_OPTION);
+                int option = JOptionPane.showOptionDialog(UIRegistry.getMostRecentWindow(), 
+                        "Delete the attachment file from disk?", 
+                        "Confirm file deletion", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, JOptionPane.NO_OPTION); // I18N
                 
                 if (canDelete && option == JOptionPane.YES_OPTION)
                 {

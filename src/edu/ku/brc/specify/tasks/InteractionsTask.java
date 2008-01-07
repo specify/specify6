@@ -449,7 +449,7 @@ public class InteractionsTask extends BaseTask
         {
             try
             {
-                if (recordSet.getItems().size() == 1)
+                if (recordSet.getNumItems() == 1)
                 {
                     RecordSetItemIFace item = recordSet.getOnlyItem();
                     if (item != null)
@@ -682,7 +682,7 @@ public class InteractionsTask extends BaseTask
         
         if (infoRequest.getRecordSet() != null &&
             infoRequest.getRecordSet().getItems() != null &&
-            infoRequest.getRecordSet().getItems().size() > 0)
+            infoRequest.getRecordSet().getNumItems() > 0)
         {
             createFormPanel(view.getViewSetName(), view.getName(), "edit", infoRequest, MultiView.IS_NEW_OBJECT, null);
             

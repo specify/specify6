@@ -33,6 +33,8 @@ import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
@@ -82,9 +84,10 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
     protected static ImageIcon       hoverImg      = null;
     protected static Font            defaultFont   = null;
     
-    protected JTextField             txtFld     = null;
+    protected JTextField             txtFld      = null;
     protected JLabel                 iconLabel;
     protected boolean                isEditing   = false;
+    protected PropertyChangeListener pcl         = null;
 
     protected boolean                isOver      = false;
     protected Vector<ActionListener> actions     = new Vector<ActionListener>();
@@ -183,18 +186,14 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
                 
                 Point pnt = e.getPoint();
                 boolean clicked = Math.abs(pnt.x - downME.x) < 4 && Math.abs(pnt.y - downME.y) < 4;
-                Rectangle r = itself.getBounds();
+                Rectangle r = RolloverCommand.this.getBounds();
                 r.x = 0;
                 r.y = 0;
-                if (clicked && itself.isEnabled() && r.contains(e.getPoint()))
+                if (clicked && RolloverCommand.this.isEnabled() && r.contains(e.getPoint()))
                 {
-                    if (popupMenu != null && !wasPopUp && e.isPopupTrigger())
+                    if (!e.isPopupTrigger())
                     {
-                        popupMenu.show(e.getComponent(), e.getX(), e.getY());
-                        
-                    } else if (!e.isPopupTrigger() && !wasPopUp)
-                    {
-                        doAction(itself);
+                        doAction(RolloverCommand.this);
                     }
                 }
             }
@@ -202,55 +201,6 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
           };
         addMouseListener(mouseInputAdapter);
         addMouseMotionListener(mouseInputAdapter);
-
-        /*
-        ActionListener actionListener = new ActionListener() {
-              public void actionPerformed(ActionEvent actionEvent) {
-                  startEditting();
-              }
-            };
-
-        if (label != null)
-        {
-            popupMenu = new JPopupMenu();
-            JMenuItem renameMenuItem = new JMenuItem(getResourceString("Rename"));
-            renameMenuItem.addActionListener(actionListener);
-            popupMenu.add(renameMenuItem);
-            
-            final RolloverCommand thisROC = this;
-            MouseListener mouseListener = new MouseAdapter() 
-            {
-                  private boolean showIfPopupTrigger(MouseEvent mouseEvent) {
-                      if (thisROC.isEnabled() && 
-                          mouseEvent.isPopupTrigger() && 
-                          popupMenu.getComponentCount() > 0) 
-                      {
-                          popupMenu.show(mouseEvent.getComponent(),
-                          mouseEvent.getX(),
-                          mouseEvent.getY());
-                          return true;
-                      }
-                      return false;
-                  }
-                  @Override
-                  public void mousePressed(MouseEvent mouseEvent) 
-                  {
-                      if (thisROC.isEnabled())
-                      {
-                          showIfPopupTrigger(mouseEvent);
-                      }
-                  }
-                  @Override
-                  public void mouseReleased(MouseEvent mouseEvent) 
-                  {
-                      if (thisROC.isEnabled())
-                      {
-                          showIfPopupTrigger(mouseEvent);
-                      }
-                  }
-            };
-            addMouseListener(mouseListener);
-        }*/
     }
 
     /* (non-Javadoc)
@@ -371,19 +321,27 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
     }
 
     /**
-     * Stops the editting of the name.
+     * Stops the editing of the name.
      * It will accept any input that has already been typed, but it will not allow for a zero length string.
-     * It sawps out the text field and swpas in the label.
+     * It swaps out the text field and swaps in the label.
      *
      */
     protected void stopEditting()
     {
         if (txtFld != null || isEditing)
         {
+            String oldLabel = label;
+            
             label = txtFld.getText();
             txtFld.setVisible(false);
             remove(txtFld);
             remove(iconLabel);
+            
+            if (pcl != null)
+            {
+                pcl.propertyChange(new PropertyChangeEvent(this, "label", oldLabel, label));
+                pcl = null;
+            }
 
             txtFld = null;
 
@@ -394,22 +352,21 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
             getParent().doLayout();
             getParent().repaint();
             isEditing = false;
+
         }
     }
 
     /**
      * Start the editing of the name. It swaps out the label with a text field to enable the user to type in a new name.
-     *
+     * @param pcl the property change listener that is notified of the change.
      */
-    protected void startEditting()
+    public void startEditting(final PropertyChangeListener pcl)
     {
-        //btn.setVisible(false);
-        //remove(btn);
-
+        this.pcl = pcl;
+        
         txtFld = new JTextField(label);
         add(iconLabel, BorderLayout.WEST);
         add(txtFld, BorderLayout.CENTER);
-
 
         txtFld.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent actionEvent) {

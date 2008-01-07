@@ -291,7 +291,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
         
         sqlStr.append(" WHERE ");
         
-        if (ids != null)
+        if (ids != null || searchTerm.length() == 0)
         {
             sqlStr.append(primaryKey);
             sqlStr.append(" IN (");
@@ -308,98 +308,104 @@ public class SearchTableConfig implements DisplayOrderingIFace,
         
         int cnt = 0;
         
-        String[] terms = StringUtils.split(searchTerm, ' ');
-        for (String term : terms)
+        if (searchTerm.length() > 0)
         {
-            //log.debug(term);
-            boolean isNumeric;
-            boolean hasDecimalPoint = false;
-            
-            if (!StringUtils.isNumeric(term))
+            String[] terms = StringUtils.split(searchTerm, ' ');
+            for (String term : terms)
             {
-                isNumeric = false;
-            } else
-            {
-                isNumeric       = true;
-                hasDecimalPoint = StringUtils.contains(term, '.');
-            }
-
-            for (SearchFieldConfig searchField : searchFields)
-            {
-                String clause;
-                DBFieldInfo fi = searchField.getFieldInfo();
+                //log.debug(term);
+                boolean isNumeric;
+                boolean hasDecimalPoint = false;
                 
-                if (ids == null)
+                if (!StringUtils.isNumeric(term))
                 {
-                    if (fi.getDataClass() == Date.class || searchField.getFieldInfo().getDataClass() == Calendar.class)
+                    isNumeric = false;
+                } else
+                {
+                    isNumeric       = true;
+                    hasDecimalPoint = StringUtils.contains(term, '.');
+                }
+    
+                for (SearchFieldConfig searchField : searchFields)
+                {
+                    String clause;
+                    DBFieldInfo fi = searchField.getFieldInfo();
+                    
+                    if (ids == null)
                     {
-                        if (!isDate)
+                        if (fi.getDataClass() == Date.class || searchField.getFieldInfo().getDataClass() == Calendar.class)
                         {
-                            if (isNumeric && ! hasDecimalPoint && term.length() == 4)
+                            if (!isDate)
                             {
-                                clause = "YEAR("+fi.getName()+") = " + term;
+                                if (isNumeric && ! hasDecimalPoint && term.length() == 4)
+                                {
+                                    clause = "YEAR("+fi.getName()+") = " + term;
+                                } else
+                                {
+                                    continue;
+                                }
                             } else
+                            {
+                                clause = fi.getColumn() + " = " + "'" + term + "'";
+                            }
+                            
+                        } else if (fi.getDataClass() == Float.class || fi.getDataClass() == Double.class || fi.getDataClass() == BigDecimal.class)
+                        {
+                            if (!isNumeric)
                             {
                                 continue;
                             }
-                        } else
+                            clause = fi.getColumn() + " = " + term;
+                            
+                        } else if (fi.getDataClass() == Byte.class || fi.getDataClass() == Short.class || 
+                                   fi.getDataClass() == Integer.class|| fi.getDataClass() == Long.class)
                         {
-                            clause = fi.getColumn() + " = " + "'" + term + "'";
+                            if (!isNumeric || hasDecimalPoint)
+                            {
+                                continue;
+                            }
+                            clause = fi.getColumn() + " = " + term;
+                            
+                        } else 
+                        {
+                            /*if (fi.getDataClass() == String.class)
+                            {
+                                log.error("Handling class ["+fi.getDataClass()+"] as a String");
+                            }*/
+                            clause = "lower(" + fi.getColumn() + ") like " + "'%" + term + "%'";
                         }
-                        
-                    } else if (fi.getDataClass() == Float.class || fi.getDataClass() == Double.class || fi.getDataClass() == BigDecimal.class)
-                    {
-                        if (!isNumeric)
-                        {
-                            continue;
-                        }
-                        clause = fi.getColumn() + " = " + term;
-                        
-                    } else if (fi.getDataClass() == Byte.class || fi.getDataClass() == Short.class || 
-                               fi.getDataClass() == Integer.class|| fi.getDataClass() == Long.class)
-                    {
-                        if (!isNumeric || hasDecimalPoint)
-                        {
-                            continue;
-                        }
-                        clause = fi.getColumn() + " = " + term;
-                        
-                    } else 
-                    {
-                        /*if (fi.getDataClass() == String.class)
-                        {
-                            log.error("Handling class ["+fi.getDataClass()+"] as a String");
-                        }*/
-                        clause = "lower(" + fi.getColumn() + ") like " + "'%" + term + "%'";
+        
+                        if (cnt > 0) sqlStr.append(" OR ");
+                        sqlStr.append(clause);
                     }
-    
-                    if (cnt > 0) sqlStr.append(" OR ");
-                    sqlStr.append(clause);
-                }
-                
-                cnt++;
-                
-                if (!idsOnly)
-                {
-                    if (searchField.getIsSortable())
+                    
+                    cnt++;
+                    
+                    if (!idsOnly)
                     {
-                        if (orderByCnt == 0)
+                        if (searchField.getIsSortable())
                         {
-                            orderBy.append(" ORDER BY ");
-                        } else
-                        {
-                            orderBy.append(", ");
+                            if (orderByCnt == 0)
+                            {
+                                orderBy.append(" ORDER BY ");
+                            } else
+                            {
+                                orderBy.append(", ");
+                            }
+                            orderBy.append(searchField.getFieldName());
+                            orderBy.append(searchField.getIsAscending() ? " ASC" : " DESC");
+                            
+                            orderByCnt++;
                         }
-                        orderBy.append(searchField.getFieldName());
-                        orderBy.append(searchField.getIsAscending() ? " ASC" : " DESC");
-                        
-                        orderByCnt++;
                     }
                 }
             }
+        } else
+        {
+            
         }
         
-        if (cnt == 0)
+        if (cnt == 0 && searchTerm.length() > 0)
         {
             return null;
         }

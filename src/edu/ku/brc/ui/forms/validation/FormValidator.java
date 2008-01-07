@@ -129,6 +129,16 @@ public class FormValidator implements ValidationListener, DataChangeListener
     }
 
     /**
+     * @param isNewObj the isNewObj to set
+     */
+    public void setNewObj(boolean isNewObj)
+    {
+        this.isNewObj = isNewObj;
+        enableUIItems(getState() == UIValidatable.ErrorType.Valid && !isNewObj, EnableType.ValidItems);
+        updateValidationBtnUIState();
+    }
+
+    /**
      * Adds a child validator.
      * @param val the validator
      */
@@ -769,7 +779,9 @@ public class FormValidator implements ValidationListener, DataChangeListener
 
         boolean isValid = getState() == UIValidatable.ErrorType.Valid;
         enableUIItems(hasChanged && isValid, EnableType.ValidAndChangedItems);
-        enableUIItems(isValid, EnableType.ValidItems);
+        enableUIItems(isValid && !isNewObj, EnableType.ValidItems);
+        
+        log.debug(">>>>>> isValid: "+isValid+" hasCHanged: "+hasChanged+" Val & New: "+(isValid && !isNewObj));
         
         //log.debug(name);
         if (parent != null)
@@ -1189,8 +1201,8 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     protected void enableUIItems(final boolean itsOKToEnable, final EnableType type)
     {
+        log.debug(name+" hasChanged ["+hasChanged+"]     itsOKToEnable ["+itsOKToEnable+ "]    enableItems: [" + type+"]");
         List<Component> list = type == EnableType.ValidItems ? enableItemsValid : enableItemsChanged;
-        //log.debug(name+" hasChanged "+hasChanged+"  itsOKToEnable "+itsOKToEnable+ " enableItems: " + list.size());
         //log.debug(this.hashCode()+"  "+hasChanged+"  "+itsOKToEnable);
 
         for (Component comp : list)
@@ -1291,7 +1303,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
 
         boolean isValid = formValidationState == UIValidatable.ErrorType.Valid;
         enableUIItems(hasChanged && isValid, EnableType.ValidAndChangedItems);
-        enableUIItems(isValid, EnableType.ValidItems);
+        enableUIItems(isValid && !isNewObj, EnableType.ValidItems);
         
         updateValidationBtnUIState();
     }

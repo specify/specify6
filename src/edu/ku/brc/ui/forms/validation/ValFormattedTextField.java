@@ -379,7 +379,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
     }
 
     /**
-     * Helper method for validation sripting to see if the text field is empty
+     * Helper method for validation scripting to see if the text field is empty
      * @return whether the text field is empty or not
      */
     public boolean isNotEmpty()
@@ -686,7 +686,11 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
      */
     public void reset()
     {
-        setText( StringUtils.isNotEmpty(defaultValue) ? defaultValue : "");
+        origValue = null;
+        if (StringUtils.isNotEmpty(defaultValue))
+        {
+            setText(defaultValue);
+        }
         validateState();
         repaint();
     }

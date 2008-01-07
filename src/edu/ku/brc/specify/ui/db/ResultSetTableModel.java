@@ -251,6 +251,26 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
     }
     
     /**
+     * @param index
+     * @return
+     */
+    public Integer getRowId(final int index)
+    {
+        return ids.get(index);
+    }
+    
+    /**
+     * Removes a row from the model.
+     * @param index the index to be removed.
+     */
+    public void removeRow(final int index)
+    {
+        cache.remove(index);
+        ids.remove(index);
+        fireTableRowsDeleted(index, index);
+    }
+    
+    /**
      * Returns a RecordSet object from the table
      * @param rows the selected rows
      * @param returnAll indicates whether all the records should be returned if nothing was selected
@@ -259,6 +279,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
     public RecordSetIFace getRecordSet(final int[] rows, final boolean returnAll)
     {
         RecordSet rs = new RecordSet();
+        rs.setType(RecordSet.GLOBAL);
         rs.initialize();
 
         // return if now rows are selected
@@ -741,10 +762,6 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
     //@Override
     public void executionError(CustomQueryIFace customQuery)
     {
-        // TODO Auto-generated method stub
-        
+        // NO OP
     }
-    
-    
-    
 }

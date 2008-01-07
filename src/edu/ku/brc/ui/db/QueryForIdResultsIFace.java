@@ -48,7 +48,7 @@ public interface QueryForIdResultsIFace
     public abstract String getTitle();
     
     /**
-     * @return the list of record Ids used to create the SQL Statment
+     * @return the list of record Ids used to create the SQL Statement
      */
     public abstract Vector<Integer> getRecIds();
     
@@ -74,14 +74,14 @@ public interface QueryForIdResultsIFace
     
     /**
      * Sets a predefined SQL statement that will be returned by the 
-     * getSQL method. Eccentially setting this overrides dynmaically creating the SQL.
+     * getSQL method. Eccentially setting this overrides dynamically creating the SQL.
      * 
      * @param sql the SQL that override the generated SQL
      */
     public abstract void setSQL(String sql);
     
     /**
-     * Dynmaically generates an SQL statement from the Search Config and the list of Ids.
+     * Dynamically generates an SQL statement from the Search Config and the list of Ids.
      * NOTE: The returned SQL statement may be what was set by setSQL method.
      * @param searchTerm the search term
      * @param ids the list of Ids to be searched
@@ -95,7 +95,7 @@ public interface QueryForIdResultsIFace
     public abstract String getSearchTerm();
     
     /**
-     * @return the displau position in the list of resultsets
+     * @return the display position in the list of resultsets
      */
     public abstract Integer getDisplayOrder();
     
@@ -115,5 +115,21 @@ public interface QueryForIdResultsIFace
      * @return a description (already localized) as to what the results means.
      */
     public abstract String getDescription();
+    
+    /**
+     * @return returns whether the services should be installed.
+     */
+    public abstract boolean shouldInstallServices();
+    
+    /**
+     * @return indicates whether the table of items can be edited.
+     */
+    public abstract boolean enableEditing();
+    
+    /**
+     * Requests an id be removed.
+     * @param id the id to be removed.
+     */
+    public abstract void removeIds(List<Integer> ids);
     
 }

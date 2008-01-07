@@ -10,7 +10,6 @@ import javax.swing.ImageIcon;
 
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.RecordSetItem;
-import edu.ku.brc.specify.tasks.DataEntryTask;
 import edu.ku.brc.specify.tasks.RecordSetTask;
 import edu.ku.brc.ui.DataFlavorTableExt;
 import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
@@ -29,7 +28,7 @@ public class SpecifyDraggableRecordIdentifier extends DraggableRecordIdentifier
 {
     protected RecordSet          recordSet     = null;
     protected RecordSetItem      recordSetItem = null;
-    protected DataFlavorTableExt dataFlavor     = new DataFlavorTableExt(RecordSetTask.class, "RECORD_SET", -1);
+    protected DataFlavorTableExt dataFlavor    = new DataFlavorTableExt(RecordSetTask.class, "RECORD_SET", -1);
     
     /**
      * Constructor with icon and label.

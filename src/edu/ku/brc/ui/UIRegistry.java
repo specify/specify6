@@ -1411,13 +1411,13 @@ public class UIRegistry
     }
 
     @SuppressWarnings("unchecked")
-    protected Action makeAction(Class actionClass,
-                                Object owner,
-                                String name,
-                                ImageIcon icon,
-                                String toolTip,
-                                Integer mnemonicKeyCode,
-                                KeyStroke acceleratorKey)
+    public Action makeAction(Class actionClass,
+                             Object owner,
+                             String name,
+                             ImageIcon icon,
+                             String toolTip,
+                             Integer mnemonicKeyCode,
+                             KeyStroke acceleratorKey)
     {
         Action a = null;
         try
@@ -1426,7 +1426,7 @@ public class UIRegistry
             if (owner != null)
             {
                 // If the class is an inner class, its constuctor takes a hidden
-                // parameter, an objext of it enclosing class.
+                // parameter, an object of it enclosing class.
                 c = actionClass.getConstructor(new Class<?>[] { owner.getClass() });
                 a = (Action) c.newInstance(new Object[] { owner });
             } else
@@ -1434,21 +1434,7 @@ public class UIRegistry
                 c = actionClass.getConstructor((Class<?>[]) null);
                 a = (Action) c.newInstance((Object[])null);
             }
-            
-            if (name != null)
-                a.putValue(Action.NAME, name);
-            
-            if (icon != null)
-                a.putValue(Action.SMALL_ICON, icon);
-            
-            if (toolTip != null)
-                a.putValue(Action.SHORT_DESCRIPTION, toolTip);
-            
-            if (mnemonicKeyCode != null)
-                a.putValue(Action.MNEMONIC_KEY, mnemonicKeyCode);
-            
-            if (acceleratorKey != null)
-                a.putValue(Action.ACCELERATOR_KEY, acceleratorKey);
+            return makeAction(a, name, icon, toolTip, mnemonicKeyCode, acceleratorKey);
             
         } catch (ClassCastException e)
         {
@@ -1472,6 +1458,31 @@ public class UIRegistry
             }
         }
         return a;
+    }
+
+    public Action makeAction(Action    action,
+                             String    name,
+                             ImageIcon icon,
+                             String    toolTip,
+                             Integer   mnemonicKeyCode,
+                             KeyStroke acceleratorKey)
+    {
+        if (name != null)
+            action.putValue(Action.NAME, name);
+        
+        if (icon != null)
+            action.putValue(Action.SMALL_ICON, icon);
+        
+        if (toolTip != null)
+            action.putValue(Action.SHORT_DESCRIPTION, toolTip);
+        
+        if (mnemonicKeyCode != null)
+            action.putValue(Action.MNEMONIC_KEY, mnemonicKeyCode);
+        
+        if (acceleratorKey != null)
+            action.putValue(Action.ACCELERATOR_KEY, acceleratorKey);
+            
+        return action;
     }
 
     // This nested class is the child of desperation. If SelectAllAction was a
