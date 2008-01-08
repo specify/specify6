@@ -15,7 +15,6 @@
 package edu.ku.brc.specify.config;
 
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Frame;
 import java.io.File;
@@ -27,8 +26,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-
-import javax.swing.JOptionPane;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -456,9 +453,10 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
         } else
         {
-            JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
-                    getResourceString("USER_NOT_FOUND"), 
-                    getResourceString("USER_NOT_FOUND_TITLE"), JOptionPane.WARNING_MESSAGE);
+            //JOptionPane.showMessageDialog(null, 
+            //        getResourceString("USER_NOT_FOUND"), 
+            //        getResourceString("USER_NOT_FOUND_TITLE"), JOptionPane.WARNING_MESSAGE);
+            
             return CONTEXT_STATUS.Error;
             //throw new RuntimeException("The user ["+userName+"] could  not be located as a Specify user.");
         }

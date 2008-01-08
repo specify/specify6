@@ -2262,7 +2262,7 @@ public class BuildSampleDatabase
 
                     } else
                     {
-                        build(dbName, driverName, discipline);
+                        build(dbName, driverName, discipline, username, password);
                     }
                     
                 } catch (Exception ex)
@@ -2445,7 +2445,9 @@ public class BuildSampleDatabase
      */
     protected void build(final String     dbName, 
                          final String     driverName, 
-                         final Discipline discipline) throws SQLException
+                         final Discipline discipline,
+                         final String     username, 
+                         final String     passwordStr) throws SQLException
     {
         boolean doingDerby = StringUtils.contains(driverName, "Derby");
         
@@ -2470,8 +2472,8 @@ public class BuildSampleDatabase
             initPrefs = backstopPrefs;
         }
         
-        String userName     = initPrefs.getProperty("initializer.username", "rods");
-        String password     = initPrefs.getProperty("initializer.password", "rods");
+        String userName     = initPrefs.getProperty("initializer.username", username);
+        String password     = initPrefs.getProperty("initializer.password", passwordStr);
         String databaseHost = initPrefs.getProperty("initializer.host",     "localhost");
         
         frame.setTitle("Building -> Database: "+ dbName + " Driver: "+ driverName + " User: "+userName);
