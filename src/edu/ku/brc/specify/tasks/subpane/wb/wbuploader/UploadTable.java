@@ -1435,12 +1435,12 @@ public class UploadTable implements Comparable<UploadTable>
         // do nothing for now
     }
 
-    public class UploadTableInvalidValue extends BaseUploadMessage
+    public class UploadTableInvalidValue extends BaseUploadMessage implements Comparable<UploadTableInvalidValue>
     {
-        protected UploadTable uploadTbl;
-        protected UploadField uploadFld;
-        protected Integer     rowNum;
-        protected Exception   cause;
+        protected final UploadTable uploadTbl;
+        protected final UploadField uploadFld;
+        protected final Integer     rowNum;
+        protected final Exception   cause;
 
         /**
          * @param uploadTbl
@@ -1450,7 +1450,7 @@ public class UploadTable implements Comparable<UploadTable>
          * @param description
          */
         public UploadTableInvalidValue(UploadTable uploadTbl, UploadField uploadFld, int rowNum,
-                Exception cause)
+                Exception cause) 
         {
             super(null);
             this.uploadTbl = uploadTbl;
@@ -1464,14 +1464,33 @@ public class UploadTable implements Comparable<UploadTable>
          */
         public String getDescription()
         {
-            if (cause == null) { return null; }
-            // StringBuilder result = new StringBuilder(cause.getClass().getSimpleName());
-            StringBuilder result = new StringBuilder();
+            if (cause == null) 
+            { 
+                return null; 
+            }
+            if (cause instanceof UploaderException)
+            {
+                if (cause.getCause() != null && cause.getCause().getMessage() != null)
+                {
+                    return cause.getCause().getMessage();
+                }
+            }
+            if (cause instanceof InvocationTargetException)
+            {
+                InvocationTargetException theCause = (InvocationTargetException)cause;
+                if (theCause.getTargetException() != null)
+                {
+                    if (theCause.getTargetException() instanceof NumberFormatException)
+                    {
+                        return getResourceString("WB_UPLOAD_INVALID_NUMBER");// + " " + theCause.getTargetException().getMessage();
+                    }
+                }
+            }
             if (cause.getMessage() != null)
             {
-                result.append(cause.getMessage());
+                return cause.getMessage();
             }
-            return result.toString();
+            return null;
         }
 
         /**
@@ -1479,7 +1498,9 @@ public class UploadTable implements Comparable<UploadTable>
          */
         public String getIssueName()
         {
-            return cause.getClass().getSimpleName();
+            if (cause != null)
+                return cause.getClass().getSimpleName();
+            return null;
         }
 
         /**
@@ -1492,27 +1513,11 @@ public class UploadTable implements Comparable<UploadTable>
         }
 
         /**
-         * @param rowNum the rowNum to set
-         */
-        public void setRow(int rowNum)
-        {
-            this.rowNum = rowNum;
-        }
-
-        /**
          * @return the uploadFld
          */
         public UploadField getUploadFld()
         {
             return uploadFld;
-        }
-
-        /**
-         * @param uploadFld the uploadFld to set
-         */
-        public void setUploadFld(UploadField uploadFld)
-        {
-            this.uploadFld = uploadFld;
         }
 
         /**
@@ -1523,14 +1528,6 @@ public class UploadTable implements Comparable<UploadTable>
             return uploadTbl;
         }
 
-        /**
-         * @param uploadTbl the uploadTbl to set
-         */
-        public void setUploadTbl(UploadTable uploadTbl)
-        {
-            this.uploadTbl = uploadTbl;
-        }
-
         /*
          * (non-Javadoc)
          * 
@@ -1539,7 +1536,7 @@ public class UploadTable implements Comparable<UploadTable>
         @Override
         public String getMsg()
         {
-            return uploadFld.getWbFldName() + " (row " + rowNum.toString() + "): "
+            return uploadFld.getWbFldName() + " (row " + Integer.toString(rowNum + 1) + "): "
                     + getDescription();
         }
 
@@ -1564,6 +1561,29 @@ public class UploadTable implements Comparable<UploadTable>
         {
             return cause;
         }
+
+        /* (non-Javadoc)
+         * @see java.lang.Comparable#compareTo(java.lang.Object)
+         */
+        @Override
+        public int compareTo(UploadTableInvalidValue o)
+        {
+            if (rowNum != null)
+            {
+                int result = rowNum.compareTo(o.rowNum);
+                if (result != 0)
+                    return result;
+            }
+            if (uploadFld != null && o.uploadFld != null)
+            {
+                if (uploadFld.getIndex() < o.uploadFld.getIndex())
+                    return -1;
+                if (uploadFld.getIndex() > o.uploadFld.getIndex())
+                    return 1;
+            }
+            return 0;
+        }
+        
     }
 
     protected UploadField findUploadField(final String name, int seq)

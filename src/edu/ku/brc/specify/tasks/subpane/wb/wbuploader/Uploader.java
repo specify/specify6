@@ -1093,6 +1093,7 @@ public class Uploader implements ActionListener, WindowStateListener
                         setCurrentOpProgress(++progress, false);
                         issues.addAll(tbl.validateValues(uploadData));
                     }
+                    Collections.sort(issues);
                     dataValidated = issues.size() == 0;
                     return dataValidated;
                 }
@@ -2271,7 +2272,7 @@ public class Uploader implements ActionListener, WindowStateListener
      */
     protected boolean canValidateContent(final String op)
     {
-        return op.equals(Uploader.USER_INPUT) || op.equals(Uploader.INITIAL_STATE)
+        return /*op.equals(Uploader.USER_INPUT) ||*/ op.equals(Uploader.INITIAL_STATE)
                 || op.equals(Uploader.FAILURE);
     }
 
