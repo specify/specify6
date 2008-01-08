@@ -3239,7 +3239,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         @Override
         public boolean isCellEditable(EventObject e)
         {
-            return true; 
+            return true;
         }
 
         //

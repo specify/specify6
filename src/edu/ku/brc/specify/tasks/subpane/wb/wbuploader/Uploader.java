@@ -5,10 +5,13 @@ package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.Component;
 import java.awt.Frame;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowStateListener;
 import java.lang.reflect.InvocationTargetException;
@@ -77,7 +80,7 @@ import edu.ku.brc.util.Pair;
  * @author timo
  * 
  */
-public class Uploader implements ActionListener, WindowStateListener
+public class Uploader implements ActionListener, WindowStateListener, KeyListener
 {
     // Phases in the upload process...
     protected final static String                   INITIAL_STATE            = "WB_UPLOAD_INITIAL_STATE";
@@ -2061,10 +2064,101 @@ public class Uploader implements ActionListener, WindowStateListener
                     if (msg instanceof UploadTableInvalidValue && msg.getCol() != -1)
                     {
                         wbSS.getSpreadSheet().editCellAt(msg.getRow(), msg.getCol(), null);
+                        
+                        //Now add this as a listener to the editorComponent to allow moving to next/prev
+                        //invalid cell after ENTER/TAB/UP/DOWN
+                        //Currently doesn't work. No KeyEvents make it to this.keyTyped().
+                        //But alternate approach to enable the spreadsheet and intercept it's KeyEvents
+                        //was too complex.
+                        Component editor = wbSS.getSpreadSheet().getEditorComponent();
+                        boolean addListener = true;
+                        KeyListener[] listeners = editor.getKeyListeners();
+                        for (int k=0; k<listeners.length; k++)
+                        {
+                            if (listeners[k] == this)
+                            {
+                                addListener = false;
+                                break;
+                            }
+                        }
+                        if (addListener)
+                        {
+                            editor.addKeyListener(this);
+                        }
                         wbSS.getSpreadSheet().grabFocus();
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * Moves to and begins editing the next invalid WorkBench cell.
+     * 
+     * Not complete. Needs to limit selections to UploadTableInvalidValue objects.
+     * 
+     * See note in goToMsgWBCell re addKeyListener().
+     */
+    protected void goToNextInvalidCell()
+    {
+        int sel = mainPanel.getMsgList().getSelectedIndex() + 1;
+        if (sel >= mainPanel.getMsgList().getModel().getSize())
+            sel = 0;
+        if (sel != -1)
+        {
+            mainPanel.getMsgList().setSelectedIndex(sel);
+            goToMsgWBCell();
+        }
+    }
+    
+    /**
+     * Moves to and begins editing the previous invalid WorkBench cell.
+     *
+     * Not complete. Needs to limit selections to UploadTableInvalidValue objects.
+     * 
+     * See note in goToMsgWBCell re addKeyListener().
+    */
+    protected void goToPrevInvalidCell()
+    {
+        int sel = mainPanel.getMsgList().getSelectedIndex() - 1;
+        if (sel <= 0)
+            sel = mainPanel.getMsgList().getModel().getSize()-1;
+        if (sel != -1)
+        {
+            mainPanel.getMsgList().setSelectedIndex(sel);
+            goToMsgWBCell();
+        }
+    }
+    
+    /**
+     * Moves to and begins editing the first invalid WorkBench cell.
+     *
+     * Not complete. Needs to limit selections to UploadTableInvalidValue objects.
+     * 
+     * See note in goToMsgWBCell re addKeyListener().
+     */
+    protected void goToFirstInvalidCell()
+    {
+        if (mainPanel.getMsgList().getModel().getSize() > 0)
+        {
+            mainPanel.getMsgList().setSelectedIndex(0);
+            goToMsgWBCell();
+        }
+    }
+
+    /**
+     * Moves to and begins editing the last invalid WorkBench cell.
+     *
+     * Not complete. Needs to limit selections to UploadTableInvalidValue objects.
+     * 
+     * See note in goToMsgWBCell re addKeyListener().
+     */
+    protected void goToLastInvalidCell()
+    {
+        if (mainPanel.getMsgList().getModel().getSize() > 0)
+        {
+            mainPanel.getMsgList().setSelectedIndex(mainPanel.getMsgList().getModel().getSize()-1);
+            goToMsgWBCell();
         }
     }
 
@@ -2145,7 +2239,7 @@ public class Uploader implements ActionListener, WindowStateListener
         }
 
         mainPanel.getValidateContentBtn().setEnabled(canValidateContent(op));
-
+        
         mainPanel.getCancelBtn().setEnabled(canCancel(op));
         mainPanel.getCancelBtn().setVisible(mainPanel.getCancelBtn().isEnabled());
 
@@ -2868,4 +2962,63 @@ public class Uploader implements ActionListener, WindowStateListener
             session.close();
         }
     }
+
+    /* (non-Javadoc)
+     * @see java.awt.event.KeyListener#keyPressed(java.awt.event.KeyEvent)
+     */
+    @Override
+    public void keyPressed(KeyEvent e)
+    {
+        //see note in goToMsgWBCell() re addKeyListener()
+        //nuthin
+    }
+    
+    /* (non-Javadoc)
+     * @see java.awt.event.KeyListener#keyReleased(java.awt.event.KeyEvent)
+     */
+    @Override
+    public void keyReleased(KeyEvent e)
+    {
+        //see note in goToMsgWBCell() re addKeyListener()
+        // nuthin
+    }
+
+    /* (non-Javadoc)
+     * @see java.awt.event.KeyListener#keyTyped(java.awt.event.KeyEvent)
+     */
+    @Override
+    public void keyTyped(KeyEvent e)
+    {
+        //see note in goToMsgWBCell() re addKeyListener()
+        int key = e.getKeyCode();
+        if (key == KeyEvent.VK_ENTER || 
+                key == KeyEvent.VK_TAB || 
+                key == KeyEvent.VK_DOWN ||
+                key == KeyEvent.VK_UP || (key == KeyEvent.VK_TAB && e.isShiftDown()) ||
+                key == KeyEvent.VK_HOME ||
+                key == KeyEvent.VK_END)
+        {
+            editInvalidCell(e);
+            e.consume();
+        }
+    }
+
+    /**
+     * @param e
+     * 
+     * Moves to WB cell for appropriate InvalidValue and starts editing it.
+     */
+    protected void editInvalidCell(KeyEvent e)
+    {
+        int key = e.getKeyCode();
+        if (key == KeyEvent.VK_ENTER || key == KeyEvent.VK_TAB || key == KeyEvent.VK_DOWN)
+            goToNextInvalidCell();
+        else if (key == KeyEvent.VK_UP || (key == KeyEvent.VK_TAB && e.isShiftDown()))
+            goToPrevInvalidCell();
+        else if (key == KeyEvent.VK_HOME)
+            goToFirstInvalidCell();
+        else if (key == KeyEvent.VK_END)
+            goToLastInvalidCell();
+    }
+
 }
