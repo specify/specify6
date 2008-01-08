@@ -38,6 +38,7 @@ import edu.ku.brc.specify.datamodel.SpQueryField;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.MultiStateIconButon;
 import edu.ku.brc.ui.forms.FormHelper;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.ui.forms.validation.DataChangeNotifier;
 import edu.ku.brc.ui.forms.validation.FormValidator;
 import edu.ku.brc.ui.forms.validation.UIValidator;
@@ -242,6 +243,16 @@ public class QueryFieldPanel extends JPanel
     public String getCriteriaFormula()
     {
         String criteriaStr = criteria.getText();
+        
+        UIFieldFormatterIFace formatter = field.getFormatter();
+        if (formatter != null)
+        {
+            // XXX Passing in a string may not always work,
+            // We might to convert to the actual type of data for that field.
+            // i.e. convert it from a String to an Integer.
+            criteriaStr = formatter.formatOutBound(criteriaStr).toString();
+        }
+            
         if (StringUtils.isNotEmpty(criteriaStr))
         {
             StringBuilder str  = new StringBuilder();

@@ -522,7 +522,9 @@ public class QueryBldrPane extends BaseSubPane
             
             if (qfp.isDisplayable())
             {
-                captions.add(new ERTICaptionInfo(colName, fi.getTitle(), true, null, 0));
+                ERTICaptionInfo erti = new ERTICaptionInfo(colName, fi.getTitle(), true, fi.getFormatter(), 0);
+                erti.setColClass(fi.getDataClass());
+                captions.add(erti);
             }
         }
         
