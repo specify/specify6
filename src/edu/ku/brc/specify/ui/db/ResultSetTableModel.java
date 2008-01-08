@@ -152,6 +152,16 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
      */
     public Class<?> getColumnClass(int column)
     {
+        if (captionInfo != null)
+        {
+            if (captionInfo.get(column).getColClass() == null)
+            {
+                return String.class;
+            }
+            log.debug(captionInfo.get(column).getColClass().getName());
+            return captionInfo.get(column).getColClass();
+        }
+        
         if (classNames.size() > 0)
         {
             Class<?> classObj = classNames.elementAt(column);
@@ -198,7 +208,8 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
             {
                 Object obj = rowArray.get(column);
                 
-                if (obj == null && getColumnClass(column) == String.class)
+                Class<?> dataClassObj = getColumnClass(column);
+                if (obj == null && (dataClassObj == null || dataClassObj == String.class))
                 {
                     return "";
                 }
@@ -222,6 +233,11 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                 if (formatter != null && formatter.isInBoundFormatter())
                 {
                     return formatter.formatInBound(obj);
+                }
+                if (obj == null)
+                {
+                    int x = 0;
+                    x++;
                 }
                 return obj;
             }
@@ -695,6 +711,8 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
         JPAQuery jpaQuery = (JPAQuery)customQuery;
         List<?> list      = jpaQuery.getDataObjects();
         
+        log.debug("Results size: "+list.size());
+        
         if (ids == null)
         {
             ids = new Vector<Integer>();
@@ -732,6 +750,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                                 } else
                                 {
                                     log.error("First Column must be Integer id! ["+colObj+"]");
+                                    row.add(colObj);
                                 }
                             } else
                             {

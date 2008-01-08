@@ -452,8 +452,11 @@ public class QueryBldrPane extends BaseSubPane
             
             processTree(root, sqlStr, 0);
             
-            sqlStr.append(" where ");
-            sqlStr.append(criteriaStr);
+            if (criteriaStr.length() > 0)
+            {
+                sqlStr.append(" where ");
+                sqlStr.append(criteriaStr);
+            }
             System.out.println(sqlStr.toString());
             
             processSQL(queryFieldItems, sqlStr.toString());

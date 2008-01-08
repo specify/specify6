@@ -168,6 +168,12 @@ public class GenericDBConversion
     protected Hashtable<String, Integer>   catNumSchemeHash = new Hashtable<String, Integer>();
 
     protected Session            session;  
+    
+    // Temp
+    protected Agent creatorAgent;
+    protected Agent modifierAgent;
+    
+    
     public GenericDBConversion()
     {
         // no op
@@ -443,17 +449,18 @@ public class GenericDBConversion
                 "webadmin"};
         
         Hashtable<String, Agent> agentMap = new Hashtable<String, Agent>();
-        Agent creatorAgent = new Agent();
+        creatorAgent = new Agent();
         creatorAgent.initialize();
         creatorAgent.setFirstName("DB");
         creatorAgent.setLastName("Creator");
         agentMap.put("Creator", creatorAgent);
         
-        Agent modifierAgent = new Agent();
+        modifierAgent = new Agent();
         modifierAgent.initialize();
         modifierAgent.setFirstName("DB");
         modifierAgent.setLastName("Modifier");
         agentMap.put("Modifier", modifierAgent);
+        
         /*
         for (String tableName : tableNames)
         {
@@ -1334,6 +1341,24 @@ public class GenericDBConversion
                         //"yesNo5",
                          };
     }
+    
+    /**
+     * @param createdBy
+     * @return
+     */
+    protected Agent getCreatorAgent(final String createdByName)
+    {
+        return creatorAgent;
+    }
+
+    /**
+     * @param modifierAgent
+     * @return
+     */
+    protected Agent getModifiedByAgent(final String modifierAgentName)
+    {
+        return modifierAgent;
+    }
 
     /**
      * Checks to see if any of the names in the array are in passed in name
@@ -1453,7 +1478,7 @@ public class GenericDBConversion
     		insert.append("INSERT INTO determinationstatus ");
             //Meg had to drop explicit insert of CURRENT_DATE, not suported by SQL Server
     		//insert.append("(DeterminationStatusID,Name,Remarks,TimestampCreated,TimestampModified, IsCurrent) ");
-            insert.append("(DeterminationStatusID,Name,Remarks,TimestampCreated,TimestampModified,  IsCurrent) ");
+            insert.append("(DeterminationStatusID,Name,Remarks,TimestampCreated,TimestampModified, IsCurrent) ");
     		insert.append("values ");
     		// followed by the 'current status' record
     		insert.append("(");
