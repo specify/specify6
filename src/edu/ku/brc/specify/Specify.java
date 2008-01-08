@@ -137,6 +137,7 @@ import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.ResultSetController;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
+import edu.ku.brc.ui.forms.persist.ViewLoader;
 import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.CacheManager;
@@ -186,7 +187,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private String               appName             = "Specify";
     private String               appVersion          = "6.0";
 
-    private String               appBuildVersion     = "200712191000 (SVN: 3290)";
+    private String               appBuildVersion     = "200801071600 (SVN: 3307)";
     
     protected static CacheManager cacheManager        = new CacheManager();
 
@@ -813,6 +814,19 @@ public class Specify extends JPanel implements DatabaseLoginListener
                             boolean isReload = !AppPreferences.getLocalPrefs().getBoolean(reloadBackViews, false);                       
                             AppPreferences.getLocalPrefs().putBoolean(reloadBackViews, isReload);
                             ((JMenuItem)ae.getSource()).setSelected(isReload);
+                        }});
+    
+            final String verifyFields = "verify_field_names";
+            cbMenuItem = new JCheckBoxMenuItem("Verify Fields");
+            menu.add(cbMenuItem);
+            cbMenuItem.setSelected(AppPreferences.getLocalPrefs().getBoolean(verifyFields, false));
+            cbMenuItem.addActionListener(new ActionListener() {
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            boolean isVerify = !AppPreferences.getLocalPrefs().getBoolean(verifyFields, false);                       
+                            AppPreferences.getLocalPrefs().putBoolean(verifyFields, isVerify);
+                            ((JMenuItem)ae.getSource()).setSelected(isVerify);
+                            ViewLoader.setDoFieldVerification(isVerify);
                         }});
     
             cbMenuItem = new JCheckBoxMenuItem("Show Form Debug");

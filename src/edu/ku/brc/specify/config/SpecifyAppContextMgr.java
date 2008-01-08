@@ -512,16 +512,21 @@ public class SpecifyAppContextMgr extends AppContextMgr
         
         // We close the session here so all SpAppResourceDir get unattached to hibernate
         // because UIFieldFormatterMgr and loading views all need a session
-        // and we don't want to recuse in and get a double session
+        // and we don't want to reuse in and get a double session
         session.close();
         
         // Here is where you turn on View/Viewdef re-use.
         if (true)
         {
+            boolean cacheDoVerify = ViewLoader.isDoFieldVerification();
+            ViewLoader.setDoFieldVerification(false);
+            
             UIFieldFormatterMgr.getInstance();
             
             backStopViewSetMgr.getView("Global", "Accession"); // force the loading of all the views
             ViewLoader.setBackStopViewSetMgr(backStopViewSetMgr);
+            
+            ViewLoader.setDoFieldVerification(cacheDoVerify);
         }
         
         // Add Backstop for Discipline and User Type

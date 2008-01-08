@@ -358,8 +358,8 @@ public class Permit extends DataModelObjBase implements AttachmentOwnerIFace<Per
         return this.issuedBy;
     }
 
-    public void setIssuedBy(Agent agentByIssuer) {
-        this.issuedBy = agentByIssuer;
+    public void setIssuedBy(Agent issuedBy) {
+        this.issuedBy = issuedBy;
     }
 
     @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, mappedBy = "permit")

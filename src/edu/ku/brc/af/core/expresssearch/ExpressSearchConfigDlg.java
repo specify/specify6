@@ -581,7 +581,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
         // This is for testing only RELEASE
         try
         {
-            FileUtils.writeStringToFile(new File("config.xml"), xstream.toXML(config));
+            FileUtils.writeStringToFile(new File("esconfig.xml"), xstream.toXML(config));
             //System.out.println(xstream.toXML(config));
             
         } catch (IOException ex)

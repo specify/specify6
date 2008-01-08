@@ -22,6 +22,7 @@ import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.io.File;
 import java.io.FileWriter;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Hashtable;
@@ -30,6 +31,12 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.table.DefaultTableModel;
+
 import org.apache.commons.betwixt.XMLIntrospector;
 import org.apache.commons.betwixt.io.BeanWriter;
 import org.apache.commons.lang.StringUtils;
@@ -37,11 +44,14 @@ import org.apache.log4j.Logger;
 import org.dom4j.Element;
 import org.dom4j.Node;
 
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.exceptions.ConfigurationException;
+import edu.ku.brc.ui.CustomFrame;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.ViewSetMgr;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
@@ -83,6 +93,19 @@ public class ViewLoader
     // Data Members
     protected boolean doingResourceLabels = false;
     protected String  viewSetName         = null;
+    
+    // Members needed for verification
+    protected static boolean               doFieldVerification = false;
+    protected static boolean               isTreeClass         = false;
+    protected static DBTableInfo           fldVerTableInfo     = null;
+    protected static FormViewDef           fldVerFormViewDef   = null;
+    
+    protected FieldVerifyTableModel fldVerTableModel    = null;
+    
+    static
+    {
+        doFieldVerification = AppPreferences.getLocalPrefs().getBoolean("verify_field_names", false);
+    }
 
     /**
      * Default Constructor
@@ -279,8 +302,8 @@ public class ViewLoader
 
 
     /**
-     * Gets the optoinal description text
-     * @param element the parent eleemnt of the desc node
+     * Gets the optional description text
+     * @param element the parent element of the desc node
      * @return the string of the text or null
      */
     protected static String getDesc(final Element element)
@@ -297,7 +320,7 @@ public class ViewLoader
     /**
      * Fill the Vector with all the views from the DOM document
      * @param doc the DOM document conforming to form.xsd
-     * @param views the liust to be filled
+     * @param views the list to be filled
      * @throws Exception for duplicate view set names or if a Form ID is not unique
      */
     public static String getViews(final Element doc,
@@ -564,6 +587,35 @@ public class ViewLoader
 
                     FormCell.CellType cellType = FormCellIFace.CellType.valueOf(cellElement.attributeValue(TYPE));
                     FormCellIFace     cell     = null;
+                    
+                    
+                    if (doFieldVerification &&
+                        fldVerTableInfo != null && 
+                        cellType == FormCellIFace.CellType.field && 
+                        StringUtils.isNotEmpty(cellId) && 
+                        !cellName.equals("this"))
+                    {
+                        if (fldVerTableInfo.getFieldByName(cellName) == null)
+                        {
+                            if (fldVerTableInfo.getRelationshipByName(cellName) == null)
+                            {
+                                String msg = " ViewSet["+instance.viewSetName+"]\n ViewDef["+fldVerFormViewDef.getName()+"]\n The cell name ["+cellName+"] for cell with Id ["+cellId+"] is not a field\n in Data Object["+fldVerTableInfo.getName()+"]\n on Row ["+rowNumber+"]";
+                                if (!isTreeClass)
+                                {
+                                    //if (!StringUtils.contains(cellName, "."))
+                                    //{
+                                        //JOptionPane.showMessageDialog(null, msg, "Cell Name Error", JOptionPane.ERROR_MESSAGE);
+                                        instance.fldVerTableModel.addRow(instance.viewSetName, fldVerFormViewDef.getName(), cellId, cellName, Integer.toString(rowNumber));
+                                        
+                                    //} else
+                                    //{
+                                    //    log.debug("Couldn't verify field name ["+cellName+"] is contains '.' notation.");
+                                    //}
+                                }
+                                log.error(msg);
+                            }
+                        }
+                    }
 
                     switch (cellType)
                     {
@@ -908,18 +960,44 @@ public class ViewLoader
                                                    final String  desc,
                                                    final DBTableInfo tableinfo)
     {
-        FormViewDef formView = new FormViewDef(type, name, className, gettableClassName, settableClassName, desc);
+        FormViewDef formViewDef = new FormViewDef(type, name, className, gettableClassName, settableClassName, desc);
+        
+        fldVerTableInfo = null;
 
         if (type != ViewDefIFace.ViewType.formtable)
         {
-            List<FormRowIFace> rows = formView.getRows();
+            
+            if (doFieldVerification)
+            {
+                if (instance.fldVerTableModel == null)
+                {
+                    instance.createFieldVerTableModel();
+                }
+                
+                try
+                {
+                    Class<?> classObj = Class.forName(className);
+                    log.debug(className);
+                    if (FormDataObjIFace.class.isAssignableFrom(classObj))
+                    {
+                        fldVerTableInfo   = DBTableIdMgr.getInstance().getByClassName(className);
+                        isTreeClass       = fldVerTableInfo != null && fldVerTableInfo.getFieldByName("highestChildNodeNumber") != null;
+                        fldVerFormViewDef = formViewDef;
+                    }
+                    
+                } catch (Exception ex)
+                {
+                    
+                }
+            }
+            List<FormRowIFace> rows = formViewDef.getRows();
             
             processRows(element, rows, tableinfo);
             
-            createDef(element, "columnDef", rows.size(), formView.getColumnDefItem());
-            createDef(element, "rowDef",    rows.size(), formView.getRowDefItem());
+            createDef(element, "columnDef", rows.size(), formViewDef.getColumnDefItem());
+            createDef(element, "rowDef",    rows.size(), formViewDef.getRowDefItem());
             
-            formView.setEnableRules(getEnableRules(element));
+            formViewDef.setEnableRules(getEnableRules(element));
             
         } else
         {
@@ -929,14 +1007,14 @@ public class ViewLoader
                 String defName = defNode.getText();
                 if (StringUtils.isNotEmpty(defName))
                 {
-                    formView.setDefinitionName(defName);
-                    return formView;
+                    formViewDef.setDefinitionName(defName);
+                    return formViewDef;
                 }
             }
             throw new RuntimeException("formtable is missing or has empty <defintion> node");
         }
 
-        return formView;
+        return formViewDef;
     }
     
     
@@ -1036,6 +1114,136 @@ public class ViewLoader
         {
             log.error("error writing views", ex);
         }
+    }
+    
+    //--------------------------------------------------------------------------------------------
+    //-- Field Verify Methods, Classes, Helpers
+    //--------------------------------------------------------------------------------------------
+    
+    public void createFieldVerTableModel()
+    {
+        fldVerTableModel = new FieldVerifyTableModel();
+    }
+    
+    /**
+     * @return the doFieldVerification
+     */
+    public static boolean isDoFieldVerification()
+    {
+        return doFieldVerification;
+    }
+
+    /**
+     * @param doFieldVerification the doFieldVerification to set
+     */
+    public static void setDoFieldVerification(boolean doFieldVerification)
+    {
+        ViewLoader.doFieldVerification = doFieldVerification;
+    }
+
+    public static void clearFieldVerInfo()
+    {
+        if (instance.fldVerTableModel != null)
+        {
+            instance.fldVerTableModel.clear();
+        }
+    }
+    
+    public static void displayFieldVerInfo()
+    {
+        if (instance.fldVerTableModel.getRowCount() > 0)
+        {
+            JTable table = new JTable(instance.fldVerTableModel);
+            UIHelper.calcColumnWidths(table);
+            
+            JScrollPane sp = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            CustomFrame dlg = new CustomFrame("Field Errors : "+instance.fldVerTableModel.getRowCount(), CustomFrame.OK_BTN, sp);
+            dlg.setOkLabel("Close");
+            dlg.createUI();
+            dlg.setSize(500, 500);
+            dlg.setVisible(true);
+        }
+    }
+    
+    class FieldVerifyTableModel extends DefaultTableModel
+    {
+        protected Vector<List<String>>       rowData  = new Vector<List<String>>();
+        protected String[]                   colNames = {"ViewSet", "View Def", "Cell Id", "Cell Name", "Row"};
+        protected Hashtable<String, Boolean> nameHash = new Hashtable<String, Boolean>();
+        
+        public FieldVerifyTableModel()
+        {
+            super();
+        }
+        
+        public void clear()
+        {
+            for (List<String> list : rowData)
+            {
+                list.clear();
+            }
+            rowData.clear();
+            nameHash.clear();
+        }
+        
+        public void addRow(final String viewSet, 
+                           final String viewDef, 
+                           final String cellId, 
+                           final String cellName, 
+                           final String rowInx)
+        {
+            String key = viewSet + viewDef + cellId;
+            if (nameHash.get(key) == null)
+            {
+                List<String> row = new ArrayList<String>(5);
+                row.add(viewSet);
+                row.add(viewDef);
+                row.add(cellId);
+                row.add(cellName);
+                row.add(rowInx);
+                rowData.add(row);
+                nameHash.put(key, true);
+            }
+        }
+        
+        /* (non-Javadoc)
+         * @see javax.swing.table.DefaultTableModel#getColumnCount()
+         */
+        @Override
+        public int getColumnCount()
+        {
+            return colNames.length;
+        }
+
+        /* (non-Javadoc)
+         * @see javax.swing.table.DefaultTableModel#getColumnName(int)
+         */
+        @Override
+        public String getColumnName(int column)
+        {
+            return colNames[column];
+        }
+
+        /* (non-Javadoc)
+         * @see javax.swing.table.DefaultTableModel#getRowCount()
+         */
+        @Override
+        public int getRowCount()
+        {
+            return rowData == null ? 0 : rowData.size();
+        }
+
+        /* (non-Javadoc)
+         * @see javax.swing.table.DefaultTableModel#getValueAt(int, int)
+         */
+        @Override
+        public Object getValueAt(int row, int column)
+        {
+            List<String> rowList = rowData.get(row);
+            
+            return rowList.get(column);
+        }
+        
     }
 }
 

@@ -74,6 +74,7 @@ import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.persist.ViewIFace;
+import edu.ku.brc.ui.forms.persist.ViewLoader;
 
 /**
  * This task controls the data entry forms.
@@ -376,6 +377,9 @@ public class DataEntryTask extends BaseTask
      */
     protected void initializeViewsNavBox()
     {
+        boolean cacheDoVerify = ViewLoader.isDoFieldVerification();
+        ViewLoader.setDoFieldVerification(false);
+        
         if (viewsNavBox.getCount() == 0)
         {
             try
@@ -485,6 +489,7 @@ public class DataEntryTask extends BaseTask
                 log.error(ex);
             }
         }
+        ViewLoader.setDoFieldVerification(cacheDoVerify);
     }
 
     /*

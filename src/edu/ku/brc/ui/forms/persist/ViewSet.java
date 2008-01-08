@@ -351,7 +351,6 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
 
             verifyViewsAndViewDefs(altViewsViewDefName);
             
-            
         } else
         {
             String msg = "The root element for the document was null!";

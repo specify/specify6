@@ -46,6 +46,7 @@ import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.forms.persist.AltViewIFace;
 import edu.ku.brc.ui.forms.persist.ViewDefIFace;
 import edu.ku.brc.ui.forms.persist.ViewIFace;
+import edu.ku.brc.ui.forms.persist.ViewLoader;
 import edu.ku.brc.ui.forms.validation.FormValidator;
 
 /**
@@ -206,6 +207,12 @@ public class MultiView extends JPanel
         
         log.debug("isUsingOnlyCreationMode "+isUsingOnlyCreationMode + " " + createWithMode + "  defaultAltViewType: "+defaultAltViewType);
         
+        
+        if (mvParent == null && ViewLoader.isDoFieldVerification())
+        {
+            ViewLoader.clearFieldVerInfo();
+        }
+        
         AltViewIFace defaultAltView = createDefaultViewable(defaultAltViewType);
         
         if (isUsingSwitcher)
@@ -254,6 +261,11 @@ public class MultiView extends JPanel
         if (currentViewable != null)
         {
             currentValidator = currentViewable.getValidator();
+        }
+        
+        if (mvParent == null && ViewLoader.isDoFieldVerification())
+        {
+            ViewLoader.displayFieldVerInfo();
         }
         
         if (false)
