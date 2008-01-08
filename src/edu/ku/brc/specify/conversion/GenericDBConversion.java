@@ -447,6 +447,13 @@ public class GenericDBConversion
                 "usyswebquerylog", 
                 "usyswebquerytemplate", 
                 "webadmin"};
+    }
+    
+    /**
+     * Creates backstop creator and modifer agents.
+     */
+    protected void initializeAgentInfo()
+    {
         
         Hashtable<String, Agent> agentMap = new Hashtable<String, Agent>();
         creatorAgent = new Agent();
@@ -461,6 +468,9 @@ public class GenericDBConversion
         modifierAgent.setLastName("Modifier");
         agentMap.put("Modifier", modifierAgent);
         
+        persist(creatorAgent);
+        persist(modifierAgent);
+            
         /*
         for (String tableName : tableNames)
         {
@@ -483,7 +493,6 @@ public class GenericDBConversion
                 
             }
         }*/
-
     }
 
     /**
@@ -1346,18 +1355,18 @@ public class GenericDBConversion
      * @param createdBy
      * @return
      */
-    protected Agent getCreatorAgent(final String createdByName)
+    protected int getCreatorAgentId(final String createdByName)
     {
-        return creatorAgent;
+        return creatorAgent.getAgentId();
     }
 
     /**
      * @param modifierAgent
      * @return
      */
-    protected Agent getModifiedByAgent(final String modifierAgentName)
+    protected int getModifiedByAgentId(final String modifierAgentName)
     {
-        return modifierAgent;
+        return modifierAgent.getAgentId();
     }
 
     /**
@@ -1478,7 +1487,7 @@ public class GenericDBConversion
     		insert.append("INSERT INTO determinationstatus ");
             //Meg had to drop explicit insert of CURRENT_DATE, not suported by SQL Server
     		//insert.append("(DeterminationStatusID,Name,Remarks,TimestampCreated,TimestampModified, IsCurrent) ");
-            insert.append("(DeterminationStatusID,Name,Remarks,TimestampCreated,TimestampModified, IsCurrent) ");
+            insert.append("(DeterminationStatusID,Name,Remarks,TimestampCreated,TimestampModified, IsCurrent, CreatedByAgentID, ModifiedByAgentID) ");
     		insert.append("values ");
     		// followed by the 'current status' record
     		insert.append("(");
@@ -1486,13 +1495,13 @@ public class GenericDBConversion
     		//Meg had to drop explicit insert of CURRENT_DATE, not suported by SQL Server
     		//Meg had to drop explicit insert of true, not suported by SQL Server
     		//insert.append(",'Current','mirror of the old schema isCurrent field',CURRENT_DATE,CURRENT_DATE,true)");
-            insert.append(",'Current','mirror of the old schema isCurrent field', '"+nowStr+"','"+nowStr+"',1)");
+            insert.append(",'Current','mirror of the old schema isCurrent field', '"+nowStr+"','"+nowStr+"',1,"+getCreatorAgentId(null)+","+getModifiedByAgentId(null)+")");
             
             //Meg had to split single insert statement into two.
             insert2.append("INSERT INTO determinationstatus ");
             //Meg had to drop explicit insert of CURRENT_DATE, not suported by SQL Server
             //insert.append("(DeterminationStatusID,Name,Remarks,TimestampCreated,TimestampModified, IsCurrent) ");
-            insert2.append("(DeterminationStatusID,Name,Remarks,TimestampCreated,TimestampModified,  IsCurrent) ");
+            insert2.append("(DeterminationStatusID, Remarks, TimestampCreated, TimestampModified,  IsCurrent, CreatedByAgentID, ModifiedByAgentID) ");
             insert2.append("values ");
             // the 'unknown status' record
             insert2.append("(");
@@ -1500,7 +1509,7 @@ public class GenericDBConversion
             //          Meg had to drop explicit insert of CURRENT_DATE, not suported by SQL Server
             //insert.append(",'Unknown','',CURRENT_DATE,CURRENT_DATE, false)");
             //          Meg had to drop explicit insert of false, not suported by SQL Server
-            insert2.append(",'Unknown','', '"+nowStr+"','"+nowStr+"',0)");
+            insert2.append(",'Unknown','', '"+nowStr+"','"+nowStr+"',0,"+getCreatorAgentId(null)+","+getModifiedByAgentId(null)+")");
 
     		Statement st = newDBConn.createStatement();
     		st.executeUpdate(insert.toString());
@@ -6122,6 +6131,8 @@ public class GenericDBConversion
 
        BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "agent", BasicSQLUtils.myDestinationServerType);
        BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "address", BasicSQLUtils.myDestinationServerType);
+       
+       initializeAgentInfo();
 
        // Just like in the conversion of the CollectionObjects we
        // need to build up our own select clause because the MetaData of columns names returned from
@@ -6216,7 +6227,7 @@ public class GenericDBConversion
                setProcess(0, rsX.getRow()); 
                rsX.first();
            }
-           //Needed to add incase AgentAddress table wasn't used.
+           //Needed to add in case AgentAddress table wasn't used.
            if (rsX.first())
             {
                 do
@@ -6264,7 +6275,7 @@ public class GenericDBConversion
            
            setProcess(0, 0); 
            
-           // Now we mapp all the Agents to their Addresses AND
+           // Now we map all the Agents to their Addresses AND
            // All the Addresses to their Agents.
            //
            // NOTE: A single Address Record Mat be used by more than one Agent so 
@@ -6288,8 +6299,8 @@ public class GenericDBConversion
                 do
                 {
                     int agentAddrId = rsX.getInt(1);
-                    int addrId = rsX.getInt(2);
-                    int agentId = rsX.getInt(3);
+                    int addrId      = rsX.getInt(2);
+                    int agentId     = rsX.getInt(3);
 
                     // ///////////////////////
                     // Add Address to Agent
@@ -6374,6 +6385,7 @@ public class GenericDBConversion
            int agentIdInx   = indexFromNameMap.get("agent.AgentID");
            int addrIdInx    = indexFromNameMap.get("address.AddressID");
            int agentTypeInx = indexFromNameMap.get("agent.AgentType");
+           int lastEditInx  = indexFromNameMap.get("agent.LastEditedBy");
 
            //int newAddrId         = -1;
            //int newAgentId        = -1;
@@ -6385,6 +6397,7 @@ public class GenericDBConversion
                int agentAddressId = rs.getInt(1);
                int agentId        = rs.getInt(agentIdInx);
                int addrId         = rs.getInt(addrIdInx);
+               String lastEditedBy = rs.getString(lastEditInx);
                
                AddressInfo addrInfo     = addressHash.get(addrId);
                AgentInfo   agentInfo    = agentHash.get(agentId);  
@@ -6404,7 +6417,7 @@ public class GenericDBConversion
                     sqlStr.append("INSERT INTO agent ");
                     sqlStr.append("(AgentID, TimestampModified, AgentType, JobTitle, FirstName, LastName, MiddleInitial, ");
                     sqlStr.append("Title, Interests, Abbreviation, Name, Email, URL, Remarks, TimestampCreated, ");
-                    sqlStr.append("CreatedByAgent, Visibility, VisibilitySetBy, ParentOrganizationID)");
+                    sqlStr.append("CreatedByAgent, Visibility, VisibilitySetBy, ParentOrganizationID, CreatedByAgentID, ModifiedByAgentID)");
                     sqlStr.append(" VALUES (");
                     for (int i=0;i<agentColumns.length;i++)
                     {
@@ -6415,6 +6428,10 @@ public class GenericDBConversion
                             sqlStr.append(agentInfo.getNewAgentId());
 
 
+                        } else if (i == lastEditInx)
+                        {
+                            // Skip the field
+                            
                         } else if (agentColumns[i].equals("agent.ParentOrganizationID"))
                         {
                             Object obj = rs.getObject(indexFromNameMap.get(agentColumns[i]));
@@ -6458,6 +6475,7 @@ public class GenericDBConversion
                             sqlStr.append(BasicSQLUtils.getStrValue(rs.getObject(inx)));
                         }
                     }
+                    sqlStr.append(getCreatorAgentId(lastEditedBy)+","+getModifiedByAgentId(lastEditedBy));
                     sqlStr.append(")");
 
                     try
@@ -6496,7 +6514,8 @@ public class GenericDBConversion
                    addrInfo.setWasAdded(true);
                    BasicSQLUtils.setIdentityInsertONCommandForSQLServer(newDBConn, "address", BasicSQLUtils.myDestinationServerType); 
                    StringBuilder sqlStr = new StringBuilder("INSERT INTO address ");
-                   sqlStr.append("(AddressID, TimestampModified, Address, Address2, City, State, Country, PostalCode, Remarks, TimestampCreated, LastEditedBy, IsPrimary, Phone1, Phone2, Fax, RoomOrBuilding, AgentID)");
+                   sqlStr.append("(AddressID, TimestampModified, Address, Address2, City, State, Country, PostalCode, Remarks, TimestampCreated, ");
+                   sqlStr.append("IsPrimary, Phone1, Phone2, Fax, RoomOrBuilding, AgentID, CreatedByAgentID, ModifiedByAgentID)");
                    sqlStr.append(" VALUES (");
                    for (int i=0;i<addressColumns.length;i++)
                    {
@@ -6533,6 +6552,7 @@ public class GenericDBConversion
                            sqlStr.append(value);
                        }
                    }
+                   sqlStr.append(getCreatorAgentId(lastEditedBy)+","+getModifiedByAgentId(lastEditedBy));
                    sqlStr.append(")");
 
                    try
@@ -6629,12 +6649,14 @@ public class GenericDBConversion
            }
 
            agentIdInx = indexFromNameMap.get("agent.AgentID");
+           lastEditInx  = indexFromNameMap.get("agent.LastEditedBy");
 
            recordCnt = 0;
            while (rs.next())
            {
                int agentAddressId = rs.getInt(1);
                int agentId        = rs.getInt(agentIdInx);
+               String lastEditedBy = rs.getString(lastEditInx);
                
                AgentInfo   agentInfo    = agentHash.get(agentId);  
                
@@ -6649,7 +6671,9 @@ public class GenericDBConversion
                    BasicSQLUtils.setIdentityInsertONCommandForSQLServer(newDBConn, "agent", BasicSQLUtils.myDestinationServerType); 
                    // Create Agent
                    StringBuilder sqlStr = new StringBuilder("INSERT INTO agent ");
-                   sqlStr.append("(AgentID, TimestampModified, AgentType, JobTitle, FirstName, LastName, MiddleInitial, Title, Interests, Abbreviation, Name, Email, URL, Remarks, TimestampCreated, LastEditedBy, Visibility, VisibilitySetBy, ParentOrganizationID)");
+                   sqlStr.append("(AgentID, TimestampModified, AgentType, JobTitle, FirstName, LastName, MiddleInitial, Title, Interests, ");
+                   sqlStr.append("Abbreviation, Name, Email, URL, Remarks, TimestampCreated, Visibility, VisibilitySetBy, ParentOrganizationID, ");
+                   sqlStr.append("CreatedByAgentID, ModifiedByAgentID)");
                    sqlStr.append(" VALUES (");
                     for (int i=0;i<agentColumns.length;i++)
                     {
@@ -6658,19 +6682,23 @@ public class GenericDBConversion
                         {
                             sqlStr.append(agentInfo.getNewAgentId());
 
-
-                        }else if (agentColumns[i].equals("agent.Visibility"))//User/Security changes
+                        } else if (i == lastEditInx)
+                        {
+                            // Skip the field
+                            
+                        } else if (agentColumns[i].equals("agent.Visibility"))//User/Security changes
                         {
                             sqlStr.append(defaultVisibilityLevel);
-                        }else if (agentColumns[i].equals("agent.VisibilitySetBy"))//User/Security changes
+                        } else if (agentColumns[i].equals("agent.VisibilitySetBy"))//User/Security changes
                         {
                             sqlStr.append("null");
-                        }else
+                        } else
                         {
                             inx = indexFromNameMap.get(agentColumns[i]);
                             sqlStr.append(BasicSQLUtils.getStrValue(rs.getObject(inx)));
                         }
                     }
+                    sqlStr.append(getCreatorAgentId(lastEditedBy)+","+getModifiedByAgentId(lastEditedBy));
                     sqlStr.append(")");
 
                     try
