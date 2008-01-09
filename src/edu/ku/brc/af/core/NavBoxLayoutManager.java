@@ -83,12 +83,12 @@ public class NavBoxLayoutManager implements LayoutManager2
     /* (non-Javadoc)
      * @see java.awt.LayoutManager#preferredLayoutSize(java.awt.Container)
      */
-    public Dimension preferredLayoutSize(Container arg0)
+    public Dimension preferredLayoutSize(Container target)
     {
-        //if (preferredSize.width == 0 || preferredSize.height == 0)
-        //{
+        synchronized (target.getTreeLock()) 
+        {
             calcPreferredSize();
-       // }
+        }
         return new Dimension(preferredSize);
     }
 
