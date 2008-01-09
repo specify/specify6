@@ -27,6 +27,7 @@ public class TableTree implements Cloneable, Comparable<TableTree>
     protected String            field;
     protected TableTree         parent;
     protected Vector<TableTree> kids      = new Vector<TableTree>();
+    protected String            abbrev = null;
     protected DBTableInfo       tableInfo = null;
     protected boolean           isAlias   = false;
     protected BaseQRI           baseQRI   = null;          
@@ -41,11 +42,13 @@ public class TableTree implements Cloneable, Comparable<TableTree>
     public TableTree(final TableTree parent, 
                      final String name,
                      final String field,
+                     final String abbrev,
                      final DBTableInfo tableInfo)
     {
         this.parent = parent;
         this.name   = name;
         this.field  = field;
+        this.abbrev = abbrev;
         this.tableInfo  = tableInfo;
     }
 
@@ -86,6 +89,10 @@ public class TableTree implements Cloneable, Comparable<TableTree>
      */
     public String getAbbrev()
     {
+        if (abbrev != null)
+        {
+            return abbrev;
+        }
         if (tableInfo != null)
         {
             return tableInfo.getAbbrev();

@@ -56,12 +56,32 @@
     </table>
 
     <table name="CollectionObject">
+    	<table name="Accession">
+        	<table name="AccessionAgent" field="accessionAgents">
+             	<table name="Agent" abbrev="AccAg">
+             	</table>
+        	</table>
+        	<table name="AccessionAttachment">
+            	<alias name="Attachment"/>
+        	</table>
+        	<table name="AccessionAuthorization">
+            	<alias name="Permit"/>
+        	</table>
+    	</table>
+    	
     	<table name="CollectionObjectAttributes"/>
         <table name="CollectionObjectAttachment">
             <alias name="Attachment"/>
         </table>
     	<table name="CollectionObjectCitation">
     		<alias name="ReferenceWork"/>
+    	</table>
+    	
+    	<table name="CollectingEvent">
+	    	<table name="Collector" field="collectors">
+             	<table name="Agent" abbrev="CtrAg">
+             	</table>
+        	</table>
     	</table>
     	
         <table name="Determination" field="determinations" title="Determinations">
@@ -78,6 +98,7 @@
             </table>
             <alias name="Agent" field="DeterminedBy"/>
         </table>
+        
         <table name="PaleoContext" field="paleoContext">
     		<table name="GeologicTimePeriod"/>
     		<table name="LithoStrat"/>

@@ -51,6 +51,7 @@ import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.SpQuery;
@@ -350,7 +351,8 @@ public class QueryBldrPane extends BaseSubPane
                 {
                     if (fieldsStr.length() > 0) fieldsStr.append(", ");
                 }
-                fieldsStr.append(qfp.getFieldInfo().getTableInfo().getAbbrev());
+                //fieldsStr.append(qfp.getFieldInfo().getTableInfo().getAbbrev());
+                fieldsStr.append(qfp.getFieldQRI().getParent().getTableTree().getAbbrev());
                 fieldsStr.append('.');
                 fieldsStr.append(qfp.getFieldInfo().getName());
             }
@@ -977,7 +979,8 @@ public class QueryBldrPane extends BaseSubPane
                 fieldName = tableName.substring(0, 1).toLowerCase() + tableName.substring(1);
             }
             
-            TableTree newTreeNode = new TableTree(parentTT, tableName, fieldName, tableInfo);
+            String abbrev = XMLHelper.getAttr(parent, "abbrev", null);
+            TableTree newTreeNode = new TableTree(parentTT, tableName, fieldName, abbrev, tableInfo);
             ttKids.add(newTreeNode);
             
             TableQRI tableQRI = new TableQRI(parentQRI, newTreeNode);
