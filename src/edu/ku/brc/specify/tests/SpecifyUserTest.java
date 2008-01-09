@@ -311,7 +311,7 @@ public class SpecifyUserTest extends TestCase
 
             log.info("createCollectionType");
             Institution    institution    = createInstitution("Natural History Museum");
-            Division       division       = createDivision(institution, "Icthyology");
+            Division       division       = createDivision(institution, "fish", "Icthyology", "IT", "Icthyology");
             CollectionType collectionType = createCollectionType(division, "fish", "fish", dataType, user, taxonTreeDef, null, null, null, lithoStratTreeDef);
 
             //createCollectionType(dataType, testUser, "fish", "fish"); // creates TaxonTreeDef
@@ -368,7 +368,7 @@ public class SpecifyUserTest extends TestCase
             SpecifyUser      user             = createSpecifyUser("admin", "admin@ku.edu", (short)0, userGroup, "CollectionManager");
 
             Institution    institution    = createInstitution("Natural History Museum");
-            Division       division       = createDivision(institution, "Icthyology");
+            Division       division       = createDivision(institution, "fish", "Icthyology", "IT", "Icthyology");
             CollectionType collectionType = createCollectionType(division, "fish", "fish", dataType, user, taxonTreeDef, null, null, null, lithoStratTreeDef);
             
             UserPermission permission = createUserPermission(testUser, collectionType, true, true);

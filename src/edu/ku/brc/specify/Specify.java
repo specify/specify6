@@ -187,7 +187,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private String               appName             = "Specify";
     private String               appVersion          = "6.0";
 
-    private String               appBuildVersion     = "200801071600 (SVN: 3307)";
+    private String               appBuildVersion     = "200801081315 (SVN: 3309)";
     
     protected static CacheManager cacheManager        = new CacheManager();
 
@@ -1210,24 +1210,28 @@ public class Specify extends JPanel implements DatabaseLoginListener
        // AppContextMgr.getInstance().
         SpecifyAppPrefs.initialPrefs();
         
-        String iconName = AppPreferences.getRemote().get("ui.formatting.disciplineicon", "CollectionObject");
-        IconManager.aliasImages(iconName,             // Source
-                                "collectionobject");  // Dest
-        
-
-        
-        // XXX Get the current locale from prefs PREF
-        int colTypeId = CollectionType.getCurrentCollectionType().getCollectionTypeId();
-        SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.CORE_SCHEMA, colTypeId, DBTableIdMgr.getInstance(), Locale.getDefault());
-        //SchemaI18NService.getInstance().loadWithLocale(new Locale("de", "", ""));
-        
-        //Collection.setCurrentCollection(null);
-        //CollectionType.setCurrentCollectionType(null);
-        
-        // "false" means that it should use any cached values it can find to automatically initialize itself
-        //AppContextMgr.CONTEXT_STATUS status = AppContextMgr.getInstance().setContext(databaseNameArg, userNameArg, startOver);
         if (status == AppContextMgr.CONTEXT_STATUS.OK)
-        { 
+        {
+            String iconName = AppPreferences.getRemote().get("ui.formatting.disciplineicon", "CollectionObject");
+            IconManager.aliasImages(iconName,             // Source
+                                    "collectionobject");  // Dest
+            
+            // XXX Get the current locale from prefs PREF
+            
+            if (CollectionType.getCurrentCollectionType() == null)
+            {
+                return;
+            }
+            
+            int colTypeId = CollectionType.getCurrentCollectionType().getCollectionTypeId();
+            SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.CORE_SCHEMA, colTypeId, DBTableIdMgr.getInstance(), Locale.getDefault());
+            //SchemaI18NService.getInstance().loadWithLocale(new Locale("de", "", ""));
+            
+            //Collection.setCurrentCollection(null);
+            //CollectionType.setCurrentCollectionType(null);
+            
+            // "false" means that it should use any cached values it can find to automatically initialize itself
+
             if (firstTime)
             {
                 GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();

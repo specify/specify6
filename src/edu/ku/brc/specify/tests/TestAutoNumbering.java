@@ -159,7 +159,7 @@ public class TestAutoNumbering extends TestCase
         LocationTreeDef           locTreeDef        = createLocationTreeDef("Sample Location Tree");
         
         Institution    institution    = createInstitution("Natural History Museum");
-        Division       division       = createDivision(institution, "Icthyology");
+        Division       division       = createDivision(institution, "fish", "Icthyology", "IT", "Icthyology");
         CollectionType collectionType = createCollectionType(division, collTypeName, disciplineName, dataType, user, taxonTreeDef, null, null, null, lithoStratTreeDef);
 
         SpecifyUser.setCurrentUser(user);

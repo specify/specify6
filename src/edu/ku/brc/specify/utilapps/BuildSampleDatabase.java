@@ -292,8 +292,10 @@ public class BuildSampleDatabase
         LithoStratTreeDef         lithoStratTreeDef = createLithoStratTreeDef("Test LithoStrat Tree");
         LocationTreeDef           locTreeDef        = createLocationTreeDef("Test Location Tree");
 
+        Discipline discipline = Discipline.getDiscipline("fish");
+
         Institution    institution    = createInstitution("Natural History Museum");
-        Division       division       = createDivision(institution, "Icthyology");
+        Division       division       = createDivision(institution, discipline.getName(), "Icthyology", "IT", "Icthyology");
         CollectionType collectionType = createCollectionType(division, collTypeName, disciplineName, dataType, user, taxonTreeDef, null, null, null, lithoStratTreeDef);
 
         startTx();
@@ -461,9 +463,8 @@ public class BuildSampleDatabase
         System.out.println("Email:     "+email);
         System.out.println("UserType:  "+userType);
         
-        
-        Institution      institution      = createInstitution("Natural History Museum");
-        Division         division         = createDivision(institution, "Icthyology");
+        Institution    institution    = createInstitution("Natural History Museum");
+        Division       division       = createDivision(institution, discipline.getName(), "Icthyology", "IT", "Icthyology");
         
         Agent            userAgent        = createAgent(title, firstName, midInit, lastName, abbrev, email);
         userAgent.setCollectionMemberId(0);
@@ -563,12 +564,13 @@ public class BuildSampleDatabase
         dataObjects.clear();
 
         //                                 Name                Type           Table Name           Field       Formatter          R/O  Size
+        dataObjects.add(createPickList("Division",            tableType,      "division",          null,   "Division",            true, -1));
         dataObjects.add(createPickList("DeterminationStatus", tableType,      "determinationstatus", null, "DeterminationStatus", true, -1));
         dataObjects.add(createPickList("DataType",            tableType,      "datatype",            null, "DataType",            true, -1));
         dataObjects.add(createPickList("Department",          tableFieldType, "accession",         "text1" ,       null,          true, -1));
         dataObjects.add(createPickList("AgentTitle",          tableFieldType, "agent",             "title" ,       null,          true, -1));
         dataObjects.add(createPickList("PrepType",            tableType,      "preptype",           null, "PrepType",             true, -1));
-        dataObjects.add(createPickList("CollectionType",      tableType,      "collectiontype",     null, "CollectionType",     true, -1));
+        dataObjects.add(createPickList("CollectionType",      tableType,      "collectiontype",     null, "CollectionType",       true, -1));
         dataObjects.add(createPickList("GeologicTimePeriodTreeDef", tableType, "geologictimeperiodtreedef", null, "GeologicTimePeriodTreeDef", true, -1));
         dataObjects.add(createPickList("CatalogNumberingScheme", tableType, "catalognumberingscheme", null, "CatalogNumberingScheme", true, -1));
         

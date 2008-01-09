@@ -1587,15 +1587,17 @@ public class GenericDBConversion
     
     public void convertDivision()
     {
+        Discipline discipline = Discipline.getDiscipline("fish");
+        
         setSession(HibernateUtil.getCurrentSession());
-            Institution    institution    = createInstitution("Natural History Museum");
-            Division       division       = createDivision(institution, "Icthyology");
-            startTx();
-            persist(institution);
-            persist(division);
-           // persist(collectionType);
-            commitTx();
-           // return true;
+        Institution    institution    = createInstitution("Natural History Museum");
+        Division       division       = createDivision(institution, discipline.getName(), "Icthyology", "IT", "Icthyology");
+        startTx();
+        persist(institution);
+        persist(division);
+       // persist(collectionType);
+        commitTx();
+       // return true;
     }
     
     public void persist(Object o)

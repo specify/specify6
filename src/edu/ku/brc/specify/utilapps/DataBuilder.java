@@ -142,12 +142,19 @@ public class DataBuilder
         return inst;
     }
     
-    public static Division createDivision(final Institution inst, final String name)
+    public static Division createDivision(final Institution inst, 
+                                          final String discipline, 
+                                          final String name, 
+                                          final String abbrev, 
+                                          final String title)
     {
         // Create Collection Type
         Division division = new Division();
         division.initialize();
         division.setName(name);
+        division.setDiscipline(discipline);
+        division.setAbbrev(abbrev);
+        division.setTitle(title);
         
         inst.addReference(division, "divisions");
 
