@@ -242,7 +242,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
                 public void run()
                 {
                     setSelectedIndex(index);
-                    remove(index+1);
+                    //remove(index+1);
                 }
             });
             
@@ -404,7 +404,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
                 if (sprs == rs || 
                    (sprs != null && sprs.getRecordSetId() != null && 
                                     rs.getRecordSetId() != null &&
-                                    sprs.getRecordSetId().intValue() == sprs.getRecordSetId().intValue()))
+                                    sprs.getRecordSetId().intValue() == rs.getRecordSetId().intValue()))
                 {
                     return sp;
                 }
