@@ -30,8 +30,6 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
-import edu.ku.brc.dbsupport.DataProviderFactory;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.treeutils.TreeOrderSiblingComparator;
 
 @SuppressWarnings("serial")

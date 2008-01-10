@@ -1065,8 +1065,24 @@ public class QueryBldrPane extends BaseSubPane
             {
                 for (Object levelObj : treeLevels)
                 {
-                    tableQRI.addKid(new TreeLevelQRI(tableQRI, null, Integer.valueOf(XMLHelper
+                    try
+                    {
+                        tableQRI.addKid(new TreeLevelQRI(tableQRI, null, Integer.valueOf(XMLHelper
                             .getAttr((Element) levelObj, "rank", "0"))));
+                    }
+                    catch (Exception ex)
+                    {
+                        //if there is no TreeDefItem for the rank then just skip it.
+                        if (ex instanceof TreeLevelQRI.NoTreeDefItemException)
+                        {
+                            log.error(ex);
+                        }
+                        //else something is really messed up
+                        else
+                        {
+                            throw new RuntimeException(ex);
+                        }
+                    }
                 }
             }
 

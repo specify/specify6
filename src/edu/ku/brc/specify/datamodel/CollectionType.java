@@ -28,6 +28,8 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -456,4 +458,18 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
         // else
         return timestampCreated.compareTo(obj.timestampCreated);
     }
+    
+    /**
+     * @param defName
+     * @return TreeDef from table named defName.
+     * 
+     * This is needed by the uploader and the query builder.
+     */
+    @Transient
+    public TreeDefIface<?,?,?> getTreeDef(final String defName) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException
+    {
+        Method getter = CollectionType.class.getMethod("get" + defName, (Class<?>[])null);
+        return (TreeDefIface<?,?,?>)getter.invoke(this,  (Object[])null);
+    }
+
 }

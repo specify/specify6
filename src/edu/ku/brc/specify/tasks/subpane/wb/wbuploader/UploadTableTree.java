@@ -13,7 +13,6 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -27,7 +26,6 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeographyTreeDefItem;
@@ -126,7 +124,14 @@ public class UploadTableTree extends UploadTable
     {
         if (treeDef == null)
         {
-            treeDef = getTreeDef(tblClass.getSimpleName() + "TreeDef");
+            try
+            {
+                treeDef = Collection.getCurrentCollection().getCollectionType().getTreeDef(capitalize(tblClass.getSimpleName()) + "TreeDef");
+            }
+            catch (Exception ex)
+            {
+                throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
+            }
         }
         if (treeDef != null)
         {
@@ -144,33 +149,7 @@ public class UploadTableTree extends UploadTable
     {
         return getTreeDef().getDefItemByRank(rank);
     }
-    
-    /**
-     * @param defName
-     * @return TreeDef loaded from table named defName.
-     */
-    @SuppressWarnings("unchecked")
-    public TreeDefIface<?,?,?> getTreeDef(final String defName) throws UploaderException
-    {
-        try
-        {
-            Method getter = CollectionType.class.getMethod("get" + capitalize(defName), (Class<?>[])null);
-            return (TreeDefIface<?,?,?>)getter.invoke(Collection.getCurrentCollection().getCollectionType(),  (Object[])null);
-        }
-        catch (NoSuchMethodException ex)
-        {
-            throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
-        }
-        catch (InvocationTargetException ex)
-        {
-            throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
-        }
-        catch (IllegalAccessException ex)
-        {
-            throw new UploaderException(ex, UploaderException.ABORT_IMPORT);
-        }
-    }
-    
+        
     /**
      * @param jc the JoinColumn annotation for the relationship.
      * @return true if the related class needs to be added as a requirement.
