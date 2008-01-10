@@ -43,6 +43,9 @@ public class ValSpinner extends JSpinner implements UIValidatable, GetSetValueIF
     protected boolean                 isNew        = false;
     protected boolean                 currentValue = false;
     
+    protected int                     minValue = -1;
+    protected int                     maxValue = -1;
+    
     /**
      * 
      */
@@ -75,6 +78,8 @@ public class ValSpinner extends JSpinner implements UIValidatable, GetSetValueIF
                                      1));    // step
         this.isRequired = isRequired;
         this.isReadOnly = isReadOnly;
+        this.minValue   = minVal;
+        this.maxValue   = maxVal;
         
         init();
         
@@ -118,6 +123,22 @@ public class ValSpinner extends JSpinner implements UIValidatable, GetSetValueIF
     //--------------------------------------------------
     //-- UIValidatable Interface
     //--------------------------------------------------
+
+    /**
+     * @return the minValue
+     */
+    public int getMinValue()
+    {
+        return minValue;
+    }
+
+    /**
+     * @return the maxValue
+     */
+    public int getMaxValue()
+    {
+        return maxValue;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.validation.UIValidatable#isInError()

@@ -28,6 +28,7 @@ import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.FormViewObj;
+import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.ui.forms.formatters.DataObjSwitchFormatter;
@@ -60,11 +61,19 @@ public class PickListBusRules extends BaseBusRules
         final ValComboBox formatterCBX = (ValComboBox)fvo.getControlByName("formatterCBX");
         final ValComboBox tablesCBX     = (ValComboBox)fvo.getControlByName("tablesCBX");
         final ValComboBox fieldsCBX     = (ValComboBox)fvo.getControlByName("fieldsCBX");
-        
+        final ValComboBox typesCBX      = (ValComboBox)fvo.getControlByName("typesCBX");
+
         tablesCBX.getComboBox().addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
-                tableSelected(fvo, tablesCBX, fieldsCBX, formatterCBX);
+                tableSelected(fvo);
+            }
+        });
+        
+        typesCBX.getComboBox().addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                typeSelected(fvo);
             }
         });
         
@@ -73,6 +82,13 @@ public class PickListBusRules extends BaseBusRules
         
         PickListBusRules.fillTableNameCBX(tablesCBX);
         
+        DefaultComboBoxModel model = (DefaultComboBoxModel)typesCBX.getComboBox().getModel();
+        model.removeAllElements();
+        String[] types = {UIRegistry.getResourceString("PL_ITEMS"), UIRegistry.getResourceString("PL_TABLE"), UIRegistry.getResourceString("PLTABLEFIELD")};
+        for (String title : types)
+        {
+            model.addElement(title);
+        }
     }
     
     /**
@@ -81,11 +97,12 @@ public class PickListBusRules extends BaseBusRules
      * @param fieldsCBX
      * @param formatterCBX
      */
-    private static void tableSelected(final FormViewObj fvo,
-                                      final ValComboBox tablesCBX,
-                                      final ValComboBox fieldsCBX,
-                                      final ValComboBox formatterCBX)
+    private static void tableSelected(final FormViewObj fvo)
     {
+        ValComboBox formatterCBX = (ValComboBox)fvo.getControlByName("formatterCBX");
+        ValComboBox tablesCBX     = (ValComboBox)fvo.getControlByName("tablesCBX");
+        ValComboBox fieldsCBX     = (ValComboBox)fvo.getControlByName("fieldsCBX");
+
         String noneStr = getResourceString("None");
         
         PickList pickList = (PickList)fvo.getDataObj();
@@ -95,10 +112,10 @@ public class PickListBusRules extends BaseBusRules
         }
         
         JComboBox   tableCbx  = tablesCBX.getComboBox();
-        String      tableName = (String)tableCbx.getSelectedItem();
-        if (tableName != null)
+        DBTableInfo tableInfo = (DBTableInfo)tableCbx.getSelectedItem();
+        if (tableInfo != null)
         {
-            if (tableName.equals(noneStr))
+            if (tableInfo.getName().equals(noneStr))
             {
                 pickList.setTableName(null);
                 pickList.setFieldName(null);
@@ -106,62 +123,45 @@ public class PickListBusRules extends BaseBusRules
                 
             } else
             {
+
+                pickList.setTableName(tableInfo.getName());
                 
-                //String currentName = (String)tablesCBX.getComboBox().getSelectedItem();
-                DBTableInfo ti = null;
-                for (DBTableInfo tblInfo : DBTableIdMgr.getInstance().getTables())
+                DefaultComboBoxModel fldModel = (DefaultComboBoxModel)fieldsCBX.getComboBox().getModel();
+                fldModel.removeAllElements();
+                
+                for (DBFieldInfo fi : tableInfo.getFields())
                 {
-                    if (tblInfo.getTitle().equals(tableName))
+                    if (fi.getDataClass() == String.class)
                     {
-                        ti = tblInfo;
-                        break;
+                        fldModel.addElement(fi);
+                    }
+                }
+                fieldsCBX.setEnabled(fldModel.getSize() > 0);
+                
+                Vector<DataObjSwitchFormatter> list = new Vector<DataObjSwitchFormatter>();
+                for (DataObjSwitchFormatter fmt : DataObjFieldFormatMgr.getFormatters())
+                {
+                    if (fmt.getDataClass() == tableInfo.getClassObj())
+                    {
+                        list.add(fmt);
                     }
                 }
                 
-                if (ti != null)
+                DefaultComboBoxModel fmtModel = (DefaultComboBoxModel)formatterCBX.getComboBox().getModel();
+                fmtModel.removeAllElements();
+                
+                if (list.size() > 0)
                 {
-                    //if (StringUtils.isEmpty(currentName) || !currentName.equals(ti.getTitle()))
+                    Collections.sort(list);
+                    
+                    for (DataObjSwitchFormatter fmt : list)
                     {
-                        pickList.setTableName(ti.getName());
-                        
-                        DefaultComboBoxModel fldModel = (DefaultComboBoxModel)fieldsCBX.getComboBox().getModel();
-                        fldModel.removeAllElements();
-                        
-                        for (DBFieldInfo fi : ti.getFields())
-                        {
-                            if (fi.getDataClass() == String.class)
-                            {
-                                fldModel.addElement(fi);
-                            }
-                        }
-                        fieldsCBX.setEnabled(fldModel.getSize() > 0);
-                        
-                        Vector<DataObjSwitchFormatter> list = new Vector<DataObjSwitchFormatter>();
-                        for (DataObjSwitchFormatter fmt : DataObjFieldFormatMgr.getFormatters())
-                        {
-                            if (fmt.getDataClass() == ti.getClassObj())
-                            {
-                                list.add(fmt);
-                            }
-                        }
-                        
-                        DefaultComboBoxModel fmtModel = (DefaultComboBoxModel)formatterCBX.getComboBox().getModel();
-                        fmtModel.removeAllElements();
-                        
-                        if (list.size() > 0)
-                        {
-                            Collections.sort(list);
-                            
-                            for (DataObjSwitchFormatter fmt : list)
-                            {
-                                fmtModel.addElement(fmt);
-                            }
-                            formatterCBX.setEnabled(true);
-                        } else
-                        {
-                            formatterCBX.setEnabled(false);
-                        }
+                        fmtModel.addElement(fmt);
                     }
+                    formatterCBX.setEnabled(true);
+                } else
+                {
+                    formatterCBX.setEnabled(false);
                 }
             }
             
@@ -179,7 +179,12 @@ public class PickListBusRules extends BaseBusRules
         if (tablesCBX.getComboBox().getModel().getSize() == 0)
         {
             DefaultComboBoxModel tblModel = (DefaultComboBoxModel)tablesCBX.getComboBox().getModel();
-            tblModel.addElement(UIRegistry.getResourceString("None"));
+            String noneStr = UIRegistry.getResourceString("None");
+            DBTableInfo none = new DBTableInfo(-1, PickList.class.getName(), "none", "", "");
+            none.setTitle(noneStr);
+            
+            tblModel.addElement(none);
+            
             for (DBTableInfo ti : DBTableIdMgr.getInstance().getTables())
             {
                 if (DataModelObjBase.class.isAssignableFrom(ti.getClassObj()) && 
@@ -188,7 +193,7 @@ public class PickListBusRules extends BaseBusRules
                         !ti.getName().startsWith("user") && 
                         !ti.getName().startsWith("appres"))
                 {
-                    tblModel.addElement(ti.getTitle());
+                    tblModel.addElement(ti);
                 }
             }
         }
@@ -205,7 +210,16 @@ public class PickListBusRules extends BaseBusRules
         for (int i=0;i<model.getSize();i++)
         {
             Object obj = model.getElementAt(i);
-            if (obj instanceof DBFieldInfo)
+            if (obj instanceof DBTableInfo)
+            {
+                DBTableInfo ti = (DBTableInfo)obj;
+                System.err.println("["+ti.getName()+"]["+value+"]");
+                if (ti.getName().equals(value))
+                {
+                    return i;
+                }
+                
+            } else if (obj instanceof DBFieldInfo)
             {
                 DBFieldInfo fi = (DBFieldInfo)obj;
                 System.err.println("["+fi.getName()+"]["+value+"]");
@@ -213,6 +227,7 @@ public class PickListBusRules extends BaseBusRules
                 {
                     return i;
                 }
+                
             } else if (obj instanceof DataObjSwitchFormatter)
             {
                 DataObjSwitchFormatter fmt = (DataObjSwitchFormatter)obj;
@@ -230,43 +245,48 @@ public class PickListBusRules extends BaseBusRules
     }
     
     /**
-     * @param tablesCBX
-     * @param value
-     * @return
+     * @param fvo
      */
-    private int getTableIndexInModel(final ValComboBox tablesCBX, final String value)
+    private static void typeSelected(final FormViewObj fvo)
     {
-        String noneStr = getResourceString("None");
-        if (value.equals(noneStr))
-        {
-            return 0;
-        }
+        ValComboBox formatterCBX = (ValComboBox)fvo.getControlByName("formatterCBX");
+        ValComboBox tablesCBX     = (ValComboBox)fvo.getControlByName("tablesCBX");
+        ValComboBox fieldsCBX     = (ValComboBox)fvo.getControlByName("fieldsCBX");
+        ValComboBox typesCBX      = (ValComboBox)fvo.getControlByName("typesCBX");
+        ValSpinner  sizeLimitSp   = (ValSpinner)fvo.getControlByName("sizeLimit");
         
-        DBTableInfo tblInfo = null;
-        for (DBTableInfo ti : DBTableIdMgr.getInstance().getTables())
+        MultiView pickListItemsMV = (MultiView)fvo.getControlByName("pickListItems");
+        
+        int typeIndex = typesCBX.getComboBox().getSelectedIndex();
+        switch (typeIndex) 
         {
-            System.out.println("["+ti.getTitle()+"]["+value+"]");
-            if (ti.getName().equals(value))
-            {
-                tblInfo = ti;
+            case 0:
+                tablesCBX.setEnabled(false);
+                fieldsCBX.setEnabled(false);
+                formatterCBX.setEnabled(false);
+                sizeLimitSp.setEnabled(true);
+                pickListItemsMV.setVisible(true);
                 break;
-            }
+                
+            case 1:
+                tablesCBX.setEnabled(true);
+                fieldsCBX.setEnabled(false);
+                formatterCBX.setEnabled(true);
+                sizeLimitSp.setEnabled(false);
+                pickListItemsMV.setVisible(false);
+                break;
+                
+            case 2:
+                tablesCBX.setEnabled(true);
+                fieldsCBX.setEnabled(true);
+                formatterCBX.setEnabled(true);
+                sizeLimitSp.setEnabled(false);
+                pickListItemsMV.setVisible(false);
+                break;
+                
+            default:
+                break;
         }
-        
-        if (tblInfo != null)
-        {
-            DefaultComboBoxModel model = (DefaultComboBoxModel)tablesCBX.getComboBox().getModel();
-            for (int i=0;i<model.getSize();i++)
-            {
-                Object obj = model.getElementAt(i);
-                System.out.println("["+tblInfo.getName()+"]["+obj.toString()+"]");
-                if (tblInfo.getTitle().equals(obj.toString()))
-                {
-                    return i;
-                }
-            }
-        }
-        return -1;
     }
     
     /* (non-Javadoc)
@@ -283,14 +303,19 @@ public class PickListBusRules extends BaseBusRules
         if (pickList != null)
         {
         
-            ValComboBox formatterCBX = (ValComboBox)fvo.getControlByName("formatterCBX");
-            ValComboBox tablesCBX    = (ValComboBox)fvo.getControlByName("tablesCBX");
-            ValComboBox fieldsCBX    = (ValComboBox)fvo.getControlByName("fieldsCBX");
+            ValComboBox typesCBX       = (ValComboBox)fvo.getControlByName("typesCBX");
+            ValComboBox tablesCBX      = (ValComboBox)fvo.getControlByName("tablesCBX");
+            ValComboBox formatterCBX   = (ValComboBox)fvo.getControlByName("formatterCBX");
+            ValComboBox fieldsCBX      = (ValComboBox)fvo.getControlByName("fieldsCBX");
+            ValSpinner sizeLimitSp     = (ValSpinner)fvo.getControlByName("sizeLimit");
             
+            int typeIndex = pickList.getType();
+            typesCBX.getComboBox().setSelectedIndex(typeIndex);
+
             String tableName = pickList.getTableName();
             if (StringUtils.isNotEmpty(tableName))
             {
-                tablesCBX.getComboBox().setSelectedIndex(getTableIndexInModel(tablesCBX, tableName));
+                tablesCBX.getComboBox().setSelectedIndex(getIndexInModel(tablesCBX, tableName));
                 
                 String fieldName = pickList.getFieldName();
                 if (StringUtils.isNotEmpty(fieldName))
@@ -305,7 +330,6 @@ public class PickListBusRules extends BaseBusRules
                 }
             }
             
-            ValSpinner sizeLimitSp = (ValSpinner)fvo.getControlByName("sizeLimit");
             if (pickList.getSizeLimit() == -1)
             {
                 sizeLimitSp.setEnabled(false);
@@ -315,6 +339,8 @@ public class PickListBusRules extends BaseBusRules
             {
                 sizeLimitSp.setEnabled(true);
             }
+            
+            typeSelected(fvo);
         }
     }
 
@@ -350,8 +376,17 @@ public class PickListBusRules extends BaseBusRules
     @Override
     public boolean okToEnableDelete(Object dataObj)
     {
-        // TODO Auto-generated method stub
-        return false;
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#processBusinessRules(java.lang.Object)
+     */
+    @Override
+    public STATUS processBusinessRules(Object dataObj)
+    {
+        //return super.processBusinessRules(dataObj);
+        return STATUS.OK;
     }
 
 }

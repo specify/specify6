@@ -30,7 +30,7 @@ import org.apache.log4j.Logger;
  * Created Date: Jan 17, 2007
  *
  */
-public class DataObjSwitchFormatter
+public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter>
 {
     protected static final Logger log = Logger.getLogger(DataObjSwitchFormatter.class);
     
@@ -117,11 +117,21 @@ public class DataObjSwitchFormatter
     {
         return fieldName;
     }
-
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return name;
+    }
+    
     //-----------------------------------------------------------------------
     //-- DataObjectFormatterIFace Interface
     //-----------------------------------------------------------------------
-    
+
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.DataObjectFormatterIFace#getName()
      */
@@ -177,5 +187,16 @@ public class DataObjSwitchFormatter
     {
         throw new RuntimeException("This method cannot be called on this type of object");
     }
-    
+
+    //-----------------------------------------------------------------------
+    //-- Comparable Interface
+    //-----------------------------------------------------------------------
+
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(DataObjSwitchFormatter o)
+    {
+        return name.compareTo(o.name);
+    }
 }

@@ -75,13 +75,34 @@ public class FormPane extends DroppableTaskPane
                     final Object   data,
                     final int      options)
     {
+        this(name, task, viewSetName, viewName, mode, data, options, null);
+    }
+
+    /**
+     * Creates a form pane for a task.
+     * @param name the name of the pane
+     * @param task the owning task
+     * @param viewSetName the name of the view set to use
+     * @param viewName the ID of the form to be created from within the ViewSet
+     * @param data the data to fill the form
+     * @param options the options needed for creating the form
+     */
+    public FormPane(final String   name,
+                    final Taskable task,
+                    final String   viewSetName,
+                    final String   viewName,
+                    final String   mode,
+                    final Object   data,
+                    final int      options,
+                    final FormPaneAdjuster adjuster)
+    {
         this(name, task, "");
 
         this.viewSetName = viewSetName;
         this.viewName    = viewName;
         this.data        = data;
 
-        createForm(viewSetName, viewName, AltView.parseMode(mode, AltViewIFace.CreationMode.VIEW), data, options);
+        createForm(viewSetName, viewName, AltView.parseMode(mode, AltViewIFace.CreationMode.VIEW), data, options, adjuster);
     }
 
     /**
@@ -105,7 +126,7 @@ public class FormPane extends DroppableTaskPane
         this.viewName    = view.getName();
         this.data        = data;
 
-        createForm(view, AltView.parseMode(mode, AltViewIFace.CreationMode.VIEW), data, options);
+        createForm(view, AltView.parseMode(mode, AltViewIFace.CreationMode.VIEW), data, options, null);
     }
 
     /**
@@ -213,7 +234,7 @@ public class FormPane extends DroppableTaskPane
                            DBTableIdMgr.getInstance().getDefaultFormNameById(dfo.getFormId()), 
                            AltViewIFace.CreationMode.VIEW, 
                            dfo.getData(), 
-                           MultiView.VIEW_SWITCHER);
+                           MultiView.VIEW_SWITCHER, null);
              }
         }
     }
@@ -230,12 +251,13 @@ public class FormPane extends DroppableTaskPane
                            final String  viewNameArg,
                            final AltView.CreationMode mode,
                            final Object  dataArg,
-                           final int     options)
+                           final int     options,
+                           final FormPaneAdjuster adjuster)
     {
         this.viewSetName = viewSetNameArg;
         this.viewName    = viewNameArg;
 
-        createForm(AppContextMgr.getInstance().getView(viewSetName, viewName), mode, dataArg, options);
+        createForm(AppContextMgr.getInstance().getView(viewSetName, viewName), mode, dataArg, options, adjuster);
     }
 
     /**
@@ -250,7 +272,8 @@ public class FormPane extends DroppableTaskPane
     public void createForm(final ViewIFace    view,
                            final AltView.CreationMode mode,
                            final Object  dataArg,
-                           final int     options)
+                           final int     options,
+                           final FormPaneAdjuster adjuster)
     {
         if (view != null)
         {
@@ -270,6 +293,11 @@ public class FormPane extends DroppableTaskPane
 
                 multiView.invalidate();
                 add(multiView, BorderLayout.CENTER);
+                
+                if (adjuster != null && multiView.getCurrentViewAsFormViewObj() != null)
+                {
+                    adjuster.adjustForm(multiView.getCurrentViewAsFormViewObj());
+                }
                 
                 if (data != null)
                 {
@@ -426,4 +454,9 @@ public class FormPane extends DroppableTaskPane
         return multiView != null ? multiView.getFirstFocusable() : null;
     }
 
+    
+    public interface FormPaneAdjuster 
+    {
+        public abstract void adjustForm(FormViewObj fvo);
+    }
 }

@@ -1,0 +1,130 @@
+<list>
+  <picklist name="Division" type="1" tablename="division" formatter="Division" readonly="true" sizelimit="-1">
+    <items/>
+  </picklist>
+  <picklist name="DeterminationStatus" type="1" tablename="determinationstatus" formatter="DeterminationStatus" readonly="true" sizelimit="-1">
+    <items/>
+  </picklist>
+  <picklist name="DataType" type="1" tablename="datatype" formatter="DataType" readonly="true" sizelimit="-1">
+    <items/>
+  </picklist>
+  <picklist name="Department" type="2" tablename="accession" fieldname="text1" readonly="true" sizelimit="-1">
+    <items/>
+  </picklist>
+  <picklist name="AgentTitle" type="2" tablename="agent" fieldname="title" readonly="true" sizelimit="-1">
+    <items/>
+  </picklist>
+  <picklist name="PrepType" type="1" tablename="preptype" formatter="PrepType" readonly="true" sizelimit="-1">
+    <items/>
+  </picklist>
+  <picklist name="CollectionType" type="1" tablename="collectiontype" formatter="CollectionType" readonly="true" sizelimit="-1">
+    <items/>
+  </picklist>
+  <picklist name="GeologicTimePeriodTreeDef" type="1" tablename="geologictimeperiodtreedef" formatter="GeologicTimePeriodTreeDef" readonly="true" sizelimit="-1">
+    <items/>
+  </picklist>
+  <picklist name="CatalogNumberingScheme" type="1" tablename="catalognumberingscheme" formatter="CatalogNumberingScheme" readonly="true" sizelimit="-1">
+    <items/>
+  </picklist>
+  <picklist name="PermitType" type="0" readonly="true" sizelimit="5">
+    <items>
+      <picklistitem title="US Dept Fish and Wildlife" value="US Dept Fish and Wildlife"/>
+      <picklistitem title="State" value="State"/>
+      <picklistitem title="International" value="International"/>
+      <picklistitem title="Federal" value="Federal"/>
+      <picklistitem title="&lt;no data&gt;" value="&lt;no data&gt;"/>
+    </items>
+  </picklist>
+  <picklist name="LoanAgentRole" type="0" readonly="true" sizelimit="2">
+    <items>
+      <picklistitem title="Borrower" value="Borrower"/>
+      <picklistitem title="Receiver" value="Receiver"/>
+    </items>
+  </picklist>
+  <picklist name="BiologicalSex" type="0" readonly="true" sizelimit="4">
+    <items>
+      <picklistitem title="Unknown" value="Unknown"/>
+      <picklistitem title="Both" value="Both"/>
+      <picklistitem title="Female" value="Female"/>
+      <picklistitem title="Male" value="Male"/>
+    </items>
+  </picklist>
+  <picklist name="AccessionStatus" type="0" readonly="true" sizelimit="3">
+    <items>
+      <picklistitem title="&lt;no data&gt;" value="&lt;no data&gt;"/>
+      <picklistitem title="In Process" value="In Process"/>
+      <picklistitem title="Complete" value="Complete"/>
+    </items>
+  </picklist>
+  <picklist name="ShipmentMethod" type="0" readonly="true" sizelimit="5">
+    <items>
+      <picklistitem title="DHL" value="DHL"/>
+      <picklistitem title="FedEx" value="FedEx"/>
+      <picklistitem title="By Hand" value="By Hand"/>
+      <picklistitem title="UPS" value="UPS"/>
+      <picklistitem title="USPS" value="USPS"/>
+    </items>
+  </picklist>
+  <picklist name="AccessionType" type="0" readonly="true" sizelimit="2">
+    <items>
+      <picklistitem title="Gift" value="Gift"/>
+      <picklistitem title="Collection" value="Collection"/>
+    </items>
+  </picklist>
+  <picklist name="AgentVariant" type="0" readonly="true" sizelimit="-1">
+    <items>
+      <picklistitem title="Vernacular" value="1"/>
+      <picklistitem title="Variant" value="0"/>
+    </items>
+  </picklist>
+  <picklist name="AccessionRole" type="0" readonly="true" sizelimit="5">
+    <items>
+      <picklistitem title="Collector" value="Collector"/>
+      <picklistitem title="Staff" value="Staff"/>
+      <picklistitem title="Donor" value="Donor"/>
+      <picklistitem title="Reviewer" value="Reviewer"/>
+      <picklistitem title="Receiver" value="Receiver"/>
+    </items>
+  </picklist>
+  <picklist name="BiologicalStage" type="0" readonly="true" sizelimit="10">
+    <items>
+      <picklistitem title="egg" value="egg"/>
+      <picklistitem title="juvenile" value="juvenile"/>
+      <picklistitem title="nymph" value="nymph"/>
+      <picklistitem title="immature" value="immature"/>
+      <picklistitem title="embryo" value="embryo"/>
+      <picklistitem title="seed" value="seed"/>
+      <picklistitem title="hatchling" value="hatchling"/>
+      <picklistitem title="adult" value="adult"/>
+      <picklistitem title="larva" value="larva"/>
+      <picklistitem title="pupa" value="pupa"/>
+    </items>
+  </picklist>
+  <picklist name="CollectingMethod" type="0" readonly="true" sizelimit="5">
+    <items>
+      <picklistitem title="trap" value="trap"/>
+      <picklistitem title="boat electro-shocker" value="boat electro-shocker"/>
+      <picklistitem title="seine" value="seine"/>
+      <picklistitem title="&lt;no data&gt;" value="&lt;no data&gt;"/>
+      <picklistitem title="hook &amp; line" value="hook &amp; line"/>
+    </items>
+  </picklist>
+  <picklist name="CollObjPrepMeth" type="0" readonly="true" sizelimit="5">
+    <items>
+      <picklistitem title="EtOH" value="EtOH"/>
+      <picklistitem title="C&amp;S" value="C&amp;S"/>
+      <picklistitem title="x-ray" value="x-ray"/>
+      <picklistitem title="image" value="image"/>
+      <picklistitem title="skeleton" value="skeleton"/>
+    </items>
+  </picklist>
+  <picklist name="TaxonLabelFormatter" type="0" readonly="false" sizelimit="500">
+    <items>
+      <picklistitem title="%G %S" value="%G %S"/>
+      <picklistitem title="%G %S (%A1 ex. %A2)" value="%G %S (%A1 ex. %A2)"/>
+    </items>
+  </picklist>
+  <picklist name="ExpressSearch" type="0" readonly="false" sizelimit="50">
+    <items/>
+  </picklist>
+</list>

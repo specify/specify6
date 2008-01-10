@@ -271,6 +271,17 @@ public class NavBox extends JPanel implements NavBoxIFace
         item.getUIComponent().setOpaque(true);
         return item.getUIComponent();
     }
+    
+    public void sort()
+    {
+        Collections.sort(items);
+        itemsPanel.removeAll();
+        for (NavBoxItemIFace nb : items)
+        {
+            itemsPanel.add(nb.getUIComponent());
+        }
+        refresh(this);
+    }
        
     /**
      * Adds a NavBoxItemIFace item to the box and returns the UI component for that item.

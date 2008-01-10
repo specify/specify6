@@ -165,6 +165,7 @@ import edu.ku.brc.specify.datamodel.Location;
 import edu.ku.brc.specify.datamodel.LocationTreeDef;
 import edu.ku.brc.specify.datamodel.LocationTreeDefItem;
 import edu.ku.brc.specify.datamodel.Permit;
+import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.ReferenceWork;
@@ -562,57 +563,81 @@ public class BuildSampleDatabase
         standardQueries(dataObjects);
         persist(dataObjects);
         dataObjects.clear();
+        
+        BldrPickList colMethods = null;
 
-        //                                 Name                Type           Table Name           Field       Formatter          R/O  Size
-        dataObjects.add(createPickList("Division",            tableType,      "division",          null,   "Division",            true, -1));
-        dataObjects.add(createPickList("DeterminationStatus", tableType,      "determinationstatus", null, "DeterminationStatus", true, -1));
-        dataObjects.add(createPickList("DataType",            tableType,      "datatype",            null, "DataType",            true, -1));
-        dataObjects.add(createPickList("Department",          tableFieldType, "accession",         "text1" ,       null,          true, -1));
-        dataObjects.add(createPickList("AgentTitle",          tableFieldType, "agent",             "title" ,       null,          true, -1));
-        dataObjects.add(createPickList("PrepType",            tableType,      "preptype",           null, "PrepType",             true, -1));
-        dataObjects.add(createPickList("CollectionType",      tableType,      "collectiontype",     null, "CollectionType",       true, -1));
-        dataObjects.add(createPickList("GeologicTimePeriodTreeDef", tableType, "geologictimeperiodtreedef", null, "GeologicTimePeriodTreeDef", true, -1));
-        dataObjects.add(createPickList("CatalogNumberingScheme", tableType, "catalognumberingscheme", null, "CatalogNumberingScheme", true, -1));
-        
-        String[] types = {"State", "Federal", "International", "US Dept Fish and Wildlife", "<no data>"};
-        dataObjects.add(createPickList("PermitType", true, types));
-
-        //String[] titles = {"Dr.", "Mr.", "Ms.", "Mrs.", "Sir"};
-        //dataObjects.add(createPickList("AgentTitle", true, titles));
-        
-        String[] roles = {"Borrower", "Receiver"};
-        dataObjects.add(createPickList("LoanAgentRole", true, roles));
-        
-        String[] sexes = {"Both", "Female", "Male", "Unknown"};
-        dataObjects.add(createPickList("BiologicalSex", true, sexes));
-        
-        String[] status = {"Complete", "In Process", "<no data>"};
-        dataObjects.add(createPickList("AccessionStatus", true, status));
-        
-        String[] methods = {"By Hand", "USPS", "UPS", "FedEx", "DHL"};
-        dataObjects.add(createPickList("ShipmentMethod", true, methods));
-        
-        String[] accTypes = {"Collection","Gift"};
-        dataObjects.add(createPickList("AccessionType", true, accTypes));
-        
-        String[] agentVariantTypes  = {"Variant","Vernacular"};
-        String[] agentVariantValues = {"0","1"};
-        dataObjects.add(createPickList("AgentVariant", true, agentVariantTypes, agentVariantValues, -1));
-        
-        String[] accRoles = {"Collector", "Donor", "Reviewer", "Staff", "Receiver"};
-        dataObjects.add(createPickList("AccessionRole", true, accRoles));
-        
-        String[] stages = {"adult", "egg", "embryo", "hatchling", "immature", "juvenile", "larva", "nymph", "pupa", "seed"};
-        dataObjects.add(createPickList("BiologicalStage", true, stages));
-        
-        String[] collMethods = {"boat electro-shocker", "hook & line", "seine", "trap", "<no data>"};
-        dataObjects.add(createPickList("CollectingMethod", true, collMethods));
-        
-        String[] prepMeth = {"C&S", "skeleton", "x-ray", "image", "EtOH"};
-        dataObjects.add(createPickList("CollObjPrepMeth", true, prepMeth));
-        
-        String[] taxonLabelFormatter = {"%G %S", "%G %S (%A1 ex. %A2)"};
-        dataObjects.add(createPickList("TaxonLabelFormatter", false, taxonLabelFormatter, 500));
+        if (false)
+        {
+            //                                 Name                Type           Table Name           Field       Formatter          R/O  Size
+            dataObjects.add(createPickList("Division",            tableType,      "division",          null,   "Division",            true, -1));
+            dataObjects.add(createPickList("DeterminationStatus", tableType,      "determinationstatus", null, "DeterminationStatus", true, -1));
+            dataObjects.add(createPickList("DataType",            tableType,      "datatype",            null, "DataType",            true, -1));
+            dataObjects.add(createPickList("Department",          tableFieldType, "accession",         "text1" ,       null,          true, -1));
+            dataObjects.add(createPickList("AgentTitle",          tableFieldType, "agent",             "title" ,       null,          true, -1));
+            dataObjects.add(createPickList("PrepType",            tableType,      "preptype",           null, "PrepType",             true, -1));
+            dataObjects.add(createPickList("CollectionType",      tableType,      "collectiontype",     null, "CollectionType",       true, -1));
+            dataObjects.add(createPickList("GeologicTimePeriodTreeDef", tableType, "geologictimeperiodtreedef", null, "GeologicTimePeriodTreeDef", true, -1));
+            dataObjects.add(createPickList("CatalogNumberingScheme", tableType, "catalognumberingscheme", null, "CatalogNumberingScheme", true, -1));
+            
+            String[] types = {"State", "Federal", "International", "US Dept Fish and Wildlife", "<no data>"};
+            dataObjects.add(createPickList("PermitType", true, types));
+    
+            //String[] titles = {"Dr.", "Mr.", "Ms.", "Mrs.", "Sir"};
+            //dataObjects.add(createPickList("AgentTitle", true, titles));
+            
+            String[] roles = {"Borrower", "Receiver"};
+            dataObjects.add(createPickList("LoanAgentRole", true, roles));
+            
+            String[] sexes = {"Both", "Female", "Male", "Unknown"};
+            dataObjects.add(createPickList("BiologicalSex", true, sexes));
+            
+            String[] status = {"Complete", "In Process", "<no data>"};
+            dataObjects.add(createPickList("AccessionStatus", true, status));
+            
+            String[] methods = {"By Hand", "USPS", "UPS", "FedEx", "DHL"};
+            dataObjects.add(createPickList("ShipmentMethod", true, methods));
+            
+            String[] accTypes = {"Collection","Gift"};
+            dataObjects.add(createPickList("AccessionType", true, accTypes));
+            
+            String[] agentVariantTypes  = {"Variant","Vernacular"};
+            String[] agentVariantValues = {"0","1"};
+            dataObjects.add(createPickList("AgentVariant", true, agentVariantTypes, agentVariantValues, -1));
+            
+            String[] accRoles = {"Collector", "Donor", "Reviewer", "Staff", "Receiver"};
+            dataObjects.add(createPickList("AccessionRole", true, accRoles));
+            
+            String[] stages = {"adult", "egg", "embryo", "hatchling", "immature", "juvenile", "larva", "nymph", "pupa", "seed"};
+            dataObjects.add(createPickList("BiologicalStage", true, stages));
+            
+            String[] collMethods = {"boat electro-shocker", "hook & line", "seine", "trap", "<no data>"};
+            dataObjects.add(createPickList("CollectingMethod", true, collMethods));
+            
+            String[] prepMeth = {"C&S", "skeleton", "x-ray", "image", "EtOH"};
+            dataObjects.add(createPickList("CollObjPrepMeth", true, prepMeth));
+            
+            String[] taxonLabelFormatter = {"%G %S", "%G %S (%A1 ex. %A2)"};
+            dataObjects.add(createPickList("TaxonLabelFormatter", false, taxonLabelFormatter, 500));
+        } else
+        {
+            List<BldrPickList> pickLists = DataBuilder.getBldrPickLists();
+            DataBuilder.buildPickListFromXML(pickLists);
+            for (BldrPickList pl : pickLists)
+            {
+                PickList pickList = createPickList(pl.getName(), pl.getType(), pl.getTableName(),
+                                                   pl.getFieldName(), pl.getFormatter(), pl.getReadOnly(), pl.getSizeLimit());
+                for (BldrPickListItem item : pl.getItems())
+                {
+                    pickList.addItem(item.getTitle(), item.getValue());
+                }
+                persist(pickList);
+                
+                if (pl.getName().equals("CollectingMethod"))
+                {
+                    colMethods = pl;
+                }
+            }
+        }
         
         //startTx();
         persist(dataObjects);
@@ -749,7 +774,7 @@ public class BuildSampleDatabase
         calendar.set(1993, 3, 19, 13, 03, 00);
         ce1.setEndDate(calendar);
         ce1.setEndDateVerbatim("19 Mar 1993, 1:03 PM");   
-        ce1.setMethod(collMethods[1]);
+        ce1.setMethod(colMethods.getItem(1).getValue());
         
         AttributeDef        cevAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "ParkName", collectionType, null);//meg added cod
         
@@ -768,7 +793,7 @@ public class BuildSampleDatabase
         calendar.set(1993, 3, 20, 07, 31, 00);
         ce2.setEndDate(calendar);
         ce2.setEndDateVerbatim("20 Mar 1993, 7:31 AM");
-        ce2.setMethod(collMethods[2]);
+        ce2.setMethod(colMethods.getItem(2).getValue());
 
         CollectingTrip trip = createCollectingTrip("Sample collecting trip", new CollectingEvent[]{ce1,ce2});
 

@@ -20,10 +20,8 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -39,14 +37,13 @@ import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
-import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.DroppableFormObject;
 import edu.ku.brc.af.tasks.subpane.DroppableTaskPane;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
-import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.af.tasks.subpane.FormPane.FormPaneAdjuster;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.CollectionType;
@@ -54,12 +51,15 @@ import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.PrepType;
+import edu.ku.brc.specify.datamodel.busrules.PickListBusRules;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.Trash;
+import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.persist.ViewIFace;
 
@@ -72,15 +72,13 @@ import edu.ku.brc.ui.forms.persist.ViewIFace;
  * @author rods
  *
  */
-public class SystemSetupTask extends BaseTask
+public class SystemSetupTask extends BaseTask implements FormPaneAdjuster
 {
     // Static Data Members
     private static final Logger log  = Logger.getLogger(SystemSetupTask.class);
 
     public static final String     SYSTEMSETUPTASK        = "SystemSetup";
     public static final DataFlavor SYSTEMSETUPTASK_FLAVOR = new DataFlavor(SystemSetupTask.class, SYSTEMSETUPTASK);
-
-    List<String> pickListNames = new ArrayList<String>();
 
     // Data Members
     protected NavBox navBox = null;
@@ -93,6 +91,7 @@ public class SystemSetupTask extends BaseTask
     {
         super(SYSTEMSETUPTASK, getResourceString(SYSTEMSETUPTASK));
         CommandDispatcher.register(SYSTEMSETUPTASK, this);
+        CommandDispatcher.register(DataEntryTask.DATA_ENTRY, this);
         isShowDefault = true;
     }
 
@@ -148,34 +147,49 @@ public class SystemSetupTask extends BaseTask
                     startEditor(edu.ku.brc.specify.datamodel.Collection.class, name, "Collection");
                 }
             })); // I18N
+            sysNavBox.add(NavBox.createBtnWithTT("PickList", name, "", IconManager.IconSize.Std16, new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    startEditor(edu.ku.brc.specify.datamodel.PickList.class, name, "PickList");
+                }
+            })); // I18N
             navBoxes.add(sysNavBox);
-           
 
             
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            List<?> pickLists = session.getDataList(PickList.class);
+            final List<?> pickLists = session.getDataList(PickList.class);
 
-            sysNavBox = new NavBox(getResourceString("picklists"));
+            navBox = new NavBox(getResourceString("PL_PICKLISTS"), true, true);
 
-            addPickList(getResourceString("newpicklist"), null, null, 0);
-
-            // Get all the pickList names
-            for (Iterator<?> iter=pickLists.iterator();iter.hasNext();)
+            Vector<PickList> pls = new Vector<PickList>();
+            for (Object obj : pickLists)
             {
-                PickList pickList = (PickList)iter.next();
-                pickListNames.add(pickList.getName());
+                pls.add((PickList)obj);
+            }
+            Collections.sort(pls);
+            
+            navBox.add(NavBox.createBtnWithTT(getResourceString("PL_NEWPICKLIST"), name, "", IconManager.IconSize.Std16, new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    startEditor(edu.ku.brc.specify.datamodel.PickList.class, "name", null, name, "PickList");
+                }
+            })); // I18N
 
+            for (PickList pickList : pls)
+            {
+                final String nameStr  = pickList.getName();
+                
+                RolloverCommand roc = (RolloverCommand)NavBox.createBtnWithTT(nameStr, name, "", IconManager.IconSize.Std16, new ActionListener() {
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        startEditor(edu.ku.brc.specify.datamodel.PickList.class, "name", nameStr, name, "PickList");
+                    }
+                });
+                roc.setData(pickList.getPickListId());
+                navBox.add((NavBoxItemIFace)roc);
             }
 
-
-            for (Iterator<?> iter=pickLists.iterator();iter.hasNext();)
-            {
-                PickList pickList = (PickList)iter.next();
-                addPickList(getTitle(pickList), pickList, "DeletePickList", sysNavBox.getItems().size()-1);
-
-            }
-
-            navBoxes.add(sysNavBox);
+            navBoxes.add(navBox);
             
             session.close();
         }
@@ -213,6 +227,34 @@ public class SystemSetupTask extends BaseTask
         return false;
     }
     
+    /**
+     * Searches for a SubPaneIFace that has the same class of data as the argument and then "shows" that Pane and returns true. 
+     * If it can't be found then it shows false.
+     * @param tabName the name of the tab to be searched for
+     * @return true if found, false if not
+     */
+    protected boolean checkForPaneWithName(final String tabName)
+    {
+        for (SubPaneIFace pane : SubPaneMgr.getInstance().getSubPanes())
+        {
+            Object uiComp = pane.getUIComponent();
+            if (uiComp instanceof FormPane)
+            {
+                if (pane.getPaneName().startsWith(tabName))
+                {
+                    SubPaneMgr.getInstance().showPane(pane);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * @param clazz
+     * @param iconName
+     * @param viewName
+     */
     protected void startEditor(final Class<?> clazz, final String iconName, final String viewName)
     {
         if (!checkForPaneWithData(clazz))
@@ -223,7 +265,8 @@ public class SystemSetupTask extends BaseTask
             
             ViewIFace view = AppContextMgr.getInstance().getView("SystemSetup", viewName);
             
-            createFormPanel(view.getViewSetName(), 
+            createFormPanel(name, 
+                            view.getViewSetName(), 
                             view.getName(), 
                             "edit", 
                             collection, 
@@ -233,138 +276,47 @@ public class SystemSetupTask extends BaseTask
     }
     
     /**
-     * Creates the edit form for Prep Types. 
+     * @param clazz
+     * @param fieldName
+     * @param value
+     * @param iconName
+     * @param viewName
      */
-    protected void editDataTypes()
+    protected void startEditor(final Class<?> clazz, 
+                               final String   fieldName, 
+                               final String   value, 
+                               final String   iconName, 
+                               final String   viewName)
     {
-        if (!checkForPaneWithData(DataType.class))
+        String title = value == null ? getResourceString("PL_NEWPICKLIST") : value;
+        
+        if (!checkForPaneWithName(title))
         {
-            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            List<?> prepTypes = session.getDataList(DataType.class);
-            session.close();
-            
-            ViewIFace view = AppContextMgr.getInstance().getView("SystemSetup", "PrepType");
-            
-            createFormPanel(view.getViewSetName(), 
-                            view.getName(), 
-                            "edit", 
-                            prepTypes, 
-                            MultiView.RESULTSET_CONTROLLER,
-                            IconManager.getIcon(name, IconManager.IconSize.Std16));
-        }
-     }
-
-    /**
-     * Creates the edit form for Prep Types. 
-     */
-    protected void editCollectionTypes()
-    {
-        if (!checkForPaneWithData(CollectionType.class))
-        {
-            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            List<?> prepTypes = session.getDataList(CollectionType.class);
-            session.close();
-            
-            ViewIFace view = AppContextMgr.getInstance().getView("SystemSetup", "PrepType");
-            
-            createFormPanel(view.getViewSetName(), 
-                            view.getName(), 
-                            "edit", 
-                            prepTypes, 
-                            MultiView.RESULTSET_CONTROLLER,
-                            IconManager.getIcon(name, IconManager.IconSize.Std16));
-        }
-     }
-    
-    /**
-     * Creates the edit form for Prep Types. 
-     */
-    protected void editPrepTypes()
-    {
-        if (!checkForPaneWithData(DeterminationStatus.class))
-        {
-            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            List<?> prepTypes = session.getDataList(PrepType.class);
-            session.close();
-            
-            ViewIFace view = AppContextMgr.getInstance().getView("SystemSetup", "PrepType");
-            
-            createFormPanel(view.getViewSetName(), 
-                            view.getName(), 
-                            "edit", 
-                            prepTypes, 
-                            MultiView.RESULTSET_CONTROLLER,
-                            IconManager.getIcon("PrepType", IconManager.IconSize.Std16));
-        }
-     }
-
-    /**
-     * Creates the edit form for Prep Types. 
-     */
-    protected void editDeterminationStatus()
-    {
-        if (!checkForPaneWithData(DeterminationStatus.class))
-        {
-            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            List<?> determinationStatus = session.getDataList(DeterminationStatus.class);
-            session.close();
-            
-            ViewIFace view = AppContextMgr.getInstance().getView("SystemSetup", "DeterminationStatus");
-            if (view != null)
+            Object dataObj = null;
+            if (value != null)
             {
-                createFormPanel(view.getViewSetName(), 
-                                view.getName(), 
-                                "edit", 
-                                determinationStatus, 
-                                MultiView.RESULTSET_CONTROLLER,
-                                IconManager.getIcon(name, IconManager.IconSize.Std16));
+                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                dataObj = session.getData(clazz, fieldName, value, DataProviderSessionIFace.CompareType.Equals);
+                session.close();
             } else
             {
-                // show error dialog
+                PickList pl = new PickList();
+                pl.initialize();
+                pl.setType(0);
+                dataObj = pl;
             }
-        }
-    }
-
-    /**
-     * Add an PickList Item to the box
-     * @param pickList the pickList to be added
-     */
-    protected void addPickList(@SuppressWarnings("unused") final String titleArg, 
-                               @SuppressWarnings("unused") final PickList pickList, 
-                               @SuppressWarnings("unused") final String delCmd, 
-                               @SuppressWarnings("unused") final int position)
-    {/*
-        // These value should not be hard coded here
-        int                 pickListTableId = DBTableIdMgr.getInstance().lookupIdByShortName("picklist");
-        DroppableFormObject dfo = new DroppableFormObject(SYSTEMSETUPTASK, pickListTableId, pickList);
-        NavBoxItemIFace     nbi = addNavBoxItem(navBox, titleArg, SYSTEMSETUPTASK, delCmd, dfo, position);
-        NavBoxButton     roc = (NavBoxButton)nbi;
-        roc.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent ae)
-            {
-                NavBoxButton     roc = (NavBoxButton)ae.getSource();
-                DroppableFormObject dfo = (DroppableFormObject)roc.getData();
-
-                FormPane formPane;
-                if (dfo.getData() == null) // null means we add a new one
-                {
-                    PickList pickList = new PickList();
-                    pickList.initialize();
-                    formPane = createFormPanel(dfo.getViewSetName(), DBTableIdMgr.getInstance().lookupDefaultFormNameById(dfo.getFormId()), null, pickList);
-
-                } else
-                {
-                    formPane = createFormPanel(roc);
-                }
-
-                if (formPane != null && formPane.getFormProcessor() == null)
-                {
-                    formPane.setFormProcessor(new PickListProcessor(pickListNames));
-                }
-            }
-        });
-        addDraggableDataFlavors(roc);*/
+            
+            ViewIFace view = AppContextMgr.getInstance().getView("SystemSetup", viewName);
+            
+            createFormPanel(title,
+                            view.getViewSetName(), 
+                            view.getName(), 
+                            "edit", 
+                            dataObj, 
+                            MultiView.NO_OPTIONS,
+                            IconManager.getIcon(iconName, IconManager.IconSize.Std16),
+                            this);
+        } 
     }
 
     /**
@@ -505,16 +457,12 @@ public class SystemSetupTask extends BaseTask
     {
         Vector<MenuItemDesc> list = new Vector<MenuItemDesc>();
 
-        JMenuItem mi = UIHelper.createMenuItem(getResourceString("PickListsMenu"), getResourceString("PickListsMenu"), "", true, null);
-        list.add(new MenuItemDesc(mi, "AdvMenu/SystemMenu"));
-        
-        final Taskable thisTask = this;
-        mi = UIHelper.createMenuItem("System Tools", "S", "", true, null);
+        JMenuItem mi = UIHelper.createMenuItem("System Tools", "S", "", true, null);
         mi.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
-                thisTask.requestContext();
+                SystemSetupTask.this.requestContext();
             }
         });
         list.add(new MenuItemDesc(mi, "AdvMenu/SystemMenu"));
@@ -531,6 +479,50 @@ public class SystemSetupTask extends BaseTask
     }
     
 
+    private void pickListSaved(final PickList pickList)
+    {
+        boolean fnd = false;
+        int     inx = -1;
+        int     i = 0;
+        boolean resort = false;
+        for (NavBoxItemIFace nbi : navBox.getItems())
+        {
+            RolloverCommand roc = (RolloverCommand)nbi;
+            //if (inx == -1 && roc.getName().compareTo(pickList.getName()) > 0)
+            //{
+            //    inx = i;
+            //}
+            if (nbi.getData() != null && ((Integer)nbi.getData()).intValue() == pickList.getPickListId().intValue())
+            {
+                fnd = true;
+                String oldName = ((RolloverCommand)nbi).getLabelText();
+                if (!oldName.equals(pickList.getName()))
+                {
+                    ((RolloverCommand)nbi).setLabelText(pickList.getName());
+                    resort = true;
+                }
+            }
+            i++;
+        }
+        
+        if (!fnd)
+        {
+            final String nameStr  = pickList.getName();
+            RolloverCommand roc = (RolloverCommand)NavBox.createBtnWithTT(nameStr, name, "", IconManager.IconSize.Std16, new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    startEditor(edu.ku.brc.specify.datamodel.PickList.class, "name", nameStr, name, "PickList");
+                }
+            });
+            roc.setData(pickList.getPickListId());
+            navBox.insertSorted((NavBoxItemIFace)roc);
+            
+        } else if (resort)
+        {
+            navBox.sort();
+        }
+    }
+
     //-------------------------------------------------------
     // CommandListener Interface
     //-------------------------------------------------------
@@ -541,51 +533,36 @@ public class SystemSetupTask extends BaseTask
      */
     protected void processSysSetupCommands(final CommandAction cmdAction)
     {
-        Object data = cmdAction.getData() instanceof DroppableFormObject ? ((DroppableFormObject)cmdAction.getData()).getData() : cmdAction.getData();
-
-        if (data instanceof PickList)
+        if (cmdAction.isType(DataEntryTask.DATA_ENTRY))
         {
-            PickList pickList = (PickList)data;
-            if (cmdAction.isAction("SavePickList"))
+            Object data = cmdAction.getData() instanceof DroppableFormObject ? ((DroppableFormObject)cmdAction.getData()).getData() : cmdAction.getData();
+            
+            if (cmdAction.isAction("Save") && data instanceof PickList)
             {
-                if (pickList.getTimestampCreated() == null)
-                {
-                    pickList.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-                    addPickList(getTitle(pickList), pickList, "DeletePickList", navBox.getItems().size()-1);
-
-                    navBox.invalidate();
-                    navBox.setSize(navBox.getPreferredSize());
-                    navBox.doLayout();
-                    navBox.repaint();
-                    NavBoxMgr.getInstance().invalidate();
-                    NavBoxMgr.getInstance().doLayout();
-                    NavBoxMgr.getInstance().repaint();
-                    UIRegistry.forceTopFrameRepaint();
-                    pickListNames.add(pickList.getName());
-                }
-
-                savePickList(pickList);
-
-                String viewName = DBTableIdMgr.getInstance().getDefaultFormNameById(DBTableIdMgr.getInstance().getIdByShortName("picklist"));
-                removePanelForData(SYSTEMSETUPTASK, viewName, pickList);
-
-            } else if (cmdAction.isAction("DeletePickList"))
-            {
-                deletePickList(pickList);
-                deletePickListFromUI(null, pickList);
-
-                if (recentFormPane != null && recentFormPane.getData() != null)
-                {
-                    String viewName = DBTableIdMgr.getInstance().getDefaultFormNameById(DBTableIdMgr.getInstance().getIdByShortName("picklist"));
-                    removePanelForData(SYSTEMSETUPTASK, viewName, pickList);
-                }
-
-                int inx = Collections.binarySearch(pickListNames, pickList.getName());
-                if (inx > -1)
-                {
-                    pickListNames.remove(inx);
-                }
+                pickListSaved((PickList)data);
             }
+    
+            /*if (data instanceof PickList)
+            {
+                PickList pickList = (PickList)data;
+                if (cmdAction.isAction("DeletePickList"))
+                {
+                    deletePickList(pickList);
+                    deletePickListFromUI(null, pickList);
+    
+                    if (recentFormPane != null && recentFormPane.getData() != null)
+                    {
+                        String viewName = DBTableIdMgr.getInstance().getDefaultFormNameById(DBTableIdMgr.getInstance().getIdByShortName("picklist"));
+                        removePanelForData(SYSTEMSETUPTASK, viewName, pickList);
+                    }
+    
+                    int inx = Collections.binarySearch(pickListNames, pickList.getName());
+                    if (inx > -1)
+                    {
+                        pickListNames.remove(inx);
+                    }
+                }
+            }*/
         }
     }
     
@@ -598,6 +575,27 @@ public class SystemSetupTask extends BaseTask
         {
             processSysSetupCommands(cmdAction);
         }
+        if (cmdAction.isType(DataEntryTask.DATA_ENTRY))
+        {
+            Object data = cmdAction.getData() instanceof DroppableFormObject ? ((DroppableFormObject)cmdAction.getData()).getData() : cmdAction.getData();
+            
+            if (cmdAction.isAction("Save") && data instanceof PickList)
+            {
+                pickListSaved((PickList)data);
+            }
+        }
+    }
+
+    //-----------------------------------------------------------------------------------
+    //-- FormPaneAdjuster Interface
+    //-----------------------------------------------------------------------------------
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.subpane.FormPane.FormPaneAdjuster#adjustForm(edu.ku.brc.ui.forms.FormViewObj)
+     */
+    public void adjustForm(FormViewObj fvo)
+    {
+        PickListBusRules.adjustForm(fvo);
+        
     }
 
 }

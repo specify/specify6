@@ -684,7 +684,7 @@ public class InteractionsTask extends BaseTask
             infoRequest.getRecordSet().getItems() != null &&
             infoRequest.getRecordSet().getNumItems() > 0)
         {
-            createFormPanel(view.getViewSetName(), view.getName(), "edit", infoRequest, MultiView.IS_NEW_OBJECT, null);
+            createFormPanel(name, view.getViewSetName(), view.getName(), "edit", infoRequest, MultiView.IS_NEW_OBJECT, null);
             
         } else
         {

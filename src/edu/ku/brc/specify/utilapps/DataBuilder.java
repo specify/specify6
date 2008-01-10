@@ -1,5 +1,7 @@
 package edu.ku.brc.specify.utilapps;
 
+import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.DateFormat;
@@ -8,10 +10,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.commons.io.FileUtils;
 import org.hibernate.Session;
+
+import com.thoughtworks.xstream.XStream;
 
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.AccessionAuthorization;
@@ -36,6 +42,7 @@ import edu.ku.brc.specify.datamodel.CollectionObjectCitation;
 import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.Container;
+import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Deaccession;
 import edu.ku.brc.specify.datamodel.DeaccessionAgent;
@@ -68,6 +75,7 @@ import edu.ku.brc.specify.datamodel.LocationTreeDefItem;
 import edu.ku.brc.specify.datamodel.OtherIdentifier;
 import edu.ku.brc.specify.datamodel.Permit;
 import edu.ku.brc.specify.datamodel.PickList;
+import edu.ku.brc.specify.datamodel.PickListItem;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.PreparationAttr;
@@ -2292,6 +2300,125 @@ public class DataBuilder
         persist(wtmi);
 
         return wtmi;
+    }
+    
+    /**
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public static List<BldrPickList> getBldrPickLists()
+    {
+        XStream xstream = new XStream();
+        
+        xstream.alias("picklist",     BldrPickList.class);
+        xstream.alias("picklistitem", BldrPickListItem.class);
+        
+        /*
+        xstream.aliasAttribute(BldrPickList.class, "readonly", "readOnly");
+        xstream.aliasAttribute(BldrPickList.class, "tablename", "tableName");
+        xstream.aliasAttribute(BldrPickList.class, "sizelimit", "sizeLimit");
+        
+        xstream.aliasAttribute(BldrPickList.class, "readOnly", "readonly");
+        xstream.aliasAttribute(BldrPickList.class, "tableName", "tablename");
+        xstream.aliasAttribute(BldrPickList.class, "sizeLimit", "sizelimit");
+        
+        xstream.aliasField("readonly", BldrPickList.class, "readonly");
+        xstream.aliasField("tablename", BldrPickList.class, "tableName");
+        xstream.aliasField("sizelimit", BldrPickList.class, "sizeLimit");
+        
+        xstream.aliasAttribute("readonly", "readonly");
+        xstream.aliasAttribute("tablename", "tableName");
+        xstream.aliasAttribute("sizelimit", "sizeLimit");
+        */
+        //xstream.aliasAttribute(RelatedQuery.class, "isActive", "isactive");
+        
+        xstream.alias("picklist",     BldrPickList.class);
+        xstream.alias("picklistitem", BldrPickListItem.class);
+        
+        xstream.omitField(BldrPickList.class, "pickListId");
+        xstream.omitField(BldrPickList.class, "items");
+        xstream.omitField(BldrPickList.class, "pickListItems");
+        
+        xstream.useAttributeFor(BldrPickList.class, "fieldName");
+        xstream.useAttributeFor(BldrPickList.class, "sizeLimit");
+        xstream.useAttributeFor(BldrPickList.class, "tableName");
+        xstream.useAttributeFor(BldrPickList.class, "readOnly");
+        xstream.useAttributeFor(BldrPickList.class, "type");
+        xstream.useAttributeFor(BldrPickList.class, "formatter");
+        xstream.useAttributeFor(BldrPickList.class, "name");
+        
+        xstream.useAttributeFor(BldrPickListItem.class, "title");
+        xstream.useAttributeFor(BldrPickListItem.class, "value");
+        
+        xstream.aliasAttribute("readonly", "readOnly");
+        xstream.aliasAttribute("tablename", "tableName");
+        xstream.aliasAttribute("fieldname", "fieldName");
+        xstream.aliasAttribute("sizelimit", "sizeLimit");
+        
+        String[] omit = {"changes","timestampCreated","timestampModified","createdByAgent","modifiedByAgent","version","valueObject",};
+        for (String fld : omit)
+        {
+            xstream.omitField(DataModelObjBase.class, fld); 
+        }
+        xstream.omitField(PickListItem.class,       "pickListItemId");
+        xstream.omitField(PickListItem.class,       "timestampCreated");
+        xstream.omitField(PickListItem.class,       "pickList");
+
+        try
+        {
+            File pickListFile = new File(XMLHelper.getConfigDirPath("picklist.xml"));
+            if (pickListFile.exists())
+            {
+                System.out.println(FileUtils.readFileToString(pickListFile));
+                return (List<BldrPickList>)xstream.fromXML(FileUtils.readFileToString(pickListFile));
+            }
+            System.out.println("Couldn't find picklist.xml ["+pickListFile.getCanonicalPath()+"]");
+            
+        } catch (IOException ex)
+        {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+    
+    /**
+     * 
+     */
+    public static void buildPickListFromXML(List<BldrPickList> list)
+    {
+        if (list != null)
+        {
+            for (BldrPickList pl : list)
+            {
+                PickList pickList = createPickList(pl.getName(), pl.getType(), pl.getTableName(), pl.getFieldName(), 
+                                                   pl.getFormatter(), pl.getReadOnly(), pl.getSizeLimit());
+                for (BldrPickListItem item : pl.getItems())
+                {
+                    pickList.addItem(item.getTitle(), item.getValue());
+                }
+                persist(pickList);
+            }
+            
+        } else
+        {
+            try
+            {
+                System.err.println("Couldn't find file["+(new File("picklist.xml")).getCanonicalPath()+"]");
+                
+            } catch (IOException ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+
+    }
+    
+    /**
+     * 
+     */
+    public static void buildPickListFromXML()
+    {
+        buildPickListFromXML(getBldrPickLists());
     }
 
     /**

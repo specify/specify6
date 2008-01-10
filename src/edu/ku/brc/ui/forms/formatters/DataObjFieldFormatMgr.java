@@ -287,6 +287,15 @@ public class DataObjFieldFormatMgr
     }
 
     /**
+     * Returns all the formatters as a Collection
+     * @return all the formatters
+     */
+    public static Collection<DataObjSwitchFormatter> getFormatters()
+    {
+        return getInstance().formatHash.values();
+    }
+
+    /**
      * Format a data object using a named formatter.
      * @param dataObj the data object for which fields will be formatted for it
      * @param formatName the name of the formatter to use

@@ -64,7 +64,7 @@ import edu.ku.brc.ui.db.PickListItemIFace;
 @org.hibernate.annotations.Table(appliesTo="picklist", indexes =
     {   @Index (name="PickListNameIDX", columnNames={"Name"})
     })
-public class PickList extends DataModelObjBase implements PickListIFace, java.io.Serializable
+public class PickList extends DataModelObjBase implements PickListIFace, java.io.Serializable, Comparable<PickList>
 {
     // Fields    
 
@@ -421,5 +421,13 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
     public String getIdentityTitle()
     {
         return StringUtils.isNotEmpty(name) ? name : super.getIdentityTitle();
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(PickList o)
+    {
+        return name.compareTo(o.name);
     }
 }

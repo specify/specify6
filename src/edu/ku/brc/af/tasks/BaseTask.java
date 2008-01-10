@@ -524,10 +524,11 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      * Looks to see if a form already exists for this request and shows it
      * otherwise it creates a form and add it to the SubPaneMgr.
      */
-    protected FormPane createFormPanel(NavBoxButton nbb)
+    protected FormPane createFormPanel(final String tabName,
+                                       final NavBoxButton nbb)
     {
         DroppableFormObject dfo = (DroppableFormObject)nbb.getData();
-        return createFormPanel(dfo.getViewSetName(), DBTableIdMgr.getInstance().getDefaultFormNameById(dfo.getFormId()), null, dfo.getData(), null);
+        return createFormPanel(tabName, dfo.getViewSetName(), DBTableIdMgr.getInstance().getDefaultFormNameById(dfo.getFormId()), null, dfo.getData(), null);
     }
 
     /**
@@ -535,32 +536,52 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      * otherwise it creates a form and add it to the SubPaneMgr.  This call is for existing data objects.
      * For new objects use the call with "options".
      */
-    protected FormPane createFormPanel(final String viewsetName, 
+    protected FormPane createFormPanel(final String tabName,
+                                       final String viewsetName, 
                                        final String viewName, 
                                        final String mode, 
                                        final Object data, 
                                        final ImageIcon paneIcon)
     {
-        return createFormPanel(viewsetName, viewName, mode, data, MultiView.VIEW_SWITCHER, paneIcon);
+        return createFormPanel(tabName, viewsetName, viewName, mode, data, MultiView.VIEW_SWITCHER, paneIcon);
     }
 
     /**
      * Looks to see if a form already exists for this request and shows it
      * otherwise it creates a form and add it to the SubPaneMgr.
      */
-    protected FormPane createFormPanel(final String viewsetName, 
+    protected FormPane createFormPanel(final String tabName,
+                                       final String viewsetName, 
                                        final String viewName, 
                                        final String mode, 
                                        final Object data, 
                                        final int options,
                                        final ImageIcon paneIcon)
     {
+        return createFormPanel(tabName, viewsetName, viewName, mode, data, options, paneIcon, null);
+    }
+
+    /**
+     * Looks to see if a form already exists for this request and shows it
+     * otherwise it creates a form and add it to the SubPaneMgr.
+     */
+    protected FormPane createFormPanel(final String tabName,
+                                       final String viewsetName, 
+                                       final String viewName, 
+                                       final String mode, 
+                                       final Object data, 
+                                       final int options,
+                                       final ImageIcon paneIcon,
+                                       final FormPane.FormPaneAdjuster adjuster)
+    {
         ImageIcon iconImg = paneIcon == null ? icon : paneIcon;
         FormPane fp = null;
 
         if (recentFormPane != null && recentFormPane.getComponentCount() == 0)
         {
-            recentFormPane.createForm(viewsetName, viewName, null, data, options); // not new data object
+            recentFormPane.createForm(viewsetName, viewName, null, null, options, adjuster); // not new data object
+            recentFormPane.getMultiView().setData(data);
+            
             fp = recentFormPane;
             fp.setIcon(iconImg);
             
@@ -574,8 +595,11 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
 
             } else
             {
-                recentFormPane = new FormPane(name, this, viewsetName, viewName, mode, data, options); // not new data object
+                recentFormPane = new FormPane(tabName, this, viewsetName, viewName, mode, null, options, adjuster); // not new data object
+                recentFormPane.setPaneName(tabName);
                 recentFormPane.setIcon(iconImg);
+                
+                recentFormPane.getMultiView().setData(data);
                 //addSubPaneToMgr(recentFormPane);
                 SubPaneMgr.replaceSimplePaneForTask(recentFormPane);
                 fp = recentFormPane;
