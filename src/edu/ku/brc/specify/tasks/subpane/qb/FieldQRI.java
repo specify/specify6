@@ -75,4 +75,11 @@ public class FieldQRI extends BaseQRI
     {
         return getSQLFldSpec();
     }
+    
+    public Class<?> getDataClass()
+    {
+        if (fi != null)
+            return fi.getDataClass();
+        return String.class;
+    }
 }

@@ -23,6 +23,7 @@ import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -157,7 +158,6 @@ public class QueryBldrPane extends BaseSubPane
         Vector<TableQRI> list = new Vector<TableQRI>();
         for (TableTree tt : tableTreeList)
         {
-
             list.add((TableQRI) tt.getBaseQRI());
         }
 
@@ -249,11 +249,12 @@ public class QueryBldrPane extends BaseSubPane
         add(sp, BorderLayout.CENTER);
 
         JButton searchBtn = new JButton("Search");
-
+        final JCheckBox distinctChk = new JCheckBox("distinct", false);
         PanelBuilder outer = new PanelBuilder(new FormLayout("f:p:g,p", "p"));
-        PanelBuilder builder = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "p"));
+        PanelBuilder builder = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g,f:p:g", "p"));
         CellConstraints cc = new CellConstraints();
         builder.add(searchBtn, cc.xy(2, 1));
+        builder.add(distinctChk, cc.xy(3, 1));
 
         outer.add(builder.getPanel(), cc.xy(1, 1));
         outer.add(saveBtn, cc.xy(2, 1));
@@ -263,7 +264,7 @@ public class QueryBldrPane extends BaseSubPane
         {
             public void actionPerformed(ActionEvent ae)
             {
-                doSearch();
+                doSearch(distinctChk.isSelected());
             }
         });
 
@@ -340,6 +341,22 @@ public class QueryBldrPane extends BaseSubPane
         this.validate();
     }
 
+    protected boolean includeObjKey()
+    {
+        return false;
+    }
+    
+    public int getFldPosition(final QueryFieldPanel qfp)
+    {
+        for (int p=0; p<queryFieldItems.size(); p++)
+        {
+            if (queryFieldItems.get(p) == qfp)
+            {
+                return includeObjKey() ? p+1 : p;
+            }
+        }
+        return -1; //oops
+    }
     /**
      * @param queryArg
      */
@@ -352,7 +369,7 @@ public class QueryBldrPane extends BaseSubPane
     /**
      * Performs the Search by building the HQL String.
      */
-    protected void doSearch()
+    protected void doSearch(boolean distinct)
     {
         if (queryFieldItems.size() > 0)
         {
@@ -477,22 +494,21 @@ public class QueryBldrPane extends BaseSubPane
 
             StringBuilder sqlStr = new StringBuilder();
             sqlStr.append("select ");
-            fieldsStr
-                    .append(", (select f.name from Taxon f where tx.nodeNumber between f.nodeNumber and f.highestChildNodeNumber and f.rankId = 100) as ord");
+            if (distinct)
+            {
+                sqlStr.append(" distinct ");
+            }
             sqlStr.append(fieldsStr);
             sqlStr.append(" from ");
 
             processTree(root, sqlStr, 0);
 
-            //criteriaStr
-            //        .append("(select f.name from Taxon f where tx.nodeNumber between f.nodeNumber and f.highestChildNodeNumber and f.rankId = 100) = 'Perciformes'");
             if (criteriaStr.length() > 0)
             {
                 sqlStr.append(" where ");
                 sqlStr.append(criteriaStr);
             }
 
-            //orderStr.append("3 desc");
             if (orderStr.length() > 0)
             {
                 sqlStr.append(" order by ");
@@ -504,8 +520,6 @@ public class QueryBldrPane extends BaseSubPane
             processSQL(queryFieldItems, sqlStr.toString());
 
         }
-        // processSQL("select CO.catalogNumber, DE.determinedDate from CollectionObject as CO JOIN
-        // CO.determinations DE");
     }
 
     /**
@@ -572,14 +586,7 @@ public class QueryBldrPane extends BaseSubPane
             if (qfp.isDisplayable())
             {
                 ERTICaptionInfo erti = new ERTICaptionInfo(colName, qfp.getFieldQRI().getTitle(), true, qfp.getFieldQRI().getFormatter(), 0);
-                if (fi != null)
-                {
-                    erti.setColClass(fi.getDataClass());
-                }
-                else
-                {
-                    erti.setColClass(String.class);
-                }
+                erti.setColClass(qfp.getFieldQRI().getDataClass());
                 captions.add(erti);
             }
         }
@@ -1056,8 +1063,7 @@ public class QueryBldrPane extends BaseSubPane
             }
 
             List<?> treeLevels = parent.selectNodes("treelevel");
-            // if (!tableInfo.getClassObj().isAssignableFrom(Treeable.class))
-            if (!Treeable.class.isAssignableFrom(tableInfo.getClassObj()))
+            if (treeLevels.size() > 0 && !Treeable.class.isAssignableFrom(tableInfo.getClassObj()))
             {
                 log.error("ignoring treelevel specified for non-Treeable table");
             }

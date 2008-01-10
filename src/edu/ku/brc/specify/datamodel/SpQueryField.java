@@ -19,6 +19,8 @@ import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.ui.UIRegistry;
+
 /**
  * @author rod
  *
@@ -65,7 +67,10 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
         GREATERTHAN(2),
         LESSTHAN(3),
         GREATERTHANEQUALS(4),
-        LESSTHANEQUALS(5);
+        LESSTHANEQUALS(5),
+        TRUE(6),
+        FALSE(7),
+        DONTCARE(8);
         
         OperatorType(final int ord)
         { 
@@ -76,7 +81,10 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
         public  void set(final byte  ord) { this.ord = ord; }
         public  static String getString(final byte ord)
         {
-            String[] names = {"Like", "=", ">", "<", ">=", "<="};
+            String[] names = {"Like", "=", ">", "<", ">=", "<=", 
+                    UIRegistry.getResourceString("WB_TRUE"), 
+                    UIRegistry.getResourceString("WB_FALSE"),
+                    " "};
             return names[ord];
         }
         public static OperatorType valueOf(Byte ord) { return OperatorType.valueOf(ord.toString()); }

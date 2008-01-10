@@ -39,7 +39,10 @@ public class TreeLevelQRI extends FieldQRI
         {
             title = treeDefItem.getName();
         }
-        throw new NoTreeDefItemException(rankId);
+        else
+        {
+            throw new NoTreeDefItemException(rankId);
+        }
     }
     
     public int getRankId()
@@ -63,8 +66,8 @@ public class TreeLevelQRI extends FieldQRI
     public String getSQLFldName()
     {
         StringBuilder result = new StringBuilder("(select treelevel.name from ");
-        result.append(getTableInfo().getShortClassName());
-        result.append("treelevel where ");
+        result.append(getTableInfo().getClassObj().getSimpleName());
+        result.append(" treelevel where ");
         result.append(parent.getTableTree().getAbbrev());
         result.append(".nodeNumber between treelevel.nodeNumber and treelevel.highestChildNodeNumber and treelevel.rankId = ");
         result.append(String.valueOf(rankId));

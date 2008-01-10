@@ -227,12 +227,23 @@ public class QueryFieldPanel extends JPanel
      */
     protected String[] getComparatorListForClass(final Class<?> classObj)
     {
-        if (classObj == String.class)
+        if (classObj.equals(String.class))
         {
-            return new String[] {"Like", "="};
+            return new String[] {SpQueryField.OperatorType.getString(SpQueryField.OperatorType.LIKE.getOrdinal()),
+                    SpQueryField.OperatorType.getString(SpQueryField.OperatorType.EQUALS.getOrdinal())};
+        }
+        else if (classObj.equals(Boolean.class))
+        {
+            return new String[] {SpQueryField.OperatorType.getString(SpQueryField.OperatorType.DONTCARE.getOrdinal()),
+                    SpQueryField.OperatorType.getString(SpQueryField.OperatorType.TRUE.getOrdinal()),
+                    SpQueryField.OperatorType.getString(SpQueryField.OperatorType.FALSE.getOrdinal())};
         }
         // else
-        return new String[] {"=", ">", "<", ">=", "<="};
+        return new String[] {SpQueryField.OperatorType.getString(SpQueryField.OperatorType.EQUALS.getOrdinal()),
+                SpQueryField.OperatorType.getString(SpQueryField.OperatorType.GREATERTHAN.getOrdinal()),
+                SpQueryField.OperatorType.getString(SpQueryField.OperatorType.LESSTHAN.getOrdinal()),
+                SpQueryField.OperatorType.getString(SpQueryField.OperatorType.GREATERTHANEQUALS.getOrdinal()),
+                SpQueryField.OperatorType.getString(SpQueryField.OperatorType.LESSTHANEQUALS.getOrdinal())};
     }
     
     /**
@@ -243,15 +254,21 @@ public class QueryFieldPanel extends JPanel
         if (queryField.getSortType() == SpQueryField.SORT_NONE) { return null; }
         
         StringBuilder result = new StringBuilder();
-        //TableTree parentTree = fieldQRI.getParent().getTableTree();
-        //result.append(parentTree.getAbbrev() + '.');
-        //result.append(getFieldInfo().getName());
-        result.append(fieldQRI.getSQLFldName());
+        result.append(String.valueOf(this.queryBldrPane.getFldPosition(this)+1));
         if (queryField.getSortType() == SpQueryField.SORT_DESC)
         {
             result.append(" DESC");
         }
         return result.toString();
+    }
+    
+    protected boolean hasCriteria()
+    {
+        if (fieldQRI.getDataClass().equals(Boolean.class))
+        {
+            return !operatorCBX.getSelectedItem().equals(SpQueryField.OperatorType.getString(SpQueryField.OperatorType.DONTCARE.getOrdinal()));
+        }
+        return StringUtils.isNotEmpty(criteria.getText());
     }
     /**
      * @return
@@ -269,29 +286,31 @@ public class QueryFieldPanel extends JPanel
             criteriaStr = formatter.formatOutBound(criteriaStr).toString();
         }
             
-        if (StringUtils.isNotEmpty(criteriaStr))
+        if (hasCriteria())
         {
             StringBuilder str  = new StringBuilder();
             String operStr     = operatorCBX.getSelectedItem().toString();
             
             //System.out.println(fieldQRI.getFieldInfo().getDataClass().getSimpleName());
-            if (fieldQRI.getFieldInfo().getDataClass() == String.class)
+            if (fieldQRI.getDataClass() == Boolean.class)
             {
-                if (operStr.equals("Like"))
+                //kind of a goofy way to handle booleans but works without worrying about disabling/removing isNotCheckbox (and criteria)
+                if (operStr.equals(SpQueryField.OperatorType.getString(SpQueryField.OperatorType.TRUE.getOrdinal())))
                 {
-                    //criteriaStr = "'%" + criteriaStr + "%'";
-                    criteriaStr = "'" + criteriaStr + "'";
-                } else
-                {
-                    criteriaStr = "'" + criteriaStr + "'";
+                    criteriaStr = "true";
                 }
+                else
+                {
+                    criteriaStr = "false";
+                }
+                operStr = "=";
+            }
+            if (fieldQRI.getDataClass() == String.class)
+            {
+                criteriaStr = "'" + criteriaStr + "'";
             }
             if (criteriaStr.length() > 0)
             {
-                //TableTree parentTree = fieldQRI.getParent().getTableTree();
-                //str.append(parentTree.getAbbrev() + '.');
-                //str.append(getFieldInfo().getName());
-                //str.append(' ');
                 str.append(fieldQRI.getSQLFldName() + " ");
                 if (operStr.equals("="))
                 {
@@ -351,13 +370,13 @@ public class QueryFieldPanel extends JPanel
      */
     protected int[] buildControlLayout(final IconManager.IconSize iconSize, final boolean returnWidths)
     {
-        comparators = new String[SpQueryField.OperatorType.values().length];
-        int inx = 0;
-        for (SpQueryField.OperatorType op : SpQueryField.OperatorType.values())
-        {
-            comparators[inx++] = SpQueryField.OperatorType.getString(op.getOrdinal());
-        }
-        
+//        comparators = new String[SpQueryField.OperatorType.values().length];
+//        int inx = 0;
+//        for (SpQueryField.OperatorType op : SpQueryField.OperatorType.values())
+//        {
+//            comparators[inx++] = SpQueryField.OperatorType.getString(op.getOrdinal());
+//        }
+        comparators = getComparatorListForClass(fieldQRI.getDataClass());
         iconLabel     = new JLabel(icon);
         fieldLabel    = new JLabel(fieldQRI.getTitle());
         isNotCheckbox = createCheckBox("isNotCheckbox");
@@ -410,6 +429,7 @@ public class QueryFieldPanel extends JPanel
         
         closeBtn.addMouseListener(new MouseAdapter() 
         {
+            @Override
             public void mousePressed(MouseEvent e) 
             {
                 queryBldrPane.removeQueryFieldItem((QueryFieldPanel)((JComponent)e.getSource()).getParent());
