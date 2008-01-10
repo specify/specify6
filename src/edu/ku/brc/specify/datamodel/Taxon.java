@@ -30,6 +30,8 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.treeutils.TreeOrderSiblingComparator;
 
 @SuppressWarnings("serial")
@@ -122,6 +124,8 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
     protected String               groupNumber;
     protected Integer              visibility;
     protected String               visibilitySetBy;
+    
+    protected List<Taxon>          ancestors; 
 
     private Set<TaxonAttachment> taxonAttachments;
     
@@ -192,6 +196,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         definitionItem                = null;
         parent                        = null;
         children                      = new HashSet<Taxon>();
+        ancestors                     = null;
         taxonAttachments              = new HashSet<TaxonAttachment>();
 	}
 
@@ -832,6 +837,45 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         this.taxonId = id;
 	}
 
+	@Transient
+	public List<Taxon> getAncestors()
+	{
+	    if (ancestors == null)
+	    {
+	        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+	        try
+	        {
+	            ancestors = (List<Taxon>)session.createQuery("from Taxon where nodeNumber < " + this.nodeNumber + " and highestChildNodeNumber >= "
+	                    + this.highestChildNodeNumber + " order by rankId").list();
+	        }
+	        finally
+	        {
+	            session.close();
+	        }
+	    }
+	    return ancestors;
+	}
+	
+	@Transient
+	public Taxon getAncestor(int ancestorRank)
+	{
+	    for (Taxon tx : getAncestors())
+	    {
+	        if (tx.rankId == ancestorRank)
+	            return tx;
+	    }
+	    return null;
+	}
+	
+	@Transient
+	public String getFamilyName()
+	{
+	    Taxon fam = getAncestor(140);
+	    if (fam != null)
+	        return fam.name;
+	    return null;
+	}
+	
     @OneToMany(mappedBy = "taxon")
     @Cascade( {CascadeType.ALL} )
     public Set<TaxonAttachment> getTaxonAttachments()

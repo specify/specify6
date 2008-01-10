@@ -79,7 +79,6 @@ public class QueryFieldPanel extends JPanel
     
     protected FieldQRI         fieldQRI;
     protected SpQueryField     queryField = null;
-    protected DBFieldInfo      field      = null;
     
     protected FormValidator    validator;
     
@@ -102,7 +101,6 @@ public class QueryFieldPanel extends JPanel
     {
         this.queryBldrPane = queryBldrPane;
         this.fieldQRI      = fieldQRI;
-        this.field         = fieldQRI != null ? fieldQRI.getFieldInfo() : null;
         this.columnDefStr  = columnDefStr;
         
         thisItem = this;
@@ -239,12 +237,30 @@ public class QueryFieldPanel extends JPanel
     
     /**
      * @return
+    */
+    public String getOrderSpec()
+    {
+        if (queryField.getSortType() == SpQueryField.SORT_NONE) { return null; }
+        
+        StringBuilder result = new StringBuilder();
+        //TableTree parentTree = fieldQRI.getParent().getTableTree();
+        //result.append(parentTree.getAbbrev() + '.');
+        //result.append(getFieldInfo().getName());
+        result.append(fieldQRI.getSQLFldName());
+        if (queryField.getSortType() == SpQueryField.SORT_DESC)
+        {
+            result.append(" DESC");
+        }
+        return result.toString();
+    }
+    /**
+     * @return
      */
     public String getCriteriaFormula()
     {
         String criteriaStr = criteria.getText();
         
-        UIFieldFormatterIFace formatter = field.getFormatter();
+        UIFieldFormatterIFace formatter = fieldQRI.getFormatter();
         if (formatter != null)
         {
             // XXX Passing in a string may not always work,
@@ -272,10 +288,11 @@ public class QueryFieldPanel extends JPanel
             }
             if (criteriaStr.length() > 0)
             {
-                TableTree parentTree = fieldQRI.getParent().getTableTree();
-                str.append(parentTree.getAbbrev() + '.');
-                str.append(getFieldInfo().getName());
-                str.append(' ');
+                //TableTree parentTree = fieldQRI.getParent().getTableTree();
+                //str.append(parentTree.getAbbrev() + '.');
+                //str.append(getFieldInfo().getName());
+                //str.append(' ');
+                str.append(fieldQRI.getSQLFldName() + " ");
                 if (operStr.equals("="))
                 {
                     str.append(isNotCheckbox.isSelected() ? "!" : "");
@@ -342,7 +359,7 @@ public class QueryFieldPanel extends JPanel
         }
         
         iconLabel     = new JLabel(icon);
-        fieldLabel    = new JLabel(field.getTitle());
+        fieldLabel    = new JLabel(fieldQRI.getTitle());
         isNotCheckbox = createCheckBox("isNotCheckbox");
         operatorCBX   = createComboBox(comparators);
         criteria      = createTextField();
@@ -387,7 +404,7 @@ public class QueryFieldPanel extends JPanel
             col += 2;
         }
 
-        icon = IconManager.getIcon(field.getTableInfo().getTitle(), iconSize);
+        icon = IconManager.getIcon(fieldQRI.getTableInfo().getTitle(), iconSize);
         setIcon(icon);
         isDisplayedCkbx.setSelected(true);
         
@@ -501,7 +518,7 @@ public class QueryFieldPanel extends JPanel
      */
     public DBFieldInfo getFieldInfo()
     {
-        return field;
+        return fieldQRI.getFieldInfo();
     }
 
     /**

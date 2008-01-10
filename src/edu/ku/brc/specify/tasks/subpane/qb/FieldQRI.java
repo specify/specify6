@@ -10,6 +10,8 @@
 package edu.ku.brc.specify.tasks.subpane.qb;
 
 import edu.ku.brc.dbsupport.DBFieldInfo;
+import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 
 /**
  * @author rod
@@ -27,7 +29,10 @@ public class FieldQRI extends BaseQRI
     {
         super(parent, null);
         this.fi  = fi;
-        title    = fi.getTitle();
+        if (fi != null)
+        {
+            title    = fi.getTitle();
+        }
         iconName = "BlankIcon";
     }
     
@@ -35,9 +40,39 @@ public class FieldQRI extends BaseQRI
     {
         return fi;
     }
+    
+    @Override
     public boolean hasChildren()
     {
         return false;
     }
 
+    public String getFieldName()
+    {
+        return fi.getName();
+    }
+    
+    public UIFieldFormatterIFace getFormatter()
+    {
+        if (fi != null)
+            return fi.getFormatter();
+        return null;
+    }
+    
+    public DBTableInfo getTableInfo()
+    {
+        if (fi != null)
+            return fi.getTableInfo();
+        return null;
+    }
+    
+    public String getSQLFldSpec()
+    {
+        return parent.getTableTree().getAbbrev() + "." + getFieldName();
+    }
+    
+    public String getSQLFldName()
+    {
+        return getSQLFldSpec();
+    }
 }
