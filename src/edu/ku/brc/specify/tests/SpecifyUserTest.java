@@ -348,7 +348,7 @@ public class SpecifyUserTest extends TestCase
         String testUserRole = "Test Role";
         try
         {
-            Agent            userAgent        = createAgent("", "John", "", "Doe", "", "jd@ku.edu");
+            Agent            userAgent        = createAgent("", "John", "", "Doe", "", "jd@ku.edu", -1);
             UserGroup        userGroup        = createUserGroup("fish");
             TaxonTreeDef     taxonTreeDef     = createTaxonTreeDef("Sample Taxon Tree Def");
             LithoStratTreeDef lithoStratTreeDef = createLithoStratTreeDef("Sample Litho Tree Def");

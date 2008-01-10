@@ -42,7 +42,7 @@ public class IdTableMapper extends IdHashMapper
      * @param idName name of the key field
      * @throws SQLException any
      */
-    public IdTableMapper(final String tableName, final String idName) throws SQLException
+    public IdTableMapper(final String tableName, final String idName)
     {
         super();
         
@@ -61,7 +61,7 @@ public class IdTableMapper extends IdHashMapper
      * @param sql the SQL statement to build the index
      * @throws SQLException any
      */
-    public IdTableMapper(final String tableName, final String idName, final String sql) throws SQLException
+    public IdTableMapper(final String tableName, final String idName, final String sql)
     {                                                                                                 
         this(tableName, idName);
         this.sql = sql;
@@ -101,7 +101,7 @@ public class IdTableMapper extends IdHashMapper
             
             if (rs.first())
             {
-                int newIndex = 1;
+                int newIndex = initialIndex;
                 do
                 {
                     int oldIndex = rs.getInt(1);

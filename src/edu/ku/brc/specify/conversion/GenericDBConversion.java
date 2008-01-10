@@ -150,7 +150,7 @@ public class GenericDBConversion
 
     protected String[]                   standardDataTypes   = {"Plant", "Animal", "Mineral", "Fungi", "Anthropology"};
     protected Hashtable<String, Integer> dataTypeNameIndexes = new Hashtable<String, Integer>(); // Name to Index in Array
-    protected Hashtable<String, Integer>    dataTypeNameToIds   = new Hashtable<String, Integer>(); // name to Record ID
+    protected Hashtable<String, Integer> dataTypeNameToIds   = new Hashtable<String, Integer>(); // name to Record ID
 
     protected Hashtable<String, TableStats> tableStatHash = new Hashtable<String, TableStats>();
     
@@ -164,7 +164,7 @@ public class GenericDBConversion
     protected boolean              hasFrame = false;
     
     protected Hashtable<String, Integer>   collectionHash   = new Hashtable<String, Integer>();
-    protected Hashtable<String, String> prefixHash       = new Hashtable<String, String>();
+    protected Hashtable<String, String>    prefixHash       = new Hashtable<String, String>();
     protected Hashtable<String, Integer>   catNumSchemeHash = new Hashtable<String, Integer>();
 
     protected Session            session;  
@@ -452,25 +452,33 @@ public class GenericDBConversion
     /**
      * Creates backstop creator and modifer agents.
      */
-    protected void initializeAgentInfo()
+    public void initializeAgentInfo()
     {
         
         Hashtable<String, Agent> agentMap = new Hashtable<String, Agent>();
         creatorAgent = new Agent();
         creatorAgent.initialize();
+        creatorAgent.setAgentType(Agent.PERSON);
         creatorAgent.setFirstName("DB");
         creatorAgent.setLastName("Creator");
+        creatorAgent.setCollectionMemberId(-1);
         agentMap.put("Creator", creatorAgent);
         
         modifierAgent = new Agent();
         modifierAgent.initialize();
+        modifierAgent.setAgentType(Agent.PERSON);
         modifierAgent.setFirstName("DB");
         modifierAgent.setLastName("Modifier");
+        modifierAgent.setCollectionMemberId(-1);
         agentMap.put("Modifier", modifierAgent);
         
+        setSession(HibernateUtil.getCurrentSession());
+        startTx();
         persist(creatorAgent);
         persist(modifierAgent);
-            
+        commitTx();
+        setSession(null);
+        
         /*
         for (String tableName : tableNames)
         {
@@ -501,29 +509,22 @@ public class GenericDBConversion
     public void mapIds() throws SQLException
     {
         log.debug("mapIds()");
-        /*String[] tableNames =
-        {
-                "Collection",
-                "CatalogSeriesDefinition",
-                "TaxonName",
-                "TaxonomicUnitType"                
-        };*/
 
         // These are the names as they occur in the old datamodel
         String[] tableNames =
         {
         "Accession",
-        "AccessionAgents",
+        // XXX "AccessionAgents",
         "AccessionAuthorizations",
         //"Address",
         //"Agent",
         //"AgentAddress",
-        "Authors",
+        // XXX "Authors",
         "BiologicalObjectAttributes", // Turn back on when datamodel checked in
         "BiologicalObjectRelation",
         "BiologicalObjectRelationType",
         "Borrow",
-        "BorrowAgents",
+        // XXX "BorrowAgents",
         "BorrowMaterial",
         "BorrowReturnMaterial",
         //"BorrowShipments",
@@ -538,7 +539,7 @@ public class GenericDBConversion
         "CollectionTaxonomyTypes",
         "Collectors",
         "Deaccession",
-        "DeaccessionAgents",
+        // XXX "DeaccessionAgents",
         "DeaccessionCollectionObject",
         "Determination",
         "DeterminationCitation",
@@ -549,12 +550,12 @@ public class GenericDBConversion
         //"GeologicTimePeriod",
         "GroupPersons",
         "Habitat",   // Turn back on when datamodel checked in
-        "ImageAgents",
+        // XXX "ImageAgents",
         "ImageCollectionObjects",
         "ImageLocalities",
         "Journal",
         "Loan",
-        "LoanAgents",
+        // XXX "LoanAgents",
         "LoanPhysicalObject",
         "LoanReturnPhysicalObject",
         "Locality",
@@ -648,126 +649,71 @@ public class GenericDBConversion
         // When you run in to this table1.field, go to that table2 and look up the id
         String[] mappings = {
             "BorrowReturnMaterial", "BorrowMaterialID", "BorrowMaterial", "BorrowMaterialID",
-            "BorrowReturnMaterial", "ReturnedByID", "Agent", "AgentID",
-
-            //"Preparation", "PhysicalObjectTypeID", "PhysicalObjectType", "PhysicalObjectTypeID",
-            "Preparation", "PreparedByID", "Agent", "AgentID",
+            // XXX "BorrowReturnMaterial", "ReturnedByID", "Agent", "AgentID",
+            // XXX "Preparation", "PreparedByID", "Agent", "AgentID",
             "Preparation", "ParasiteTaxonNameID", "TaxonName", "TaxonNameID",
-            //"Preparation", "PreparationTypeID", "PreparationType", "PreparationTypeID",
-            //"Preparation", "ContainerTypeID", "ContainerType", "ContainerTypeID",
 
             "LoanPhysicalObject", "PhysicalObjectID", "preparation", "PreparationID",
             "LoanPhysicalObject", "LoanID", "Loan", "LoanID",
 
-            // ??? "ExchangeIn", "CollectionID", "Collection", "CollectionID",
-            "ExchangeIn", "ReceivedFromOrganizationID", "Agent", "AgentID",
-            "ExchangeIn", "CatalogedByID", "Agent", "AgentID",
-
-            // ??? "Geography", "CurrentID", "Current", "CurrentID",
-
-            "Collection", "OrganizationID", "Agent", "AgentID",
-
-            "GroupPersons", "GroupID", "Agent", "AgentID",
-            "GroupPersons", "MemberID", "Agent", "AgentID",
+            // XXX "ExchangeIn", "ReceivedFromOrganizationID", "Agent", "AgentID",
+            // XXX "ExchangeIn", "CatalogedByID", "Agent", "AgentID",
+            // XXX "Collection", "OrganizationID", "Agent", "AgentID",
+            // XXX  "GroupPersons", "GroupID", "Agent", "AgentID",
+            // XXX "GroupPersons", "MemberID", "Agent", "AgentID",
 
             // ??? "ExchangeOut", "CollectionID", "Collection", "CollectionID",
-            "ExchangeOut", "SentToOrganizationID", "Agent", "AgentID",
-            "ExchangeOut", "CatalogedByID", "Agent", "AgentID",
+            // XXX  "ExchangeOut", "SentToOrganizationID", "Agent", "AgentID",
+            // XXX "ExchangeOut", "CatalogedByID", "Agent", "AgentID",
             "ExchangeOut", "ShipmentID", "Shipment", "ShipmentID",
-
-            //"ImageLocalities", "ImageID", "Image", "ImageID",
-            //"ImageLocalities", "LocalityID", "Locality", "LocalityID",
-
-            //"ImageCollectionObjects", "ImageID", "Image", "ImageID",
-            //"ImageCollectionObjects", "CollectionlObjectID", "CollectionObject", "CollectionObjectID",
 
             "ReferenceWork", "JournalID", "Journal", "JournalID",
             "ReferenceWork", "ContainingReferenceWorkID", "ReferenceWork", "ReferenceWorkID",
 
             //"ImageAgents", "ImageID", "Image", "ImageID",
-           // "ImageAgents", "AgentID", "Agent", "AgentID",
+            // "ImageAgents", "AgentID", "Agent", "AgentID",
 
             "BiologicalObjectRelation", "BiologicalObjectID",             "CollectionObject", "CollectionObjectID",
             "BiologicalObjectRelation", "RelatedBiologicalObjectID",      "CollectionObject", "CollectionObjectID",
             "BiologicalObjectRelation", "BiologicalObjectRelationTypeID", "BiologicalObjectRelationType", "BiologicalObjectRelationTypeID",
 
-            //"SoundEventStorage", "SoundEventID", "SoundEvent", "SoundEventID",
-            //"SoundEventStorage", "SoundRecordingID", "SoundRecording", "SoundRecordingID",
-
-            "Shipment", "ShipperID", "AgentAddress", "AgentAddressID",
-            "Shipment", "ShippedToID", "AgentAddress", "AgentAddressID",
-            "Shipment", "ShippedByID", "Agent", "AgentID",
+            // XXX "Shipment", "ShipperID", "AgentAddress", "AgentAddressID",
+            // XXX "Shipment", "ShippedToID", "AgentAddress", "AgentAddressID",
+            // XXX "Shipment", "ShippedByID", "Agent", "AgentID",
             //"Shipment", "ShipmentMethodID", "ShipmentMethod", "ShipmentMethodID",
 
-            // ??? "Habitat", "BiologicalObjectTypeCollectedID", "BiologicalObjectTypeCollected", "BiologicalObjectTypeCollectedID",
             "Habitat", "HostTaxonID", "TaxonName", "TaxonNameID",
-            //"Habitat", "HabitatTypeID", "HabitatType", "HabitatTypeID",
 
-            "Authors", "AgentID", "Agent", "AgentID",
+            // XXX "Authors", "AgentID", "Agent", "AgentID",
             "Authors", "ReferenceWorkID", "ReferenceWork", "ReferenceWorkID",
-
             "BorrowMaterial",  "BorrowID", "Borrow", "BorrowID",
-
-            //"BorrowShipment", "BorrowID", "Borrow", "BorrowID",
-            //"BorrowShipment", "ShipmentID", "Shipment", "ShipmentID",
-
             "BorrowAgents",    "BorrowID", "Borrow", "BorrowID",
-            "BorrowAgents",    "AgentAddressID", "AgentAddress", "AgentAddressID",
-            //"BorrowAgents",    "RoleID", "Role", "RoleID",
-
+            // XXX "BorrowAgents",    "AgentAddressID", "AgentAddress", "AgentAddressID",
             "DeaccessionPreparation", "DeaccessionID",            "Deaccession",                 "DeaccessionID",
             "DeaccessionPreparation", "DeaccessionPreparationID", "DeaccessionCollectionObject", "DeaccessionCollectionObjectID",
-            
             "DeaccessionCollectionObject",  "DeaccessionID",       "Deaccession",      "DeaccessionID", // not sure this is needed
             "DeaccessionCollectionObject",  "CollectionObjectID",  "CollectionObject", "CollectionObjectID", // not sure this is needed
-            
             "DeaccessionPreparation", "PreparationID",            "Preparation",                 "PreparationID",
-
             "CollectionObjectCitation", "ReferenceWorkID", "ReferenceWork", "ReferenceWorkID",
             "CollectionObjectCitation", "BiologicalObjectID", "CollectionObject", "CollectionObjectID",
-
-            //"Stratigraphy", "GeologicTimePeriodID", "GeologicTimePeriod", "GeologicTimePeriodID", // MOVE to convertGTP
-
-            //"Deaccession", "CollectionID", "Collection", "CollectionID",
-            //"Deaccession", "TypeID", "Type", "TypeID",
-
-            //"CollectingEvent", "BiologicalObjectTypeCollectedID", "BiologicalObjectTypeCollected", "BiologicalObjectTypeCollectedID",
             "CollectingEvent", "HabitatAttributesID", "Habitat", "HabitatID",
             "CollectingEvent", "LocalityID", "Locality", "LocalityID",
             "CollectingEvent", "StratigraphyID", "Stratigraphy", "StratigraphyID",
-            //"CollectingEvent", "MethodID", "Method", "MethodID",
 
             "Collectors", "CollectingEventID", "CollectingEvent", "CollectingEventID",
-            "Collectors", "AgentID", "Agent", "AgentID",
+            // XXX "Collectors", "AgentID", "Agent", "AgentID",
 
-            "Permit", "IssuerID", "AgentAddress", "AgentAddressID",
-            "Permit", "IssueeID", "AgentAddress", "AgentAddressID",
-            //"Permit", "TypeID", "Type", "TypeID",
-
-            "Sound", "RecordedByID", "Agent", "AgentID",
-
+            // XXX "Permit", "IssuerID", "AgentAddress", "AgentAddressID",
+            // XXX "Permit", "IssueeID", "AgentAddress", "AgentAddressID",
+            // XXX "Sound", "RecordedByID", "Agent", "AgentID",
             "TaxonCitation", "ReferenceWorkID", "ReferenceWork", "ReferenceWorkID",
             "TaxonCitation", "TaxonNameID", "TaxonName", "TaxonNameID",
-
-            "Determination", "DeterminerID",           "Agent", "AgentID",
-            //"Determination", "TaxonNameID",            "Taxon", "TaxonID",???
+            // XXX "Determination", "DeterminerID",           "Agent", "AgentID",
             "Determination", "TaxonNameID",            "TaxonName", "TaxonNameID",
-            "Determination", "BiologicalObjectID",     "CollectionObject", "CollectionObjectID",
+            // XXX "Determination", "BiologicalObjectID",     "CollectionObject", "CollectionObjectID",
             
-            //"Determination", "PreparationID",          "Preparation", "PreparationID",
-            //"Determination", "BiologicalObjectTypeID", "BiologicalObjectType", "BiologicalObjectTypeID",
-            //"Determination", "TypeStatusNameID",       "TypeStatusName", "TypeStatusNameID",
-            //"Determination", "ConfidenceID",           "Confidence", "ConfidenceID",
-            //"Determination", "MethodID",               "Method", "MethodID",
-
             // ??? "GeologicTimePeriod", "UpperBoundaryID", "UpperBoundary", "UpperBoundaryID",
             // ??? "GeologicTimePeriod", "LowerBoundaryID", "LowerBoundary", "LowerBoundaryID",
-
-            //"CatalogSeriesDefinition", "CatalogSeriesID", "Collection", "CatalogSeriesID",
-            //"CatalogSeriesDefinition", "ObjectTypeID", "ObjectType", "ObjectTypeID",
-
-            // (not needed) "CollectionObject", "DerivedFromID", "DerivedFrom", "DerivedFromID",
-            //"CollectionObject", "ContainerID", "Container", "ContainerID",
 
             //************************************************************************************
             // NOTE: Since we are mapping CollectionObjectType to CatalogSeriesDefinition
@@ -782,83 +728,34 @@ public class GenericDBConversion
 
             "CollectionObject", "CollectingEventID", "CollectingEvent", "CollectingEventID",
 
-            //"CollectionObject", "ContainerTypeID", "ContainerType", "ContainerTypeID",
-            //"CollectionObject", "PreparationMethodID", "PreparationMethod", "PreparationMethodID",
-
-            //"CollectionObjectCatalog", "CollectionObjectTypeID", "CollectionObjectType", "CollectionObjectTypeID",
-            //"CollectionObject", "CollectionID",           "CatalogSeries", "CatalogSeriesID",
             "CollectionObject", "AccessionID",            "Accession", "AccessionID",
-            "CollectionObject", "CatalogerID",            "Agent", "AgentID",
-
-
-            //"Observation", "BiologicalObjectID", "BiologicalObject", "BiologicalObjectID",
-            //"Observation", "ObservationMethodID", "ObservationMethod", "ObservationMethodID",
-
+            // XXX "CollectionObject", "CatalogerID",            "Agent", "AgentID",
             "Loan", "ShipmentID", "Shipment", "ShipmentID",
-            //"Loan", "CollectionID", "Collection", "CollectionID",
-
             "AccessionAuthorizations", "AccessionID", "Accession", "AccessionID",
             "AccessionAuthorizations", "PermitID",    "Permit", "PermitID",
-
             "AccessionAgents", "AccessionID",    "Accession",    "AccessionID",
-            "AccessionAgents", "AgentAddressID", "AgentAddress", "AgentAddressID",
-            //"AccessionAgent", "RoleID", "Role", "RoleID",
-
+            // XXX "AccessionAgents", "AgentAddressID", "AgentAddress", "AgentAddressID",
             "DeterminationCitation", "ReferenceWorkID", "ReferenceWork", "ReferenceWorkID",
             "DeterminationCitation", "DeterminationID", "Determination", "DeterminationID",
-
-            //"Collection", "CollectionID", "Collection", "CollectionID",
-
             "OtherIdentifier", "CollectionObjectID", "CollectionObject", "CollectionObjectID",
 
-            "Agent", "ParentOrganizationID", "Agent", "AgentID",
-
-            //"CollectionTaxonomyTypes", "CollectionID", "Collection", "CollectionID",
-            //"CollectionTaxonomyTypes", "BiologicalObjectTypeID", "BiologicalObjectType", "BiologicalObjectTypeID",
-            //"CollectionTaxonomyTypes", "TaxonomyTypeID", "TaxonomyType", "TaxonomyTypeID",
-
-            "AgentAddress", "AddressID",      "Address", "AddressID",
-            "AgentAddress", "AgentID",        "Agent",   "AgentID",
-            "AgentAddress", "OrganizationID", "Agent",   "AgentID",
+            // XXX "Agent", "ParentOrganizationID", "Agent", "AgentID",
+            // XXX "AgentAddress", "AddressID",      "Address", "AddressID",
+            // XXX "AgentAddress", "AgentID",        "Agent",   "AgentID",
+            // XXX "AgentAddress", "OrganizationID", "Agent",   "AgentID",
 
             "LocalityCitation", "ReferenceWorkID", "ReferenceWork", "ReferenceWorkID",
-            "LocalityCitation", "LocalityID", "Locality", "LocalityID",
-
-            // Attribute Tables One-to-Ones
-            //"CollectingEvent",  "HabitatAttributesID",     "Habitat",                    "HabitatID",
-            //"CollectionObject", "CollectionObjectAttributesID",      "BiologicalObjectAttributes", "BiologicalObjectAttributesID", 
-            //"CollectionObject", "PreparationAttributesID", "Preparation",                "PreparationID",                
-            //"BiologicalObjectAttributes", "BiologicalObjectTypeID", "BiologicalObjectType", "BiologicalObjectTypeID",
-            //"BiologicalObjectAttributes", "SexID", "Sex", "SexID",
-            //"BiologicalObjectAttributes", "StageID", "Stage", "StageID",
-
+            "LocalityCitation", "LocalityID",      "Locality",      "LocalityID",
             "LoanReturnPhysicalObject", "LoanPhysicalObjectID",        "LoanPhysicalObject", "LoanPhysicalObjectID",
-            "LoanReturnPhysicalObject", "ReceivedByID",                "Agent",  "AgentID",
+            // XXX "LoanReturnPhysicalObject", "ReceivedByID",                "Agent",  "AgentID",
             "LoanReturnPhysicalObject", "DeaccessionPhysicalObjectID", "CollectionObject", "CollectionObjectID",
-
-            //"Borrow", "CollectionID", "Collection", "CollectionID",
-
-            //"Locality", "GeographyID", "Geography", "GeographyID",
-            //"Locality", "ElevationMethodID", "ElevationMethod", "ElevationMethodID",
-            //"Locality", "LatLongTypeID", "LatLongType", "LatLongTypeID",
-            //"Locality", "LatLongMethodID", "LatLongMethod", "LatLongMethodID",
-
             "DeaccessionAgents", "DeaccessionID", "Deaccession", "DeaccessionID",
-            "DeaccessionAgents", "AgentAddressID", "AgentAddress", "AgentAddressID",
-            //"DeaccessionAgent", "RoleID", "Role", "RoleID",
-
+            // XXX "DeaccessionAgents", "AgentAddressID", "AgentAddress", "AgentAddressID",
             "ProjectCollectionObjects", "ProjectID", "Project", "ProjectID",
             "ProjectCollectionObjects", "CollectionObjectID", "CollectionObject", "CollectionObjectID",
-
-            "Project", "ProjectAgentID", "Agent", "AgentID",
-
+            // XXX "Project", "ProjectAgentID", "Agent", "AgentID",
             "LoanAgents", "LoanID", "Loan", "LoanID",
-            "LoanAgents", "AgentAddressID", "AgentAddress", "AgentAddressID",
-            //"LoanAgent", "RoleID", "Role", "RoleID",
-
-            //"Accession", "CollectionID", "Collection", "CollectionID",
-            //"Accession", "StatusID", "Status", "StatusID",
-            //"Accession", "TypeID", "Type", "TypeID",
+            // XXX "LoanAgents", "AgentAddressID", "AgentAddress", "AgentAddressID",
 
         	// taxonname ID mappings
             "TaxonName", "ParentTaxonNameID", "TaxonName", "TaxonNameID",
@@ -877,6 +774,114 @@ public class GenericDBConversion
         {
             idMapperMgr.mapForeignKey(mappings[i], mappings[i+1], mappings[i+2], mappings[i+3]);
         }
+    }
+    
+    /**
+     * @throws SQLException
+     */
+    public void mapAgentRelatedIds() throws SQLException
+    {
+        log.debug("mapAgentRelatedIds()");
+
+        // These are the names as they occur in the old datamodel
+        String[] tableNames =
+        {
+        "AccessionAgents",
+        //"Address",
+        //"Agent",
+        //"AgentAddress",
+        "Authors",
+        "BorrowAgents",
+        "DeaccessionAgents",
+        "ImageAgents",
+        "LoanAgents",
+        };
+
+        //shouldCreateMapTables = false;
+        
+        IdTableMapper idMapper = null;
+        for (String tableName : tableNames)
+        {
+            idMapper = idMapperMgr.addTableMapper(tableName, tableName+"ID");
+            log.debug("mapIds() for table" + tableName);
+            if (shouldCreateMapTables)
+            {
+                idMapper.mapAllIds();
+            }
+        }
+
+        // When you run in to this table1.field, go to that table2 and look up the id
+        String[] mappings = {
+            "BorrowReturnMaterial", "ReturnedByID",     "Agent", "AgentID",
+            "Preparation",          "PreparedByID",     "Agent", "AgentID",
+            "ExchangeIn",           "ReceivedFromOrganizationID", "Agent", "AgentID",
+            "ExchangeIn",           "CatalogedByID",    "Agent", "AgentID",
+            "Collection",           "OrganizationID",   "Agent", "AgentID",
+            "GroupPersons",         "GroupID",          "Agent",  "AgentID",
+            "GroupPersons",         "MemberID",         "Agent", "AgentID",
+            "ExchangeOut",          "SentToOrganizationID", "Agent", "AgentID",
+            "ExchangeOut",          "CatalogedByID",    "Agent", "AgentID",
+            "ExchangeOut",          "ShipmentID",       "Shipment", "ShipmentID",
+            "Shipment",             "ShipperID",        "AgentAddress", "AgentAddressID",
+            "Shipment",             "ShippedToID",      "AgentAddress", "AgentAddressID",
+            "Shipment",             "ShippedByID",      "Agent", "AgentID",
+            "Authors",              "AgentID", "Agent", "AgentID",
+            "BorrowAgents",         "AgentAddressID",   "AgentAddress", "AgentAddressID",
+            "Collectors",           "AgentID",          "Agent", "AgentID",
+            "Permit",               "IssuerID",         "AgentAddress", "AgentAddressID",
+            "Permit",               "IssueeID",         "AgentAddress", "AgentAddressID",
+            "Sound",                "RecordedByID",     "Agent", "AgentID",
+            "Determination",        "DeterminerID",     "Agent", "AgentID",
+            "CollectionObject",     "CatalogerID",      "Agent", "AgentID",
+            "AccessionAgents",      "AgentAddressID",   "AgentAddress", "AgentAddressID",
+            "Agent",                "ParentOrganizationID", "Agent", "AgentID",
+            "AgentAddress",         "AddressID",        "Address", "AddressID",
+            "AgentAddress",         "AgentID",          "Agent",   "AgentID",
+            "AgentAddress",         "OrganizationID",   "Agent",   "AgentID",
+            "LoanReturnPhysicalObject", "ReceivedByID", "Agent",  "AgentID",
+            "DeaccessionAgents",    "AgentAddressID",   "AgentAddress", "AgentAddressID",
+            "Project",              "ProjectAgentID",   "Agent", "AgentID",
+            "LoanAgents",           "AgentAddressID",   "AgentAddress", "AgentAddressID",
+            
+            // XXX "BorrowReturnMaterial", "ReturnedByID", "Agent", "AgentID",
+            // XXX "Preparation", "PreparedByID", "Agent", "AgentID",
+            // XXX "ExchangeIn", "ReceivedFromOrganizationID", "Agent", "AgentID",
+            // XXX "ExchangeIn", "CatalogedByID", "Agent", "AgentID",
+            // XXX "Collection", "OrganizationID", "Agent", "AgentID",
+            // XXX "GroupPersons", "GroupID", "Agent", "AgentID",
+            // XXX "GroupPersons", "MemberID", "Agent", "AgentID",
+            // XXX "ExchangeOut", "SentToOrganizationID", "Agent", "AgentID",
+            // XXX "ExchangeOut", "CatalogedByID", "Agent", "AgentID",
+            "ExchangeOut",          "ShipmentID",       "Shipment", "ShipmentID",
+            // XXX "Shipment", "ShipperID", "AgentAddress", "AgentAddressID",
+            // XXX "Shipment", "ShippedToID", "AgentAddress", "AgentAddressID",
+            // XXX "Shipment", "ShippedByID", "Agent", "AgentID",
+            // XXX "Authors", "AgentID", "Agent", "AgentID",
+            // XXX "BorrowAgents",    "AgentAddressID", "AgentAddress", "AgentAddressID",
+            // XXX "Collectors", "AgentID", "Agent", "AgentID",
+            // XXX "Permit", "IssuerID", "AgentAddress", "AgentAddressID",
+            // XXX "Permit", "IssueeID", "AgentAddress", "AgentAddressID",
+            // XXX "Sound", "RecordedByID", "Agent", "AgentID",
+            // XXX "Determination", "DeterminerID",           "Agent", "AgentID",
+            // XXX "Determination", "TaxonNameID",            "TaxonName", "TaxonNameID",
+            // XXX "Determination", "BiologicalObjectID",     "CollectionObject", "CollectionObjectID",
+            // XXX "AccessionAgents", "AgentAddressID", "AgentAddress", "AgentAddressID",
+            // XXX "Agent", "ParentOrganizationID", "Agent", "AgentID",
+            // XXX "AgentAddress", "AddressID",      "Address", "AddressID",
+            // XXX "AgentAddress", "AgentID",        "Agent",   "AgentID",
+            // XXX "AgentAddress", "OrganizationID", "Agent",   "AgentID",
+            // XXX "LoanReturnPhysicalObject", "ReceivedByID",                "Agent",  "AgentID",
+            // XXX "DeaccessionAgents", "AgentAddressID", "AgentAddress", "AgentAddressID",
+            // XXX "Project", "ProjectAgentID", "Agent", "AgentID",
+            // XXX "LoanAgents", "AgentAddressID", "AgentAddress", "AgentAddressID",
+
+        };
+
+        for (int i=0;i<mappings.length;i += 4)
+        {
+            idMapperMgr.mapForeignKey(mappings[i], mappings[i+1], mappings[i+2], mappings[i+3]);
+        }
+ 
     }
 
     /**
@@ -1357,7 +1362,7 @@ public class GenericDBConversion
      */
     protected int getCreatorAgentId(final String createdByName)
     {
-        return creatorAgent.getAgentId();
+        return creatorAgent == null ? -1 : creatorAgent.getAgentId();
     }
 
     /**
@@ -1366,7 +1371,12 @@ public class GenericDBConversion
      */
     protected int getModifiedByAgentId(final String modifierAgentName)
     {
-        return modifierAgent.getAgentId();
+        return modifierAgent == null ? -2 : modifierAgent.getAgentId();
+    }
+    
+    protected int getCollectionMemberId()
+    {
+        return -1;
     }
 
     /**
@@ -1488,7 +1498,7 @@ public class GenericDBConversion
             //Meg had to drop explicit insert of CURRENT_DATE, not suported by SQL Server
     		//insert.append("(DeterminationStatusID,Name,Remarks,TimestampCreated,TimestampModified, IsCurrent) ");
             insert.append("(DeterminationStatusID,Name,Remarks,TimestampCreated,TimestampModified, IsCurrent, CreatedByAgentID, ModifiedByAgentID) ");
-    		insert.append("values ");
+    		insert.append("VALUES ");
     		// followed by the 'current status' record
     		insert.append("(");
     		insert.append(D_STATUS_CURRENT);
@@ -1501,7 +1511,7 @@ public class GenericDBConversion
             insert2.append("INSERT INTO determinationstatus ");
             //Meg had to drop explicit insert of CURRENT_DATE, not suported by SQL Server
             //insert.append("(DeterminationStatusID,Name,Remarks,TimestampCreated,TimestampModified, IsCurrent) ");
-            insert2.append("(DeterminationStatusID, Remarks, TimestampCreated, TimestampModified,  IsCurrent, CreatedByAgentID, ModifiedByAgentID) ");
+            insert2.append("(DeterminationStatusID, Name, Remarks, TimestampCreated, TimestampModified,  IsCurrent, CreatedByAgentID, ModifiedByAgentID) ");
             insert2.append("values ");
             // the 'unknown status' record
             insert2.append("(");
@@ -1512,7 +1522,9 @@ public class GenericDBConversion
             insert2.append(",'Unknown','', '"+nowStr+"','"+nowStr+"',0,"+getCreatorAgentId(null)+","+getModifiedByAgentId(null)+")");
 
     		Statement st = newDBConn.createStatement();
+            log.debug(insert.toString());
     		st.executeUpdate(insert.toString());
+    		log.debug(insert2.toString());
             st.executeUpdate(insert2.toString());
             st.close();
             
@@ -1559,7 +1571,8 @@ public class GenericDBConversion
                 Statement updateStatement = newDBConn.createStatement();
                 //String updateStr = "INSERT INTO datatype (DataTypeID, TimestampCreated, TimestampModified, LastEditedBy, Name) VALUES (null,'"+nowStr+"','"+nowStr+"',NULL,'"+dataTypeName+"')";
                 //Meg removed explicit insert of null value into DataTypeID, it was failing on SQL Server
-                String updateStr = "INSERT INTO datatype ( TimestampCreated, TimestampModified, LastEditedBy, Name) VALUES ('"+nowStr+"','"+nowStr+"',NULL,'"+dataTypeName+"')";
+                //String updateStr = "INSERT INTO datatype ( TimestampCreated, TimestampModified, Name, CreatedByAgentID, ModifiedByAgentID) VALUES ('"+nowStr+"','"+nowStr+"','"+dataTypeName+"',"+getCreatorAgentId(null)+","+getModifiedByAgentId(null)+")";
+                String updateStr = "INSERT INTO datatype ( TimestampCreated, TimestampModified, Name) VALUES ('"+nowStr+"','"+nowStr+"','"+dataTypeName+"')";
                 updateStatement.executeUpdate(updateStr);
                 updateStatement.clearBatch();
                 updateStatement.close();
@@ -1589,7 +1602,7 @@ public class GenericDBConversion
     {
         Discipline discipline = Discipline.getDiscipline("fish");
         
-        setSession(HibernateUtil.getCurrentSession());
+        //setSession(HibernateUtil.getCurrentSession());
         Institution    institution    = createInstitution("Natural History Museum");
         Division       division       = createDivision(institution, discipline.getName(), "Icthyology", "IT", "Icthyology");
         startTx();
@@ -1649,8 +1662,9 @@ public class GenericDBConversion
             int recordCnt = 0;
             while (rs.next())
             {
-                int    taxonomyTypeID  = rs.getInt(1);
+                int    taxonomyTypeID   = rs.getInt(1);
                 String taxonomyTypeName = rs.getString(2);
+                String lastEditedBy     = null;
                 
                 String disciplineName = getStandardDisciplineName(taxonomyTypeName);
                 if (disciplineName == null)
@@ -1707,20 +1721,23 @@ public class GenericDBConversion
                 Statement updateStatement = newDBConn.createStatement();
                 StringBuilder strBuf2 = new StringBuilder();
                 //adding DivisioniID
-                strBuf2.append("INSERT INTO collectiontype (CollectionTypeID, TimestampModified, Discipline, Name, TimestampCreated, LastEditedBy, DataTypeID, SpecifyUserID, GeographyTreeDefID, GeologicTimePeriodTreeDefID, LocationTreeDefID, TaxonTreeDefID, DivisionID) VALUES (");
+                strBuf2.append("INSERT INTO collectiontype (CollectionTypeID, TimestampModified, Discipline, Name, TimestampCreated, ");
+                strBuf2.append("DataTypeID, SpecifyUserID, GeographyTreeDefID, GeologicTimePeriodTreeDefID, LocationTreeDefID, TaxonTreeDefID, DivisionID, ");
+                strBuf2.append("CreatedByAgentID, ModifiedByAgentID) VALUES (");
                 strBuf2.append(taxonomyTypeMapper.get(taxonomyTypeID)+","); 
                 strBuf2.append("'"+dateFormatter.format(now)+"',"); // TimestampModified
                 strBuf2.append("'"+discipline.getName()+"',");
                 strBuf2.append("'"+discipline.getTitle()+"',");
                 strBuf2.append("'"+dateFormatter.format(now)+"',");  // TimestampCreated
-                strBuf2.append("NULL,"); // lastEditedBy
                 strBuf2.append(dataTypeId+",");
                 strBuf2.append(specifyUserId+",");
                 strBuf2.append("1,"); // GeographyTreeDefID
                 strBuf2.append("1,"); // GeologicTimePeriodTreeDefID
                 strBuf2.append("1,"); // LocationTreeDefID
                 strBuf2.append("1,");// TaxonTreeDefID
-                strBuf2.append("1)"); //DivisionID
+                strBuf2.append("1,"); //DivisionID
+                strBuf2.append(getCreatorAgentId(null)+","+getModifiedByAgentId(lastEditedBy));
+                strBuf2.append(")");
                 //strBuf2.append("NULL)");//  UserPermissionID//User/Security changes
                 log.info(strBuf2.toString());
                 
@@ -1767,7 +1784,7 @@ public class GenericDBConversion
                      String taxTypeName     = rs.getString(3);
                      String prefix          = rs.getString(4);
                      String remarks         = rs.getString(5);
-                     String lastEditBy      = rs.getString(6);
+                     String lastEditedBy    = rs.getString(6);
                      //int   catSeriesDefID  = rs.getInt(7);
                      int   taxonomyTypeID  = rs.getInt(8);
                      
@@ -1780,19 +1797,19 @@ public class GenericDBConversion
                          seriesNameHash.put(seriesName, true);
                      }
                      
-                     Session session = HibernateUtil.getNewSession();
-                     CatalogNumberingScheme cns = new CatalogNumberingScheme();
+                     Session                localSession = HibernateUtil.getNewSession();
+                     CatalogNumberingScheme cns          = new CatalogNumberingScheme();
                      cns.initialize();
                      cns.setIsNumericOnly(true);
                      cns.setSchemeClassName("");
                      cns.setSchemeName(newSeriesName);
-                     Transaction trans = session.beginTransaction();
-                     session.save(cns);
+                     Transaction trans = localSession.beginTransaction();
+                     localSession.save(cns);
                      trans.commit();
                      
                      Integer catNumSchemeId = cns.getCatalogNumberingSchemeId();
                      //catNumSchemeHash.put(hashKey, catNumSchemeId);
-                     session.close();
+                     localSession.close();
                      
                      // Now craete the proper record in the  Join Table
     
@@ -1800,15 +1817,16 @@ public class GenericDBConversion
     
                      Statement updateStatement = newDBConn.createStatement();
                      strBuf.setLength(0);
-                     strBuf.append("INSERT INTO collection (CollectionTypeID, CollectionName, CollectionPrefix, Remarks, CatalogNumberingSchemeID, LastEditedBy, TimestampCreated, TimestampModified) VALUES (");
+                     strBuf.append("INSERT INTO collection (CollectionTypeID, CollectionName, CollectionPrefix, Remarks, CatalogNumberingSchemeID, ");
+                     strBuf.append("TimestampCreated, TimestampModified, CreatedByAgentID, ModifiedByAgentID) VALUES (");
                      strBuf.append(newColObjdefID+",");
                      strBuf.append(getStrValue(newSeriesName)+",");
                      strBuf.append(getStrValue(prefix)+",");
                      strBuf.append(getStrValue(remarks)+",");
                      strBuf.append(catNumSchemeId.toString()+",");
-                     strBuf.append(getStrValue(lastEditBy)+",");
                      strBuf.append("'"+dateFormatter.format(now)+"',"); // TimestampModified
-                     strBuf.append("'"+dateFormatter.format(now)+"'");  // TimestampCreated
+                     strBuf.append("'"+dateFormatter.format(now)+"',");  // TimestampCreated
+                     strBuf.append(getCreatorAgentId(null)+","+getModifiedByAgentId(lastEditedBy));
                      strBuf.append(")");
     
                      System.out.println(strBuf.toString());
@@ -3863,12 +3881,12 @@ public class GenericDBConversion
     public boolean convertLoanPreparations()
     {
         BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "determination", BasicSQLUtils.myDestinationServerType); 
-        BasicSQLUtils.setIdentityInsertONCommandForSQLServer(newDBConn, "loanphysicalobject", BasicSQLUtils.myDestinationServerType); 
-        deleteAllRecordsFromTable(newDBConn, "loanphysicalobject", BasicSQLUtils.myDestinationServerType); // automatically closes the connection
+        BasicSQLUtils.setIdentityInsertONCommandForSQLServer(newDBConn, "loanpreparation", BasicSQLUtils.myDestinationServerType); 
+        deleteAllRecordsFromTable(newDBConn, "loanpreparation", BasicSQLUtils.myDestinationServerType); // automatically closes the connection
         
         if (BasicSQLUtils.getNumRecords(oldDBConn, "loanphysicalobject") == 0)
         {
-            BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "loanphysicalobject", BasicSQLUtils.myDestinationServerType); 
+            BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "loanpreparation", BasicSQLUtils.myDestinationServerType); 
             return true;
         }
        
@@ -3901,9 +3919,9 @@ public class GenericDBConversion
             log.info(sql);
 
             List<BasicSQLUtils.FieldMetaData> newFieldMetaData = new ArrayList<BasicSQLUtils.FieldMetaData>();
-            getFieldMetaDataFromSchema(newDBConn, "loanphysicalobject", newFieldMetaData, BasicSQLUtils.myDestinationServerType);
+            getFieldMetaDataFromSchema(newDBConn, "loanpreparation", newFieldMetaData, BasicSQLUtils.myDestinationServerType);
 
-            log.info("Number of Fields in New loanphysicalobject "+newFieldMetaData.size());
+            log.info("Number of Fields in New loanpreparation "+newFieldMetaData.size());
             String sqlStr = sql.toString();
 
             Map<String, Integer> oldNameIndex = new Hashtable<String, Integer>();
@@ -3917,6 +3935,7 @@ public class GenericDBConversion
 
             int quantityIndex         = oldNameIndex.get("Quantity") + 1;
             int quantityReturnedIndex = oldNameIndex.get("QuantityReturned") + 1;
+            int lastEditedByInx       = oldNameIndex.get("LastEditedBy") + 1;
            //int quantityResolvedIndex = oldNameIndex.get("QuantityResolved") + 1;
                        
   
@@ -3953,6 +3972,7 @@ public class GenericDBConversion
                 int quantityReturned = getIntValue(rs, quantityReturnedIndex);
                 //int quantityResolved = getIntValue(rs, quantityResolvedIndex);
                 Boolean isResolved   = quantityReturned == quantity;
+                String  lastEditedBy = rs.getString(lastEditedByInx);
                 
                 str.setLength(0);
                 StringBuffer fieldList = new StringBuffer();
@@ -3967,7 +3987,7 @@ public class GenericDBConversion
                     fieldList.append(newFieldName + " ");
                 }
                 fieldList.append(")");
-                str.append("INSERT INTO loanphysicalobject "+ fieldList+ " VALUES (");
+                str.append("INSERT INTO loanpreparation "+ fieldList+ " VALUES (");
                 for (int i=0;i<newFieldMetaData.size();i++)
                 {
                     if (i > 0) str.append(", ");
@@ -3982,6 +4002,18 @@ public class GenericDBConversion
                     } else if (newFieldName.equals("IsResolved"))
                     {
                         str.append(BasicSQLUtils.getStrValue(isResolved)); 
+
+                    } else if (newFieldName.equalsIgnoreCase("CollectionMemberID"))
+                    {
+                        str.append(getCollectionMemberId()); 
+
+                    } else if (newFieldName.equalsIgnoreCase("ModifiedByAgentID"))
+                    {
+                        str.append(getModifiedByAgentId(lastEditedBy)); 
+
+                    } else if (newFieldName.equalsIgnoreCase("CreatedByAgentID"))
+                    {
+                        str.append(getCreatorAgentId(null)); 
 
                     } else
                     {
@@ -4036,7 +4068,7 @@ public class GenericDBConversion
                 {
                     if (count % 2000 == 0) 
                     {
-                        log.info("LoanPhysicalObject Records: "+count);
+                        log.info("LoanPreparation Records: "+count);
                     }
                 }
 
@@ -4045,8 +4077,7 @@ public class GenericDBConversion
                     Statement updateStatement = newDBConn.createStatement();
                     if (BasicSQLUtils.myDestinationServerType != BasicSQLUtils.SERVERTYPE.MS_SQLServer)
                     {
-                        BasicSQLUtils.removeForeignKeyConstraints(newDBConn,
-                                BasicSQLUtils.myDestinationServerType);
+                        BasicSQLUtils.removeForeignKeyConstraints(newDBConn, BasicSQLUtils.myDestinationServerType);
                     }
                     //log.debug("executring: " + str.toString());
                     //updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
@@ -4072,10 +4103,10 @@ public class GenericDBConversion
             if (hasFrame)
             {
                 setProcess(count);
-                log.info("Processed LoanPhysicalObject "+count+" records.");
+                log.info("Processed LoanPreparation "+count+" records.");
             } else
             {
-                log.info("Processed LoanPhysicalObject "+count+" records.");
+                log.info("Processed LoanPreparation "+count+" records.");
             }
             rs.close();
 
@@ -4085,11 +4116,11 @@ public class GenericDBConversion
         {
             e.printStackTrace();
             log.error(e);
-            BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "loanphysicalobject", BasicSQLUtils.myDestinationServerType); 
+            BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "LoanPreparation", BasicSQLUtils.myDestinationServerType); 
             throw new RuntimeException(e);
         }
         log.info("Done processing LoanPhysicalObject");
-        BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "loanphysicalobject", BasicSQLUtils.myDestinationServerType); 
+        BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "LoanPreparation", BasicSQLUtils.myDestinationServerType); 
         return true;
 
     }
@@ -4143,11 +4174,11 @@ public class GenericDBConversion
      * @param  collection collection
      * @return set of objects
      */
-    public Set<CollectionType> createCollectionType(final String          name,
-                                                        final DataType        dataType,
-                                                        final SpecifyUser     user,
-                                                        final TaxonTreeDef taxaTreeDef,
-                                                        final Collection   collection)
+    public Set<CollectionType> createCollectionType(final String       name,
+                                                    final DataType     dataType,
+                                                    final SpecifyUser  user,
+                                                    final TaxonTreeDef taxaTreeDef,
+                                                    final Collection   collection)
     {
         try
         {
@@ -6003,8 +6034,15 @@ public class GenericDBConversion
     }
     
     
-    protected void copyAgentFromOldToNew(Integer oldAgentId, IdTableMapper agentIDMapper)
+    /**
+     * @param oldAgentId
+     * @param agentIDMapper
+     */
+    protected void copyAgentFromOldToNew(final Integer oldAgentId, 
+                                         final IdTableMapper agentIDMapper)
     {
+        boolean doDebug = false;
+        
         StringBuilder sql = new StringBuilder("select ");
         if(BasicSQLUtils.myDestinationServerType != BasicSQLUtils.SERVERTYPE.MS_SQLServer)
         {
@@ -6046,6 +6084,8 @@ public class GenericDBConversion
             Statement stmtX = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
             ResultSet rsX   = stmtX.executeQuery(sql.toString());
             
+            //log.debug(sql.toString());
+            
             int cnt = 0;
             while (rsX.next())
             {
@@ -6053,7 +6093,8 @@ public class GenericDBConversion
                 
                 StringBuilder sqlStr = new StringBuilder();
                 sqlStr.append("INSERT INTO agent ");
-                sqlStr.append("("+newFieldListStr+")");
+                sqlStr.append("("+newFieldListStr);
+                sqlStr.append(")");
                 sqlStr.append(" VALUES (");
                 
                 int fCnt = 0;
@@ -6061,19 +6102,26 @@ public class GenericDBConversion
                 {
                     if (fCnt > 0) sqlStr.append(", ");
                     
-                    Integer index = oldIndexFromNameMap.get(fieldName);
-                    if (index == null)
+                    if (StringUtils.contains(fieldName.toLowerCase(), "collectionmemberid"))
                     {
-                        //System.out.println(fieldName);
-                        sqlStr.append("NULL");
-                        
-                    } else if (fCnt == 0)
-                    {
-                        sqlStr.append(agentIDMapper.get(agentId));
+                        sqlStr.append(getCollectionMemberId());
                         
                     } else
                     {
-                        sqlStr.append(BasicSQLUtils.getStrValue(rsX.getObject(index.intValue())));
+                        Integer index = oldIndexFromNameMap.get(fieldName);
+                        if (index == null)
+                        {
+                            //System.out.println(fieldName);
+                            sqlStr.append("NULL");
+                            
+                        } else if (fCnt == 0)
+                        {
+                            sqlStr.append(agentIDMapper.get(agentId));
+                            
+                        } else
+                        {
+                            sqlStr.append(BasicSQLUtils.getStrValue(rsX.getObject(index.intValue())));
+                        }
                     }
                     fCnt++;
                 }
@@ -6082,7 +6130,7 @@ public class GenericDBConversion
                 
                 Statement updateStatement = newDBConn.createStatement();
                 //updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
-                if (false)
+                if (doDebug)
                 {
                     log.info(sqlStr.toString());
                 }
@@ -6101,9 +6149,7 @@ public class GenericDBConversion
             ex.printStackTrace();
             System.exit(0);
         }
-
-        
-    }
+  }
     
   /**
    * Specify 5.x points at AgentAdress instead of an Agent. The idea was that to point at an Agent and possibly a differnt address
@@ -6117,7 +6163,11 @@ public class GenericDBConversion
    */
     public boolean convertAgents() throws SQLException
     {
+        boolean debugAgents = false;
+        
         log.debug("convert Agents");
+        
+        //GenericDBConversion.setShouldCreateMapTables(true);
         
         BasicSQLUtils.removeForeignKeyConstraints(newDBConn, BasicSQLUtils.myDestinationServerType);
         // Create the mappers here, but fill them in during the AgentAddress Process
@@ -6125,17 +6175,14 @@ public class GenericDBConversion
         IdTableMapper addrIDMapper      = idMapperMgr.addTableMapper("address", "AddressID");
         IdTableMapper agentAddrIDMapper = idMapperMgr.addTableMapper("agentaddress", "AgentAddressID");
       
+        agentIDMapper.setInitialIndex(4);
+        
         log.info("Mapping Agent Ids");
         agentIDMapper.mapAllIds();//.mapAllIds("select AgentID from agent order by AgentID"); 
       
         log.info("Mapping Address Ids");
         addrIDMapper.mapAllIds();//.mapAllIds("select AddressID from address order by AddressID");
-
-       BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "agent", BasicSQLUtils.myDestinationServerType);
-       BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "address", BasicSQLUtils.myDestinationServerType);
-       
-       initializeAgentInfo();
-
+        
        // Just like in the conversion of the CollectionObjects we
        // need to build up our own select clause because the MetaData of columns names returned from
        // a query doesn't include the table names for all columns, this is far more predictable
@@ -6186,10 +6233,10 @@ public class GenericDBConversion
                "agentaddress.URL",
                "agent.Remarks",
                "agent.TimestampCreated",
-               "agent.LastEditedBy",
                "agent.Visibility",
                "agent.VisibilitySetBy",//User/Security changes
-               "agent.ParentOrganizationID"};
+               "agent.ParentOrganizationID",
+               "agent.CollectionMemberID"};
 
 
        // See comments for agent Columns
@@ -6203,7 +6250,6 @@ public class GenericDBConversion
                                   "address.Postalcode",
                                   "address.Remarks",
                                   "address.TimestampCreated",
-                                  "address.LastEditedBy",
                                   "agentaddress.IsCurrent",
                                   "agentaddress.Phone1",
                                   "agentaddress.Phone2",
@@ -6350,7 +6396,7 @@ public class GenericDBConversion
            rsX.close();
            stmtX.close();
            
-           nextAddressId = (int)BasicSQLUtils.getNumRecords(oldDBConn, "address") + 1;
+           nextAddressId = BasicSQLUtils.getNumRecords(oldDBConn, "address") + 1;
 
            
            //////////////////////////////////////////////////////////////////////////////////
@@ -6396,9 +6442,9 @@ public class GenericDBConversion
            while (rs.next())
            {
                byte agentType      = rs.getByte(agentTypeInx);
-               int agentAddressId = rs.getInt(1);
-               int agentId        = rs.getInt(agentIdInx);
-               int addrId         = rs.getInt(addrIdInx);
+               int agentAddressId  = rs.getInt(1);
+               int agentId         = rs.getInt(agentIdInx);
+               int addrId          = rs.getInt(addrIdInx);
                String lastEditedBy = rs.getString(lastEditInx);
                
                AddressInfo addrInfo     = addressHash.get(addrId);
@@ -6419,8 +6465,9 @@ public class GenericDBConversion
                     sqlStr.append("INSERT INTO agent ");
                     sqlStr.append("(AgentID, TimestampModified, AgentType, JobTitle, FirstName, LastName, MiddleInitial, ");
                     sqlStr.append("Title, Interests, Abbreviation, Name, Email, URL, Remarks, TimestampCreated, ");
-                    sqlStr.append("CreatedByAgent, Visibility, VisibilitySetBy, ParentOrganizationID, CreatedByAgentID, ModifiedByAgentID)");
+                    sqlStr.append("Visibility, VisibilitySetBy, ParentOrganizationID, CollectionMemberID, CreatedByAgentID, ModifiedByAgentID)");
                     sqlStr.append(" VALUES (");
+                    
                     for (int i=0;i<agentColumns.length;i++)
                     {
                         if (i > 0) sqlStr.append(",");
@@ -6428,11 +6475,6 @@ public class GenericDBConversion
                         if (i == 0)
                         {
                             sqlStr.append(agentInfo.getNewAgentId());
-
-
-                        } else if (i == lastEditInx)
-                        {
-                            // Skip the field
                             
                         } else if (agentColumns[i].equals("agent.ParentOrganizationID"))
                         {
@@ -6451,6 +6493,10 @@ public class GenericDBConversion
                             {
                                 sqlStr.append("NULL");
                             }
+                            
+                        } else if (agentColumns[i].equalsIgnoreCase("agent.CollectionMemberID"))
+                        {
+                            sqlStr.append(getCollectionMemberId());
                             
                         } else if (agentColumns[i].equals("agent.Name"))
                         {
@@ -6473,18 +6519,22 @@ public class GenericDBConversion
                             
                         } else
                         {
+                            if (debugAgents)
+                            {
+                                //log.info(agentColumns[i]);
+                            }
                             inx = indexFromNameMap.get(agentColumns[i]);
                             sqlStr.append(BasicSQLUtils.getStrValue(rs.getObject(inx)));
                         }
                     }
-                    sqlStr.append(getCreatorAgentId(lastEditedBy)+","+getModifiedByAgentId(lastEditedBy));
+                    sqlStr.append(","+getCreatorAgentId(lastEditedBy)+","+getModifiedByAgentId(lastEditedBy));
                     sqlStr.append(")");
 
                     try
                     {
                         Statement updateStatement = newDBConn.createStatement();
                         //updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
-                        if (false)
+                        if (debugAgents)
                         {
                             log.info(sqlStr.toString());
                         }
@@ -6517,14 +6567,15 @@ public class GenericDBConversion
                    BasicSQLUtils.setIdentityInsertONCommandForSQLServer(newDBConn, "address", BasicSQLUtils.myDestinationServerType); 
                    StringBuilder sqlStr = new StringBuilder("INSERT INTO address ");
                    sqlStr.append("(AddressID, TimestampModified, Address, Address2, City, State, Country, PostalCode, Remarks, TimestampCreated, ");
-                   sqlStr.append("IsPrimary, Phone1, Phone2, Fax, RoomOrBuilding, AgentID, CreatedByAgentID, ModifiedByAgentID)");
+                   sqlStr.append("IsPrimary, Phone1, Phone2, Fax, RoomOrBuilding, AgentID, CollectionMemberID, CreatedByAgentID, ModifiedByAgentID)");
                    sqlStr.append(" VALUES (");
                    for (int i=0;i<addressColumns.length;i++)
                    {
                        if (i > 0) sqlStr.append(",");
+                       
                        if (i == addressColumns.length-1)
                        {
-                           sqlStr.append(agentId);
+                           sqlStr.append(agentInfo.getNewAgentId());
 
                        } else
                        {
@@ -6554,14 +6605,14 @@ public class GenericDBConversion
                            sqlStr.append(value);
                        }
                    }
-                   sqlStr.append(getCreatorAgentId(lastEditedBy)+","+getModifiedByAgentId(lastEditedBy));
+                   sqlStr.append(","+getCollectionMemberId()+","+getCreatorAgentId(lastEditedBy)+","+getModifiedByAgentId(lastEditedBy));
                    sqlStr.append(")");
 
                    try
                    {
                        Statement updateStatement = newDBConn.createStatement();
                        //updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
-                       if (false)
+                       if (debugAgents)
                        {
                            log.info(sqlStr.toString());
                        }
@@ -6675,7 +6726,7 @@ public class GenericDBConversion
                    StringBuilder sqlStr = new StringBuilder("INSERT INTO agent ");
                    sqlStr.append("(AgentID, TimestampModified, AgentType, JobTitle, FirstName, LastName, MiddleInitial, Title, Interests, ");
                    sqlStr.append("Abbreviation, Name, Email, URL, Remarks, TimestampCreated, Visibility, VisibilitySetBy, ParentOrganizationID, ");
-                   sqlStr.append("CreatedByAgentID, ModifiedByAgentID)");
+                   sqlStr.append("CollectionMemberID, CreatedByAgentID, ModifiedByAgentID)");
                    sqlStr.append(" VALUES (");
                     for (int i=0;i<agentColumns.length;i++)
                     {
@@ -6694,20 +6745,29 @@ public class GenericDBConversion
                         } else if (agentColumns[i].equals("agent.VisibilitySetBy"))//User/Security changes
                         {
                             sqlStr.append("null");
+                            
+                        } else if (agentColumns[i].equalsIgnoreCase("agent.CollectionMemberID"))
+                        {
+                            sqlStr.append(getCollectionMemberId());
+                            
                         } else
                         {
+                            if (debugAgents)
+                            {
+                                //log.info(agentColumns[i]);
+                            }
                             inx = indexFromNameMap.get(agentColumns[i]);
                             sqlStr.append(BasicSQLUtils.getStrValue(rs.getObject(inx)));
                         }
                     }
-                    sqlStr.append(getCreatorAgentId(lastEditedBy)+","+getModifiedByAgentId(lastEditedBy));
+                    sqlStr.append(","+getCreatorAgentId(lastEditedBy)+","+getModifiedByAgentId(lastEditedBy));
                     sqlStr.append(")");
 
                     try
                     {
                         Statement updateStatement = newDBConn.createStatement();
                         //updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
-                        if (false)
+                        if (debugAgents)
                         {
                             log.info(sqlStr.toString());
                         }
@@ -6758,10 +6818,10 @@ public class GenericDBConversion
                recordCnt++;
                if (recordCnt % 50 == 0)
                {
-                   setProcess((int)recordCnt);
+                   setProcess(recordCnt);
                }
            }
-           setProcess((int)recordCnt);
+           setProcess(recordCnt);
            BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "agent", BasicSQLUtils.myDestinationServerType); 
 /*
            if (oldAddrIds.size() > 0)

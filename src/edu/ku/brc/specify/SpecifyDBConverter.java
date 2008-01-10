@@ -99,7 +99,8 @@ public class SpecifyDBConverter
     }
 
     /**
-     * Utility method to associate an artist with a catObj
+     * @param args
+     * @throws Exception
      */
     public static void main(String args[]) throws Exception
     {
@@ -172,7 +173,7 @@ public class SpecifyDBConverter
                 dbNamesToConvert = converter.selectedDBsToConvert(names);
                 log.debug("size of name to conver: " + dbNamesToConvert.size());
                 
-                if((dbNamesToConvert.size()>=1)&&(dbNamesToConvert.get(0).equals("Custom")))
+                if ((dbNamesToConvert.size()>=1)&&(dbNamesToConvert.get(0).equals("Custom")))
                 {
                     log.debug("Running custom converter");
                     CustomDBConverterDlg dlg = converter.runCustomConverter();
@@ -213,12 +214,17 @@ public class SpecifyDBConverter
         });
     }
     
+    /**
+     * @param isCustomConvert
+     * @param sourceDbProps
+     * @param destDbProps
+     */
     protected  void processDB(final boolean isCustomConvert, 
                               final DatabaseConnectionProperties sourceDbProps, 
                               final DatabaseConnectionProperties destDbProps)
     {
         
-        if(!(isCustomConvert) && (dbNamesToConvert.size() > 0 && currentIndex < dbNamesToConvert.size()))
+        if (!(isCustomConvert) && (dbNamesToConvert.size() > 0 && currentIndex < dbNamesToConvert.size()))
         {
             
             final SwingWorker worker = new SwingWorker()
@@ -249,7 +255,7 @@ public class SpecifyDBConverter
             };
             worker.start();
         }
-        else if(isCustomConvert)
+        else if (isCustomConvert)
         {
             final SwingWorker worker = new SwingWorker()
             {
@@ -284,6 +290,11 @@ public class SpecifyDBConverter
         }
     }
     
+    /**
+     * @param sourceDatabaseName
+     * @param destDatabaseName
+     * @throws Exception
+     */
     protected void convertDB(final String sourceDatabaseName, final String destDatabaseName)throws Exception
     {
         convertDB(sourceDatabaseName, destDatabaseName, false, null,  null);
@@ -312,7 +323,7 @@ public class SpecifyDBConverter
         
         Properties initPrefs = BuildSampleDatabase.getInitializePrefs(databaseNameDest);
         
-        String userNameSource    ="";
+        String userNameSource     = "";
         String passwordSource     = "";
         String driverNameSource   = "";
         String databaseHostSource = "";
@@ -324,7 +335,7 @@ public class SpecifyDBConverter
         String databaseHostDest = "";
         DatabaseDriverInfo driverInfoDest = null;
         
-        if(isCustomConvert)
+        if (isCustomConvert)
         {
             log.debug("Running a custom convert");
             userNameSource      = sourceDbProps.getUserName();
@@ -372,18 +383,18 @@ public class SpecifyDBConverter
         {
             throw new RuntimeException("Couldn't find Source DB driver by name ["+driverInfoSource+"] in driver list.");
         }
-        if(driverInfoDest == null)
+        if (driverInfoDest == null)
         {
             throw new RuntimeException("Couldn't find Destination driver by name ["+driverInfoDest+"] in driver list.");
         }
         
-        if(driverNameDest.equals("MySQL"))BasicSQLUtils.myDestinationServerType = BasicSQLUtils.SERVERTYPE.MySQL;
-        else if(driverNameDest.equals("Derby"))BasicSQLUtils.myDestinationServerType = BasicSQLUtils.SERVERTYPE.Derby;
-        else if(driverNameDest.equals("SQLServer"))BasicSQLUtils.myDestinationServerType = BasicSQLUtils.SERVERTYPE.MS_SQLServer;
+        if (driverNameDest.equals("MySQL"))BasicSQLUtils.myDestinationServerType = BasicSQLUtils.SERVERTYPE.MySQL;
+        else if (driverNameDest.equals("Derby"))BasicSQLUtils.myDestinationServerType = BasicSQLUtils.SERVERTYPE.Derby;
+        else if (driverNameDest.equals("SQLServer"))BasicSQLUtils.myDestinationServerType = BasicSQLUtils.SERVERTYPE.MS_SQLServer;
         
-        if(driverNameSource.equals("MySQL"))BasicSQLUtils.mySourceServerType = BasicSQLUtils.SERVERTYPE.MySQL;
-        else if(driverNameSource.equals("Derby"))BasicSQLUtils.mySourceServerType = BasicSQLUtils.SERVERTYPE.Derby;
-        else if(driverNameSource.equals("SQLServer"))BasicSQLUtils.mySourceServerType = BasicSQLUtils.SERVERTYPE.MS_SQLServer;
+        if (driverNameSource.equals("MySQL"))BasicSQLUtils.mySourceServerType = BasicSQLUtils.SERVERTYPE.MySQL;
+        else if (driverNameSource.equals("Derby"))BasicSQLUtils.mySourceServerType = BasicSQLUtils.SERVERTYPE.Derby;
+        else if (driverNameSource.equals("SQLServer"))BasicSQLUtils.mySourceServerType = BasicSQLUtils.SERVERTYPE.MS_SQLServer;
         
         else 
         {
@@ -440,7 +451,7 @@ public class SpecifyDBConverter
         	GenericDBConversion.setShouldCreateMapTables(startfromScratch);
             GenericDBConversion.setShouldDeleteMapTables(false);
             
-            frame.setOverall(0, 15);
+            frame.setOverall(0, 16);
             SwingUtilities.invokeLater(new Runnable() {
                 public void run()
                 {
@@ -468,7 +479,7 @@ public class SpecifyDBConverter
                 idMapperMgr = IdMapperMgr.getInstance();
                 Connection oldConn = conversion.getOldDBConnection();
                 Connection newConn = conversion.getNewDBConnection();
-                if (oldConn==null || newConn==null)
+                if (oldConn == null || newConn == null)
                 {
                 	log.error("One of the DB connections is null.  Cannot proceed.  Check your DB install to make sure both DBs exist.");
                 	System.exit(-1);
@@ -478,52 +489,21 @@ public class SpecifyDBConverter
                 // NOTE: Within BasicSQLUtils the connection is for removing tables and records
                 BasicSQLUtils.setDBConnection(conversion.getNewDBConnection());
 
-
-                frame.setDesc("Converting Agents.");
-                log.info("Converting Agents.");
-                
                 //---------------------------------------------------------------------------------------
                 //-- Create basic set of information.
                 //---------------------------------------------------------------------------------------
                 conversion.doInitialize();
 
-                // This MUST be done before any of the table copies because it
-                // creates the IdMappers for Agent, Address and mor eimportantly AgentAddress
-                // NOTE: AgentAddress is actually mapping from the old AgentAddress table to the new Agent table
-                boolean copyAgentAddressTables = false;
-                if (copyAgentAddressTables || doAll)
-                {
-                    log.info("Calling - convertAgents");
-                    conversion.convertAgents();
+                BasicSQLUtils.deleteAllRecordsFromTable(conversion.getNewDBConnection(), "agent", BasicSQLUtils.myDestinationServerType);
+                BasicSQLUtils.deleteAllRecordsFromTable(conversion.getNewDBConnection(), "address", BasicSQLUtils.myDestinationServerType);
 
-                } else
-                {
-                    idMapperMgr.addTableMapper("agent", "AgentID");
-                    idMapperMgr.addTableMapper("address", "AddressID");
-                    idMapperMgr.addTableMapper("agentaddress", "AgentAddressID");
-                }
-                frame.incOverall();
-
-                frame.setDesc("Converting Geologic Time Period.");
-                log.info("Converting Geologic Time Period.");
-                // GTP needs to be converted here so the stratigraphy conversion can use
-                // the IDs
-                boolean doGTP = false;
-                if (doGTP || doAll )
-                {
-                	GeologicTimePeriodTreeDef treeDef = conversion.convertGTPDefAndItems();
-                	conversion.convertGTP(treeDef);
-                } else
-                {
-                    idMapperMgr.addTableMapper("geologictimeperiod", "GeologicTimePeriodID");
-                    idMapperMgr.mapForeignKey("Stratigraphy", "GeologicTimePeriodID", "GeologicTimePeriod", "GeologicTimePeriodID");
-                }
-
-                frame.incOverall();
-
+                conversion.initializeAgentInfo();
+                
                 frame.setDesc("Mapping Tables.");
                 log.info("Mapping Tables.");
                 boolean mapTables = true;
+                
+                //GenericDBConversion.setShouldCreateMapTables(false);
                 if (mapTables || doAll)
                 {
                     // Ignore these field names from new table schema when mapping OR
@@ -535,7 +515,8 @@ public class SpecifyDBConverter
                     conversion.mapIds();//MEG LOOK HERE
                     BasicSQLUtils.setFieldsToIgnoreWhenMappingIDs(null);
                 }
-
+                //GenericDBConversion.setShouldCreateMapTables(startfromScratch);
+                
                 frame.incOverall();
 
 
@@ -563,8 +544,8 @@ public class SpecifyDBConverter
                     criteria.add(Restrictions.eq("lastName", lastName));
                     criteria.add(Restrictions.eq("firstName", firstName));
                     
-                    Agent userAgent = null;
-                    List<?> list = criteria.list();
+                    Agent   userAgent = null;
+                    List<?> list      = criteria.list();
                     if (list != null && list.size() == 1)
                     {
                         userAgent = (Agent)list.get(0);
@@ -588,6 +569,63 @@ public class SpecifyDBConverter
                     idMapperMgr.addTableMapper("CollectionObjectType", "CollectionObjectTypeID");
                 }
                 frame.incOverall();
+                
+                frame.setDesc("Converting Agents.");
+                log.info("Converting Agents.");
+                
+                // This MUST be done before any of the table copies because it
+                // creates the IdMappers for Agent, Address and more importantly AgentAddress
+                // NOTE: AgentAddress is actually mapping from the old AgentAddress table to the new Agent table
+                boolean copyAgentAddressTables = false;
+                if (copyAgentAddressTables || doAll)
+                {
+                    log.info("Calling - convertAgents");
+                    conversion.convertAgents();
+
+                } else
+                {
+                    idMapperMgr.addTableMapper("agent", "AgentID");
+                    idMapperMgr.addTableMapper("address", "AddressID");
+                    idMapperMgr.addTableMapper("agentaddress", "AgentAddressID");
+                }
+                frame.incOverall();
+                
+                frame.setDesc("Mapping Agent Tables.");
+                log.info("MappingAgent Tables.");
+                if (mapTables || doAll)
+                {
+                    // Ignore these field names from new table schema when mapping OR
+                    // when mapping IDs
+                    BasicSQLUtils.setFieldsToIgnoreWhenMappingIDs(new String[] {"MethodID",  "RoleID",  "CollectionID",  "ConfidenceID",
+                                                                                "TypeStatusNameID",  "ObservationMethodID",  "StatusID",
+                                                                                "TypeID",  "ShipmentMethodID", "RankID", "DirectParentRankID",
+                                                                                "RequiredParentRankID", "MediumID"});
+                    conversion.mapAgentRelatedIds();//MEG LOOK HERE
+                    BasicSQLUtils.setFieldsToIgnoreWhenMappingIDs(null);
+                }
+                frame.incOverall();
+
+
+                frame.setDesc("Converting Geologic Time Period.");
+                log.info("Converting Geologic Time Period.");
+                // GTP needs to be converted here so the stratigraphy conversion can use
+                // the IDs
+                boolean doGTP = false;
+                if (doGTP || doAll )
+                {
+                    GeologicTimePeriodTreeDef treeDef = conversion.convertGTPDefAndItems();
+                    conversion.convertGTP(treeDef);
+                } else
+                {
+                    idMapperMgr.addTableMapper("geologictimeperiod", "GeologicTimePeriodID");
+                    idMapperMgr.mapForeignKey("Stratigraphy", "GeologicTimePeriodID", "GeologicTimePeriod", "GeologicTimePeriodID");
+                }
+
+                frame.incOverall();
+
+
+                
+                
                 frame.setDesc("Converting USYS Tables.");
                 log.info("Converting USYS Tables.");
                 boolean copyUSYSTables = false;
@@ -689,7 +727,7 @@ public class SpecifyDBConverter
                 frame.setDesc("Creating Location");
                 log.info("Creating Location");
                 boolean doLocation = false;
-                if( doLocation || doAll )
+                if (doLocation || doAll )
                 {
                     conversion.buildSampleLocationTreeDef();
                 }
@@ -698,7 +736,7 @@ public class SpecifyDBConverter
                 frame.setDesc("Converting Taxonomy");
                 log.info("Converting Taxonomy");
                 boolean doTaxonomy = false;
-                if( doTaxonomy || doAll )
+                if (doTaxonomy || doAll )
                 {
                 	conversion.copyTaxonTreeDefs();
                 	conversion.convertTaxonTreeDefItems();

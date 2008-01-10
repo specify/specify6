@@ -46,7 +46,8 @@ public class IdHashMapper implements IdMapperIFace
     protected String          mapTableName  = null;
     protected boolean         showLogErrors = true;
     
-    protected ProgressFrame frame      = null;
+    protected ProgressFrame   frame         = null;
+    protected int             initialIndex  = 1;
     
     /**
      * Default Constructor for those creating derived classes.
@@ -74,7 +75,7 @@ public class IdHashMapper implements IdMapperIFace
      * @param sql the sql
      * @throws SQLException
      */
-    public IdHashMapper(final String tableName, final String sql) throws SQLException
+    public IdHashMapper(final String tableName, final String sql)
     {
         this(tableName);
         
@@ -100,16 +101,17 @@ public class IdHashMapper implements IdMapperIFace
             {
                 Statement stmtNew = newConn.createStatement();
                 //String str  = "DROP TABLE `"+mapTableName+"`";
-                String str  = "DROP TABLE "+mapTableName  ;
+                String str  = "DROP TABLE "+mapTableName;
+                
                 try
                 {
                     log.info(str);
                     stmtNew.executeUpdate(str);
-                } catch (SQLException ex){
-                   //log.info("table does not exist, cannot drop: " + mapTableName); 
-                    log.warn(ex);
-                    ///ex.printStackTrace();
-                };
+                    
+                } catch (Exception ex)
+                {
+                    // Exception may occur if table doesn't exist
+                }
 
                 str = "CREATE TABLE `"+mapTableName+"` ("+
                                     "`OldID` int(11) NOT NULL default '0', "+
@@ -367,6 +369,13 @@ public class IdHashMapper implements IdMapperIFace
     {
         this.frame = frame;
     }
-    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.conversion.IdMapperIFace#setInitialIndex(int)
+     */
+    public void setInitialIndex(int initialIndex)
+    {
+        this.initialIndex = initialIndex;
+    }
     
 }

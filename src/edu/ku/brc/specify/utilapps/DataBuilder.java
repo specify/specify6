@@ -177,6 +177,17 @@ public class DataBuilder
                                     final String abbreviation,
                                     final String email)
     {
+        return createAgent(title, firstName, middleInit, lastName, abbreviation, email, -1);
+    }
+    
+    public static Agent createAgent(final String title,
+                                    final String firstName,
+                                    final String middleInit,
+                                    final String lastName,
+                                    final String abbreviation,
+                                    final String email,
+                                    final int    collectionMemberId)
+    {
         // Create Collection Type
         Agent agent = new Agent();
         agent.initialize();
@@ -187,6 +198,7 @@ public class DataBuilder
         agent.setAbbreviation(abbreviation);
         agent.setTitle(title);
         agent.setEmail(email);
+        agent.setCollectionMemberId(collectionMemberId);
 
         persist(agent);
         return agent;

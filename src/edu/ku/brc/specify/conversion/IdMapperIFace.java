@@ -39,42 +39,48 @@ public interface IdMapperIFace
      * @param fromID the integer key
      * @param toID the value (most likely a database ID)
      */
-    public void put(int fromID, int toID);
+    public abstract void put(int fromID, int toID);
 
     /**
      * Returns an integer (mostly a table ID).
      * @param key the key (or ID) to use to get the value
      * @return the value of the mapping
      */
-    public Integer get(Integer key);
+    public abstract Integer get(Integer key);
 
     /**
      * Returns the name of the table.
      * @return the name of the table
      */
-    public String getName();
+    public abstract String getName();
 
     /**
      * Returns the SQL statement used to fill the table (might be null).
      * @return the SQL statement used to fill the table (might be null)
      */
-    public String getSql();
+    public abstract String getSql();
 
     /**
      * The number of entries in the mapping table.
      * @return the number of entries in the mapping table
      */
-    public int size();
+    public abstract int size();
     
     /**
      * Sets UI frame for progress.
      * @param frame the frame
      */
-    public void setFrame(ProgressFrame frame);
+    public abstract void setFrame(ProgressFrame frame);
 
     /**
      * Tells it to show log errors.
      * @param showLogErrors true/false
      */
-    public void setShowLogErrors(boolean showLogErrors);
+    public abstract void setShowLogErrors(boolean showLogErrors);
+    
+    /**
+     * The base index is '1' unless otherwise set.
+     * @param index the initial index to use for mapping.
+     */
+    public abstract void setInitialIndex(int index);
 }

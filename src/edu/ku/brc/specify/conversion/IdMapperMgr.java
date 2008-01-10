@@ -79,7 +79,7 @@ public class IdMapperMgr
      * @param sql the SQL used to do the mapping
      * @return the IdHashMapper object
      */
-    public IdTableMapper addTableMapper(final String tableName, final String idName, final String sql) throws SQLException
+    public IdTableMapper addTableMapper(final String tableName, final String idName, final String sql)
     {
         log.debug("addTableMapper called for table: " + tableName);
         log.debug("addTableMapper called for sql: " + sql);
@@ -110,7 +110,7 @@ public class IdMapperMgr
      * @return the same Mapper that was passed in
      * @throws SQLException
      */
-    public IdTableMapper addTableMapper(final String tableName, final String idName)  throws SQLException
+    public IdTableMapper addTableMapper(final String tableName, final String idName)
     {
         return addTableMapper(tableName, idName, null);
     }
@@ -122,7 +122,7 @@ public class IdMapperMgr
      * @return the new mapper
      * @throws SQLException
      */
-    public IdHashMapper addHashMapper(final String tableName, final String sql) throws SQLException
+    public IdHashMapper addHashMapper(final String tableName, final String sql)
     {
         if (oldConn == null || newConn == null)
         {
@@ -141,7 +141,7 @@ public class IdMapperMgr
      * @param tableName the tableName of the mapper
      * @return the IdHashMapper object
      */
-    public IdHashMapper addHashMapper(final String tableName) throws SQLException
+    public IdHashMapper addHashMapper(final String tableName)
     {
         return addHashMapper(tableName, null);
     }
