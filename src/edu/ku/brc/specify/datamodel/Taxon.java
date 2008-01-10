@@ -836,45 +836,6 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 	{
         this.taxonId = id;
 	}
-
-	@Transient
-	public List<Taxon> getAncestors()
-	{
-	    if (ancestors == null)
-	    {
-	        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-	        try
-	        {
-	            ancestors = (List<Taxon>)session.createQuery("from Taxon where nodeNumber < " + this.nodeNumber + " and highestChildNodeNumber >= "
-	                    + this.highestChildNodeNumber + " order by rankId").list();
-	        }
-	        finally
-	        {
-	            session.close();
-	        }
-	    }
-	    return ancestors;
-	}
-	
-	@Transient
-	public Taxon getAncestor(int ancestorRank)
-	{
-	    for (Taxon tx : getAncestors())
-	    {
-	        if (tx.rankId == ancestorRank)
-	            return tx;
-	    }
-	    return null;
-	}
-	
-	@Transient
-	public String getFamilyName()
-	{
-	    Taxon fam = getAncestor(140);
-	    if (fam != null)
-	        return fam.name;
-	    return null;
-	}
 	
     @OneToMany(mappedBy = "taxon")
     @Cascade( {CascadeType.ALL} )
