@@ -17,7 +17,9 @@
  */
 package edu.ku.brc.specify.datamodel.busrules;
 
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace;
 
 /**
  * @author rods
@@ -41,42 +43,66 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
     @Override
     public boolean okToEnableDelete(Object dataObj)
     {
-        String[] tableInfo = 
-        {
-                "specifyuser",  "AgentID",
-                "agent",        "ParentOrganizationID",
-                "groupperson", "GroupID",
-                "loanreturnpreparation", "ReceivedByID",
-                "author",      "AgentID",
-                "borrowreturnmaterial", "ReturnedByID",
-                "preparation",  "PreparedByID",
-                "exchangein",   "CatalogedByID",
-                "exchangein",   "ReceivedFromOrganizationID",
-                "project",      "ProjectAgentID",
-                "shipment",     "ShippedByID",
-                "shipment",     "ShipperID",
-                "shipment",     "ShippedToID",
-                "collector",   "AgentID",
-                "exchangeout",  "CatalogedByID",
-                "exchangeout",  "SentToOrganizationID",
-                "repositoryagreement",  "AgentID",
-                "deaccessionagent",  "AgentID",
-                "permit",       "IssuedToID",
-                "permit",       "IssuedByID",
-                "borrowagent",  "AgentID",
-            };
-
-        Agent agent = (Agent)dataObj;
-        
-        Integer agentId = agent.getId();
-        if (agentId==null)
-        {
-            return true;
-        }
-        
-        boolean result = okToDelete(tableInfo, agent.getId());
-        
-        return result;
+        return true;
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace, edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace)
+     */
+    @Override
+    public void okToDelete(Object dataObj,
+                           DataProviderSessionIFace session,
+                           BusinessRulesOkDeleteIFace deletable)
+    {
+        boolean isOK = false;
+        
+        if (deletable != null)
+        {
+            String[] tableInfo = 
+            {
+                    "specifyuser",  "AgentID",
+                    "agent",        "ParentOrganizationID",
+                    "groupperson",  "GroupID",
+                    "loanreturnpreparation", "ReceivedByID",
+                    "author",       "AgentID",
+                    "borrowreturnmaterial", "ReturnedByID",
+                    "preparation",  "PreparedByID",
+                    "exchangein",   "CatalogedByID",
+                    "exchangein",   "ReceivedFromOrganizationID",
+                    "project",      "ProjectAgentID",
+                    "shipment",     "ShippedByID",
+                    "shipment",     "ShipperID",
+                    "shipment",     "ShippedToID",
+                    "collector",   "AgentID",
+                    "exchangeout",  "CatalogedByID",
+                    "exchangeout",  "SentToOrganizationID",
+                    "repositoryagreement",  "AgentID",
+                    "deaccessionagent",  "AgentID",
+                    "permit",       "IssuedToID",
+                    "permit",       "IssuedByID",
+                    "borrowagent",  "AgentID",
+                };
+    
+            Agent agent = (Agent)dataObj;
+            
+            Integer agentId = agent.getId();
+            if (agentId == null)
+            {
+                isOK = false;
+                
+            } else
+            {
+            
+                isOK = okToDelete(tableInfo, agent.getId());
+            }
+            deletable.doDeleteDataObj(dataObj, session, isOK);
+            
+        } else
+        {
+            super.okToDelete(dataObj, session, deletable);
+        }
+    }
+    
+    
 
 }

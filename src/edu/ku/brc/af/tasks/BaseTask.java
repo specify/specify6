@@ -572,7 +572,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
                                        final Object data, 
                                        final int options,
                                        final ImageIcon paneIcon,
-                                       final FormPane.FormPaneAdjuster adjuster)
+                                       final FormPane.FormPaneAdjusterIFace adjuster)
     {
         ImageIcon iconImg = paneIcon == null ? icon : paneIcon;
         FormPane fp = null;

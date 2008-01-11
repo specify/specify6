@@ -82,6 +82,16 @@ public interface BusinessRulesIFace
      */
     public boolean okToEnableDelete(Object dataObj);
     
+    /**
+     * For some objects the check for deletion may need to hit the database.
+     * This is called by a form after the user has said yes, but before anything else happens.
+     * 
+     * @param dataObj the object to be deleted
+     * @param session the data provider session
+     * @param deletable usually a FormViewObj, but it is really something that can perform the delete.
+     * @return true if it can be deleted, false if not
+     */
+    public void okToDelete(Object dataObj, DataProviderSessionIFace session, BusinessRulesOkDeleteIFace deletable);
     
     /**
      * Returns a message for the user describing what was deleted (intended to be a single line of text).

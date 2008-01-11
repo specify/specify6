@@ -25,6 +25,7 @@ import java.util.Vector;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
+import edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.Viewable;
@@ -228,6 +229,19 @@ public abstract class BaseBusRules implements BusinessRulesIFace
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#okToDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace, edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace)
+     */
+    public void okToDelete(final Object dataObj,
+                           final DataProviderSessionIFace session,
+                           final BusinessRulesOkDeleteIFace deletable)
+    {
+        if (deletable != null)
+        {
+            deletable.doDeleteDataObj(dataObj, session, true);
+        }
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#okToDelete(java.lang.Object)
      */
     public abstract boolean okToEnableDelete(Object dataObj);
@@ -312,7 +326,7 @@ public abstract class BaseBusRules implements BusinessRulesIFace
             }
         }
         // if we get this far, this class of object isn't handled by these business rules
-        return STATUS.Error;
+        return STATUS.OK;
     }
 
     /* (non-Javadoc)

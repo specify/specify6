@@ -189,7 +189,7 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
                 Rectangle r = RolloverCommand.this.getBounds();
                 r.x = 0;
                 r.y = 0;
-                if (clicked && RolloverCommand.this.isEnabled() && r.contains(e.getPoint()))
+                if (!wasPopUp && clicked && RolloverCommand.this.isEnabled() && r.contains(e.getPoint()))
                 {
                     if (!e.isPopupTrigger())
                     {

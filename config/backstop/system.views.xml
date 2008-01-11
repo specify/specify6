@@ -44,6 +44,7 @@
         
         <view name="DeterminationStatus"
             class="edu.ku.brc.specify.datamodel.DeterminationStatus"
+            busrules="edu.ku.brc.specify.datamodel.busrules.DeterminationStatusBusRules"
             resourcelabels="false">
             <desc><![CDATA[The DeterminationStatus Object form.]]></desc>
             <altviews>
@@ -54,6 +55,7 @@
         
         <view name="DataType"
             class="edu.ku.brc.specify.datamodel.DataType"
+            busrules="edu.ku.brc.specify.datamodel.busrules.DataTypeBusRules"
             resourcelabels="false">
             <desc><![CDATA[The DataType Object form.]]></desc>
             <altviews>
@@ -64,6 +66,7 @@
         
         <view name="CollectionType"
             class="edu.ku.brc.specify.datamodel.CollectionType"
+            busrules="edu.ku.brc.specify.datamodel.busrules.CollectionTypeBusRules"
             resourcelabels="false">
             <desc><![CDATA[The CollectionType Object form.]]></desc>
             <altviews>
@@ -74,6 +77,7 @@
         
         <view name="CatalogNumberingScheme"
             class="edu.ku.brc.specify.datamodel.CatalogNumberingScheme"
+            busrules="edu.ku.brc.specify.datamodel.busrules.CatalogNumberingSchemeBusRules"
             resourcelabels="false">
             <desc><![CDATA[The CatalogNumberingScheme Object form.]]></desc>
             <altviews>
@@ -84,6 +88,7 @@
         
         <view name="Collection"
             class="edu.ku.brc.specify.datamodel.Collection"
+            busrules="edu.ku.brc.specify.datamodel.busrules.CollectionBusRules"
             resourcelabels="false">
             <desc><![CDATA[The Collection Object form.]]></desc>
             <altviews>

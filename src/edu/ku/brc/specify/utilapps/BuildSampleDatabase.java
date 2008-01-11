@@ -569,55 +569,56 @@ public class BuildSampleDatabase
         if (false)
         {
             //                                 Name                Type           Table Name           Field       Formatter          R/O  Size
-            dataObjects.add(createPickList("Division",            tableType,      "division",          null,   "Division",            true, -1));
-            dataObjects.add(createPickList("DeterminationStatus", tableType,      "determinationstatus", null, "DeterminationStatus", true, -1));
-            dataObjects.add(createPickList("DataType",            tableType,      "datatype",            null, "DataType",            true, -1));
-            dataObjects.add(createPickList("Department",          tableFieldType, "accession",         "text1" ,       null,          true, -1));
-            dataObjects.add(createPickList("AgentTitle",          tableFieldType, "agent",             "title" ,       null,          true, -1));
-            dataObjects.add(createPickList("PrepType",            tableType,      "preptype",           null, "PrepType",             true, -1));
-            dataObjects.add(createPickList("CollectionType",      tableType,      "collectiontype",     null, "CollectionType",       true, -1));
-            dataObjects.add(createPickList("GeologicTimePeriodTreeDef", tableType, "geologictimeperiodtreedef", null, "GeologicTimePeriodTreeDef", true, -1));
-            dataObjects.add(createPickList("CatalogNumberingScheme", tableType, "catalognumberingscheme", null, "CatalogNumberingScheme", true, -1));
+            dataObjects.add(createPickList("Division",            tableType,      "division",          null,   "Division",            true, -1, true));
+            dataObjects.add(createPickList("DeterminationStatus", tableType,      "determinationstatus", null, "DeterminationStatus", true, -1, true));
+            dataObjects.add(createPickList("DataType",            tableType,      "datatype",            null, "DataType",            true, -1, true));
+            dataObjects.add(createPickList("Department",          tableFieldType, "accession",         "text1" ,       null,          true, -1, true));
+            dataObjects.add(createPickList("AgentTitle",          tableFieldType, "agent",             "title" ,       null,          true, -1, true));
+            dataObjects.add(createPickList("PrepType",            tableType,      "preptype",           null, "PrepType",             true, -1, true));
+            dataObjects.add(createPickList("CollectionType",      tableType,      "collectiontype",     null, "CollectionType",       true, -1, true));
+            dataObjects.add(createPickList("GeologicTimePeriodTreeDef", tableType, "geologictimeperiodtreedef", null, "GeologicTimePeriodTreeDef", true, -1, true));
+            dataObjects.add(createPickList("CatalogNumberingScheme", tableType, "catalognumberingscheme", null, "CatalogNumberingScheme", true, -1, true));
             
             String[] types = {"State", "Federal", "International", "US Dept Fish and Wildlife", "<no data>"};
-            dataObjects.add(createPickList("PermitType", true, types));
+            dataObjects.add(createPickList("PermitType", true, types, true));
     
             //String[] titles = {"Dr.", "Mr.", "Ms.", "Mrs.", "Sir"};
             //dataObjects.add(createPickList("AgentTitle", true, titles));
             
             String[] roles = {"Borrower", "Receiver"};
-            dataObjects.add(createPickList("LoanAgentRole", true, roles));
+            dataObjects.add(createPickList("LoanAgentRole", true, roles, true));
             
             String[] sexes = {"Both", "Female", "Male", "Unknown"};
-            dataObjects.add(createPickList("BiologicalSex", true, sexes));
+            dataObjects.add(createPickList("BiologicalSex", true, sexes, true));
             
             String[] status = {"Complete", "In Process", "<no data>"};
-            dataObjects.add(createPickList("AccessionStatus", true, status));
+            dataObjects.add(createPickList("AccessionStatus", true, status, true));
             
             String[] methods = {"By Hand", "USPS", "UPS", "FedEx", "DHL"};
-            dataObjects.add(createPickList("ShipmentMethod", true, methods));
+            dataObjects.add(createPickList("ShipmentMethod", true, methods, true));
             
             String[] accTypes = {"Collection","Gift"};
-            dataObjects.add(createPickList("AccessionType", true, accTypes));
+            dataObjects.add(createPickList("AccessionType", true, accTypes, true));
             
             String[] agentVariantTypes  = {"Variant","Vernacular"};
             String[] agentVariantValues = {"0","1"};
-            dataObjects.add(createPickList("AgentVariant", true, agentVariantTypes, agentVariantValues, -1));
+            dataObjects.add(createPickList("AgentVariant", true, agentVariantTypes, agentVariantValues, -1, true));
             
             String[] accRoles = {"Collector", "Donor", "Reviewer", "Staff", "Receiver"};
-            dataObjects.add(createPickList("AccessionRole", true, accRoles));
+            dataObjects.add(createPickList("AccessionRole", true, accRoles, true));
             
             String[] stages = {"adult", "egg", "embryo", "hatchling", "immature", "juvenile", "larva", "nymph", "pupa", "seed"};
-            dataObjects.add(createPickList("BiologicalStage", true, stages));
+            dataObjects.add(createPickList("BiologicalStage", true, stages, true));
             
             String[] collMethods = {"boat electro-shocker", "hook & line", "seine", "trap", "<no data>"};
-            dataObjects.add(createPickList("CollectingMethod", true, collMethods));
+            dataObjects.add(createPickList("CollectingMethod", true, collMethods, true));
             
             String[] prepMeth = {"C&S", "skeleton", "x-ray", "image", "EtOH"};
-            dataObjects.add(createPickList("CollObjPrepMeth", true, prepMeth));
+            dataObjects.add(createPickList("CollObjPrepMeth", true, prepMeth, true));
             
             String[] taxonLabelFormatter = {"%G %S", "%G %S (%A1 ex. %A2)"};
-            dataObjects.add(createPickList("TaxonLabelFormatter", false, taxonLabelFormatter, 500));
+            dataObjects.add(createPickList("TaxonLabelFormatter", false, taxonLabelFormatter, 500, true));
+            
         } else
         {
             List<BldrPickList> pickLists = DataBuilder.getBldrPickLists();
@@ -625,7 +626,8 @@ public class BuildSampleDatabase
             for (BldrPickList pl : pickLists)
             {
                 PickList pickList = createPickList(pl.getName(), pl.getType(), pl.getTableName(),
-                                                   pl.getFieldName(), pl.getFormatter(), pl.getReadOnly(), pl.getSizeLimit());
+                                                   pl.getFieldName(), pl.getFormatter(), pl.getReadOnly(), 
+                                                   pl.getSizeLimit(), pl.getIsSystem());
                 for (BldrPickListItem item : pl.getItems())
                 {
                     pickList.addItem(item.getTitle(), item.getValue());

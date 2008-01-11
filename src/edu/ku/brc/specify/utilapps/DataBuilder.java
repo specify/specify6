@@ -770,7 +770,8 @@ public class DataBuilder
                                           final String  fieldName,
                                           final String  formatter,
                                           boolean       readOnly, 
-                                          int           sizeLimit)
+                                          int           sizeLimit,
+                                          Boolean       isSystem)
     {
         PickList pickList = new PickList();
         pickList.initialize();
@@ -781,6 +782,7 @@ public class DataBuilder
         pickList.setFormatter(formatter);
         pickList.setReadOnly(readOnly);
         pickList.setSizeLimit(sizeLimit);
+        pickList.setIsSystem(isSystem);
         persist(pickList);
         return pickList;
     }
@@ -790,9 +792,9 @@ public class DataBuilder
      * @param readOnly
      * @return
      */
-    public static PickList createPickList(final String name, boolean readOnly)
+    public static PickList createPickList(final String name, boolean readOnly, boolean isSystem)
     {
-        return createPickList(name, 0, null, null, null, readOnly, -1);
+        return createPickList(name, 0, null, null, null, readOnly, -1, isSystem);
     }
     
     /**
@@ -803,9 +805,10 @@ public class DataBuilder
      */
     public static PickList createPickList(final String name,
                                           boolean readOnly, 
-                                          String[] values)
+                                          String[] values,
+                                          boolean isSystem)
     {
-        PickList pickList = createPickList(name, 0, null, null, null, readOnly, values.length);
+        PickList pickList = createPickList(name, 0, null, null, null, readOnly, values.length, isSystem);
 
         for (String value: values)
         {
@@ -824,9 +827,10 @@ public class DataBuilder
     public static PickList createPickList(final String name,
                                           boolean readOnly, 
                                           String[] values,
-                                          int maxSize)
+                                          int maxSize,
+                                          boolean isSystem)
     {
-        PickList pickList = createPickList(name, 0, null, null, null, readOnly, maxSize);
+        PickList pickList = createPickList(name, 0, null, null, null, readOnly, maxSize, isSystem);
 
         for (String value: values)
         {
@@ -847,9 +851,10 @@ public class DataBuilder
                                           boolean readOnly, 
                                           String[] titles,
                                           String[] values,
-                                          int maxSize)
+                                          int maxSize,
+                                          boolean isSystem)
     {
-        PickList pickList = createPickList(name, 0, null, null, null, readOnly, maxSize);
+        PickList pickList = createPickList(name, 0, null, null, null, readOnly, maxSize, isSystem);
 
         for (int i=0;i<titles.length;i++)
         {
@@ -2358,14 +2363,16 @@ public class DataBuilder
         xstream.useAttributeFor(BldrPickList.class, "type");
         xstream.useAttributeFor(BldrPickList.class, "formatter");
         xstream.useAttributeFor(BldrPickList.class, "name");
+        xstream.useAttributeFor(BldrPickList.class, "isSystem");
         
         xstream.useAttributeFor(BldrPickListItem.class, "title");
         xstream.useAttributeFor(BldrPickListItem.class, "value");
         
-        xstream.aliasAttribute("readonly", "readOnly");
+        xstream.aliasAttribute("readonly",  "readOnly");
         xstream.aliasAttribute("tablename", "tableName");
         xstream.aliasAttribute("fieldname", "fieldName");
         xstream.aliasAttribute("sizelimit", "sizeLimit");
+        xstream.aliasAttribute("issystem",  "isSystem");
         
         String[] omit = {"changes","timestampCreated","timestampModified","createdByAgent","modifiedByAgent","version","valueObject",};
         for (String fld : omit)
@@ -2403,7 +2410,7 @@ public class DataBuilder
             for (BldrPickList pl : list)
             {
                 PickList pickList = createPickList(pl.getName(), pl.getType(), pl.getTableName(), pl.getFieldName(), 
-                                                   pl.getFormatter(), pl.getReadOnly(), pl.getSizeLimit());
+                                                   pl.getFormatter(), pl.getReadOnly(), pl.getSizeLimit(), pl.getIsSystem());
                 for (BldrPickListItem item : pl.getItems())
                 {
                     pickList.addItem(item.getTitle(), item.getValue());

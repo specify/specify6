@@ -414,6 +414,23 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
     }
     
     /**
+     * Finds a SubPane by name.
+     * @param subPaneName the name of the SubPaneIFace
+     * @return the SubPaneIFace with the name in question or null if not found
+     */
+    public SubPaneIFace getSubPaneByName(final String subPaneName)
+    {
+        for (SubPaneIFace sp : instance.panes.values())
+        {
+            if (subPaneName.equals(sp.getPaneName()))
+            {
+                return sp;
+            }
+        }
+        return null;
+    }
+    
+    /**
      * Returns a list of the SubPaneIFaces.
      * @return a list of the SubPaneIFaces.
      */

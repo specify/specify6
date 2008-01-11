@@ -94,7 +94,7 @@ public class FormPane extends DroppableTaskPane
                     final String   mode,
                     final Object   data,
                     final int      options,
-                    final FormPaneAdjuster adjuster)
+                    final FormPaneAdjusterIFace adjuster)
     {
         this(name, task, "");
 
@@ -252,7 +252,7 @@ public class FormPane extends DroppableTaskPane
                            final AltView.CreationMode mode,
                            final Object  dataArg,
                            final int     options,
-                           final FormPaneAdjuster adjuster)
+                           final FormPaneAdjusterIFace adjuster)
     {
         this.viewSetName = viewSetNameArg;
         this.viewName    = viewNameArg;
@@ -273,7 +273,7 @@ public class FormPane extends DroppableTaskPane
                            final AltView.CreationMode mode,
                            final Object  dataArg,
                            final int     options,
-                           final FormPaneAdjuster adjuster)
+                           final FormPaneAdjusterIFace adjuster)
     {
         if (view != null)
         {
@@ -455,7 +455,10 @@ public class FormPane extends DroppableTaskPane
     }
 
     
-    public interface FormPaneAdjuster 
+    /**
+     * This interface is used to make form adjustments before any data is set into the form, at creation time.
+     */
+    public interface FormPaneAdjusterIFace 
     {
         public abstract void adjustForm(FormViewObj fvo);
     }

@@ -19,13 +19,16 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.Timestamp;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 
 import org.apache.log4j.Logger;
 
@@ -43,9 +46,10 @@ import edu.ku.brc.af.tasks.subpane.DroppableFormObject;
 import edu.ku.brc.af.tasks.subpane.DroppableTaskPane;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
-import edu.ku.brc.af.tasks.subpane.FormPane.FormPaneAdjuster;
+import edu.ku.brc.af.tasks.subpane.FormPane.FormPaneAdjusterIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
@@ -59,6 +63,7 @@ import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.Trash;
+import edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.persist.ViewIFace;
@@ -67,12 +72,12 @@ import edu.ku.brc.ui.forms.persist.ViewIFace;
  *
  * This is used for launching editors for Database Objects that are at the "core" of the data model.
  * 
- * @code_status Alpha
+ * @code_status Beta
  *
  * @author rods
  *
  */
-public class SystemSetupTask extends BaseTask implements FormPaneAdjuster
+public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, BusinessRulesOkDeleteIFace
 {
     // Static Data Members
     private static final Logger log  = Logger.getLogger(SystemSetupTask.class);
@@ -81,7 +86,8 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjuster
     public static final DataFlavor SYSTEMSETUPTASK_FLAVOR = new DataFlavor(SystemSetupTask.class, SYSTEMSETUPTASK);
 
     // Data Members
-    protected NavBox navBox = null;
+    protected NavBox           navBox = null;
+    protected PickListBusRules pickListBusRules = new PickListBusRules();
 
     /**
      * Default Constructor
@@ -129,7 +135,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjuster
                     startEditor(CollectionType.class, SYSTEMSETUPTASK, "CollectionType");
                 }
             })); // I18N
-            sysNavBox.add(NavBox.createBtnWithTT("Prep Type", "PrepType", "", IconManager.IconSize.Std16, new ActionListener() {
+            sysNavBox.add(NavBox.createBtnWithTT("Prep Type", SYSTEMSETUPTASK, "", IconManager.IconSize.Std16, new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
                     startEditor(PrepType.class, "PrepType", "PrepType");
@@ -147,53 +153,158 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjuster
                     startEditor(edu.ku.brc.specify.datamodel.Collection.class, name, "Collection");
                 }
             })); // I18N
-            sysNavBox.add(NavBox.createBtnWithTT("PickList", name, "", IconManager.IconSize.Std16, new ActionListener() {
+            sysNavBox.add(NavBox.createBtnWithTT(getResourceString("PL_NEWPICKLIST"), name, "", IconManager.IconSize.Std16, new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
-                    startEditor(edu.ku.brc.specify.datamodel.PickList.class, name, "PickList");
+                    startEditor(edu.ku.brc.specify.datamodel.PickList.class, "name", null, name, "PickList");
                 }
             })); // I18N
             navBoxes.add(sysNavBox);
 
             
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            final List<?> pickLists = session.getDataList(PickList.class);
-
-            navBox = new NavBox(getResourceString("PL_PICKLISTS"), true, true);
-
-            Vector<PickList> pls = new Vector<PickList>();
-            for (Object obj : pickLists)
+            try
             {
-                pls.add((PickList)obj);
-            }
-            Collections.sort(pls);
-            
-            navBox.add(NavBox.createBtnWithTT(getResourceString("PL_NEWPICKLIST"), name, "", IconManager.IconSize.Std16, new ActionListener() {
-                public void actionPerformed(ActionEvent e)
+                final List<?> pickLists = session.getDataList(PickList.class);
+    
+                navBox = new NavBox(getResourceString("PL_PICKLISTS"), true, true);
+    
+                Vector<PickList> pls = new Vector<PickList>();
+                for (Object obj : pickLists)
                 {
-                    startEditor(edu.ku.brc.specify.datamodel.PickList.class, "name", null, name, "PickList");
+                    pls.add((PickList)obj);
                 }
-            })); // I18N
-
-            for (PickList pickList : pls)
-            {
-                final String nameStr  = pickList.getName();
+                Collections.sort(pls);
                 
-                RolloverCommand roc = (RolloverCommand)NavBox.createBtnWithTT(nameStr, name, "", IconManager.IconSize.Std16, new ActionListener() {
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        startEditor(edu.ku.brc.specify.datamodel.PickList.class, "name", nameStr, name, "PickList");
-                    }
-                });
-                roc.setData(pickList.getPickListId());
-                navBox.add((NavBoxItemIFace)roc);
+    
+                for (PickList pickList : pls)
+                {
+                    addPickList(pickList, false);
+                }
+    
+                navBoxes.add(navBox);
+                
+            }  catch (Exception ex)
+            {
+                log.error(ex);
+                // XXX error dialog
+                
+            } finally
+            {
+                session.close();
             }
-
-            navBoxes.add(navBox);
-            
-            session.close();
         }
     }
+    
+    /**
+     * Adds a new PickList to the NavBox Container.
+     * @param pickList the new pickList
+     */
+    protected void addPickList(final PickList pickList, final boolean isNew)
+    {
+        final String nameStr  = pickList.getName();
+        
+        RolloverCommand roc;
+        if (pickList.getIsSystem())
+        {
+            roc = (RolloverCommand)NavBox.createBtnWithTT(nameStr, name, "", IconManager.IconSize.Std16, new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    startEditor(edu.ku.brc.specify.datamodel.PickList.class, "name", nameStr, name, "PickList");
+                }
+            });
+        } else
+        {
+            roc = (RolloverCommand)makeDnDNavBtn(navBox, nameStr, name, null, 
+                new CommandAction(SYSTEMSETUPTASK, DELETE_CMD_ACT, pickList.getPickListId()), 
+                true, true);// true means make it draggable
+        
+            roc.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    startEditor(edu.ku.brc.specify.datamodel.PickList.class, "name", nameStr, name, "PickList");
+                }
+            });
+            roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
+        }
+        roc.setData(pickList.getPickListId());
+        addPopMenu(roc, pickList);
+        if (isNew)
+        {
+            navBox.insertSorted((NavBoxItemIFace)roc);
+        } else
+        {
+            navBox.add((NavBoxItemIFace)roc);
+        }
+    }
+    
+    /**
+     * Adds the Context PopupMenu for the RecordSet.
+     * @param roc the RolloverCommand btn to add the pop to
+     */
+    public void addPopMenu(final RolloverCommand roc, final PickList pickList)
+    {
+        if (roc.getLabelText() != null)
+        {
+            final JPopupMenu popupMenu = new JPopupMenu();
+            
+            JMenuItem delMenuItem = new JMenuItem(UIRegistry.getResourceString("Delete"));
+            if (!pickList.getIsSystem())
+            {
+                delMenuItem.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent actionEvent) {
+                        CommandDispatcher.dispatch(new CommandAction(SYSTEMSETUPTASK, DELETE_CMD_ACT, roc));
+                    }
+                  });
+            } else
+            {
+                delMenuItem.setEnabled(false);
+            }
+            popupMenu.add(delMenuItem);
+            
+            JMenuItem viewMenuItem = new JMenuItem(UIRegistry.getResourceString("Edit"));
+            viewMenuItem.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent actionEvent) {
+                    startEditor(edu.ku.brc.specify.datamodel.PickList.class, "name",  roc.getName(), roc.getName(), "PickList");
+                }
+              });
+            popupMenu.add(viewMenuItem);
+            
+            MouseListener mouseListener = new MouseAdapter() 
+            {
+                  private boolean showIfPopupTrigger(MouseEvent mouseEvent) {
+                      if (roc.isEnabled() && 
+                          mouseEvent.isPopupTrigger() && 
+                          popupMenu.getComponentCount() > 0) 
+                      {
+                          popupMenu.show(mouseEvent.getComponent(),
+                                  mouseEvent.getX(),
+                                  mouseEvent.getY());
+                          return true;
+                      }
+                      return false;
+                  }
+                  @Override
+                  public void mousePressed(MouseEvent mouseEvent) 
+                  {
+                      if (roc.isEnabled())
+                      {
+                          showIfPopupTrigger(mouseEvent);
+                      }
+                  }
+                  @Override
+                  public void mouseReleased(MouseEvent mouseEvent) 
+                  {
+                      if (roc.isEnabled())
+                      {
+                          showIfPopupTrigger(mouseEvent);
+                      }
+                  }
+            };
+            roc.addMouseListener(mouseListener);
+        }
+    }
+
     
     /**
      * Searches for a SubPaneIFace that has the same class of data as the argument and then "shows" that Pane and returns true. 
@@ -240,7 +351,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjuster
             Object uiComp = pane.getUIComponent();
             if (uiComp instanceof FormPane)
             {
-                if (pane.getPaneName().startsWith(tabName))
+                if (pane.getPaneName().equals(tabName))
                 {
                     SubPaneMgr.getInstance().showPane(pane);
                     return true;
@@ -259,19 +370,33 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjuster
     {
         if (!checkForPaneWithData(clazz))
         {
-            DataProviderSessionIFace session    = DataProviderFactory.getInstance().createSession();
-            List<?>                  collection = session.getDataList(clazz);
-            session.close();
+            List<?> pickLists = null;
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            try
+            {
+                pickLists = session.getDataList(clazz);
+            } catch (Exception ex)
+            {
+                log.error(ex);
+                
+            } finally
+            {
+                session.close();
+            }
             
-            ViewIFace view = AppContextMgr.getInstance().getView("SystemSetup", viewName);
-            
-            createFormPanel(name, 
-                            view.getViewSetName(), 
-                            view.getName(), 
-                            "edit", 
-                            collection, 
-                            MultiView.RESULTSET_CONTROLLER,
-                            IconManager.getIcon(iconName, IconManager.IconSize.Std16));
+            if (pickLists != null)
+            {
+                ViewIFace view = AppContextMgr.getInstance().getView("SystemSetup", viewName);
+                
+                createFormPanel(name, 
+                                view.getViewSetName(), 
+                                view.getName(), 
+                                "edit", 
+                                pickLists, 
+                                MultiView.RESULTSET_CONTROLLER,
+                                IconManager.getIcon(iconName, IconManager.IconSize.Std16));
+            }
+
         } 
     }
     
@@ -296,8 +421,18 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjuster
             if (value != null)
             {
                 DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                dataObj = session.getData(clazz, fieldName, value, DataProviderSessionIFace.CompareType.Equals);
-                session.close();
+                try
+                {
+                    dataObj = session.getData(clazz, fieldName, value, DataProviderSessionIFace.CompareType.Equals);
+                } catch (Exception ex)
+                {
+                    log.error(ex);
+                    // XXX error dialog
+                } finally
+                {
+                    session.close();
+                }
+                
             } else
             {
                 PickList pl = new PickList();
@@ -330,50 +465,40 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjuster
     }
 
     /**
-     * Save a ipickList
+     * Save a PickList.
      * @param pickList the pickList to be saved
       */
     public void savePickList(final PickList pickList)
     {
-        pickList.setTimestampModified(new Timestamp(System.currentTimeMillis()));
-
-        // save to database
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        try
-        {
-            session.beginTransaction();
-            session.attach(pickList);
-            session.saveOrUpdate(pickList);
-            session.commit();
-            
-        } catch (Exception ex)
-        {
-            log.warn(ex);
-        }
-        session.close();
 
     }
 
     /**
-     * Delete a picklist
+     * Delete a PickList.
      * @param pickList the pickList to be deleted
      */
-    protected void deletePickList(final PickList pickList)
+    protected PickList deletePickList(final PickList pickList, final DataProviderSessionIFace sessionArg)
     {
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        DataProviderSessionIFace session = sessionArg == null ? DataProviderFactory.getInstance().createSession() : sessionArg;
         try
         {
             session.beginTransaction();
-            session.attach(pickList);
             session.delete(pickList);
             session.commit();
-            
+        
         } catch (Exception ex)
         {
             log.warn(ex);
+            
+        } finally
+        {
+            if (sessionArg == null)
+            {
+                session.close();
+            }
         }
-        session.close();
-
+        
+        return pickList;
     }
 
     /**
@@ -479,19 +604,16 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjuster
     }
     
 
+    /**
+     * A PickList was saved, if it is new then add a new NavBoxItem
+     * @param pickList the saved PickList
+     */
     private void pickListSaved(final PickList pickList)
     {
         boolean fnd = false;
-        int     inx = -1;
-        int     i = 0;
         boolean resort = false;
         for (NavBoxItemIFace nbi : navBox.getItems())
         {
-            RolloverCommand roc = (RolloverCommand)nbi;
-            //if (inx == -1 && roc.getName().compareTo(pickList.getName()) > 0)
-            //{
-            //    inx = i;
-            //}
             if (nbi.getData() != null && ((Integer)nbi.getData()).intValue() == pickList.getPickListId().intValue())
             {
                 fnd = true;
@@ -501,25 +623,23 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjuster
                     ((RolloverCommand)nbi).setLabelText(pickList.getName());
                     resort = true;
                 }
+                break;
             }
-            i++;
         }
         
         if (!fnd)
         {
-            final String nameStr  = pickList.getName();
-            RolloverCommand roc = (RolloverCommand)NavBox.createBtnWithTT(nameStr, name, "", IconManager.IconSize.Std16, new ActionListener() {
-                public void actionPerformed(ActionEvent e)
-                {
-                    startEditor(edu.ku.brc.specify.datamodel.PickList.class, "name", nameStr, name, "PickList");
-                }
-            });
-            roc.setData(pickList.getPickListId());
-            navBox.insertSorted((NavBoxItemIFace)roc);
+            addPickList(pickList, true);
             
         } else if (resort)
         {
             navBox.sort();
+        }
+        
+        SubPaneIFace subPane = SubPaneMgr.getInstance().getCurrentSubPane();
+        if (subPane != null && subPane.getPaneName().startsWith(getResourceString("PL_NEWPICKLIST")))
+        {
+            SubPaneMgr.getInstance().renamePane(subPane, pickList.getName());
         }
     }
 
@@ -533,37 +653,50 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjuster
      */
     protected void processSysSetupCommands(final CommandAction cmdAction)
     {
-        if (cmdAction.isType(DataEntryTask.DATA_ENTRY))
+        Object data = cmdAction.getData() instanceof DroppableFormObject ? ((DroppableFormObject)cmdAction.getData()).getData() : cmdAction.getData();
+        
+        if (data instanceof NavBoxButton)
         {
-            Object data = cmdAction.getData() instanceof DroppableFormObject ? ((DroppableFormObject)cmdAction.getData()).getData() : cmdAction.getData();
-            
-            if (cmdAction.isAction("Save") && data instanceof PickList)
-            {
-                pickListSaved((PickList)data);
-            }
-    
-            /*if (data instanceof PickList)
-            {
-                PickList pickList = (PickList)data;
-                if (cmdAction.isAction("DeletePickList"))
-                {
-                    deletePickList(pickList);
-                    deletePickListFromUI(null, pickList);
-    
-                    if (recentFormPane != null && recentFormPane.getData() != null)
-                    {
-                        String viewName = DBTableIdMgr.getInstance().getDefaultFormNameById(DBTableIdMgr.getInstance().getIdByShortName("picklist"));
-                        removePanelForData(SYSTEMSETUPTASK, viewName, pickList);
-                    }
-    
-                    int inx = Collections.binarySearch(pickListNames, pickList.getName());
-                    if (inx > -1)
-                    {
-                        pickListNames.remove(inx);
-                    }
-                }
-            }*/
+            data = ((NavBoxButton)data).getData();
         }
+        
+        if (cmdAction.isAction(BaseTask.DELETE_CMD_ACT))
+        {
+            if (data instanceof Integer)
+            {
+                final DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                try
+                {
+                    final PickList pickList = session.getData(PickList.class, "pickListId", (Integer)data, DataProviderSessionIFace.CompareType.Equals);
+                    if (pickList != null)
+                    {
+                        UIRegistry.getStatusBar().setIndeterminate(true);
+                        final SwingWorker worker = new SwingWorker()
+                        {
+                            public Object construct()
+                            {
+                                pickListBusRules.okToDelete(pickList, session, SystemSetupTask.this);
+                                return null;
+                            }
+
+                            //Runs on the event-dispatching thread.
+                            public void finished()
+                            {
+                                UIRegistry.getStatusBar().setIndeterminate(false);
+                                session.close();
+                            }
+                        };
+                        worker.start();
+                        
+                    }
+                } catch (Exception ex)
+                {
+                    log.error(ex); // XXX need error dialog
+                    session.close();
+                }
+            }
+        }
+        
     }
     
     /* (non-Javadoc)
@@ -574,8 +707,8 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjuster
         if (cmdAction.isType(SYSTEMSETUPTASK))
         {
             processSysSetupCommands(cmdAction);
-        }
-        if (cmdAction.isType(DataEntryTask.DATA_ENTRY))
+            
+        } else if (cmdAction.isType(DataEntryTask.DATA_ENTRY))
         {
             Object data = cmdAction.getData() instanceof DroppableFormObject ? ((DroppableFormObject)cmdAction.getData()).getData() : cmdAction.getData();
             
@@ -595,7 +728,45 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjuster
     public void adjustForm(FormViewObj fvo)
     {
         PickListBusRules.adjustForm(fvo);
-        
     }
 
+    //-----------------------------------------------------------------------------------
+    //-- BusinessRulesOkDeleteIFace Interface
+    //-----------------------------------------------------------------------------------
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace#doDeleteDataObj(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    public void doDeleteDataObj(Object dataObj, DataProviderSessionIFace session, final boolean doDelete)
+    {
+        UIRegistry.getStatusBar().setIndeterminate(false);
+        
+        if (dataObj instanceof PickList)
+        {
+            PickList pickList = (PickList)dataObj;
+            
+            if (doDelete)
+            {
+                deletePickList(pickList, session);
+                if (pickList != null)
+                {
+                    if (!pickList.getIsSystem())
+                    {
+                        deletePickListFromUI(null, pickList);
+                        SubPaneIFace sp = SubPaneMgr.getInstance().getSubPaneByName(pickList.getName());
+                        
+                        if (sp != null)
+                        {
+                            SubPaneMgr.getInstance().removePane(sp);
+                        }
+                    } else
+                    {
+                        UIRegistry.getStatusBar().setErrorMessage(getResourceString("PL_NO_DEL_SYSPL"));
+                    }
+                }
+            } else
+            {
+                UIRegistry.getStatusBar().setErrorMessage(getResourceString("PL_NO_DEL_PL_INUSE"));
+            }
+        }
+    }
 }

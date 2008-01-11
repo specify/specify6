@@ -50,4 +50,6 @@ public class DataTypeBusRules extends BaseBusRules
         // else
         return super.getDeleteMsg(dataObj);
     }
+    
+    
 }

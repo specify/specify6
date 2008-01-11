@@ -2103,9 +2103,9 @@ public class GenericDBConversion
         int tableType      = PickListDBAdapterIFace.Type.Table.ordinal();
         //int tableFieldType = PickListDBAdapterIFace.Type.TableField.ordinal();
         
-        //                 Name                Type           Table Name           Field       Formatter          R/O  Size
-        createPickList("DeterminationStatus", tableType,      "determinationstatus", null, "DeterminationStatus", true, -1);
-        createPickList("DataType",            tableType,      "datatype",            null, "DataType",            true, -1);
+        //                 Name                Type           Table Name           Field       Formatter          R/O  Size IsSys
+        createPickList("DeterminationStatus", tableType,      "determinationstatus", null, "DeterminationStatus", true, -1, true);
+        createPickList("DataType",            tableType,      "datatype",            null, "DataType",            true, -1, true);
 
         log.info("Converting USYS Tables.");
 

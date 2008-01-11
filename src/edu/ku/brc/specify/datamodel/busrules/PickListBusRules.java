@@ -20,18 +20,27 @@ import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.PickList;
+import edu.ku.brc.specify.datamodel.SpAppResourceDir;
+import edu.ku.brc.specify.datamodel.SpViewSetObj;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.ui.forms.formatters.DataObjSwitchFormatter;
+import edu.ku.brc.ui.forms.validation.ValCheckBox;
 import edu.ku.brc.ui.forms.validation.ValComboBox;
 import edu.ku.brc.ui.forms.validation.ValSpinner;
 
@@ -45,6 +54,8 @@ import edu.ku.brc.ui.forms.validation.ValSpinner;
  */
 public class PickListBusRules extends BaseBusRules
 {
+    private static final Logger log  = Logger.getLogger(PickListBusRules.class);
+    
     //protected static final String noneStr = getResourceString("None");
     
     public PickListBusRules()
@@ -200,9 +211,10 @@ public class PickListBusRules extends BaseBusRules
     }
     
     /**
-     * @param vcbx
-     * @param value
-     * @return
+     * Returns the index in the model for the string value.
+     * @param vcbx the combobox
+     * @param value the value
+     * @return the index in the model for the string value
      */
     private int getIndexInModel(final ValComboBox vcbx, final String value)
     {
@@ -213,7 +225,6 @@ public class PickListBusRules extends BaseBusRules
             if (obj instanceof DBTableInfo)
             {
                 DBTableInfo ti = (DBTableInfo)obj;
-                System.err.println("["+ti.getName()+"]["+value+"]");
                 if (ti.getName().equals(value))
                 {
                     return i;
@@ -222,7 +233,6 @@ public class PickListBusRules extends BaseBusRules
             } else if (obj instanceof DBFieldInfo)
             {
                 DBFieldInfo fi = (DBFieldInfo)obj;
-                System.err.println("["+fi.getName()+"]["+value+"]");
                 if (fi.getName().equals(value))
                 {
                     return i;
@@ -231,7 +241,6 @@ public class PickListBusRules extends BaseBusRules
             } else if (obj instanceof DataObjSwitchFormatter)
             {
                 DataObjSwitchFormatter fmt = (DataObjSwitchFormatter)obj;
-                System.err.println("["+fmt.getName()+"]["+value+"]");
                 if (fmt.getName().equals(value))
                 {
                     return i;
@@ -254,7 +263,8 @@ public class PickListBusRules extends BaseBusRules
         ValComboBox fieldsCBX     = (ValComboBox)fvo.getControlByName("fieldsCBX");
         ValComboBox typesCBX      = (ValComboBox)fvo.getControlByName("typesCBX");
         ValSpinner  sizeLimitSp   = (ValSpinner)fvo.getControlByName("sizeLimit");
-        
+        ValCheckBox readOnlyChk    = (ValCheckBox)fvo.getControlByName("readOnly");
+
         MultiView pickListItemsMV = (MultiView)fvo.getControlByName("pickListItems");
         
         int typeIndex = typesCBX.getComboBox().getSelectedIndex();
@@ -266,6 +276,7 @@ public class PickListBusRules extends BaseBusRules
                 formatterCBX.setEnabled(false);
                 sizeLimitSp.setEnabled(true);
                 pickListItemsMV.setVisible(true);
+                readOnlyChk.setEnabled(true);
                 break;
                 
             case 1:
@@ -274,6 +285,7 @@ public class PickListBusRules extends BaseBusRules
                 formatterCBX.setEnabled(true);
                 sizeLimitSp.setEnabled(false);
                 pickListItemsMV.setVisible(false);
+                readOnlyChk.setEnabled(false);
                 break;
                 
             case 2:
@@ -282,6 +294,7 @@ public class PickListBusRules extends BaseBusRules
                 formatterCBX.setEnabled(true);
                 sizeLimitSp.setEnabled(false);
                 pickListItemsMV.setVisible(false);
+                readOnlyChk.setEnabled(false);
                 break;
                 
             default:
@@ -307,7 +320,7 @@ public class PickListBusRules extends BaseBusRules
             ValComboBox tablesCBX      = (ValComboBox)fvo.getControlByName("tablesCBX");
             ValComboBox formatterCBX   = (ValComboBox)fvo.getControlByName("formatterCBX");
             ValComboBox fieldsCBX      = (ValComboBox)fvo.getControlByName("fieldsCBX");
-            ValSpinner sizeLimitSp     = (ValSpinner)fvo.getControlByName("sizeLimit");
+            ValSpinner  sizeLimitSp    = (ValSpinner)fvo.getControlByName("sizeLimit");
             
             int typeIndex = pickList.getType();
             typesCBX.getComboBox().setSelectedIndex(typeIndex);
@@ -374,19 +387,76 @@ public class PickListBusRules extends BaseBusRules
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToEnableDelete(java.lang.Object)
      */
     @Override
-    public boolean okToEnableDelete(Object dataObj)
+    public boolean okToEnableDelete(final Object dataObj)
     {
-        return true;
+        return ((PickList)dataObj).getIsSystem();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace, edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace)
+     */
+    @Override
+    public void okToDelete(final Object dataObj,
+                           final DataProviderSessionIFace session,
+                           final BusinessRulesOkDeleteIFace deletable)
+    {
+        PickList pickList = (PickList)dataObj;
+        
+        if (!pickList.getIsSystem())
+        {
+            // Check all the forms here
+            // This is cheap and a hack because we should probably parse the XML
+            // instead of just doing a text search
+            
+            String searchText = "picklist=\""+pickList.getName()+"\"";
+            
+            for (SpAppResourceDir appDir : ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getSpAppResourceList())
+            {
+                for (SpViewSetObj viewSet :appDir.getSpViewSets())
+                {
+                    String xml = viewSet.getDataAsString();
+                    if (StringUtils.contains(xml, searchText))
+                    {
+                        if (deletable != null)
+                        {
+                            deletable.doDeleteDataObj(dataObj, session, false);
+                        }
+                        return;
+                    }
+                }
+            }
+            super.okToDelete(dataObj, session, deletable);
+        }
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#processBusinessRules(java.lang.Object)
      */
     @Override
-    public STATUS processBusinessRules(Object dataObj)
+    public STATUS processBusinessRules(final Object dataObj)
     {
-        //return super.processBusinessRules(dataObj);
-        return STATUS.OK;
+        PickList pickList = (PickList)dataObj;
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+            errorList.clear();
+            
+            PickList dbPL = (PickList)session.getData(PickList.class, "name", pickList.getName(), DataProviderSessionIFace.CompareType.Equals);
+            if (dbPL != null)
+            {
+                errorList.add(UIRegistry.getLocalizedMessage("PL_DUPLICATE_NAME", pickList.getName()));
+                return STATUS.Error;
+            }
+        } catch (Exception ex)
+        {
+            log.error(ex);
+        } finally
+        {
+            session.close();
+        }
+        
+        return super.processBusinessRules(dataObj);
     }
+
 
 }

@@ -82,6 +82,7 @@ import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.dbsupport.SQLExecutionListener;
 import edu.ku.brc.dbsupport.SQLExecutionProcessor;
 import edu.ku.brc.dbsupport.StaleObjectException;
+import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.ui.ColorChooser;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.CommandAction;
@@ -142,7 +143,8 @@ public class FormViewObj implements Viewable,
                                     ViewBuilderIFace, 
                                     ValidationListener, 
                                     ResultSetControllerListener, 
-                                    AppPrefsChangeListener
+                                    AppPrefsChangeListener,
+                                    BusinessRulesOkDeleteIFace
 {
     private static final Logger log = Logger.getLogger(FormViewObj.class);
     
@@ -1659,7 +1661,7 @@ public class FormViewObj implements Viewable,
     /**
      * Save any changes to the current object
      */
-    protected void removeObject()
+    protected void askToRemoveObject()
     {
         Object[] delBtnLabels = {getResourceString("Delete"), getResourceString("Cancel")};
         String title = dataObj instanceof FormDataObjIFace ? ((FormDataObjIFace)dataObj).getIdentityTitle() : tableInfo.getTitle();
@@ -1675,6 +1677,46 @@ public class FormViewObj implements Viewable,
             return;
         }
         
+        // We do this because the process of determining whether something can be deleted might take a while.
+        if (businessRules != null)
+        {
+            
+            UIRegistry.getStatusBar().setIndeterminate(true);
+            final SwingWorker worker = new SwingWorker()
+            {
+                public Object construct()
+                {
+                    businessRules.okToDelete(dataObj, session, FormViewObj.this);
+                    return null;
+                }
+
+                //Runs on the event-dispatching thread.
+                public void finished()
+                {
+                    UIRegistry.getStatusBar().setIndeterminate(false);
+                    session.close();
+                }
+            };
+            worker.start();
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace#doDeleteDataObj(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace, boolean)
+     */
+    public void doDeleteDataObj(final Object dataObj, final DataProviderSessionIFace session, final boolean doDelete)
+    {
+        if (doDelete)
+        {
+            removeObject();
+        }
+    }
+
+    /**
+     * Save any changes to the current object
+     */
+    protected void removeObject()
+    {
         // Delete a child object by caching it in the Top Level MultiView
         if (mvParent != null && !mvParent.isTopLevel())
         {
@@ -1935,7 +1977,7 @@ public class FormViewObj implements Viewable,
             delBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae)
                 {
-                    removeObject();
+                    askToRemoveObject();
                 }
             });
         }

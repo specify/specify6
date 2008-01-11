@@ -76,6 +76,7 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
     protected String            formatter; // dataobj_formatter or uiformatter
     protected Boolean           readOnly;
     protected Integer           sizeLimit;
+    protected Boolean           isSystem; 
     protected Set<PickListItem> pickListItems;
     
     // Transient
@@ -108,6 +109,7 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
         formatter  = null;
         readOnly   = false;
         sizeLimit  = 50;
+        isSystem   = false;
         
         pickListItems = new HashSet<PickListItem>();
     }
@@ -295,6 +297,23 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
     }
 
     /**
+     * @return the isSystem
+     */
+    @Column(name="IsSystem", unique = false, nullable = false, updatable = true, insertable = true)
+    public Boolean getIsSystem()
+    {
+        return isSystem;
+    }
+
+    /**
+     * @param isSystem the isSystem to set
+     */
+    public void setIsSystem(Boolean isSystem)
+    {
+        this.isSystem = isSystem;
+    }
+
+    /**
      * @param items
      */
     public void setPickListItems(Set<PickListItem> items)
@@ -428,6 +447,6 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
      */
     public int compareTo(PickList o)
     {
-        return name.compareTo(o.name);
+        return name.toLowerCase().compareTo(o.name.toLowerCase());
     }
 }

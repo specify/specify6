@@ -576,8 +576,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
         currentStatus = CONTEXT_STATUS.OK;
         
-
-        
         return currentStatus;
     }
 

@@ -95,7 +95,7 @@ public class DBFieldInfo extends DBInfoBase
     
     public String toString()
     {
-        return column;
+        return StringUtils.isNotEmpty(title) ? title : column;
     }
     
     /**

@@ -240,6 +240,8 @@ public class NavBox extends JPanel implements NavBoxIFace
         } else
         {
             items.insertElementAt(item, position);
+            Collections.sort(items);
+            
             if (scrollable)
             {
                 itemsPanel.removeAll();
@@ -263,7 +265,7 @@ public class NavBox extends JPanel implements NavBoxIFace
             ((GhostGlassPane)UIRegistry.get(UIRegistry.GLASSPANE)).add((GhostActionable)item);
         }
        
-        if (notify && mgr != null)
+        if (notify)// && mgr != null)
         {
             refresh(this);
         }
@@ -272,6 +274,9 @@ public class NavBox extends JPanel implements NavBoxIFace
         return item.getUIComponent();
     }
     
+    /**
+     * Sorts all the items and reads them sorted.
+     */
     public void sort()
     {
         Collections.sort(items);
