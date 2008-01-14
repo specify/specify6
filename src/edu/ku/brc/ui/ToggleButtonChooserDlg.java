@@ -79,9 +79,9 @@ public class ToggleButtonChooserDlg<T> extends CustomDialog
      * @throws HeadlessException
      */
     public ToggleButtonChooserDlg(final Frame   parentFrame, 
-                              final String  title,
-                              final String  desc, 
-                              final List<T> listItems) throws HeadlessException
+                                  final String  title,
+                                  final String  desc, 
+                                  final List<T> listItems) throws HeadlessException
     {
         this(parentFrame, title, desc, listItems, null, OKCANCEL, ToggleButtonChooserPanel.Type.Checkbox);
     }
@@ -133,6 +133,9 @@ public class ToggleButtonChooserDlg<T> extends CustomDialog
         
     }
 
+    /**
+     * @param addSelectAll
+     */
     public void setAddSelectAll(boolean addSelectAll)
     {
         panel.setAddSelectAll(addSelectAll);

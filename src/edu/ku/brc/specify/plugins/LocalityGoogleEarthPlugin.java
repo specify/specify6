@@ -22,7 +22,7 @@ import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.exporters.GoogleEarthExporter;
 import edu.ku.brc.specify.exporters.GoogleEarthPlacemarkIFace;
-import edu.ku.brc.specify.tasks.ExportTask;
+import edu.ku.brc.specify.tasks.ToolsTask;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DateWrapper;
@@ -69,9 +69,9 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
         List<GoogleEarthPlacemarkIFace> items = new Vector<GoogleEarthPlacemarkIFace>();
         items.add(new CEPlacemark(ce));
         
-        CommandAction command = new CommandAction(ExportTask.EXPORT,ExportTask.EXPORT_LIST);
+        CommandAction command = new CommandAction(ToolsTask.TOOLS,ToolsTask.EXPORT_LIST);
         command.setData(items);
-        command.setProperty("exporter", GoogleEarthExporter.class);
+        command.setProperty("tool", GoogleEarthExporter.class);
         JStatusBar statusBar = UIRegistry.getStatusBar();
         statusBar.setText(UIRegistry.getResourceString("WB_OPENING_GOOGLE_EARTH"));
         CommandDispatcher.dispatch(command);

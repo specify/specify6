@@ -195,9 +195,8 @@ public class IconManager extends Component
         
         if (icon != null)
         {
-            IconEntry entry = new IconEntry(iconName);
-    
-            entry.add(id, path);
+            IconEntry entry = new IconEntry(iconName, id, path);
+            
             instance.defaultEntries.put(iconName, entry);
             
             if (instance.iconListForType != null)
@@ -260,17 +259,47 @@ public class IconManager extends Component
      * @param scaledIconSize the new scaled size in pixels
      * @return the scaled icon
      */
-    public static ImageIcon getScaledIcon(final ImageIcon icon, final IconSize iconSize, final IconSize scaledIconSize)
+    public static ImageIcon getScaledIcon(final ImageIcon icon, 
+                                          final IconSize  iconSize, 
+                                          final IconSize  scaledIconSize)
     {
+        IconEntry entry = null;
+        // Find current Entry
+        for (IconEntry et : instance.defaultEntries.values())
+        {
+            if (et.getIcon() == icon)
+            {
+                entry = et;
+                break;
+            }
+        }
+        
+        if (entry != null)
+        {
+            return entry.getIcon(scaledIconSize);
+        }
+        
         if (icon != null)
         {
-    		
-        	ImageIcon scaledIcon = new ImageIcon(instance.getFastScale(icon, iconSize, scaledIconSize));
-        	return scaledIcon;	
+        	return createNewScaledIcon(icon, iconSize, scaledIconSize);
         } 
+        
         // else
         log.error("Couldn't find icon [" + iconSize + "] to scale to [" + scaledIconSize + "]");
         return null;
+    }
+    
+    /**
+     * @param icon
+     * @param iconSize
+     * @param scaledIconSize
+     * @return
+     */
+    public static ImageIcon createNewScaledIcon(final ImageIcon icon, 
+                                                final IconSize  iconSize, 
+                                                final IconSize  scaledIconSize) 
+    {
+        return new ImageIcon(instance.getFastScale(icon, iconSize, scaledIconSize));
     }
 
     /**
@@ -281,15 +310,12 @@ public class IconManager extends Component
      */
     public static ImageIcon getIcon(final String iconName, final IconSize id)
     {
-    	//original size icon
-        ImageIcon icon = getIcon(iconName);
-        if (icon == null)
+        IconEntry entry = instance.defaultEntries.get(iconName);
+        if (entry != null)
         {
-            return null;
+            return entry.getIcon(id);
         }
-         
-        icon = getScaledIcon(icon, null, id);
-        return icon;
+        return null;
     }
     
     /**
@@ -453,7 +479,7 @@ public class IconManager extends Component
         IconEntry entry = instance.defaultEntries.get(iconName);
         if (entry != null)
         {
-            IconEntry aliasEntry = new IconEntry(entry.getName(), true, entry.getIcons());
+            IconEntry aliasEntry = new IconEntry(entry.getName(), entry.getSize(), entry.getUrl(), true, entry.getIcons());
             instance.defaultEntries.put(aliasName, aliasEntry);
         }
     }
@@ -472,6 +498,8 @@ public class IconManager extends Component
             if (entry != null)
             {
                 aliasEntry.setIcons(entry.getIcons());
+                aliasEntry.setUrl(entry.getUrl());
+                aliasEntry.setSize(entry.getSize());
                 
             } else
             {
@@ -507,6 +535,26 @@ public class IconManager extends Component
         }
         return null;
     }
+    
+    /**
+     * @param icon
+     * @param size
+     * @return
+     */
+    public static URL getURLForIcon(final ImageIcon icon, final IconManager.IconSize size)
+    {
+        for (IconEntry entry : instance.defaultEntries.values())
+        {
+            for (IconEntry.IconSizeEntry sizeEntry : entry.getIcons().values())
+            {
+                if (sizeEntry.isIconAvailable() && icon == sizeEntry.getImageIcon())
+                {
+                    return entry.getUrl();
+                }
+            }
+        }
+        return null;
+    }
 
     /**
      * Creates a Black and White image from the color
@@ -521,6 +569,7 @@ public class IconManager extends Component
         ColorConvertOp colorConvert = new ColorConvertOp(ColorSpace.getInstance(ColorSpace.CS_GRAY), null);
         colorConvert.filter(bi, bi);
         ImageIcon icon = new ImageIcon(bi);
+        g.dispose();
         return icon;
     }
 
@@ -548,7 +597,7 @@ public class IconManager extends Component
     /**
      * Returns a Standard Size icon
      * @param imageName the name of the icon/image
-     * @param id tthe size to be returned
+     * @param id the size to be returned
      * @return Returns a Standard Size icon
      */
     public static ImageIcon getImage(final String imageName, final IconSize id)

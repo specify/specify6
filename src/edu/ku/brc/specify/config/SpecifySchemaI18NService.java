@@ -57,10 +57,10 @@ public class SpecifySchemaI18NService extends SchemaI18NService
      * @see edu.ku.brc.af.core.SchemaI18NService#loadWithLocale(java.lang.Byte, int, edu.ku.brc.dbsupport.DBTableIdMgr, java.util.Locale)
      */
     @Override
-    public void loadWithLocale(final Byte schemaType, 
-                               final int  collectionTypeId,
+    public void loadWithLocale(final Byte         schemaType, 
+                               final int          collectionTypeId,
                                final DBTableIdMgr mgr, 
-                               final Locale locale)
+                               final Locale       locale)
     {
         String sql = "SELECT splocalecontainer.Name, Text, IsHidden FROM splocalecontainer INNER JOIN splocaleitemstr ON " +
                      "splocalecontainer.SpLocaleContainerID = splocaleitemstr.SpLocaleContainerNameID where Language = '"+locale.getLanguage()+"' AND " +

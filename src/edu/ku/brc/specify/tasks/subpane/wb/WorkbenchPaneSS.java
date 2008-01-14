@@ -41,6 +41,7 @@ import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.ConnectException;
+import java.net.URL;
 import java.util.Collections;
 import java.util.EventObject;
 import java.util.List;
@@ -129,6 +130,7 @@ import edu.ku.brc.services.mapping.LocalityMapper;
 import edu.ku.brc.services.mapping.SimpleMapLocation;
 import edu.ku.brc.services.mapping.LocalityMapper.MapLocationIFace;
 import edu.ku.brc.services.mapping.LocalityMapper.MapperListener;
+import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.RecordSet;
@@ -141,7 +143,7 @@ import edu.ku.brc.specify.exporters.ExportToFile;
 import edu.ku.brc.specify.exporters.GoogleEarthExporter;
 import edu.ku.brc.specify.exporters.GoogleEarthPlacemarkIFace;
 import edu.ku.brc.specify.exporters.WorkbenchRowPlacemarkWrapper;
-import edu.ku.brc.specify.tasks.ExportTask;
+import edu.ku.brc.specify.tasks.ToolsTask;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.DB;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadData;
@@ -423,7 +425,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         addAction.setEnabled(true); 
 
 
-        carryForwardBtn = createIconBtn("Configure", IconManager.IconSize.NonStd, "WB_CARRYFORWARD", false, new ActionListener()
+        carryForwardBtn = createIconBtn("CarryForward20x20", IconManager.IconSize.NonStd, "WB_CARRYFORWARD", false, new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -456,7 +458,12 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             public void actionPerformed(ActionEvent ae)
             {
-                showRecordsInGoogleEarth();
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run()
+                    {
+                        showRecordsInGoogleEarth();
+                    }
+                });
             }
         });
         // enable or disable along with Show Map and Geo Ref Convert buttons
@@ -1730,9 +1737,9 @@ public class WorkbenchPaneSS extends BaseSubPane
             selectedRows.add(row);
         }
         
-        CommandAction command = new CommandAction(ExportTask.EXPORT, ExportTask.EXPORT_LIST);
+        CommandAction command = new CommandAction(ToolsTask.TOOLS, ToolsTask.EXPORT_LIST);
         command.setData(selectedRows);
-        command.setProperty("exporter", ExportToFile.class);
+        command.setProperty("tool", ExportToFile.class);
         
         
         Properties props = new Properties();
@@ -1763,7 +1770,79 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         UsageTracker.incrUsageCount("WB.ExportXLSRowsTool");
         CommandDispatcher.dispatch(command);
-      }
+    }
+    
+    protected WorkbenchTemplateMappingItem selectColumnName()
+    {
+        WorkbenchTemplateMappingItem genus    = null;
+        WorkbenchTemplateMappingItem species  = null;
+        WorkbenchTemplateMappingItem variety1 = null;
+        
+        Vector<WorkbenchTemplateMappingItem> list = new Vector<WorkbenchTemplateMappingItem>();
+        for (WorkbenchTemplateMappingItem item : workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems())
+        {
+            list.add(item);
+            if (item.getFieldName().equals("genus1"))
+            {
+                genus = item;
+                
+            } else if (item.getFieldName().equals("species1"))
+            {
+                species = item;
+                
+            } else if (item.getFieldName().equals("variety1"))
+            {
+                variety1 = item;
+            }
+        }
+        
+        Collections.sort(list);
+        
+        if (genus != null && species != null)
+        {
+            WorkbenchTemplateMappingItem genusSpecies = new WorkbenchTemplateMappingItem();
+            genusSpecies.setCaption(genus.getTitle() + " " + species.getTitle() +
+                                    (variety1 != null ? (" " + variety1.getTitle()) : ""));
+            genusSpecies.setViewOrder((short)-1);
+            genusSpecies.setWorkbenchTemplateMappingItemId((int)genus.getViewOrder());
+            genusSpecies.setVersion((int)species.getViewOrder());
+            
+            if (variety1 != null)
+            {
+                genusSpecies.setSrcTableId((int)variety1.getViewOrder());
+            }
+            list.insertElementAt(genusSpecies, 0);
+        }
+        
+        WorkbenchTemplateMappingItem rowItem = new WorkbenchTemplateMappingItem();
+        rowItem.setCaption("Row Number"); // I18N
+        rowItem.setViewOrder((short)-2);
+        list.insertElementAt(rowItem, 0);
+        
+        ToggleButtonChooserDlg<WorkbenchTemplateMappingItem> dlg = new ToggleButtonChooserDlg<WorkbenchTemplateMappingItem>((Frame)UIRegistry.getTopWindow(), 
+                getResourceString("GE_CHOOSE_FIELD_FOR_EXPORT_TITLE"), 
+                getResourceString("GE_CHOOSE_FIELD_FOR_EXPORT"), 
+                list);
+        dlg.setUseScrollPane(true);
+        dlg.setVisible(true);
+        return dlg.getSelectedObject();
+    }
+    
+    /**
+     * @param viewOrder
+     * @return
+     */
+    protected WorkbenchTemplateMappingItem getWBMI(final int viewOrder)
+    {
+        for (WorkbenchTemplateMappingItem item : workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems())
+        {
+            if (item.getViewOrder().intValue() == viewOrder)
+            {
+                return item;
+            }
+        }
+        return null;
+    }
     
     /**
      * Make a request to the ExportTask to display the selected records in GoogleEarth.
@@ -1774,14 +1853,33 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         log.info("Showing map of selected records");
         int[] selection = spreadSheet.getSelectedRowModelIndexes();
-        if (selection.length==0)
+        if (selection.length == 0)
         {
             // if none are selected, map all of them
             int rowCnt = spreadSheet.getRowCount();
             selection = new int[rowCnt];
             for (int i = 0; i < rowCnt; ++i)
             {
-                selection[i]=spreadSheet.convertRowIndexToModel(i);
+                selection[i] = spreadSheet.convertRowIndexToModel(i);
+            }
+        }
+        
+        WorkbenchTemplateMappingItem item = selectColumnName();
+        if (item == null)
+        {
+            return;
+        }
+        WorkbenchTemplateMappingItem genus   = null;
+        WorkbenchTemplateMappingItem species = null;
+        WorkbenchTemplateMappingItem variety = null;
+        
+        if (item.getViewOrder() == -1)
+        {
+            genus   = getWBMI(item.getWorkbenchTemplateMappingItemId());
+            species = getWBMI(item.getVersion());
+            if (item.getSrcTableId() != null)
+            {
+                variety = getWBMI(item.getSrcTableId());
             }
         }
         
@@ -1792,46 +1890,54 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             int index = selection[i];
             WorkbenchRow row = rows.get(index);
-            int visibleRowNumber = spreadSheet.convertRowIndexToView(index);
-            selectedRows.add(new WorkbenchRowPlacemarkWrapper(row, "Row " + (visibleRowNumber+1)));
+            
+            short  viewOrder = item.getViewOrder();
+            String title     = null;
+            if (viewOrder == -1)
+            {
+                title = row.getData(genus.getViewOrder()) + " " + 
+                        row.getData(species.getViewOrder()) +
+                        (variety != null ? (" " + row.getData(variety.getViewOrder())) : "");
+            }
+            
+            if ((viewOrder == -1 && StringUtils.isEmpty(title)) || viewOrder == -2)
+            {
+                int visibleRowNumber = spreadSheet.convertRowIndexToView(index);
+                title = "Row " + (visibleRowNumber+1);
+                
+            } else if (viewOrder > -1)
+            {
+                title = row.getData(item.getViewOrder());
+            }
+            selectedRows.add(new WorkbenchRowPlacemarkWrapper(row, title));
         }
         
-//        // get an icon URL that is specific to the current context
-//        String discipline = CollectionType.getCurrentCollectionType().getDiscipline();
-//        String iconUrl = null;
-//        discipline = discipline.toLowerCase();
-//        if (discipline.startsWith("fish"))
-//        {
-//            iconUrl = getResourceString("WB_GOOGLE_FISH_ICON_URL");
-//        }
-//        if (discipline.startsWith("bird"))
-//        {
-//            iconUrl = getResourceString("WB_GOOGLE_BIRD_ICON_URL");
-//        }
-//        if (discipline.startsWith("insect") || discipline.startsWith("ento"))
-//        {
-//            iconUrl = getResourceString("WB_GOOGLE_ENTO_ICON_URL");
-//        }
-//        if (discipline.startsWith("plant") || discipline.equals("botany"))
-//        {
-//            iconUrl = getResourceString("WB_GOOGLE_PLANT_ICON_URL");
-//        }
-//        if (discipline.startsWith("mammal"))
-//        {
-//            iconUrl = getResourceString("WB_GOOGLE_MAMMAL_ICON_URL");
-//        }
-//        if (discipline.startsWith("herp"))
-//        {
-//            iconUrl = getResourceString("WB_GOOGLE_HERP_ICON_URL");
-//        }
+        // get an icon URL that is specific to the current context
+        String iconUrl = AppPreferences.getRemote().getProperties().getProperty("google.earth.icon", null);
+        if (StringUtils.isEmpty(iconUrl))
+        {
+            String discipline = CollectionType.getCurrentCollectionType().getDiscipline();
+            for ( Pair<String, ImageIcon> pair : IconManager.getListByType("disciplines", IconManager.IconSize.Std16))
+            {
+                if (pair.first.equals(discipline))
+                {
+                    URL pathURL = IconManager.getURLForIcon(pair.second, IconManager.IconSize.Std16);
+                    if (pathURL != null)
+                    {
+                        iconUrl = pathURL.getFile();
+                        break;
+                    }
+                }
+            }
+        }
         
-        CommandAction command = new CommandAction(ExportTask.EXPORT,ExportTask.EXPORT_LIST);
+        CommandAction command = new CommandAction(ToolsTask.TOOLS,ToolsTask.EXPORT_LIST);
         command.setData(selectedRows);
-        command.setProperty("exporter", GoogleEarthExporter.class);
-//        if (iconUrl != null)
-//        {
-//            command.setProperty("iconURL", iconUrl);
-//        }
+        command.setProperty("tool", GoogleEarthExporter.class);
+        if (iconUrl != null)
+        {
+            command.setProperty("iconURL", iconUrl);
+        }
         JStatusBar statusBar = UIRegistry.getStatusBar();
         statusBar.setText("WB_OPENING_GOOGLE_EARTH");
         CommandDispatcher.dispatch(command);
@@ -2015,9 +2121,9 @@ public class WorkbenchPaneSS extends BaseSubPane
                     String localityNameStr      = row.getData(localityNameColIndex);
                             
                     // get the geography data
-                    String country = (countryColIndex!=-1) ? row.getData(countryColIndex) : "";
-                    String state   = (stateColIndex!=-1) ? row.getData(stateColIndex) : "";
-                    String county  = (countyColIndex!=-1) ? row.getData(countyColIndex) : "";
+                    String country = (countryColIndex != -1) ? row.getData(countryColIndex) : "";
+                    String state   = (stateColIndex != -1) ? row.getData(stateColIndex) : "";
+                    String county  = (countyColIndex != -1) ? row.getData(countyColIndex) : "";
                     
                     // make the web service request
                     log.info("Making call to GEOLocate web service: " + localityNameStr);
@@ -2261,9 +2367,9 @@ public class WorkbenchPaneSS extends BaseSubPane
                     String localityNameStr      = row.getData(localityNameColIndex);
                             
                     // get the geography data
-                    String country = (countryColIndex!=-1) ? row.getData(countryColIndex) : "";
-                    String state   = (stateColIndex!=-1) ? row.getData(stateColIndex) : "";
-                    String county  = (countyColIndex!=-1) ? row.getData(countyColIndex) : "";
+                    String country = (countryColIndex != -1) ? row.getData(countryColIndex) : "";
+                    String state   = (stateColIndex != -1)   ? row.getData(stateColIndex) : "";
+                    String county  = (countyColIndex != -1)  ? row.getData(countyColIndex) : "";
                     
                     log.info("Making call to BioGeomancer service: " + localityNameStr);
                     String bgResults;
@@ -2327,7 +2433,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                     if (resCount > 0)
                     {
                         // everything must have worked and returned at least 1 result
-                        // TEMP FIX FOR BUG 4562 RELEASE 
+                        // XXX TEMP FIX FOR BUG 4562 RELEASE 
                     	// For now, all calls the setBioGeomancerResults() and getBioGeomancerResults() have been converted
                     	// to calls to setTmpBgResults() and getTmpBgResults() to allow for continued use of the BG features
                     	// without causing Hibernate to store the results to the DB, throwing the BUG 4562.
@@ -2382,9 +2488,10 @@ public class WorkbenchPaneSS extends BaseSubPane
                     // TODO: i18n
                     // XXX: i18n
                     String message = "BioGeomancer returned results for " + numRecordsWithResults
-                            + " records.  Would you like to view them now?";
+                            + " records.  Would you like to view them now?"; // I18N
                     int userChoice = JOptionPane.showConfirmDialog(WorkbenchPaneSS.this, message,
-                            "Continue?", JOptionPane.YES_NO_OPTION);
+                            "Continue?", JOptionPane.YES_NO_OPTION); // I18N
+                    
                     if (userChoice != JOptionPane.OK_OPTION)
                     {
                         statusBar.setText("BioGeomancer process terminated by user");
@@ -2448,7 +2555,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     {
         // create the UI for displaying the BG results
         JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
-        BioGeomancerResultsChooser bgResChooser = new BioGeomancerResultsChooser(topFrame,"BioGeomancer Results Chooser",rows);
+        BioGeomancerResultsChooser bgResChooser = new BioGeomancerResultsChooser(topFrame,"BioGeomancer Results Chooser",rows); // I18N
         
         List<BioGeomancerResultStruct> results = bgResChooser.getResultsChosen();
         
@@ -2535,6 +2642,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 DBFieldInfo fi = ti.getFieldByName(wbtmi.getFieldName());
                 if (fi != null)
                 {
+                    wbtmi.setFieldInfo(fi);
                     //System.out.println(fi.getName()+"  "+fi.getLength()+"  "+fi.getType());
                     if (fi.getLength() > 0)
                     {

@@ -677,7 +677,7 @@ public class BuildSampleDatabase
         lake.setLong2text("100.403180 deg W");
         lake.setLongitude2(new BigDecimal(-100.403180));
         
-        Locality farmpond = createLocality("Farm pond", (Geography)geos.get(21));
+        Locality farmpond = createLocality("Shoal Creek at Schermerhorn Park, S of Galena at Rt. 26", (Geography)geos.get(11));
         farmpond.setLatLongType(LINE);
         farmpond.setOriginalLatLongUnit(2);
         farmpond.setLat1text("41.642187 deg N");
@@ -1641,7 +1641,7 @@ public class BuildSampleDatabase
         
         // Create Kansas and a few counties
         List<Geography> counties = createGeographyChildren(geoTreeDef, states.get(0),
-                new String[] { "Douglas", "Johnson", "Osage", "Sedgwick" }, county.getRankId());
+                new String[] { "Cherokee", "Douglas", "Johnson", "Osage", "Sedgwick" }, county.getRankId());
         // 11, 12, 13, 14
         newObjs.addAll(counties);
         counties = createGeographyChildren(geoTreeDef, states.get(1),
@@ -1652,6 +1652,16 @@ public class BuildSampleDatabase
                 new String[] { "Dakota", "Logan", "Valley", "Wheeler", "Johnson" }, county.getRankId());
         // 20, 21, 22, 23, 24
         newObjs.addAll(counties);
+        
+        int i = 0;
+        for (Object geo : newObjs)
+        {
+            if (geo instanceof Geography)
+            {
+                log.debug(i+" "+((Geography)geo).getName());
+            }
+            i++;
+        }
         
         TreeHelper.fixFullnameForNodeAndDescendants(earth);
         earth.setNodeNumber(1);

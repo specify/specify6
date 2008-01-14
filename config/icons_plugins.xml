@@ -5,6 +5,7 @@
     <icon name="FishBase"         file="fblogootw32.png" sizes="all"/>
     <!-- <icon name="BioGeoMancer"     file="biogeomancer.png" sizes="all"/> -->
     <icon name="BioGeoMancer"     file="biogeomancer20x20.png" sizes="NonStd"/>
+    <icon name="BioGeoMancer32"   file="biogeomancer.png" sizes="32"/>
     <icon name="ConvertGeoRef"	  file="LatLong20x20.png" sizes="NonStd"/>
     <icon name="GoogleEarth"      file="GoogleEarth20x20.png" sizes="NonStd"/>
     

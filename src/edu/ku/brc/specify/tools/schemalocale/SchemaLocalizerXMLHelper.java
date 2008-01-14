@@ -16,6 +16,7 @@ import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Locale;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.io.FileUtils;
@@ -62,7 +63,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     
     protected DBTableIdMgr                                 tableMgr;
     
-    protected Vector<DisciplineBasedContainer>                    tables     = new Vector<DisciplineBasedContainer>();
+    protected Vector<DisciplineBasedContainer>             tables     = new Vector<DisciplineBasedContainer>();
     protected Hashtable<String, LocalizableContainerIFace> tableHash  = new Hashtable<String, LocalizableContainerIFace>();
     
     protected Vector<LocalizableJListItem>                 tableDisplayItems;
@@ -1045,6 +1046,49 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     public boolean exportToDirectory(File expportDirectory)
     {
         return save(expportDirectory.getAbsolutePath() + File.separator);
+    }
+    
+    protected SpLocaleItemStr getNameForLocale(final Set<SpLocaleItemStr> itemStrs, final Locale locale)
+    {
+        for (SpLocaleItemStr itemStr : itemStrs)
+        {
+            if (itemStr.isLocale(locale))
+            {
+                return itemStr;
+            }
+        }
+        return null;
+    }
+    
+    public void setTitlesIntoSchema()
+    {
+        Locale locale = Locale.getDefault();
+        
+        for (DBTableInfo ti : tableMgr.getTables())
+        {
+            DisciplineBasedContainer container = (DisciplineBasedContainer)tableHash.get(ti.getName());
+            SpLocaleItemStr itemStr = getNameForLocale(container.getNames(), locale);
+            if (itemStr != null)
+            {
+                ti.setTitle(itemStr.getText());
+            }
+            
+            Set<SpLocaleContainerItem> fieldContainers = container.getItems();
+            for (DBFieldInfo fi : ti.getFields())
+            {
+                for (SpLocaleContainerItem item : fieldContainers)
+                {
+                    if (item.getName().equals(fi.getName()))
+                    {
+                        itemStr = getNameForLocale(item.getNames(), locale);
+                        if (itemStr != null)
+                        {
+                            fi.setTitle(itemStr.getText());
+                        }
+                    }
+                }
+            }
+        }
     }
 
 }

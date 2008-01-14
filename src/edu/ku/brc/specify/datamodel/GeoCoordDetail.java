@@ -351,6 +351,7 @@ public class GeoCoordDetail extends CollectionMember
     /**
      * @return the bgmXML
      */
+    @Column(name = "BgmXML", unique = false, nullable = true, insertable = true, updatable = true, length = 4096)
     public String getBgmXML()
     {
         return bgmXML;
@@ -359,7 +360,6 @@ public class GeoCoordDetail extends CollectionMember
     /**
      * @param bgmXML the bgmXML to set
      */
-    @Column(name = "BgmXML", unique = false, nullable = true, insertable = true, updatable = true, length = 4096)
     public void setBgmXML(String bgmXML)
     {
         this.bgmXML = bgmXML;

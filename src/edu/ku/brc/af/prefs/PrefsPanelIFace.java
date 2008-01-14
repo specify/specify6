@@ -14,6 +14,8 @@
  */
 package edu.ku.brc.af.prefs;
 
+import java.util.Properties;
+
 import edu.ku.brc.ui.forms.validation.FormValidator;
 
 /**
@@ -26,18 +28,21 @@ import edu.ku.brc.ui.forms.validation.FormValidator;
  */
 public interface PrefsPanelIFace
 {
-
-    
     /**
      * Return the validator for the panel
      * @return Return the validator for the panel
      */
-    public FormValidator getValidator();
+    public abstract FormValidator getValidator();
     
     
     /**
      * @return
      */
-    public boolean isFormValid();
+    public abstract boolean isFormValid();
+    
+    /**
+     * @param changeHash
+     */
+    public abstract void getChangedFields(Properties changeHash);
     
 }

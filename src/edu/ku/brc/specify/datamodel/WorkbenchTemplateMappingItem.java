@@ -27,6 +27,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import edu.ku.brc.dbsupport.DBFieldInfo;
+
 /**
  * Items are sorted by ViewOrder
  */
@@ -66,6 +68,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     
     // Transient
     protected Class<?>          dataFieldClass = null;
+    protected DBFieldInfo       fieldInfo      = null;
     
     // Constructors
 
@@ -110,6 +113,7 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
         
         // Transient
         dataFieldClass = null;
+        fieldInfo      = null;
 
     }
 
@@ -405,13 +409,31 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
         return viewOrder.compareTo(obj.viewOrder);
     }
     
+    
+    /**
+     * @return the fieldInfo
+     */
+    @Transient
+    public DBFieldInfo getFieldInfo()
+    {
+        return fieldInfo;
+    }
+
+    /**
+     * @param fieldInfo the fieldInfo to set
+     */
+    public void setFieldInfo(DBFieldInfo fieldInfo)
+    {
+        this.fieldInfo = fieldInfo;
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString()
     {
-        return caption != null ? caption : fieldName;
+        return fieldInfo != null ? fieldInfo.getTitle() : (caption != null ? caption : fieldName);
     }
 
     /*
@@ -424,6 +446,15 @@ public class WorkbenchTemplateMappingItem extends DataModelObjBase implements ja
     public int getTableId()
     {
         return getClassTableId();
+    }
+    
+    /**
+     * @return the localized title
+     */
+    @Transient
+    public String getTitle()
+    {
+        return fieldInfo != null ? fieldInfo.getTitle() : getCaption();
     }
     
     /* (non-Javadoc)

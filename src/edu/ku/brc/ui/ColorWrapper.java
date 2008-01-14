@@ -130,7 +130,7 @@ public class ColorWrapper
                 //throw new IllegalArgumentException("ColorWrapper - one of the values is not numeric r["+rgbVals[0]+"] g["+rgbVals[1]+"] b["+rgbVals[2]+"]");
                 log.error("ColorWrapper - one of the values is not numeric ["+rgbStr+"] r["+rgbVals[0]+"] g["+rgbVals[1]+"] b["+rgbVals[2]+"]");
             }
-        } else
+        } else if (StringUtils.isNotEmpty(rgbStr))
         {
             throw new IllegalArgumentException("ColorWrapper - The Color string doesn't parse ["+rgbStr+"]");
         }

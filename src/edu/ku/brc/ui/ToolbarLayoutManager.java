@@ -127,6 +127,11 @@ public class ToolbarLayoutManager implements LayoutManager, LayoutManager2
     {        
         synchronized (target.getTreeLock()) 
         {
+            comps.clear();
+            for (int i=0;i<target.getComponentCount();i++)
+            {
+                comps.add(target.getComponent(i));
+            }
             Insets insets = target.getInsets();
                 
             calcPreferredSize(target);

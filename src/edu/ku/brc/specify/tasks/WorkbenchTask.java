@@ -89,6 +89,7 @@ import edu.ku.brc.helpers.ImageFilter;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
@@ -99,7 +100,6 @@ import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.exporters.ExportFileConfigurationFactory;
 import edu.ku.brc.specify.exporters.ExportToFile;
 import edu.ku.brc.specify.tasks.subpane.wb.ConfigureExternalDataIFace;
-import edu.ku.brc.specify.tasks.subpane.wb.ConfigureXLS;
 import edu.ku.brc.specify.tasks.subpane.wb.DataImportIFace;
 import edu.ku.brc.specify.tasks.subpane.wb.ImageFrame;
 import edu.ku.brc.specify.tasks.subpane.wb.ImportColumnInfo;
@@ -109,6 +109,7 @@ import edu.ku.brc.specify.tasks.subpane.wb.TemplateEditor;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchBackupMgr;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchJRDataSource;
 import edu.ku.brc.specify.tasks.subpane.wb.WorkbenchPaneSS;
+import edu.ku.brc.specify.tools.schemalocale.SchemaLocalizerXMLHelper;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -359,6 +360,10 @@ public class WorkbenchTask extends BaseTask
             schema = new DBTableIdMgr(false);
             schema.initialize(new File(XMLHelper.getConfigDirPath("specify_workbench_datamodel.xml")));
             databasechema = new WeakReference<DBTableIdMgr>(schema);
+            
+            SchemaLocalizerXMLHelper schemaLocalizer = new SchemaLocalizerXMLHelper(SpLocaleContainer.WORKBENCH_SCHEMA, schema);
+            schemaLocalizer.load();
+            schemaLocalizer.setTitlesIntoSchema();
         }
         
         return schema;
@@ -1074,8 +1079,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
 
        if (workbench != null)
        {
-           CommandAction command = new CommandAction(ExportTask.EXPORT, ExportTask.EXPORT_LIST);
-           command.setProperty("exporter", ExportToFile.class);
+           CommandAction command = new CommandAction(ToolsTask.TOOLS, ToolsTask.EXPORT_LIST);
+           command.setProperty("tool", ExportToFile.class);
            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
            try
            {
@@ -1143,8 +1148,8 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         // The command may have been clicked on so ask for one
         if (workbenchTemplate != null)
         {
-            CommandAction command = new CommandAction(ExportTask.EXPORT, ExportTask.EXPORT_LIST);
-            command.setProperty("exporter", ExportToFile.class);
+            CommandAction command = new CommandAction(ToolsTask.TOOLS, ToolsTask.EXPORT_LIST);
+            command.setProperty("tool", ExportToFile.class);
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
             try
             {

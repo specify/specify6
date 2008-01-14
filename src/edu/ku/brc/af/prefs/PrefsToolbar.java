@@ -127,11 +127,15 @@ public class PrefsToolbar extends JPanel
             {
                 org.dom4j.Element pref = (org.dom4j.Element)iterPrefs.next();
 
-                String prefTitle  = pref.attributeValue("title");
-                String iconPath   = pref.attributeValue("icon");
-                String panelClass = pref.attributeValue("panelClass");
+                String prefTitle   = pref.attributeValue("title");
+                String iconPath    = pref.attributeValue("icon");
+                String panelClass  = pref.attributeValue("panelClass");
+                String viewSetName = pref.attributeValue("viewsetname");
+                String viewName    = pref.attributeValue("viewname");
 
-                if (StringUtils.isNotEmpty(prefTitle) && StringUtils.isNotEmpty(iconPath) && StringUtils.isNotEmpty(panelClass))
+                if (StringUtils.isNotEmpty(prefTitle) && 
+                    StringUtils.isNotEmpty(iconPath) && 
+                    StringUtils.isNotEmpty(panelClass))
                 {
                     ImageIcon icon;
                     if (iconPath.startsWith("http") || iconPath.startsWith("file"))
@@ -160,8 +164,20 @@ public class PrefsToolbar extends JPanel
 
                     try
                     {
-                        Class<?> panelClassObj = Class.forName(panelClass);
-                        Component comp = (Component)panelClassObj.newInstance();
+                        Class<?>  panelClassObj = Class.forName(panelClass);
+                        Component comp          = (Component)panelClassObj.newInstance();
+                        if (panelClassObj == GenericPrefsPanel.class)
+                        {
+                            if (StringUtils.isNotEmpty(viewSetName) && StringUtils.isNotEmpty(viewName))
+                            {
+                                GenericPrefsPanel genericPrefsPanel = (GenericPrefsPanel)comp;
+                                genericPrefsPanel.createForm(viewSetName, viewName);
+                                
+                            } else
+                            {
+                                log.error("ViewSetName["+viewSetName+"] or ViewName["+viewName+"] is empty!");
+                            }
+                        }
                         prefsDlg.addPanel(prefTitle, comp);
 
                         add(btn.getUIComponent());

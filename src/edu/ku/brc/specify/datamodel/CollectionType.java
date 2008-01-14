@@ -51,6 +51,8 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.specify.config.Discipline;
+
 /**
 
  */
@@ -101,14 +103,35 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
         this.collectionTypeId = collectionTypeId;
     }
 
+    /**
+     * @return
+     */
     public static CollectionType getCurrentCollectionType()
     {
         return currentCollectionType;
     }
 
+    /**
+     * @param currentCollectionType
+     */
     public static void setCurrentCollectionType(CollectionType currentCollectionType)
     {
         CollectionType.currentCollectionType = currentCollectionType;
+    }
+    
+    /**
+     * Returns true if the the discipline matches the current one
+     * @param disciplineArg the one in question
+     * @return true if the the discipline matches the current one
+     */
+    public static boolean isCurrentDiscipline(final Discipline.STD_DISCIPLINES disciplineArg)
+    {
+        if (CollectionType.currentCollectionType != null)
+        {
+            String dsc = CollectionType.currentCollectionType.getDiscipline();
+            return StringUtils.isNotEmpty(dsc) && dsc.equals(disciplineArg.toString());
+        }
+        return false;
     }
 
     // Initializer

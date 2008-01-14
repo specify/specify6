@@ -3171,7 +3171,7 @@ public class FormViewObj implements Viewable,
      * @return If the control supports UIValidatable interface then it return whether the controls has been changed. If it
      * doesn't then it assumes it has and returns true.
      */
-    protected boolean hasFormControlChanged(final String id)
+    public boolean hasFormControlChanged(final String id)
     {
         FieldInfo fieldInfo = controlsById.get(id);
         if (fieldInfo != null)
@@ -4017,6 +4017,19 @@ public class FormViewObj implements Viewable,
             setColorOnControls(0, viewFieldColorLocal.getColor());
         }
         //log.debug("Pref: ["+evt.getKey()+"]["+pref.get(evt.getKey(), "XXX")+"]");
+    }
+    
+    /**
+     * @return  returns hash table mapping the Ids to the Names
+     */
+    public Hashtable<String, String> getIdToNameHash()
+    {
+        Hashtable<String, String> hash = new Hashtable<String, String>();
+        for (FieldInfo fieldInfo : controlsById.values())
+        {
+            hash.put(fieldInfo.getId(), fieldInfo.getName());
+        }
+        return hash;
     }
 
     /* (non-Javadoc)

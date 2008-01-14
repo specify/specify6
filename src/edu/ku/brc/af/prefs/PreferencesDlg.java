@@ -33,6 +33,7 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Properties;
 import java.util.prefs.BackingStoreException;
 
 import javax.swing.BorderFactory;
@@ -155,7 +156,9 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
     @Override
     protected void okButtonPressed()
     {
-        saveChangedPrefs();
+        final Properties changesHash = new Properties();
+        saveChangedPrefs(changesHash);
+        
         try
         {
             AppPreferences.getRemote().flush();
@@ -169,7 +172,9 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
         SwingUtilities.invokeLater(new Runnable() {
             public void run()
             {
-                CommandDispatcher.dispatch(new CommandAction(PREFERENCES, "Updated", AppPreferences.getRemote()));
+                CommandAction cmdAction = new CommandAction(PREFERENCES, "Updated", AppPreferences.getRemote());
+                cmdAction.addProperties(changesHash);
+                CommandDispatcher.dispatch(cmdAction);
             }
         });
     }
@@ -189,16 +194,14 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
     }
 
     /**
-     * Save any prefs that have changed
+     * Save any Preferences that have changed.
      */
-    protected void saveChangedPrefs()
+    protected void saveChangedPrefs(final Properties changesHash)
     {
-        //if (currentComp instanceof PrefsSavable)
-        //{
-        //    ((PrefsSavable)currentComp).savePrefs();
-        //}
         for (PrefsPanelIFace pp : prefPanels)
         {
+            pp.getChangedFields(changesHash);
+            
             ((PrefsSavable)pp).savePrefs();
         }
 

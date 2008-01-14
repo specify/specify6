@@ -13,24 +13,33 @@ import java.util.Vector;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.dbsupport.DBFieldInfo;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.Taxon;
+import edu.ku.brc.specify.tasks.ToolsTask;
+import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.util.Pair;
+import edu.ku.brc.util.services.GenericKMLGenerator;
 
 /**
  * Creates Google Earth KML for the LocalityMapper.
  * 
  * @author jstewart
+ * 
  * @code_status Complete
  */
-public class KeyholeMarkupGenerator
+public class CollectingEventKMLGenerator
 {
 	/** Logger used to emit any messages from this class. */
-	private static final Logger log = Logger.getLogger(KeyholeMarkupGenerator.class);
+	private static final Logger log = Logger.getLogger(CollectingEventKMLGenerator.class);
 
 	/** Standard XML file type declaration. */
 	protected static String XML_DECLARATION = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
@@ -39,22 +48,45 @@ public class KeyholeMarkupGenerator
 
 	/** <code>CollectingEvents</code> to map in the KML output. */
 	protected List<CollectingEvent> events;
+	
 	/** Labels to apply to the events mapped. */
 	protected List<String> labels;
 
 	/** A mapping from a species name to a URL with a species image. */
-	protected Hashtable<String,String> speciesToImageMapper;
-
+	protected Hashtable<String, String> speciesToImageMapper;
+	
+	protected String textColor = "000000";
+    
+    /** A URL to an image file to be used as the placemark icon. */
+    protected String placemarkIconURL;
+    
+    /** The background color of the placemark balloons. */
+    protected String balloonStyleBgColor;
+    
+    /** The text color for the placemark balloons. */
+    protected String balloonStyleTextColor;
+    
+    /** The format description for the placemark balloons. */
+    protected String balloonStyleText;
+    
 	/**
 	 * Constructs a new KML generator object.
 	 */
-	public KeyholeMarkupGenerator()
+	public CollectingEventKMLGenerator()
 	{
 		events = new Vector<CollectingEvent>();
 		labels = new Vector<String>();
 	}
 
-	/**
+    /**
+     * @param textColor the textColor to set
+     */
+    public void setTextColor(String textColor)
+    {
+        this.textColor = textColor;
+    }
+
+    /**
 	 * Adds a collecting event to the set to be mapped.
 	 *
 	 * @param ce the event
@@ -80,7 +112,7 @@ public class KeyholeMarkupGenerator
 	 *
 	 * @param speciesToImageMapper the mapping <code>Hashtable</code>
 	 */
-	public void setSpeciesToImageMapper(Hashtable<String, String> speciesToImageMapper)
+	public void setSpeciesToImageMapper(final Hashtable<String, String> speciesToImageMapper)
 	{
 		this.speciesToImageMapper = speciesToImageMapper;
 	}
@@ -91,17 +123,20 @@ public class KeyholeMarkupGenerator
 	 * @param filename the name of the output file
 	 * @throws IOException a file I/O exception occurred
 	 */
-	public void outputToFile( String filename ) throws IOException
+	public void outputToFile(final String filename) throws IOException
 	{
 		BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
 		writer.write(XML_DECLARATION);
 		writer.write(KML_NAMESPACE_DECL);
-		writer.write("<Document>");
+		writer.write("<Document>\n");
+		
+		writer.write(GenericKMLGenerator.generateStyle(placemarkIconURL, balloonStyleBgColor, balloonStyleTextColor, balloonStyleText));
+		
 		for( int i = 0; i < events.size(); ++i )
 		{
-			CollectingEvent ce = events.get(i);
-			String label = labels.get(i);
-			writer.write(generatePlacemark(ce,label));
+			CollectingEvent ce    = events.get(i);
+			String          label = labels.get(i);
+			writer.write(generatePlacemark(ce, label));
 		}
 		writer.write(generatePathForLocalities());
 		writer.write("</Document>\n");
@@ -143,24 +178,27 @@ public class KeyholeMarkupGenerator
 	 * @param label the label for the event
 	 * @return the KML string
 	 */
-	protected String generatePlacemark( CollectingEvent ce, String label )
+	protected String generatePlacemark(final CollectingEvent ce, final String label)
 	{
 		// get all of the important information
 
 		// get location information
-		Locality loc = ce.getLocality();
+		Locality   loc = ce.getLocality();
         BigDecimal lat = loc.getLatitude1();
         BigDecimal lon = loc.getLongitude1();
 
 		// get event times
-		Calendar start = ce.getStartDate();
-		DateFormat dfStart = DateFormat.getDateInstance();
+		Calendar   start       = ce.getStartDate();
+		DateFormat dfStart     = DateFormat.getDateInstance();
+		
 		dfStart.setCalendar(start);
-		String startString = dfStart.format(start.getTime());
-		Calendar end   = ce.getEndDate();
-		DateFormat dfEnd = DateFormat.getDateInstance();
+		String     startString = dfStart.format(start.getTime());
+		
+		Calendar   end       = ce.getEndDate();
+		DateFormat dfEnd     = DateFormat.getDateInstance();
+		
 		dfEnd.setCalendar(end);
-		String endString = dfEnd.format(end.getTime());
+		String     endString = dfEnd.format(end.getTime());
 
 		// get names of collectors
 		List<String> agentNames = new Vector<String>();
@@ -176,6 +214,7 @@ public class KeyholeMarkupGenerator
 		}
 
 		// get taxonomy of collection object
+		Hashtable<Pair<String, String>, CollectionObject> coHash = new Hashtable<Pair<String,String>, CollectionObject>();
 		Vector<Pair<String,String>> genusSpecies = new Vector<Pair<String,String>>();
 		for( CollectionObject co: ce.getCollectionObjects() )
 		{
@@ -191,11 +230,22 @@ public class KeyholeMarkupGenerator
 					break;
 				}
 			}
-			genusSpecies.add(new Pair<String,String>(genus,species));
+			Pair<String, String> genusSpeciesPair = new Pair<String,String>(genus,species);
+			genusSpecies.add(genusSpeciesPair);
+			coHash.put(genusSpeciesPair, co);
 		}
+		
+		DBTableInfo           colObjTableInfo = DBTableIdMgr.getInstance().getInfoById(CollectionObject.getClassTableId());
+		DBFieldInfo           catalogNumberFI = colObjTableInfo.getFieldByColumnName("CatalogNumber");
+		UIFieldFormatterIFace formatter       = catalogNumberFI.getFormatter();
 
 		// build the placemark
 		StringBuilder sb = new StringBuilder("<Placemark>\n");
+        //if (placemarkIconURL != null)
+        {
+            sb.append(GenericKMLGenerator.generateXmlElement("styleUrl", "#custom"));
+            sb.append("\n");
+        }
 		sb.append("<name>");
         if(label != null)
         {
@@ -216,7 +266,7 @@ public class KeyholeMarkupGenerator
 		//sb.append(" - ");
 		//sb.append(endString);
 		//sb.append("</h3></center><br/>");
-		sb.append("<h3>Collector:</h3>\n<ul>\n");
+		sb.append("<h3>"+UIRegistry.getResourceString("GE_COLLECTOR")+":</h3>\n<ul>\n");
 		for( String agent: agentNames )
 		{
 			sb.append("<li>");
@@ -224,31 +274,68 @@ public class KeyholeMarkupGenerator
 			sb.append("</li>\n");
 		}
 		sb.append("</ul>\n");
-		sb.append("<br/><h3>Collection objects:</h3>\n<table>\n");
-		for( Pair<String,String> tax: genusSpecies )
+		sb.append("<br/><h3>"+UIRegistry.getResourceString("GE_COLLECTION_OBJECTS")+":</h3>\n<table>\n");
+		
+        String primaryURL        = AppPreferences.getRemote().get(ToolsTask.GE_BALLOON_PRIMARY_URL, null);
+        String primaryURLTitle   = AppPreferences.getRemote().get(ToolsTask.GE_BALLOON_PRIMARY_URL_TITLE, null);
+        String secondaryURL      = AppPreferences.getRemote().get(ToolsTask.GE_BALLOON_SECONDARY_URL, null);
+        String secondaryURLTitle = AppPreferences.getRemote().get(ToolsTask.GE_BALLOON_SECONDARY_URL_TITLE, null);
+        
+        sb.append("<tr>");
+        sb.append("<th><center>");
+        sb.append(UIRegistry.getResourceString("GE_CATALOG_NUMBER"));
+        sb.append("</center></th>\n");
+        sb.append("<th>");
+        sb.append(UIRegistry.getResourceString("GE_TAXONOMY"));
+        sb.append("</b></th>\n");
+        if (StringUtils.isNotEmpty(primaryURL))
+        {
+            sb.append("<th style=\"color:#"+textColor+"\"><center>"+UIRegistry.getResourceString("GE_PRIMARY")+"</center></th>\n");
+        }
+        
+        if (StringUtils.isNotEmpty(secondaryURL))
+        {
+            sb.append("<th style=\"color:#"+textColor+"\"><center>"+UIRegistry.getResourceString("GE_SECONDARY")+"</center></th>\n");
+        }
+        sb.append("</tr>\n");
+        
+		for( Pair<String, String> tax: genusSpecies )
 		{
 			sb.append("<tr>\n");
-
+            sb.append("<td><center>");
+            if (formatter != null)
+            {
+                sb.append(formatter.formatInBound(coHash.get(tax).getCatalogNumber()));                
+            } else
+            {
+                sb.append(coHash.get(tax).getCatalogNumber());    
+            }
+            sb.append("</center></td>\n");
+            
 			// simple name text
 			String taxonomicName = tax.first + " " + tax.second;
 			sb.append("<td><i>");
 			sb.append(taxonomicName);
 			sb.append("</i></td>\n");
 
-			sb.append("<td><a href=\"http://www.fishbase.org/Summary/speciesSummary.php?genusname=");
-			sb.append(tax.first);
-			sb.append("&speciesname=");
-			sb.append(tax.second);
-			sb.append("\">");
-			sb.append("fb</a></td>\n");
-
-			sb.append("<td><a href=\"http://animaldiversity.ummz.umich.edu/site/accounts/information/");
-			sb.append(tax.first);
-			sb.append("_");
-			sb.append(tax.second);
-			sb.append("\">");
-			sb.append("ad</a></td>\n");
-
+			String linkTextColor = (textColor.startsWith("F") ? "WHITE" : "BLACK");
+			
+            if (StringUtils.isNotEmpty(primaryURL))
+            {
+                String primaryURLStr   = String.format(primaryURL, tax.first, tax.second);
+                sb.append("<td><a style=\"color:"+linkTextColor+"\" href=\""+primaryURLStr+"\"><center>");
+                sb.append(primaryURLTitle);
+                sb.append("</a></center></td>\n");
+            }
+            
+            if (StringUtils.isNotEmpty(secondaryURL))
+            {
+                String secondaryURLStr = String.format(secondaryURL, tax.first, tax.second);
+                sb.append("<td><a style=\"color:"+linkTextColor+"\" href=\""+secondaryURLStr+"\"><center>");
+                sb.append(secondaryURLTitle);
+                sb.append("</a></center></td>\n");
+            }
+            
 			if( speciesToImageMapper != null )
 			{
 				String imgSrc = speciesToImageMapper.get(taxonomicName);
@@ -289,4 +376,37 @@ public class KeyholeMarkupGenerator
 		log.debug("Generated placemark:\n " + sb.toString() );
 		return sb.toString();
 	}
+
+    /**
+     * @param placemarkIconURL the placemarkIconURL to set
+     */
+    public void setPlacemarkIconURL(String placemarkIconURL)
+    {
+        this.placemarkIconURL = placemarkIconURL;
+    }
+
+    /**
+     * @param balloonStyleBgColor the balloonStyleBgColor to set
+     */
+    public void setBalloonStyleBgColor(String balloonStyleBgColor)
+    {
+        this.balloonStyleBgColor = balloonStyleBgColor;
+    }
+
+    /**
+     * @param balloonStyleTextColor the balloonStyleTextColor to set
+     */
+    public void setBalloonStyleTextColor(String balloonStyleTextColor)
+    {
+        this.balloonStyleTextColor = balloonStyleTextColor;
+    }
+
+    /**
+     * @param balloonStyleText the balloonStyleText to set
+     */
+    public void setBalloonStyleText(String balloonStyleText)
+    {
+        this.balloonStyleText = balloonStyleText;
+    }
+
 }

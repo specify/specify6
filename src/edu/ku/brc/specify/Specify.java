@@ -187,7 +187,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private String               appName             = "Specify";
     private String               appVersion          = "6.0";
 
-    private String               appBuildVersion     = "200801081315 (SVN: 3309)";
+    private String               appBuildVersion     = "2008010091030 (SVN: 3317)";
     
     protected static CacheManager cacheManager        = new CacheManager();
 
@@ -697,6 +697,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         
         if (!isWorkbenchOnly)
         {
+            menu = UIHelper.createMenu(mb, "ToolsMenu", "ToolsMneu");
             menu = UIHelper.createMenu(mb, "AdvMenu", "AdvMneu");
             menu.add(UIHelper.createMenu(mb, "SystemMenu", "SystemMneu"));
             

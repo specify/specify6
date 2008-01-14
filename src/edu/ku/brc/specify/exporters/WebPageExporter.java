@@ -15,19 +15,19 @@ import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Taxon;
 
 /**
- * An implementation of {@link RecordSetExporter} that handles {@link List}s and
+ * An implementation of {@link RecordSetToolsIFace} that handles {@link List}s and
  * {@link RecordSet}s of {@link Taxon} objects.  The resulting output is an HTML
  * page displaying detailed information about the {@link Taxon} objects.
  * 
  * @author jstewart
  * @code_status Alpha
  */
-public class WebPageExporter implements RecordSetExporter
+public class WebPageExporter implements RecordSetToolsIFace
 {
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.exporters.RecordSetExporter#exportRecordSet(edu.ku.brc.specify.datamodel.RecordSet)
      */
-    public void exportRecordSet(RecordSet data, Properties reqParams) throws Exception
+    public void processRecordSet(RecordSet data, Properties reqParams) throws Exception
     {
         int taxonTableId = DBTableIdMgr.getInstance().getIdByClassName(Taxon.class.getName());
         int dataTableId = data.getDbTableId();
@@ -76,8 +76,25 @@ public class WebPageExporter implements RecordSetExporter
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.exporters.RecordSetExporter#exportList(java.util.List, java.util.Properties)
      */
-    public void exportList(List<?> data, Properties reqParams) throws Exception
+    public void processDataList(List<?> data, Properties reqParams) throws Exception
     {
         throw new Exception("Not yet implemented");
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.exporters.RecordSetExporterIFace#isVisible()
+     */
+    public boolean isVisible()
+    {
+        return false;
+    }
+    
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.exporters.RecordSetToolsIFace#getTableIds()
+     */
+    public Integer[] getTableIds()
+    {
+        return null;
     }
 }

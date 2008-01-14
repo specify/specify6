@@ -42,6 +42,16 @@
 			</altviews>
 		</view>
 		
+		<view
+			name="GoogleEarth"
+			class="java.util.prefs.Preferences"
+			useresourcelabels="false">
+			<desc><![CDATA[GoogleEarth Preference Form.]]></desc>
+			<altviews>
+				<altview name="GoogleEarth" viewdef="GoogleEarth" label="Google Earth" mode="edit" validated="true"/>
+			</altviews>
+		</view>
+		
 	</views>
 
 	<viewdefs>
@@ -76,7 +86,7 @@
 				</row>
 				<row>
 					<cell type="label" name="accounttypeLabel" labelfor="accounttype" label="Account Type"/>
-				    <cell type="field" uitype="combobox" id="accounttype" name="settings.email.accounttype" isrequired="true" initialize="data=Not in use, POP3, IMAP" valtype="Changed"/>
+				    <cell type="field" uitype="combobox" id="accounttype" name="settings.email.accounttype" isrequired="true" initialize="data=Not in use, POP3, IMAP"/>
 				</row>
 				<row>
 					<cell type="label" name="accountnameLabel" labelfor="accountname" label="Account Name"/>
@@ -91,7 +101,7 @@
 				</row>
 				<row>
 					<cell type="label" name="localmailboxLabel" labelfor="localmailbox" label="Local Mailbox"/>
-				    <cell type="field" id="localmailbox" name="settings.email.localmailbox" cols="20" colspan="5" uitype="browse" isrequired="true" validation="obj.isNotEmpty()" valtype="Changed"/>
+				    <cell type="field" id="localmailbox" name="settings.email.localmailbox" cols="20" colspan="5" uitype="browse" isrequired="true" validation="obj.isNotEmpty()"/>
 				</row>
 				<row>
 				    <cell type="separator" label="User Information" colspan="7"/>
@@ -215,7 +225,7 @@
 				</row>
 				<row>
 					<cell type="label" labelfor="1" label="Image Directory"/>
-					<cell type="field" id="1" name="REPORT_IMAGE_PATH" uitype="browse" cols="40" colspan="2" valtype="Changed"/>
+					<cell type="field" id="1" name="REPORT_IMAGE_PATH" uitype="browse" cols="40" colspan="2"/>
 				</row>
 				-->
 				<row>
@@ -230,6 +240,59 @@
 				<row>
 					<cell type="field" id="3" name="usage_tracking.send_stats" uitype="checkbox" label="Send usage statistics" colspan="3"/>
 				</row>
+			</rows>
+		</viewdef>
+		
+		<viewdef
+			type="form"
+			name="GoogleEarth"
+			class="java.util.prefs.Preferences"
+			gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
+			settable="edu.ku.brc.af.prefs.PrefsSettableImpl">
+			
+			<desc><![CDATA[GoogleEarth Preference Form.]]></desc>
+			
+			<columnDef>p,2px,p,p:g,f:p:g</columnDef>
+			<rowDef auto="true" cell="p" sep="4dlu"/>
+			
+			<rows>
+				<row>
+					<cell type="field" id="20" name="exporttask.ontaskbar" uitype="checkbox" label="Add Tools to Taskbar (Restart Required)" colspan="4"/>
+				</row>
+				<row>
+					<cell type="separator" label="Google Earth" colspan="5"/>
+				</row>
+				<row>
+					<cell type="label" labelfor="1" label="Icon Image Path"/>
+					<cell type="field" id="1" name="google.earth.icon" cols="30" uitype="browse" colspan="3"/>
+				</row>
+			    <row>
+                    <cell type="separator" label="Placemark Balloon Configuration" colspan="5"/>
+                </row>
+                <row>
+					<cell type="label" labelfor="2" label="Balloon BG Color"/>
+					<cell type="field" uitype="colorchooser" id="2" name="google.earth.bgcolor"/>
+				</row>
+                <row>
+					<cell type="label" labelfor="3" label="Balloon Text Color"/>
+					<cell type="field" uitype="colorchooser" id="3" name="google.earth.fgcolor"/>
+				</row>
+                <row>
+                    <cell type="label" labelfor="4" label="Primary URL"/>
+                    <cell type="field" id="4" name="google.earth.primaryurl" uitype="text" colspan="3"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="5" label="Primary URL Title"/>
+                    <cell type="field" id="5" name="google.earth.primaryurltitle" uitype="text" colspan="2"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="6" label="Secondary URL"/>
+                    <cell type="field" id="6" name="google.earth.secondaryurl" uitype="text" colspan="3"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="7" label="Secondary URL Title"/>
+                    <cell type="field" id="7" name="google.earth.secondaryurltitle" uitype="text" colspan="2"/> 
+                </row>
 			</rows>
 		</viewdef>
 		

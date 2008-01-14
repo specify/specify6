@@ -18,7 +18,6 @@ package edu.ku.brc.dbsupport;
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -99,7 +98,7 @@ public class DBTableIdMgr
 		String classname = null;
 		try
 		{
-			FileInputStream fileInputStream = new FileInputStream(inputFile);
+			//FileInputStream fileInputStream = new FileInputStream(inputFile);
 			SAXReader       reader          = new SAXReader();
 			reader.setValidation(false);
             

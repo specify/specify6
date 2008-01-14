@@ -7,27 +7,15 @@
 
 package edu.ku.brc.specify.prefs;
 
-import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
-import javax.swing.JPanel;
 
-import org.apache.log4j.Logger;
-
-import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.prefs.AppPreferences;
-import edu.ku.brc.af.prefs.PrefsPanelIFace;
-import edu.ku.brc.af.prefs.PrefsSavable;
+import edu.ku.brc.af.prefs.GenericPrefsPanel;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.ui.forms.FormViewObj;
-import edu.ku.brc.ui.forms.MultiView;
-import edu.ku.brc.ui.forms.ViewFactory;
-import edu.ku.brc.ui.forms.Viewable;
-import edu.ku.brc.ui.forms.persist.ViewIFace;
 import edu.ku.brc.ui.forms.validation.FormValidator;
-import edu.ku.brc.ui.forms.validation.UIValidatable;
 
 /**
  * @author rod
@@ -37,34 +25,14 @@ import edu.ku.brc.ui.forms.validation.UIValidatable;
  * Apr 29, 2007
  *
  */
-public class CachePrefs extends JPanel implements PrefsSavable, PrefsPanelIFace
+public class CachePrefs extends GenericPrefsPanel
 {
-    private static final Logger log  = Logger.getLogger(CachePrefs.class);
-
-    protected ViewIFace         formView  = null;
-    protected Viewable     form      = null;
-    
     /**
      * Constructor.
      */
     public CachePrefs()
     {
-        super(new BorderLayout());
-        
-        String viewName = "System";
-        String name     = "Preferences";
-
-        formView = AppContextMgr.getInstance().getView(name, viewName);
-
-        if (formView != null)
-        {
-            form = ViewFactory.createFormView(null, formView, null, AppPreferences.getRemote(), MultiView.NO_OPTIONS, null);
-            add(form.getUIComponent(), BorderLayout.CENTER);
-
-        } else
-        {
-            log.error("Couldn't load form with name ["+name+"] Id ["+viewName+"]");
-        }  
+        createForm("Preferences", "System");
         
         JButton clearCache = (JButton)form.getCompById("clearcache");
         clearCache.addActionListener(new ActionListener() {
@@ -83,32 +51,4 @@ public class CachePrefs extends JPanel implements PrefsSavable, PrefsPanelIFace
             }
         });
     }
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.prefs.PrefsSavable#savePrefs()
-     */
-    public void savePrefs()
-    {
-        if (form.getValidator() == null || form.getValidator().hasChanged())
-        {
-            form.getDataFromUI();
-        }
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.prefs.PrefsPanelIFace#getValidator()
-     */
-    public FormValidator getValidator()
-    {
-        return form.getValidator();
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.prefs.PrefsPanelIFace#isFormValid()
-     */
-    public boolean isFormValid()
-    {
-        return form.getValidator().getState() == UIValidatable.ErrorType.Valid;
-    }
-
 }

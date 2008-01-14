@@ -44,6 +44,8 @@ import edu.ku.brc.helpers.XMLHelper;
 public class Discipline implements Comparable<Discipline>
 {
     private static final Logger  log = Logger.getLogger(Discipline.class);
+    
+    public enum STD_DISCIPLINES {fish, paleo, bird, mammal, insect, plant, invertebrate, minerals, fungi};
             
     // Static WeakReference Data Members
     protected static WeakReference<Vector<Discipline>>            disciplineList  = null;

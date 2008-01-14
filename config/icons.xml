@@ -44,6 +44,7 @@
     <icon name="Data_Entry"    file="Form32x32.png" sizes="all"/>
     <icon name="Configure16"   file="Configure16x16.png" sizes="16"/>
     <icon name="CarryForward"  file="CarryForward16x16.png" sizes="16"/>
+    <icon name="CarryForward20x20" file="CarryForward20x20.png" sizes="NonStd"/>
     <icon name="EMail"         file="Email32x32.png" sizes="all"/>
     
     <icon name="Configure"     file="Configure20x20.png" sizes="NonStd"/>
@@ -58,6 +59,7 @@
     <icon name="CardImage"     file="ImageWindow20x20.png" sizes="NonStd"/>
     <icon name="LocalityMapper" file="map20x20.png" sizes="NonStd"/>
     <icon name="ControlEdit"    file="EditProperties20x20.png" sizes="NonStd"/>
+    <icon name="Tools"          file="EditProperties32x32.png" sizes="32"/>
     <icon name="DropIndicator"  file="dropindicator.png" sizes="NonStd"/>
 
     <!-- Aliases -->

@@ -14,8 +14,8 @@
  */
 package edu.ku.brc.specify.prefs;
 
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIHelper.createDuplicateJGoodiesDef;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -31,14 +31,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 
-import org.apache.log4j.Logger;
-
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.prefs.GenericPrefsPanel;
 import edu.ku.brc.af.prefs.PrefsPanelIFace;
 import edu.ku.brc.af.prefs.PrefsSavable;
 import edu.ku.brc.helpers.EMailHelper;
@@ -48,14 +45,8 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.forms.MultiView;
-import edu.ku.brc.ui.forms.ViewFactory;
-import edu.ku.brc.ui.forms.Viewable;
-import edu.ku.brc.ui.forms.persist.ViewIFace;
-import edu.ku.brc.ui.forms.validation.FormValidator;
-import edu.ku.brc.ui.forms.validation.UIValidatable;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.validation.ValComboBox;
 import edu.ku.brc.ui.forms.validation.ValPasswordField;
 
@@ -70,13 +61,8 @@ import edu.ku.brc.ui.forms.validation.ValPasswordField;
  *
  */
 @SuppressWarnings("serial")
-public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandListener, PrefsPanelIFace
+public class EMailPrefsPanel extends GenericPrefsPanel implements PrefsSavable, CommandListener, PrefsPanelIFace
 {
-    private static final Logger log  = Logger.getLogger(EMailPrefsPanel.class);
-
-    protected ViewIFace    formView = null;
-    protected Viewable     form     = null;
-
     // Checker
     protected ImageIcon    checkIcon     = IconManager.getIcon("Checkmark", IconManager.IconSize.Std24);
     protected ImageIcon    exclaimIcon   = IconManager.getIcon("Error", IconManager.IconSize.Std24);
@@ -90,9 +76,7 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
     protected JPanel       checkPanel;
 
     protected String testMessage = "Specify Test Message";
-
-
-
+    
     protected EMailCheckerRunnable emailCheckerRunnable;
 
 
@@ -101,10 +85,9 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
      */
     public EMailPrefsPanel()
     {
-        super(new BorderLayout());
-
+        super();
+        
         createUI();
-
     }
 
     /**
@@ -112,45 +95,20 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
      */
     protected void createUI()
     {
+        createForm("Preferences", "EMail");
 
-        String viewName    = "EMail";
-        String viewSetName = "Preferences";
-
-        formView = AppContextMgr.getInstance().getView(viewSetName, viewName);
-
-        if (formView != null)
+        if (formView != null & form != null && form.getUIComponent() != null)
         {
-            form = ViewFactory.createFormView(null, formView, null, AppPreferences.getRemote(), MultiView.NO_OPTIONS, null);
-            if (form != null && form.getUIComponent() != null)
+            ValComboBox cbx = (ValComboBox)form.getCompById("accounttype");
+            if (cbx.getComboBox().getSelectedIndex() == -1)
             {
-                add(form.getUIComponent(), BorderLayout.CENTER);
-                
-                form.setDataObj(AppPreferences.getRemote());
-                
-                
-                ValComboBox  cbx   = (ValComboBox)form.getCompById("accounttype");
-                if (cbx.getComboBox().getSelectedIndex() == -1)
-                {
-                    cbx.getComboBox().setSelectedIndex(0);
-                }
-                form.getValidator().validateForm();
-
-                CommandDispatcher.register("EmailPref", this);
-
-
-            } else
-            {
-                log.error("The email preferences were not properly loaded because ["+viewName+"]["+viewSetName+"]");
+                cbx.getComboBox().setSelectedIndex(0);
             }
+            form.getValidator().validateForm();
 
-        } else
-        {
-            log.error("Couldn't load form with name ["+viewSetName+"] Id ["+viewName+"]");
+            CommandDispatcher.register("EmailPref", this);
         }
-
     }
-
-
 
     /**
      * Sends a test mail message.
@@ -178,8 +136,6 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
         String htmlMsg = "<html><body>" + testMessage + "</body></html>";
         return EMailHelper.sendMsg(smtpStr, usernameStr, passwordStr, emailStr, emailStr, testMessage, htmlMsg, EMailHelper.HTML_TEXT, null);
     }
-
-
 
     /**
      * Test to make the mailbox is present and we can read it and
@@ -386,17 +342,6 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
     // PrefsSavable Interface
     //--------------------------------------------------------------------
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.prefs.PrefsSavable#savePrefs()
-     */
-    public void savePrefs()
-    {
-        if (form.getValidator() == null || form.getValidator().hasChanged())
-        {
-            form.getDataFromUI();
-        }
-    }
-
     /**
      * This creates a dialog and start a thread to check to make sure all the email settings work.
      */
@@ -509,26 +454,4 @@ public class EMailPrefsPanel extends JPanel implements PrefsSavable, CommandList
             parentDlg.dispose();
         }
     }
-
-    //---------------------------------------------------
-    // PrefsPanelIFace
-    //---------------------------------------------------
-    
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.prefs.PrefsPanelIFace#getValidator()
-     */
-    public FormValidator getValidator()
-    {
-        return form.getValidator();
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.prefs.PrefsPanelIFace#isFormValid()
-     */
-    public boolean isFormValid()
-    {
-        return form.getValidator().getState() == UIValidatable.ErrorType.Valid;
-    }
-
 }

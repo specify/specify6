@@ -70,7 +70,7 @@ import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.extras.FishBaseInfoGetter;
 import edu.ku.brc.specify.extras.FishBaseInfoGetterListener;
-import edu.ku.brc.specify.tasks.services.KeyholeMarkupGenerator;
+import edu.ku.brc.specify.tasks.services.CollectingEventKMLGenerator;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ImageDisplay;
@@ -119,7 +119,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
     protected ResultSetController             recordSetController;
     protected ControlBarPanel                 controlPanel;
     protected JButton                         googleBtn;
-    protected KeyholeMarkupGenerator          kmlGen;
+    protected CollectingEventKMLGenerator          kmlGen;
     protected List<CollectingEvent>           colEvents;
     protected LocalityMapperSubPane           thisPane;
 
@@ -175,7 +175,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
      */
     protected void createUI()
     {
-        kmlGen = new KeyholeMarkupGenerator();
+        kmlGen = new CollectingEventKMLGenerator();
         this.collectingEvents = new ArrayList<CollectingEvent>();
 
         CollectingEvent startCE = null;

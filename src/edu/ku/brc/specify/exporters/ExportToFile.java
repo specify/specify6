@@ -24,10 +24,16 @@ import edu.ku.brc.ui.UIRegistry;
 /**
  * 
  * @author timbo
+ * 
  * @code_status Alpha
  */
-public class ExportToFile implements RecordSetExporter
+public class ExportToFile implements RecordSetToolsIFace
 {    
+    public ExportToFile()
+    {
+        
+    }
+    
     protected DataExport buildExporter(Properties reqParams)
     {
         String mimeType = reqParams.getProperty("mimetype");
@@ -39,21 +45,18 @@ public class ExportToFile implements RecordSetExporter
         {
              return new CSVExport(new ConfigureCSV(reqParams));
         }
-        else
-        {
-            return null;
-        }
+        return null;
     }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.exporters.RecordSetExporter#exportList(java.util.List)
      */
-    public void exportList(List<?> data, Properties reqParams) throws Exception
+    public void processDataList(List<?> data, Properties reqParams) throws Exception
     {
         DataExport exporter = buildExporter(reqParams);
         if (exporter != null)
         {
-            String name = FilenameUtils.getName(exporter.getConfig().getFileName());
+            String     name      = FilenameUtils.getName(exporter.getConfig().getFileName());
             JStatusBar statusBar = UIRegistry.getStatusBar();
             if (statusBar != null)
             {
@@ -78,7 +81,7 @@ public class ExportToFile implements RecordSetExporter
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.exporters.RecordSetExporter#exportRecordSet(edu.ku.brc.specify.datamodel.RecordSet)
      */
-    public void exportRecordSet(RecordSet data, Properties reqParams) throws Exception
+    public void processRecordSet(RecordSet data, Properties reqParams) throws Exception
     {
         // TODO Auto-generated method stub
     }
@@ -88,7 +91,6 @@ public class ExportToFile implements RecordSetExporter
      */
     public String getDescription()
     {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -97,7 +99,6 @@ public class ExportToFile implements RecordSetExporter
      */
     public Class<?>[] getHandledClasses()
     {
-        // TODO Auto-generated method stub
         return null;
     }
 
@@ -106,8 +107,7 @@ public class ExportToFile implements RecordSetExporter
      */
     public String getIconName()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return "AppIcon";
     }
 
     /* (non-Javadoc)
@@ -115,8 +115,22 @@ public class ExportToFile implements RecordSetExporter
      */
     public String getName()
     {
-        // TODO Auto-generated method stub
-        return null;
+        return UIRegistry.getResourceString("File");
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.exporters.RecordSetExporterIFace#isVisible()
+     */
+    public boolean isVisible()
+    {
+        return false;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.exporters.RecordSetToolsIFace#getTableIds()
+     */
+    public Integer[] getTableIds()
+    {
+        return new Integer[] {79};
+    }
 }

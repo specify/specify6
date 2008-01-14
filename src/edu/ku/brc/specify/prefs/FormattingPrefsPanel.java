@@ -1,6 +1,5 @@
 package edu.ku.brc.specify.prefs;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.GraphicsEnvironment;
@@ -8,29 +7,22 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Properties;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import org.apache.log4j.Logger;
-
-import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.prefs.GenericPrefsPanel;
 import edu.ku.brc.af.prefs.PrefsPanelIFace;
 import edu.ku.brc.af.prefs.PrefsSavable;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.db.ViewBasedDisplayPanel;
-import edu.ku.brc.ui.forms.MultiView;
-import edu.ku.brc.ui.forms.Viewable;
-import edu.ku.brc.ui.forms.persist.ViewIFace;
-import edu.ku.brc.ui.forms.validation.FormValidator;
-import edu.ku.brc.ui.forms.validation.UIValidatable;
+import edu.ku.brc.ui.forms.validation.UIValidator;
 import edu.ku.brc.ui.forms.validation.ValComboBox;
 import edu.ku.brc.util.Pair;
 
@@ -43,16 +35,13 @@ import edu.ku.brc.util.Pair;
  *
  */
 @SuppressWarnings("serial")
-public class FormattingPrefsPanel extends JPanel implements PrefsPanelIFace, PrefsSavable
+public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPanelIFace, PrefsSavable
 {
-    private static final Logger log  = Logger.getLogger(FormattingPrefsPanel.class);
-
-    protected ViewIFace    formView  = null;
-    protected Viewable     form      = null;
     protected JComboBox    fontNames = null;
     protected JComboBox    fontSizes = null;
     protected JTextField   testField = null;
-
+    protected ValComboBox  disciplineCBX;
+    
     /**
      * Constructor.
      */
@@ -66,25 +55,9 @@ public class FormattingPrefsPanel extends JPanel implements PrefsPanelIFace, Pre
      */
     protected void createUI()
     {
+        createForm("Preferences", "Formatting");
         
-        String viewName = "Formatting";
-        String name     = "Preferences";
-
-        formView = AppContextMgr.getInstance().getView(name, viewName);
-
-        if (formView != null)
-        {
-            
-            ViewBasedDisplayPanel vbp = new ViewBasedDisplayPanel(null, name, viewName, "XXX", "java.util.Hashtable", "", true, MultiView.IS_EDITTING);
-            add(vbp, BorderLayout.CENTER);
-            form = vbp.getMultiView().getCurrentViewAsFormViewObj();
-                
-        } else
-        {
-            log.error("Couldn't load form with name ["+name+"] Id ["+viewName+"]");
-        }
-
-        form.setDataObj(AppPreferences.getRemote());
+        UIValidator.setIgnoreAllValidation(this, true);
         
         ValComboBox fontNamesVCB = (ValComboBox)form.getCompById("fontNames");
         ValComboBox fontSizesVCB = (ValComboBox)form.getCompById("fontSizes");
@@ -143,8 +116,8 @@ public class FormattingPrefsPanel extends JPanel implements PrefsPanelIFace, Pre
         List<Pair<String, ImageIcon>> list = IconManager.getListByType("disciplines", IconManager.IconSize.Std16);
         
         final JLabel dispLabel = (JLabel)form.getCompById("disciplineIcon");
-        final ValComboBox  dispVCB   = (ValComboBox)form.getCompById("disciplineIconCBX");
-        JComboBox    comboBox  = dispVCB.getComboBox();
+        disciplineCBX = (ValComboBox)form.getCompById("disciplineIconCBX");
+        JComboBox          comboBox  = disciplineCBX.getComboBox();
         comboBox.setRenderer(new DefaultListCellRenderer()
         {
             @SuppressWarnings("unchecked")
@@ -197,14 +170,36 @@ public class FormattingPrefsPanel extends JPanel implements PrefsPanelIFace, Pre
         });
         
         comboBox.setSelectedIndex(inx);
+        
+        UIValidator.setIgnoreAllValidation(this, false);
+        fontNamesVCB.setChanged(false);
+        fontSizesVCB.setChanged(false);
+
         form.getValidator().validateForm();
-
-
     }
 
     //--------------------------------------------------------------------
     // PrefsSavable Interface
     //--------------------------------------------------------------------
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.prefs.GenericPrefsPanel#getChangedFields(java.util.Properties)
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public void getChangedFields(final Properties changeHash)
+    {
+        super.getChangedFields(changeHash);
+        
+        if (disciplineCBX.isChanged())
+        {
+            Pair<String, ImageIcon> item = (Pair<String, ImageIcon>)disciplineCBX.getComboBox().getSelectedItem();
+            if (item != null)
+            {
+                changeHash.put("ui.formatting.disciplineicon", item.first);
+            }
+        }
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.prefs.PrefsSavable#savePrefs()
@@ -214,9 +209,9 @@ public class FormattingPrefsPanel extends JPanel implements PrefsPanelIFace, Pre
     {
         if (form.getValidator() == null || form.getValidator().hasChanged())
         {
-            form.getDataFromUI();
+            super.savePrefs();
             
-            Pair<String, ImageIcon> item = (Pair<String, ImageIcon>)((ValComboBox)form.getCompById("disciplineIconCBX")).getComboBox().getSelectedItem();
+            Pair<String, ImageIcon> item = (Pair<String, ImageIcon>)disciplineCBX.getComboBox().getSelectedItem();
             if (item != null)
             {
                 AppPreferences.getRemote().put("ui.formatting.disciplineicon", item.first);
@@ -228,26 +223,4 @@ public class FormattingPrefsPanel extends JPanel implements PrefsPanelIFace, Pre
             UIRegistry.setBaseFont(new Font((String)fontNames.getSelectedItem(), Font.PLAIN, fontSizes.getSelectedIndex()+6));
         }
     }
-
-
-    //---------------------------------------------------
-    // PrefsPanelIFace
-    //---------------------------------------------------
-    
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.prefs.PrefsPanelIFace#getValidator()
-     */
-    public FormValidator getValidator()
-    {
-        return form.getValidator();
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.prefs.PrefsPanelIFace#isFormValid()
-     */
-    public boolean isFormValid()
-    {
-        return form.getValidator().getState() == UIValidatable.ErrorType.Valid;
-    }
-
 }

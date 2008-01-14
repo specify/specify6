@@ -15,21 +15,21 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
- * An implementation of {@link RecordSetExporter} that handles {@link List}s and
+ * An implementation of {@link RecordSetToolsIFace} that handles {@link List}s and
  * {@link RecordSet}s of {@link CollectionObject} objects.  The resulting output
  * is formatted according to the DiGIR schema.
  * 
  * @author jstewart
  * @code_status Alpha
  */
-public class DiGIRExporter implements RecordSetExporter
+public class DiGIRExporter implements RecordSetToolsIFace
 {
     public static final String NAME = "DiGIR";
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.exporters.RecordSetExporter#exportRecordSet(edu.ku.brc.specify.datamodel.RecordSet, java.util.Properties)
      */
-    public void exportRecordSet(RecordSet data, Properties reqParams)
+    public void processRecordSet(RecordSet data, Properties reqParams)
     {
         JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
         Icon icon = IconManager.getIcon(NAME);
@@ -39,7 +39,7 @@ public class DiGIRExporter implements RecordSetExporter
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.exporters.RecordSetExporter#exportList(java.util.List, java.util.Properties)
      */
-    public void exportList(List<?> data, Properties reqParams)
+    public void processDataList(List<?> data, Properties reqParams)
     {
         JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
         Icon icon = IconManager.getIcon(NAME);
@@ -76,5 +76,22 @@ public class DiGIRExporter implements RecordSetExporter
     public String getDescription()
     {
         return getResourceString(NAME+"_Description");
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.exporters.RecordSetExporterIFace#isVisible()
+     */
+    public boolean isVisible()
+    {
+        return false;
+    }
+    
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.exporters.RecordSetToolsIFace#getTableIds()
+     */
+    public Integer[] getTableIds()
+    {
+        return null;
     }
 }

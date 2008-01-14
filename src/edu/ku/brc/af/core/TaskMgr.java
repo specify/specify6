@@ -280,6 +280,24 @@ public class TaskMgr
             instance.toolbarTasks.add(plugin);
         }
     }
+    
+    public static void addToolbarBtn(final Component toolBarComp, final int pos)
+    {
+        JToolBar toolBar = (JToolBar)UIRegistry.get(UIRegistry.TOOLBAR);
+        if (toolBar != null)
+        {
+            toolBar.add(toolBarComp, pos);
+        }
+    }
+
+    public static void removeToolbarBtn(final Component toolBarComp)
+    {
+        JToolBar toolBar = (JToolBar)UIRegistry.get(UIRegistry.TOOLBAR);
+        if (toolBar != null)
+        {
+            toolBar.remove(toolBarComp);
+        }
+    }
 
     /**
      * @param parent
@@ -419,8 +437,7 @@ public class TaskMgr
         for (Enumeration<Taskable> e=instance.tasks.elements();e.hasMoreElements();)
         {
             Taskable taskablePlugin = e.nextElement();
-            int index = instance.toolbarTasks.indexOf(taskablePlugin);
-            taskablePlugin.initialize(getCommandDefinitions(taskablePlugin.getTaskClass()), index > -1);
+            taskablePlugin.initialize(getCommandDefinitions(taskablePlugin.getTaskClass()), true);
         }
     }
 

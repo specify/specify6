@@ -18,7 +18,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.exporters.ExportFileConfigurationFactory;
 import edu.ku.brc.specify.exporters.ExportToFile;
-import edu.ku.brc.specify.tasks.ExportTask;
+import edu.ku.brc.specify.tasks.ToolsTask;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.UIRegistry;
@@ -133,8 +133,8 @@ public class WorkbenchBackupMgr
             props.setProperty("mimetype", ExportFileConfigurationFactory.XLS_MIME_TYPE);
             props.setProperty("fileName", backupName);
 
-            CommandAction command = new CommandAction(ExportTask.EXPORT, ExportTask.EXPORT_LIST);
-            command.setProperty("exporter", ExportToFile.class);
+            CommandAction command = new CommandAction(ToolsTask.TOOLS, ToolsTask.EXPORT_LIST);
+            command.setProperty("tool", ExportToFile.class);
             command.setData(workbench.getWorkbenchRowsAsList());
 
             // XXX the command has to be sent synchronously so the backup happens before the save,

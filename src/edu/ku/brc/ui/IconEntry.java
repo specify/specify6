@@ -34,17 +34,26 @@ public class IconEntry
 { 
     private String                   name;
     private boolean                  isAlias;
-    private Hashtable<IconSize, URL> icons = null;
+    private Hashtable<IconSize, IconSizeEntry> icons = null;
+    
+    // Base Size and location as 
+    private IconSize                 size;
+    private URL                      url;
+    private ImageIcon                imageIcon = null;
     
     /**
      * 
      * @param name the name of the icon entry
      */
-    public IconEntry(final String name, 
-                     final boolean isAlias,
-                     final Hashtable<IconSize, URL> iconHash)
+    public IconEntry(final String   name, 
+                     final IconSize size,
+                     final URL      url,
+                     final boolean  isAlias,
+                     final Hashtable<IconSize, IconSizeEntry> iconHash)
     {
         this.name    = name;
+        this.size    = size;
+        this.url     = url;
         this.isAlias = isAlias;
         this.icons   = iconHash;
     }
@@ -53,9 +62,11 @@ public class IconEntry
      * 
      * @param name the name of the icon entry
      */
-    public IconEntry(final String name)
+    public IconEntry(final String   name, 
+                     final IconSize size,
+                     final URL      url)
     {
-        this(name, false, new Hashtable<IconSize, URL>());
+        this(name, size, url, false, new Hashtable<IconSize, IconSizeEntry>());
     }
 
     /**
@@ -77,7 +88,7 @@ public class IconEntry
     /**
      * @return the icons
      */
-    public Hashtable<IconSize, URL> getIcons()
+    public Hashtable<IconSize, IconSizeEntry> getIcons()
     {
         return icons;
     }
@@ -85,9 +96,17 @@ public class IconEntry
     /**
      * @param icons the icons to set
      */
-    public void setIcons(Hashtable<IconSize, URL> icons)
+    public void setIcons(Hashtable<IconSize, IconSizeEntry> icons)
     {
-        this.icons = icons;
+        if (this.icons == null)
+        {
+            this.icons = new Hashtable<IconSize, IconSizeEntry>();
+        }
+        this.icons.clear();
+        for (IconSize sz : icons.keySet())
+        {
+            this.icons.put(sz, icons.get(sz));
+        }
     }
 
     /**
@@ -97,76 +116,111 @@ public class IconEntry
      */
     public ImageIcon getIcon(final IconSize id)
     {
-        //log.debug("Getting["+name+"]["+id.toString()+"]");
-        return makeIcon(icons.get(id));
+        imageIcon = getIcon();
+        
+        IconSizeEntry sizeEntry = icons.get(id);
+        if (sizeEntry == null)
+        {
+            ImageIcon imgIcon = IconManager.createNewScaledIcon(imageIcon, size, id);
+            IconSizeEntry newSizeEntry = new IconSizeEntry(id, imgIcon);
+            icons.put(id, newSizeEntry);
+            return imgIcon;
+        }
+        return sizeEntry.getImageIcon();
     }
     
-    /**
-     * Adds an icon URL of a particular size
-     * @param id the IconSize
-     * @param path the URL of the icon to be added
+   /**
+     * @return the size
      */
-    public void add(final IconSize id, final URL path)
+    public IconSize getSize()
     {
-        //log.debug("Putting["+name+"]["+id.toString()+"]");
-    	icons.put(id, path);
+        return size;
     }
-
-    /*
-    do not need addScaled, the image will scale when it is called. 
-    public void addScaled(final IconSize id, final IconSize newId)	
-    {
-        //log.debug("Putting["+name+"]["+id.toString()+"]");
-        icons.put(newId, getScaledIcon(id, newId));
-    }*/
-    
-    
 
     /**
-     * Gets a scaled icon and ,if it doesn't exist it creates one and scales it
-     * @param iconSize the icon size (Std)
-     * @param scaledIconSize the new scaled size in pixels
-     * @return the scaled icon
-     */     
-   public ImageIcon getScaledIcon(final IconSize iconSize, final IconSize scaledIconSize)
+     * @return the url
+     */
+    public URL getUrl()
     {
-	   ImageIcon scaledIcon = IconManager.getScaledIcon(makeIcon(icons.get(iconSize)), iconSize, scaledIconSize);
-      
-    	return scaledIcon;
+        return url;
     }
-    
-    public ImageIcon getIcon()
+
+   /**
+     * @param size the size to set
+     */
+    public void setSize(IconSize size)
     {
+        this.size = size;
+    }
+
+    /**
+     * @param url the url to set
+     */
+    public void setUrl(URL url)
+    {
+        this.url = url;
+    }
+
+/**
+    * @return
+    */
+   public ImageIcon getIcon()
+   {
+       if (imageIcon == null)
+       {
+           imageIcon = new ImageIcon(url);
+       }
+       return imageIcon;
+       //IconSizeEntry entry = getDefaultIconSizeEntry();
+       //return entry != null ? entry.getImageIcon() : null;
+   }
+   
+   /**
+    * @return
+    */
+   /*private IconSizeEntry getDefaultIconSizeEntry()
+   {
         switch (icons.size())
         {
             case 0:
             {
                 return null;
             }
+            
             case 1:
             {
-            	return makeIcon(icons.values().iterator().next());
+            	return icons.values().iterator().next();
             }
+            
             default:
             {
-                ImageIcon icon = makeIcon(icons.get(IconSize.NonStd));
-                if (icon!=null)
+                // First try 32x32
+                IconSizeEntry entry = icons.get(IconSize.Std32);
+                if (entry != null)
                 {
-                    return icon;
+                    return entry;
                 }
+                
+                // then try non-std
+                entry = icons.get(IconSize.NonStd);
+                if (entry != null)
+                {
+                    return entry;
+                }
+                
+                // ok, got looking for anything
                 for (IconSize size: IconSize.values())
                 {
-                	icon = makeIcon(icons.get(size));
-                    if (icon!=null)
+                    entry = icons.get(size);
+                    if (entry != null)
                     {
-                        return icon;
+                        return entry;
                     }
                 }
                 return null;
             }
         }
-    }
-
+    }*/
 
     /**
      * Return name
@@ -177,26 +231,55 @@ public class IconEntry
         return name;
     }
     
-    /**
-     * Returns an icon from a given URL
-     * @param path the URL of the icon
-     * @return the icon from that path
-     */
-    public ImageIcon makeIcon(URL path)
+    //---------------------------------------------------
+    //-- 
+    //---------------------------------------------------
+    public class IconSizeEntry 
     {
-    	ImageIcon icon = new ImageIcon(path);
-    	return icon;
-    	
+        protected IconSize  size;
+        protected ImageIcon imageIcon;
+        
+        /**
+         * @param url
+         */
+        public IconSizeEntry(final IconSize size)
+        {
+            super();
+            this.size      = size;
+            this.imageIcon = null;
+        }
+        
+        public IconSizeEntry(final IconSize size, 
+                             final ImageIcon imageIcon)
+        {
+            super();
+            this.size      = size;
+            this.imageIcon = imageIcon;
+        }
+        
+        public boolean isIconAvailable()
+        {
+            return imageIcon != null;
+        }
+        
+        /**
+         * @return the imageIcon
+         */
+        public ImageIcon getImageIcon()
+        {
+            if (imageIcon == null)
+            {
+                imageIcon = new ImageIcon(url);
+            }
+            return imageIcon;
+        }
+
+        /**
+         * @return the size
+         */
+        public IconSize getSize()
+        {
+            return size;
+        }
     }
-    
-    /**
-     * Return URL
-     * @return Return URL
-     */
-    public URL getURL(final IconSize id)
-    {
-    	return icons.get(id);
-    }
-   
-    
 }
