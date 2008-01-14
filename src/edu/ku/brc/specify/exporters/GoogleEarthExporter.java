@@ -350,10 +350,11 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
         // see if an icon URL was specified as a parameter
         if (iconURLparam != null && iconURLparam instanceof String)
         {
-            //kmlGenerator.setPlacemarkIconURL("files/specify32.png");
-            //defaultIconFile = File.createTempFile("sp6-export-icon-", ".png");
-            //FileUtils.copyFile(new File(iconURLparam), defaultIconFile);
-            kmlGenerator.setPlacemarkIconURL((String)iconURLparam);
+            
+            kmlGenerator.setPlacemarkIconURL("files/specify32.png");
+            defaultIconFile = File.createTempFile("sp6-export-icon-", ".png");
+            FileUtils.copyFile(new File(iconURLparam), defaultIconFile);
+            //kmlGenerator.setPlacemarkIconURL((String)iconURLparam);
 
         }
         else if (defaultIconFile != null)
