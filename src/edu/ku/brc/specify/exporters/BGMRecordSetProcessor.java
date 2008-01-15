@@ -1,11 +1,8 @@
 /*
-     * Copyright (C) 2008  The University of Kansas
-     *
-     * [INSERT KU-APPROVED LICENSE TEXT HERE]
-     *
-     */
-/**
- * 
+ * Copyright (C) 2008  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ *
  */
 package edu.ku.brc.specify.exporters;
 
@@ -24,9 +21,9 @@ import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.services.biogeomancer.GeoRefBGMProvider;
-import edu.ku.brc.services.biogeomancer.GeoRefDataIFace;
-import edu.ku.brc.services.biogeomancer.GeoRefProviderCompletionIFace;
+import edu.ku.brc.services.biogeomancer.GeoCoordBGMProvider;
+import edu.ku.brc.services.biogeomancer.GeoCoordDataIFace;
+import edu.ku.brc.services.biogeomancer.GeoCoordProviderListenerIFace;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.GeoCoordDetail;
@@ -36,14 +33,16 @@ import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.RecordSetItem;
 
 /**
+ * Implements the RecordSetToolsIFace for GeoReferenceing with Biogeomancer.
+ * 
  * @author rod
  *
- * @code_status Alpha
+ * @code_status Complete
  *
  * Jan 14, 2008
  *
  */
-public class BGMRecordSetProcessor implements RecordSetToolsIFace, GeoRefProviderCompletionIFace
+public class BGMRecordSetProcessor implements RecordSetToolsIFace, GeoCoordProviderListenerIFace
 {
     private static final Logger log = Logger.getLogger(BGMRecordSetProcessor.class);
     
@@ -55,15 +54,16 @@ public class BGMRecordSetProcessor implements RecordSetToolsIFace, GeoRefProvide
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.exporters.RecordSetExporterIFace#exportList(java.util.List, java.util.Properties)
      */
-    public void processDataList(final List<?> data, final Properties requestParams) throws Exception
+    public void processDataList(final List<?> data, 
+                                final Properties requestParams) throws Exception
     {
-        // TODO Auto-generated method stub
-
+        throw new RuntimeException("Not Implemented!");
     }
     
     /**
-     * @param hSQL
-     * @param ids
+     * Retrieves all the record ids for the given HSQL.
+     * @param hSQL the HSQL
+     * @param ids the list to be filled in with the ids
      */
     @SuppressWarnings("unchecked")
     protected void retrieveIds(final String hSQL, final Vector<Integer> ids)
@@ -93,7 +93,8 @@ public class BGMRecordSetProcessor implements RecordSetToolsIFace, GeoRefProvide
      * @see edu.ku.brc.specify.exporters.RecordSetExporterIFace#exportRecordSet(edu.ku.brc.specify.datamodel.RecordSet, java.util.Properties)
      */
     @SuppressWarnings("unchecked")
-    public void processRecordSet(final RecordSet recordSet, final Properties requestParams) throws Exception
+    public void processRecordSet(final RecordSet recordSet, 
+                                 final Properties requestParams) throws Exception
     {
         Vector<Integer> ids = new Vector<Integer>();
         if (recordSet.getDbTableId() == CollectionObject.getClassTableId())
@@ -117,7 +118,7 @@ public class BGMRecordSetProcessor implements RecordSetToolsIFace, GeoRefProvide
         
         if (ids.size() > 0)
         {
-            List<GeoRefDataIFace> geoRefDataList = new Vector<GeoRefDataIFace>();
+            List<GeoCoordDataIFace> geoRefDataList = new Vector<GeoCoordDataIFace>();
             
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
             try
@@ -146,15 +147,16 @@ public class BGMRecordSetProcessor implements RecordSetToolsIFace, GeoRefProvide
                 session.close();
             }
             
-            GeoRefBGMProvider bgmProvider = new GeoRefBGMProvider();
-            bgmProvider.processGeoRefData(geoRefDataList, this);
+            GeoCoordBGMProvider bgmProvider = new GeoCoordBGMProvider();
+            bgmProvider.processGeoRefData(geoRefDataList, this, requestParams != null ? requestParams.getProperty("helpcontext") : null);
         }
     }
     
     /**
-     * @param geo
-     * @param rankId
-     * @return
+     * Recursive method to discover any given rank that has a lower rank the current Geogrpahy object passed in.
+     * @param geo the current geo
+     * @param rankId the rankid to be found
+     * @return the geo object with the rankid or null
      */
     protected String getNameForRank(final Geography geo, final int rankId)
     {
@@ -212,9 +214,6 @@ public class BGMRecordSetProcessor implements RecordSetToolsIFace, GeoRefProvide
         return true;
     }
 
-    //----------------------------------------------------------------------
-    // GeoRefProviderCompletionIFace Interface
-    //----------------------------------------------------------------------
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.exporters.RecordSetToolsIFace#getTableIds()
@@ -223,99 +222,117 @@ public class BGMRecordSetProcessor implements RecordSetToolsIFace, GeoRefProvide
     {
         return new Integer[] {1, 2, 10};
     }
+    
+    //----------------------------------------------------------------------
+    // GeoRefProviderListenerIFace Interface
+    //----------------------------------------------------------------------
+
+
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.services.biogeomancer.GeoRefProviderCompletionIFace#complete()
+     * @see edu.ku.brc.services.biogeomancer.GeoCoordProviderListenerIFace#aboutToDisplayResults()
      */
-    public void complete(final List<GeoRefDataIFace> items)
+    public void aboutToDisplayResults()
     {
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        try
+
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.services.biogeomancer.GeoCoordProviderListenerIFace#complete(java.util.List, int)
+     */
+    public void complete(final List<GeoCoordDataIFace> items, final int itemsUpdated)
+    {
+        if (itemsUpdated > 0)
         {
-            for (GeoRefDataIFace item : items)
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            try
             {
-                try
+                for (GeoCoordDataIFace item : items)
                 {
-                    if (StringUtils.isNotEmpty(item.getXML()) && 
-                        item.getLatitude() != null && 
-                        item.getLongitude() != null)
+                    try
                     {
-                        Locality  locality = (Locality)session.getData(Locality.class, 
-                                                                       "localityId", 
-                                                                       item.getId(), 
-                                                                       DataProviderSessionIFace.CompareType.Equals);
-                        if (locality != null)
+                        if (StringUtils.isNotEmpty(item.getXML()) && 
+                            item.getLatitude() != null && 
+                            item.getLongitude() != null)
                         {
-                            locality.setLatitude1(new BigDecimal(item.getLatitude()));
-                            locality.setLongitude1(new BigDecimal(item.getLongitude()));
-                            
-                            Set<GeoCoordDetail> geoCoordDetails = locality.getGeoCoordDetails();
-                            GeoCoordDetail gcDetail = null;
-                            if (geoCoordDetails.size() == 0)
+                            Locality  locality = (Locality)session.getData(Locality.class, 
+                                                                           "localityId", 
+                                                                           item.getId(), 
+                                                                           DataProviderSessionIFace.CompareType.Equals);
+                            if (locality != null)
                             {
-                                gcDetail = new GeoCoordDetail();
-                                gcDetail.initialize();
-                                locality.addReference(gcDetail, "geoCoordDetails");
+                                locality.setLatitude1(new BigDecimal(item.getLatitude()));
+                                locality.setLongitude1(new BigDecimal(item.getLongitude()));
                                 
-                            } else if (geoCoordDetails.size() == 1)
-                            {
-                                gcDetail = geoCoordDetails.iterator().next();
-                            } else
-                            {
-                                throw new RuntimeException("Locality can only have ONE GeoCoordDetail!");
+                                Set<GeoCoordDetail> geoCoordDetails = locality.getGeoCoordDetails();
+                                GeoCoordDetail gcDetail = null;
+                                if (geoCoordDetails.size() == 0)
+                                {
+                                    gcDetail = new GeoCoordDetail();
+                                    gcDetail.initialize();
+                                    locality.addReference(gcDetail, "geoCoordDetails");
+                                    
+                                } else if (geoCoordDetails.size() == 1)
+                                {
+                                    gcDetail = geoCoordDetails.iterator().next();
+                                } else
+                                {
+                                    throw new RuntimeException("Locality can only have ONE GeoCoordDetail!");
+                                }
+                                
+                                log.debug("XML Length: "+item.getXML().length());
+                                gcDetail.setBgmXML(item.getXML());
+                                // Need code here to break apart the XML and put it into the fields
+                                
+                                try
+                                {
+                                    session.beginTransaction();
+                                    session.saveOrUpdate(locality);
+                                    session.commit();
+                                    session.evict(locality);
+                                    
+                                } catch (Exception ex)
+                                {
+                                    log.error(ex);
+                                    ex.printStackTrace();
+                                    
+                                    session.rollback();
+                                }
+                                
                             }
-                            
-                            log.debug("XML Length: "+item.getXML().length());
-                            gcDetail.setBgmXML(item.getXML());
-                            // Need code here to break apart the XML and put it into the fields
-                            
-                            try
-                            {
-                                session.beginTransaction();
-                                session.saveOrUpdate(locality);
-                                session.commit();
-                                session.evict(locality);
-                                
-                            } catch (Exception ex)
-                            {
-                                log.error(ex);
-                                ex.printStackTrace();
-                                
-                                session.rollback();
-                            }
-                            
                         }
-                    }
-                    
-                } catch (Exception ex)
-                {
-                    // XXX error dialog
-                    log.error(ex);
-                }    
+                        
+                    } catch (Exception ex)
+                    {
+                        // XXX error dialog
+                        log.error(ex);
+                    }    
+                }
+            } catch (Exception ex)
+            {
+                log.error(ex);
+                // XXX error dialog
+                
+            } finally 
+            {
+                session.close();
             }
-        } catch (Exception ex)
-        {
-            log.error(ex);
-            // XXX error dialog
-            
-        } finally 
-        {
-            session.close();
         }
     }
 
 
     //----------------------------------------------------------------------
+    //
     //----------------------------------------------------------------------
-    class GeoRefData implements GeoRefDataIFace
+    class GeoRefData implements GeoCoordDataIFace
     {
         private int    id;
         private String country;
         private String state;
         private String county;
         private String localityStr;
-        private Double latitude;
-        private Double longitude;
+        private String latitude;
+        private String longitude;
         private String xml;
         
         public GeoRefData(final int id, final String country, final String state, final String county, final String localityStr)
@@ -329,7 +346,7 @@ public class BGMRecordSetProcessor implements RecordSetToolsIFace, GeoRefProvide
         }
 
         /* (non-Javadoc)
-         * @see edu.ku.brc.services.biogeomancer.GeoRefDataIFace#getCountry()
+         * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getCountry()
          */
         public String getCountry()
         {
@@ -337,7 +354,7 @@ public class BGMRecordSetProcessor implements RecordSetToolsIFace, GeoRefProvide
         }
 
         /* (non-Javadoc)
-         * @see edu.ku.brc.services.biogeomancer.GeoRefDataIFace#getCounty()
+         * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getCounty()
          */
         public String getCounty()
         {
@@ -345,7 +362,7 @@ public class BGMRecordSetProcessor implements RecordSetToolsIFace, GeoRefProvide
         }
 
         /* (non-Javadoc)
-         * @see edu.ku.brc.services.biogeomancer.GeoRefDataIFace#getId()
+         * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getId()
          */
         public Integer getId()
         {
@@ -353,15 +370,15 @@ public class BGMRecordSetProcessor implements RecordSetToolsIFace, GeoRefProvide
         }
 
         /* (non-Javadoc)
-         * @see edu.ku.brc.services.biogeomancer.GeoRefDataIFace#getLatitude()
+         * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getLatitude()
          */
-        public Double getLatitude()
+        public String getLatitude()
         {
             return latitude;
         }
 
         /* (non-Javadoc)
-         * @see edu.ku.brc.services.biogeomancer.GeoRefDataIFace#getLocalityString()
+         * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getLocalityString()
          */
         public String getLocalityString()
         {
@@ -369,15 +386,15 @@ public class BGMRecordSetProcessor implements RecordSetToolsIFace, GeoRefProvide
         }
 
         /* (non-Javadoc)
-         * @see edu.ku.brc.services.biogeomancer.GeoRefDataIFace#getLongitude()
+         * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getLongitude()
          */
-        public Double getLongitude()
+        public String getLongitude()
         {
             return longitude;
         }
 
         /* (non-Javadoc)
-         * @see edu.ku.brc.services.biogeomancer.GeoRefDataIFace#getState()
+         * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getState()
          */
         public String getState()
         {
@@ -385,7 +402,7 @@ public class BGMRecordSetProcessor implements RecordSetToolsIFace, GeoRefProvide
         }
 
         /* (non-Javadoc)
-         * @see edu.ku.brc.services.biogeomancer.GeoRefDataIFace#getTitle()
+         * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getTitle()
          */
         public String getTitle()
         {
@@ -393,7 +410,7 @@ public class BGMRecordSetProcessor implements RecordSetToolsIFace, GeoRefProvide
         }
 
         /* (non-Javadoc)
-         * @see edu.ku.brc.services.biogeomancer.GeoRefDataIFace#getXML()
+         * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getXML()
          */
         public String getXML()
         {
@@ -401,16 +418,16 @@ public class BGMRecordSetProcessor implements RecordSetToolsIFace, GeoRefProvide
         }
 
         /* (non-Javadoc)
-         * @see edu.ku.brc.services.biogeomancer.GeoRefDataIFace#set(java.lang.Double, java.lang.Double)
+         * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#set(java.lang.Double, java.lang.Double)
          */
-        public void set(Double latitude, Double longitude)
+        public void set(final String latitudeArg, final String longitudeArg)
         {
-            this.latitude  = latitude;
-            this.longitude = longitude;
+            this.latitude  = latitudeArg;
+            this.longitude = longitudeArg;
         }
 
         /* (non-Javadoc)
-         * @see edu.ku.brc.services.biogeomancer.GeoRefDataIFace#setXML(java.lang.String)
+         * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#setXML(java.lang.String)
          */
         public void setXML(String xmlArg)
         {
@@ -418,4 +435,5 @@ public class BGMRecordSetProcessor implements RecordSetToolsIFace, GeoRefProvide
         }
         
     }
+
 }

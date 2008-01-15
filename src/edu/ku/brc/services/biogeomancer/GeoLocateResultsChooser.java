@@ -24,7 +24,7 @@ import edu.ku.brc.util.Pair;
 public class GeoLocateResultsChooser extends CustomDialog
 {
     protected GeoLocateResultsDisplay resultsDisplayPanel = new GeoLocateResultsDisplay();
-    protected List<Pair<GeoRefDataIFace,GeorefResultSet>> rowsAndResults;
+    protected List<Pair<GeoCoordDataIFace,GeorefResultSet>> rowsAndResults;
     protected List<GeorefResult> chosenResults;
     protected boolean            hasBeenShown;
     protected int                rowIndex;
@@ -37,7 +37,7 @@ public class GeoLocateResultsChooser extends CustomDialog
      */
     public GeoLocateResultsChooser(final Frame parent, 
                                    final String title, 
-                                   final List<Pair<GeoRefDataIFace, GeorefResultSet>> rowsAndResults)
+                                   final List<Pair<GeoCoordDataIFace, GeorefResultSet>> rowsAndResults)
     {
         super(parent,title,true,CustomDialog.OKCANCELAPPLYHELP,null);
         this.rowsAndResults = rowsAndResults;
@@ -173,7 +173,7 @@ public class GeoLocateResultsChooser extends CustomDialog
         
         try
         {
-            GeoRefDataIFace item = rowsAndResults.get(rowIndex).first;
+            GeoCoordDataIFace item = rowsAndResults.get(rowIndex).first;
             
             resultsDisplayPanel.setGeoLocateQueryAndResults(item.getLocalityString(), 
                                                             item.getCounty(), 

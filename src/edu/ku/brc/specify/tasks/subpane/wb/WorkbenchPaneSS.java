@@ -39,7 +39,6 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
-import java.io.IOException;
 import java.net.ConnectException;
 import java.net.URL;
 import java.util.Collections;
@@ -47,11 +46,6 @@ import java.util.EventObject;
 import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -120,12 +114,11 @@ import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.StaleObjectException;
 import edu.ku.brc.helpers.ImageFilter;
 import edu.ku.brc.helpers.SwingWorker;
-import edu.ku.brc.services.biogeomancer.BioGeomancer;
-import edu.ku.brc.services.biogeomancer.BioGeomancerQuerySummaryStruct;
-import edu.ku.brc.services.biogeomancer.BioGeomancerResultStruct;
-import edu.ku.brc.services.geolocate.client.GeoLocate;
-import edu.ku.brc.services.geolocate.client.GeorefResult;
-import edu.ku.brc.services.geolocate.client.GeorefResultSet;
+import edu.ku.brc.services.biogeomancer.GeoCoordBGMProvider;
+import edu.ku.brc.services.biogeomancer.GeoCoordDataIFace;
+import edu.ku.brc.services.biogeomancer.GeoCoordGeoLocateProvider;
+import edu.ku.brc.services.biogeomancer.GeoCoordProviderListenerIFace;
+import edu.ku.brc.services.biogeomancer.GeoCoordServiceProviderIFace;
 import edu.ku.brc.services.mapping.LocalityMapper;
 import edu.ku.brc.services.mapping.SimpleMapLocation;
 import edu.ku.brc.services.mapping.LocalityMapper.MapLocationIFace;
@@ -160,7 +153,6 @@ import edu.ku.brc.ui.DropDownButtonStateful;
 import edu.ku.brc.ui.DropDownMenuInfo;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
-import edu.ku.brc.ui.ProgressDialog;
 import edu.ku.brc.ui.SearchReplacePanel;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.ToggleButtonChooserPanel;
@@ -478,10 +470,10 @@ public class WorkbenchPaneSS extends BaseSubPane
                 String tool = remotePrefs.get("georef_tool", "");
                 if (tool.equalsIgnoreCase("geolocate"))
                 {
-                    doGeoLocateLookup();    
+                    doGeoRef(new GeoCoordGeoLocateProvider(), "WB.GeoLocateRows");    
                 } else
                 {
-                    doBioGeomancerLookup();                    
+                    doGeoRef(new GeoCoordBGMProvider(), "WB.BioGeomancerRows");                   
                 }
             }
         });
@@ -2042,11 +2034,14 @@ public class WorkbenchPaneSS extends BaseSubPane
         return reqdFields;
     }
     
-    protected List<WorkbenchRow> getSelectedRowsFromView()
+    /**
+     * @return the selected rows form the workbench
+     */
+    protected List<GeoCoordDataIFace> getSelectedRowsFromViewForGeoRef()
     {
         // get the indexes into the model for all of the selected rows
         int[] selection = spreadSheet.getSelectedRowModelIndexes();
-        if (selection.length==0)
+        if (selection.length == 0)
         {
             // if none are selected, map all of them
             int rowCnt = spreadSheet.getRowCount();
@@ -2058,8 +2053,8 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
 
         // gather all of the WorkbenchRows into a vector
-        List<WorkbenchRow> rows = workbench.getWorkbenchRowsAsList();
-        final List<WorkbenchRow> selectedRows = new Vector<WorkbenchRow>();
+        List<WorkbenchRow>      rows         = workbench.getWorkbenchRowsAsList();
+        List<GeoCoordDataIFace> selectedRows = new Vector<GeoCoordDataIFace>();
         for (int i: selection)
         {
             selectedRows.add(rows.get(i));
@@ -2067,523 +2062,46 @@ public class WorkbenchPaneSS extends BaseSubPane
         return selectedRows;
     }
     
-    protected void doGeoLocateLookup()
-    {
-        UsageTracker.incrUsageCount("WB.GeoLocateRows");
-        
-        log.info("Performing GeoLocate lookup of selected records");
-        
-        // table IDs and row indexes needed for the GL lookup
-        final int    localityNameColIndex = workbench.getColumnIndex(Locality.class, "localityName");
-        final int    countryColIndex      = workbench.getColumnIndex(Geography.class, "Country");
-        final int    stateColIndex        = workbench.getColumnIndex(Geography.class, "State");
-        final int    countyColIndex       = workbench.getColumnIndex(Geography.class, "County");
-
-        //final JStatusBar statusBar = UIRegistry.getStatusBar();
-        
-        final List<WorkbenchRow> selectedRows = getSelectedRowsFromView();
-
-        // create a progress bar dialog to show the network progress
-        final ProgressDialog progressDialog = new ProgressDialog("GEOLocate Progress", false, true); // I18N
-        progressDialog.getCloseBtn().setText(getResourceString("Cancel"));
-        progressDialog.setModal(true);
-        progressDialog.setProcess(0, selectedRows.size());
-
-        // XXX Java 6
-        //progressDialog.setIconImage( IconManager.getImage("AppIcon").getImage());
-
-        // create the thread pool for doing the GEOLocate web service requests
-        final ExecutorService glExecServ = Executors.newFixedThreadPool(10);
-        
-        // NOTE:
-        // You might think to use a CompletionService to get the completed tasks, as they finish.
-        // However, since we want to display the results to the user in the order they appear in the table
-        // we don't want a CompletionService.  We can simply wait for each result in order.
-        // See "Java Concurrency in Practice" by Brian Goetz, page 129
-        // So, instead we keep a List of the Future objects as we schedule the Callable workers.
-        final List<Future<Pair<WorkbenchRow,GeorefResultSet>>> runningQueries = new Vector<Future<Pair<WorkbenchRow,GeorefResultSet>>>();
-        
-        // create the thread pool for pre-caching maps
-        final ExecutorService mapGrabExecServ = Executors.newFixedThreadPool(10);
-        
-        // create individual worker threads to do the GL queries for the rows
-        for (WorkbenchRow wbRow: selectedRows)
-        {
-            final WorkbenchRow row = wbRow;
-            
-            // create a background thread to do the web service work
-            Callable<Pair<WorkbenchRow,GeorefResultSet>> wsClientWorker = new Callable<Pair<WorkbenchRow,GeorefResultSet>>()
-            {
-                @SuppressWarnings("synthetic-access")
-                public Pair<WorkbenchRow,GeorefResultSet> call() throws Exception
-                {
-                    // get the locality data
-                    String localityNameStr      = row.getData(localityNameColIndex);
-                            
-                    // get the geography data
-                    String country = (countryColIndex != -1) ? row.getData(countryColIndex) : "";
-                    String state   = (stateColIndex != -1) ? row.getData(stateColIndex) : "";
-                    String county  = (countyColIndex != -1) ? row.getData(countyColIndex) : "";
-                    
-                    // make the web service request
-                    log.info("Making call to GEOLocate web service: " + localityNameStr);
-                    final GeorefResultSet glResults = GeoLocate.getGeoLocateResults(country, state, county, localityNameStr);
-
-                    // update the progress bar
-                    SwingUtilities.invokeLater(new Runnable()
-                    {
-                       public void run()
-                       {
-                           int progress = progressDialog.getProcess();
-                           progressDialog.setProcess(++progress);
-                       }
-                    });
-
-                    // if there was at least one result, pre-cache a map for that result
-                    if (glResults != null && glResults.getNumResults() > 0)
-                    {
-                        Runnable mapPreCacheTask = new Runnable()
-                        {
-                            public void run()
-                            {
-                                try
-                                {
-                                    int rowNumber = row.getRowNumber();
-                                    log.info("Requesting map of GEOLocate results for workbench row " + rowNumber);
-                                    GeoLocate.getMapOfGeographicPoints(glResults.getResultSet(), null);
-                                }
-                                catch (Exception e)
-                                {
-                                    log.warn("Failed to pre-cache GEOLocate results map",e);
-                                }
-                            }
-                        };
-                        mapGrabExecServ.execute(mapPreCacheTask);
-                    }
-
-                    return new Pair<WorkbenchRow,GeorefResultSet>(row,glResults);
-                }
-            };
-            
-            runningQueries.add(glExecServ.submit(wsClientWorker));
-        }
-        
-        // shut down the ExecutorService
-        // this will run all of the task that have already been submitted
-        glExecServ.shutdown();
-        
-        // this thread simply gets the 'waiting for all results' part off of the Swing thread
-        final Thread waitingForExecutors = new Thread(new Runnable()
-        {
-            @SuppressWarnings("synthetic-access")
-            public void run()
-            {
-                // a big list of the query results
-                final List<Pair<WorkbenchRow,GeorefResultSet>> glResults = new Vector<Pair<WorkbenchRow,GeorefResultSet>>();
-                
-                // iterrate over the set of queries, asking for the result
-                // this will basically block us right here until all of the queries are completed
-                for (Future<Pair<WorkbenchRow,GeorefResultSet>> completedQuery: runningQueries)
-                {
-                    try
-                    {
-                        glResults.add(completedQuery.get());
-                    }
-                    catch (InterruptedException e)
-                    {
-                        // ignore this query since results were not available
-                        log.warn("Process cancelled by user",e);
-                        mapGrabExecServ.shutdown();
-                        return;
-                    }
-                    catch (ExecutionException e)
-                    {
-                        // ignore this query since results were not available
-                        log.error(completedQuery.toString() + " had an execution error",e);
-                    }
-                }
-                
-                // do the UI work to show the results
-                SwingUtilities.invokeLater(new Runnable()
-                {
-                    public void run()
-                    {
-                        progressDialog.setVisible(false);
-                        displayGeoLocateResults(glResults);
-                        mapGrabExecServ.shutdown();
-                    }
-                });
-            }
-        });
-        waitingForExecutors.setName("GEOLocate UI update thread");
-        waitingForExecutors.start();
-        
-        // if the user hits close, stop the worker thread
-        progressDialog.getCloseBtn().addActionListener(new ActionListener()
-        {
-            @SuppressWarnings("synthetic-access")
-            public void actionPerformed(ActionEvent ae)
-            {
-                log.debug("Stopping the GEOLocate service worker threads");
-                glExecServ.shutdownNow();
-                mapGrabExecServ.shutdownNow();
-                waitingForExecutors.interrupt();
-            }
-        });
-
-        // popup the progress dialog
-        UIHelper.centerAndShow(progressDialog);
-    }
-    
     /**
-     * Create a dialog to display the set of rows that had at least one result option
-     * returned by GEOLocate.  The dialog allows the user to iterate through the
-     * records supplied, choosing a result (or not) for each one.
-     * 
-     * @param rows the set of records containing valid GEOLocate responses with at least one result
+     * @param geoRefService
+     * @param trackId
      */
-    protected void displayGeoLocateResults(List<Pair<WorkbenchRow,GeorefResultSet>> glResults)
+    protected void doGeoRef(final GeoCoordServiceProviderIFace geoRefService,
+                            final String trackId)
     {
-        final JStatusBar statusBar = UIRegistry.getStatusBar();
-        
-        List<Pair<WorkbenchRow,GeorefResultSet>> withResults = new Vector<Pair<WorkbenchRow,GeorefResultSet>>();
+        UsageTracker.incrUsageCount(trackId);
+        log.info("Performing GeoREflookup of selected records: "+ trackId);
 
-        for (Pair<WorkbenchRow,GeorefResultSet> result: glResults)
+        if (true)
         {
-            if (result.second.getNumResults() > 0)
+            List<GeoCoordDataIFace> selectedWBRows = getSelectedRowsFromViewForGeoRef();
+            if (selectedWBRows != null)
             {
-                withResults.add(result);
-            }
-        }
-        
-        if (withResults.size() == 0)
-        {
-            statusBar.setText(getResourceString("NO_GL_RESULTS"));
-            return;
-        }
-        
-        // turn off alwaysOnTop for Swing repaint reasons (prevents a lock up)
-        if (imageFrame != null)
-        {
-            imageFrame.setAlwaysOnTop(false);
-        }
-        // ask the user if they want to review the results
-        // TODO: i18n
-        // XXX: i18n
-        String message = "GEOLocate returned results for " + withResults.size()
-                + " records.  Would you like to view them now?";
-        int userChoice = JOptionPane.showConfirmDialog(WorkbenchPaneSS.this, message,
-                "Continue?", JOptionPane.YES_NO_OPTION);
-        if (userChoice != JOptionPane.OK_OPTION)
-        {
-            statusBar.setText("GEOLocate process terminated by user");
-            return;
-        }
-
-        // create the UI for displaying the BG results
-        JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
-        GeoLocateResultsChooser bgResChooser = new GeoLocateResultsChooser(topFrame,"GEOLocate Results Chooser",withResults);
-        
-        List<GeorefResult> results = bgResChooser.getResultsChosen();
-        
-        // get the latitude1 and longitude1 column indices
-        int localityTableId = DBTableIdMgr.getInstance().getIdByClassName(Locality.class.getName());
-        int latIndex        = workbench.getColumnIndex(localityTableId, "latitude1");
-        int lonIndex        = workbench.getColumnIndex(localityTableId, "longitude1");
-
-        for (int i = 0; i < results.size(); ++i)
-        {
-            WorkbenchRow row = withResults.get(i).first;
-            GeorefResult chosenResult = results.get(i);
-            
-            if (chosenResult != null)
-            {
-                row.setData(Double.toString(chosenResult.getWGS84Coordinate().getLatitude()), (short)latIndex);
-                row.setData(Double.toString(chosenResult.getWGS84Coordinate().getLongitude()), (short)lonIndex);
-                
-                setChanged(true);
-            }
-        }
-        spreadSheet.repaint();
-    }
-
-    /**
-     * Use the BioGeomancer web service to lookup georeferences for the selected records.
-     */
-    protected void doBioGeomancerLookup()
-    {
-        UsageTracker.incrUsageCount("WB.BioGeomancerRows");
-        
-        log.info("Performing BioGeomancer lookup of selected records");
-        
-        // table IDs and row indexes needed for the BG lookup
-        final int    localityTableId      = DBTableIdMgr.getInstance().getIdByClassName(Locality.class.getName());
-        final int    localityNameColIndex = workbench.getColumnIndex(localityTableId, "localityName");
-        final int    geographyTableId = DBTableIdMgr.getInstance().getIdByClassName(Geography.class.getName());
-        final int    countryColIndex  = workbench.getColumnIndex(geographyTableId, "Country");
-        final int    stateColIndex    = workbench.getColumnIndex(geographyTableId, "State");
-        final int    countyColIndex   = workbench.getColumnIndex(geographyTableId, "County");
-
-        final List<WorkbenchRow> selectedRows = getSelectedRowsFromView();
-        
-        // create a progress bar dialog to show the network progress
-        final ProgressDialog progressDialog = new ProgressDialog("BioGeomancer Progress", false, true); // I18N
-        progressDialog.getCloseBtn().setText(getResourceString("Cancel"));
-        progressDialog.setModal(true);
-        progressDialog.setProcess(0, selectedRows.size());
-        
-        // XXX Java 6
-        //progressDialog.setIconImage( IconManager.getImage("AppIcon").getImage());
-
-        // use a SwingWorker thread to do all of the work, and update the GUI when done
-        final SwingWorker bgTask = new SwingWorker()
-        {
-            final JStatusBar statusBar = UIRegistry.getStatusBar();
-            protected boolean cancelled = false;
-            
-            @Override
-            public void interrupt()
-            {
-                super.interrupt();
-                cancelled = true;
-            }
-                        
-            @SuppressWarnings("synthetic-access")
-            @Override
-            public Object construct()
-            {
-                // perform the BG web service call ON all rows, storing results in the rows
-                
-                int progress = 0;
-
-                for (WorkbenchRow row: selectedRows)
+                geoRefService.processGeoRefData(selectedWBRows, new GeoCoordProviderListenerIFace()
                 {
-                    if (cancelled)
+                    public void aboutToDisplayResults()
                     {
-                        break;
-                    }
-                    
-                    // get the locality data
-                    String localityNameStr      = row.getData(localityNameColIndex);
-                            
-                    // get the geography data
-                    String country = (countryColIndex != -1) ? row.getData(countryColIndex) : "";
-                    String state   = (stateColIndex != -1)   ? row.getData(stateColIndex) : "";
-                    String county  = (countyColIndex != -1)  ? row.getData(countyColIndex) : "";
-                    
-                    log.info("Making call to BioGeomancer service: " + localityNameStr);
-                    String bgResults;
-                    BioGeomancerQuerySummaryStruct bgQuerySummary;
-                    try
-                    {
-                        bgResults = BioGeomancer.getBioGeomancerResponse(row.getWorkbenchRowId().toString(), country, state, county, localityNameStr);
-                        bgQuerySummary = BioGeomancer.parseBioGeomancerResponse(bgResults);
-                    }
-                    catch (IOException ex1)
-                    {
-                        String warning = getResourceString("WB_BIOGEOMANCER_UNAVAILABLE");
-                        statusBar.setWarningMessage(warning, ex1);
-                        log.error("A network error occurred while contacting the BioGeomancer service", ex1);
-                        
-                        // update the progress bar UI and move on
-                        progressDialog.setProcess(++progress);
-                        continue;
-                    }
-                    catch (Exception ex2)
-                    {
-                        // right now we'll simply blame this on BG
-                        // in the future we might get more specific about this error
-                        String warning = getResourceString("WB_BIOGEOMANCER_UNAVAILABLE");
-                        statusBar.setWarningMessage(warning, ex2);
-                        log.warn("Failed to get result count from BioGeomancer respsonse", ex2);
-                        
-                        // update the progress bar UI and move on
-                        progressDialog.setProcess(++progress);
-                        continue;
-                    }
-
-                    // if there was at least one result, pre-cache a map for that result
-                    int resCount = bgQuerySummary.results.length;
-                    if (resCount > 0)
-                    {
-                        final int rowNumber = row.getRowNumber();
-                        final BioGeomancerQuerySummaryStruct summaryStruct = bgQuerySummary;
-                        // create a thread to go grab the map so it will be cached for later use
-                        Thread t = new Thread(new Runnable()
+                        if (imageFrame != null)
                         {
-                            public void run()
-                            {
-                                try
-                                {
-                                    log.info("Requesting map of BioGeomancer results for workbench row " + rowNumber);
-                                    BioGeomancer.getMapOfQuerySummary(summaryStruct, null);
-                                }
-                                catch (Exception e)
-                                {
-                                    log.warn("Failed to pre-cache BioGeomancer results map",e);
-                                }
-                            }
-                        });
-                        t.setName("Map Pre-Caching Thread: row " + row.getRowNumber());
-                        log.debug("Starting map pre-caching thread");
-                        t.start();
-                    }
-                    
-                    // if we got at least one result...
-                    if (resCount > 0)
-                    {
-                        // everything must have worked and returned at least 1 result
-                        // XXX TEMP FIX FOR BUG 4562 RELEASE 
-                    	// For now, all calls the setBioGeomancerResults() and getBioGeomancerResults() have been converted
-                    	// to calls to setTmpBgResults() and getTmpBgResults() to allow for continued use of the BG features
-                    	// without causing Hibernate to store the results to the DB, throwing the BUG 4562.
-                        //row.setBioGeomancerResults(bgResults);
-                    	row.setTmpBgResults(bgResults);
-                        setChanged(true);
-                    }
-                    
-                    // update the progress bar UI and move on
-                    progressDialog.setProcess(++progress);
-                }
-                
-                return null;
-            }
-        
-            @Override
-            public void finished()
-            {
-                if (!cancelled)
-                {
-                    // hide the progress dialog
-                    progressDialog.setVisible(false);
-
-                    // find out how many records actually had results
-                    List<WorkbenchRow> rowsWithResults = new Vector<WorkbenchRow>();
-                    for (WorkbenchRow row : selectedRows)
-                    {
-                        if (row.getTmpBgResults() != null)
-                        {
-                            rowsWithResults.add(row);
+                            imageFrame.setAlwaysOnTop(false);
                         }
                     }
-
-                    // if no records had possible results...
-                    int numRecordsWithResults = rowsWithResults.size();
-                    if (numRecordsWithResults == 0)
-                    {
-                        statusBar.setText(getResourceString("NO_BG_RESULTS"));
-//                        JOptionPane.showMessageDialog(UIRegistry.getTopWindow(),
-//                                getResourceString("NO_BG_RESULTS"),
-//                                getResourceString("NO_RESULTS"), JOptionPane.INFORMATION_MESSAGE);
-                        return;
-                    }
-
-                    // turn off alwaysOnTop for Swing repaint reasons (prevents a lock up)
-                    if (imageFrame != null)
-                    {
-                        imageFrame.setAlwaysOnTop(false);
-                    }
                     
-                    // ask the user if they want to review the results
-                    // TODO: i18n
-                    // XXX: i18n
-                    String message = "BioGeomancer returned results for " + numRecordsWithResults
-                            + " records.  Would you like to view them now?"; // I18N
-                    int userChoice = JOptionPane.showConfirmDialog(WorkbenchPaneSS.this, message,
-                            "Continue?", JOptionPane.YES_NO_OPTION); // I18N
-                    
-                    if (userChoice != JOptionPane.OK_OPTION)
+                    public void complete(final List<GeoCoordDataIFace> items, final int itemsUpdated)
                     {
-                        statusBar.setText("BioGeomancer process terminated by user");
-                        return;
+                        if (itemsUpdated > 0)
+                        {
+                            setChanged(true);
+                            model.fireDataChanged();
+                            spreadSheet.repaint();
+                        }
                     }
-
-                    displayBioGeomancerResults(rowsWithResults);
-                }
+                }, "WorkbenchSpecialTools"); // last argument is Help Context
             }
-        };
-        
-        // if the user hits close, stop the worker thread
-        progressDialog.getCloseBtn().addActionListener(new ActionListener()
-        {
-            @SuppressWarnings("synthetic-access")
-            public void actionPerformed(ActionEvent ae)
-            {
-                log.debug("Stopping the BioGeomancer service worker thread");
-                bgTask.interrupt();
-            }
-        });
-        
-        log.debug("Starting the BioGeomancer service worker thread");
-        bgTask.start();
-        UIHelper.centerAndShow(progressDialog);
-    }
-    
-    /**
-     * Given the BioGeomancer XML response (as a String), determines the
-     * number of possible georeference results returned.
-     * 
-     * @param bgResponse the XML response from BioGeomancer
-     * @return the number of possible georeference results
-     * @throws Exception if the XML cannot be parsed
-     */
-    public int getBioGeomancerResultCount(final String bgResponse) throws Exception
-    {
-        if (bgResponse == null)
-        {
-            return 0;
-        }
-        
-        try
-        {
-            return BioGeomancer.getResultsCount(bgResponse);
-        }
-        catch (Exception e)
-        {
-            throw new Exception("Unable to determine number of results from BioGeomancer service", e);
+            return;
         }
     }
     
-    /**
-     * Create a dialog to display the set of rows that had at least one result option
-     * returned by BioGeomancer.  The dialog allows the user to iterate through the
-     * records supplied, choosing a result (or not) for each one.
-     * 
-     * @param rows the set of records containing valid BioGeomancer responses with at least one result
-     */
-    protected void displayBioGeomancerResults(List<WorkbenchRow> rows)
-    {
-        // create the UI for displaying the BG results
-        JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
-        BioGeomancerResultsChooser bgResChooser = new BioGeomancerResultsChooser(topFrame,"BioGeomancer Results Chooser",rows); // I18N
-        
-        List<BioGeomancerResultStruct> results = bgResChooser.getResultsChosen();
-        
-        // get the latitude1 and longitude1 column indices
-        int localityTableId = DBTableIdMgr.getInstance().getIdByClassName(Locality.class.getName());
-        int latIndex        = workbench.getColumnIndex(localityTableId, "latitude1");
-        int lonIndex        = workbench.getColumnIndex(localityTableId, "longitude1");
-
-        for (int i = 0; i < rows.size(); ++i)
-        {
-            WorkbenchRow row = rows.get(i);
-            BioGeomancerResultStruct userChoice = results.get(i);
-            
-            if (userChoice != null)
-            {
-                //System.out.println(userChoice.coordinates);
-                
-                String[] coords = StringUtils.split(userChoice.coordinates);
-
-                row.setData(coords[1], (short)latIndex);
-                row.setData(coords[0], (short)lonIndex);
-                
-                setChanged(true);
-            }
-        }
-        spreadSheet.repaint();
-    }
-        
     /**
      * Set that there has been a change.
      * 

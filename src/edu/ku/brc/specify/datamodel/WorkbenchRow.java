@@ -42,6 +42,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.services.biogeomancer.GeoCoordDataIFace;
 import edu.ku.brc.ui.GraphicsUtils;
 
 /**
@@ -55,7 +56,7 @@ import edu.ku.brc.ui.GraphicsUtils;
     {   
         @Index (name="RowNumberIDX", columnNames={"RowNumber"})
     })
-public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchRow>
+public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchRow>, GeoCoordDataIFace
 {
     private static final Logger log = Logger.getLogger(WorkbenchRow.class);
     
@@ -688,6 +689,18 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     }
 
     @Transient
+    public int getLatitudeIndex()
+    {
+        return workbench.getColumnIndex(Locality.class, "latitude1");
+    }
+
+    @Transient
+    public int getLongitudeIndex()
+    {
+        return workbench.getColumnIndex(Locality.class, "longitude1");
+    }
+
+    @Transient
 	public String getTmpBgResults()
 	{
 		return tmpBgResults;
@@ -697,4 +710,100 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
 	{
 		this.tmpBgResults = tmpBgResults;
 	}
+
+	   
+    ////////////////////////////////////////////////////
+    // Helper methods
+    ////////////////////////////////////////////////////
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getCountry()
+     */
+    @Transient
+    public String getCountry()
+    {
+        return getData(getCountryIndex());
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getCounty()
+     */
+    @Transient
+    public String getCounty()
+    {
+        return getData(getCountyIndex());
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getLatitude()
+     */
+    @Transient
+    public String getLatitude()
+    {
+        return getData(getLatitudeIndex());
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getLocalityString()
+     */
+    @Transient
+    public String getLocalityString()
+    {
+        return getData(getLocalityStringIndex());
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getLongitude()
+     */
+    @Transient
+    public String getLongitude()
+    {
+        return getData(getLongitudeIndex());
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getState()
+     */
+    @Transient
+    public String getState()
+    {
+        return getData(getStateIndex());
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getTitle()
+     */
+    @Transient
+    public String getTitle()
+    {
+        return getData(getLocalityStringIndex());
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getXML()
+     */
+    @Transient
+    public String getXML()
+    {
+        return getTmpBgResults();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#set(java.lang.Double, java.lang.Double)
+     */
+    @Transient
+    public void set(String latitude, String longitude)
+    {
+        setData(latitude, (short)getLatitudeIndex());
+        setData(longitude, (short)getLongitudeIndex());
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#setXML(java.lang.String)
+     */
+    public void setXML(String xml)
+    {
+        setTmpBgResults(xml);
+    }
+
 }

@@ -30,7 +30,7 @@ import edu.ku.brc.ui.UIRegistry;
 public class BioGeomancerResultsChooser extends CustomDialog
 {
     protected BioGeomancerResultsDisplay resultsDisplayPanel = new BioGeomancerResultsDisplay();
-    protected List<GeoRefDataIFace> items;
+    protected List<GeoCoordDataIFace> items;
     protected List<BioGeomancerResultStruct> chosenResults;
     protected boolean hasBeenShown;
     protected int     rowIndex;
@@ -45,7 +45,7 @@ public class BioGeomancerResultsChooser extends CustomDialog
      */
     public BioGeomancerResultsChooser(final Frame parent, 
                                       final String title, 
-                                      final List<GeoRefDataIFace> items,
+                                      final List<GeoCoordDataIFace> items,
                                       final String helpContext)
     {
         super(parent,title,true,CustomDialog.OKCANCELAPPLYHELP,null);

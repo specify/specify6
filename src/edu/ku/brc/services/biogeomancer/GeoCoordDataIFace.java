@@ -17,7 +17,7 @@ package edu.ku.brc.services.biogeomancer;
  * Jan 14, 2008
  *
  */
-public interface GeoRefDataIFace
+public interface GeoCoordDataIFace
 {
 
     //--------------------------------------------
@@ -26,9 +26,9 @@ public interface GeoRefDataIFace
     
     public abstract String getLocalityString();
     
-    public abstract Double getLatitude();
+    public abstract String getLatitude();
     
-    public abstract Double getLongitude();
+    public abstract String getLongitude();
     
     public abstract Integer getId();
     
@@ -44,7 +44,7 @@ public interface GeoRefDataIFace
     //-- This portion is used for setting the data
     //--------------------------------------------
 
-    public abstract void set(final Double latitude, Double longitude);
+    public abstract void set(final String latitude, String longitude);
     
     public abstract void setXML(String xml);
     

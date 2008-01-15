@@ -46,24 +46,31 @@ import edu.ku.brc.util.Pair;
  * Jan 14, 2008
  *
  */
-public class GeoRefGeoLocateProvider implements GeoRefServiceProviderIFace
+public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace
 {
-    private static final Logger log = Logger.getLogger(GeoRefGeoLocateProvider.class);
+    private static final Logger log = Logger.getLogger(GeoCoordGeoLocateProvider.class);
+    
+    protected GeoCoordProviderListenerIFace listener    = null;
+    protected String                        helpContext = null;
     
     /**
-     * 
+     * Constructor.
      */
-    public GeoRefGeoLocateProvider()
+    public GeoCoordGeoLocateProvider()
     {
         
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.services.biogeomancer.GeoRefServiceProviderIFace#processGeoRefData(java.util.List)
+     * @see edu.ku.brc.services.biogeomancer.GeoCoordServiceProviderIFace#processGeoRefData(java.util.List)
      */
-    public void processGeoRefData(final List<GeoRefDataIFace> items, 
-                                  final GeoRefProviderCompletionIFace listenerArg)
+    public void processGeoRefData(final List<GeoCoordDataIFace>       items, 
+                                  final GeoCoordProviderListenerIFace listenerArg,
+                                  final String                        helpContextArg)
     {
+        this.listener    = listenerArg;
+        this.helpContext = helpContextArg;
+        
         UsageTracker.incrUsageCount("WB.GeoLocateRows");
         
         log.info("Performing GeoLocate lookup of selected records");
@@ -86,21 +93,21 @@ public class GeoRefGeoLocateProvider implements GeoRefServiceProviderIFace
         // we don't want a CompletionService.  We can simply wait for each result in order.
         // See "Java Concurrency in Practice" by Brian Goetz, page 129
         // So, instead we keep a List of the Future objects as we schedule the Callable workers.
-        final List<Future<Pair<GeoRefDataIFace, GeorefResultSet>>> runningQueries = new Vector<Future<Pair<GeoRefDataIFace, GeorefResultSet>>>();
+        final List<Future<Pair<GeoCoordDataIFace, GeorefResultSet>>> runningQueries = new Vector<Future<Pair<GeoCoordDataIFace, GeorefResultSet>>>();
         
         // create the thread pool for pre-caching maps
         final ExecutorService mapGrabExecServ = Executors.newFixedThreadPool(10);
         
         // create individual worker threads to do the GL queries for the rows
-        for (GeoRefDataIFace grItem: items)
+        for (GeoCoordDataIFace grItem: items)
         {
-            final GeoRefDataIFace item = grItem;
+            final GeoCoordDataIFace item = grItem;
             
             // create a background thread to do the web service work
-            Callable<Pair<GeoRefDataIFace, GeorefResultSet>> wsClientWorker = new Callable<Pair<GeoRefDataIFace, GeorefResultSet>>()
+            Callable<Pair<GeoCoordDataIFace, GeorefResultSet>> wsClientWorker = new Callable<Pair<GeoCoordDataIFace, GeorefResultSet>>()
             {
                 @SuppressWarnings("synthetic-access")
-                public Pair<GeoRefDataIFace, GeorefResultSet> call() throws Exception
+                public Pair<GeoCoordDataIFace, GeorefResultSet> call() throws Exception
                 {
                     // get the locality data
                     String localityNameStr = item.getLocalityString();
@@ -146,7 +153,7 @@ public class GeoRefGeoLocateProvider implements GeoRefServiceProviderIFace
                         mapGrabExecServ.execute(mapPreCacheTask);
                     }
 
-                    return new Pair<GeoRefDataIFace, GeorefResultSet>(item, glResults);
+                    return new Pair<GeoCoordDataIFace, GeorefResultSet>(item, glResults);
                 }
             };
             
@@ -164,11 +171,11 @@ public class GeoRefGeoLocateProvider implements GeoRefServiceProviderIFace
             public void run()
             {
                 // a big list of the query results
-                final List<Pair<GeoRefDataIFace, GeorefResultSet>> glResults = new Vector<Pair<GeoRefDataIFace, GeorefResultSet>>();
+                final List<Pair<GeoCoordDataIFace, GeorefResultSet>> glResults = new Vector<Pair<GeoCoordDataIFace, GeorefResultSet>>();
                 
                 // iterrate over the set of queries, asking for the result
                 // this will basically block us right here until all of the queries are completed
-                for (Future<Pair<GeoRefDataIFace, GeorefResultSet>> completedQuery: runningQueries)
+                for (Future<Pair<GeoCoordDataIFace, GeorefResultSet>> completedQuery: runningQueries)
                 {
                     try
                     {
@@ -194,7 +201,7 @@ public class GeoRefGeoLocateProvider implements GeoRefServiceProviderIFace
                     public void run()
                     {
                         progressDialog.setVisible(false);
-                        displayGeoLocateResults(glResults);
+                        displayGeoLocateResults(glResults, items);
                         mapGrabExecServ.shutdown();
                     }
                 });
@@ -227,13 +234,14 @@ public class GeoRefGeoLocateProvider implements GeoRefServiceProviderIFace
      * 
      * @param rows the set of records containing valid GEOLocate responses with at least one result
      */
-    protected void displayGeoLocateResults(List<Pair<GeoRefDataIFace, GeorefResultSet>> glResults)
+    protected void displayGeoLocateResults(final List<Pair<GeoCoordDataIFace, GeorefResultSet>> glResults,
+                                           final List<GeoCoordDataIFace> items)
     {
         final JStatusBar statusBar = UIRegistry.getStatusBar();
         
-        List<Pair<GeoRefDataIFace, GeorefResultSet>> withResults = new Vector<Pair<GeoRefDataIFace, GeorefResultSet>>();
+        List<Pair<GeoCoordDataIFace, GeorefResultSet>> withResults = new Vector<Pair<GeoCoordDataIFace, GeorefResultSet>>();
 
-        for (Pair<GeoRefDataIFace, GeorefResultSet> result: glResults)
+        for (Pair<GeoCoordDataIFace, GeorefResultSet> result: glResults)
         {
             if (result.second.getNumResults() > 0)
             {
@@ -247,11 +255,10 @@ public class GeoRefGeoLocateProvider implements GeoRefServiceProviderIFace
             return;
         }
         
-        // turn off alwaysOnTop for Swing repaint reasons (prevents a lock up)
-        // ZZZ if (imageFrame != null)
-        //{
-        //    imageFrame.setAlwaysOnTop(false);
-        //}
+        if (listener != null)
+        {
+            listener.aboutToDisplayResults();
+        }
         
         // ask the user if they want to review the results
         // TODO: i18n
@@ -274,19 +281,26 @@ public class GeoRefGeoLocateProvider implements GeoRefServiceProviderIFace
         
         List<GeorefResult> results = bgResChooser.getResultsChosen();
         
+        int itemsUpdated = 0;
+        
         for (int i = 0; i < results.size(); ++i)
         {
-            GeoRefDataIFace item = withResults.get(i).first;
+            GeoCoordDataIFace item = withResults.get(i).first;
             GeorefResult chosenResult = results.get(i);
             
             if (chosenResult != null)
             {
                 Double latitude = chosenResult.getWGS84Coordinate().getLatitude();
                 Double longitude = chosenResult.getWGS84Coordinate().getLongitude();
-                item.set(latitude, longitude);
+                item.set(String.format("%7.5f", latitude), String.format("%7.5f", longitude));
                 
-                // ZZZ setChanged(true);
+                itemsUpdated++;
             }
+        }
+        
+        if (listener != null)
+        {
+            listener.complete(items, itemsUpdated);
         }
     }
 }

@@ -4,7 +4,6 @@
  * [INSERT KU-APPROVED LICENSE TEXT HERE]
  *
  */
-
 package edu.ku.brc.services.biogeomancer;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
@@ -37,29 +36,31 @@ import edu.ku.brc.ui.UIRegistry;
  * Jan 14, 2008
  *
  */
-public class GeoRefBGMProvider implements GeoRefServiceProviderIFace
+public class GeoCoordBGMProvider implements GeoCoordServiceProviderIFace
 {
-    private static final Logger log = Logger.getLogger(GeoRefBGMProvider.class);
+    private static final Logger log = Logger.getLogger(GeoCoordBGMProvider.class);
     
-    protected  GeoRefProviderCompletionIFace listener = null;
-    
+    protected GeoCoordProviderListenerIFace listener    = null;
+    protected String                        helpContext = null;
     /**
      * 
      */
-    public GeoRefBGMProvider()
+    public GeoCoordBGMProvider()
     {
         
     }
     
-    /**
-     * Use the BioGeomancer web service to lookup georeferences for the selected records.
+    /* (non-Javadoc)
+     * @see edu.ku.brc.services.biogeomancer.GeoCoordServiceProviderIFace#processGeoRefData(java.util.List, edu.ku.brc.services.biogeomancer.GeoCoordProviderListenerIFace, java.lang.String)
      */
-    public void processGeoRefData(final List<GeoRefDataIFace> items, 
-                                  final GeoRefProviderCompletionIFace listenerArg)
+    public void processGeoRefData(final List<GeoCoordDataIFace>      items, 
+                                  final GeoCoordProviderListenerIFace listenerArg,
+                                  final String helpContextArg)
     {
-        this.listener = listenerArg;
+        this.listener    = listenerArg;
+        this.helpContext = helpContextArg;
         
-        UsageTracker.incrUsageCount("WB.BioGeomancerRows");
+        UsageTracker.incrUsageCount("Tools.BioGeomancerData");
         
         log.info("Performing BioGeomancer lookup of selected records");
         
@@ -93,7 +94,7 @@ public class GeoRefBGMProvider implements GeoRefServiceProviderIFace
                 
                 int progress = 0;
 
-                for (GeoRefDataIFace item : items)
+                for (GeoCoordDataIFace item : items)
                 {
                     if (cancelled)
                     {
@@ -195,8 +196,8 @@ public class GeoRefBGMProvider implements GeoRefServiceProviderIFace
                     progressDialog.setVisible(false);
 
                     // find out how many records actually had results
-                    List<GeoRefDataIFace> rowsWithResults = new Vector<GeoRefDataIFace>();
-                    for (GeoRefDataIFace row : items)
+                    List<GeoCoordDataIFace> rowsWithResults = new Vector<GeoCoordDataIFace>();
+                    for (GeoCoordDataIFace row : items)
                     {
                         if (row.getXML() != null)
                         {
@@ -214,12 +215,11 @@ public class GeoRefBGMProvider implements GeoRefServiceProviderIFace
 //                                getResourceString("NO_RESULTS"), JOptionPane.INFORMATION_MESSAGE);
                         return;
                     }
-
-                    // turn off alwaysOnTop for Swing repaint reasons (prevents a lock up)
-                    // ZZZ if (imageFrame != null)
-                    //{
-                    //    imageFrame.setAlwaysOnTop(false);
-                    //}
+                    
+                    if (listener != null)
+                    {
+                        listener.aboutToDisplayResults();
+                    }
                     
                     // ask the user if they want to review the results
                     // TODO: i18n
@@ -264,20 +264,20 @@ public class GeoRefBGMProvider implements GeoRefServiceProviderIFace
      * 
      * @param items the set of records containing valid BioGeomancer responses with at least one result
      */
-    protected void displayBioGeomancerResults(final List<GeoRefDataIFace> items)
+    protected void displayBioGeomancerResults(final List<GeoCoordDataIFace> items)
     {
         // create the UI for displaying the BG results
         JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
         BioGeomancerResultsChooser bgResChooser = new BioGeomancerResultsChooser(topFrame, 
                 "BioGeomancer Results Chooser", 
                 items, 
-                "HELPCONTEXT"); // I18N
+                helpContext); // I18N
         
+        int itemsUpdated = 0;
         List<BioGeomancerResultStruct> results = bgResChooser.getResultsChosen();
-        
         for (int i = 0; i < items.size(); ++i)
         {
-            GeoRefDataIFace          item       = items.get(i);
+            GeoCoordDataIFace          item       = items.get(i);
             BioGeomancerResultStruct userChoice = results.get(i);
             
             if (userChoice != null)
@@ -286,17 +286,14 @@ public class GeoRefBGMProvider implements GeoRefServiceProviderIFace
                 
                 String[] coords = StringUtils.split(userChoice.coordinates);
 
-                Double latitude  = Double.parseDouble(coords[1]);
-                Double longitude = Double.parseDouble(coords[0]);
-                item.set(latitude, longitude);
-                
-                // ZZZ setChanged(true);
+                item.set(coords[1], coords[0]);
+                itemsUpdated++;
             }
         }
         
         if (listener != null)
         {
-            listener.complete(items);
+            listener.complete(items, itemsUpdated);
         }
     }
 }

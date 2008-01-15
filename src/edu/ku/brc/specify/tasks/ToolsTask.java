@@ -317,15 +317,17 @@ public class ToolsTask extends BaseTask
     
     /**
      * @param tool
-     * @param data
+     * @param recordSet
      * @param requestParams
      */
-    protected void doPRocessTool(RecordSetToolsIFace tool, RecordSetIFace data, Properties requestParams)
+    protected void doPRocessTool(final RecordSetToolsIFace tool, 
+                                 final RecordSetIFace      recordSet, 
+                                 final Properties          requestParams)
     {
-        RecordSet rs = (RecordSet)data;
+        RecordSet rs = (RecordSet)recordSet;
         try
         {
-            tool.processRecordSet(rs,requestParams);
+            tool.processRecordSet(rs, requestParams);
         }
         catch (Exception e)
         {
@@ -337,14 +339,16 @@ public class ToolsTask extends BaseTask
     
     /**
      * @param tool
-     * @param data
+     * @param dataList
      * @param requestParams
      */
-    protected void doProcessTool(RecordSetToolsIFace tool, List<?> data, Properties requestParams)
+    protected void doProcessTool(final RecordSetToolsIFace tool, 
+                                 final List<?>             dataList, 
+                                 final Properties          requestParams)
     {
         try
         {
-            tool.processDataList(data,requestParams);
+            tool.processDataList(dataList,requestParams);
         }
         catch (Exception e)
         {
