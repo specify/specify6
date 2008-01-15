@@ -3,4 +3,5 @@
 	<tool class="edu.ku.brc.specify.exporters.GoogleEarthExporter" addui="true"/>
 	<tool class="edu.ku.brc.specify.exporters.ExportToFile" addui="false"/>
 	<tool class="edu.ku.brc.specify.exporters.BGMRecordSetProcessor" addui="true"/>
+	<tool class="edu.ku.brc.specify.exporters.GeoLocateRecordSetProcessor" addui="true"/>
 </tools>
