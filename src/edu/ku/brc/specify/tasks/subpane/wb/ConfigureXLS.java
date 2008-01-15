@@ -41,7 +41,7 @@ import org.apache.poi.poifs.filesystem.DocumentEntry;
 import org.apache.poi.poifs.filesystem.DocumentInputStream;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 
-import edu.ku.brc.specify.exporters.ExportFileConfigurationFactory;
+import edu.ku.brc.specify.rstools.ExportFileConfigurationFactory;
 import edu.ku.brc.ui.UIRegistry;
 
 /**

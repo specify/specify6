@@ -23,7 +23,7 @@ import org.apache.log4j.Logger;
 
 import com.csvreader.CsvReader;
 
-import edu.ku.brc.specify.exporters.ExportFileConfigurationFactory;
+import edu.ku.brc.specify.rstools.ExportFileConfigurationFactory;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;

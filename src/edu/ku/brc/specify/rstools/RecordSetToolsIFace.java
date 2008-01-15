@@ -4,7 +4,7 @@
  * [INSERT KU-APPROVED LICENSE TEXT HERE]
  * 
  */
-package edu.ku.brc.specify.exporters;
+package edu.ku.brc.specify.rstools;
 
 import java.util.List;
 import java.util.Properties;
@@ -37,7 +37,7 @@ public interface RecordSetToolsIFace
     public abstract String getIconName();
     
     /**
-     * Returns a short text description of the tool.
+     * Returns a short text description of the tool. (This is used in to build the pane display).
      * 
      * @return a short text description of the tool.
      */

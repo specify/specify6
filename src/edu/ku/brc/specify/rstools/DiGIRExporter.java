@@ -1,4 +1,4 @@
-package edu.ku.brc.specify.exporters;
+package edu.ku.brc.specify.rstools;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 

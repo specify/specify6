@@ -5,7 +5,7 @@
  * 
  */
 
-package edu.ku.brc.specify.exporters;
+package edu.ku.brc.specify.rstools;
 
 import edu.ku.brc.util.Pair;
 

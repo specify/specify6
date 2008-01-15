@@ -4,7 +4,7 @@
  * [INSERT KU-APPROVED LICENSE TEXT HERE]
  *
  */
-package edu.ku.brc.specify.exporters;
+package edu.ku.brc.specify.rstools;
 
 import java.io.IOException;
 import java.util.List;

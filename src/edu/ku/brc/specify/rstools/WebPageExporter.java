@@ -5,7 +5,7 @@
  * 
  */
 
-package edu.ku.brc.specify.exporters;
+package edu.ku.brc.specify.rstools;
 
 import java.util.List;
 import java.util.Properties;

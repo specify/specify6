@@ -34,6 +34,7 @@ import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
+import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.prefs.AppPreferences;
@@ -43,7 +44,7 @@ import edu.ku.brc.af.tasks.subpane.HtmlDescPane;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.TableModel2Excel;
 import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.exporters.RecordSetToolsIFace;
+import edu.ku.brc.specify.rstools.RecordSetToolsIFace;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DataFlavorTableExt;
@@ -119,6 +120,14 @@ public class ToolsTask extends BaseTask
         
         CommandDispatcher.register(TOOLS, this);
         CommandDispatcher.register(PreferencesDlg.PREFERENCES, this);
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.Taskable#isSingletonPane()
+     */
+    public boolean isSingletonPane()
+    {
+        return true;
     }
 
 
@@ -271,6 +280,24 @@ public class ToolsTask extends BaseTask
             log.error(ex);
         }
     }
+    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.Taskable#requestContext()
+     */
+    public void requestContext()
+    {
+        ContextMgr.requestContext(this);
+
+        if (starterPane == null)
+        {
+            super.requestContext();
+            
+        } else
+        {
+            SubPaneMgr.getInstance().showPane(starterPane);
+        }
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.BaseTask#getStarterPane()
@@ -279,12 +306,15 @@ public class ToolsTask extends BaseTask
     public SubPaneIFace getStarterPane()
     {
         StringBuilder htmlDesc = new StringBuilder("<h3>Welcome to the Specify Data Exporter</h3>");
-        htmlDesc.append("<p>Exporters installed:<ul>");
-        for (RecordSetToolsIFace exporter: loadedToolsList)
+        htmlDesc.append("<p>Tools installed:<ul>");
+        for (RecordSetToolsIFace tool: loadedToolsList)
         {
-            htmlDesc.append("<li><b>" + exporter.getName() + "</b><p>" + exporter.getDescription());
+            if (tool.isVisible())
+            {
+                htmlDesc.append("<li><b>" + tool.getName() + "</b><p>" + tool.getDescription());
+            }
         }
-        htmlDesc.append("</ul>");
+        htmlDesc.append("<br></ul>");
         starterPane = new HtmlDescPane(name, this, htmlDesc.toString());
         return starterPane;
     }

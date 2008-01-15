@@ -4,30 +4,31 @@
  * [INSERT KU-APPROVED LICENSE TEXT HERE]
  *
  */
-package edu.ku.brc.specify.exporters;
+package edu.ku.brc.specify.rstools;
 
 import java.util.Properties;
 
-import edu.ku.brc.services.biogeomancer.GeoCoordBGMProvider;
+import edu.ku.brc.services.biogeomancer.GeoCoordGeoLocateProvider;
 import edu.ku.brc.services.biogeomancer.GeoCoordProviderListenerIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
- * Implements the RecordSetToolsIFace for GeoReferenceing with Biogeomancer.
+ * Implements the RecordSetToolsIFace for GeoReferenceing with Geolocate.
  * 
  * @author rod
  *
  * @code_status Complete
  *
- * Jan 14, 2008
+ * Jan 15, 2008
  *
  */
-public class BGMRecordSetProcessor extends GeoRefRecordSetProcessorBase implements GeoCoordProviderListenerIFace
+public class GeoLocateRecordSetProcessor extends GeoRefRecordSetProcessorBase implements GeoCoordProviderListenerIFace
 {
     /**
      * Constructor.
      */
-    public BGMRecordSetProcessor()
+    public GeoLocateRecordSetProcessor()
     {
         
     }
@@ -38,7 +39,7 @@ public class BGMRecordSetProcessor extends GeoRefRecordSetProcessorBase implemen
     public void processRecordSet(final RecordSet recordSet, 
                                  final Properties requestParams) throws Exception
     {
-        processRecordSet(recordSet, requestParams, new GeoCoordBGMProvider());
+        processRecordSet(recordSet, requestParams, new GeoCoordGeoLocateProvider());
     }
 
 
@@ -47,7 +48,7 @@ public class BGMRecordSetProcessor extends GeoRefRecordSetProcessorBase implemen
      */
     public String getIconName()
     {
-        return "BioGeoMancer32";
+        return "BioGeoMancer32"; // XXX need GeoLocate Icon
     }
 
     /* (non-Javadoc)
@@ -55,7 +56,16 @@ public class BGMRecordSetProcessor extends GeoRefRecordSetProcessorBase implemen
      */
     public String getName()
     {
-        return "Biogeomancer";
+        return "GeoLocate"; 
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.exporters.GeoRefRecordSetProcessorBase#getDescription()
+     */
+    @Override
+    public String getDescription()
+    {
+        return UIRegistry.getResourceString("GEOLOCATE_DESC");
     }
     
 }
