@@ -229,8 +229,8 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         {
             this.insertTab(newPane.getPaneName(), newPane.getIcon(), newPane.getUIComponent(), null, index);
             
-            panes.remove(oldPane.getPaneName());
-
+            removePane(oldPane);
+            
             // Add this pane to the tabs
             String title = buildUniqueName(newPane.getPaneName());
             newPane.setPaneName(title);

@@ -353,7 +353,7 @@ public class QueryTask extends BaseTask
             public void actionPerformed(ActionEvent e)
             {
                 RolloverCommand queryNavBtn = (RolloverCommand)e.getSource();
-                editQuery((Integer)recordSet.getOnlyItem().getRecordId());
+                editQuery(recordSet.getOnlyItem().getRecordId());
                 queryNavBtn.setEnabled(false);
                 queryBldrPane.setQueryNavBtn(queryNavBtn);
             }
@@ -431,20 +431,17 @@ public class QueryTask extends BaseTask
      */
     protected void editQuery(final SpQuery query)
     {
-        if (queryBldrPane != null)
-        {
-            queryBldrPane.setQuery(query);
-            
-        } else
-        {
-            queryBldrPane = new QueryBldrPane(name, this, query);
-        }
-        
+        QueryBldrPane newPane = new QueryBldrPane(query.getName(), this, query);
         if (starterPane != null)
         {
-            SubPaneMgr.getInstance().replacePane(starterPane, queryBldrPane);
+            SubPaneMgr.getInstance().replacePane(starterPane, newPane);
             starterPane = null;
         }
+        else if (queryBldrPane != null)
+        {
+            SubPaneMgr.getInstance().replacePane(queryBldrPane, newPane);
+        } 
+        queryBldrPane = newPane;
     }
 
     /*
@@ -524,18 +521,17 @@ public class QueryTask extends BaseTask
      * @param recordSet the rs to be saved
      */
     public RolloverCommand saveNewQuery(final SpQuery query, final boolean enabled)
-    {
-        RecordSet rs = new RecordSet(query.getName(), SpQuery.getClassTableId());
-        rs.addItem(query.getSpQueryId());
-        
-        RolloverCommand roc = (RolloverCommand)addToNavBox(rs);
-        roc.setEnabled(enabled);
-        
+    {        
         query.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
         query.setSpecifyUser(SpecifyUser.getCurrentUser());
         
         persistRecordSet(query);
         
+        RecordSet rs = new RecordSet(query.getName(), SpQuery.getClassTableId());
+        rs.addItem(query.getSpQueryId());
+        
+        RolloverCommand roc = (RolloverCommand)addToNavBox(rs);
+        roc.setEnabled(enabled);
 
         NavBoxMgr.getInstance().addBox(navBox);
 

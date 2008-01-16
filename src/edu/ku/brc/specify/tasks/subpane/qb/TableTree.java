@@ -27,7 +27,7 @@ public class TableTree implements Cloneable, Comparable<TableTree>
     protected String            name;
     protected String            field;
     protected TableTree         parent = null;
-    protected Vector<TableTree> kids      = new Vector<TableTree>();
+    protected Vector<TableTree> kids = new Vector<TableTree>();
     protected String            abbrev = null;
     protected DBTableInfo       tableInfo = null;
     protected boolean           isAlias   = false;

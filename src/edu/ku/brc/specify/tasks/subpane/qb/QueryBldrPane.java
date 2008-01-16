@@ -149,6 +149,7 @@ public class QueryBldrPane extends BaseSubPane
             public void actionPerformed(ActionEvent e)
             {
                 saveQuery();
+                saveBtn.setEnabled(false);
             }
         });
 
@@ -362,6 +363,7 @@ public class QueryBldrPane extends BaseSubPane
     public void setQuery(final SpQuery queryArg)
     {
         query = queryArg;
+        name = query.getName();
         setQueryIntoUI();
     }
 
@@ -670,7 +672,7 @@ public class QueryBldrPane extends BaseSubPane
                     ex.printStackTrace();
                 }
             }
-
+            
         }
         else
         {
