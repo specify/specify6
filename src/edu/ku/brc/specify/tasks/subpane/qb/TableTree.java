@@ -26,58 +26,56 @@ public class TableTree implements Cloneable, Comparable<TableTree>
 {
     protected String            name;
     protected String            field;
-    protected TableTree         parent;
+    protected TableTree         parent = null;
     protected Vector<TableTree> kids      = new Vector<TableTree>();
     protected String            abbrev = null;
     protected DBTableInfo       tableInfo = null;
     protected boolean           isAlias   = false;
     protected TableQRI           tableQRI   = null;          
 
-    public TableTree(final TableTree parent, 
-                     final String name, boolean isAlias)
+    /**
+     * @param name
+     * @param isAlias
+     */
+    public TableTree(final String name, boolean isAlias)
     {
-        this.parent = parent;
         this.name   = name;
         this.isAlias = isAlias;
-        if (this.parent != null)
-        {
-            this.parent.addKid(this);
-            if (this.tableInfo != null)
-            {
-                this.tableQRI = new TableQRI(this);
-                for (DBFieldInfo fi : this.tableInfo.getFields())
-                {
-                    tableQRI.addField(fi);
-                }
-            }
-        }
+        processTblInfo();
     }
     
-    public TableTree(final TableTree parent, 
-                     final String name,
+    /**
+     * @param name
+     * @param field
+     * @param abbrev
+     * @param tableInfo
+     */
+    public TableTree(final String name,
                      final String field,
                      final String abbrev,
                      final DBTableInfo tableInfo)
     {
-        this.parent = parent;
         this.tableInfo  = tableInfo;
-        if (this.parent != null)
-        {
-            this.parent.addKid(this);
-            if (this.tableInfo != null)
-            {
-                this.tableQRI = new TableQRI(this);
-                for (DBFieldInfo fi : this.tableInfo.getFields())
-                {
-                    tableQRI.addField(fi);
-                }
-            }
-        }
+        processTblInfo();
         this.name   = name;
         this.field  = field;
         this.abbrev = abbrev;
     }
 
+    /**
+     * Builds tableQRI from tableInfo.
+     */
+    protected void processTblInfo()
+    {
+        if (tableInfo != null)
+        {
+            tableQRI = new TableQRI(this);
+            for (DBFieldInfo fi : tableInfo.getFields())
+            {
+                tableQRI.addField(fi);
+            }
+        }
+    }
     /**
      * @param parent the parent to set
      */
@@ -134,20 +132,35 @@ public class TableTree implements Cloneable, Comparable<TableTree>
         return tableInfo;
     }
 
+    /**
+     * @return number of kids.
+     */
     public int getKids()
     {
         return kids.size();
     }
     
+    /**
+     * @param k
+     * @return kid with index k.
+     */
     public TableTree getKid(int k)
     {
         return kids.get(k);
     }
     
-    public boolean addKid(final TableTree kid)
+    /**
+     * @param kid
+     * @return kid if added else null.
+     */
+    public TableTree addKid(final TableTree kid)
     {
-        kid.setParent(this);
-        return kids.add(kid);
+        if (kids.add(kid))
+        {
+            kid.setParent(this);
+            return kid;
+        }
+        return null;
     }
     /**
      * @return the isAlias
@@ -211,13 +224,16 @@ public class TableTree implements Cloneable, Comparable<TableTree>
         return obj;
     }
 
+    /**
+     * @return tableQRI.
+     */
     public TableQRI getTableQRI()
     {
         return tableQRI;
     }
 
     /**
-     * @param tableQRI the tableQRI to set
+     * @param tableQRI the tableQRI to clone and set
      */
     public void setTableQRIClone(TableQRI tableQRI) throws CloneNotSupportedException
     {

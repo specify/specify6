@@ -53,7 +53,6 @@ import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpQueryField;
 import edu.ku.brc.specify.datamodel.Treeable;
@@ -156,7 +155,6 @@ public class QueryBldrPane extends BaseSubPane
         listBoxPanel = new JPanel(new HorzLayoutManager(2, 2));
 
         Vector<TableQRI> list = new Vector<TableQRI>();
-        //for (TableTree tt : tableTreeList)
         for (int k=0; k<tableTree.getKids(); k++)
         {
             list.add(tableTree.getKid(k).getTableQRI());
@@ -265,7 +263,7 @@ public class QueryBldrPane extends BaseSubPane
         {
             public void actionPerformed(ActionEvent ae)
             {
-                doSearch(distinctChk.isSelected());
+                doSearch((TableQRI)tableList.getSelectedValue(), distinctChk.isSelected());
             }
         });
 
@@ -370,32 +368,36 @@ public class QueryBldrPane extends BaseSubPane
     /**
      * Performs the Search by building the HQL String.
      */
-    protected void doSearch(boolean distinct)
+    protected void doSearch(final TableQRI rootTable, boolean distinct)
     {
         if (queryFieldItems.size() > 0)
         {
             StringBuilder fieldsStr = new StringBuilder();
-            for (QueryFieldPanel qfp : queryFieldItems)
+            if (!distinct)
             {
-                if (qfp.isForDisplay())
-                {
-                    if (fieldsStr.length() > 0)
-                        fieldsStr.append(", ");
-                }
-                fieldsStr.append(qfp.getFieldQRI().getSQLFldSpec());
+                fieldsStr.append(rootTable.getTableTree().getAbbrev());
+                fieldsStr.append(".");
+                fieldsStr.append(rootTable.getTableInfo().getIdFieldName());
             }
-
             Vector<BaseQRI> list = new Vector<BaseQRI>();
-
             StringBuilder criteriaStr = new StringBuilder();
-
             StringBuilder orderStr = new StringBuilder();
-
             boolean debug = true;
             ProcessNode root = new ProcessNode(null);
+            int fldPosition = distinct ? 0 : 1;
+            
             for (QueryFieldPanel qfi : queryFieldItems)
             {
                 qfi.updateQueryField();
+
+                if (qfi.isForDisplay())
+                {
+                    if (fieldsStr.length() > 0)
+                        fieldsStr.append(", ");
+                    fieldsStr.append(qfi.getFieldQRI().getSQLFldSpec());
+                    fldPosition++;
+                }
+                
                 FieldQRI pqri = qfi.getFieldQRI();
                 if (debug)
                 {
@@ -403,7 +405,6 @@ public class QueryBldrPane extends BaseSubPane
                 }
                 String criteria = qfi.getCriteriaFormula();
                 boolean isDisplayOnly = StringUtils.isEmpty(criteria);
-
                 if (!isDisplayOnly)
                 {
                     if (!isDisplayOnly && criteriaStr.length() > 0)
@@ -412,9 +413,8 @@ public class QueryBldrPane extends BaseSubPane
                     }
                     criteriaStr.append(criteria);
                 }
-                // criteriaStr.append(' ');
 
-                String orderSpec = qfi.getOrderSpec();
+                String orderSpec = qfi.getOrderSpec(fldPosition);
                 if (orderSpec != null)
                 {
                     if (orderStr.length() > 0)
@@ -516,7 +516,7 @@ public class QueryBldrPane extends BaseSubPane
 
             System.out.println(sqlStr.toString());
 
-            processSQL(queryFieldItems, sqlStr.toString());
+            processSQL(queryFieldItems, sqlStr.toString(), rootTable.getTableInfo(), distinct);
 
         }
     }
@@ -567,7 +567,7 @@ public class QueryBldrPane extends BaseSubPane
      * @param queryFieldItemsArg
      * @param sql
      */
-    protected void processSQL(final Vector<QueryFieldPanel> queryFieldItemsArg, final String sql)
+    protected void processSQL(final Vector<QueryFieldPanel> queryFieldItemsArg, final String sql, final DBTableInfo rootTable, final boolean distinct)
     {
         List<ERTICaptionInfo> captions = new Vector<ERTICaptionInfo>();
         for (QueryFieldPanel qfp : queryFieldItemsArg)
@@ -581,21 +581,27 @@ public class QueryBldrPane extends BaseSubPane
             {
                 colName = ti.getAbbrev() + '.' + fi.getColumn();
             }
-            if (qfp.isDisplayable())
+            if (qfp.isForDisplay() && qfp.isDisplayable())
             {
                 ERTICaptionInfo erti = new ERTICaptionInfo(colName, qfp.getFieldQRI().getTitle(), true, qfp.getFieldQRI().getFormatter(), 0);
                 erti.setColClass(qfp.getFieldQRI().getDataClass());
                 captions.add(erti);
             }
         }
-        //captions.add(new ERTICaptionInfo("ord", "Order", true, null, 0));
         List<Integer> list = new Vector<Integer>();
+        
+        String iconName = distinct ? "BlankIcon" : rootTable.getClassObj().getSimpleName();
+        int tblId = distinct ? -1 : rootTable.getTableId();
         QBQueryForIdResultsHQL qri = new QBQueryForIdResultsHQL(new Color(144, 30, 255),
                 "Search Results", // XXX I18N
-                CollectionObject.class.getSimpleName(), // Icon Name
-                1, // table id
+                //rootTable.getTableInfo().getClassObj().getSimpleName(), // Icon Name
+                iconName,
+                //rootTable.getTableInfo().getTableId(), // table id
+                tblId,
                 "", // search term
                 list);
+        //else do something else...
+        
         qri.setSQL(sql);
         qri.setCaptions(captions);
         qri.setExpanded(true);
@@ -1042,7 +1048,7 @@ public class QueryBldrPane extends BaseSubPane
             }
 
             String abbrev = XMLHelper.getAttr(parent, "abbrev", null);
-            TableTree newTreeNode = new TableTree(parentTT, tableName, fieldName, abbrev, tableInfo);
+            TableTree newTreeNode = parentTT.addKid(new TableTree(tableName, fieldName, abbrev, tableInfo));
             
 
             List<?> treeLevels = parent.selectNodes("treelevel");
@@ -1088,8 +1094,7 @@ public class QueryBldrPane extends BaseSubPane
                 tableInfo = DBTableIdMgr.getInstance().getByShortClassName(kidClassName);
                 if (!tableInfo.isHidden())
                 {
-                    //interesting line of code...
-                    new TableTree(newTreeNode, kidClassName, true);
+                    newTreeNode.addKid(new TableTree(kidClassName, true));
                 }
             }
         }
@@ -1141,7 +1146,7 @@ public class QueryBldrPane extends BaseSubPane
      */
     protected TableTree readTables()
     {
-        TableTree treeRoot = new TableTree(null, "root", "root", "root", null);
+        TableTree treeRoot = new TableTree("root", "root", "root", null);
         try
         {
             Element root = XMLHelper.readDOMFromConfigDir("querybuilder.xml");
