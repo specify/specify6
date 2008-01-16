@@ -11,6 +11,7 @@ package edu.ku.brc.specify.tasks.subpane.qb;
 
 import java.util.Vector;
 
+import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableInfo;
 
 /**
@@ -30,13 +31,26 @@ public class TableTree implements Cloneable, Comparable<TableTree>
     protected String            abbrev = null;
     protected DBTableInfo       tableInfo = null;
     protected boolean           isAlias   = false;
-    protected BaseQRI           baseQRI   = null;          
+    protected TableQRI           tableQRI   = null;          
 
     public TableTree(final TableTree parent, 
-                     final String name)
+                     final String name, boolean isAlias)
     {
         this.parent = parent;
         this.name   = name;
+        this.isAlias = isAlias;
+        if (this.parent != null)
+        {
+            this.parent.addKid(this);
+            if (this.tableInfo != null)
+            {
+                this.tableQRI = new TableQRI(this);
+                for (DBFieldInfo fi : this.tableInfo.getFields())
+                {
+                    tableQRI.addField(fi);
+                }
+            }
+        }
     }
     
     public TableTree(final TableTree parent, 
@@ -46,26 +60,22 @@ public class TableTree implements Cloneable, Comparable<TableTree>
                      final DBTableInfo tableInfo)
     {
         this.parent = parent;
+        this.tableInfo  = tableInfo;
+        if (this.parent != null)
+        {
+            this.parent.addKid(this);
+            if (this.tableInfo != null)
+            {
+                this.tableQRI = new TableQRI(this);
+                for (DBFieldInfo fi : this.tableInfo.getFields())
+                {
+                    tableQRI.addField(fi);
+                }
+            }
+        }
         this.name   = name;
         this.field  = field;
         this.abbrev = abbrev;
-        this.tableInfo  = tableInfo;
-    }
-
-    /**
-     * @return the baseQRI
-     */
-    public BaseQRI getBaseQRI()
-    {
-        return baseQRI;
-    }
-
-    /**
-     * @param baseQRI the baseQRI to set
-     */
-    public void setBaseQRI(BaseQRI baseQRI)
-    {
-        this.baseQRI = baseQRI;
     }
 
     /**
@@ -124,14 +134,21 @@ public class TableTree implements Cloneable, Comparable<TableTree>
         return tableInfo;
     }
 
-    /**
-     * @return the kids
-     */
-    public Vector<TableTree> getKids()
+    public int getKids()
     {
-        return kids;
+        return kids.size();
     }
-
+    
+    public TableTree getKid(int k)
+    {
+        return kids.get(k);
+    }
+    
+    public boolean addKid(final TableTree kid)
+    {
+        kid.setParent(this);
+        return kids.add(kid);
+    }
     /**
      * @return the isAlias
      */
@@ -180,17 +197,31 @@ public class TableTree implements Cloneable, Comparable<TableTree>
     {
         TableTree obj = (TableTree)super.clone();
         
-        obj.name      = name;
-        obj.field     = field;
-        obj.parent    = parent;
         obj.kids      = new Vector<TableTree>();
         for (TableTree tt : kids)
         {
-            obj.kids.add(tt);
+            TableTree newKid = (TableTree)tt.clone();
+            obj.addKid(newKid);
         }
-        obj.tableInfo = tableInfo;
         
+        if (tableQRI != null)
+        {
+            obj.tableQRI = (TableQRI)tableQRI.clone();
+        }
         return obj;
     }
 
+    public TableQRI getTableQRI()
+    {
+        return tableQRI;
+    }
+
+    /**
+     * @param tableQRI the tableQRI to set
+     */
+    public void setTableQRIClone(TableQRI tableQRI) throws CloneNotSupportedException
+    {
+        this.tableQRI = (TableQRI)tableQRI.clone();
+        this.tableQRI.setTableTree(this);
+    }
 }

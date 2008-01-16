@@ -23,11 +23,13 @@ import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
  */
 public class FieldQRI extends BaseQRI
 {
+    protected TableQRI table = null;
     protected DBFieldInfo fi;
     
-    public FieldQRI(final BaseQRI parent, final DBFieldInfo fi)
+    public FieldQRI(final TableQRI table, final DBFieldInfo fi)
     {
-        super(parent, null);
+        super(null);
+        this.table = table;
         this.fi  = fi;
         if (fi != null)
         {
@@ -68,7 +70,7 @@ public class FieldQRI extends BaseQRI
     
     public String getSQLFldSpec()
     {
-        return parent.getTableTree().getAbbrev() + "." + getFieldName();
+        return table.getTableTree().getAbbrev() + "." + getFieldName();
     }
     
     public String getSQLFldName()
@@ -82,4 +84,35 @@ public class FieldQRI extends BaseQRI
             return fi.getDataClass();
         return String.class;
     }
+
+    /**
+     * @param table the table to set
+     */
+    public void setTable(TableQRI table)
+    {
+        this.table = table;
+    }
+
+    /**
+     * @return the table
+     */
+    public TableQRI getTable()
+    {
+        return table;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.qb.BaseQRI#getTableTree()
+     */
+    @Override
+    public TableTree getTableTree()
+    {
+        if (table != null)
+        {
+            return table.getTableTree();
+        }
+        return null;
+    }
+    
+    
 }

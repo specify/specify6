@@ -107,7 +107,7 @@ public class QueryBldrPane extends BaseSubPane
                                                                                       IconManager.IconSize.Std16);
     protected int                                            listCellHeight;
 
-    protected Vector<TableTree>                              tableTreeList;
+    protected TableTree                                      tableTree;
     protected boolean                                        processingLists  = false;
 
     protected RolloverCommand                                queryNavBtn      = null;
@@ -130,7 +130,7 @@ public class QueryBldrPane extends BaseSubPane
             fieldsToSkipHash.put(nameStr, true);
         }
 
-        tableTreeList = readTables();
+        tableTree = readTables();
 
         createUI();
 
@@ -156,9 +156,10 @@ public class QueryBldrPane extends BaseSubPane
         listBoxPanel = new JPanel(new HorzLayoutManager(2, 2));
 
         Vector<TableQRI> list = new Vector<TableQRI>();
-        for (TableTree tt : tableTreeList)
+        //for (TableTree tt : tableTreeList)
+        for (int k=0; k<tableTree.getKids(); k++)
         {
-            list.add((TableQRI) tt.getBaseQRI());
+            list.add(tableTree.getKid(k).getTableQRI());
         }
 
         Collections.sort(list);
@@ -199,7 +200,7 @@ public class QueryBldrPane extends BaseSubPane
                     {
                         fillNextList(tableList);
 
-                        TableTree node = tableTreeList.get(inx);
+                        TableTree node = tableTree.getKid(inx);
                         query.setContextTableId((short) node.getTableInfo().getTableId());
                         query.setContextName(node.getName());
 
@@ -427,13 +428,13 @@ public class QueryBldrPane extends BaseSubPane
                 // the current node up to the top
                 // basically we are creating a path of nodes
                 // to determine if we need to create a new node in the tree
-                BaseQRI parent = qfi.getFieldQRI();
+                TableTree parent = qfi.getFieldQRI().getTableTree();
                 list.clear();
                 list.insertElementAt(pqri, 0);
-                while (parent.getParent() != null)
+                while (parent != tableTree)
                 {
+                    list.insertElementAt(parent.getTableQRI(), 0);
                     parent = parent.getParent();
-                    list.insertElementAt(parent, 0);
                 }
 
                 if (debug)
@@ -448,7 +449,6 @@ public class QueryBldrPane extends BaseSubPane
                 // Now walk the stack top (the top most parent)
                 // down and if the path form the top down doesn't
                 // exist then add a new node
-                System.out.println("\nBuilding Tree:");
                 ProcessNode parentNode = root;
                 for (BaseQRI qri : list)
                 {
@@ -480,7 +480,6 @@ public class QueryBldrPane extends BaseSubPane
                             }
                         }
                     }
-                    // System.out.println(stack.get(i).getTitle());
                 }
 
                 if (debug)
@@ -530,11 +529,11 @@ public class QueryBldrPane extends BaseSubPane
     protected void processTree(final ProcessNode parent, final StringBuilder sqlStr, final int level)
     {
         BaseQRI qri = parent.getQri();
-        if (qri != null)
+        if (qri != null && qri.getTableTree() != tableTree)
         {
-            TableTree tt = qri.getTableTree();
-            if (tt != null)
+            if (qri instanceof TableQRI)
             {
+                TableTree tt = qri.getTableTree();
                 System.out.println("processTree " + tt.getName());
                 if (level == 1)
                 {
@@ -558,7 +557,6 @@ public class QueryBldrPane extends BaseSubPane
                 }
             }
         }
-
         for (ProcessNode kid : parent.getKids())
         {
             processTree(kid, sqlStr, level + 1);
@@ -681,8 +679,9 @@ public class QueryBldrPane extends BaseSubPane
      */
     protected static TableTree findTableTree(final TableTree parentTT, final String nameArg)
     {
-        for (TableTree tt : parentTT.getKids())
+        for (int k=0; k<parentTT.getKids(); k++)
         {
+            TableTree tt = parentTT.getKid(k);
             if (tt.getName().equals(nameArg)) { return tt; }
         }
         return null;
@@ -727,17 +726,20 @@ public class QueryBldrPane extends BaseSubPane
      * @param tableTree
      * @param model
      */
-    protected void createNewList(final BaseQRI parentQRI,
-                                 final TableTree tableTree,
+    protected void createNewList(final TableQRI tblQRI,
                                  final DefaultListModel model)
     {
         model.clear();
-        if (parentQRI != null)
+        if (tblQRI != null)
         {
-            TableQRI tblQRI = (TableQRI) parentQRI;
-            for (BaseQRI baseQRI : tblQRI.getKids())
+            for (int f=0; f<tblQRI.getFields(); f++)
             {
-                model.addElement(baseQRI);
+                model.addElement(tblQRI.getField(f));
+            }
+            for (int k=0; k<tblQRI.getTableTree().getKids(); k++)
+            {
+                if (!tblQRI.getTableTree().getKid(k).isAlias())
+                    model.addElement(tblQRI.getTableTree().getKid(k).getTableQRI());
             }
         }
     }
@@ -764,8 +766,6 @@ public class QueryBldrPane extends BaseSubPane
         {
             listBoxPanel.removeAll();
         }
-        // System.out.println("cur "+curInx+" cnt "+listBoxPanel.getComponentCount()+" size
-        // "+listBoxList.size());
 
         QryListRendererIFace item = (QryListRendererIFace) parentList.getSelectedValue();
         if (!(item instanceof FieldQRI))
@@ -804,18 +804,13 @@ public class QueryBldrPane extends BaseSubPane
 
             if (item instanceof TableQRI)
             {
-                model.clear();
-                TableQRI table = (TableQRI) item;
-
-                createNewList((BaseQRI) item, table.getTableTree(), model);
+                createNewList((TableQRI)item, model);
 
             }
-            else if (item instanceof RelQRI)
-            {
-                RelQRI rel = (RelQRI) item;
-
-                createNewList((BaseQRI) item, rel.getTableTree(), model);
-            }
+//            else if (item instanceof RelQRI)
+//            {
+//                createNewList(item, model);
+//            }
 
             listBoxPanel.add(sp);
             listBoxPanel.remove(addBtn);
@@ -899,33 +894,32 @@ public class QueryBldrPane extends BaseSubPane
      * @param level
      * @return
      */
-    protected FieldQRI getFieldQRI(final Vector<TableTree> kids,
+    protected FieldQRI getFieldQRI(final TableTree tbl,
                                    final SpQueryField field,
                                    final int[] tableIds,
                                    final int level)
     {
         int id = tableIds[level];
         System.out.println("getFieldQRI id[" + id + "] level[" + level + "]");
-        for (TableTree kid : kids)
+        for (int k=0; k<tbl.getKids(); k++)
         {
+            TableTree kid = tbl.getKid(k);
             System.out.println("checking id[" + id + "] [" + kid.getTableInfo().getTableId() + "]");
             if (kid.getTableInfo().getTableId() == id)
             {
                 if (level == (tableIds.length - 1))
                 {
-                    TableQRI tblQRI = (TableQRI) kid.getBaseQRI();
-                    for (BaseQRI baseQRI : tblQRI.getKids())
+                    for (int f=0; f<kid.getTableQRI().getFields(); f++)
                     {
-                        if (baseQRI instanceof FieldQRI)
-                        {
-                            FieldQRI fqri = (FieldQRI) baseQRI;
-                            if (fqri.getFieldInfo().getName().equals(field.getFieldName())) { return fqri; }
+                        if (kid.getTableQRI().getField(f).getFieldName().equals(field.getFieldName())) 
+                        { 
+                            return kid.getTableQRI().getField(f); 
                         }
                     }
                 }
                 else
                 {
-                    FieldQRI fi = getFieldQRI(kid.getKids(), field, tableIds, level + 1);
+                    FieldQRI fi = getFieldQRI(kid, field, tableIds, level + 1);
                     if (fi != null) { return fi; }
                 }
             }
@@ -943,7 +937,7 @@ public class QueryBldrPane extends BaseSubPane
         if (field != null)
         {
             System.out.println(field.getTableList());
-            FieldQRI fieldQRI = getFieldQRI(tableTreeList, field, field.getTableIds(), 0);
+            FieldQRI fieldQRI = getFieldQRI(tableTree, field, field.getTableIds(), 0);
             if (fieldQRI != null)
             {
                 addQueryFieldItem(fieldQRI, field);
@@ -1030,9 +1024,7 @@ public class QueryBldrPane extends BaseSubPane
      * @param parentQRI
      */
     protected void processForTables(final Element parent,
-                                    final TableTree parentTT,
-                                    final Vector<TableTree> ttKids,
-                                    final TableQRI parentQRI)
+                                    final TableTree parentTT)
     {
         String tableName = XMLHelper.getAttr(parent, "name", null);
         if (tableName.equals("CollectionObject") || tableName.equals("Taxon"))
@@ -1051,16 +1043,7 @@ public class QueryBldrPane extends BaseSubPane
 
             String abbrev = XMLHelper.getAttr(parent, "abbrev", null);
             TableTree newTreeNode = new TableTree(parentTT, tableName, fieldName, abbrev, tableInfo);
-            ttKids.add(newTreeNode);
-
-            TableQRI tableQRI = new TableQRI(parentQRI, newTreeNode);
-            newTreeNode.setBaseQRI(tableQRI);
-
-            for (DBFieldInfo fi : tableInfo.getFields())
-            {
-                FieldQRI fqri = new FieldQRI(tableQRI, fi);
-                tableQRI.addKid(fqri);
-            }
+            
 
             List<?> treeLevels = parent.selectNodes("treelevel");
             if (treeLevels.size() > 0 && !Treeable.class.isAssignableFrom(tableInfo.getClassObj()))
@@ -1073,7 +1056,7 @@ public class QueryBldrPane extends BaseSubPane
                 {
                     try
                     {
-                        tableQRI.addKid(new TreeLevelQRI(tableQRI, null, Integer.valueOf(XMLHelper
+                        newTreeNode.getTableQRI().addField(new TreeLevelQRI(newTreeNode.getTableQRI(), null, Integer.valueOf(XMLHelper
                             .getAttr((Element) levelObj, "rank", "0"))));
                     }
                     catch (Exception ex)
@@ -1092,15 +1075,10 @@ public class QueryBldrPane extends BaseSubPane
                 }
             }
 
-            if (parentQRI != null)
-            {
-                parentQRI.addKid(tableQRI);
-            }
-
             for (Object kidObj : parent.selectNodes("table"))
             {
                 Element kidElement = (Element) kidObj;
-                processForTables(kidElement, newTreeNode, newTreeNode.getKids(), tableQRI);
+                processForTables(kidElement, newTreeNode);
             }
 
             for (Object obj : parent.selectNodes("alias"))
@@ -1110,77 +1088,81 @@ public class QueryBldrPane extends BaseSubPane
                 tableInfo = DBTableIdMgr.getInstance().getByShortClassName(kidClassName);
                 if (!tableInfo.isHidden())
                 {
-                    TableTree aliasTreeNode = new TableTree(newTreeNode, kidClassName);
-                    aliasTreeNode.setAlias(true);
-                    newTreeNode.getKids().add(aliasTreeNode);
-                    aliasTreeNode.setParent(newTreeNode);
-                    // System.out.println(XMLHelper.getAttr(kidElement, "name", null)+" "+parentTT);
-                    // hash.put(XMLHelper.getAttr(kidElement, "name", null), new Pair<TableTree,
-                    // TableTree>(newTreeNode, newTreeNode));
+                    //interesting line of code...
+                    new TableTree(newTreeNode, kidClassName, true);
                 }
             }
         }
     }
 
     /**
-     * @param tableTree
+     * @param tbl
      * @param hash
      */
-    protected void fixAliases(final TableTree tableTree, Hashtable<String, TableTree> hash)
+    protected void fixAliases(final TableTree tbl, Hashtable<String, TableTree> hash)
     {
-        if (tableTree.isAlias())
+        if (tbl.isAlias())
         {
-            TableTree tt = hash.get(tableTree.getName());
+            TableTree tt = hash.get(tbl.getName());
             if (tt != null)
             {
-                tableTree.setField(tt.getField());
-                tableTree.getKids().addAll(tt.getKids());
-                tableTree.setTableInfo(tt.getTableInfo());
-                tableTree.setAlias(false);
-
+                try
+                {
+                    tbl.setField(tt.getField());
+                    for (int k = 0; k < tt.getKids(); k++)
+                    {
+                        tbl.addKid((TableTree) tt.getKid(k).clone());
+                    }
+                    tbl.setTableInfo(tt.getTableInfo());
+                    tbl.setTableQRIClone(tt.getTableQRI());
+                    tbl.setAlias(false);
+                }
+                catch (CloneNotSupportedException ex)
+                {
+                    throw new RuntimeException(ex);
+                }
             }
             else
             {
-                log.error("Couldn't find [" + tableTree.getName() + "] in the hash.");
+                log.error("Couldn't find [" + tbl.getName() + "] in the hash.");
             }
         }
         else
         {
-            for (TableTree kidTable : tableTree.getKids())
+            for (int k = 0; k < tbl.getKids(); k++)
             {
-                fixAliases(kidTable, hash);
+                fixAliases(tbl.getKid(k), hash);
             }
         }
-
     }
 
     /**
      * @return
      */
-    protected Vector<TableTree> readTables()
+    protected TableTree readTables()
     {
-        Vector<TableTree> tables = null;
+        TableTree treeRoot = new TableTree(null, "root", "root", "root", null);
         try
         {
             Element root = XMLHelper.readDOMFromConfigDir("querybuilder.xml");
             List<?> tableNodes = root.selectNodes("/database/table");
-            tables = new Vector<TableTree>(tableNodes.size());
             for (Object obj : tableNodes)
             {
                 Element tableElement = (Element) obj;
-                processForTables(tableElement, null, tables, null);
+                processForTables(tableElement, treeRoot);
             }
 
             Hashtable<String, TableTree> hash = new Hashtable<String, TableTree>();
-            for (TableTree tt : tables)
+            for (int t=0; t<treeRoot.getKids(); t++)
             {
+                TableTree tt = treeRoot.getKid(t);
                 hash.put(tt.getName(), tt);
                 log.debug("Adding[" + tt.getName() + "] to hash");
             }
 
-            for (TableTree tt : tables)
+            for (int t=0; t<treeRoot.getKids(); t++)
             {
-                fixAliases(tt, hash);
+                fixAliases(treeRoot.getKid(t), hash);
             }
 
         }
@@ -1188,7 +1170,7 @@ public class QueryBldrPane extends BaseSubPane
         {
             ex.printStackTrace();
         }
-        return tables;
+        return treeRoot;
     }
 
     /**

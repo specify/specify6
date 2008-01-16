@@ -17,17 +17,18 @@ package edu.ku.brc.specify.tasks.subpane.qb;
  * Oct 18, 2007
  *
  */
-public class BaseQRI implements QryListRendererIFace, Comparable<QryListRendererIFace>
+public class BaseQRI implements QryListRendererIFace, Comparable<QryListRendererIFace>, Cloneable
 {
-    protected BaseQRI   parent;
+    /* (non-Javadoc)
+     * @see java.lang.Object#clone()
+     */
     protected TableTree tableTree;
     protected String    iconName;
     protected String    title;
     protected Boolean   isInUse = null;
     
-    public BaseQRI(final BaseQRI parent, final TableTree tableTree)
+    public BaseQRI(final TableTree tableTree)
     {
-        this.parent    = parent;
         this.tableTree = tableTree;
     }
 
@@ -36,14 +37,6 @@ public class BaseQRI implements QryListRendererIFace, Comparable<QryListRenderer
         return isInUse != null && isInUse;
     }
     
-    /**
-     * @return the parent
-     */
-    public BaseQRI getParent()
-    {
-        return parent;
-    }
-
     /**
      * @return the isInUse
      */
@@ -91,4 +84,18 @@ public class BaseQRI implements QryListRendererIFace, Comparable<QryListRenderer
     {
         return true;
     }
+    @Override
+    protected Object clone() throws CloneNotSupportedException
+    {
+        return super.clone();
+    }
+
+    /**
+     * @param tableTree the tableTree to set
+     */
+    public void setTableTree(TableTree tableTree)
+    {
+        this.tableTree = tableTree;
+    }
+
 }

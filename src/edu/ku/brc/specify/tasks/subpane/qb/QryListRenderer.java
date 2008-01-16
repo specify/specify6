@@ -82,30 +82,33 @@ public class QryListRenderer implements ListCellRenderer
         this.displayKidIndicator = displayKidIndicator;
     }
 
-    public Component getListCellRendererComponent(JList   list,
-                                                  Object  value,   // value to display
-                                                  int     index,      // cell index
-                                                  boolean iss,    // is the cell selected
-                                                  boolean chf)    // the list and the cell have the focus
+    public Component getListCellRendererComponent(JList list, Object value, // value to display
+                                                  int index, // cell index
+                                                  boolean iss, // is the cell selected
+                                                  boolean chf) // the list and the cell have the
+                                                                // focus
     {
-        QryListRendererIFace qri = (QryListRendererIFace)value;
-        ImageIcon icon = qri.getIsInUse() == null ? IconManager.getIcon(qri.getIconName(), iconSize) : (qri.getIsInUse() ? IconManager.getIcon("Checkmark", iconSize) : blankIcon);
+        QryListRendererIFace qri = (QryListRendererIFace) value;
+        ImageIcon icon = qri.getIsInUse() == null ? IconManager
+                .getIcon(qri.getIconName(), iconSize) : (qri.getIsInUse() ? IconManager.getIcon(
+                "Checkmark", iconSize) : blankIcon);
         iconLabel.setIcon(icon != null ? icon : blankIcon);
-        kidLabel.setIcon(displayKidIndicator ? qri.hasChildren() ? IconManager.getIcon("Forward", iconSize) : blankIcon : blankIcon);
-        
-        if (iss) {
-            //setOpaque(true);
+        kidLabel.setIcon(displayKidIndicator ? qri.hasChildren() ? IconManager.getIcon("Forward",
+                iconSize) : blankIcon : blankIcon);
+        if (iss)
+        {
+            // setOpaque(true);
             panel.setBackground(list.getSelectionBackground());
             panel.setForeground(list.getSelectionForeground());
             list.setSelectedIndex(index);
-
-        } else {
-            //this.setOpaque(false);
+        }
+        else
+        {
+            // this.setOpaque(false);
             panel.setBackground(list.getBackground());
             panel.setForeground(list.getForeground());
         }
-
-        label.setText(" "+qri.getTitle());
+        label.setText(" " + qri.getTitle());
         panel.doLayout();
         return panel;
     }

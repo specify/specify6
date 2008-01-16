@@ -143,15 +143,12 @@ public class QueryFieldPanel extends JPanel
             queryField.setStartValue(criteria.getText());
             
             Vector<Integer> idList = new Vector<Integer>();
-            BaseQRI         parent  = fieldQRI.getParent();
+            TableQRI parent  = fieldQRI.getTable();
             
             while (parent != null)
             {
-                if (parent instanceof TableQRI)
-                {
-                    idList.add(((TableQRI)parent).getTableInfo().getTableId());
-                }
-                parent = parent.getParent();
+                idList.add(parent.getTableInfo().getTableId());
+                parent = parent.getTableTree().getParent().getTableQRI();
             }
             
             StringBuilder tablesIds = new StringBuilder();

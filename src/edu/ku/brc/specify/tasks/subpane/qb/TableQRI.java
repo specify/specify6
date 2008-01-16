@@ -13,6 +13,7 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.ui.UIHelper;
 
@@ -27,12 +28,12 @@ import edu.ku.brc.ui.UIHelper;
 public class TableQRI extends BaseQRI
 {
     protected DBTableInfo ti;
-    protected Vector<BaseQRI> kids = new Vector<BaseQRI>();
+    protected Vector<FieldQRI> fields = new Vector<FieldQRI>();
     
     
-    public TableQRI(final BaseQRI parent, final TableTree tableTree)
+    public TableQRI(final TableTree tableTree)
     {
-        super(parent, tableTree);
+        super(tableTree);
         
         this.ti  = tableTree.getTableInfo();
         iconName = ti.getClassObj().getSimpleName();
@@ -51,13 +52,49 @@ public class TableQRI extends BaseQRI
     /**
      * @return the kids
      */
-    public Vector<BaseQRI> getKids()
+    public int getFields()
     {
-        return kids;
+        return fields.size();
     }
     
-    public void addKid(final BaseQRI baseQRI)
+    public FieldQRI getField(int f)
     {
-        kids.add(baseQRI);
+        return fields.get(f);
     }
+    
+    public void addField(final DBFieldInfo fieldInfo)
+    {
+        fields.add(new FieldQRI(this, fieldInfo));
+    }
+    
+    public void addField(final FieldQRI fieldQRI)
+    {
+        fieldQRI.setTable(this);
+        fields.add(fieldQRI);
+    }
+    
+    public void addFieldClone(final FieldQRI fieldQRI) throws CloneNotSupportedException
+    {
+        FieldQRI newField = (FieldQRI)fieldQRI.clone();
+        newField.setTable(this);
+        fields.add(newField);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.qb.BaseQRI#clone()
+     */
+    @Override
+    protected Object clone() throws CloneNotSupportedException
+    {
+        TableQRI result = (TableQRI)super.clone();
+        result.fields = new Vector<FieldQRI>(fields.size());
+        for (FieldQRI f : fields)
+        {
+            result.addFieldClone(f);
+        }
+        return result;
+    }
+    
+    
+    
 }

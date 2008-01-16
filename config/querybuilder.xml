@@ -3,7 +3,7 @@
 <database>
 
     <table name="Accession">
-        <table name="AccessionAgent">
+        <table name="AccessionAgent" field="accessionAgents">
             <alias name="Agent"/>
         </table>
         <table name="AccessionAttachment">

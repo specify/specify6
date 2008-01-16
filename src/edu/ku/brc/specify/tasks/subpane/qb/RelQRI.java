@@ -22,18 +22,17 @@ import edu.ku.brc.ui.UIHelper;
  * Oct 18, 2007
  *
  */
-public class RelQRI extends BaseQRI
+public class RelQRI extends FieldQRI
 {
     protected DBRelationshipInfo ri;
-    protected TableTree          tableTree;
     
-    public RelQRI(final BaseQRI parent, final TableTree tableTree, final DBRelationshipInfo ri)
+    public RelQRI(final TableQRI parent, final DBRelationshipInfo ri)
     {
-        super(parent, tableTree);
+        super(parent, null);
         
         int x = 0;
         x++;
-        /*this.ri = ri;
+        this.ri = ri;
         
         try
         {
@@ -49,33 +48,27 @@ public class RelQRI extends BaseQRI
             ex.printStackTrace();
             iconName = "BlankIcon";
             title    = "????";
-        }*/
+        }
     }
     
-    /**
-     * @return the tableTree
-     */
-    public TableTree getTableTree()
-    {
-        return tableTree;
-    }
 
     /**
      * @param tableTree the tableTree to set
      */
-    public void setTableTree(TableTree tableTree)
-    {
-        this.tableTree = tableTree;
-        
-        title    = tableTree.getTableInfo().getTitle();
-        if (title == null)
-        {
-            int x = 0;
-            x++;
-        }
-        iconName = tableTree.getTableInfo().getShortClassName();
-    }
+//    public void setTableTree(TableTree tableTree)
+//    {
+//        this.tableTree = tableTree;
+//        
+//        title    = tableTree.getTableInfo().getTitle();
+//        if (title == null)
+//        {
+//            int x = 0;
+//            x++;
+//        }
+//        iconName = tableTree.getTableInfo().getShortClassName();
+//    }
 
+    @Override
     public boolean hasChildren()
     {
         return true;//ri.getType() == DBRelationshipInfo.RelationshipType.OneToMany || ri.getType() == DBRelationshipInfo.RelationshipType.ManyToMany;

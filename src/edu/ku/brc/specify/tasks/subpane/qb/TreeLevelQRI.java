@@ -25,7 +25,7 @@ public class TreeLevelQRI extends FieldQRI
 {
     protected final int rankId;
     
-    public TreeLevelQRI(final BaseQRI parent, final DBFieldInfo fi, final int rankId)
+    public TreeLevelQRI(final TableQRI parent, final DBFieldInfo fi, final int rankId)
             throws Exception
     {
         super(parent, fi);
@@ -59,7 +59,7 @@ public class TreeLevelQRI extends FieldQRI
     @Override
     public DBTableInfo getTableInfo()
     {
-        return parent.getTableTree().getTableInfo();
+        return table.getTableTree().getTableInfo();
     }
     
     @Override
@@ -68,7 +68,7 @@ public class TreeLevelQRI extends FieldQRI
         StringBuilder result = new StringBuilder("(select treelevel.name from ");
         result.append(getTableInfo().getClassObj().getSimpleName());
         result.append(" treelevel where ");
-        result.append(parent.getTableTree().getAbbrev());
+        result.append(table.getTableTree().getAbbrev());
         result.append(".nodeNumber between treelevel.nodeNumber and treelevel.highestChildNodeNumber and treelevel.rankId = ");
         result.append(String.valueOf(rankId));
         result.append(")");
