@@ -104,4 +104,14 @@ public class UIPluginBase extends JPanel implements GetSetValueIFace, UIPluginab
         this.listener = listener;
     }
 
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.UIPluginable#shutdown()
+     */
+    public void shutdown()
+    {
+        listener   = null;
+        properties = null;
+        data       = null;
+    }
 }

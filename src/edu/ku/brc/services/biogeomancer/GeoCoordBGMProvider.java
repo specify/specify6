@@ -294,6 +294,7 @@ public class GeoCoordBGMProvider implements GeoCoordServiceProviderIFace
         if (listener != null)
         {
             listener.complete(items, itemsUpdated);
+            listener = null;
         }
     }
 }

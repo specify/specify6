@@ -96,7 +96,7 @@ public abstract class GeoRefRecordSetProcessorBase implements RecordSetToolsIFac
      * @see edu.ku.brc.specify.exporters.RecordSetExporterIFace#exportRecordSet(edu.ku.brc.specify.datamodel.RecordSet, java.util.Properties)
      */
     public abstract void processRecordSet(final RecordSet recordSet, 
-                                 final Properties requestParams) throws Exception;
+                                          final Properties requestParams) throws Exception;
     
     /**
      * @param recordSet
@@ -144,7 +144,7 @@ public abstract class GeoRefRecordSetProcessorBase implements RecordSetToolsIFac
                     String          state    = getNameForRank(geo, 300);
                     String          county   = getNameForRank(geo, 400);
                     
-                    GeoRefData geoRefData = new GeoRefData(locality.getLocalityId(),
+                    GeoCoordData geoRefData = new GeoCoordData(locality.getLocalityId(),
                                                            country,
                                                            state,
                                                            county,
@@ -169,7 +169,7 @@ public abstract class GeoRefRecordSetProcessorBase implements RecordSetToolsIFac
      * @param rankId the rankid to be found
      * @return the geo object with the rankid or null
      */
-    protected String getNameForRank(final Geography geo, final int rankId)
+    public static String getNameForRank(final Geography geo, final int rankId)
     {
         if (geo.getRankId() == rankId)
         {
@@ -322,120 +322,4 @@ public abstract class GeoRefRecordSetProcessorBase implements RecordSetToolsIFac
             }
         }
     }
-
-    //----------------------------------------------------------------------
-    //
-    //----------------------------------------------------------------------
-    class GeoRefData implements GeoCoordDataIFace
-    {
-        private int    id;
-        private String country;
-        private String state;
-        private String county;
-        private String localityStr;
-        private String latitude;
-        private String longitude;
-        private String xml;
-        
-        public GeoRefData(final int id, final String country, final String state, final String county, final String localityStr)
-        {
-            super();
-            this.id = id;
-            this.country = country;
-            this.state = state;
-            this.county = county;
-            this.localityStr = localityStr;
-        }
-
-        /* (non-Javadoc)
-         * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getCountry()
-         */
-        public String getCountry()
-        {
-            return country;
-        }
-
-        /* (non-Javadoc)
-         * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getCounty()
-         */
-        public String getCounty()
-        {
-            return county;
-        }
-
-        /* (non-Javadoc)
-         * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getId()
-         */
-        public Integer getId()
-        {
-            return id;
-        }
-
-        /* (non-Javadoc)
-         * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getLatitude()
-         */
-        public String getLatitude()
-        {
-            return latitude;
-        }
-
-        /* (non-Javadoc)
-         * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getLocalityString()
-         */
-        public String getLocalityString()
-        {
-            return localityStr;
-        }
-
-        /* (non-Javadoc)
-         * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getLongitude()
-         */
-        public String getLongitude()
-        {
-            return longitude;
-        }
-
-        /* (non-Javadoc)
-         * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getState()
-         */
-        public String getState()
-        {
-            return state;
-        }
-
-        /* (non-Javadoc)
-         * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getTitle()
-         */
-        public String getTitle()
-        {
-            return "???";
-        }
-
-        /* (non-Javadoc)
-         * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#getXML()
-         */
-        public String getXML()
-        {
-            return xml;
-        }
-
-        /* (non-Javadoc)
-         * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#set(java.lang.Double, java.lang.Double)
-         */
-        public void set(final String latitudeArg, final String longitudeArg)
-        {
-            this.latitude  = latitudeArg;
-            this.longitude = longitudeArg;
-        }
-
-        /* (non-Javadoc)
-         * @see edu.ku.brc.services.biogeomancer.GeoCoordDataIFace#setXML(java.lang.String)
-         */
-        public void setXML(String xmlArg)
-        {
-            this.xml = xmlArg;
-        }
-        
-    }
-
 }

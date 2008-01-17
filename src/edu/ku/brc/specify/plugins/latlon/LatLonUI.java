@@ -448,6 +448,16 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
         return this;
     }
     
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.UIPluginable#shutdown()
+     */
+    public void shutdown()
+    {
+       changeListener = null;
+       locality       = null;
+    }
+    
     //--------------------------------------------------------
     // UIValidatable Interface
     //--------------------------------------------------------

@@ -94,6 +94,7 @@ import edu.ku.brc.ui.DropDownMenuInfo;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIPluginable;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.JAutoCompComboBox;
 import edu.ku.brc.ui.db.PickListItemIFace;
@@ -3547,7 +3548,8 @@ public class FormViewObj implements Viewable,
     {
         for (Enumeration<FieldInfo> e=controlsById.elements(); e.hasMoreElements();)
         {
-            e.nextElement().shutdown();
+            FieldInfo fieldInfo = e.nextElement();
+            fieldInfo.shutdown();
         }
         controlsById.clear();
         controlsByName.clear();
@@ -4173,6 +4175,10 @@ public class FormViewObj implements Viewable,
             if (comp instanceof UIValidatable)
             {
                 ((UIValidatable)comp).cleanUp();
+                
+            } else if (comp instanceof UIPluginable)
+            {
+                ((UIPluginable)comp).shutdown();
             }
             formCell   = null;
             subView    = null;

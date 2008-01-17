@@ -279,4 +279,15 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
     {
         return taxon;
     }
+    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.UIPluginable#shutdown()
+     */
+    public void shutdown()
+    {
+        multiView = null;
+        getter    = null;
+        frame     = null;
+    }
 }

@@ -54,8 +54,7 @@
 	<xsl:template match="/">
 		<html>
 			<head>
-				<link rel="stylesheet" href="schema.css"
-					type="text/css" />
+				<link rel="stylesheet" href="schema.css" type="text/css" />
 				<title>Specify 6 Schema</title>
 			</head>
 			<body>
@@ -304,9 +303,7 @@
 						<xsl:call-template
 							name="substring-after-last">
 							<xsl:with-param name="input" select="@type" />
-							<xsl:with-param name="substr">
-								.
-							</xsl:with-param>
+							<xsl:with-param name="substr">.</xsl:with-param>
 						</xsl:call-template>
 					</xsl:otherwise>
 				</xsl:choose>

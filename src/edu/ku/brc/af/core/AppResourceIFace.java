@@ -15,7 +15,6 @@
 package edu.ku.brc.af.core;
 
 import java.sql.Timestamp;
-import java.util.Map;
 import java.util.Properties;
 
 import edu.ku.brc.specify.datamodel.Agent;
@@ -68,19 +67,19 @@ public interface AppResourceIFace
 
     public abstract void setModifiedByAgent(Agent lastEditedBy);
     
-    public String getMetaData();
+    public abstract String getMetaData();
     
-    public String getMetaData(String attr);
+    public abstract String getMetaData(String attr);
 
-    public void setMetaData(String metaData);
+    public abstract void setMetaData(String metaData);
     
-    public Properties getMetaDataMap();
+    public abstract Properties getMetaDataMap();
     
     public abstract void setDataAsString(final String dataStr);
     
     public abstract String getDataAsString();
     
-    public String toString();
+    public abstract String toString();
 
     //public abstract Set<AppResourceDefault> getAppContexts();
     //public abstract void setAppContexts(Set<AppResourceDefault> appContexts);

@@ -670,7 +670,6 @@
     		    <row>
     		        <!-- <cell type="subview" viewname="Locality" id="7" name="collectingEvent.locality" colspan="12"/> -->
     		        <cell type="field" id="7" name="collectingEvent.locality" uitype="querycbx" initialize="name=Locality;title=Locality" colspan="12"/>
-    		        <cell type="field" id="23" name="this" uitype="plugin" initialize="name=LocalityGoogleEarth;title=Google Earth" colspan="1"/>
     		    </row>
     		    
     			<row>
@@ -1070,6 +1069,10 @@
                     <cell type="field" id="7" name="maxElevation" uitype="text" cols="20"/>
                     <cell type="label" labelfor="8" label="Method"/>
                     <cell type="field" id="8" name="elevationMethod" uitype="text" cols="1"/>
+                </row>
+                <row>
+       		        <cell type="field" id="23" name="this" uitype="plugin" initialize="name=LocalityGeoRef;title=Geo Ref" colspan="1"/>
+    		        <cell type="field" id="24" name="this" uitype="plugin" initialize="name=LocalityGoogleEarth;title=Google Earth" colspan="1"/>
                 </row>
                 <row>
                     <cell type="separator" label="Attachments" colspan="12"/>

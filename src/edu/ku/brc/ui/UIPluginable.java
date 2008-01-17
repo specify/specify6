@@ -50,5 +50,11 @@ public interface UIPluginable
      * @return the UI component for the plugin
      */
     public JComponent getUIComponent();
+    
+    
+    /**
+     * Tells the plugin to cleanup because the form is going away. 
+     */
+    public void shutdown();
 
 }

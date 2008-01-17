@@ -59,12 +59,15 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
         addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0)
             {
-                exportToGoogleEarth();
+                sendToGoogleEarthTool();
             }
         });
     }
     
-    protected void exportToGoogleEarth()
+    /**
+     * 
+     */
+    protected void sendToGoogleEarthTool()
     {
         List<GoogleEarthPlacemarkIFace> items = new Vector<GoogleEarthPlacemarkIFace>();
         items.add(new CEPlacemark(ce));
@@ -97,21 +100,26 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
             {
                 colObj = (CollectionObject)value;
                 ce     = colObj.getCollectingEvent();
+                if (ce != null)
+                {
+                    locality = ce.getLocality();
+                }
                 
             } else if (value instanceof CollectingEvent)
             {
-                ce = (CollectingEvent)value;
+                ce       = (CollectingEvent)value;
+                locality = ce.getLocality(); // ce can't be null
+                
+            } else if (value instanceof Locality)
+            {
+                locality = (Locality)value;
             }
             
-            if (ce != null)
+            if (locality != null)
             {
-                locality = ce.getLocality();
-                if (locality != null)
+                if (locality.getLat1() != null && locality.getLong1() != null)
                 {
-                    if (locality.getLat1() != null && locality.getLong1() != null)
-                    {
-                        enable = true;
-                    }
+                    enable = true;
                 }
             }
         }
@@ -129,15 +137,16 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.UIPluginable#initialize(java.util.Properties, boolean)
      */
-    public void initialize(Properties properties, boolean isViewMode)
+    public void initialize(final Properties properties, final boolean isViewMode)
     {
-        setIcon(IconManager.getIcon("GoogleEarth"));
+        setIcon(IconManager.getIcon("GoogleEarth16"));
+        setText("Display in GoogleEarth");  // I18N
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.UIPluginable#setCellName(java.lang.String)
      */
-    public void setCellName(String cellName)
+    public void setCellName(final String cellName)
     {
         // no op
     }
@@ -145,11 +154,19 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.UIPluginable#setChangeListener(javax.swing.event.ChangeListener)
      */
-    public void setChangeListener(ChangeListener listener)
+    public void setChangeListener(final ChangeListener listener)
     {
         
     }
 
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.UIPluginable#shutdown()
+     */
+    public void shutdown()
+    {
+        
+    }
     
     //---------------------------------------------------------------------------------
     //-- Inner Classes

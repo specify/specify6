@@ -6,8 +6,10 @@
  */
 package edu.ku.brc.specify.rstools;
 
+import java.util.List;
 import java.util.Properties;
 
+import edu.ku.brc.services.biogeomancer.GeoCoordDataIFace;
 import edu.ku.brc.services.biogeomancer.GeoCoordGeoLocateProvider;
 import edu.ku.brc.services.biogeomancer.GeoCoordProviderListenerIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
@@ -31,6 +33,22 @@ public class GeoLocateRecordSetProcessor extends GeoRefRecordSetProcessorBase im
     public GeoLocateRecordSetProcessor()
     {
         
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.rstools.GeoRefRecordSetProcessorBase#processDataList(java.util.List, java.util.Properties)
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public void processDataList(final List<?> items, 
+                                final Properties requestParams) throws Exception
+    {
+        Object listenerObj = requestParams.get("listener");
+        GeoCoordProviderListenerIFace listener = listenerObj != null && listenerObj instanceof GeoCoordProviderListenerIFace ? 
+                (GeoCoordProviderListenerIFace)listenerObj : null;
+        
+        GeoCoordGeoLocateProvider geoCoordGLProvider = new GeoCoordGeoLocateProvider();
+        geoCoordGLProvider.processGeoRefData((List<GeoCoordDataIFace>)items, listener, "");
     }
     
     /* (non-Javadoc)

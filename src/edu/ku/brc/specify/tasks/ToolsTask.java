@@ -327,7 +327,7 @@ public class ToolsTask extends BaseTask
         if (data instanceof RecordSet)
         {
             RecordSetIFace rs = (RecordSetIFace)data;
-            doPRocessTool(exporter, rs, requestParams);
+            processTool(exporter, rs, requestParams);
         }
     }
     
@@ -350,9 +350,9 @@ public class ToolsTask extends BaseTask
      * @param recordSet
      * @param requestParams
      */
-    protected void doPRocessTool(final RecordSetToolsIFace tool, 
-                                 final RecordSetIFace      recordSet, 
-                                 final Properties          requestParams)
+    protected void processTool(final RecordSetToolsIFace tool, 
+                               final RecordSetIFace      recordSet, 
+                               final Properties          requestParams)
     {
         RecordSet rs = (RecordSet)recordSet;
         try
@@ -378,7 +378,7 @@ public class ToolsTask extends BaseTask
     {
         try
         {
-            tool.processDataList(dataList,requestParams);
+            tool.processDataList(dataList, requestParams);
         }
         catch (Exception e)
         {

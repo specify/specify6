@@ -69,6 +69,9 @@ public class CollectingEventKMLGenerator
     /** The format description for the placemark balloons. */
     protected String balloonStyleText;
     
+    /** The description of the KML/KMZ File */
+    protected String description;
+    
 	/**
 	 * Constructs a new KML generator object.
 	 */
@@ -77,6 +80,16 @@ public class CollectingEventKMLGenerator
 		events = new Vector<CollectingEvent>();
 		labels = new Vector<String>();
 	}
+
+
+    /**
+     * @param description the description to set
+     */
+    public void setDescription(String description)
+    {
+        this.description = description;
+    }
+
 
     /**
      * @param textColor the textColor to set
@@ -129,7 +142,12 @@ public class CollectingEventKMLGenerator
 		writer.write(XML_DECLARATION);
 		writer.write(KML_NAMESPACE_DECL);
 		writer.write("<Document>\n");
-		
+        if (StringUtils.isNotEmpty(description))
+        {
+            writer.append("<description><![CDATA[");
+            writer.append(description);
+            writer.append("]]></description>");
+        }
 		writer.write(GenericKMLGenerator.generateStyle(placemarkIconURL, balloonStyleBgColor, balloonStyleTextColor, balloonStyleText));
 		
 		for( int i = 0; i < events.size(); ++i )

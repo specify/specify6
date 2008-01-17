@@ -323,9 +323,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
      * @return the AppResourceDefault object or null
      */
     protected SpAppResourceDir find(final List<?>        appResDefList,
-                                      final SpecifyUser    userArg,
-                                      final Collection     catSeries,
-                                      final CollectionType collType)
+                                    final SpecifyUser    userArg,
+                                    final Collection     catSeries,
+                                    final CollectionType collType)
     {
         if (debug) log.debug("finding AppResourceDefault");
         
@@ -727,10 +727,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
             throw new RuntimeException("Sorry the View Name cannot be empty.");
         }
 
-        if (StringUtils.isEmpty(viewSetName))
-        {
-            throw new RuntimeException("Sorry not empty or null ViewSetNames use the call with CollectionType instead.");
-        }
+        // We now allow "null" viewset names so it can find the first one it runs into.
+        
+        //if (StringUtils.isEmpty(viewSetName))
+        //{
+        //    throw new RuntimeException("Sorry not empty or null ViewSetNames use the call with CollectionType instead.");
+        //}
 
         for (SpAppResourceDir appResDef : spAppResourceList)
         {
@@ -740,7 +742,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             {
                 if (debug) log.debug("VS  ["+vs.getName()+"]["+viewSetName+"]");
                 
-                if (vs.getName().equals(viewSetName))
+                if (StringUtils.isEmpty(viewSetName) || vs.getName().equals(viewSetName))
                 {
                     ViewIFace view = vs.getView(viewName);
                     if (view != null)

@@ -27,12 +27,14 @@ import org.dom4j.Element;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.exceptions.ConfigurationException;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.ViewBasedDialogFactoryIFace;
 import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.ui.db.ViewBasedDisplayFrame;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
+import edu.ku.brc.ui.forms.persist.ViewIFace;
 
 /**
  * This class is the implementation for the ViewBasedDialogFactoryIFace interface for the entire application.
@@ -180,14 +182,25 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
         // Override when trying to parent a Frame to a Dialog, because
         // the Frame will be placed behind the Dialog
         
-        DialogInfo info =  instance.dialogs.get(name);
+         DialogInfo info =  instance.dialogs.get(name);
         if (info != null)
         {
+            SpecifyAppContextMgr sacm = (SpecifyAppContextMgr)AppContextMgr.getInstance();
+            
+            String viewSetName = info.getViewSetName();
+            String viewName    = info.getViewName();
+            
+            ViewIFace view = sacm.getView(null, viewName);
+            if (view != null)
+            {
+                viewSetName = view.getViewSetName();
+            }
+            
             if (type == ViewBasedDialogFactoryIFace.FRAME_TYPE.FRAME)
             {
                 if (parent instanceof Frame)
                 {
-                    return new ViewBasedDisplayFrame(info.getViewSetName(),
+                    return new ViewBasedDisplayFrame(viewSetName,
                                                      info.getViewName(),
                                                      info.getSearchName(),
                                                      frameTitle,
@@ -199,7 +212,7 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
                 }
                 
                 return new ViewBasedDisplayDialog((Dialog)parent,
-                                                    info.getViewSetName(),
+                                                    viewSetName,
                                                     info.getViewName(),
                                                     info.getSearchName(),
                                                     frameTitle,
@@ -212,7 +225,7 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
             } else if (parent instanceof Frame)
             {
                 return new ViewBasedDisplayDialog((Frame)parent,
-                                                  info.getViewSetName(),
+                                                  viewSetName,
                                                   info.getViewName(),
                                                   info.getSearchName(),
                                                   frameTitle,
@@ -224,7 +237,7 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
             } else
             {
                 return new ViewBasedDisplayDialog((Dialog)parent,
-                                                  info.getViewSetName(),
+                                                  viewSetName,
                                                   info.getViewName(),
                                                   info.getSearchName(),
                                                   frameTitle,

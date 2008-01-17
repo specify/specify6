@@ -164,4 +164,16 @@ public class DefItemEditorPlugin extends JPanel implements GetSetValueIFace, UIP
     {
         
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.UIPluginable#shutdown()
+     */
+    @Override
+    public void shutdown()
+    {
+        // TODO Auto-generated method stub
+        
+    }
+    
+    
 }

@@ -25,6 +25,7 @@ import java.util.zip.ZipOutputStream;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -65,18 +66,23 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.tasks.RecordSetExporter#exportRecordSet(edu.ku.brc.specify.datamodel.RecordSet)
 	 */
-	public void processRecordSet(RecordSet data, Properties reqParams)
+	public void processRecordSet(final RecordSet data, final Properties reqParams)
     {
+	    String description = JOptionPane.showInputDialog(UIRegistry.getTopWindow(), UIRegistry.getResourceString("GE_ENTER_DESC"));
+        
         log.info("Exporting RecordSet");
         int dataTableId = data.getDbTableId();
 
         if (dataTableId == DBTableIdMgr.getInstance().getIdByClassName(CollectingEvent.class.getName()))
         {
-            exportCollectingEvents(RecordSetLoader.loadRecordSet(data), true, getPlacemarkIconURLPath());
+            exportCollectingEvents(description, 
+                                   RecordSetLoader.loadRecordSet(data), 
+                                   true, 
+                                   getPlacemarkIconURLPath());
             
         } else if (dataTableId == DBTableIdMgr.getInstance().getIdByClassName(CollectionObject.class.getName()))
         {
-            exportCollectionObjectRecordSet(data);
+            exportCollectionObjectRecordSet(description, data);
         }
         else
         {
@@ -106,7 +112,7 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
                 }
             }
         }
-        return null;
+        return iconUrl;
 	}
     
     /* (non-Javadoc)
@@ -132,7 +138,7 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
                 
                 String iconURL = reqParams.getProperty("iconURL");
 
-                List<GoogleEarthPlacemarkIFace> mappedPlacemarks = exportPlacemarkList((List<GoogleEarthPlacemarkIFace>)data, iconURL, tmpFile);
+                List<GoogleEarthPlacemarkIFace> mappedPlacemarks = exportPlacemarkList(reqParams.getProperty("description"), (List<GoogleEarthPlacemarkIFace>)data, iconURL, tmpFile);
                 if (mappedPlacemarks.size() != data.size())
                 {
                     UIRegistry.getStatusBar().setErrorMessage(String.format(getResourceString("NOT_ALL_MAPPED"), new Object[] {(data.size() - mappedPlacemarks.size()), data.size()}));
@@ -160,9 +166,11 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
     
     /**
      * Converts a RecordSet of CollectionObjects to a list of CollecitnEvents.
-     * @param recordSet the recordset
+     * @param description
+     * @param recordSet the RecordSet
      */
-    protected void exportCollectionObjectRecordSet(final RecordSet recordSet)
+    protected void exportCollectionObjectRecordSet(final String description,
+                                                   final RecordSet recordSet)
     {
         List<Object> ceList  = new Vector<Object>();
         List<Object> records = RecordSetLoader.loadRecordSet(recordSet);
@@ -187,7 +195,7 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
             {
                 ceList.add(ce);    
             }
-            exportCollectingEvents(ceList, true, getPlacemarkIconURLPath());
+            exportCollectingEvents(description, ceList, true, getPlacemarkIconURLPath());
         }
     }
     
@@ -197,20 +205,28 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
      * 
      * @param ceList list of {@link CollectingEvent}s
      * @param doKMZ whether to export as KMZ or KML
-     * @param iconURLparam the icon to use for placemarks
+     * @param iconURL the icon to use for placemarks
      */
-    protected void exportCollectingEvents(final List<Object> ceList, 
+    protected void exportCollectingEvents(final String description,
+                                          final List<Object> ceList, 
                                           final boolean      doKMZ,
-                                          final String       iconURLparam) 
+                                          final String       iconURLParam) 
     {
         try
         {
             if (ceList != null && ceList.size() > 0)
             {
                 CollectingEventKMLGenerator kmlGen = new CollectingEventKMLGenerator();
+                kmlGen.setDescription(description);
+                
+                String iconURL = iconURLParam;
+                if (StringUtils.isEmpty(iconURL))
+                {
+                    iconURL = getPlacemarkIconURLPath();
+                }
                 
                 File defaultIconFile = null;
-                if (StringUtils.isNotEmpty(iconURLparam))
+                if (StringUtils.isNotEmpty(iconURL))
                 {
                     kmlGen.setPlacemarkIconURL(getPlacemarkIconURLPath());
                     
@@ -226,12 +242,12 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
                     // the default icon file was not found, we simply have to leave it out of the KMZ file
     
                     // see if an icon URL was specified as a parameter
-                    if (iconURLparam != null && iconURLparam instanceof String)
+                    if (iconURL != null && iconURL instanceof String)
                     {
                         //kmlGenerator.setPlacemarkIconURL("files/specify32.png");
                         //defaultIconFile = File.createTempFile("sp6-export-icon-", ".png");
                         //FileUtils.copyFile(new File(iconURLparam), defaultIconFile);
-                        kmlGen.setPlacemarkIconURL((String)iconURLparam);
+                        kmlGen.setPlacemarkIconURL((String)iconURL);
                     }
                     else if (defaultIconFile != null)
                     {
@@ -275,7 +291,7 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
                     
                 }
                 
-                if (StringUtils.isNotEmpty(iconURLparam))
+                if (StringUtils.isNotEmpty(iconURL))
                 {
                     if (defaultIconFile != null)
                     {
@@ -317,13 +333,15 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
      * @return a List of placemarks that were mapped (does not include any passed in placemarks that couldn't be mapped for some reason)
      * @throws IOException an error occurred while writing the KML to the file
      */
-    protected List<GoogleEarthPlacemarkIFace> exportPlacemarkList(final List<GoogleEarthPlacemarkIFace> placemarks, 
+    protected List<GoogleEarthPlacemarkIFace> exportPlacemarkList(final String description,
+                                                                  final List<GoogleEarthPlacemarkIFace> placemarks, 
                                                                   final String     iconURLparam, 
                                                                   final File       outputFile) throws IOException
     {
         List<GoogleEarthPlacemarkIFace> mappedPlacemarks = new Vector<GoogleEarthPlacemarkIFace>();
         
         GenericKMLGenerator kmlGenerator = new GenericKMLGenerator();
+        kmlGenerator.setDescription(description);
         
         String bgColor = AppPreferences.getRemote().get("google.earth.bgcolor", "0, 102, 179");
         bgColor = UIHelper.getBGRHexFromColor(UIHelper.parseRGB(bgColor));

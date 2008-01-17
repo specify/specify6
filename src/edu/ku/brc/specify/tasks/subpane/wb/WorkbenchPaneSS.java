@@ -1764,11 +1764,15 @@ public class WorkbenchPaneSS extends BaseSubPane
         CommandDispatcher.dispatch(command);
     }
     
+    /**
+     * @return
+     */
     protected WorkbenchTemplateMappingItem selectColumnName()
     {
-        WorkbenchTemplateMappingItem genus    = null;
-        WorkbenchTemplateMappingItem species  = null;
-        WorkbenchTemplateMappingItem variety1 = null;
+        WorkbenchTemplateMappingItem genus      = null;
+        WorkbenchTemplateMappingItem species    = null;
+        WorkbenchTemplateMappingItem subspecies = null;
+        WorkbenchTemplateMappingItem variety1   = null;
         
         Vector<WorkbenchTemplateMappingItem> list = new Vector<WorkbenchTemplateMappingItem>();
         for (WorkbenchTemplateMappingItem item : workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems())
@@ -1782,6 +1786,10 @@ public class WorkbenchPaneSS extends BaseSubPane
             {
                 species = item;
                 
+            } else if (item.getFieldName().equals("subspecies1"))
+            {
+                subspecies = item;
+                
             } else if (item.getFieldName().equals("variety1"))
             {
                 variety1 = item;
@@ -1794,11 +1802,16 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             WorkbenchTemplateMappingItem genusSpecies = new WorkbenchTemplateMappingItem();
             genusSpecies.setCaption(genus.getTitle() + " " + species.getTitle() +
+                                    (subspecies != null ? (" " + subspecies.getTitle()) : "") +
                                     (variety1 != null ? (" " + variety1.getTitle()) : ""));
             genusSpecies.setViewOrder((short)-1);
             genusSpecies.setWorkbenchTemplateMappingItemId((int)genus.getViewOrder());
             genusSpecies.setVersion(species.getViewOrder());
             
+            if (subspecies != null)
+            {
+                genusSpecies.setOrigImportColumnIndex(subspecies.getViewOrder());
+            }
             if (variety1 != null)
             {
                 genusSpecies.setSrcTableId((int)variety1.getViewOrder());
@@ -1814,7 +1827,10 @@ public class WorkbenchPaneSS extends BaseSubPane
         ToggleButtonChooserDlg<WorkbenchTemplateMappingItem> dlg = new ToggleButtonChooserDlg<WorkbenchTemplateMappingItem>((Frame)UIRegistry.getTopWindow(), 
                 getResourceString("GE_CHOOSE_FIELD_FOR_EXPORT_TITLE"), 
                 getResourceString("GE_CHOOSE_FIELD_FOR_EXPORT"), 
-                list);
+                list,
+                null,
+                ToggleButtonChooserDlg.OKCANCEL,
+                ToggleButtonChooserPanel.Type.RadioButton);
         dlg.setUseScrollPane(true);
         dlg.setVisible(true);
         return dlg.getSelectedObject();
@@ -1863,12 +1879,17 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
         WorkbenchTemplateMappingItem genus   = null;
         WorkbenchTemplateMappingItem species = null;
+        WorkbenchTemplateMappingItem subspecies = null;
         WorkbenchTemplateMappingItem variety = null;
         
         if (item.getViewOrder() == -1)
         {
             genus   = getWBMI(item.getWorkbenchTemplateMappingItemId());
             species = getWBMI(item.getVersion());
+            if (item.getViewOrder() != null)
+            {
+                subspecies = getWBMI(item.getOrigImportColumnIndex());
+            }
             if (item.getSrcTableId() != null)
             {
                 variety = getWBMI(item.getSrcTableId());
@@ -1889,6 +1910,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             {
                 title = row.getData(genus.getViewOrder()) + " " + 
                         row.getData(species.getViewOrder()) +
+                        (subspecies != null ? (" " + row.getData(subspecies.getViewOrder())) : "") +
                         (variety != null ? (" " + row.getData(variety.getViewOrder())) : "");
             }
             
@@ -1926,6 +1948,8 @@ public class WorkbenchPaneSS extends BaseSubPane
         CommandAction command = new CommandAction(ToolsTask.TOOLS,ToolsTask.EXPORT_LIST);
         command.setData(selectedRows);
         command.setProperty("tool", GoogleEarthExporter.class);
+        command.setProperty("description", workbench.getRemarks());
+        
         if (iconUrl != null)
         {
             command.setProperty("iconURL", iconUrl);

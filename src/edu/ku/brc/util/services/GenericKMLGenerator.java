@@ -61,6 +61,9 @@ public class GenericKMLGenerator
     /** The format description for the placemark balloons. */
     protected String balloonStyleText;
     
+    /** The description of the KML/KMZ File */
+    protected String description;
+    
     /**
      * Constructs an instance.
      */
@@ -68,7 +71,15 @@ public class GenericKMLGenerator
     {
         // nothing needed here
     }
-    
+
+    /**
+     * @param description the description to set
+     */
+    public void setDescription(String description)
+    {
+        this.description = description;
+    }
+
     /**
      * Adds the given point, name and HTML text to be included in the generated KML output.
      * 
@@ -90,6 +101,14 @@ public class GenericKMLGenerator
         pointDescMap.put(point, htmlDescription);
     }
     
+    /**
+     * @param descritpion the descritpion to set
+     */
+    public void setDescritpion(String descritpion)
+    {
+        this.description = descritpion;
+    }
+
     /**
      * Returns the URL to the placemark icon.
      * 
@@ -261,7 +280,12 @@ public class GenericKMLGenerator
         kmlBuilder.append(XML_DECLARATION);
         kmlBuilder.append(KML_NAMESPACE_DECL);
         kmlBuilder.append("<Document>\n");
-
+        if (StringUtils.isNotEmpty(description))
+        {
+            kmlBuilder.append("<description><![CDATA[");
+            kmlBuilder.append(description);
+            kmlBuilder.append("]]></description>");
+        }
         // setup the custom style, if any of these are non-null
         kmlBuilder.append(generateStyle(placemarkIconURL, balloonStyleBgColor, balloonStyleTextColor, balloonStyleText));
         

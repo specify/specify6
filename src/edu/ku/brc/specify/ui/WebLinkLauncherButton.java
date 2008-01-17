@@ -194,6 +194,14 @@ public class WebLinkLauncherButton extends JButton implements UIPluginable, GetS
         // ignore
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.UIPluginable#shutdown()
+     */
+    public void shutdown()
+    {
+        dataObj = null;
+    }
+    
     //--------------------------------------------------------
     //-- GetSetValueIFace
     //--------------------------------------------------------

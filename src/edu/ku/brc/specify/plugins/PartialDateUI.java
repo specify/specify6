@@ -253,6 +253,15 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace, UIPlugina
 
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.UIPluginable#shutdown()
+     */
+    public void shutdown()
+    {
+        changeListener = null;
+        dataObj        = null;
+    }
+    
     //--------------------------------------------------------
     // UIValidatable Interface
     //--------------------------------------------------------
