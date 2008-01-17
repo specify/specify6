@@ -384,6 +384,8 @@ public class QueryFieldPanel extends JPanel
                             IconManager.getImage("GrayDot",   IconManager.IconSize.Std16),
                             IconManager.getImage("UpArrow",   IconManager.IconSize.Std16),
                             IconManager.getImage("DownArrow", IconManager.IconSize.Std16)});
+        DataChangeNotifier dcn = validator.hookupComponent(sortCheckbox, "scb",  UIValidator.Type.Changed, "", true);
+        sortCheckbox.addActionListener(dcn);
         //sortCheckbox.setMargin(new Insets(2,2,2,2));
         //sortCheckbox.setBorder(BorderFactory.createLineBorder(new Color(225,225,225)));
         isDisplayedCkbx = createCheckBox("isDisplayedCkbx");

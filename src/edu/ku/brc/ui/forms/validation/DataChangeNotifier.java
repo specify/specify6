@@ -45,6 +45,7 @@ import javax.swing.text.JTextComponent;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.ui.GetSetValueIFace;
+import edu.ku.brc.ui.MultiStateIconButon;
 
 /**
  * Implements several listener interfaces and listens for the various types of notifications
@@ -173,7 +174,10 @@ public class DataChangeNotifier implements FocusListener,
             Object value = ((GetSetValueIFace)component).getValue();
             return (value!=null) ? value.toString() : null;
             
-        } else
+        } else if (component instanceof MultiStateIconButon)
+        {
+            return String.valueOf(((MultiStateIconButon)component).getState());
+        }else
         {
             throw new RuntimeException("Can't get a value for componentonent: "+component);
         }
