@@ -158,7 +158,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
             {
                 return String.class;
             }
-            log.debug(captionInfo.get(column).getColClass().getName());
+            //log.debug(captionInfo.get(column).getColClass().getName());
             return captionInfo.get(column).getColClass();
         }
         

@@ -201,6 +201,7 @@ public class GroupPerson extends CollectionMember implements java.io.Serializabl
     /* (non-Javadoc)
      * @see edu.ku.brc.util.Orderable#getOrderIndex()
      */
+    @Transient
     public int getOrderIndex()
     {
         return orderNumber;

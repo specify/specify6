@@ -61,7 +61,8 @@ import edu.ku.brc.specify.treeutils.TreeOrderSiblingComparator;
 @Table(name = "lithostrat")
 @org.hibernate.annotations.Table(appliesTo="lithostrat", indexes =
     {   @Index (name="LithoNameIDX", columnNames={"Name"}),
-        @Index (name="LithoFullNameIDX", columnNames={"FullName"})
+        @Index (name="LithoFullNameIDX", columnNames={"FullName"}),
+        @Index (name="LithoGuidIDX", columnNames={"GUID"})
     })
 public class LithoStrat extends DataModelObjBase implements java.io.Serializable, Treeable<LithoStrat,LithoStratTreeDef,LithoStratTreeDefItem>
 {

@@ -1151,7 +1151,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     public PickListItemIFace getDefaultPickListItem(final String pickListName, final String title)
     {
         PickListItemIFace dObj        = null;
-        Collection     catSeries   = Collection.getCurrentCollection();
+        Collection        catSeries   = Collection.getCurrentCollection();
         String            prefName    = (catSeries != null ? catSeries.getIdentityTitle() : "") + pickListName + "_DefaultId";
         AppPreferences    appPrefs    = AppPreferences.getRemote();
         String            idStr       = appPrefs.get(prefName, null);
@@ -1175,6 +1175,10 @@ public class SpecifyAppContextMgr extends AppContextMgr
             if (pickList != null)
             {
                 Vector<PickListItemIFace> list = new Vector<PickListItemIFace>();
+                for (PickListItem itm : pickList.getPickListItems())
+                {
+                    itm.getTitle();
+                }
                 list.addAll(pickList.getItems());
                 ChooseFromListDlg<PickListItemIFace> dlg = new ChooseFromListDlg<PickListItemIFace>(null, 
                         UIRegistry.getLocalizedMessage("CHOOSE_DEFAULT_OBJECT", title), list);
@@ -1185,12 +1189,16 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     appPrefs.put(prefName, dlg.getSelectedObject().getId().toString());
                     return dlg.getSelectedObject();
                 }
+                return null;
             }
+            // error dialog "Unable load the PickList and it's items."
+            
             throw new RuntimeException("PickList name["+pickListName+"] doesn't exist.");
             
         } catch (Exception ex)
         {
             log.error(ex);
+            // error dialog "Unable load the PickList and it's items."
             
         } finally 
         {
@@ -1211,9 +1219,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
                                              final boolean ask, 
                                              boolean useAllItems)
     {
-        Collection    catSeries   = Collection.getCurrentCollection();
+        Collection       collection  = Collection.getCurrentCollection();
         FormDataObjIFace dObj        = null;
-        String           prefName    = (catSeries != null ? catSeries.getIdentityTitle() : "") + prefPrefix + "_DefaultId";
+        String           prefName    = (collection != null ? collection.getIdentityTitle() : "") + prefPrefix + "_DefaultId";
         AppPreferences   appPrefs    = AppPreferences.getRemote();
         String           idStr       = appPrefs.get(prefName, null);
         if (StringUtils.isEmpty(idStr) && ask)
@@ -1225,23 +1233,41 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     public Item(FormDataObjIFace d) { data = d; }
                     public String toString() { return data.getIdentityTitle(); }
                 }
+                
+                List<Item> items = null;
                 DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                List<Item> items = new Vector<Item>();
-                for (Object o : session.getDataList(classObj))
+                try
                 {
-                    items.add(new Item((FormDataObjIFace)o));
+                    items = new Vector<Item>();
+                    for (Object o : session.getDataList(classObj))
+                    {
+                        FormDataObjIFace dataObj = (FormDataObjIFace)o;
+                        dataObj.getId();
+                        items.add(new Item(dataObj));
+                    }
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                    
+                } finally
+                {
+                    session.close();
                 }
-                session.close();
-                
-                
-                ChooseFromListDlg<Item> dlg = new ChooseFromListDlg<Item>(null, title, items);
-                dlg.setModal(true);
-                dlg.setVisible(true);
-                if (!dlg.isCancelled())
+                if (items != null)
                 {
-                    dObj = (FormDataObjIFace)dlg.getSelectedObject().data;
-                    appPrefs.put(prefName, dObj.getId().toString());
-                    return dObj;
+                    
+                    ChooseFromListDlg<Item> dlg = new ChooseFromListDlg<Item>(null, title, items);
+                    dlg.setModal(true);
+                    dlg.setVisible(true);
+                    if (!dlg.isCancelled())
+                    {
+                        dObj = (FormDataObjIFace)dlg.getSelectedObject().data;
+                        appPrefs.put(prefName, dObj.getId().toString());
+                        return dObj;
+                    }
+                } else
+                {
+                    // xxx error dialog "Unable to retrieve default data object"
                 }
                 
             } else
@@ -1264,6 +1290,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 {
                     // it's ok 
                     // we get when it can't find the search dialog
+                    
+                 // xxx error dialog "Unable to retrieve default search dialog"
                 }
             }
         } else

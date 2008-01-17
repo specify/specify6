@@ -51,7 +51,7 @@ public class TreeHelper
                    I extends TreeDefItemIface<T,D,I>>
                         String generateFullname(T treeNode)
     {
-        log.debug("Generating fullname for " + treeNode.toString());
+        //log.debug("Generating fullname for " + treeNode.toString());
         // get all the nodes from this node on up, only grabbing the ones included in the fullname
         Vector<T> parts = new Vector<T>();
         parts.add(treeNode);

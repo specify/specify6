@@ -60,7 +60,8 @@ import edu.ku.brc.specify.treeutils.GeologicTimePeriodComparator;
 @Table(name = "geologictimeperiod")
 @org.hibernate.annotations.Table(appliesTo="geologictimeperiod", indexes =
     {   @Index (name="GTPNameIDX", columnNames={"Name"}),
-        @Index (name="GTPFullNameIDX", columnNames={"FullName"})
+        @Index (name="GTPFullNameIDX", columnNames={"FullName"}),
+        @Index (name="GTPGuidIDX", columnNames={"GUID"})
     })
 public class GeologicTimePeriod extends DataModelObjBase implements java.io.Serializable, Treeable<GeologicTimePeriod,GeologicTimePeriodTreeDef,GeologicTimePeriodTreeDefItem>{
 

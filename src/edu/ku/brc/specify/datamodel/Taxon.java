@@ -38,7 +38,7 @@ import edu.ku.brc.specify.treeutils.TreeOrderSiblingComparator;
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "taxon")
 @org.hibernate.annotations.Table(appliesTo="taxon", indexes =
-    {   @Index (name="TaxonGuidIDX", columnNames={"Guid"}),
+    {   @Index (name="TaxonGuidIDX", columnNames={"GUID"}),
         @Index (name="TaxonomicSerialNumberIDX", columnNames={"TaxonomicSerialNumber"}),
         @Index (name="TaxonCommonNameIDX", columnNames={"CommonName"}),
         @Index (name="TaxonNameIDX", columnNames={"Name"}),
@@ -1059,15 +1059,15 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
     @Transient
 	public List<Taxon> getAllAncestors()
 	{
-		Vector<Taxon> ancestors = new Vector<Taxon>();
+		Vector<Taxon> ancestorsList = new Vector<Taxon>();
 		Taxon parentNode = parent;
 		while(parentNode != null)
 		{
-			ancestors.add(0,parentNode);
+			ancestorsList.add(0,parentNode);
 			parentNode = parentNode.getParent();
 		}
 		
-		return ancestors;
+		return ancestorsList;
 	}
 
 	public boolean isDescendantOf(Taxon node)

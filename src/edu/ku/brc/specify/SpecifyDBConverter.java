@@ -35,12 +35,18 @@ import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
 
+import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.SchemaI18NService;
+import edu.ku.brc.af.core.expresssearch.ExpressSearchSQLAdjuster;
 import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.dbsupport.CustomQueryFactory;
 import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.ResultsPager;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.conversion.BasicSQLUtils;
 import edu.ku.brc.specify.conversion.CustomDBConverterDlg;
 import edu.ku.brc.specify.conversion.CustomDBConverterPanel;
@@ -54,6 +60,8 @@ import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.PrepType;
+import edu.ku.brc.specify.datamodel.SpLocaleContainer;
+import edu.ku.brc.specify.datamodel.SpLocaleContainerItem;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
@@ -67,6 +75,7 @@ import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.DatabaseConnectionProperties;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 
 /**
  * Create more sample data, letting Hibernate persist it for us.
@@ -95,7 +104,7 @@ public class SpecifyDBConverter
      */
     public SpecifyDBConverter()
     {
-        //
+        setUpSystemProperties();
     }
 
     /**
@@ -299,6 +308,23 @@ public class SpecifyDBConverter
     {
         convertDB(sourceDatabaseName, destDatabaseName, false, null,  null);
     }
+    
+    protected void setUpSystemProperties()
+    {
+        // Name factories
+        System.setProperty(AppContextMgr.factoryName,                   "edu.ku.brc.specify.config.SpecifyAppContextMgr");      // Needed by AppContextMgr
+        System.setProperty(AppPreferences.factoryName,                  "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");         // Needed by AppReferences
+        System.setProperty("edu.ku.brc.ui.ViewBasedDialogFactoryIFace", "edu.ku.brc.specify.ui.DBObjDialogFactory");            // Needed By UIRegistry
+        System.setProperty("edu.ku.brc.ui.forms.DraggableRecordIdentifierFactory", "edu.ku.brc.specify.ui.SpecifyDraggableRecordIdentiferFactory"); // Needed By the Form System
+        System.setProperty("edu.ku.brc.dbsupport.AuditInterceptor",     "edu.ku.brc.specify.dbsupport.AuditInterceptor");       // Needed By the Form System for updating Lucene and logging transactions
+        System.setProperty("edu.ku.brc.dbsupport.DataProvider",         "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set
+        System.setProperty("edu.ku.brc.ui.db.PickListDBAdapterFactory", "edu.ku.brc.specify.ui.db.PickListDBAdapterFactory");   // Needed By the Auto Cosmplete UI
+        System.setProperty(CustomQueryFactory.factoryName,              "edu.ku.brc.specify.dbsupport.SpecifyCustomQueryFactory");
+        System.setProperty(UIFieldFormatterMgr.factoryName,             "edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr");    // Needed for CatalogNumberign
+        System.setProperty(ExpressSearchSQLAdjuster.factoryName,        "edu.ku.brc.specify.dbsupport.SpecifyExpressSearchSQLAdjuster");    // Needed for ExpressSearch
+        System.setProperty(SchemaI18NService.factoryName,               "edu.ku.brc.specify.config.SpecifySchemaI18NService");    // Needed for Localization and Schema
+        
+    }
 
     /**
      * Convert old Database to New 
@@ -329,7 +355,7 @@ public class SpecifyDBConverter
         String databaseHostSource = "";
         DatabaseDriverInfo driverInfoSource = null;
         
-        String userNameDest    ="";
+        String userNameDest     = "";
         String passwordDest     = "";
         String driverNameDest   = "";
         String databaseHostDest = "";
@@ -451,7 +477,7 @@ public class SpecifyDBConverter
         	GenericDBConversion.setShouldCreateMapTables(startfromScratch);
             GenericDBConversion.setShouldDeleteMapTables(false);
             
-            frame.setOverall(0, 16);
+            frame.setOverall(0, 17);
             SwingUtilities.invokeLater(new Runnable() {
                 public void run()
                 {
@@ -474,7 +500,6 @@ public class SpecifyDBConverter
                                                                          passwordSource);
 
                 conversion.setFrame(frame);
-                
 
                 idMapperMgr = IdMapperMgr.getInstance();
                 Connection oldConn = conversion.getOldDBConnection();
@@ -488,6 +513,14 @@ public class SpecifyDBConverter
 
                 // NOTE: Within BasicSQLUtils the connection is for removing tables and records
                 BasicSQLUtils.setDBConnection(conversion.getNewDBConnection());
+                
+                if (false)
+                {
+                    //conversion.convertLocality();
+                    conversion.doLocalizeSchema();
+                    return;
+                }
+
 
                 //---------------------------------------------------------------------------------------
                 //-- Create basic set of information.
@@ -497,7 +530,7 @@ public class SpecifyDBConverter
                 BasicSQLUtils.deleteAllRecordsFromTable(conversion.getNewDBConnection(), "agent", BasicSQLUtils.myDestinationServerType);
                 BasicSQLUtils.deleteAllRecordsFromTable(conversion.getNewDBConnection(), "address", BasicSQLUtils.myDestinationServerType);
 
-                conversion.initializeAgentInfo();
+                conversion.initializeAgentInfo(startfromScratch);
                 
                 frame.setDesc("Mapping Tables.");
                 log.info("Mapping Tables.");
@@ -522,7 +555,7 @@ public class SpecifyDBConverter
 
                 frame.setDesc("Converting CollectionObjectDefs.");
                 log.info("Converting CollectionObjectDefs.");
-                boolean convertCollectionType = true;
+                boolean convertCollectionType = false;
                 if (convertCollectionType || doAll)
                 {
                     DataBuilder.getSession().beginTransaction();
@@ -562,6 +595,7 @@ public class SpecifyDBConverter
                     conversion.convertCollectionObjectDefs(specifyUser.getSpecifyUserId());
                     SpecifyUser.setCurrentUser(specifyUser);
                     
+
 
                 } else
                 {
@@ -622,9 +656,6 @@ public class SpecifyDBConverter
                 }
 
                 frame.incOverall();
-
-
-                
                 
                 frame.setDesc("Converting USYS Tables.");
                 log.info("Converting USYS Tables.");
@@ -635,7 +666,7 @@ public class SpecifyDBConverter
                 }
                 conversion.convertDivision();
                 frame.incOverall();
-
+                
                 frame.setDesc("Converting Determinations Records");
                 log.info("Converting Determinations Records");
                 boolean doDeterminations = false;
@@ -666,7 +697,7 @@ public class SpecifyDBConverter
 
                 frame.setDesc("Copying Tables");
                 log.info("Copying Tables");
-                boolean copyTables = true;
+                boolean copyTables = false;
                 if (copyTables || doAll)
                 {
                     conversion.copyTables();
@@ -692,7 +723,21 @@ public class SpecifyDBConverter
                     if (true)
                     {
                         Map<String, PrepType> prepTypeMap = conversion.createPreparationTypesFromUSys();
-                        prepTypeMap.put("n/a", prepTypeMap.get("misc"));
+                        PrepType miscPT = prepTypeMap.get("misc");
+                        if (miscPT != null)
+                        {
+                            prepTypeMap.put("n/a", miscPT);
+                        } else
+                        {
+                            miscPT = prepTypeMap.get("Misc"); 
+                            if (miscPT != null)
+                            {
+                                prepTypeMap.put("n/a", miscPT);
+                            } else
+                            {
+                                log.error("******************************* Couldn't find 'Misc' PrepType!");
+                            }
+                        }
                         conversion.convertPreparationRecords(prepTypeMap);
                     }
                     
@@ -718,12 +763,13 @@ public class SpecifyDBConverter
                     frame.incOverall();
                     conversion.convertLocality();
                     frame.incOverall();
+                    
                 } else
                 {
                     frame.incOverall();
                     frame.incOverall();
                 }
-
+                
                 frame.setDesc("Creating Location");
                 log.info("Creating Location");
                 boolean doLocation = false;
@@ -735,7 +781,7 @@ public class SpecifyDBConverter
                 
                 frame.setDesc("Converting Taxonomy");
                 log.info("Converting Taxonomy");
-                boolean doTaxonomy = false;
+                boolean doTaxonomy = true;
                 if (doTaxonomy || doAll )
                 {
                 	conversion.copyTaxonTreeDefs();
@@ -783,6 +829,11 @@ public class SpecifyDBConverter
                     
                 	conversion.copyTaxonRecords();
                 }
+                frame.incOverall();
+                
+                
+                frame.setDesc("Localizing the Schema");
+                conversion.doLocalizeSchema();
                 frame.incOverall();
 
                 System.setProperty(AppPreferences.factoryName, "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");    // Needed by AppReferences
@@ -870,13 +921,13 @@ public class SpecifyDBConverter
                         return;
                     }
 
-                        Set<CollectionType>  collTypeSet = conversion.createCollectionType("Fish", dataType, user, null, null);
+                    Set<CollectionType>  collTypeSet = conversion.createCollectionType("Fish", dataType, user, null, null);
 
 
-                        Object obj = collTypeSet.iterator().next();
-                        CollectionType collType = (CollectionType)obj;
+                    Object obj = collTypeSet.iterator().next();
+                    CollectionType collType = (CollectionType)obj;
 
-                        conversion.convertBiologicalAttrs(collType, null, null);
+                    conversion.convertBiologicalAttrs(collType, null, null);
                 }
                 //conversion.showStats();
             }

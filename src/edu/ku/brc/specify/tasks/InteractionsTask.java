@@ -524,10 +524,16 @@ public class InteractionsTask extends BaseTask
                         // Get Defaults for Certain fields
                         SpecifyAppContextMgr appContextMgr     = (SpecifyAppContextMgr)AppContextMgr.getInstance();
                         PickListItemIFace    defShipmentMethod = appContextMgr.getDefaultPickListItem("ShipmentMethod", getResourceString("SHIPMENT_METHOD"));
-                        shipment.setShipmentMethod(defShipmentMethod.getValue());
+                        if (defShipmentMethod != null)
+                        {
+                             shipment.setShipmentMethod(defShipmentMethod.getValue());
+                        }
                         
                         FormDataObjIFace shippedBy = appContextMgr.getDefaultObject(Agent.class, "ShippedBy", getResourceString("SHIPPED_BY"), true, false);
-                        shipment.setShippedBy((Agent)shippedBy);
+                        if (shippedBy != null)
+                        {
+                            shipment.setShippedBy((Agent)shippedBy);
+                        }
                         
                         if (infoRequest != null && infoRequest.getAgent() != null)
                         {

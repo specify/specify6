@@ -210,6 +210,9 @@ import edu.ku.brc.util.thumbnails.Thumbnailer;
 public class BuildSampleDatabase
 {
     private static final Logger  log      = Logger.getLogger(BuildSampleDatabase.class);
+    
+    protected static boolean     debugOn  = false;
+
     protected Calendar           calendar = Calendar.getInstance();
     protected Session            session;
     protected Random             rand = new Random(12345678L);
@@ -2923,8 +2926,7 @@ public class BuildSampleDatabase
         }
     }
     
-    boolean debugOn = false;
-    protected void loadLocalization(final SpLocaleContainerItem memoryItem, final SpLocaleContainerItem newItem)
+    public static void loadLocalization(final SpLocaleContainerItem memoryItem, final SpLocaleContainerItem newItem)
     {
         newItem.setName(memoryItem.getName());
         newItem.setType(memoryItem.getType());
@@ -2963,7 +2965,7 @@ public class BuildSampleDatabase
 
     }
     
-    protected void loadLocalization(final SpLocaleContainer memoryContainer, final SpLocaleContainer newContainer)
+    public static void loadLocalization(final SpLocaleContainer memoryContainer, final SpLocaleContainer newContainer)
     {
         newContainer.setName(memoryContainer.getName());
         newContainer.setType(memoryContainer.getType());
@@ -3017,7 +3019,7 @@ public class BuildSampleDatabase
      * @param schemaType
      * @param tableMgr
      */
-    protected void loadSchemaLocalization(final CollectionType collTyp, final Byte schemaType, final DBTableIdMgr tableMgr)
+    public static void loadSchemaLocalization(final CollectionType collTyp, final Byte schemaType, final DBTableIdMgr tableMgr)
     {
         SchemaLocalizerXMLHelper schemaLocalizer = new SchemaLocalizerXMLHelper(schemaType, tableMgr);
         schemaLocalizer.load();

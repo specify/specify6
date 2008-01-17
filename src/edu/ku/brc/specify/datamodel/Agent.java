@@ -61,7 +61,8 @@ import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
         @Index (name="AgentFirstNameIDX", columnNames={"FirstName"}),
         @Index (name="AgentNameIDX", columnNames={"Name"}),
         @Index (name="AuthorNameIDX", columnNames={"AuthorName"}), 
-        @Index (name="CollectorNameIDX", columnNames={"CollectorName"})  
+        @Index (name="CollectorNameIDX", columnNames={"CollectorName"}),
+        @Index (name="AgentGuidIDX", columnNames={"GUID"})  
     })
 public class Agent extends CollectionMember implements java.io.Serializable, AttachmentOwnerIFace<AgentAttachment> {
 

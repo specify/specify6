@@ -58,7 +58,7 @@ public abstract class CollectionMember extends DataModelObjBase
     /**
      * @return the collectionMemberId
      */
-    @Column(name = "CollectionMemberId", nullable = false)
+    @Column(name = "CollectionMemberID", nullable = false)
     public Integer getCollectionMemberId()
     {
         return collectionMemberId;

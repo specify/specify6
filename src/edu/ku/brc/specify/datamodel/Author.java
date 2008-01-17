@@ -220,6 +220,7 @@ public class Author extends DataModelObjBase implements java.io.Serializable,
     /* (non-Javadoc)
      * @see edu.ku.brc.util.Orderable#getOrderIndex()
      */
+    @Transient
     public int getOrderIndex()
     {
         return orderNumber;

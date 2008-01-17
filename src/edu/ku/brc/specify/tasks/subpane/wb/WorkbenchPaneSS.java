@@ -1797,7 +1797,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                                     (variety1 != null ? (" " + variety1.getTitle()) : ""));
             genusSpecies.setViewOrder((short)-1);
             genusSpecies.setWorkbenchTemplateMappingItemId((int)genus.getViewOrder());
-            genusSpecies.setVersion((int)species.getViewOrder());
+            genusSpecies.setVersion(species.getViewOrder());
             
             if (variety1 != null)
             {
@@ -2795,7 +2795,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         //protected UndoManager undoManager = new UndoManager();
 
-        public GridCellEditor(final JTextField textField, final String caption, final int length, final JButton gcSaveBtn)
+        public GridCellEditor(final JTextField textField, final String caption, final int length, @SuppressWarnings("unused")final JButton gcSaveBtn)
         {
             super(textField);
             this.textField = textField;

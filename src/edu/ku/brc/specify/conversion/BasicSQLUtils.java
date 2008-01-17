@@ -78,7 +78,10 @@ public class BasicSQLUtils
     protected static Map<String, String> ignoreMappingFieldNames = null;
     protected static Map<String, String> ignoreMappingFieldIDs   = null;
     protected static Map<String, String> oneToOneIDHash          = null;
-
+    
+    // A map used to map a New Column name to an object that can either get or convert the value.
+    protected static Hashtable<String, BasicSQLUtilsMapValueIFace> columnValueMapper = new Hashtable<String, BasicSQLUtilsMapValueIFace>();
+    
     protected static Connection dbConn = null;  // (it may be shared so don't close)
     
     protected static ProgressFrame   frame = null;
@@ -154,6 +157,16 @@ public class BasicSQLUtils
     {
         BasicSQLUtils.oneToOneIDHash = oneToOneIDHash;
     }
+    
+    public static void clearValueMapper()
+    {
+        columnValueMapper.clear();
+    }
+    
+    public static void addToValueMapper(final String newFieldName, final BasicSQLUtilsMapValueIFace mapper)
+    {
+        columnValueMapper.put(newFieldName, mapper);
+    }
 
     /**
      * Creates or clears and fills a list
@@ -200,6 +213,13 @@ public class BasicSQLUtils
     }
 
     /**
+     * @return whether there are any ignore Fields
+     */
+    public static boolean hasIgnoreFields()
+    {
+        return ignoreMappingFieldNames != null;
+    }
+    /**
      * Sets a list of field names to ignore when mapping IDs
      * @param fieldNames the list of names to ignore
      */
@@ -236,7 +256,7 @@ public class BasicSQLUtils
 //        {
 //            //TODO: Problem encountered with the CUPaleo database when converting the AccessionAgent 
 //            //We (Rod?) need to go in an create a hashtable that
-//            if(ex instanceof MySQLIntegrityConstraintViolationException)
+//            if (ex instanceof MySQLIntegrityConstraintViolationException)
 //            {
 //                log.error("ignoring a record because it makes a MySQLIntegrityConstraintViolation: " + ex.getStackTrace().toString() );
 //                return 0;
@@ -268,14 +288,14 @@ public class BasicSQLUtils
         {
             //TODO: Problem encountered with the CUPaleo database when converting the AccessionAgent 
             //We (Rod?) need to go in an create a hashtable that
-            if((ex instanceof MySQLIntegrityConstraintViolationException)&&(cmdStr.contains("INSERT INTO accessionagent")))
+            if ((ex instanceof MySQLIntegrityConstraintViolationException)&&(cmdStr.contains("INSERT INTO accessionagent")))
             {
                 log.error("ignoring a record because it makes a MySQLIntegrityConstraintViolation: " + ex.getStackTrace().toString() );
                 log.error(cmdStr+"\n");
                 ex.printStackTrace();
                 return 0;
             }
-            else if(cmdStr.contains("INSERT INTO accessionagent"))
+            else if (cmdStr.contains("INSERT INTO accessionagent"))
             {
                 log.error("ignoring a record because it makes a uncatchable SQL Exception: " + ex.getStackTrace().toString() );
                 log.error(cmdStr+"\n");
@@ -334,10 +354,11 @@ public class BasicSQLUtils
     /**
      * Deletes all the records from a table
      * @param tableName the name of the table
+     * @param currentServerType server type
      * @return the return value from the SQL update statment (or -1 on an exception)
      */
-    public static int deleteAllRecordsFromTable(final String tableName,
-                                                SERVERTYPE currentServerType)
+    public static int deleteAllRecordsFromTable(final String    tableName,
+                                                final SERVERTYPE currentServerType)
     {
         int count = 0;
 
@@ -366,8 +387,9 @@ public class BasicSQLUtils
      * @param tableName the name of the table
      * @return the return value from the SQL update statment (or -1 on an exception)
      */
-    public static int deleteAllRecordsFromTable(final Connection connection, final String tableName,
-                                                SERVERTYPE currentServerType)
+    public static int deleteAllRecordsFromTable(final Connection connection, 
+                                                final String    tableName,
+                                                final SERVERTYPE currentServerType)
     {
         try
         {
@@ -550,7 +572,7 @@ public class BasicSQLUtils
     // MEG NEEDS TO FIX THIS!!!!!!! IT IS NOT CORRECT, BUT I WANTED TO MOVE ON
     public static String escapeStringLiterals(String str)
     {
-//        if(s.indexOf("\r\n")>= 0)
+//        if (s.indexOf("\r\n")>= 0)
 //                {
 //            log.error("slash r slash n: newline encountered");
 //                }
@@ -559,7 +581,7 @@ public class BasicSQLUtils
 //        {
 //            char c = s.charAt(i);
 //            //Character c1 = (Character)c;
-//            if(Character.isWhitespace(c))
+//            if (Character.isWhitespace(c))
 //            {
 //                log.error("Character is whitespace");
 //            }
@@ -567,7 +589,7 @@ public class BasicSQLUtils
 //            log.error("Char: " + c );
 //            log.error("Unicode: " + Character.getNumericValue(c));
 //        }
-//        if(s.indexOf("\r")>= 0)
+//        if (s.indexOf("\r")>= 0)
 //        {
 //            log.error("return encountered");
 //        }
@@ -619,7 +641,7 @@ public class BasicSQLUtils
             return "NULL";
 
         } 
-        else if(obj instanceof net.sourceforge.jtds.jdbc.ClobImpl )
+        else if (obj instanceof net.sourceforge.jtds.jdbc.ClobImpl )
         {
             //log.debug("instance of Clob");
             String str = "";
@@ -1163,17 +1185,19 @@ public class BasicSQLUtils
                 // For each column in the new DB table...
                 for (int i = 0; i < newFieldMetaData.size(); i++)
                 {
-                    FieldMetaData newFieldName = newFieldMetaData.get(i);
-                    String colName          = newFieldName.getName();
-                    String oldMappedColName = null;
-
-                    // Get the Old Column Index from the New Name
-                    Integer columnIndex = fromHash.get(colName);
-                    if (colName.startsWith("Habitat"))
+                    FieldMetaData newFieldName     = newFieldMetaData.get(i);
+                    String        colName          = newFieldName.getName();
+                    String        oldMappedColName = null;
+                    
+                    /*System.out.println("["+newFieldName.getName()+"]");
+                    if (newFieldName.getName().equals("DeaccessionPreparationID"))
                     {
                         int x = 0;
                         x++;
-                    }
+                    }*/
+
+                    // Get the Old Column Index from the New Name
+                    Integer columnIndex = fromHash.get(colName);
                     
                     if (columnIndex == null && colNewToOldMap != null)
                     {
@@ -1207,7 +1231,7 @@ public class BasicSQLUtils
 
                                 // if the value was null, getInt() returns 0
                                 // use wasNull() to distinguish real 0 from a null return
-                                if( rs.wasNull())
+                                if (rs.wasNull())
                                 {
                                     dataObj = null;
                                     
@@ -1333,11 +1357,12 @@ public class BasicSQLUtils
                     else // there was no old column that maps to this new column
                     {
                         String newColValue = null;
-                        if (newColDefValues!=null)
+                        if (newColDefValues != null)
                         {
                             newColValue = newColDefValues.get(colName);
                         }
-                        if (newColValue==null)
+                        
+                        if (newColValue == null)
                         {
                             newColValue = "NULL";
                             //System.out.println("ignoreMappingFieldNames" + ignoreMappingFieldNames);
@@ -1349,10 +1374,23 @@ public class BasicSQLUtils
                             }
                         }
                         if (i > 0) str.append(", ");
+                        
+                        if (newFieldName.getName().equals("Version"))
+                        {
+                            int x= 0;
+                            x++;
+                        }
+                        BasicSQLUtilsMapValueIFace valueMapper = columnValueMapper.get(newFieldName.getName());
+                        if (valueMapper != null)
+                        {
+                            newColValue = valueMapper.mapValue(newColValue);
+                        }
+                        
                         str.append(newColValue);
                     }
 
                 }
+                
                 str.append(")");
                 if (frame != null)
                 {
@@ -1369,7 +1407,7 @@ public class BasicSQLUtils
                     }                        
                 }
                 Statement updateStatement = toConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
-                if(BasicSQLUtils.myDestinationServerType != BasicSQLUtils.SERVERTYPE.MS_SQLServer) 
+                if (BasicSQLUtils.myDestinationServerType != BasicSQLUtils.SERVERTYPE.MS_SQLServer) 
                 {
                     BasicSQLUtils.removeForeignKeyConstraints(toConn, BasicSQLUtils.myDestinationServerType);
                 
@@ -1557,12 +1595,12 @@ public class BasicSQLUtils
     
     public static String getServerTypeSpecificSQL(final String mySQLFormatedStr, final SERVERTYPE currentServerType)
     {
-        //if((myDestinationServerType == myDestinationServerType.MySQL) || (myDestinationServerType == myDestinationServerType.Derby))
+        //if ((myDestinationServerType == myDestinationServerType.MySQL) || (myDestinationServerType == myDestinationServerType.Derby))
         //{
         //    return mySQLFormatedString;
         //}
         String mySQLFormatedString = mySQLFormatedStr;
-         if(currentServerType == SERVERTYPE.MS_SQLServer)
+         if (currentServerType == SERVERTYPE.MS_SQLServer)
         {
             mySQLFormatedString = stripSingleQuotes(mySQLFormatedString);
             mySQLFormatedString = stripEngineCharSet(mySQLFormatedString);
@@ -1591,11 +1629,11 @@ public class BasicSQLUtils
     
     public static String createIndexFieldStatment(final String name, final SERVERTYPE currentServerType) 
     {
-        if(currentServerType == SERVERTYPE.MS_SQLServer)
+        if (currentServerType == SERVERTYPE.MS_SQLServer)
         {
             return "create INDEX INX_"+name+" ON " + name + " (NewID)";
         }
-        else if((currentServerType == SERVERTYPE.MySQL)|| (currentServerType == SERVERTYPE.Derby))
+        else if ((currentServerType == SERVERTYPE.MySQL)|| (currentServerType == SERVERTYPE.Derby))
         {
             return "alter table "+name+" add index INX_"+name+" (NewID)";
         }
@@ -1700,7 +1738,7 @@ public class BasicSQLUtils
     {
         try
         {
-            if(currentServerType == SERVERTYPE.MS_SQLServer) 
+            if (currentServerType == SERVERTYPE.MS_SQLServer) 
             {
                 List<String> myTables = getTableNames(connection, currentServerType);       
                 for (Iterator<String> i = myTables.iterator( ); i.hasNext( ); ) 
@@ -1729,7 +1767,7 @@ public class BasicSQLUtils
     public static String generateShowTablesCommand(final String databaseName,
                                                    final SERVERTYPE currentServerType) 
     {
-        if(currentServerType == SERVERTYPE.MS_SQLServer) 
+        if (currentServerType == SERVERTYPE.MS_SQLServer) 
         {
             return "SELECT TABLE_NAME FROM  "+databaseName+".INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = "
                     + "\'BASE TABLE\' ";//AND TABLE_SCHEMA = \'"+ databaseName + "\'";
@@ -1741,7 +1779,7 @@ public class BasicSQLUtils
     public static String generateDescribeTableCommand(final String tableName, String databaseName,
                                                       final SERVERTYPE currentServerType) 
     {
-        if(currentServerType == SERVERTYPE.MS_SQLServer) 
+        if (currentServerType == SERVERTYPE.MS_SQLServer) 
         {
             return "SELECT COLUMN_NAME, DATA_TYPE FROM "+databaseName+".INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = \'"+tableName+"\' ";
                     //+"AND TABLE_SCHEMA = \'"+ databaseName + "\'";

@@ -266,7 +266,7 @@ public class IdHashMapper implements IdMapperIFace
 	            stmtNew.executeUpdate("DROP TABLE `"+mapTableName+"`");
 	            stmtNew.close();
 	            
-	        } catch (SQLException ex)
+	        } catch (Exception ex)
 	        {
 	            ex.printStackTrace();
 	            log.error(ex);

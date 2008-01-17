@@ -71,7 +71,8 @@ import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 @org.hibernate.annotations.Table(appliesTo="collectionobject", indexes =
     {   @Index (name="FieldNumberIDX", columnNames={"FieldNumber"}),
         @Index (name="CatalogedDateIDX", columnNames={"CatalogedDate"}),
-        @Index (name="CatalogNumberIDX", columnNames={"CatalogNumber"})
+        @Index (name="CatalogNumberIDX", columnNames={"CatalogNumber"}),
+        @Index (name="ColObjGuidIDX", columnNames={"GUID"})
     })
 public class CollectionObject extends CollectionMember implements AttachmentOwnerIFace<CollectionObjectAttachment>, java.io.Serializable, AttributeProviderIFace, Comparable<CollectionObject>
 {

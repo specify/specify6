@@ -56,7 +56,8 @@ import org.hibernate.annotations.Index;
 @Table(name = "referencework")
 @org.hibernate.annotations.Table(appliesTo="referencework", indexes =
     {   @Index (name="RefWrkTitleIDX", columnNames={"Title"}),
-        @Index (name="RefWrkPublisherIDX", columnNames={"Publisher"})
+        @Index (name="RefWrkPublisherIDX", columnNames={"Publisher"}),
+        @Index (name="RefWrkGuidIDX", columnNames={"GUID"})
     })
 public class ReferenceWork extends DataModelObjBase implements java.io.Serializable 
 {
