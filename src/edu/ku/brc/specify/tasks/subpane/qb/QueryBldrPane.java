@@ -24,6 +24,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -889,8 +890,15 @@ public class QueryBldrPane extends BaseSubPane
         {
             public void run()
             {
-                listBoxList.get(currentInx).repaint();
+                try
+                {
+                    listBoxList.get(currentInx).repaint();
+                } catch (ArrayIndexOutOfBoundsException ex)
+                {
+                    log.error(ex);
+                }
                 queryFieldsPanel.repaint();
+                saveBtn.setEnabled(true);
             }
         });
     }
