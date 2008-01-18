@@ -34,6 +34,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.dbsupport.DBFieldInfo;
+import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.SpQueryField;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.MultiStateIconButon;
@@ -218,6 +219,24 @@ public class QueryFieldPanel extends JPanel
         validator.reset(true);
     }
 
+    
+    /**
+     * @param field
+     * @return list of comparators appropriate for field.
+     */
+    protected String[] getComparatorList(final FieldQRI field)
+    {
+        //CatalogNumber needs to be treated as a number.
+        //And other fields? Not sure how to tell. Maybe the formatter?????
+        if (field.getFieldInfo().getName().equalsIgnoreCase("catalognumber") 
+                && field.getTableInfo().getClassObj().equals(CollectionObject.class))
+        {
+            return getComparatorListForClass(Number.class);
+        }
+        //else
+        return getComparatorListForClass(field.getDataClass());
+    }
+    
     /**
      * @param classObj
      * @return
@@ -374,7 +393,7 @@ public class QueryFieldPanel extends JPanel
 //        {
 //            comparators[inx++] = SpQueryField.OperatorType.getString(op.getOrdinal());
 //        }
-        comparators = getComparatorListForClass(fieldQRI.getDataClass());
+        comparators = getComparatorList(fieldQRI);
         iconLabel     = new JLabel(icon);
         fieldLabel    = new JLabel(fieldQRI.getTitle());
         isNotCheckbox = createCheckBox("isNotCheckbox");
