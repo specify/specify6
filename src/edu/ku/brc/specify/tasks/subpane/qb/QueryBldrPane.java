@@ -9,6 +9,8 @@
  */
 package edu.ku.brc.specify.tasks.subpane.qb;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -24,9 +26,10 @@ import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
-import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
@@ -885,7 +888,8 @@ public class QueryBldrPane extends BaseSubPane
         queryFieldsPanel.remove(qfp);
         qfp.getFieldQRI().setIsInUse(false);
         queryFieldsPanel.validate();
-
+        updateAddBtnState();
+        
         SwingUtilities.invokeLater(new Runnable()
         {
             public void run()
@@ -1228,4 +1232,41 @@ public class QueryBldrPane extends BaseSubPane
         }
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.subpane.BaseSubPane#aboutToShutdown()
+     */
+    @Override
+    public boolean aboutToShutdown()
+    {
+        boolean result = true;
+        if (isChanged())
+        {
+            String msg = String.format(getResourceString("SaveChanges"), getTitle());
+            JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
+
+            int rv = JOptionPane.showConfirmDialog(topFrame,
+                                                   msg,
+                                                   getResourceString("SaveChangesTitle"),
+                                                   JOptionPane.YES_NO_CANCEL_OPTION);
+            if (rv == JOptionPane.YES_OPTION)
+            {
+                saveQuery();
+            }
+            else if (rv == JOptionPane.CANCEL_OPTION)
+            {
+                return false;
+            }
+            else if (rv == JOptionPane.NO_OPTION)
+            {
+                // nothing
+            }
+        }
+        return result;
+    }
+    
+    protected boolean isChanged()
+    {
+        return saveBtn.isEnabled(); //el cheapo
+    }
+    
 }

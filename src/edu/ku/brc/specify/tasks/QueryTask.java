@@ -263,6 +263,7 @@ public class QueryTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.BaseTask#getStarterPane()
      */
+    @Override
     public SubPaneIFace getStarterPane()
     {
         PanelBuilder    display = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g", "f:p:g,p,150px,f:p:g"));
@@ -303,6 +304,7 @@ public class QueryTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.Taskable#initialize()
      */
+    @Override
     public void initialize()
     {
         if (!isInitialized)
@@ -320,6 +322,7 @@ public class QueryTask extends BaseTask
      *  (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#getToolBarItems()
      */
+    @Override
     public List<ToolBarItemDesc> getToolBarItems()
     {
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
@@ -353,9 +356,12 @@ public class QueryTask extends BaseTask
             public void actionPerformed(ActionEvent e)
             {
                 RolloverCommand queryNavBtn = (RolloverCommand)e.getSource();
-                editQuery(recordSet.getOnlyItem().getRecordId());
-                queryNavBtn.setEnabled(false);
-                queryBldrPane.setQueryNavBtn(queryNavBtn);
+                if (queryBldrPane == null || queryBldrPane.aboutToShutdown())
+                {
+                    editQuery(recordSet.getOnlyItem().getRecordId());
+                    queryNavBtn.setEnabled(false);
+                    queryBldrPane.setQueryNavBtn(queryNavBtn);
+                }
             }
             
         });
@@ -405,10 +411,13 @@ public class QueryTask extends BaseTask
      */
     protected void createNewQuery()
     {
-        SpQuery query = createNewQueryDataObj(null);
-        if (query != null)
+        if (queryBldrPane == null || queryBldrPane.aboutToShutdown())
         {
-            editQuery(query);
+            SpQuery query = createNewQueryDataObj(null);
+            if (query != null)
+            {
+                editQuery(query);
+            }
         }
     }
     
@@ -418,12 +427,18 @@ public class QueryTask extends BaseTask
     protected void editQuery(Integer queryId)
     {
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        Object                   dataObj = session.getData(SpQuery.class, "spQueryId", queryId, DataProviderSessionIFace.CompareType.Equals);
-        if (dataObj != null)
+        try
         {
-            editQuery((SpQuery)dataObj);
+            Object dataObj = session.getData(SpQuery.class, "spQueryId", queryId, DataProviderSessionIFace.CompareType.Equals);
+            if (dataObj != null)
+            {
+                editQuery((SpQuery)dataObj);
+            }
         }
-        session.close();
+        finally
+        {
+            session.close();
+        }
     }
     
     /**
@@ -440,14 +455,16 @@ public class QueryTask extends BaseTask
         else if (queryBldrPane != null)
         {
             SubPaneMgr.getInstance().replacePane(queryBldrPane, newPane);
-        } 
+        }
         queryBldrPane = newPane;
     }
 
     /*
-     *  (non-Javadoc)
+     * (non-Javadoc)
+     * 
      * @see edu.ku.brc.specify.core.Taskable#getNavBoxes()
      */
+    @Override
     public java.util.List<NavBoxIFace> getNavBoxes()
     {
         initialize();
@@ -462,6 +479,7 @@ public class QueryTask extends BaseTask
      *  (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#getMenuItems()
      */
+    @Override
     public List<MenuItemDesc> getMenuItems()
     {
         Vector<MenuItemDesc> list = new Vector<MenuItemDesc>();
@@ -482,6 +500,7 @@ public class QueryTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#getTaskClass()
      */
+    @Override
     public Class<? extends BaseTask> getTaskClass()
     {
         return this.getClass();
@@ -606,6 +625,7 @@ public class QueryTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.ui.CommandListener#doCommand(edu.ku.brc.specify.ui.CommandAction)
      */
+    @Override
     public void doCommand(CommandAction cmdAction)
     {
         if (cmdAction.isType(QUERY))

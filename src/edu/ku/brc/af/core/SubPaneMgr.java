@@ -198,6 +198,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
 
     /**
      * Replaces  the "old pane" with a new pane, the main point here that the new gets inserted into the same position.
+     * NOTE: aboutToShutdown() is not called for the "old pane".
      * @param oldPane the old pane to be replaced
      * @param newPane the new pane
      * @return the same pane as the one renamed
@@ -229,7 +230,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         {
             this.insertTab(newPane.getPaneName(), newPane.getIcon(), newPane.getUIComponent(), null, index);
             
-            removePane(oldPane);
+            removePane(oldPane, false);
             
             // Add this pane to the tabs
             String title = buildUniqueName(newPane.getPaneName());
