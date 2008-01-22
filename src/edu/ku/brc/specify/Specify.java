@@ -187,7 +187,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private String               appName             = "Specify";
     private String               appVersion          = "6.0";
 
-    private String               appBuildVersion     = "200801151430 (SVN: 3334)";
+    private String               appBuildVersion     = "200801220800 (SVN: 3345)";
     
     protected static CacheManager cacheManager        = new CacheManager();
 
@@ -1545,6 +1545,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
   public static void main(String[] args)
   {
       log.debug("********* Current ["+(new File(".").getAbsolutePath())+"]");
+      boolean doingConfig = false;
       // This is for Windows and Exe4J, turn the args into System Properties
 	  for (String s : args)
 	  {
@@ -1557,9 +1558,14 @@ public class Specify extends JPanel implements DatabaseLoginListener
 				  System.setProperty(pairs[0].substring(2, pairs[0].length()), pairs[1]);
 			  } 
 		  }
+          
+          if (s.equals("-Dconfig"))
+          {
+              doingConfig = true;
+          }
 	  }
 	  
-	  final boolean doConfig = args.length == 1 && args[0].equals("config");
+	  final boolean doConfig = doingConfig;
       
       // Now check the System Properties
       String appDir = System.getProperty("appdir");
