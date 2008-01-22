@@ -102,6 +102,7 @@ public class Uploader implements ActionListener, WindowStateListener, KeyListene
 
     /**
      * the exception that killed the most recent op. null if most recent op was not murdered.
+     * locked by this. Use setOpKiller and getOpKiller for access.
      */
     protected Exception                             opKiller;
 
@@ -1077,7 +1078,7 @@ public class Uploader implements ActionListener, WindowStateListener, KeyListene
     public void validateData()
     {
         dataValidated = false;
-        opKiller = null;
+        setOpKiller(null);
 
         final Vector<UploadTableInvalidValue> issues = new Vector<UploadTableInvalidValue>();
 
@@ -1102,7 +1103,7 @@ public class Uploader implements ActionListener, WindowStateListener, KeyListene
                 }
                 catch (Exception ex)
                 {
-                    opKiller = ex;
+                    setOpKiller(ex);
                     return false;
                 }
             }
@@ -1496,8 +1497,19 @@ public class Uploader implements ActionListener, WindowStateListener, KeyListene
             return;
         }
         setupUI(currentOp);
+        setOpKiller(null);
     }
 
+    protected synchronized void setOpKiller(final Exception killer)
+    {
+        opKiller = killer;
+    }
+    
+    protected synchronized Exception getOpKiller()
+    {
+        return opKiller;
+    }
+    
     /**
      * @param min
      * @param max
@@ -1630,7 +1642,7 @@ public class Uploader implements ActionListener, WindowStateListener, KeyListene
      */
     public void getDefaultsForMissingRequirements()
     {
-        opKiller = null;
+        setOpKiller(null);
         final UploaderTask uploadTask = new UploaderTask(false, "")
         {
             boolean          success   = false;
@@ -1681,7 +1693,7 @@ public class Uploader implements ActionListener, WindowStateListener, KeyListene
                 }
                 catch (Exception ex)
                 {
-                    opKiller = ex;
+                    setOpKiller(ex);
                     return false;
                 }
             }
@@ -2259,24 +2271,25 @@ public class Uploader implements ActionListener, WindowStateListener, KeyListene
         mainPanel.getCurrOpProgress().setVisible(mainPanel.getCancelBtn().isVisible());
         
         String statText = getResourceString(op);
+        Exception killer = getOpKiller();
         if (op.equals(Uploader.SUCCESS))
         {
             statText += ". " + getUploadedObjects().toString() + " "
                     + getResourceString("WB_UPLOAD_OBJECT_COUNT") + ".";
-            if (opKiller != null)
+            if (killer != null)
             {
                 log.debug("Hey. Wait a minute. The operation succeeded while dead. Is that not creepy?");
             }
         }
-        else if (op.equals(Uploader.FAILURE) && opKiller != null)
+        else if (op.equals(Uploader.FAILURE) && killer != null)
         {
-            if (opKiller.getLocalizedMessage().equals(""))
+            if (killer.getLocalizedMessage().equals(""))
             {
-                statText += ": " + opKiller;
+                statText += ": " + killer;
             }
             else
             {
-                statText += ": " + opKiller.getLocalizedMessage();
+                statText += ": " + killer.getLocalizedMessage();
             }
         }
         if (dotDotDot(op)) 
@@ -2408,7 +2421,7 @@ public class Uploader implements ActionListener, WindowStateListener, KeyListene
     public void uploadIt()
     {
         buildIdentifier();
-        opKiller = null;
+        setOpKiller(null);
         prepareToUpload();
 
         final UploaderTask uploadTask = new UploaderTask(true, "WB_CANCEL_UPLOAD_MSG")
@@ -2459,7 +2472,7 @@ public class Uploader implements ActionListener, WindowStateListener, KeyListene
                 }
                 catch (Exception ex)
                 {
-                    opKiller = ex;
+                    setOpKiller(ex);
                     return false;
                 }
                 success = !cancelled;
@@ -2478,7 +2491,11 @@ public class Uploader implements ActionListener, WindowStateListener, KeyListene
                 else
                 {
                     mainPanel.clearObjectsCreated();
+                    //undoUpload will clear opKiller, so save it and reassign, after call. (iffy?)
+                    Exception savedOpKiller = getOpKiller();
                     undoUpload(false, false);
+                    setOpKiller(savedOpKiller);
+                    
                     if (!cancelled)
                     {
                         setCurrentOp(Uploader.FAILURE);
@@ -2521,7 +2538,7 @@ public class Uploader implements ActionListener, WindowStateListener, KeyListene
      */
     public void undoUpload(final boolean isUserCmd, final boolean shuttingDown)
     {
-        opKiller = null;
+        setOpKiller(null);
         
         if (shuttingDown)
         {
@@ -2545,7 +2562,7 @@ public class Uploader implements ActionListener, WindowStateListener, KeyListene
                                             : "WB_UPLOAD_CLEANUP")), wbSS.getWorkbench().getName(),
                                     wbSS.getWorkbench().getName() }), getResourceString("Warning"),
                             JOptionPane.WARNING_MESSAGE);
-                    opKiller = ex; //probably doesn't matter if shuttingDown but..
+                    setOpKiller(ex); //probably doesn't matter if shuttingDown but..
                     return;
                 }
             }
@@ -2587,7 +2604,7 @@ public class Uploader implements ActionListener, WindowStateListener, KeyListene
                     }
                     catch (Exception ex)
                     {
-                        opKiller = ex;
+                        setOpKiller(ex);
                         return false;
                     }
                 }
@@ -2598,7 +2615,7 @@ public class Uploader implements ActionListener, WindowStateListener, KeyListene
                     super.finished();
                     statusBar.setText("");
                     statusBar.getProgressBar().setVisible(false);
-                    if (opKiller != null)
+                    if (getOpKiller() != null)
                     {
                         JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
                                 String.format(getResourceString("WB_UPLOAD_CLEANUP_FAILED"),
@@ -2733,7 +2750,7 @@ public class Uploader implements ActionListener, WindowStateListener, KeyListene
     public void retrieveUploadedData()
     {
         bogusStorages = new HashMap<String, Vector<Vector<String>>>();
-        opKiller = null;
+        setOpKiller(null);
 
         final UploaderTask retrieverTask = new UploaderTask(true, "WB_CANCEL_UPLOAD_MSG")
         {
@@ -2784,7 +2801,7 @@ public class Uploader implements ActionListener, WindowStateListener, KeyListene
                 }
                 catch (Exception ex)
                 {
-                    opKiller = ex;
+                    setOpKiller(ex);
                     return false;
                 }
             }

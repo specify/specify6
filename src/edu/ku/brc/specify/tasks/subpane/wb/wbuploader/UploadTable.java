@@ -284,6 +284,10 @@ public class UploadTable implements Comparable<UploadTable>
                                 + m.getName());
                         Method setter = getSetterForGetter(m);
                         String fldName = col.name();
+                        if (fldName.equalsIgnoreCase("CollectionMemberID"))
+                        {
+                            fldName = "CollectionMemberId";
+                        }
                         missingRequiredFlds.add(new DefaultFieldEntry(this, m.getReturnType(),
                                 setter, fldName));
                     }
