@@ -69,6 +69,7 @@ public class SetupDialog extends JFrame
     protected Vector<BaseSetupPanel> panels     = new Vector<BaseSetupPanel>();
     
     protected Specify                specify;
+    protected String                 setupXMLPath;
     
     /**
      * @param specify
@@ -77,9 +78,10 @@ public class SetupDialog extends JFrame
     {
         super();
         
+        setupXMLPath = UIRegistry.getUserHomeAppDir() + File.separator + "setup_prefs.xml";
         try
         {
-            props.loadFromXML(new FileInputStream(new File("setup_prefs.xml")));
+            props.loadFromXML(new FileInputStream(new File(setupXMLPath)));
             
         } catch (Exception ex)
         {
@@ -330,7 +332,7 @@ public class SetupDialog extends JFrame
             {
                 panel.getValues(props);
             }
-            props.storeToXML(new FileOutputStream(new File("setup_prefs.xml")), "SetUp Props");
+            props.storeToXML(new FileOutputStream(new File(setupXMLPath)), "SetUp Props");
             
         } catch (Exception ex)
         {

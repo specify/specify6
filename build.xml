@@ -210,6 +210,7 @@
 		<copy todir="${appdir}/Contents/Resources/Java/help">
 			<fileset dir="help">
 				<exclude name="**/.svn" />
+				<exclude name="**/*.psd" />
 			</fileset>
 		</copy>
 		
@@ -294,7 +295,7 @@
 		<property name="derby.data.path" value="${dist-mac}/DerbyDatabases" />
 		
 		<antcall target="clean-jar"/>
-		<antcall target="dist-jar-mac-ls"/>
+		<antcall target="dist-jar-mac-ls"/> <!-- No IMages -->
 		<antcall target="dist-mac-common"/>
 		
 		<!-- Copy and Rename Info List -->
@@ -302,6 +303,26 @@
 		
 		<!-- Copy and Rename PkgInfo -->
 		<copy file="${packaging}/schemaloc/PkgInfo" todir="${appdir}/Contents" />
+		
+	</target>
+	
+	<!-- *************************************************************
+	     Mac SpecifyDBInit Application Build
+	     ************************************************************* -->
+	<target name="dist-mac-db-init" depends="">
+		
+		<property name="appdir" value="${dist-mac}/SpecifyDBInit.app" />
+		<property name="derby.data.path" value="${dist-mac}/DerbyDatabases" />
+		
+		<antcall target="clean-jar"/>
+		<antcall target="dist-jar-mac"/>
+		<antcall target="dist-mac-common"/>
+		
+		<!-- Copy and Rename Info List -->
+		<copy file="${packaging}/specifydbinit/Info.plist" todir="${appdir}/Contents" />
+		
+		<!-- Copy and Rename PkgInfo -->
+		<copy file="${packaging}/specifydbinit/PkgInfo" todir="${appdir}/Contents" />
 		
 	</target>
 	
@@ -313,6 +334,7 @@
 		<antcall target="dist-mac"/>
 		<antcall target="dist-mac-sl"/>
 		<antcall target="dist-mac-bld"/>
+		<antcall target="dist-mac-db-init"/>
 	</target>
 	
 	<!-- *************************************************************

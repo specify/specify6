@@ -753,7 +753,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             }
         }
 
-        return backStopViewSetMgr.getView(viewSetName, viewName);
+        return backStopViewSetMgr.getView(viewSetName == null ? "Global" : viewSetName, viewName);
 
     }
 

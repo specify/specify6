@@ -312,11 +312,11 @@ public class BuildSampleDatabase
         frame.setProcess(++createStep);
 
         // create tree defs (later we will make the def items and nodes)
-        TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Test Taxon");
-        GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Test Geography");
-        GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Test Chronos Stratigraphy");
-        LithoStratTreeDef         lithoStratTreeDef = createLithoStratTreeDef("Test LithoStrat Tree");
-        LocationTreeDef           locTreeDef        = createLocationTreeDef("Test Location Tree");
+        TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Taxon");
+        GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Geography");
+        GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Chronos Stratigraphy");
+        LithoStratTreeDef         lithoStratTreeDef = createLithoStratTreeDef("LithoStrat");
+        LocationTreeDef           locTreeDef        = createLocationTreeDef("Location");
         
         lithoStratTreeDef.setRemarks("A simple super, group, formation, member, bed Litho Stratigraphy tree");
         
@@ -373,19 +373,17 @@ public class BuildSampleDatabase
         ////////////////////////////////
         frame.setDesc("Creating Trees...");
         frame.setProcess(++createStep);
-        List<Object> taxa        = createSimpleTaxon(taxonTreeDef, doShallowTaxonTree);
+        //List<Object> taxa        = createSimpleTaxon(taxonTreeDef, doShallowTaxonTree);
         List<Object> geos        = createSimpleGeography(geoTreeDef);
-        List<Object> locs        = createSimpleLocation(locTreeDef);
-        List<Object> gtps        = createSimpleGeologicTimePeriod(gtpTreeDef);
-        List<Object> lithoStrats = createSimpleLithoStrat(lithoStratTreeDef);
+        //List<Object> locs        = createSimpleLocation(locTreeDef);
+        //List<Object> gtps        = createSimpleGeologicTimePeriod(gtpTreeDef);
+        //List<Object> lithoStrats = createSimpleLithoStrat(lithoStratTreeDef);
         
-        //startTx();
-        persist(taxa);
+        //persist(taxa);
         persist(geos);
-        persist(locs);
-        persist(gtps);
-        persist(lithoStrats);
-        //commitTx();
+        //persist(locs);
+        //persist(gtps);
+        //persist(lithoStrats);
         
         
         ////////////////////////////////
