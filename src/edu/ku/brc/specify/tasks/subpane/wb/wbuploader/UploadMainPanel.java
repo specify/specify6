@@ -12,9 +12,11 @@ package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
@@ -23,6 +25,9 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
@@ -73,7 +78,9 @@ public class UploadMainPanel extends JPanel
     protected JPanel msgPane;
     protected JLabel msgLbl;
     protected JList msgList;
-    
+    protected JList validationErrorList;
+    protected JPanel validationErrorPanel;
+    protected JScrollPane msgListSB;
     
     /**
      * The object listening to this form. Currently an Uploader object.
@@ -85,6 +92,29 @@ public class UploadMainPanel extends JPanel
     {
         buildUI();
      }
+    
+    public void showValidationErrors()
+    {
+        CellConstraints cc = new CellConstraints();
+        msgPane.remove(msgListSB);
+        msgPane.add(validationErrorPanel, cc.xy(1, 1));
+        msgPane.add(msgListSB, cc.xy(1, 2));
+        msgPane.validate();
+    }
+    
+    public void hideValidationErrors()
+    {
+        CellConstraints cc = new CellConstraints();
+        msgPane.remove(validationErrorPanel);
+        msgPane.remove(msgListSB);
+        msgPane.add(msgListSB, cc.xywh(1, 1, 1, 2));
+        msgPane.validate();
+    }
+    
+    public boolean isValidationErrorsVisible()
+    {
+        return validationErrorPanel.getParent() == msgPane;
+    }
     
     public void buildUI()
     {
@@ -114,20 +144,26 @@ public class UploadMainPanel extends JPanel
         JScrollPane sp = new JScrollPane(uploadTbls, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         add(sp, cc.xy(2, 6));
         
-        msgPane = new JPanel(new BorderLayout());
+        msgPane = new JPanel(new FormLayout("fill:m:grow", "fill:pref:grow, fill:pref:grow"));
         
         msgLbl  = new JLabel(getResourceString("WB_UPLOAD_MSG_LIST"));
         add(msgLbl, cc.xy(4, 4));
         
         msgList = new JList(new DefaultListModel());
-        JScrollPane sp2 = new JScrollPane(msgList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        msgPane.add(sp2, BorderLayout.CENTER);
+        msgListSB = new JScrollPane(msgList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        msgPane.add(msgListSB, cc.xywh(1, 1, 1, 2));
         
+        validationErrorPanel = new JPanel(new BorderLayout());
+        validationErrorList = new JList(new DefaultListModel());
+        validationErrorPanel.add(new JScrollPane(validationErrorList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER), 
+                BorderLayout.CENTER);
         printBtn = new JButton(getResourceString("WB_UPLOAD_PRINT_MESSAGES_BTN")); 
         printBtn.setActionCommand(PRINT_INVALID);
         JPanel pbtnPane = new JPanel(new FormLayout("fill:m:grow, right:max(50dlu;pref)", "c:m"));
         pbtnPane.add(printBtn, cc.xy(2, 1));
-        msgPane.add(pbtnPane, BorderLayout.SOUTH);
+        validationErrorPanel.add(pbtnPane, BorderLayout.SOUTH);
+        //validationErrorPanel.setVisible(false);
+        //msgPane.add(validationErrorPanel, cc.xy(1, 1));
         
         add(msgPane, cc.xy(4, 6));
                 
@@ -469,7 +505,7 @@ public class UploadMainPanel extends JPanel
     
     public static void main(final String[] args)
     {
-        UploadMainPanel tf = new UploadMainPanel();
+        final UploadMainPanel tf = new UploadMainPanel();
         tf.buildUI();
         DefaultListModel tbls = new DefaultListModel();
         tbls.addElement("CollectingEvent");
@@ -478,19 +514,51 @@ public class UploadMainPanel extends JPanel
         tf.getUploadTbls().setModel(tbls);
         
         DefaultListModel invalids = new DefaultListModel();
-        invalids.addElement("bad");
-        invalids.addElement("wrong");
-        invalids.addElement("shame");
-        tf.getMsgList().setModel(invalids);
-        
+        invalids.addElement("good");
+        invalids.addElement("dog");
+        DefaultListModel msgs = new DefaultListModel();
+        msgs.addElement("happy");
+        msgs.addElement("man");
+        tf.getMsgList().setModel(msgs);
+        tf.getValidationErrorList().setModel(invalids);
         tf.getMsgPane().setVisible(invalids.size() > 0);
         
         tf.setActionListener(tf.new TesterThingy());
         
         tf.setVisible(true);
-        
+
+        JMenuBar menuBar = new JMenuBar();
+
+      //Build the first menu.
+      JMenu menu = new JMenu("A Menu");
+      menuBar.add(menu);
+
+      //a group of JMenuItems
+      JMenuItem menuItem = new JMenuItem("flipper",
+                               KeyEvent.VK_F);
+      menuItem.addActionListener(new ActionListener()
+      {
+          @Override
+          public void actionPerformed(ActionEvent e)
+          {
+              if (tf.isValidationErrorsVisible())
+              {
+                  tf.hideValidationErrors();
+              }
+              else
+              {
+                  tf.showValidationErrors();
+              }
+              //tf.getValidationErrorPanel().setVisible(!tf.getValidationErrorPanel().isVisible());
+              //tf.getMsgPane().layout();
+          }
+      });
+      menu.add(menuItem);
+
         JFrame frm = new JFrame();
+        frm.setPreferredSize(new Dimension(600,400));
         frm.setContentPane(tf);
+        frm.setJMenuBar(menuBar);
         frm.pack();
         frm.setVisible(true);
     }
@@ -525,5 +593,21 @@ public class UploadMainPanel extends JPanel
     public JButton getPrintBtn()
     {
         return printBtn;
+    }
+
+    /**
+     * @return the validationErrorList
+     */
+    public JList getValidationErrorList()
+    {
+        return validationErrorList;
+    }
+
+    /**
+     * @return the validationErrorPanel
+     */
+    public JPanel getValidationErrorPanel()
+    {
+        return validationErrorPanel;
     }
 }
