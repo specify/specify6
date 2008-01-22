@@ -417,6 +417,176 @@ public class LocalityDetail extends CollectionMember
         this.yesNo2 = yesNo2;
     }
     
+    /**
+     * @return the hucCode
+     */
+    @Column(name = "HucCode", unique = false, nullable = true, updatable = true, insertable = true, length=16)
+    public String getHucCode()
+    {
+        return hucCode;
+    }
+
+    /**
+     * @param hucCode the hucCode to set
+     */
+    public void setHucCode(String hucCode)
+    {
+        this.hucCode = hucCode;
+    }
+
+    /**
+     * @return the utmEasting
+     */
+    @Column(name = "UtmEasting", unique = false, nullable = true, updatable = true, insertable = true)
+    public Float getUtmEasting()
+    {
+        return utmEasting;
+    }
+
+    /**
+     * @param utmEasting the utmEasting to set
+     */
+    public void setUtmEasting(Float utmEasting)
+    {
+        this.utmEasting = utmEasting;
+    }
+
+    /**
+     * @return the utmNorthing
+     */
+    @Column(name = "UtmNorthing", unique = false, nullable = true, updatable = true, insertable = true)
+    public Float getUtmNorthing()
+    {
+        return utmNorthing;
+    }
+
+    /**
+     * @param utmNorthing the utmNorthing to set
+     */
+    public void setUtmNorthing(Float utmNorthing)
+    {
+        this.utmNorthing = utmNorthing;
+    }
+
+    /**
+     * @return the utmFalseEasting
+     */
+    @Column(name = "UtmFalseEasting", unique = false, nullable = true, updatable = true, insertable = true)
+    public Integer getUtmFalseEasting()
+    {
+        return utmFalseEasting;
+    }
+
+    /**
+     * @param utmFalseEasting the utmFalseEasting to set
+     */
+    public void setUtmFalseEasting(Integer utmFalseEasting)
+    {
+        this.utmFalseEasting = utmFalseEasting;
+    }
+
+    /**
+     * @return the utmFalseNorthing
+     */
+    @Column(name = "UtmFalseNorthing", unique = false, nullable = true, updatable = true, insertable = true)
+    public Integer getUtmFalseNorthing()
+    {
+        return utmFalseNorthing;
+    }
+
+    /**
+     * @param utmFalseNorthing the utmFalseNorthing to set
+     */
+    public void setUtmFalseNorthing(Integer utmFalseNorthing)
+    {
+        this.utmFalseNorthing = utmFalseNorthing;
+    }
+
+    /**
+     * @return the utmDatum
+     */
+    @Column(name = "getUtmDatum", unique = false, nullable = true, updatable = true, insertable = true)
+    public String getUtmDatum()
+    {
+        return utmDatum;
+    }
+
+    /**
+     * @param utmDatum the utmDatum to set
+     */
+    public void setUtmDatum(String utmDatum)
+    {
+        this.utmDatum = utmDatum;
+    }
+
+    /**
+     * @return the utmZone
+     */
+    @Column(name = "UtmZone", unique = false, nullable = true, updatable = true, insertable = true)
+    public Short getUtmZone()
+    {
+        return utmZone;
+    }
+
+    /**
+     * @param utmZone the utmZone to set
+     */
+    public void setUtmZone(Short utmZone)
+    {
+        this.utmZone = utmZone;
+    }
+
+    /**
+     * @return the utmOrigLatitude
+     */
+    @Column(name = "UtmOrigLatitude", unique = false, nullable = true, updatable = true, insertable = true)
+    public BigDecimal getUtmOrigLatitude()
+    {
+        return utmOrigLatitude;
+    }
+
+    /**
+     * @param utmOrigLatitude the utmOrigLatitude to set
+     */
+    public void setUtmOrigLatitude(BigDecimal utmOrigLatitude)
+    {
+        this.utmOrigLatitude = utmOrigLatitude;
+    }
+
+    /**
+     * @return the utmOrigLongitude
+     */
+    @Column(name = "UtmOrigLongitude", unique = false, nullable = true, updatable = true, insertable = true)
+    public BigDecimal getUtmOrigLongitude()
+    {
+        return utmOrigLongitude;
+    }
+
+    /**
+     * @param utmOrigLongitude the utmOrigLongitude to set
+     */
+    public void setUtmOrigLongitude(BigDecimal utmOrigLongitude)
+    {
+        this.utmOrigLongitude = utmOrigLongitude;
+    }
+
+    /**
+     * @return the utmScale
+     */
+    @Column(name = "UtmScale", unique = false, nullable = true, updatable = true, insertable = true, length = 8)
+    public String getUtmScale()
+    {
+        return utmScale;
+    }
+
+    /**
+     * @param utmScale the utmScale to set
+     */
+    public void setUtmScale(String utmScale)
+    {
+        this.utmScale = utmScale;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#isRestrictable()
      */

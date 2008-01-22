@@ -67,6 +67,7 @@ import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToggleButtonChooserPanel;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -246,6 +247,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
                 }
             }
         });
+        UIHelper.makeTableHeadersCentered(searchFieldsTable, false);
         
         String[] values = new String[] {NONE, ASCENDING, DESCENDING};
         

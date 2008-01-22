@@ -46,7 +46,7 @@ public class WorkbenchDataItem implements java.io.Serializable, Comparable<Workb
     public static final int VAL_ERROR  = 2;
         
     // Fields
-    protected Integer         workbenchDataItemId;
+    protected Integer      workbenchDataItemId;
     protected String       cellData;
     protected Short        rowNumber;
     protected Short        validationStatus;

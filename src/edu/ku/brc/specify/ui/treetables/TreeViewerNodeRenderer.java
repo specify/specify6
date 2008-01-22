@@ -35,8 +35,6 @@ import javax.swing.UIManager;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
-import org.apache.log4j.Logger;
-
 import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.util.Pair;
@@ -48,7 +46,7 @@ import edu.ku.brc.util.Pair;
 public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListener
 {
     /** Logger for all messages emitted. */
-    private static final Logger log = Logger.getLogger(TreeViewerNodeRenderer.class);
+    //private static final Logger log = Logger.getLogger(TreeViewerNodeRenderer.class);
             
     // open/close handle icons
     protected Icon open;
@@ -77,9 +75,15 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
     protected boolean renderTooltip = true;
     
     /**
-     * 
+     * @param ttv
+     * @param model
+     * @param bgColors
+     * @param lineColor
      */
-    public TreeViewerNodeRenderer(TreeTableViewer<?,?,?> ttv, TreeViewerListModel model, Color[] bgColors, Color lineColor)
+    public TreeViewerNodeRenderer(final TreeTableViewer<?,?,?> ttv, 
+                                  final TreeViewerListModel model, 
+                                  final Color[] bgColors, 
+                                  final Color lineColor)
     {
         this.model = model;
         this.treeViewer = ttv;
@@ -105,17 +109,30 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         nodeUI = new TreeNodeUI();
     }
     
+    /**
+     * @param renderTooltip
+     */
     public void setRenderTooltip(boolean renderTooltip)
     {
         this.renderTooltip = renderTooltip;
     }
 
+    /**
+     * @return
+     */
     public Color[] getBackgroundColors()
     {
         return this.bgs;
     }
 
-    public Component getListCellRendererComponent(JList l, Object value, int index, boolean isSelected, boolean cellHasFocus)
+    /* (non-Javadoc)
+     * @see javax.swing.ListCellRenderer#getListCellRendererComponent(javax.swing.JList, java.lang.Object, int, boolean, boolean)
+     */
+    public Component getListCellRendererComponent(final JList   l, 
+                                                  final Object  value, 
+                                                  final int     index, 
+                                                  final boolean isSelected, 
+                                                  final boolean cellHasFocus)
     {
         //log.debug("getListCellRendererComponent( " + value + " )");
         this.list = l;

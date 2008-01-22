@@ -1071,8 +1071,18 @@
                     <cell type="field" id="8" name="elevationMethod" uitype="text" cols="1"/>
                 </row>
                 <row>
-       		        <cell type="field" id="23" name="this" uitype="plugin" initialize="name=LocalityGeoRef;title=Geo Ref" colspan="1"/>
-    		        <cell type="field" id="24" name="this" uitype="plugin" initialize="name=LocalityGoogleEarth;title=Google Earth" colspan="1"/>
+                    <cell type="separator" label="Tools" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="panel" id="outerPanel" name="outerPanel" coldef="p,f:p:g,p,f:p:g,p,f:p:g" rowdef="p" colspan="12">
+                        <rows>
+                            <row>
+                                <cell type="label" label=" "/>
+       		        			<cell type="field" id="23" name="this" uitype="plugin" initialize="name=LocalityGeoRef;title=Geo Ref" colspan="1"/>
+    		        			<cell type="field" id="24" name="this" uitype="plugin" initialize="name=LocalityGoogleEarth;title=Google Earth" colspan="1"/>
+    		        		</row>
+    		        	</rows>
+    		        </cell>
                 </row>
                 <row>
                     <cell type="separator" label="Attachments" colspan="12"/>

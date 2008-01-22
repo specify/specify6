@@ -46,8 +46,6 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellRenderer;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -494,16 +492,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
             tableColModel.getColumn(i).setCellRenderer(centerRenderer);
         }*/
         
-        ((DefaultTableCellRenderer)table.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
-        
-        TableCellRenderer tcr = table.getDefaultRenderer(String.class);
-        
-        // For Strings with no changes made to the table, the render is a DefaultTableCellRender.
-        DefaultTableCellRenderer dtcr = (DefaultTableCellRenderer) tcr;
-        
-        // set the alignment to center
-        dtcr.setHorizontalAlignment(SwingConstants.CENTER);
-        
+        UIHelper.makeTableHeadersCentered(table, true);
     }
     
     /*class CenterRenderer extends DefaultTableCellRenderer

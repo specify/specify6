@@ -404,7 +404,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
      */
     public SubPaneIFace getStarterPane()
     {
-        return starterPane = new SimpleDescPane(name, this, "This is the Data Entry Pane");
+        return starterPane = new SimpleDescPane(name, this, "Drop a Bundle here."); // I18N
     }
 
      /*

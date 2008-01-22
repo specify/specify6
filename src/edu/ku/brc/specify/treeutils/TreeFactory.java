@@ -211,7 +211,11 @@ public class TreeFactory
         return null;
     }
     
-    public static String getSynonymQueryString(Class<?> clazz)
+    /**
+     * @param clazz
+     * @return
+     */
+    public static String getSynonymQueryString(final Class<?> clazz)
     {
         if (clazz.equals(Taxon.class))
         {
@@ -241,31 +245,36 @@ public class TreeFactory
         return null;
     }
     
-    public static String getRelatedRecordCountQueryString(Class<?> clazz)
+    /**
+     * @param clazz
+     * @param id
+     * @return
+     */
+    public static String getRelatedRecordCountQueryString(final Class<?> clazz, final int id)
     {
         if (clazz.equals(Taxon.class))
         {
-            return "SELECT count(*) FROM CollectionObject AS co INNER JOIN co.determinations AS d INNER JOIN d.taxon AS t WHERE t.id=:NODEID";
+            return "SELECT count(*) FROM CollectionObject AS co INNER JOIN co.determinations AS d INNER JOIN d.taxon AS t WHERE t.id="+Integer.toString(id);
         }
         
         if (clazz.equals(Geography.class))
         {
-            return "SELECT count(*) FROM CollectingEvent AS ce INNER JOIN ce.localities AS l INNER JOIN l.geography AS g WHERE g.id=:NODEID";
+            return "SELECT count(*) FROM CollectingEvent AS ce INNER JOIN ce.localities AS l INNER JOIN l.geography AS g WHERE g.id="+Integer.toString(id);
         }
         
         if (clazz.equals(GeologicTimePeriod.class))
         {
-            return "SELECT count(*) FROM CollectionObject AS co INNER JOIN co.paleoContext AS pc INNER JOIN pc.chronosStrat as gtp WHERE gtp.id=:NODEID";
+            return "SELECT count(*) FROM CollectionObject AS co INNER JOIN co.paleoContext AS pc INNER JOIN pc.chronosStrat as gtp WHERE gtp.id="+Integer.toString(id);
         }
         
         if (clazz.equals(Location.class))
         {
-            return "SELECT count(*) FROM CollectionObject AS co INNER JOIN co..preparations AS prep INNER JOIN prep.location as loc WHERE loc.id=:NODEID";
+            return "SELECT count(*) FROM CollectionObject AS co INNER JOIN co..preparations AS prep INNER JOIN prep.location as loc WHERE loc.id="+Integer.toString(id);
         }
         
         if (clazz.equals(LithoStrat.class))
         {
-            return "SELECT count(*) FROM CollectionObject AS co INNER JOIN co.paleoContext AS pc INNER JOIN pc.lithoStrat as ls WHERE ls.id=:NODEID";
+            return "SELECT count(*) FROM CollectionObject AS co INNER JOIN co.paleoContext AS pc INNER JOIN pc.lithoStrat as ls WHERE ls.id="+Integer.toString(id);
         }
         
         return null;
@@ -278,7 +287,7 @@ public class TreeFactory
 	 * @param node a node of the class to be edited using the returned formset and view
 	 * @return a {@link edu.ku.brc.util.Pair<String,String>} containing the formset and view names
 	 */
-	public static Pair<String,String> getAppropriateFormsetAndViewNames( Object node )
+	public static Pair<String,String> getAppropriateFormsetAndViewNames(final Object node)
 	{
 	    log.info("getAppropriateFormsetAndViewNames(Object): Replace this with a call to the table ID manager to get the appropriate form");
 		if( node instanceof Geography )

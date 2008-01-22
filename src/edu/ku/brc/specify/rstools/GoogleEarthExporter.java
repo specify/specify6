@@ -8,6 +8,7 @@ package edu.ku.brc.specify.rstools;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
@@ -262,11 +263,11 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
                     }
                 }
                 
-                String bgColor = AppPreferences.getRemote().get("google.earth.bgcolor", "0, 102, 179");
-                bgColor = UIHelper.getBGRHexFromColor(UIHelper.parseRGB(bgColor));
+                Color  geBGColor = AppPreferences.getRemote().getColor("google.earth.bgcolor", new Color(0, 102, 179));
+                String bgColor   = UIHelper.getBGRHexFromColor(geBGColor);
                 
-                String fgColor = AppPreferences.getRemote().get("google.earth.fgcolor", "255, 255, 255");
-                fgColor = UIHelper.getBGRHexFromColor(UIHelper.parseRGB(fgColor));
+                Color  geFGColor = AppPreferences.getRemote().getColor("google.earth.fgcolor", new Color(255, 255, 255));
+                String fgColor   = UIHelper.getBGRHexFromColor(geFGColor);
 
                 kmlGen.setBalloonStyleBgColor("AA"+bgColor);
                 kmlGen.setBalloonStyleTextColor("FF" + fgColor);
@@ -333,21 +334,35 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
      * @return a List of placemarks that were mapped (does not include any passed in placemarks that couldn't be mapped for some reason)
      * @throws IOException an error occurred while writing the KML to the file
      */
-    protected List<GoogleEarthPlacemarkIFace> exportPlacemarkList(final String description,
+    protected List<GoogleEarthPlacemarkIFace> exportPlacemarkList(final String     description,
                                                                   final List<GoogleEarthPlacemarkIFace> placemarks, 
                                                                   final String     iconURLparam, 
                                                                   final File       outputFile) throws IOException
     {
+        URL  defaultIconURL = IconManager.getImagePath(DEFAULT_ICON_FILE);
+
         List<GoogleEarthPlacemarkIFace> mappedPlacemarks = new Vector<GoogleEarthPlacemarkIFace>();
         
         GenericKMLGenerator kmlGenerator = new GenericKMLGenerator();
-        kmlGenerator.setDescription(description);
+        if (description != null)
+        {
+            kmlGenerator.setDescription(description);
+            
+        } else if (placemarks.size() == 1)
+        {
+            GoogleEarthPlacemarkIFace pm = placemarks.get(0);
+            kmlGenerator.setDescription(pm.getTitle());
+            if (pm.getIconURL() != null)
+            {
+                defaultIconURL = pm.getIconURL();
+            }
+        }
         
-        String bgColor = AppPreferences.getRemote().get("google.earth.bgcolor", "0, 102, 179");
-        bgColor = UIHelper.getBGRHexFromColor(UIHelper.parseRGB(bgColor));
+        Color  geBGColor = AppPreferences.getRemote().getColor("google.earth.bgcolor", new Color(0, 102, 179));
+        String bgColor   = UIHelper.getBGRHexFromColor(geBGColor);
         
-        String fgColor = AppPreferences.getRemote().get("google.earth.fgcolor", "255, 255, 255");
-        fgColor = UIHelper.getBGRHexFromColor(UIHelper.parseRGB(fgColor));
+        Color  geFGColor = AppPreferences.getRemote().getColor("google.earth.fgcolor", new Color(255, 255, 255));
+        String fgColor   = UIHelper.getBGRHexFromColor(geFGColor);
         
         // setup all of the general style stuff
         kmlGenerator.setBalloonStyleBgColor("AA"+bgColor);
@@ -355,13 +370,13 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
         kmlGenerator.setBalloonStyleText(getBalloonText(fgColor));
 
         // get a copy of the default icon file (we (attempt to) package this with all KMZ files)
-        URL defaultIconURL = IconManager.getImagePath(DEFAULT_ICON_FILE);
         File defaultIconFile = null;
         if (defaultIconURL != null)
         {
             defaultIconFile = File.createTempFile("sp6-export-icon-", ".png");
             FileUtils.copyURLToFile(defaultIconURL, defaultIconFile);
         }
+        
         // else...
         // the default icon file was not found, we simply have to leave it out of the KMZ file
 
@@ -388,7 +403,7 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
         }
         
         // add all of the placemarks to the KML generator
-        for (GoogleEarthPlacemarkIFace pm: placemarks)
+        for (GoogleEarthPlacemarkIFace pm : placemarks)
         {
             String name = pm.getTitle();
             Pair<Double,Double> geoRef = pm.getLatLon();

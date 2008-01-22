@@ -121,7 +121,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
             String   sqlStr   = results.getSQL(results.getSearchTerm(), ids);
             if (sqlStr != null)
             {
-                jpaQuery = new JPAQuery(this, sqlStr);
+                jpaQuery = new JPAQuery(sqlStr, this);
                 jpaQuery.start();
             }
             

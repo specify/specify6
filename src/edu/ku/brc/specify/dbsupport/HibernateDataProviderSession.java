@@ -67,7 +67,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
         }
     }
     
-    public HibernateDataProviderSession(Session session)
+    public HibernateDataProviderSession(final Session session)
     {
         if (session != null)
         {
@@ -97,7 +97,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#refresh(java.lang.Object)
      */
-    public boolean refresh(Object dataObj)
+    public boolean refresh(final Object dataObj)
     {
         if (session != null)
         {
@@ -115,7 +115,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#delete(java.lang.Object)
      */
-    public boolean delete(Object dataObj) throws Exception
+    public boolean delete(final Object dataObj) throws Exception
     {
         if (session != null)
         {
@@ -133,7 +133,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#deleteOnSaveOrUpdate(java.lang.Object)
      */
-    public void deleteOnSaveOrUpdate(Object dataObj)
+    public void deleteOnSaveOrUpdate(final Object dataObj)
     {
         deleteList.add(dataObj);
     }
@@ -142,7 +142,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#deleteOnSaveOrUpdate(java.lang.Object)
      */
     @SuppressWarnings("unchecked")
-    public <T> T merge(T dataObj) throws StaleObjectException
+    public <T> T merge(final T dataObj) throws StaleObjectException
     {
         if (session != null)
         {
@@ -165,7 +165,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#getDataList(java.lang.String)
      */
-    public List<?> getDataList(String sqlStr)
+    public List<?> getDataList(final String sqlStr)
     {
         if (session != null)
         {
@@ -183,7 +183,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#getDataList(java.lang.Class)
      */
     @SuppressWarnings("unchecked")
-    public <T> List<T> getDataList(Class<T> clazz)
+    public <T> List<T> getDataList(final Class<T> clazz)
     {
         if (session != null)
         {
@@ -205,7 +205,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#getDataList(java.lang.Class, java.lang.String, boolean)
      */
     @SuppressWarnings("unchecked")
-    public <T> List<T>  getDataList(Class<T> clsObject, String fieldName, boolean isDistinct)
+    public <T> List<T>  getDataList(final Class<T> clsObject, final String fieldName, final boolean isDistinct)
     {
         Query query = session.createQuery("SELECT DISTINCT " + fieldName + " FROM " + clsObject.getName() + " WHERE " + fieldName + " <> NULL");
         return query.list();
@@ -216,7 +216,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#getDataList(java.lang.Class, java.lang.String, java.lang.Object)
      */
     @SuppressWarnings("unchecked")
-    public <T> List<T> getDataList(Class<T> clsObject, String fieldName, Object value, DataProviderSessionIFace.CompareType compareType)
+    public <T> List<T> getDataList(final Class<T> clsObject, final String fieldName, final Object value, final DataProviderSessionIFace.CompareType compareType)
     {
         if (session != null)
         {
@@ -234,7 +234,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#getData(java.lang.Class, java.lang.String, java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace.CompareType)
      */
     @SuppressWarnings("unchecked")
-    public <T> T getData(Class<T> clsObject, String fieldName, Object value, DataProviderSessionIFace.CompareType compareType)
+    public <T> T getData(final Class<T> clsObject, final String fieldName, final Object value, final DataProviderSessionIFace.CompareType compareType)
     {
         if (session != null)
         {
@@ -253,7 +253,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#getDataList(java.lang.Class, java.lang.String, java.lang.Object)
      */
-    public <T> List<T> getDataList(Class<T> clsObject, String fieldName, Object value)
+    public <T> List<T> getDataList(final Class<T> clsObject, final String fieldName, final Object value)
     {
         if (session != null)
         {
@@ -268,15 +268,21 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     protected void checkAndReconnect()
     {
         boolean reconnect = false;
-        try
+        Statement  stmt = null;
+        ResultSet  rs   = null;
+       try
         {
             Connection conn = session.connection();
-            Statement  stmt = conn.createStatement();
-            ResultSet  rs   = stmt.executeQuery("select * from specifyuser");
-            rs.next();
-            rs.close();
-            stmt.close();
-            
+            stmt = conn.createStatement();
+            if (stmt != null)
+            {
+                rs   = stmt.executeQuery("select * from specifyuser");
+                if (rs != null)
+                {
+                    rs.next();
+                }
+            }
+             
         } catch (SQLException ex)
         {
             reconnect = true;
@@ -284,12 +290,32 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
         } catch (JDBCConnectionException ex)
         {
             reconnect = true;
+        } finally
+        {
+            try
+            {
+                if (rs != null)
+                {
+                    rs.close();
+                }
+                if (stmt != null)
+                {
+                    stmt.close();
+                }
+                
+            } catch (Exception ex)
+            {
+                
+            }
         }
         
         if (reconnect)
         {
             log.debug("Reconnecting and rebuilding session factory....");
-            session.close();
+            if (session != null && session.isOpen())
+            {
+                session.close();
+            }
             HibernateUtil.rebuildSessionFactory();
             session = HibernateUtil.getNewSession();
         }
@@ -299,7 +325,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#get(java.lang.Class, java.lang.Integer)
      */
     @SuppressWarnings("unchecked")
-    public <T> T get(Class<T> clsObj, Integer id)
+    public <T> T get(final Class<T> clsObj, final Integer id)
     {
         if (session != null)
         {
@@ -314,7 +340,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#getDataCount(java.lang.Class, java.lang.String, java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace.CompareType)
      */
-    public <T> Integer getDataCount(Class<T> clsObject, String fieldName, Object value, DataProviderSessionIFace.CompareType compareType)
+    public <T> Integer getDataCount(final Class<T> clsObject, final String fieldName, final Object value, final DataProviderSessionIFace.CompareType compareType)
     {
         if (session != null)
         {
@@ -345,7 +371,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#load(java.lang.Class, java.lang.Integer)
      */
     @SuppressWarnings("unchecked")
-    public <T> T load(Class<T> clsObj, Integer id)
+    public <T> T load(final Class<T> clsObj, final Integer id)
     {
         if (session != null)
         {
@@ -360,7 +386,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#getData(java.lang.String)
      */
-    public Object getData(String sqlStr)
+    public Object getData(final String sqlStr)
     {
         if (session != null)
         {
@@ -384,7 +410,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#evict(java.lang.Class)
      */
-    public void evict(Class<?> clsObject)
+    public void evict(final Class<?> clsObject)
     {
         if (session != null)
         {
@@ -400,7 +426,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#evict(java.lang.Object)
      */
-    public void evict(Object dataObj)
+    public void evict(final Object dataObj)
     {
         if (session != null)
         {
@@ -414,7 +440,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#placeIntoSession(java.lang.Object)
      */
-    public void attach(Object dataObj)
+    public void attach(final Object dataObj)
     {
         if (session != null)
         {
@@ -429,7 +455,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#save(java.lang.Object)
      */
-    public boolean save(Object dataObj) throws Exception
+    public boolean save(final Object dataObj) throws Exception
     {
         if (session != null)
         {
@@ -446,7 +472,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#saveOrUpdate(java.lang.Object)
      */
-    public boolean saveOrUpdate(Object dataObj) throws Exception
+    public boolean saveOrUpdate(final Object dataObj) throws Exception
     {
         if (session != null)
         {
@@ -463,7 +489,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#update(java.lang.Object)
      */
-    public boolean update(Object dataObj) throws Exception
+    public boolean update(final Object dataObj) throws Exception
     {
         if (session != null)
         {
@@ -477,7 +503,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
         return false;
     }
     
-    public QueryIFace createQuery(String hql)
+    public QueryIFace createQuery(final String hql)
     {
         return new HibernateQuery(hql);
     }
@@ -486,7 +512,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#createCriteria(java.lang.Class)
      */
-    public CriteriaIFace createCriteria(Class<?> cls)
+    public CriteriaIFace createCriteria(final Class<?> cls)
     {
         if (session != null) 
         { 
@@ -650,16 +676,18 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
         }
     }
     
+    
+    
     public class HibernateCriteria implements CriteriaIFace
     {
         protected Criteria criteriaDelegate;
         
-        public HibernateCriteria(Class<?> cls)
+        public HibernateCriteria(final Class<?> cls)
         {
             criteriaDelegate = session.createCriteria(cls);
         }
         
-        public void add(Object criterion)
+        public void add(final Object criterion)
         {
             if (criterion instanceof Criterion)
             {

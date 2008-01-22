@@ -8,6 +8,7 @@ package edu.ku.brc.specify.plugins;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URL;
 import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
@@ -17,6 +18,8 @@ import javax.swing.JComponent;
 import javax.swing.event.ChangeListener;
 
 import edu.ku.brc.af.prefs.AppPrefsCache;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Locality;
@@ -45,9 +48,12 @@ import edu.ku.brc.util.Pair;
  */
 public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFace, UIPluginable
 {
-    protected CollectionObject colObj = null;
+    protected CollectionObject colObj    = null;
     protected CollectingEvent  ce;
     protected Locality         locality;
+    protected Object           origData  = null;
+    protected boolean          hasPoints = false;
+    protected URL              iconURL   = null;
     
     /**
      * 
@@ -70,14 +76,41 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
     protected void sendToGoogleEarthTool()
     {
         List<GoogleEarthPlacemarkIFace> items = new Vector<GoogleEarthPlacemarkIFace>();
-        items.add(new CEPlacemark(ce));
+        if (ce != null)
+        {
+            URL url = iconURL != null ? iconURL : IconManager.getURLForIcon(IconManager.getIcon("locality", IconManager.IconSize.Std32), IconManager.IconSize.Std32);
+            items.add(new CEPlacemark(ce, url));
+            
+            
+        } else if (locality != null)
+        {
+            if (locality.getCollectingEvents().size() > 0)
+            {
+                URL url = iconURL != null ? iconURL : IconManager.getURLForIcon(IconManager.getIcon("collectingevent", IconManager.IconSize.Std32), IconManager.IconSize.Std32);
+                for (CollectingEvent colEv : locality.getCollectingEvents())
+                {
+                    items.add(new CEPlacemark(colEv, url));
+                }
+            } else
+            {
+                URL url = iconURL != null ? iconURL : IconManager.getURLForIcon(IconManager.getIcon("locality", IconManager.IconSize.Std32), IconManager.IconSize.Std32);
+                items.add(new CEPlacemark(locality, url));
+            }
+        }
         
-        CommandAction command = new CommandAction(ToolsTask.TOOLS,ToolsTask.EXPORT_LIST);
-        command.setData(items);
-        command.setProperty("tool", GoogleEarthExporter.class);
         JStatusBar statusBar = UIRegistry.getStatusBar();
-        statusBar.setText(UIRegistry.getResourceString("WB_OPENING_GOOGLE_EARTH"));
-        CommandDispatcher.dispatch(command);
+        if (items.size() > 0)
+        {
+            CommandAction command = new CommandAction(ToolsTask.TOOLS,ToolsTask.EXPORT_LIST);
+            command.setData(items);
+            command.setProperty("tool", GoogleEarthExporter.class);
+            statusBar.setText(UIRegistry.getResourceString("WB_OPENING_GOOGLE_EARTH"));
+            CommandDispatcher.dispatch(command);
+            
+        } else
+        {
+            statusBar.setErrorMessage(UIRegistry.getResourceString("GE_NO_POINTS"));
+        }
     }
     
     /* (non-Javadoc)
@@ -85,15 +118,21 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
      */
     public Object getValue()
     {
-        return colObj != null ? colObj : ce;
+        return origData;
+    }
+    
+    protected URL getDisciplineIcon(final CollectionObject co)
+    {
+        return IconManager.getURLForIcon(IconManager.getIcon(co.getCollection().getCollectionType().getDiscipline()), IconManager.IconSize.Std32);
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.GetSetValueIFace#setValue(java.lang.Object, java.lang.String)
      */
-    public void setValue(Object value, String defaultValue)
+    public void setValue(final Object value, final String defaultValue)
     {
-        boolean enable = false;
+        origData = value;
+        
         if (value != null)
         {
             if (value instanceof CollectionObject)
@@ -104,26 +143,43 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
                 {
                     locality = ce.getLocality();
                 }
+                iconURL = getDisciplineIcon(colObj);
                 
             } else if (value instanceof CollectingEvent)
             {
                 ce       = (CollectingEvent)value;
                 locality = ce.getLocality(); // ce can't be null
                 
+                if (ce.getCollectionObjects().size() == 1)
+                {
+                    colObj  = ce.getCollectionObjects().iterator().next();
+                    iconURL = getDisciplineIcon(colObj);
+                }
+                
             } else if (value instanceof Locality)
             {
                 locality = (Locality)value;
-            }
-            
-            if (locality != null)
-            {
-                if (locality.getLat1() != null && locality.getLong1() != null)
+                if (locality.getCollectingEvents().size() == 1)
                 {
-                    enable = true;
+                    ce = locality.getCollectingEvents().iterator().next();
+                    if (ce.getCollectionObjects().size() == 1)
+                    {
+                        colObj  = ce.getCollectionObjects().iterator().next();
+                        iconURL = getDisciplineIcon(colObj);
+                    }
                 }
             }
+            hasPoints = locality != null && locality.getLat1() != null && locality.getLong1() != null;
         }
-        setEnabled(enable);
+        setEnabled(hasPoints);
+    }
+    
+    /* (non-Javadoc)
+     * @see javax.swing.AbstractButton#setEnabled(boolean)
+     */
+    public void setEnabled(final boolean enabled)
+    {
+        super.setEnabled(enabled && hasPoints);
     }
 
     /* (non-Javadoc)
@@ -175,21 +231,51 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
     class CEPlacemark implements GoogleEarthPlacemarkIFace 
     {
         protected CollectingEvent colEv;
+        protected Locality        locality;
         protected String          title;
+        protected URL             iconURL = null;
         
-        public CEPlacemark(CollectingEvent ce)
+        /**
+         * @param ce
+         * @param iconURL
+         */
+        public CEPlacemark(final CollectingEvent ce, final URL iconURL)
         {
-            this.colEv = ce;
+            this.colEv    = ce;
+            this.locality = ce.getLocality();
+            this.iconURL  = iconURL;
+            
             DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
             title = scrDateFormat.format(ce.getStartDate());
         }
         
+        /**
+         * @param locality
+         * @param iconURL
+         */
+        public CEPlacemark(final Locality locality, final URL iconURL)
+        {
+            this.colEv    = null;
+            this.locality = locality;
+            this.iconURL  = iconURL;
+            title         = locality.getLocalityName();
+        }
+        
+        /* (non-Javadoc)
+         * @see edu.ku.brc.specify.rstools.GoogleEarthPlacemarkIFace#getIconURL()
+         */
+        public URL getIconURL()
+        {
+            return iconURL;
+        }
+
         /* (non-Javadoc)
          * @see edu.ku.brc.specify.exporters.GoogleEarthPlacemarkIFace#cleanup()
          */
         public void cleanup()
         {
-            colEv = null;
+            colEv    = null;
+            locality = null;
         }
 
         /* (non-Javadoc)
@@ -197,11 +283,26 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
          */
         public String getHtmlContent()
         {
+            DBTableInfo localityTI = DBTableIdMgr.getInstance().getInfoById(Locality.getClassTableId());
+            
             StringBuilder sb = new StringBuilder("<table>");
-            sb.append("<tr><td align=\"center\">");
-            sb.append(colEv.getLocality().getLat1());
-            sb.append(", ");
-            sb.append(colEv.getLocality().getLong1());
+            sb.append("<tr><td align=\"right\">");
+            sb.append(localityTI.getFieldByColumnName("localityName").getTitle());
+            sb.append(":</td><td align=\"left\">");
+            
+            sb.append(locality.getLocalityName());
+            sb.append("</td></tr>\n");
+            
+            sb.append("<tr><td align=\"right\">");
+            sb.append(localityTI.getFieldByColumnName("latitude1").getTitle());
+            sb.append(":</td><td align=\"left\">");
+            sb.append(locality.getLat1());
+            sb.append("</td></tr>\n");
+            
+            sb.append("<tr><td align=\"right\">");
+            sb.append(localityTI.getFieldByColumnName("longitude1").getTitle());
+            sb.append(":</td><td align=\"left\">");
+            sb.append(locality.getLong1());
             sb.append("</td></tr>\n");
             sb.append("</table>\n");
             return sb.toString();
@@ -212,7 +313,7 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
          */
         public Pair<Double, Double> getLatLon()
         {
-            return new Pair<Double, Double>(colEv.getLocality().getLat1(), colEv.getLocality().getLong1());
+            return new Pair<Double, Double>(locality.getLat1(), locality.getLong1());
         }
 
         /* (non-Javadoc)
@@ -222,6 +323,5 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
         {
             return title;
         }
-    
     }
 }

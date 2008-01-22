@@ -20,6 +20,7 @@ import java.awt.event.ActionListener;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Vector;
+import java.util.prefs.BackingStoreException;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -115,6 +116,16 @@ public class AppPrefsEditor extends JPanel implements TableModelListener, ListSe
             items.remove(table.getSelectedRow());
             removeBtn.setEnabled(false);
             table.repaint();
+            appPrefs.setChanged(true);
+            table.getSelectionModel().clearSelection();
+            
+            try
+            {
+                appPrefs.flush();
+            } catch (BackingStoreException ex)
+            {
+                
+            }
         }
     }
     
@@ -124,6 +135,15 @@ public class AppPrefsEditor extends JPanel implements TableModelListener, ListSe
         items.add(newKey);
         model.fireChange();
         table.repaint();
+        appPrefs.setChanged(true);
+        
+        try
+        {
+            appPrefs.flush();
+        } catch (BackingStoreException ex)
+        {
+            
+        }
     }
     
     public void tableChanged(TableModelEvent e)

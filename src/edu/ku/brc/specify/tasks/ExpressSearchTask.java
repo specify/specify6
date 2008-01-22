@@ -207,7 +207,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         {
             instance.sqlResultsCount++;
 
-            jpaQuery = new JPAQuery(instance, sqlStr);
+            jpaQuery = new JPAQuery(sqlStr, instance);
             jpaQuery.setData(new Object[] {searchTableConfig, esrPane, searchTerm});
             jpaQuery.start();
         }
@@ -305,6 +305,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                 // Now loop through each of the view queries
                 for (ExpressResultsTableInfo erti : list)
                 {
+                    log.debug("Not Active: "+erti.getId()+"  "+erti.getTitle()+"  "+config.isActiveForRelatedQueryId(erti.getId()));
                     if (!config.isActiveForRelatedQueryId(erti.getId()))
                     {
                         continue;

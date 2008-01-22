@@ -19,9 +19,11 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import edu.ku.brc.dbsupport.CustomQueryListener;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
+import edu.ku.brc.dbsupport.JPAQuery;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
@@ -45,7 +47,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 											implements TreeDataService<T,D,I>
 {
     /**
-     * A <code>Logger</code> object used for all log messages eminating from
+     * A <code>Logger</code> object used for all log messages eliminating from
      * this class.
      */
     protected static final Logger log = Logger.getLogger(HibernateTreeDataServiceImpl.class);
@@ -58,77 +60,113 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 	 */
 	public HibernateTreeDataServiceImpl()
 	{
+	    
 	}
 	
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.treeutils.TreeDataService#findByName(edu.ku.brc.specify.datamodel.TreeDefIface, java.lang.String)
 	 */
 	@SuppressWarnings("unchecked")
-    public synchronized List<T> findByName(D treeDef, String name)
+    public synchronized List<T> findByName(final D treeDef, final String name)
     {
         Vector<T> results = new Vector<T>();
         Class<T> nodeClass = treeDef.getNodeClass();
         
         Session session = getNewSession(treeDef);
-        Query q = session.createQuery("FROM "+nodeClass.getSimpleName()+" as node WHERE node.name LIKE :name");
-        q.setParameter("name",name);
-        for( Object o: q.list() )
+        try
         {
-            T t = (T)o;
-            
-            // force loading on all ancestors
-            T parent = t.getParent();
-            while(parent!=null)
+            Query q = session.createQuery("FROM "+nodeClass.getSimpleName()+" as node WHERE node.name LIKE :name");
+            q.setParameter("name",name);
+            for( Object o: q.list() )
             {
-                parent = parent.getParent();
+                T t = (T)o;
+                
+                // force loading on all ancestors
+                T parent = t.getParent();
+                while(parent != null)
+                {
+                    parent = parent.getParent();
+                }
+                
+                results.add(t);
             }
             
-            results.add(t);
+            Collections.sort(results,new TreePathComparator<T,D,I>(true));
+            
+        } catch (Exception ex)
+        {
+            log.error(ex);
+            
+        } finally
+        {
+            session.close();
         }
-        
-        Collections.sort(results,new TreePathComparator<T,D,I>(true));
-        session.close();
         return results;
     }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.treeutils.TreeDataService#getChildNodes(edu.ku.brc.specify.datamodel.Treeable)
      */
-    public synchronized Set<T> getChildNodes(T parent)
+    public synchronized Set<T> getChildNodes(final T parent)
     {
         if (Hibernate.isInitialized(parent.getChildren()))
         {
             return parent.getChildren();
         }
         
+        Set<T> children = null;
         Session session = getNewSession(parent);
-        Set<T> children = parent.getChildren();
-        // to force Set loading
-        int childCount = children.size();
-        //log.debug("getChildNodes( " + parent + " ): " + childCount + " child(ren) of " + parent.getName() + " loaded");
-        for (T child: children)
+        try
         {
-            //log.debug("\t" + nodeDebugInfo(child));
+            children = parent.getChildren();
+            // to force Set loading
+            //int childCount = children.size();
+            //log.debug("getChildNodes( " + parent + " ): " + childCount + " child(ren) of " + parent.getName() + " loaded");
+            for (@SuppressWarnings("unused")T child: children)
+            {
+                //log.debug("\t" + nodeDebugInfo(child));
+            }
+        } catch (Exception ex)
+        {
+            log.error(ex);
+            
+        } finally
+        {
+            session.close();
         }
-        session.close();
         return children;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.treeutils.TreeDataService#getChildTreeNodes(edu.ku.brc.specify.datamodel.Treeable)
+     */
     @SuppressWarnings("unchecked")
-    public List<TreeNode> getChildTreeNodes(T parent)
+    public List<TreeNode> getChildTreeNodes(final T parent)
     {
-        Session session = getNewSession(parent);
-        String childQueryString = TreeFactory.getChildQueryString(parent);
-        Query getNodeInfoList = session.createQuery(childQueryString);
-        getNodeInfoList.setParameter("PARENT", parent);
-        List list = getNodeInfoList.list();
-        List<Object[]> nodeInfoList = list;
-        session.close();
+        Vector<TreeNode> treeNodes = null;
         
-        Vector<TreeNode> treeNodes = new Vector<TreeNode>();
-        for (Object[] nodeInfo: nodeInfoList)
+        Session session = getNewSession(parent);
+        try
         {
-            treeNodes.add(createNode(nodeInfo,parent));
+            String childQueryString = TreeFactory.getChildQueryString(parent);
+            Query getNodeInfoList = session.createQuery(childQueryString);
+            getNodeInfoList.setParameter("PARENT", parent);
+            List list = getNodeInfoList.list();
+            List<Object[]> nodeInfoList = list;
+            
+            treeNodes = new Vector<TreeNode>();
+            for (Object[] nodeInfo: nodeInfoList)
+            {
+                treeNodes.add(createNode(nodeInfo,parent));
+            }
+            
+        } catch (Exception ex)
+        {
+            log.error(ex);
+            
+        } finally
+        {
+            session.close();
         }
         return treeNodes;
     }
@@ -154,7 +192,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
      * @return a {@link TreeNode} object
      */
     @SuppressWarnings("unchecked")
-    private TreeNode createNode(Object[] nodeInfo, T parent)
+    private TreeNode createNode(final Object[] nodeInfo, final T parent)
     {
         Integer id                     = (Integer) nodeInfo[0];
         String  nodeName               = (String)  nodeInfo[1];
@@ -192,55 +230,75 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         return node;
     }
     
-    public int getRelatedRecordCount(Class<?> clazz, int id)
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.treeutils.TreeDataService#getRelatedRecordCount(java.lang.Class, int, edu.ku.brc.dbsupport.CustomQueryListener)
+     */
+    public void getRelatedRecordCount(final Class<?> clazz, 
+                                      final int       id, 
+                                      final CustomQueryListener listener)
     {
-        String queryStr = TreeFactory.getRelatedRecordCountQueryString(clazz);
-        Session session = getNewSession();
-        Query query = session.createQuery(queryStr);
-        query.setParameter("NODEID", id);
-        
-        int recordCount = (Integer)query.uniqueResult();
-        return recordCount;
+        String   queryStr = TreeFactory.getRelatedRecordCountQueryString(clazz, id);
+        JPAQuery jpaQuery = new JPAQuery(queryStr, listener); 
+        jpaQuery.start();
     }
 
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.treeutils.TreeDataService#getRootNode(edu.ku.brc.specify.datamodel.TreeDefIface)
 	 */
 	@SuppressWarnings("unchecked")
-	public synchronized T getRootNode(D treeDef)
+	public synchronized T getRootNode(final D treeDef)
 	{
 		T root = null;
 		
         Session session = getNewSession(treeDef);
-        
-        for( I defItem: treeDef.getTreeDefItems() )
+        try
         {
-            if (defItem.getRankId()==0)
+            for( I defItem: treeDef.getTreeDefItems() )
             {
-                root = defItem.getTreeEntries().iterator().next();
+                if (defItem.getRankId()==0)
+                {
+                    root = defItem.getTreeEntries().iterator().next();
+                }
             }
-        }
-        
-        session.close();
-        if (root!=null)
+            
+            if (root != null)
+            {
+                //log.debug("Root node: " + nodeDebugInfo(root));
+            }
+            else
+            {
+                //log.debug("No root node");
+            }
+            
+        } catch (Exception ex)
         {
-            //log.debug("Root node: " + nodeDebugInfo(root));
-        }
-        else
+            log.error(ex);
+            
+        } finally
         {
-            //log.debug("No root node");
+            session.close();
         }
 		return root;
 	}
 
     @SuppressWarnings("unchecked")
-    public synchronized T getNodeById(Class<?> clazz, int id)
+    public synchronized T getNodeById(final Class<?> clazz, final int id)
     {
         //log.debug("getNodeById( " + clazz.getSimpleName() + ", " + id + " )");
         Session session = getNewSession();
-        T record = (T)session.load(clazz, id);
-        session.close();
-        return record;
+        try
+        {
+            return (T)session.load(clazz, id);
+            
+        } catch (Exception ex)
+        {
+            log.error(ex);
+            
+        } finally
+        {
+            session.close();
+        }
+        return null;
     }
     
 	/* (non-Javadoc)
@@ -249,24 +307,33 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 	@SuppressWarnings("unchecked")
 	public synchronized List<D> getAllTreeDefs(Class<D> treeDefClass)
 	{
+	    Vector<D> defs = null;
         Session session = getNewSession();
-
-        Query q = session.createQuery("FROM " + treeDefClass.getSimpleName());
-        List<?> results = q.list();
-        
-		Vector<D> defs = new Vector<D>(results.size());
-		for( Object o: results )
-		{
-			D def = (D)o;
+        try
+        {
+            Query q = session.createQuery("FROM " + treeDefClass.getSimpleName());
+            List<?> results = q.list();
             
-            // force loading of all related def items
-            def.getTreeDefItems().size();
-            
-			defs.add(def);
-		}
+    		defs = new Vector<D>(results.size());
+    		for( Object o: results )
+    		{
+    			D def = (D)o;
+                
+                // force loading of all related def items
+                def.getTreeDefItems().size();
+                
+    			defs.add(def);
+    		}
         
-        session.close();
-		return defs;
+        } catch (Exception ex)
+        {
+            log.error(ex);
+            
+        } finally
+        {
+            session.close();
+        }
+        return defs;
 	}
 	
 	/* (non-Javadoc)
@@ -276,24 +343,35 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 	public synchronized D getTreeDef(Class<D> defClass, int defId)
 	{
         Session session = getNewSession();
-		String className = defClass.getSimpleName();
-		String idFieldName = className.toLowerCase().substring(0,1) + className.substring(1) + "Id";
-		Query query = session.createQuery("FROM " + className + " WHERE " + idFieldName + "=:defId");
-		query.setParameter("defId",defId);
-		D def = (D)query.uniqueResult();
-
-        // force loading of all related def items
-        // (they should load anyway as long as FetchType.EAGER is set on getTreeDefItems())
-        def.getTreeDefItems().size();
-        
-        session.close();
-		return def;
+        try
+        {
+    		String className = defClass.getSimpleName();
+    		String idFieldName = className.toLowerCase().substring(0,1) + className.substring(1) + "Id";
+    		Query query = session.createQuery("FROM " + className + " WHERE " + idFieldName + "=:defId");
+    		query.setParameter("defId",defId);
+    		D def = (D)query.uniqueResult();
+    
+            // force loading of all related def items
+            // (they should load anyway as long as FetchType.EAGER is set on getTreeDefItems())
+            def.getTreeDefItems().size();
+            
+    		return def;
+    		
+        } catch (Exception ex)
+        {
+            log.error(ex);
+            
+        } finally
+        {
+            session.close();
+        }
+        return null;
 	}
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.treeutils.TreeDataService#getDescendantCount(edu.ku.brc.specify.datamodel.Treeable)
      */
-    public synchronized int getDescendantCount(T node)
+    public synchronized int getDescendantCount(final T node)
     {
         if (node == null)
         {
@@ -302,145 +380,210 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         
         Session session = getNewSession(node);
         //log.debug("refreshing " + nodeDebugInfo(node));
-        
-        session.refresh(node);
-        Integer nodeNum = node.getNodeNumber();
-        Integer highChild = node.getHighestChildNodeNumber();
-        
-        int descCnt = 0;
-        if (nodeNum!=null && highChild!=null)
+        try
         {
-            descCnt = highChild-nodeNum;
-        }
-        else
-        {
-        	descCnt = node.getDescendantCount();
-        }
+            session.refresh(node);
+            Integer nodeNum = node.getNodeNumber();
+            Integer highChild = node.getHighestChildNodeNumber();
+            
+            int descCnt = 0;
+            if (nodeNum != null && highChild != null)
+            {
+                descCnt = highChild-nodeNum;
+            }
+            else
+            {
+            	descCnt = node.getDescendantCount();
+            }
+            
+            return descCnt;
         
-        session.close();
-        return descCnt;
-   }
+        } catch (Exception ex)
+        {
+            log.error(ex);
+            
+        } finally
+        {
+            session.close();
+        }
+        return 0;
+    }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.treeutils.TreeDataService#deleteTreeNode(edu.ku.brc.specify.datamodel.Treeable)
      */
     @SuppressWarnings("null")
-    public synchronized boolean deleteTreeNode(T node)
+    public synchronized boolean deleteTreeNode(final T node)
     {
         Session session = getNewSession(node);
-
-        // refresh the node data so we have correct information for the following calculation
-        session.refresh(node);
-        T parent = node.getParent();
-        if (parent!=null)
+        try
         {
-            session.refresh(parent);
-        }
-
-        Transaction tx = session.beginTransaction();
-        
-        // detach from the parent node
-        if (parent!=null)
-        {
-            parent.removeChild(node);
-            node.setParent(null);
-        }
-        
-        // detach the node from an accepted parent
-        if (node.getAcceptedParent() != null)
-        {
-            node.getAcceptedParent().getAcceptedChildren().remove(node);
-            node.setAcceptedParent(null);
-        }
-        
-        // let Hibernate delete the subtree
-        DataProviderSessionIFace sessionWrapper = new HibernateDataProviderSession(session);
-        
-        BusinessRulesIFace busRulesObj = DBTableIdMgr.getInstance().getBusinessRule(node);
-        if (busRulesObj != null)
-        {
-            // TODO: Have to rework this to provide a non-null DataProviderSessionIFace thingy
-            busRulesObj.beforeDelete(node, sessionWrapper);
-        }
-        session.delete(node);
-        
-        if (busRulesObj != null)
-        {
-            try
+            // refresh the node data so we have correct information for the following calculation
+            session.refresh(node);
+            T parent = node.getParent();
+            if (parent != null)
             {
-                if (!busRulesObj.beforeDeleteCommit(node, sessionWrapper))
+                session.refresh(parent);
+            }
+    
+            Transaction tx = session.beginTransaction();
+            
+            // detach from the parent node
+            if (parent != null)
+            {
+                parent.removeChild(node);
+                node.setParent(null);
+            }
+            
+            // detach the node from an accepted parent
+            if (node.getAcceptedParent() != null)
+            {
+                node.getAcceptedParent().getAcceptedChildren().remove(node);
+                node.setAcceptedParent(null);
+            }
+            
+            // let Hibernate delete the subtree
+            DataProviderSessionIFace sessionWrapper = new HibernateDataProviderSession(session);
+            
+            BusinessRulesIFace busRulesObj = DBTableIdMgr.getInstance().getBusinessRule(node);
+            if (busRulesObj != null)
+            {
+                // TODO: Have to rework this to provide a non-null DataProviderSessionIFace thingy
+                busRulesObj.beforeDelete(node, sessionWrapper);
+            }
+            session.delete(node);
+            
+            if (busRulesObj != null)
+            {
+                try
+                {
+                    if (!busRulesObj.beforeDeleteCommit(node, sessionWrapper))
+                    {
+                        tx.rollback();
+                        return false;
+                    }
+                }
+                catch(Exception e)
                 {
                     tx.rollback();
                     return false;
                 }
             }
-            catch(Exception e)
+            boolean retVal = commitTransaction(session, tx); // NOTE: this closes an open session
+            
+            if (busRulesObj != null && retVal)
             {
-                tx.rollback();
-                return false;
+                busRulesObj.afterDeleteCommit(node);
+            }
+            return retVal;
+            
+        } catch (Exception ex)
+        {
+            log.error(ex);
+            
+        } finally
+        {
+            if (session.isOpen())
+            {
+                session.close();
             }
         }
-        boolean retVal = commitTransaction(session, tx);
-        
-        if (busRulesObj != null && retVal)
-        {
-            busRulesObj.afterDeleteCommit(node);
-        }
-        return retVal;
+        return false;
     }
     
-    public List<String> nodesSkippingOverLevel(int levelSkippedRank, D treeDef)
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.treeutils.TreeDataService#nodesSkippingOverLevel(int, edu.ku.brc.specify.datamodel.TreeDefIface)
+     */
+    public List<String> nodesSkippingOverLevel(final int levelSkippedRank, final D treeDef)
     {
         Session session = getNewSession();
-        Class<T> nodeClass = treeDef.getNodeClass();
-        
-        Query nodeSkippingLevelQuery = session.createQuery("select n.fullName from " + nodeClass.getName() + " n where rankId>:rankID AND parent.rankId<:rankID AND definition=:treeDef");
-        nodeSkippingLevelQuery.setParameter("rankID", levelSkippedRank);
-//        nodeSkippingLevelQuery.setParameter("rankID2", levelSkippedRank);
-        nodeSkippingLevelQuery.setParameter("treeDef", treeDef);
-        List<?> results = nodeSkippingLevelQuery.list();
-        Vector<String> nodeNames = new Vector<String>(results.size());
-        for (Object o: results)
+        try
         {
-            nodeNames.add((String)o);
+            Class<T> nodeClass = treeDef.getNodeClass();
+            
+            Query nodeSkippingLevelQuery = session.createQuery("select n.fullName from " + nodeClass.getName() + " n where rankId>:rankID AND parent.rankId<:rankID AND definition=:treeDef");
+            nodeSkippingLevelQuery.setParameter("rankID", levelSkippedRank);
+    //        nodeSkippingLevelQuery.setParameter("rankID2", levelSkippedRank);
+            nodeSkippingLevelQuery.setParameter("treeDef", treeDef);
+            List<?> results = nodeSkippingLevelQuery.list();
+            Vector<String> nodeNames = new Vector<String>(results.size());
+            for (Object o: results)
+            {
+                nodeNames.add((String)o);
+            }
+            return nodeNames;
+            
+        } catch (Exception ex)
+        {
+            log.error(ex);
+            
+        } finally
+        {
+            session.close();
         }
-        session.close();
-        return nodeNames;
+        return null;
     }
     
-    public List<String> nodeNamesAtLevel(int rankID, D treeDef)
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.treeutils.TreeDataService#nodeNamesAtLevel(int, edu.ku.brc.specify.datamodel.TreeDefIface)
+     */
+    public List<String> nodeNamesAtLevel(final int rankID, final D treeDef)
     {
         Session session = getNewSession();
-        Class<T> nodeClass = treeDef.getNodeClass();
-        
-        Query nodeNamesQuery = session.createQuery("select n.fullName from " + nodeClass.getName() + " n where rankId=:rankID AND definition=:treeDef");
-        nodeNamesQuery.setParameter("rankID", rankID);
-        nodeNamesQuery.setParameter("treeDef", treeDef);
-        List<?> results = nodeNamesQuery.list();
-        Vector<String> nodeNames = new Vector<String>(results.size());
-        for (Object o: results)
+        try
         {
-            nodeNames.add((String)o);
+            Class<T> nodeClass = treeDef.getNodeClass();
+            
+            Query nodeNamesQuery = session.createQuery("select n.fullName from " + nodeClass.getName() + " n where rankId=:rankID AND definition=:treeDef");
+            nodeNamesQuery.setParameter("rankID", rankID);
+            nodeNamesQuery.setParameter("treeDef", treeDef);
+            List<?> results = nodeNamesQuery.list();
+            Vector<String> nodeNames = new Vector<String>(results.size());
+            for (Object o: results)
+            {
+                nodeNames.add((String)o);
+            }
+            return nodeNames;
+            
+        } catch (Exception ex)
+        {
+            log.error(ex);
+        } finally
+        {
+            session.close();
         }
-        session.close();
-        return nodeNames;
+        return null;
     }
     
-    public int countNodesAtLevel(int rankID, D treeDef)
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.treeutils.TreeDataService#countNodesAtLevel(int, edu.ku.brc.specify.datamodel.TreeDefIface)
+     */
+    public int countNodesAtLevel(final int rankID, final D treeDef)
     {
         Session session = getNewSession();
-        Class<T> nodeClass = treeDef.getNodeClass();
-        
-        Query nodeCountQuery = session.createQuery("select count(n) from " + nodeClass.getName() + " n where rankID=:rankID AND definition=:treeDef");
-        nodeCountQuery.setParameter("rankID", rankID);
-        nodeCountQuery.setParameter("treeDef", treeDef);
-        Integer count = (Integer)nodeCountQuery.uniqueResult();
-        session.close();
-        return count;
+        try
+        {
+            Class<T> nodeClass = treeDef.getNodeClass();
+            
+            Query nodeCountQuery = session.createQuery("select count(n) from " + nodeClass.getName() + " n where rankID=:rankID AND definition=:treeDef");
+            nodeCountQuery.setParameter("rankID", rankID);
+            nodeCountQuery.setParameter("treeDef", treeDef);
+            Integer count = (Integer)nodeCountQuery.uniqueResult();
+            return count;
+            
+        } catch (Exception ex)
+        {
+            log.error(ex);
+            
+        } finally
+        {
+            session.close();
+        }
+        return 0;
     }
     
     @SuppressWarnings({ "unchecked", "null" })
-    public synchronized boolean updateNodeNumbersAfterNodeAddition(T newNode, DataProviderSessionIFace session) throws Exception
+    public synchronized boolean updateNodeNumbersAfterNodeAddition(final T newNode, final DataProviderSessionIFace session) throws Exception
     {
         // update the nodeNumber and highestChildNodeNumber fields for all effected nodes
         boolean doNodeNumberUpdate = true;
@@ -454,7 +597,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         else
         {
             parentNN = parent.getNodeNumber();
-            if (parentNN==null)
+            if (parentNN == null)
             {
                 doNodeNumberUpdate = false;
             }
@@ -503,7 +646,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
     }
     
     @SuppressWarnings("null")
-    public boolean updateNodeNumbersAfterNodeDeletion(T deletedNode, DataProviderSessionIFace session) throws Exception
+    public boolean updateNodeNumbersAfterNodeDeletion(final T deletedNode, final DataProviderSessionIFace session) throws Exception
     {
         boolean success = true;
         
@@ -513,7 +656,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 
         // update the nodeNumber and highestChildNodeNumber fields for all effected nodes
         boolean doNodeNumberUpdate = true;
-        if (delNodeNN==null || delNodeHC==null)
+        if (delNodeNN == null || delNodeHC == null)
         {
             doNodeNumberUpdate = false;
         }
@@ -544,11 +687,11 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
     }
     
     @SuppressWarnings("unchecked")
-    public synchronized boolean moveTreeNode(T node, T newParent)
+    public synchronized boolean moveTreeNode(final T node, final T newParent)
     {
         //log.debug("Moving ["+nodeDebugInfo(node)+"] to ["+nodeDebugInfo(newParent)+"]");
         
-        if (node==null || newParent==null)
+        if (node == null || newParent == null)
         {
             throw new NullPointerException("'node' and 'newParent' must both be non-null");
         }
@@ -559,201 +702,230 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         }
         
         T oldParent = node.getParent();
-        if (oldParent==null)
+        if (oldParent == null)
         {
             throw new NullPointerException("'node' must already have a parent");
         }
 
         Session session = getNewSession();
-        T mergedNode      = (T)mergeIntoSession(session, node);
-        T mergedNewParent = (T)mergeIntoSession(session, newParent);
-        T mergedOldParent = (T)mergeIntoSession(session, oldParent);
-        Transaction tx = session.beginTransaction();
-        
-        //log.debug("refreshing " + nodeDebugInfo(mergedNode));
-        session.refresh(mergedNode);
-        //log.debug("refreshing " + nodeDebugInfo(mergedNewParent));
-        session.refresh(mergedNewParent);
-        
-        // fix up the parent/child pointers for the effected nodes
-        // oldParent cannot be null at this point
-        mergedOldParent.removeChild(mergedNode);
-        mergedNewParent.addChild(mergedNode);
-        mergedNode.setParent(mergedNewParent);
-        
-        BusinessRulesIFace busRules = DBTableIdMgr.getInstance().getBusinessRule(mergedNode);
-        HibernateDataProviderSession sessionWrapper = new HibernateDataProviderSession(session);
-        
-        if (busRules != null)
+        try
         {
-            busRules.beforeSave(mergedNode, sessionWrapper);
-        }
-        session.saveOrUpdate(mergedNode);
-        
-        // fix all the node numbers for effected nodes
-        // X will represent moving subtree's root node
-        // Y will represent new parent of moving subtree
-        
-        // get the root node
-        T rootNode = mergedNewParent;
-        while (rootNode.getParent() != null)
-        {
-            rootNode = rootNode.getParent();
-        }
-        
-        int rootHC = rootNode.getHighestChildNodeNumber();
-        int xNN = mergedNode.getNodeNumber();
-        int xHC = mergedNode.getHighestChildNodeNumber();
-        int yNN = mergedNewParent.getNodeNumber();
-        D def = mergedNode.getDefinition();
-        String className = mergedNode.getClass().getName();
-        int numMoving = xHC-xNN+1;
-        
-        // the HQL update statements that need to happen now are dependant on the 'direction' of the move
-        boolean downwardMove = true;
-        if (xNN>yNN)
-        {
-            downwardMove = false;
-        }
-        
-        if (downwardMove)
-        {
-            // change node numbers for the moving nodes to high values in order to temporarily 'move them out of the tree'
-            String step1QueryStr = "UPDATE " + className + " SET nodeNumber=nodeNumber+:rootHC, highestChildNodeNumber=highestChildNodeNumber+:rootHC WHERE nodeNumber>=:xNN AND nodeNumber<=:xHC AND definition=:def";
-            Query step1Query = session.createQuery(step1QueryStr);
-            step1Query.setParameter("def", def);
-            step1Query.setParameter("xNN", xNN);
-            step1Query.setParameter("xHC", xHC);
-            step1Query.setParameter("rootHC", rootHC);
-            step1Query.executeUpdate();
-
-            String step2QueryStr = "UPDATE " + className + " SET nodeNumber=nodeNumber-:numMoving WHERE nodeNumber>:xHC AND nodeNumber<=:yNN AND definition=:def";
-            Query step2Query = session.createQuery(step2QueryStr);
-            step2Query.setParameter("def", def);
-            step2Query.setParameter("xHC", xHC);
-            step2Query.setParameter("yNN", yNN);
-            step2Query.setParameter("numMoving", numMoving);
-            step2Query.executeUpdate();
-
-            String step3QueryStr = "UPDATE " + className + " SET highestChildNodeNumber=highestChildNodeNumber-:numMoving WHERE highestChildNodeNumber>=:xHC AND highestChildNodeNumber<:yNN AND definition=:def";
-            Query step3Query = session.createQuery(step3QueryStr);
-            step3Query.setParameter("def", def);
-            step3Query.setParameter("xHC", xHC);
-            step3Query.setParameter("yNN", yNN);
-            step3Query.setParameter("numMoving", numMoving);
-            step3Query.executeUpdate();
-
-            String step4QueryStr = "UPDATE " + className + " SET highestChildNodeNumber=highestChildNodeNumber-nodeNumber WHERE nodeNumber>:rootHC AND definition=:def";
-            Query step4Query = session.createQuery(step4QueryStr);
-            step4Query.setParameter("def", def);
-            step4Query.setParameter("rootHC", rootHC);
-            step4Query.executeUpdate();
-
-            String step5QueryStr = "UPDATE " + className + " SET nodeNumber=nodeNumber + :yNN - :xHC - :rootHC WHERE nodeNumber>:rootHC AND definition=:def";
-            Query step5Query = session.createQuery(step5QueryStr);
-            step5Query.setParameter("def", def);
-            step5Query.setParameter("xHC", xHC);
-            step5Query.setParameter("yNN", yNN);
-            step5Query.setParameter("rootHC", rootHC);
-            step5Query.executeUpdate();
-
-            String step6QueryStr = "UPDATE " + className + " SET highestChildNodeNumber=nodeNumber+highestChildNodeNumber WHERE nodeNumber >:lowerBound AND nodeNumber<=:yNN AND definition=:def";
-            Query step6Query = session.createQuery(step6QueryStr);
-            step6Query.setParameter("def", def);
-            step6Query.setParameter("yNN", yNN);
-            //step6Query.setParameter("numMoving", numMoving);
-            step6Query.setParameter("lowerBound", yNN - numMoving);
-            step6Query.executeUpdate();
-        }
-        else
-        {
-            // change node numbers for the moving nodes to high values in order to temporarily 'move them out of the tree'
-            String step1QueryStr = "UPDATE " + className + " SET nodeNumber=nodeNumber+:rootHC, highestChildNodeNumber=highestChildNodeNumber+:rootHC WHERE nodeNumber>=:xNN AND nodeNumber<=:xHC AND definition=:def";
-            Query step1Query = session.createQuery(step1QueryStr);
-            step1Query.setParameter("def", def);
-            step1Query.setParameter("xNN", xNN);
-            step1Query.setParameter("xHC", xHC);
-            step1Query.setParameter("rootHC", rootHC);
-            step1Query.executeUpdate();
+            T mergedNode      = (T)mergeIntoSession(session, node);
+            T mergedNewParent = (T)mergeIntoSession(session, newParent);
+            T mergedOldParent = (T)mergeIntoSession(session, oldParent);
+            Transaction tx = session.beginTransaction();
             
-            String step2QueryStr = "UPDATE " + className + " SET nodeNumber=nodeNumber+:numMoving WHERE nodeNumber>:yNN AND nodeNumber<:xNN AND definition=:def";
-            Query step2Query = session.createQuery(step2QueryStr);
-            step2Query.setParameter("def", def);
-            step2Query.setParameter("xNN", xNN);
-            step2Query.setParameter("yNN", yNN);
-            step2Query.setParameter("numMoving", numMoving);
-            step2Query.executeUpdate();
-
-            String step3QueryStr = "UPDATE " + className + " SET highestChildNodeNumber=highestChildNodeNumber+:numMoving WHERE highestChildNodeNumber>=:yNN AND highestChildNodeNumber<:xHC AND definition=:def";
-            Query step3Query = session.createQuery(step3QueryStr);
-            step3Query.setParameter("def", def);
-            step3Query.setParameter("yNN", yNN);
-            step3Query.setParameter("xHC", xHC);
-            step3Query.setParameter("numMoving", numMoving);
-            step3Query.executeUpdate();
-
-            String step4QueryStr = "UPDATE " + className + " SET highestChildNodeNumber=highestChildNodeNumber-nodeNumber WHERE nodeNumber>:rootHC AND definition=:def";
-            Query step4Query = session.createQuery(step4QueryStr);
-            step4Query.setParameter("def", def);
-            step4Query.setParameter("rootHC", rootHC);
-            step4Query.executeUpdate();
-
-            String step5QueryStr = "UPDATE " + className + " SET nodeNumber=nodeNumber+1+:yNN-:xNN-:rootHC WHERE nodeNumber>:rootHC AND definition=:def";
-            Query step5Query = session.createQuery(step5QueryStr);
-            step5Query.setParameter("def", def);
-            step5Query.setParameter("xNN", xNN);
-            step5Query.setParameter("yNN", yNN);
-            step5Query.setParameter("rootHC", rootHC);
-            step5Query.executeUpdate();
-
-            String step6QueryStr = "UPDATE " + className + " SET highestChildNodeNumber=highestChildNodeNumber+nodeNumber WHERE nodeNumber>:yNN AND nodeNumber<=:upperBound AND definition=:def";
-            Query step6Query = session.createQuery(step6QueryStr);
-            step6Query.setParameter("def", def);
-            step6Query.setParameter("yNN", yNN);
-            //step6Query.setParameter("numMoving", numMoving);
-            step6Query.setParameter("upperBound", yNN + numMoving);
-            step6Query.executeUpdate();
-        }
-
-        if (busRules != null)
-        {
-            try
+            //log.debug("refreshing " + nodeDebugInfo(mergedNode));
+            session.refresh(mergedNode);
+            //log.debug("refreshing " + nodeDebugInfo(mergedNewParent));
+            session.refresh(mergedNewParent);
+            
+            // fix up the parent/child pointers for the effected nodes
+            // oldParent cannot be null at this point
+            mergedOldParent.removeChild(mergedNode);
+            mergedNewParent.addChild(mergedNode);
+            mergedNode.setParent(mergedNewParent);
+            
+            BusinessRulesIFace busRules = DBTableIdMgr.getInstance().getBusinessRule(mergedNode);
+            HibernateDataProviderSession sessionWrapper = new HibernateDataProviderSession(session);
+            
+            if (busRules != null)
             {
-                boolean retVal = busRules.beforeSaveCommit(mergedNode, sessionWrapper);
-                if (retVal == false)
+                busRules.beforeSave(mergedNode, sessionWrapper);
+            }
+            session.saveOrUpdate(mergedNode);
+            
+            // fix all the node numbers for effected nodes
+            // X will represent moving subtree's root node
+            // Y will represent new parent of moving subtree
+            
+            // get the root node
+            T rootNode = mergedNewParent;
+            while (rootNode.getParent() != null)
+            {
+                rootNode = rootNode.getParent();
+            }
+            
+            int rootHC = rootNode.getHighestChildNodeNumber();
+            int xNN = mergedNode.getNodeNumber();
+            int xHC = mergedNode.getHighestChildNodeNumber();
+            int yNN = mergedNewParent.getNodeNumber();
+            D   def = mergedNode.getDefinition();
+            String className = mergedNode.getClass().getName();
+            int numMoving = xHC-xNN+1;
+            
+            // the HQL update statements that need to happen now are dependant on the 'direction' of the move
+            boolean downwardMove = true;
+            if (xNN>yNN)
+            {
+                downwardMove = false;
+            }
+            
+            if (downwardMove)
+            {
+                // change node numbers for the moving nodes to high values in order to temporarily 'move them out of the tree'
+                String step1QueryStr = "UPDATE " + className + " SET nodeNumber=nodeNumber+:rootHC, highestChildNodeNumber=highestChildNodeNumber+:rootHC WHERE nodeNumber>=:xNN AND nodeNumber<=:xHC AND definition=:def";
+                Query step1Query = session.createQuery(step1QueryStr);
+                step1Query.setParameter("def", def);
+                step1Query.setParameter("xNN", xNN);
+                step1Query.setParameter("xHC", xHC);
+                step1Query.setParameter("rootHC", rootHC);
+                step1Query.executeUpdate();
+    
+                String step2QueryStr = "UPDATE " + className + " SET nodeNumber=nodeNumber-:numMoving WHERE nodeNumber>:xHC AND nodeNumber<=:yNN AND definition=:def";
+                Query step2Query = session.createQuery(step2QueryStr);
+                step2Query.setParameter("def", def);
+                step2Query.setParameter("xHC", xHC);
+                step2Query.setParameter("yNN", yNN);
+                step2Query.setParameter("numMoving", numMoving);
+                step2Query.executeUpdate();
+    
+                String step3QueryStr = "UPDATE " + className + " SET highestChildNodeNumber=highestChildNodeNumber-:numMoving WHERE highestChildNodeNumber>=:xHC AND highestChildNodeNumber<:yNN AND definition=:def";
+                Query step3Query = session.createQuery(step3QueryStr);
+                step3Query.setParameter("def", def);
+                step3Query.setParameter("xHC", xHC);
+                step3Query.setParameter("yNN", yNN);
+                step3Query.setParameter("numMoving", numMoving);
+                step3Query.executeUpdate();
+    
+                String step4QueryStr = "UPDATE " + className + " SET highestChildNodeNumber=highestChildNodeNumber-nodeNumber WHERE nodeNumber>:rootHC AND definition=:def";
+                Query step4Query = session.createQuery(step4QueryStr);
+                step4Query.setParameter("def", def);
+                step4Query.setParameter("rootHC", rootHC);
+                step4Query.executeUpdate();
+    
+                String step5QueryStr = "UPDATE " + className + " SET nodeNumber=nodeNumber + :yNN - :xHC - :rootHC WHERE nodeNumber>:rootHC AND definition=:def";
+                Query step5Query = session.createQuery(step5QueryStr);
+                step5Query.setParameter("def", def);
+                step5Query.setParameter("xHC", xHC);
+                step5Query.setParameter("yNN", yNN);
+                step5Query.setParameter("rootHC", rootHC);
+                step5Query.executeUpdate();
+    
+                String step6QueryStr = "UPDATE " + className + " SET highestChildNodeNumber=nodeNumber+highestChildNodeNumber WHERE nodeNumber >:lowerBound AND nodeNumber<=:yNN AND definition=:def";
+                Query step6Query = session.createQuery(step6QueryStr);
+                step6Query.setParameter("def", def);
+                step6Query.setParameter("yNN", yNN);
+                //step6Query.setParameter("numMoving", numMoving);
+                step6Query.setParameter("lowerBound", yNN - numMoving);
+                step6Query.executeUpdate();
+            }
+            else
+            {
+                // change node numbers for the moving nodes to high values in order to temporarily 'move them out of the tree'
+                String step1QueryStr = "UPDATE " + className + " SET nodeNumber=nodeNumber+:rootHC, highestChildNodeNumber=highestChildNodeNumber+:rootHC WHERE nodeNumber>=:xNN AND nodeNumber<=:xHC AND definition=:def";
+                Query step1Query = session.createQuery(step1QueryStr);
+                step1Query.setParameter("def", def);
+                step1Query.setParameter("xNN", xNN);
+                step1Query.setParameter("xHC", xHC);
+                step1Query.setParameter("rootHC", rootHC);
+                step1Query.executeUpdate();
+                
+                String step2QueryStr = "UPDATE " + className + " SET nodeNumber=nodeNumber+:numMoving WHERE nodeNumber>:yNN AND nodeNumber<:xNN AND definition=:def";
+                Query step2Query = session.createQuery(step2QueryStr);
+                step2Query.setParameter("def", def);
+                step2Query.setParameter("xNN", xNN);
+                step2Query.setParameter("yNN", yNN);
+                step2Query.setParameter("numMoving", numMoving);
+                step2Query.executeUpdate();
+    
+                String step3QueryStr = "UPDATE " + className + " SET highestChildNodeNumber=highestChildNodeNumber+:numMoving WHERE highestChildNodeNumber>=:yNN AND highestChildNodeNumber<:xHC AND definition=:def";
+                Query step3Query = session.createQuery(step3QueryStr);
+                step3Query.setParameter("def", def);
+                step3Query.setParameter("yNN", yNN);
+                step3Query.setParameter("xHC", xHC);
+                step3Query.setParameter("numMoving", numMoving);
+                step3Query.executeUpdate();
+    
+                String step4QueryStr = "UPDATE " + className + " SET highestChildNodeNumber=highestChildNodeNumber-nodeNumber WHERE nodeNumber>:rootHC AND definition=:def";
+                Query step4Query = session.createQuery(step4QueryStr);
+                step4Query.setParameter("def", def);
+                step4Query.setParameter("rootHC", rootHC);
+                step4Query.executeUpdate();
+    
+                String step5QueryStr = "UPDATE " + className + " SET nodeNumber=nodeNumber+1+:yNN-:xNN-:rootHC WHERE nodeNumber>:rootHC AND definition=:def";
+                Query step5Query = session.createQuery(step5QueryStr);
+                step5Query.setParameter("def", def);
+                step5Query.setParameter("xNN", xNN);
+                step5Query.setParameter("yNN", yNN);
+                step5Query.setParameter("rootHC", rootHC);
+                step5Query.executeUpdate();
+    
+                String step6QueryStr = "UPDATE " + className + " SET highestChildNodeNumber=highestChildNodeNumber+nodeNumber WHERE nodeNumber>:yNN AND nodeNumber<=:upperBound AND definition=:def";
+                Query step6Query = session.createQuery(step6QueryStr);
+                step6Query.setParameter("def", def);
+                step6Query.setParameter("yNN", yNN);
+                //step6Query.setParameter("numMoving", numMoving);
+                step6Query.setParameter("upperBound", yNN + numMoving);
+                step6Query.executeUpdate();
+            }
+    
+            if (busRules != null)
+            {
+                try
+                {
+                    boolean retVal = busRules.beforeSaveCommit(mergedNode, sessionWrapper);
+                    if (retVal == false)
+                    {
+                        tx.rollback();
+                        return false;
+                    }
+                }
+                catch (Exception e)
                 {
                     tx.rollback();
                     return false;
                 }
             }
-            catch (Exception e)
+            boolean success = commitTransaction(session, tx); // NOTE: Closes open session
+            if (busRules != null)
             {
-                tx.rollback();
-                return false;
+                success &= busRules.afterSaveCommit(mergedNode);
+            }
+            
+            return success;
+            
+        } catch (Exception ex)
+        {
+            log.error(ex);
+            
+        } finally
+        {
+            if (session.isOpen())
+            {
+                session.close();
             }
         }
-        boolean success = commitTransaction(session, tx);
-        if (busRules != null)
-        {
-            success &= busRules.afterSaveCommit(mergedNode);
-        }
-        
-        return success;
+        return false;
     }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.treeutils.TreeDataService#createNodeLink(edu.ku.brc.specify.datamodel.Treeable, edu.ku.brc.specify.datamodel.Treeable)
      */
     @SuppressWarnings("unchecked")
-    public String synonymize(T source, T destination)
+    public String synonymize(final T source, final T destination)
     {
+        String statusMsg = null;
         Session session = getNewSession(source);
-        T mergedDest = (T)mergeIntoSession(session, destination);
-        Transaction tx = session.beginTransaction();
-        String statusMsg = TreeHelper.createNodeRelationship(source,mergedDest);
-        if (!commitTransaction(session, tx))
+        try
         {
-            statusMsg = "Failed to create node relationship.";
+            T mergedDest = (T)mergeIntoSession(session, destination);
+            Transaction tx = session.beginTransaction();
+            statusMsg = TreeHelper.createNodeRelationship(source,mergedDest);
+            
+            if (!commitTransaction(session, tx)) // NOTE: this call will close an open session.
+            {
+                statusMsg = "Failed to create node relationship.";
+            }
+        } catch (Exception ex)
+        {
+            log.error(ex);
+        } finally
+        {
+            if (session.isOpen())
+            {
+                session.close();
+            }
         }
         return statusMsg;
     }
@@ -761,16 +933,31 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.treeutils.TreeDataService#getSynonyms(edu.ku.brc.specify.datamodel.Treeable)
      */
-    public Set<T> getSynonyms(T node)
+    public Set<T> getSynonyms(final T node)
     {
-        Session session = getNewSession(node);
-        Set<T> synonyms = node.getAcceptedChildren();
-        synonyms.size();
-        session.close();
+        Set<T>  synonyms = null;
+        Session session  = getNewSession(node);
+        try
+        {
+            synonyms = node.getAcceptedChildren();
+            synonyms.size();
+            
+        } catch (Exception ex)
+        {
+            log.error(ex);
+        } finally
+        {
+            session.close();
+        }
         return synonyms;
     }
     
-    public Set<T> getSynonyms(Class<? extends Treeable<?,?,?>> clazz, Integer id)
+    /**
+     * @param clazz
+     * @param id
+     * @return
+     */
+    public Set<T> getSynonyms(final Class<? extends Treeable<?,?,?>> clazz, final Integer id)
     {
         T node = getNodeById(clazz, id);
         return getSynonyms(node);
@@ -780,46 +967,80 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
      * @see edu.ku.brc.specify.treeutils.TreeDataService#getSynonymIdsAndNames(java.lang.Class, java.lang.Integer)
      */
     @SuppressWarnings("unchecked")
-    public Set<Pair<Integer,String>> getSynonymIdsAndNames(Class<?> clazz, Integer nodeId)
+    public Set<Pair<Integer,String>> getSynonymIdsAndNames(final Class<?> clazz, final Integer nodeId)
     {
-        Set<Pair<Integer,String>> idsAndNames = new HashSet<Pair<Integer,String>>();
+        Set<Pair<Integer, String>> idsAndNames = new HashSet<Pair<Integer,String>>();
         Session session = getNewSession();
-        String queryString = TreeFactory.getSynonymQueryString(clazz);
-        Query q = session.createQuery(queryString);
-        q.setParameter("NODEID", nodeId);
-        List<Object[]> results = q.list();
-        for (Object[] idAndName: results)
+        try
         {
-            Integer id = (Integer)idAndName[0];
-            String name = (String)idAndName[1];
+            String queryString = TreeFactory.getSynonymQueryString(clazz);
+            Query  q           = session.createQuery(queryString);
+            q.setParameter("NODEID", nodeId);
             
-            idsAndNames.add(new Pair<Integer,String>(id,name));
+            List<Object[]> results = q.list();
+            for (Object[] idAndName: results)
+            {
+                Integer id = (Integer)idAndName[0];
+                String name = (String)idAndName[1];
+                
+                idsAndNames.add(new Pair<Integer,String>(id,name));
+            }
+        } catch (Exception ex)
+        {
+            log.error(ex);
+            
+        } finally
+        {
+            session.close();
         }
-        session.close();
         return idsAndNames;
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.treeutils.TreeDataService#initializeRelatedObjects(edu.ku.brc.specify.datamodel.Treeable)
      */
-    public synchronized void initializeRelatedObjects(T node)
+    public synchronized void initializeRelatedObjects(final T node)
     {
-        Session session = getNewSession(node);
-        TreeHelper.initializeRelatedObjects(node);
-        session.close();
+        Session session = null;
+        try
+        {
+            session = getNewSession(node);
+            if (session != null)
+            {
+                TreeHelper.initializeRelatedObjects(node);
+            }
+        } catch (Exception ex)
+        {
+            log.error(ex);
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
+        }
     }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.treeutils.TreeDataService#refresh(java.lang.Object[])
      */
-    public synchronized void refresh(Object ... objects)
+    public synchronized void refresh(final Object ... objects)
     {
         Session session = getNewSession(objects);
-        for (Object o: objects)
+        try
         {
-            session.refresh(o);
+            for (Object o: objects)
+            {
+                session.refresh(o);
+            }
+            
+        } catch (Exception ex)
+        {
+            log.error(ex);
+        } finally
+        {
+            session.close();
         }
-        session.close();
     }
     
     /**
@@ -828,12 +1049,12 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
      * @param objects the objects to associate with the new session
      * @return the newly created session
      */
-    private Session getNewSession(Object... objects)
+    private Session getNewSession(final Object... objects)
     {
         Session session = HibernateUtil.getSessionFactory().openSession();
         for (Object o: objects)
         {
-            if (o!=null)
+            if (o != null)
             {
                 // make sure not to attempt locking an unsaved object
                 DataModelObjBase dmob = (DataModelObjBase)o;
@@ -846,10 +1067,15 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         return session;
     }
     
-    private Object mergeIntoSession(Session session, Object object)
+    /**
+     * Merges object with session.
+     * @param session the session
+     * @param object the object to be merged
+     * @return a new object after the merge.
+     */
+    private Object mergeIntoSession(final Session session, final Object object)
     {
-        Object newObject = session.merge(object);
-        return newObject;
+        return session.merge(object);
     }
     
     /**
@@ -860,7 +1086,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
      * @param tx the transaction
      * @return true on success
      */
-    private boolean commitTransaction(Session session, Transaction tx)
+    private boolean commitTransaction(final Session session, final Transaction tx)
     {
         boolean result = true;
         try
@@ -892,7 +1118,8 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
      * @param o any object
      * @return a string representation of the node
      */
-    private String nodeDebugInfo(Object o)
+    @SuppressWarnings("unused")
+    private String nodeDebugInfo(final Object o)
     {
         if (o instanceof Treeable)
         {

@@ -1,7 +1,9 @@
 package edu.ku.brc.specify.rstools;
 
+import java.net.URL;
 import java.util.Collections;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
@@ -33,17 +35,29 @@ public class WorkbenchRowPlacemarkWrapper implements GoogleEarthPlacemarkIFace
     
     /** The data items contained in the row. */
     protected Vector<WorkbenchDataItem> dataList = null;
+    
+    protected List<WorkbenchTemplateMappingItem>               visibleColumns;
+    protected Hashtable<WorkbenchTemplateMappingItem, Boolean> visibleMap = new Hashtable<WorkbenchTemplateMappingItem, Boolean>();
 
     /**
      * Constructor.
      * 
      * @param row the {@link WorkbenchRow} to represent as a {@link GoogleEarthPlacemarkIFace} object
      * @param label the text label of the resulting placemark
+     * @param visibleColumns the columns to use for the HTML
      */
-    public WorkbenchRowPlacemarkWrapper( WorkbenchRow row, String label )
+    public WorkbenchRowPlacemarkWrapper(final WorkbenchRow row, 
+                                        final String label,
+                                        final List<WorkbenchTemplateMappingItem> visibleColumns)
     {
         this.wbRow = row;
         this.label = label;
+        this.visibleColumns = visibleColumns;
+        
+        for (WorkbenchTemplateMappingItem wbtmi : visibleColumns)
+        {
+            visibleMap.put(wbtmi, true);
+        }
     }
     
     /**
@@ -90,11 +104,11 @@ public class WorkbenchRowPlacemarkWrapper implements GoogleEarthPlacemarkIFace
         for (WorkbenchDataItem wbdi : dataList)
         {
             WorkbenchTemplateMappingItem wbtmi = mappings.get(wbdi.getColumnNumber());
-            if (wbtmi.getIsExportableToContent())
+            if (visibleMap.get(wbtmi) != null && wbtmi.getIsExportableToContent())
             {
                 sb.append("<tr><td align=\"right\">");
                 sb.append(wbtmi.getTitle());
-                sb.append("</td><td align=\"left\">");
+                sb.append(":</td><td align=\"left\">");
                 sb.append(wbdi.getCellData());
                 sb.append("</td></tr>\n");
             }
@@ -169,6 +183,15 @@ public class WorkbenchRowPlacemarkWrapper implements GoogleEarthPlacemarkIFace
     {
         initExportData();
         return label;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.rstools.GoogleEarthPlacemarkIFace#getIconURL()
+     */
+    public URL getIconURL()
+    {
+        // TODO Auto-generated method stub
+        return null;
     }
 
 }

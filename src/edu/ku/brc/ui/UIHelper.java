@@ -73,6 +73,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.WindowConstants;
@@ -80,6 +81,7 @@ import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.plaf.ColorUIResource;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -1851,6 +1853,28 @@ public final class UIHelper
             size.height = Math.min(size.height, table.getRowHeight()*10);
             size.width  = totalWidth;
             table.setPreferredScrollableViewportSize(size);
+        }
+    }
+    
+    /**
+     * Sets a JTable to have the headers be centered. Also, the caller can indicate whether
+     * and "String" columns are also centered.
+     * @param table the table
+     * @param dataColsAlso whether the String data columns should be cetnered.
+     */
+    public static void makeTableHeadersCentered(final JTable table, final boolean dataColsAlso)
+    {
+        ((DefaultTableCellRenderer)table.getTableHeader().getDefaultRenderer()).setHorizontalAlignment(SwingConstants.CENTER);
+        
+        if (dataColsAlso)
+        {
+            TableCellRenderer tcr = table.getDefaultRenderer(String.class);
+            
+            // For Strings with no changes made to the table, the render is a DefaultTableCellRender.
+            DefaultTableCellRenderer dtcr = (DefaultTableCellRenderer) tcr;
+            
+            // set the alignment to center
+            dtcr.setHorizontalAlignment(SwingConstants.CENTER);
         }
     }
 

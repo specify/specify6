@@ -14,6 +14,7 @@
  */
 package edu.ku.brc.af.prefs;
 
+import java.awt.Color;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
@@ -26,7 +27,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.prefs.BackingStoreException;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * A reference implementation for the preferences/properties system. These are persisted every 30 seconds or whatever the
@@ -386,6 +390,46 @@ public class AppPreferences
     public void putFloat(final String name, final Float value)
     {
         put(name, value.toString());
+    }
+    
+    /**
+     * @param name
+     * @param defaultColor
+     * @return
+     */
+    public Color getColor(final String name, final Color defaultColor)
+    {
+        String colorStr = get(name, null);
+        if (StringUtils.isNotEmpty(colorStr))
+        {
+            try
+            {
+                return UIHelper.parseRGB(colorStr);
+                
+            } catch (Exception ex)
+            {
+                
+            }
+        }
+        return defaultColor;
+    }
+    
+    /**
+     * @param name
+     * @param color
+     */
+    public void putColor(final String name, final Color color)
+    {
+        put(name, String.format("%d, %d, %d", color.getRed(), color.getGreen(), color.getBlue()));
+    }
+
+    /**
+     * @param name
+     * @param color
+     */
+    public void putColor(final String name, final String color)
+    {
+        put(name, color);
     }
 
     /**

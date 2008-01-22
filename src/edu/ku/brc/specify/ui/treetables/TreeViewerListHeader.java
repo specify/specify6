@@ -68,9 +68,14 @@ public class TreeViewerListHeader extends JPanel implements ListDataListener
 	 * list (which represents the given data model).
 	 *
 	 * @param list the list
-	 * @param tdlm the list's underlying data model
+	 * @param tvlm the list's underlying data model
+	 * @param listCellRenderer
+	 * @param rankToNameMap
 	 */
-	public TreeViewerListHeader(JList list, TreeViewerListModel tvlm, TreeViewerNodeRenderer listCellRenderer, Map<Integer, String> rankToNameMap)
+	public TreeViewerListHeader(JList                  list, 
+	                            TreeViewerListModel    tvlm, 
+	                            TreeViewerNodeRenderer listCellRenderer, 
+	                            Map<Integer, String>   rankToNameMap)
 	{
 		this.list = list;
 		this.model = tvlm;

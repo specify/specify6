@@ -223,7 +223,7 @@
                 </sql>
                 <captions>
                     <caption tableid="1" col="co.CollectionObjectID" visible="false"/>
-                    <caption tableid="1" col="co.CatalogNumber"/>
+                    <caption tableid="1" col="co.CatalogNumber" formatter="CatalogNumber"/>
                     <caption tableid="4" col="t.FullName"   key="DeterminationName"/>
                     <caption tableid="4" col="t2.FullName"  key="AcceptedTaxonName"/>
                 </captions>
@@ -243,7 +243,7 @@
                 </sql>
                 <captions>
                     <caption tableid="1" col="co.CollectionObjectID" visible="false"/>
-                    <caption tableid="1" col="co.CatalogNumber"/>
+                    <caption tableid="1" col="co.CatalogNumber"      formatter="CatalogNumber"/>
                     <caption tableid="4" col="t.FullName"            key="DeterminationName"/>
                     <caption tableid="4" col="t2.FullName"           key="OldTaxonName"/>
                 </captions>
@@ -264,7 +264,7 @@
                 </sql>
                 <captions>
                     <caption tableid="1" col="co.CollectionObjectID" visible="false"/>
-                    <caption tableid="1" col="co.CatalogNumber"/>
+                    <caption tableid="1" col="co.CatalogNumber"      formatter="CatalogNumber"/>
                     <caption tableid="4" col="deterTax.FullName"     key="OldTaxonOnDeter"/>
                     <caption tableid="4" col="acceptTax.FullName"    key="AcceptedTaxonName"/>
                     <caption tableid="4" col="oldTax.FullName"       key="OtherOldTaxonName"/>

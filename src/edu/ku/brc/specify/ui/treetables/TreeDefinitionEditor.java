@@ -56,6 +56,7 @@ import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
@@ -250,6 +251,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 		defItemsTable.setRowSelectionAllowed(true);
 		defItemsTable.setColumnSelectionAllowed(false);
 		defItemsTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		UIHelper.makeTableHeadersCentered(defItemsTable, false);
 		
 		defNameLabel.setText(treeDef.getName());
 		Font f = defNameLabel.getFont();

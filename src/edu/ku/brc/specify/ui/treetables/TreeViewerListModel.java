@@ -16,8 +16,6 @@ import java.util.Vector;
 
 import javax.swing.AbstractListModel;
 
-import org.apache.log4j.Logger;
-
 /**
  * @author jstewart
  * @code_status Alpha
@@ -25,16 +23,21 @@ import org.apache.log4j.Logger;
 public class TreeViewerListModel extends AbstractListModel
 {
     /** Logger for all messages emitted. */
-    private static final Logger log = Logger.getLogger(TreeViewerListModel.class);
+    //private static final Logger log = Logger.getLogger(TreeViewerListModel.class);
 
     protected Vector<TreeNode> nodes = new Vector<TreeNode>(100);
     protected TreeNode visibleRoot;
-    protected int visibleSize;
+    protected int      visibleSize;
     
     protected TreeNode dropLocationNode;
     
     protected Set<Integer> idsShowingChildren = new HashSet<Integer>();
+    protected boolean      doAddAllRanks      = false;
     
+    
+    /**
+     * @param rootNode
+     */
     public TreeViewerListModel(TreeNode rootNode)
     {
         nodes.add(rootNode);
@@ -275,7 +278,7 @@ public class TreeViewerListModel extends AbstractListModel
         {
             TreeNode node = nodes.get(i);
             int rank = node.getRank();
-            if (!visibleRanks.contains(rank))
+            if (!visibleRanks.contains(rank) || doAddAllRanks)
             {
                 visibleRanks.add(rank);
             }

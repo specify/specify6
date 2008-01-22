@@ -7,6 +7,8 @@
 
 package edu.ku.brc.specify.rstools;
 
+import java.net.URL;
+
 import edu.ku.brc.util.Pair;
 
 /**
@@ -23,24 +25,29 @@ public interface GoogleEarthPlacemarkIFace
      * 
      * @return the placemark title
      */
-    public String getTitle();
+    public abstract String getTitle();
     
     /**
      * Returns the HTML content to be displayed in the placemark popup bubble.
      * 
      * @return the HTML content
      */
-    public String getHtmlContent();
+    public abstract String getHtmlContent();
     
     /**
      * Returns the geolocation of the placemark (latitude, longitude).
      * 
      * @return the lat and lon
      */
-    public Pair<Double,Double> getLatLon();
+    public abstract Pair<Double,Double> getLatLon();
+    
+    /**
+     * @return an URL to the image to use or null
+     */
+    public abstract URL getIconURL();
     
     /**
      * Provides an opportunity for the object to cleanup any internal data.
      */
-    public void cleanup();
+    public abstract void cleanup();
 }

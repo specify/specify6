@@ -62,7 +62,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     
     public enum LoadStatus {None, Successful, Error, OutOfMemory, TooLarge}
     
-    protected Integer                   workbenchRowId;
+    protected Integer                workbenchRowId;
     protected Short                  rowNumber;
     protected byte[]                 cardImageData;
     protected String                 cardImageFullPath;
@@ -82,6 +82,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     protected LoadStatus                                     loadStatus    = LoadStatus.None;
     protected Exception                                      loadException = null;
     protected ImageIcon                                      imgIcon       = null;
+
     
     // A temporary storage location for results from BG.  These results ARE NOT stored into the DB
     // unless they are also set into 'bioGeomancerResults'.
@@ -659,6 +660,8 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         }
         return null;
     }
+    
+    
 
     ////////////////////////////////////////////////////
     // Helper methods
@@ -713,7 +716,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
 
 	   
     ////////////////////////////////////////////////////
-    // Helper methods
+    // GeoCoordDataIFace methods
     ////////////////////////////////////////////////////
 
     /* (non-Javadoc)

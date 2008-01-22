@@ -48,7 +48,7 @@ public class BGMRecordSetProcessor extends GeoRefRecordSetProcessorBase implemen
                 (GeoCoordProviderListenerIFace)listenerObj : null;
         
         GeoCoordBGMProvider geoCoordBGMProvider = new GeoCoordBGMProvider();
-        geoCoordBGMProvider.processGeoRefData((List<GeoCoordDataIFace>)items, listener, "HELPCONTEXT"); // XXX HELP FIX ME
+        geoCoordBGMProvider.processGeoRefData((List<GeoCoordDataIFace>)items, listener, "WorkbenchBGM"); // XXX HELP FIX ME
     }
 
     /* (non-Javadoc)

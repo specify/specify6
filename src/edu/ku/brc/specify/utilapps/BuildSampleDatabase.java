@@ -118,6 +118,7 @@ import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.Discipline;
+import edu.ku.brc.specify.config.init.DBConfigInfo;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.Address;
@@ -196,7 +197,6 @@ import edu.ku.brc.specify.treeutils.TreeHelper;
 import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.FileStoreAttachmentManager;
@@ -274,59 +274,105 @@ public class BuildSampleDatabase
      * @param disciplineName the discipline name
      * @return the entire list of DB object to be persisted
      */
-    public List<Object> createEmptyDiscipline(final String collTypeName, 
-                                              final String disciplineName,
-                                              final String username, 
-                                              final String userType, 
-                                              final String firstName, 
-                                              final String lastName, 
-                                              final String email)
+    public List<Object> createEmptyDiscipline(final DBConfigInfo config)
     {
         Vector<Object> dataObjects = new Vector<Object>();
 
-        Agent             userAgent         = createAgent("", firstName, "", lastName, "", email);
-        UserGroup         userGroup         = createUserGroup(disciplineName);
-        SpecifyUser       user              = createSpecifyUser(username, email, (short) 0, userGroup, userType);
-        DataType          dataType          = createDataType(disciplineName);
+        
+        int createStep = 0;
+        
+        frame.setProcess(0, 13);
+        
+        frame.setProcess(++createStep);
 
-        // create tree defs (later we will make the def items and nodes)
-        TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Test Taxon Tree");
-        GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Test Geography Tree");
-        GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Test Geologic Time Period Tree");
-        LithoStratTreeDef         lithoStratTreeDef = createLithoStratTreeDef("Test LithoStrat Tree");
-        LocationTreeDef           locTreeDef        = createLocationTreeDef("Test Location Tree");
-
-        Discipline discipline = Discipline.getDiscipline("fish");
-
-        Institution    institution    = createInstitution("Natural History Museum");
-        Division       division       = createDivision(institution, discipline.getName(), "Icthyology", "IT", "Icthyology");
-        CollectionType collectionType = createCollectionType(division, collTypeName, disciplineName, dataType, user, taxonTreeDef, null, null, null, lithoStratTreeDef);
+        Institution    institution    = createInstitution(config.getInstName());
+        Division       division       = createDivision(institution, config.getDiscipline().getName(), config.getDivName(), config.getDivAbbrev(), config.getDivTitle());
+        
+        Agent            userAgent        = createAgent(config.getLastName(), config.getFirstName(), "", config.getLastName(), "", config.getEmail());
+        userAgent.setCollectionMemberId(0);
+        UserGroup        userGroup        = createUserGroup(config.getDiscipline().getTitle());
+        
+        institution.setTitle(config.getInstTitle());
+        
+        frame.setDesc("Creating Core information...");
+        frame.setProcess(++createStep);
 
         startTx();
+        persist(userGroup);
         persist(institution);
         persist(division);
-        persist(collectionType);
-        commitTx();
         
+        SpecifyUser      user             = createSpecifyUser(config.getUsername(), config.getEmail(), (short) 0, userGroup, config.getUserType());
+        persist(user);
+        
+        DataType         dataType         = createDataType(config.getDiscipline().getTitle());
+        persist(dataType);
+        
+        frame.setDesc("Creating Trees Definitions...");
+        frame.setProcess(++createStep);
+
+        // create tree defs (later we will make the def items and nodes)
+        TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Test Taxon");
+        GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Test Geography");
+        GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Test Chronos Stratigraphy");
+        LithoStratTreeDef         lithoStratTreeDef = createLithoStratTreeDef("Test LithoStrat Tree");
+        LocationTreeDef           locTreeDef        = createLocationTreeDef("Test Location Tree");
+        
+        lithoStratTreeDef.setRemarks("A simple super, group, formation, member, bed Litho Stratigraphy tree");
+        
+        frame.setDesc("Creating CollectionType...");
+        frame.setProcess(++createStep);
+
+        CollectionType collectionType = createCollectionType(division, config.getDiscipline().getName(), config.getDiscipline().getTitle(), 
+                                                             dataType, user, taxonTreeDef, geoTreeDef, gtpTreeDef, locTreeDef, lithoStratTreeDef);
+        
+        persist(collectionType);
+        persist(userAgent);
+        
+        frame.setDesc("Localizing Schema...");
+        frame.setProcess(++createStep);
+
         loadSchemaLocalization(collectionType, SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
         
-        DBTableIdMgr schema = new DBTableIdMgr(false);
-        schema.initialize(new File(XMLHelper.getConfigDirPath("specify_workbench_datamodel.xml")));
-        loadSchemaLocalization(collectionType, SpLocaleContainer.WORKBENCH_SCHEMA, schema);
+        frame.setDesc("Creating CatalogNumberingScheme...");
+        frame.setProcess(++createStep);
+
+        CatalogNumberingScheme cns = createCatalogNumberingScheme("CatalogNumber", "", true);
+        
+        persist(cns);
+        
+        ////////////////////////////////
+        // Create Collection
+        ////////////////////////////////
+        log.info("Creating a Collection");
+        frame.setDesc("Creating Collection...");
+        frame.setProcess(++createStep);
+
+        Collection collection = createCollection(config.getCollectionPrefix(), config.getCollectionName(), cns, collectionType);
+        persist(collection);
+        
+        Collection.setCurrentCollection(collection);
+
+        frame.setDesc("Commiting...");
+        frame.setProcess(++createStep);
+        commitTx();
+        
+        startTx();
+        
+        //DBTableIdMgr schema = new DBTableIdMgr(false);
+        //schema.initialize(new File(XMLHelper.getConfigDirPath("specify_datamodel.xml")));
+        //loadSchemaLocalization(collectionType, SpLocaleContainer, schema);
         
         SpecifyUser.setCurrentUser(user);
         user.setAgent(userAgent);
-
-        dataObjects.add(collectionType);
-        dataObjects.add(userGroup);
-        dataObjects.add(user);
-        dataObjects.add(dataType);
-        dataObjects.add(taxonTreeDef);
-        dataObjects.add(userAgent);
         
+        persist(user);
+
         ////////////////////////////////
         // build the tree def items and nodes
         ////////////////////////////////
+        frame.setDesc("Creating Trees...");
+        frame.setProcess(++createStep);
         List<Object> taxa        = createSimpleTaxon(taxonTreeDef, doShallowTaxonTree);
         List<Object> geos        = createSimpleGeography(geoTreeDef);
         List<Object> locs        = createSimpleLocation(locTreeDef);
@@ -339,12 +385,48 @@ public class BuildSampleDatabase
         persist(locs);
         persist(gtps);
         persist(lithoStrats);
-         
-        CatalogNumberingScheme cns = createCatalogNumberingScheme("CatalogNumber", "", true);
-        dataObjects.add(cns);
+        //commitTx();
+        
+        
+        ////////////////////////////////
+        // picklists
+        ////////////////////////////////
 
-        Collection collection = createCollection("Fish", "Fish", cns, collectionType);
-        dataObjects.add(collection);
+        frame.setDesc("Creating Std Queries...");
+        frame.setProcess(++createStep);
+        standardQueries(dataObjects);
+        
+        persist(dataObjects);
+        dataObjects.clear();
+        
+        log.info("Creating picklists");
+        frame.setDesc("Creating PickLists...");
+        frame.setProcess(++createStep);
+        
+        createPickLists();
+        
+        //startTx();
+        persist(dataObjects);
+        //commitTx();
+        dataObjects.clear();
+        
+        ////////////////////////////////
+        // Determination Status (Must be done here)
+        ////////////////////////////////
+        log.info("Creating determinations status");
+        DeterminationStatus current    = createDeterminationStatus("Current",    "", true);
+        DeterminationStatus notCurrent = createDeterminationStatus("Not current","", false);
+        DeterminationStatus incorrect  = createDeterminationStatus("Incorrect",  "", false);
+        
+        frame.setDesc("Commiting...");
+        frame.setProcess(++createStep);
+        //startTx();
+        persist(current);
+        persist(notCurrent);
+        persist(incorrect);
+        commitTx();
+        
+        frame.setProcess(++createStep);
 
         return dataObjects;
     }
@@ -425,6 +507,31 @@ public class BuildSampleDatabase
         
         //commitTx();
         
+    }
+    
+    protected BldrPickList createPickLists()
+    {
+        BldrPickList colMethods = null;
+        
+        List<BldrPickList> pickLists = DataBuilder.getBldrPickLists();
+        DataBuilder.buildPickListFromXML(pickLists);
+        for (BldrPickList pl : pickLists)
+        {
+            PickList pickList = createPickList(pl.getName(), pl.getType(), pl.getTableName(),
+                                               pl.getFieldName(), pl.getFormatter(), pl.getReadOnly(), 
+                                               pl.getSizeLimit(), pl.getIsSystem());
+            for (BldrPickListItem item : pl.getItems())
+            {
+                pickList.addItem(item.getTitle(), item.getValue());
+            }
+            persist(pickList);
+            
+            if (pl.getName().equals("CollectingMethod"))
+            {
+                colMethods = pl;
+            }
+        }
+        return colMethods;
     }
     
     /**
@@ -557,92 +664,13 @@ public class BuildSampleDatabase
         ////////////////////////////////
         log.info("Creating picklists");
 
-        int tableType      = PickListDBAdapterIFace.Type.Table.ordinal();
-        int tableFieldType = PickListDBAdapterIFace.Type.TableField.ordinal();
-        
         Vector<Object> dataObjects = new Vector<Object>();
-        
         
         standardQueries(dataObjects);
         persist(dataObjects);
         dataObjects.clear();
         
-        BldrPickList colMethods = null;
-
-        if (false)
-        {
-            //                                 Name                Type           Table Name           Field       Formatter          R/O  Size
-            dataObjects.add(createPickList("Division",            tableType,      "division",          null,   "Division",            true, -1, true));
-            dataObjects.add(createPickList("DeterminationStatus", tableType,      "determinationstatus", null, "DeterminationStatus", true, -1, true));
-            dataObjects.add(createPickList("DataType",            tableType,      "datatype",            null, "DataType",            true, -1, true));
-            dataObjects.add(createPickList("Department",          tableFieldType, "accession",         "text1" ,       null,          true, -1, true));
-            dataObjects.add(createPickList("AgentTitle",          tableFieldType, "agent",             "title" ,       null,          true, -1, true));
-            dataObjects.add(createPickList("PrepType",            tableType,      "preptype",           null, "PrepType",             true, -1, true));
-            dataObjects.add(createPickList("CollectionType",      tableType,      "collectiontype",     null, "CollectionType",       true, -1, true));
-            dataObjects.add(createPickList("GeologicTimePeriodTreeDef", tableType, "geologictimeperiodtreedef", null, "GeologicTimePeriodTreeDef", true, -1, true));
-            dataObjects.add(createPickList("CatalogNumberingScheme", tableType, "catalognumberingscheme", null, "CatalogNumberingScheme", true, -1, true));
-            
-            String[] types = {"State", "Federal", "International", "US Dept Fish and Wildlife", "<no data>"};
-            dataObjects.add(createPickList("PermitType", true, types, true));
-    
-            //String[] titles = {"Dr.", "Mr.", "Ms.", "Mrs.", "Sir"};
-            //dataObjects.add(createPickList("AgentTitle", true, titles));
-            
-            String[] roles = {"Borrower", "Receiver"};
-            dataObjects.add(createPickList("LoanAgentRole", true, roles, true));
-            
-            String[] sexes = {"Both", "Female", "Male", "Unknown"};
-            dataObjects.add(createPickList("BiologicalSex", true, sexes, true));
-            
-            String[] status = {"Complete", "In Process", "<no data>"};
-            dataObjects.add(createPickList("AccessionStatus", true, status, true));
-            
-            String[] methods = {"By Hand", "USPS", "UPS", "FedEx", "DHL"};
-            dataObjects.add(createPickList("ShipmentMethod", true, methods, true));
-            
-            String[] accTypes = {"Collection","Gift"};
-            dataObjects.add(createPickList("AccessionType", true, accTypes, true));
-            
-            String[] agentVariantTypes  = {"Variant","Vernacular"};
-            String[] agentVariantValues = {"0","1"};
-            dataObjects.add(createPickList("AgentVariant", true, agentVariantTypes, agentVariantValues, -1, true));
-            
-            String[] accRoles = {"Collector", "Donor", "Reviewer", "Staff", "Receiver"};
-            dataObjects.add(createPickList("AccessionRole", true, accRoles, true));
-            
-            String[] stages = {"adult", "egg", "embryo", "hatchling", "immature", "juvenile", "larva", "nymph", "pupa", "seed"};
-            dataObjects.add(createPickList("BiologicalStage", true, stages, true));
-            
-            String[] collMethods = {"boat electro-shocker", "hook & line", "seine", "trap", "<no data>"};
-            dataObjects.add(createPickList("CollectingMethod", true, collMethods, true));
-            
-            String[] prepMeth = {"C&S", "skeleton", "x-ray", "image", "EtOH"};
-            dataObjects.add(createPickList("CollObjPrepMeth", true, prepMeth, true));
-            
-            String[] taxonLabelFormatter = {"%G %S", "%G %S (%A1 ex. %A2)"};
-            dataObjects.add(createPickList("TaxonLabelFormatter", false, taxonLabelFormatter, 500, true));
-            
-        } else
-        {
-            List<BldrPickList> pickLists = DataBuilder.getBldrPickLists();
-            DataBuilder.buildPickListFromXML(pickLists);
-            for (BldrPickList pl : pickLists)
-            {
-                PickList pickList = createPickList(pl.getName(), pl.getType(), pl.getTableName(),
-                                                   pl.getFieldName(), pl.getFormatter(), pl.getReadOnly(), 
-                                                   pl.getSizeLimit(), pl.getIsSystem());
-                for (BldrPickListItem item : pl.getItems())
-                {
-                    pickList.addItem(item.getTitle(), item.getValue());
-                }
-                persist(pickList);
-                
-                if (pl.getName().equals("CollectingMethod"))
-                {
-                    colMethods = pl;
-                }
-            }
-        }
+        BldrPickList colMethods = createPickLists();;
         
         //startTx();
         persist(dataObjects);
@@ -2231,7 +2259,10 @@ public class BuildSampleDatabase
             
             Discipline         discipline = Discipline.getDiscipline("fish");
             DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver(driverName);
-            buildEmptyDatabase(driverInfo, "localhost", "WorkBench", "guest", "guest", "guest", "guest", "guest@ku.edu", discipline);
+            DBConfigInfo config = new DBConfigInfo(driverInfo, "localhost", "WorkBench", "guest", "guest", 
+                                                   "guest", "guest", "guest@ku.edu", discipline, 
+                                                   "Institution", "Division");
+            buildEmptyDatabase(config);
 
         } else
         {
@@ -2300,7 +2331,8 @@ public class BuildSampleDatabase
                     if (false) // XXX Debug
                     {
                         DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver("Derby");
-                        buildEmptyDatabase(driverInfo, "localhost", "mydata", username, password, "Rod", "Spears", "rods@ku.edu", discipline);
+                        DBConfigInfo       config     = new DBConfigInfo(driverInfo, "localhost", "mydata", username, password, "Rod", "Spears", "rods@ku.edu", discipline, "Institition", "Division");
+                        buildEmptyDatabase(config);
 
                     } else
                     {
@@ -2343,16 +2375,11 @@ public class BuildSampleDatabase
      * @throws SQLException
      * @throws IOException
      */
-    public boolean buildEmptyDatabase(final DatabaseDriverInfo driverInfo,
-                                      final String hostName, 
-                                      final String dbName, 
-                                      final String username, 
-                                      final String password, 
-                                      final String firstName, 
-                                      final String lastName, 
-                                      final String email,
-                                      final Discipline  discipline)
+    public boolean buildEmptyDatabase(final DBConfigInfo config)
     {
+        System.setProperty(AppPreferences.factoryName,          "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");    // Needed by AppReferences
+        System.setProperty("edu.ku.brc.dbsupport.DataProvider", "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set
+        
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setSize(new Dimension(500,125));
         frame.setTitle("Building Specify Database");
@@ -2361,7 +2388,7 @@ public class BuildSampleDatabase
             UIHelper.centerAndShow(frame);
         } else
         {
-            System.out.println("Building Specify Database Username["+username+"]");
+            System.out.println("Building Specify Database Username["+config.getUsername()+"]");
         }
         
         frame.setProcessPercent(true);
@@ -2376,16 +2403,18 @@ public class BuildSampleDatabase
             {
                 frame.getProcessProgress().setIndeterminate(true);
                 frame.getProcessProgress().setString("");
-                frame.setDesc("Creating Database Schema for "+dbName);
+                frame.setDesc("Creating Database Schema for "+config.getDbName());
                 frame.setOverall(steps++);
             }
         });
+        
+        DatabaseDriverInfo driverInfo = config.getDriverInfo();
         
         try
         {
             if (hideFrame) System.out.println("Creating schema");
             
-            SpecifySchemaGenerator.generateSchema(driverInfo, hostName, dbName, username, password);
+            SpecifySchemaGenerator.generateSchema(driverInfo, config.getHostName(), config.getDbName(), config.getUsername(), config.getPassword());
             
             SwingUtilities.invokeLater(new Runnable()
             {
@@ -2393,23 +2422,23 @@ public class BuildSampleDatabase
                 {
                     frame.getProcessProgress().setIndeterminate(true);
                     frame.getProcessProgress().setString("");
-                    frame.setDesc("Logging into "+dbName+"....");
+                    frame.setDesc("Logging into "+config.getDbName()+"....");
                     frame.setOverall(steps++);
                 }
             });
             
-            String connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Create, hostName, dbName);
+            String connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Create, config.getHostName(), config.getDbName());
             if (connStr == null)
             {
-                connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName, dbName);
+                connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, config.getHostName(), config.getDbName());
             }
             
             if (!UIHelper.tryLogin(driverInfo.getDriverClassName(), 
                     driverInfo.getDialectClassName(), 
-                    dbName, 
+                    config.getDbName(), 
                     connStr, 
-                    username, 
-                    password))
+                    config.getUsername(), 
+                    config.getPassword()))
             {
                 if (hideFrame) System.out.println("Login Failed!");
                 return false;
@@ -2423,7 +2452,7 @@ public class BuildSampleDatabase
                 {
                     frame.getProcessProgress().setIndeterminate(true);
                     frame.getProcessProgress().setString("");
-                    frame.setDesc("Creating database "+dbName+"....");
+                    frame.setDesc("Creating database "+config.getDbName()+"....");
                     frame.setOverall(steps++);
                 }
             });
@@ -2441,13 +2470,7 @@ public class BuildSampleDatabase
             
             if (hideFrame) System.out.println("Creating Empty Database");
             
-            List<Object> dataObjects = createEmptyDiscipline(discipline.getTitle(), 
-                                                             discipline.getName(),
-                                                             username,
-                                                             "CollectionManager",
-                                                             firstName,
-                                                             lastName,
-                                                             email);
+            List<Object> dataObjects = createEmptyDiscipline(config);
             
 
             SwingUtilities.invokeLater(new Runnable()
@@ -2456,7 +2479,7 @@ public class BuildSampleDatabase
                 {
                     frame.getProcessProgress().setIndeterminate(true);
                     frame.getProcessProgress().setString("");
-                    frame.setDesc("Saving data into "+dbName+"....");
+                    frame.setDesc("Saving data into "+config.getDbName()+"....");
                     frame.setOverall(steps++);
                 }
             });
@@ -3094,4 +3117,5 @@ public class BuildSampleDatabase
             });
         }
     }
+
 }

@@ -235,6 +235,24 @@ public class Specify extends JPanel implements DatabaseLoginListener
     }
     
     /**
+     * This is used to pre-initialize any preferences. This is needed because a user may
+     * try to edit the preferences before they eve get set by the classes that use them.
+     */
+    protected void preInitializePrefs()
+    {
+        AppPreferences remotePrefs = AppPreferences.getRemote();
+        if (remotePrefs.get("Treeeditor.TreeColColor1", null) == null)
+        {
+            remotePrefs.putColor("Treeeditor.TreeColColor1", new Color(202, 238, 255));
+        }
+        
+        if (remotePrefs.get("Treeeditor.TreeColColor2", null) == null)
+        {
+            remotePrefs.putColor("Treeeditor.TreeColColor2", new Color(151, 221, 255));
+        }
+    }
+    
+    /**
      * Start up without the initializer, assumes there is at least one database to connect to.
      */
     public void startUp()
@@ -1443,6 +1461,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
         statusField.setSectionText(0, userName);
         
         AppPreferences.setConnectedToDB(true);
+        
+        preInitializePrefs();
     }
     
     /**
@@ -1538,6 +1558,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
 			  } 
 		  }
 	  }
+	  
+	  final boolean doConfig = args.length == 1 && args[0].equals("config");
       
       // Now check the System Properties
       String appDir = System.getProperty("appdir");
@@ -1654,8 +1676,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
               
               RolloverCommand.setHoverImg(IconManager.getIcon("DropIndicator"));
               
-              boolean startAsWorkBench = false; // XXX Workbench Testing (start up testing)
-              if (startAsWorkBench)
+              if (doConfig)
               {
                   // For a WorkBench Only Release  
                   specify.startWithInitializer(true, true);  // true, true means doLoginOnly and assume Derby

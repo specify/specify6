@@ -59,6 +59,8 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
+import edu.ku.brc.dbsupport.CustomQueryIFace;
+import edu.ku.brc.dbsupport.CustomQueryListener;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -222,7 +224,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 * @see edu.ku.brc.af.tasks.subpane.BaseSubPane#showingPane(boolean)
 	 */
 	@Override
-	public void showingPane(boolean show)
+	public void showingPane(final boolean show)
 	{
 		super.showingPane(show);
 		if (show)
@@ -258,9 +260,12 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		}
 	}
 
-    protected void setStatusBarText(String text)
+    /**
+     * @param text
+     */
+    protected void setStatusBarText(final String text)
     {
-        if (statusBar!=null)
+        if (statusBar != null)
         {
             statusBar.setText(text);
         }
@@ -297,9 +302,12 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		};
         
 		//listModel = new TreeDataListModel<T,D,I>(treeDef);
+		AppPreferences remotePrefs = AppPreferences.getRemote();
+		
 		Color[] bgs = new Color[2];
-		bgs[0] = new Color(202,238,255);
-		bgs[1] = new Color(151,221,255);
+		bgs[0] = remotePrefs.getColor("Treeeditor.TreeColColor1", new Color(202, 238, 255));
+		bgs[1] = remotePrefs.getColor("Treeeditor.TreeColColor2", new Color(151, 221, 255));
+		
         Color lineColor = new Color(0x00, 0x00, 0x00, 0x66);
 		listCellRenderer = new TreeViewerNodeRenderer(this, listModel, bgs, lineColor);
 		ListSelectionListener listSelListener = new ListSelectionListener()
@@ -322,9 +330,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		};
 
 		// setup both views
-		lists = new TreeDataGhostDropJList[2];
-		scrollers = new JScrollPane[2];
-		listHeaders = new TreeViewerListHeader[2];
+		lists          = new TreeDataGhostDropJList[2];
+		scrollers      = new JScrollPane[2];
+		listHeaders    = new TreeViewerListHeader[2];
 		treeListPanels = new JPanel[2];
         
         int rowHeight = 20;
@@ -781,6 +789,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         lists[1].addMouseMotionListener(tooltipRendererListener);
 	}
     
+    /**
+     * 
+     */
     public void updateAllUI()
     {
         listModel.layoutChanged();
@@ -804,6 +815,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 //        repaint();        
     }
 	
+	/**
+	 * 
+	 */
 	protected void toggleViewMode()
 	{
 		if (mode == SINGLE_VIEW_MODE)
@@ -822,7 +836,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     	UIRegistry.forceTopFrameRepaint();
 	}
     
-	protected void setViewMode(int newMode)
+	/**
+	 * @param newMode
+	 */
+	protected void setViewMode(final int newMode)
 	{
 		removeAll();
 		mode = newMode;
@@ -843,7 +860,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         updateAllUI();
 	}
     
-	protected void syncViewWithOtherView(JList list)
+	/**
+	 * @param list
+	 */
+	protected void syncViewWithOtherView(final JList list)
 	{
 		if (list == lists[0])
 		{
@@ -867,7 +887,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 * created if the user chooses to proceed with the data entry.
 	 */
 	@SuppressWarnings("unchecked")
-    public void addChildToSelectedNode(JList list)
+    public void addChildToSelectedNode(final JList list)
 	{
 		Object selection = list.getSelectedValue();
 		if ( selection == null )
@@ -901,7 +921,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 * only if it is determined possible without violating any business
 	 * rules.
 	 */
-    public void deleteSelectedNode(JList list)
+    public void deleteSelectedNode(final JList list)
 	{
         // get the selected TreeNode
 		Object selection = list.getSelectedValue();
@@ -951,7 +971,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         }
 	}
     
-    public void initializeNodeAssociations(T node)
+    /**
+     * @param node
+     */
+    public void initializeNodeAssociations(final T node)
     {
         dataService.initializeRelatedObjects(node);
     }
@@ -960,7 +983,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 * Display a form for editing the data in the currently selected node.
 	 */
 	@SuppressWarnings("unchecked")
-	public void editSelectedNode(JList list)
+	public void editSelectedNode(final JList list)
 	{
 		Object selection = list.getSelectedValue();
 		if ( selection == null )
@@ -977,7 +1000,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 * the ability to "zoom in" to a lower level of the tree.
 	 */
 	@SuppressWarnings("unchecked")
-	public synchronized void showSubtreeOfSelection(JList list)
+	public synchronized void showSubtreeOfSelection(final JList list)
 	{
         TreeNode selectedNode = (TreeNode)list.getSelectedValue();
 		if ( selectedNode == null )
@@ -996,7 +1019,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         updateAllUI();
 	}
 	
-    public synchronized void zoomOutOneLevel(JList list)
+    public synchronized void zoomOutOneLevel(final JList list)
     {
         TreeNode selectedNode = (TreeNode)list.getSelectedValue();
         
@@ -1023,7 +1046,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 * Sets the visibleRoot property to the actual root of the tree.  This results in the 
 	 * entire tree being made available to the user.
 	 */
-	public synchronized void showWholeTree(JList list)
+	public synchronized void showWholeTree(final JList list)
 	{
 		Object selection = list.getSelectedValue();		
 
@@ -1037,8 +1060,11 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		}
 	}
 
+	/**
+	 * @param list
+	 */
 	@SuppressWarnings("unchecked")
-	public void selectParentOfSelection(JList list)
+	public void selectParentOfSelection(final JList list)
 	{
 		Object selection = list.getSelectedValue();
 		if ( selection == null )
@@ -1062,7 +1088,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.tasks.DualViewSearchable#find(java.lang.String, int, boolean)
 	 */
-	public void find(String nodeName,int where,boolean wrap)
+	public void find(final String nodeName, final int where, final boolean wrap)
 	{
         setStatusBarText(null);
 		findName = nodeName;
@@ -1133,7 +1159,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.tasks.DualViewSearchable#findNext(java.lang.String, int, boolean)
 	 */
-	public void findNext(String key, int where, boolean wrap)
+	public void findNext(final String key, final int where, final boolean wrap)
 	{
         setStatusBarText(null);
 
@@ -1190,7 +1216,12 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		}
 	}
 	
-	public void findNext(int where, boolean wrap, T current)
+	/**
+	 * @param where
+	 * @param wrap
+	 * @param current
+	 */
+	public void findNext(final int where, final boolean wrap, final T current)
 	{
         setStatusBarText(null);
 
@@ -1251,7 +1282,12 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         }
 	}
 	
-	public void findNext(JList where, boolean wrap, TreeNode currentNode)
+	/**
+	 * @param where
+	 * @param wrap
+	 * @param currentNode
+	 */
+	public void findNext(final JList where, final boolean wrap, final TreeNode currentNode)
 	{
         setStatusBarText(null);
 
@@ -1271,7 +1307,11 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		}
 	}
 	
-	protected boolean showPathToNode(T node)
+	/**
+	 * @param node
+	 * @return
+	 */
+	protected boolean showPathToNode(final T node)
 	{
 		List<T> pathToNode = node.getAllAncestors();
 		TreeNode visRoot = listModel.getVisibleRoot();
@@ -1305,7 +1345,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 *
 	 * @param node the node being edited
 	 * @param title the title of the dialog window
-	 */
+     * @param isNewObject indicates that the object is new
+     */
+    @SuppressWarnings("unchecked")
     protected void showEditDialog(final T node, final String title, final boolean isNewObject)
 	{
 	    // TODO: double check these choices
@@ -1537,11 +1579,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		}
 	}
     
-	/**
-	 * Returns the top-level UI component of the tree viewer.
-	 *
-	 * @see edu.ku.brc.specify.tasks.subpane.BaseSubPane#getUIComponent()
-	 * @return the top-level UI component
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.af.tasks.subpane.BaseSubPane#getUIComponent()
 	 */
 	@Override
 	public JComponent getUIComponent()
@@ -1668,7 +1707,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 * @param droppedOn the node the dragged node was dropped onto
 	 */
 	@SuppressWarnings("unchecked")
-	public boolean dropOccurred( Object dragged, Object droppedOn, int dropAction )
+	public boolean dropOccurred(final Object dragged, final Object droppedOn, final int dropAction )
 	{
         setStatusBarText(null);
 
@@ -1775,7 +1814,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 * @see edu.ku.brc.ui.DragDropCallback#dropAcceptable(java.lang.Object, java.lang.Object, int)
 	 */
 	@SuppressWarnings("unchecked")
-	public boolean dropAcceptable( Object dragged, Object droppedOn, int dropAction )
+	public boolean dropAcceptable(final Object dragged, final Object droppedOn, final int dropAction )
 	{
 		if (dragged == droppedOn)
 		{
@@ -1865,6 +1904,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         listModel.setDropLocationNode(null);
     }
 
+    /**
+     * @param e
+     */
     @SuppressWarnings("unchecked")
 	public void showPopup(MouseEvent e)
 	{
@@ -1889,6 +1931,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		}
 	}
 	
+	/**
+	 * @param e
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	protected boolean clickIsOnText(MouseEvent e)
 	{
@@ -1910,6 +1956,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		return false;
 	}
 	
+	/**
+	 * @param e
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	protected boolean clickIsOnExpansionIcon(MouseEvent e)
 	{
@@ -1932,6 +1982,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		return false;
 	}
 	
+	/**
+	 * @param e
+	 */
 	@SuppressWarnings("unchecked")
 	public void mouseButtonClicked(MouseEvent e)
 	{
@@ -1956,7 +2009,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		TreeNode treeNode = (TreeNode)model.getElementAt(index);
 
         // if the user clicked an expansion handle, expand the child nodes
-		if ( clickIsOnExpansionIcon(e) || (e.getClickCount()==2 && clickIsOnText(e)) )
+		if ( clickIsOnExpansionIcon(e) || (e.getClickCount() == 2 && clickIsOnText(e)) )
 		{
             if (listModel.showingChildrenOf(treeNode))
             {
@@ -2000,7 +2053,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         return highestRank;
     }
     
-	public void mouseButtonReleased(MouseEvent e)
+	/**
+	 * @param e
+	 */
+	public void mouseButtonReleased(final MouseEvent e)
 	{
 		if (e.isPopupTrigger())
 		{
@@ -2008,7 +2064,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		}
 	}
 	
-	public void mouseButtonPressed(MouseEvent e)
+	/**
+	 * @param e
+	 */
+	public void mouseButtonPressed(final MouseEvent e)
 	{
         //log.debug("mouse button pressed on " + e.getSource());
 
@@ -2035,6 +2094,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.af.tasks.subpane.BaseSubPane#aboutToShutdown()
+	 */
 	@Override
 	public boolean aboutToShutdown()
 	{
@@ -2072,7 +2134,11 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		super.shutdown();
 	}
 	
-	public T getSelectedNode(JList list)
+	/**
+	 * @param list
+	 * @return
+	 */
+	public T getSelectedNode(final JList list)
 	{
 		if (lists[0] == list || lists[1] == list )
 		{
@@ -2087,6 +2153,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		throw new IllegalArgumentException("Provided JList must be one of the TTV display lists");
 	}
 	
+	/**
+	 * @return
+	 */
 	public TreeNodePopupMenu getPopupMenu()
 	{
 		return popupMenu;
@@ -2100,7 +2169,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
      * @param dataRecord the database record
      * @return a TreeNode object representing the given Treeable database record
      */
-    private TreeNode createNode(T dataRecord)
+    private TreeNode createNode(final T dataRecord)
     {
         String nodeName = dataRecord.getName();
         String fullName = dataRecord.getFullName();
@@ -2154,27 +2223,39 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         
         for (TreeNode newNode: childNodes)
         {
-//            final TreeNode node = newNode;
-//            Runnable getAssocRecCount = new Runnable()
-//            {
-//                public void run()
-//                {
-//                    int relatedRecordCount = 0;
-//                    try
-//                    {
-//                        relatedRecordCount = dataService.getRelatedRecordCount(dbRecord.getClass(), node.getId());
-//                    }
-//                    catch (Exception e)
-//                    {
-//                        log.error(e);
-//                    }
-//                    node.setAssociatedRecordCount(relatedRecordCount);
-//                    lists[0].repaint();
-//                    lists[1].repaint();
-//                }
-//            };
-//            
-//            countGrabberExecutor.submit(getAssocRecCount);
+            final TreeNode node = newNode;
+            Runnable getAssocRecCount = new Runnable()
+            {
+                public void run()
+                {
+                    try
+                    {
+                        CustomQueryListener listener = new CustomQueryListener()
+                        {
+                            public void exectionDone(final CustomQueryIFace customQuery)
+                            {
+                                List<?> results = customQuery.getDataObjects();
+                                if (results != null && results.get(0) != null && results.get(0) instanceof Integer)
+                                {
+                                    node.setAssociatedRecordCount((Integer)results.get(0));
+                                    lists[0].repaint();
+                                    lists[1].repaint();
+                                }
+                            }
+                            public void executionError(final CustomQueryIFace customQuery)
+                            {
+                            }
+                        };
+                        dataService.getRelatedRecordCount(dbRecord.getClass(), node.getId(), listener);
+                    }
+                    catch (Exception e)
+                    {
+                        log.error(e);
+                    }
+                }
+            };
+            
+            countGrabberExecutor.submit(getAssocRecCount);
          }
         
         // get the node representing the parent DB record
@@ -2213,6 +2294,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         return childNodes;
     }
     
+    /**
+     * Show children delayed.
+     * @param childNode the parent node
+     */
     protected void showChildrenInTimer(final TreeNode childNode)
     {
         ActionListener al = new ActionListener()
@@ -2222,12 +2307,17 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 showChildren(childNode);
             }
         };
-        Timer swingTimer = new Timer(200,al);
+        Timer swingTimer = new Timer(200, al);
         swingTimer.setRepeats(false);
         swingTimer.start();
     }
 
-    protected synchronized List<TreeNode> showChildren(TreeNode parent)
+    /**
+     * Show children for parent.
+     * @param parent the parent
+     * @return the list of kids
+     */
+    protected synchronized List<TreeNode> showChildren(final TreeNode parent)
     {
         // get the DB record that corresponds to this TreeNode
         T dbRecord = getRecordForNode(parent);
@@ -2235,13 +2325,22 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         return showChildren(dbRecord);
     }
 
-    protected synchronized void hideChildren(TreeNode parent)
+    /**
+     * Hide children for parent.
+     * @param parent the parent
+     */
+    protected synchronized void hideChildren(final TreeNode parent)
     {
         idsToReexpand.remove(parent.getId());
         listModel.removeChildNodes(parent);
     }
     
-    private T getRecordForNode(TreeNode node)
+    /**
+     * Get record for node.
+     * @param node the node
+     * @return the record
+     */
+    private T getRecordForNode(final TreeNode node)
     {
         T record = dataService.getNodeById(treeDef.getNodeClass(), node.getId());
         return record;

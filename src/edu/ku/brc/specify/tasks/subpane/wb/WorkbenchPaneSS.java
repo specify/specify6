@@ -42,6 +42,7 @@ import java.io.File;
 import java.net.ConnectException;
 import java.net.URL;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.EventObject;
 import java.util.List;
 import java.util.Properties;
@@ -1401,7 +1402,7 @@ public class WorkbenchPaneSS extends BaseSubPane
 
         JFrame mainFrame = (JFrame)UIRegistry.getTopWindow();
         
-        String title = "GeoRefConv";
+        String title       = "GeoRefConv";
         String description = "GeoRefConvDesc";
         ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>(mainFrame,title,description,outputFormats,null, CustomDialog.OKCANCEL, Type.RadioButton)
         {
@@ -1767,12 +1768,22 @@ public class WorkbenchPaneSS extends BaseSubPane
     /**
      * @return
      */
-    protected WorkbenchTemplateMappingItem selectColumnName()
+    protected Pair<WorkbenchTemplateMappingItem, List<WorkbenchTemplateMappingItem>> selectColumnName()
     {
         WorkbenchTemplateMappingItem genus      = null;
         WorkbenchTemplateMappingItem species    = null;
         WorkbenchTemplateMappingItem subspecies = null;
         WorkbenchTemplateMappingItem variety1   = null;
+        
+
+        Comparator<WorkbenchTemplateMappingItem> wbmtiComp = new Comparator<WorkbenchTemplateMappingItem>()
+        {
+            public int compare(WorkbenchTemplateMappingItem wbmti1, WorkbenchTemplateMappingItem wbmti2)
+            {
+                return wbmti1.getTitle().compareTo(wbmti2.getTitle());
+            }
+            
+        };
         
         Vector<WorkbenchTemplateMappingItem> list = new Vector<WorkbenchTemplateMappingItem>();
         for (WorkbenchTemplateMappingItem item : workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems())
@@ -1796,7 +1807,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         }
         
-        Collections.sort(list);
+        Collections.sort(list, wbmtiComp);
         
         if (genus != null && species != null)
         {
@@ -1823,17 +1834,42 @@ public class WorkbenchPaneSS extends BaseSubPane
         rowItem.setCaption("Row Number"); // I18N
         rowItem.setViewOrder((short)-2);
         list.insertElementAt(rowItem, 0);
+
+        ToggleButtonChooserPanel<WorkbenchTemplateMappingItem> titlePanel = new ToggleButtonChooserPanel<WorkbenchTemplateMappingItem>(list, 
+                "GE_CHOOSE_FIELD_FOR_TITLE_EXPORT", 
+               ToggleButtonChooserPanel.Type.RadioButton);
+        titlePanel.setUseScrollPane(true);
+        titlePanel.createUI();
         
-        ToggleButtonChooserDlg<WorkbenchTemplateMappingItem> dlg = new ToggleButtonChooserDlg<WorkbenchTemplateMappingItem>((Frame)UIRegistry.getTopWindow(), 
-                getResourceString("GE_CHOOSE_FIELD_FOR_EXPORT_TITLE"), 
-                getResourceString("GE_CHOOSE_FIELD_FOR_EXPORT"), 
-                list,
-                null,
-                ToggleButtonChooserDlg.OKCANCEL,
-                ToggleButtonChooserPanel.Type.RadioButton);
-        dlg.setUseScrollPane(true);
+        Vector<WorkbenchTemplateMappingItem> includeList = new Vector<WorkbenchTemplateMappingItem>();
+        for (WorkbenchTemplateMappingItem item : workbench.getWorkbenchTemplate().getWorkbenchTemplateMappingItems())
+        {
+            includeList.add(item);
+        }
+        
+        Collections.sort(includeList, wbmtiComp);
+        
+        ToggleButtonChooserPanel<WorkbenchTemplateMappingItem> inclPanel = new ToggleButtonChooserPanel<WorkbenchTemplateMappingItem>(includeList, 
+                "GE_CHOOSE_FIELDS_EXPORT", 
+               ToggleButtonChooserPanel.Type.Checkbox);
+        inclPanel.setUseScrollPane(true);
+        inclPanel.setAddSelectAll(true);
+        inclPanel.createUI();
+        
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g,10px,f:p:g", "f:p:g,6px"));
+        CellConstraints cc = new CellConstraints();
+        pb.add(titlePanel, cc.xy(1,1));
+        pb.add(inclPanel, cc.xy(3,1));
+
+        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), getResourceString("GE_CHOOSE_FIELD_FOR_EXPORT_TITLE"), true, pb.getPanel());
         dlg.setVisible(true);
-        return dlg.getSelectedObject();
+        if (!dlg.isCancelled())
+        {
+            return new Pair<WorkbenchTemplateMappingItem, List<WorkbenchTemplateMappingItem>>(
+                    titlePanel.getSelectedObject(), 
+                    inclPanel.getSelectedObjects());
+        }
+        return null;
     }
     
     /**
@@ -1872,21 +1908,25 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
         }
         
-        WorkbenchTemplateMappingItem item = selectColumnName();
-        if (item == null)
+        Pair<WorkbenchTemplateMappingItem, List<WorkbenchTemplateMappingItem>> configPair = selectColumnName();
+        if (configPair == null || 
+            configPair.first == null || 
+            configPair.second == null || 
+            configPair.second.size() == 0)
         {
             return;
         }
-        WorkbenchTemplateMappingItem genus   = null;
-        WorkbenchTemplateMappingItem species = null;
+        WorkbenchTemplateMappingItem genus      = null;
+        WorkbenchTemplateMappingItem species    = null;
         WorkbenchTemplateMappingItem subspecies = null;
-        WorkbenchTemplateMappingItem variety = null;
+        WorkbenchTemplateMappingItem variety    = null;
         
+        WorkbenchTemplateMappingItem item = configPair.first;
         if (item.getViewOrder() == -1)
         {
             genus   = getWBMI(item.getWorkbenchTemplateMappingItemId());
             species = getWBMI(item.getVersion());
-            if (item.getViewOrder() != null)
+            if (item.getOrigImportColumnIndex() != null)
             {
                 subspecies = getWBMI(item.getOrigImportColumnIndex());
             }
@@ -1923,7 +1963,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             {
                 title = row.getData(item.getViewOrder());
             }
-            selectedRows.add(new WorkbenchRowPlacemarkWrapper(row, title));
+            selectedRows.add(new WorkbenchRowPlacemarkWrapper(row, title, configPair.second));
         }
         
         // get an icon URL that is specific to the current context
@@ -1947,8 +1987,8 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         CommandAction command = new CommandAction(ToolsTask.TOOLS,ToolsTask.EXPORT_LIST);
         command.setData(selectedRows);
-        command.setProperty("tool", GoogleEarthExporter.class);
-        command.setProperty("description", workbench.getRemarks());
+        command.setProperty("tool",           GoogleEarthExporter.class);
+        command.setProperty("description",    workbench.getRemarks() != null ? workbench.getRemarks() : "");
         
         if (iconUrl != null)
         {
@@ -2469,7 +2509,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             }
             else if (rv == JOptionPane.NO_OPTION)
             {
-                // nothing
+                hasChanged = false; // we do this so we don't get asked a second time
             }
             
         }

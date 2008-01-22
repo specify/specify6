@@ -519,7 +519,7 @@ public class DataEntryTask extends BaseTask
     @Override
     public SubPaneIFace getStarterPane()
     {
-        return starterPane = new DroppableFormRecordSetAccepter(title, this, "This is the Data Entry Pane");
+        return starterPane = new DroppableFormRecordSetAccepter(title, this, "Drop a Bundle here."); // I18N
     }
 
     /*

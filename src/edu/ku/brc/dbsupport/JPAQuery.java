@@ -45,6 +45,7 @@ public class JPAQuery implements CustomQueryIFace
     
     protected CustomQueryListener       cql         = null;
     protected Object                    data        = null;
+    protected Query                     query       = null;
     
     /**
      * Constructor.
@@ -60,10 +61,22 @@ public class JPAQuery implements CustomQueryIFace
      * @param sqlStr the query string
      * @param cql the listener
      */
-    public JPAQuery(final CustomQueryListener cql, 
-                    final String sqlStr)
+    public JPAQuery(final String sqlStr,
+                    final CustomQueryListener cql)
     {
         this.sqlStr = sqlStr;
+        this.cql    = cql;
+    }
+    
+    /**
+     * Constructor to be used as a Runnable.
+     * @param query the query string
+     * @param cql the listener
+     */
+    public JPAQuery(final Query query,
+                    final CustomQueryListener cql)
+    {
+        this.query  = query;
         this.cql    = cql;
     }
     
@@ -133,8 +146,8 @@ public class JPAQuery implements CustomQueryIFace
             try
             {
                 log.debug("["+sqlStr+"]");
-                Query query = session.createQuery(sqlStr);
-                resultsList = query.list();
+                Query qry = query != null ? query : session.createQuery(sqlStr);
+                resultsList = qry.list();
                 
             } catch (JDBCConnectionException ex)
             {

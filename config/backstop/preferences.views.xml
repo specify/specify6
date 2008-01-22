@@ -36,7 +36,7 @@
 			name="System"
 			class="java.util.prefs.Preferences"
 			useresourcelabels="false">
-			<desc><![CDATA[Formatting Preference Form.]]></desc>
+			<desc><![CDATA[System Preference Form.]]></desc>
 			<altviews>
 				<altview name="System" viewdef="System" label="System" mode="edit" validated="true"/>
 			</altviews>
@@ -53,6 +53,8 @@
 		</view>
 		
 	</views>
+	
+	<!-- ***************************************************************************************** -->
 
 	<viewdefs>
 	    <viewdef
@@ -165,6 +167,9 @@
 					<cell type="field" uitype="combobox" id="fontSizes" name="ui.formatting.fontSize" readonly="true" changesonly="true"/>
 					<cell type="field" uitype="dsptextfield" id="fontTest" name="fontTest" readonly="true"/>
 				</row>
+				<row>
+					<cell type="separator" label="Icons" colspan="13"/>
+				</row>
 			    <row>
 					<cell type="label" labelfor="disciplineIcon" label="Discipline Icon"/>
 					<cell type="field" uitype="label" id="disciplineIcon" label="" />
@@ -172,7 +177,18 @@
 					<cell type="label" labelfor="disciplineIconCBX" label="Choose"/>
 					<cell type="field" uitype="combobox" id="disciplineIconCBX" readonly="true" changesonly="true" />
 				</row>
+				<row>
+					<cell type="separator" label="Tree Editor Colors" colspan="13"/>
+				</row>
+				<row>
+					<cell type="label" labelfor="TreeColColor1" label="Column Color #1"/>
+					<cell type="field" uitype="colorchooser" id="TreeColColor1" name="Treeeditor.TreeColColor1"/>
+				</row>
 				
+				<row>
+					<cell type="label" labelfor="TreeColColor2" label="Column Color #2"/>
+					<cell type="field" uitype="colorchooser" id="TreeColColor2" name="Treeeditor.TreeColColor2"/>
+				</row>
 			</rows>
 		</viewdef>
 		

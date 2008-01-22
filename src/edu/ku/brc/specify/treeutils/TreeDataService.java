@@ -9,6 +9,7 @@ package edu.ku.brc.specify.treeutils;
 import java.util.List;
 import java.util.Set;
 
+import edu.ku.brc.dbsupport.CustomQueryListener;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
@@ -83,7 +84,14 @@ public interface TreeDataService <T extends Treeable<T,D,I>,
      */
     public int getDescendantCount(T node);
     
-    public int getRelatedRecordCount(Class<?> clazz, int id);
+    /**
+     * @param clazz
+     * @param id
+     * @param listener
+     */
+    public void getRelatedRecordCount(final Class<?> clazz, 
+                                      final int       id, 
+                                      final CustomQueryListener listener);
     
     /**
      * Deletes the given node from the DB.
@@ -94,16 +102,46 @@ public interface TreeDataService <T extends Treeable<T,D,I>,
      */
     public boolean deleteTreeNode(T node);
 
+    /**
+     * @param objects
+     */
     public void refresh(Object ... objects);
     
+    /**
+     * @param rankID
+     * @param treeDef
+     * @return
+     */
     public int countNodesAtLevel(int rankID, D treeDef);
     
+    /**
+     * @param levelSkippedRank
+     * @param treeDef
+     * @return
+     */
     public List<String> nodesSkippingOverLevel(int levelSkippedRank, D treeDef);
     
+    /**
+     * @param rankID
+     * @param treeDef
+     * @return
+     */
     public List<String> nodeNamesAtLevel(int rankID, D treeDef);
     
+    /**
+     * @param newNode
+     * @param session
+     * @return
+     * @throws Exception
+     */
     public boolean updateNodeNumbersAfterNodeAddition(T newNode, DataProviderSessionIFace session) throws Exception;
     
+    /**
+     * @param deletedNode
+     * @param session
+     * @return
+     * @throws Exception
+     */
     public boolean updateNodeNumbersAfterNodeDeletion(T deletedNode, DataProviderSessionIFace session) throws Exception;
     
     /**
@@ -128,8 +166,17 @@ public interface TreeDataService <T extends Treeable<T,D,I>,
      */
     public String synonymize(T source, T destination);
     
+    /**
+     * @param node
+     * @return
+     */
     public Set<T> getSynonyms(T node);
     
+    /**
+     * @param clazz
+     * @param nodeId
+     * @return
+     */
     public Set<Pair<Integer,String>> getSynonymIdsAndNames(Class<?> clazz, Integer nodeId);
     
     /**

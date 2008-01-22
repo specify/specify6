@@ -19,14 +19,14 @@
       </searchFields>
       <displayFields>
         <displayfield>
-          <fieldName>lastName</fieldName>
-          <formatter></formatter>
-          <order>0</order>
-        </displayfield>
-        <displayfield>
           <fieldName>firstName</fieldName>
           <formatter></formatter>
           <order>1</order>
+        </displayfield>
+        <displayfield>
+          <fieldName>lastName</fieldName>
+          <formatter></formatter>
+          <order>0</order>
         </displayfield>
         <displayfield>
           <fieldName>name</fieldName>
@@ -34,6 +34,7 @@
           <order>2</order>
         </displayfield>
       </displayFields>
+      <wsFields/>
     </searchtable>
     <searchtable>
       <tableName>CollectingEvent</tableName>
@@ -64,6 +65,7 @@
           <order>2147483647</order>
         </displayfield>
       </displayFields>
+      <wsFields/>
     </searchtable>
     <searchtable>
       <tableName>CollectionObject</tableName>
@@ -105,31 +107,33 @@
           <order>2147483647</order>
         </displayfield>
       </displayFields>
+      <wsFields/>
     </searchtable>
     <searchtable>
       <tableName>Determination</tableName>
-      <displayOrder>3</displayOrder>
-      <searchFields>
-        <searchfield>
-          <fieldName>determinedDate</fieldName>
-          <isSortable>false</isSortable>
-          <isAscending>true</isAscending>
-          <order>0</order>
-        </searchfield>
-      </searchFields>
-      <displayFields>
-        <displayfield>
-          <fieldName>determinedDate</fieldName>
-          <formatter></formatter>
-          <order>2147483647</order>
-        </displayfield>
-      </displayFields>
-    </searchtable>
-    <searchtable>
-      <tableName>Geography</tableName>
       <displayOrder>4</displayOrder>
       <searchFields>
         <searchfield>
+          <fieldName>determinedDate</fieldName>
+          <isSortable>false</isSortable>
+          <isAscending>true</isAscending>
+          <order>0</order>
+        </searchfield>
+      </searchFields>
+      <displayFields>
+        <displayfield>
+          <fieldName>determinedDate</fieldName>
+          <formatter></formatter>
+          <order>2147483647</order>
+        </displayfield>
+      </displayFields>
+      <wsFields/>
+    </searchtable>
+    <searchtable>
+      <tableName>Geography</tableName>
+      <displayOrder>5</displayOrder>
+      <searchFields>
+        <searchfield>
           <fieldName>fullName</fieldName>
           <isSortable>false</isSortable>
           <isAscending>true</isAscending>
@@ -143,10 +147,11 @@
           <order>2147483647</order>
         </displayfield>
       </displayFields>
+      <wsFields/>
     </searchtable>
     <searchtable>
       <tableName>Locality</tableName>
-      <displayOrder>5</displayOrder>
+      <displayOrder>6</displayOrder>
       <searchFields>
         <searchfield>
           <fieldName>localityName</fieldName>
@@ -162,10 +167,11 @@
           <order>2147483647</order>
         </displayfield>
       </displayFields>
+      <wsFields/>
     </searchtable>
     <searchtable>
       <tableName>Taxon</tableName>
-      <displayOrder>6</displayOrder>
+      <displayOrder>7</displayOrder>
       <searchFields>
         <searchfield>
           <fieldName>fullName</fieldName>
@@ -181,28 +187,174 @@
           <order>0</order>
         </displayfield>
       </displayFields>
+      <wsFields/>
     </searchtable>
   </tables>
   <relatedQueries>
     <relatedquery>
       <id>9</id>
-      <displayOrder>2</displayOrder>
+      <displayOrder>3</displayOrder>
     </relatedquery>
     <relatedquery>
       <id>1</id>
-      <displayOrder>7</displayOrder>
-    </relatedquery>
-    <relatedquery>
-      <id>2</id>
       <displayOrder>8</displayOrder>
     </relatedquery>
     <relatedquery>
-      <id>3</id>
+      <id>2</id>
       <displayOrder>9</displayOrder>
     </relatedquery>
     <relatedquery>
-      <id>4</id>
+      <id>3</id>
       <displayOrder>10</displayOrder>
     </relatedquery>
+    <relatedquery>
+      <id>4</id>
+      <displayOrder>11</displayOrder>
+    </relatedquery>
+    <relatedquery>
+      <id>5</id>
+      <displayOrder>12</displayOrder>
+      <isActive>true</isActive>
+    </relatedquery>
+    <relatedquery>
+      <id>11</id>
+      <displayOrder>13</displayOrder>
+      <isActive>true</isActive>
+    </relatedquery>
+    <relatedquery>
+      <id>7</id>
+      <displayOrder>14</displayOrder>
+      <isActive>true</isActive>
+    </relatedquery>
+    <relatedquery>
+      <id>8</id>
+      <displayOrder>15</displayOrder>
+      <isActive>true</isActive>
+    </relatedquery>
+    <relatedquery>
+      <id>10</id>
+      <displayOrder>16</displayOrder>
+      <isActive>true</isActive>
+    </relatedquery>
+    <relatedquery>
+      <id>12</id>
+      <displayOrder>17</displayOrder>
+      <isActive>true</isActive>
+    </relatedquery>
+    <relatedquery>
+      <id>6</id>
+      <displayOrder>18</displayOrder>
+      <isActive>true</isActive>
+    </relatedquery>
   </relatedQueries>
+  <relatedQueryIdHash>
+    <entry>
+      <string>9</string>
+      <relatedquery reference="../../../relatedQueries/relatedquery"/>
+    </entry>
+    <entry>
+      <string>8</string>
+      <relatedquery reference="../../../relatedQueries/relatedquery[9]"/>
+    </entry>
+    <entry>
+      <string>7</string>
+      <relatedquery reference="../../../relatedQueries/relatedquery[8]"/>
+    </entry>
+    <entry>
+      <string>6</string>
+      <relatedquery reference="../../../relatedQueries/relatedquery[12]"/>
+    </entry>
+    <entry>
+      <string>5</string>
+      <relatedquery reference="../../../relatedQueries/relatedquery[6]"/>
+    </entry>
+    <entry>
+      <string>4</string>
+      <relatedquery reference="../../../relatedQueries/relatedquery[5]"/>
+    </entry>
+    <entry>
+      <string>12</string>
+      <relatedquery reference="../../../relatedQueries/relatedquery[11]"/>
+    </entry>
+    <entry>
+      <string>3</string>
+      <relatedquery reference="../../../relatedQueries/relatedquery[4]"/>
+    </entry>
+    <entry>
+      <string>2</string>
+      <relatedquery reference="../../../relatedQueries/relatedquery[3]"/>
+    </entry>
+    <entry>
+      <string>11</string>
+      <relatedquery reference="../../../relatedQueries/relatedquery[7]"/>
+    </entry>
+    <entry>
+      <string>10</string>
+      <relatedquery reference="../../../relatedQueries/relatedquery[10]"/>
+    </entry>
+    <entry>
+      <string>1</string>
+      <relatedquery reference="../../../relatedQueries/relatedquery[2]"/>
+    </entry>
+  </relatedQueryIdHash>
+  <tableIdHash>
+    <entry>
+      <string>9</string>
+      <searchtable reference="../../../tables/searchtable[4]"/>
+    </entry>
+    <entry>
+      <string>5</string>
+      <searchtable reference="../../../tables/searchtable"/>
+    </entry>
+    <entry>
+      <string>4</string>
+      <searchtable reference="../../../tables/searchtable[7]"/>
+    </entry>
+    <entry>
+      <string>3</string>
+      <searchtable reference="../../../tables/searchtable[5]"/>
+    </entry>
+    <entry>
+      <string>2</string>
+      <searchtable reference="../../../tables/searchtable[6]"/>
+    </entry>
+    <entry>
+      <string>1</string>
+      <searchtable reference="../../../tables/searchtable[3]"/>
+    </entry>
+    <entry>
+      <string>10</string>
+      <searchtable reference="../../../tables/searchtable[2]"/>
+    </entry>
+  </tableIdHash>
+  <tableNameHash>
+    <entry>
+      <string>Geography</string>
+      <searchtable reference="../../../tables/searchtable[5]"/>
+    </entry>
+    <entry>
+      <string>CollectingEvent</string>
+      <searchtable reference="../../../tables/searchtable[2]"/>
+    </entry>
+    <entry>
+      <string>Determination</string>
+      <searchtable reference="../../../tables/searchtable[4]"/>
+    </entry>
+    <entry>
+      <string>CollectionObject</string>
+      <searchtable reference="../../../tables/searchtable[3]"/>
+    </entry>
+    <entry>
+      <string>Taxon</string>
+      <searchtable reference="../../../tables/searchtable[7]"/>
+    </entry>
+    <entry>
+      <string>Agent</string>
+      <searchtable reference="../../../tables/searchtable"/>
+    </entry>
+    <entry>
+      <string>Locality</string>
+      <searchtable reference="../../../tables/searchtable[6]"/>
+    </entry>
+  </tableNameHash>
 </search>
