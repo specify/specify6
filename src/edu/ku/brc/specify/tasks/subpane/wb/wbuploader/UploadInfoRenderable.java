@@ -16,6 +16,7 @@ public class UploadInfoRenderable implements TableNameRendererIFace, Comparable<
     protected String title;
     protected Integer createdCnt;
     protected boolean showCreatedCnt = false;
+    protected boolean includeCreatedCntinTitle = false;
     protected Vector<UploadTable> myTables;
     
     protected void refresh()
@@ -54,7 +55,7 @@ public class UploadInfoRenderable implements TableNameRendererIFace, Comparable<
      */
     public String getTitle()
     {
-        if (!showCreatedCnt)
+        if (!showCreatedCnt || includeCreatedCntinTitle)
         {
             return title;
         }
@@ -105,5 +106,22 @@ public class UploadInfoRenderable implements TableNameRendererIFace, Comparable<
     public String getTableName()
     {
         return tblClass.getSimpleName();
+    }
+
+    /**
+     * @return the createdCnt
+     */
+    public Integer getCreatedCnt()
+    {
+        return createdCnt;
+    }
+    
+    /**
+     * sets createdCnt to 0 and sets showCreatedCnt to false.
+     */
+    public void reset()
+    {
+        createdCnt = 0;
+        setShowCreatedCnt(false);
     }
 }

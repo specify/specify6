@@ -29,7 +29,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
 
-import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -41,7 +40,6 @@ import net.sf.jasperreports.engine.JRField;
 
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.af.core.expresssearch.TableNameRenderer;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -66,11 +64,9 @@ import edu.ku.brc.specify.tasks.subpane.wb.schema.Relationship;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadMappingDefRel.ImportMappingRelFld;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable.DefaultFieldEntry;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable.UploadTableInvalidValue;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
-import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -1881,7 +1877,7 @@ public class Uploader implements ActionListener, WindowStateListener, KeyListene
         }
         else if (e.getActionCommand().equals(UploadMainPanel.MSG_CLICK))
         {
-            goToMsgWBCell();
+            goToMsgWBCell((Component)e.getSource());
         }
         else if (e.getActionCommand().equals(UploadMainPanel.PRINT_INVALID))
         {
@@ -2053,12 +2049,20 @@ public class Uploader implements ActionListener, WindowStateListener, KeyListene
     /**
      * Moves to dataset cell corresponding to currently selected validation issue and starts editor.
      */
-    protected void goToMsgWBCell()
+    protected void goToMsgWBCell(final Component c)
     {
         if (mainPanel == null) { throw new RuntimeException("Upload form does not exist."); }
         if (wbSS != null)
         {
-            UploadMessage msg = (UploadMessage) mainPanel.getMsgList().getSelectedValue();
+            UploadMessage msg;
+            if (c == mainPanel.getValidationErrorList())
+            {
+                msg = (UploadMessage) mainPanel.getValidationErrorList().getSelectedValue();
+            }
+            else
+            {
+                msg = (UploadMessage) mainPanel.getMsgList().getSelectedValue();
+            }
             if (msg.getRow() != -1)
             {
                 if (msg.getCol() == -1)
@@ -2111,7 +2115,7 @@ public class Uploader implements ActionListener, WindowStateListener, KeyListene
      * 
      * See note in goToMsgWBCell re addKeyListener().
      */
-    protected void goToNextInvalidCell()
+    protected void goToNextInvalidCell(final Component c)
     {
         int sel = mainPanel.getMsgList().getSelectedIndex() + 1;
         if (sel >= mainPanel.getMsgList().getModel().getSize())
@@ -2119,7 +2123,7 @@ public class Uploader implements ActionListener, WindowStateListener, KeyListene
         if (sel != -1)
         {
             mainPanel.getMsgList().setSelectedIndex(sel);
-            goToMsgWBCell();
+            goToMsgWBCell(c);
         }
     }
     
@@ -2130,7 +2134,7 @@ public class Uploader implements ActionListener, WindowStateListener, KeyListene
      * 
      * See note in goToMsgWBCell re addKeyListener().
     */
-    protected void goToPrevInvalidCell()
+    protected void goToPrevInvalidCell(final Component c)
     {
         int sel = mainPanel.getMsgList().getSelectedIndex() - 1;
         if (sel <= 0)
@@ -2138,7 +2142,7 @@ public class Uploader implements ActionListener, WindowStateListener, KeyListene
         if (sel != -1)
         {
             mainPanel.getMsgList().setSelectedIndex(sel);
-            goToMsgWBCell();
+            goToMsgWBCell(c);
         }
     }
     
@@ -2149,12 +2153,12 @@ public class Uploader implements ActionListener, WindowStateListener, KeyListene
      * 
      * See note in goToMsgWBCell re addKeyListener().
      */
-    protected void goToFirstInvalidCell()
+    protected void goToFirstInvalidCell(final Component c)
     {
         if (mainPanel.getMsgList().getModel().getSize() > 0)
         {
             mainPanel.getMsgList().setSelectedIndex(0);
-            goToMsgWBCell();
+            goToMsgWBCell(c);
         }
     }
 
@@ -2165,12 +2169,15 @@ public class Uploader implements ActionListener, WindowStateListener, KeyListene
      * 
      * See note in goToMsgWBCell re addKeyListener().
      */
-    protected void goToLastInvalidCell()
+    protected void goToLastInvalidCell(final Component c)
     {
-        if (mainPanel.getMsgList().getModel().getSize() > 0)
+        if (c instanceof JList)
         {
-            mainPanel.getMsgList().setSelectedIndex(mainPanel.getMsgList().getModel().getSize()-1);
-            goToMsgWBCell();
+            if (((JList)c).getModel().getSize() > 0)
+            {
+                ((JList)c).setSelectedIndex(((JList)c).getModel().getSize()-1);
+                goToMsgWBCell(c);
+            }
         }
     }
 
@@ -2213,17 +2220,7 @@ public class Uploader implements ActionListener, WindowStateListener, KeyListene
                 uts.add(new UploadInfoRenderable(ut));
             }
         }
-
-        DefaultListModel tbls = new DefaultListModel();
-        JList tableList = mainPanel.getUploadTbls();
-        TableNameRenderer nameRender = new TableNameRenderer(IconManager.IconSize.Std24);
-        nameRender.setUseIcon("PlaceHolder");
-        tableList.setCellRenderer(nameRender);
-        for (UploadInfoRenderable ut : uts)
-        {
-            tbls.addElement(ut);
-        }
-        tableList.setModel(tbls);
+        mainPanel.addAffectedTables(uts.iterator());
         mainPanel.setActionListener(this);
         // mainPanel.addWindowStateListener(this);
     }
@@ -2250,6 +2247,15 @@ public class Uploader implements ActionListener, WindowStateListener, KeyListene
             }
         }
 
+        if (op.equals(UPLOADING) || op.equals(SUCCESS))
+        {
+            mainPanel.showUploadTblTbl();
+        }
+        else
+        {
+            mainPanel.showUploadTblList();
+        }
+        
         mainPanel.getValidateContentBtn().setEnabled(canValidateContent(op));
         
         mainPanel.getCancelBtn().setEnabled(canCancel(op));
@@ -2267,7 +2273,6 @@ public class Uploader implements ActionListener, WindowStateListener, KeyListene
 
         mainPanel.getCloseBtn().setEnabled(canClose(op));
 
-        //UIRegistry.getStatusBar().getProgressBar().setVisible(mainPanel.getCancelBtn().isVisible());
         mainPanel.getCurrOpProgress().setVisible(mainPanel.getCancelBtn().isVisible());
         
         String statText = getResourceString(op);
@@ -2296,9 +2301,17 @@ public class Uploader implements ActionListener, WindowStateListener, KeyListene
         {
             statText += "...";
         }
-        mainPanel.addMsg(new BaseUploadMessage(statText));
         
         mainPanel.clearMsgs(new Class<?>[]{UploadTableInvalidValue.class});
+        if (op.equals(USER_INPUT))
+        {
+            mainPanel.addMsg(new UploadTableInvalidValue(statText, null, null, -1, null));
+        }
+        else
+        {
+            mainPanel.addMsg(new BaseUploadMessage(statText));
+        }
+        
         if (validationIssues != null)
         {
             for (UploadTableInvalidValue invalid : validationIssues)
@@ -3029,13 +3042,13 @@ public class Uploader implements ActionListener, WindowStateListener, KeyListene
     {
         int key = e.getKeyCode();
         if (key == KeyEvent.VK_ENTER || key == KeyEvent.VK_TAB || key == KeyEvent.VK_DOWN)
-            goToNextInvalidCell();
+            goToNextInvalidCell(e.getComponent());
         else if (key == KeyEvent.VK_UP || (key == KeyEvent.VK_TAB && e.isShiftDown()))
-            goToPrevInvalidCell();
+            goToPrevInvalidCell(e.getComponent());
         else if (key == KeyEvent.VK_HOME)
-            goToFirstInvalidCell();
+            goToFirstInvalidCell(e.getComponent());
         else if (key == KeyEvent.VK_END)
-            goToLastInvalidCell();
+            goToLastInvalidCell(e.getComponent());
     }
 
 }

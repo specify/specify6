@@ -12,6 +12,8 @@ package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -19,8 +21,11 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Iterator;
+import java.util.Vector;
 
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -32,13 +37,19 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 
 import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+
+import edu.ku.brc.af.core.expresssearch.TableNameRenderer;
+import edu.ku.brc.ui.IconManager;
 
 /**
  * @author timbo
@@ -65,6 +76,8 @@ public class UploadMainPanel extends JPanel
     
     protected JLabel uploadTblLbl;
     protected JList uploadTbls;
+    protected JTable uploadTblTbl;
+    protected JPanel uploadTblPanel;
     protected JLabel currOpLbl;
     protected JProgressBar currOpProgress;
     protected JButton validateContentBtn;
@@ -91,9 +104,12 @@ public class UploadMainPanel extends JPanel
     public UploadMainPanel()
     {
         buildUI();
-     }
+    }
     
-    public void showValidationErrors()
+    /**
+     * Shows the validation error msg list.
+     */
+    protected void showValidationErrors()
     {
         CellConstraints cc = new CellConstraints();
         msgPane.remove(msgListSB);
@@ -102,7 +118,10 @@ public class UploadMainPanel extends JPanel
         msgPane.validate();
     }
     
-    public void hideValidationErrors()
+    /**
+     * Hides the validation error msg list.
+     */
+    protected void hideValidationErrors()
     {
         CellConstraints cc = new CellConstraints();
         msgPane.remove(validationErrorPanel);
@@ -111,9 +130,112 @@ public class UploadMainPanel extends JPanel
         msgPane.validate();
     }
     
-    public boolean isValidationErrorsVisible()
+    /**
+     * @return true if validation error msg list is displayed.
+     */
+    protected boolean isValidationErrorsVisible()
     {
         return validationErrorPanel.getParent() == msgPane;
+    }
+    
+    /**
+     * Displays the list view of affected tables.
+     */
+    public void showUploadTblList()
+    {
+        ((CardLayout)uploadTblPanel.getLayout()).first(uploadTblPanel);
+    }
+    
+    /**
+     * Displays the table view of affected tables.
+     */
+    public void showUploadTblTbl()
+    {
+        ((CardLayout)uploadTblPanel.getLayout()).last(uploadTblPanel);
+    }
+    
+    /**
+     * @param uts - the tables that could be affected by the upload.
+     * 
+     * Sets up the ui controls that display the affected tables.
+     */
+    public void addAffectedTables(Iterator<UploadInfoRenderable> uts)
+    {
+        DefaultListModel tbls = new DefaultListModel();
+        Vector<Vector<Object>> cells = new Vector<Vector<Object>>();
+        JList tableList = getUploadTbls();
+        TableNameRenderer nameRender = new TableNameRenderer(IconManager.IconSize.Std24);
+        nameRender.setUseIcon("PlaceHolder");
+        tableList.setCellRenderer(nameRender);
+    
+        while (uts.hasNext())
+        {
+            UploadInfoRenderable ut = uts.next();
+            tbls.addElement(ut);
+            Vector<Object> row = new Vector<Object>(2);
+            row.add(ut);
+            row.add(ut);
+            cells.add(row);            
+        }
+    
+        tableList.setModel(tbls);
+        Vector<String> heads = new Vector<String>(2);
+        heads.add(getResourceString("ERD_TABLE")); 
+        heads.add(getResourceString("WB_UPLOAD_RECORDS_ADDED"));
+        getUploadTblTbl().setModel(new DefaultTableModel(cells, heads));
+        getUploadTblTbl().setDefaultRenderer(Object.class, new DefaultTableCellRenderer()
+        {
+            @Override
+            public Component getTableCellRendererComponent(JTable table,
+                                                           Object value,
+                                                           boolean isSelected,
+                                                           boolean hasFocus,
+                                                           int row,
+                                                           int column)
+            {
+                super
+                        .getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
+                                column);
+
+                UploadInfoRenderable ti = (UploadInfoRenderable) value;
+                if (column == 0)
+                {
+                    ImageIcon icon = IconManager.getIcon(ti.getIconName(),
+                            IconManager.IconSize.Std24);
+                    setIcon(icon != null ? icon : IconManager.getIcon("Blank",
+                            IconManager.IconSize.Std24));
+                }
+                else
+                {
+                    setIcon(null);
+                }
+                if (isSelected)
+                {
+                    setOpaque(true);
+                    setBackground(table.getSelectionBackground());
+                    setForeground(table.getSelectionForeground());
+
+                }
+                else
+                {
+                    setBackground(table.getBackground());
+                    setForeground(table.getForeground());
+                }
+
+                if (column == 0)
+                {
+                    setText(ti.getTitle());
+                }
+                else
+                {
+                    if (ti.getCreatedCnt() != null)
+                    {
+                        setText(ti.getCreatedCnt().toString());
+                    }
+                }
+                return this;
+            }
+        });
     }
     
     public void buildUI()
@@ -140,11 +262,26 @@ public class UploadMainPanel extends JPanel
         uploadTblLbl = new JLabel(getResourceString("WB_UPLOAD_AFFECTED_TBLS_LIST"));
         add(uploadTblLbl, cc.xy(2, 4));
         
+        
+        uploadTblPanel = new JPanel(new CardLayout());
         uploadTbls = new JList();
         JScrollPane sp = new JScrollPane(uploadTbls, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        add(sp, cc.xy(2, 6));
+        uploadTblPanel.add(sp, "list");
+        uploadTblTbl = new JTable()
+        {
+            @Override
+            public boolean isCellEditable(int row, int column)
+            {
+                return false;
+            }
+        };
+        uploadTblTbl.setCellSelectionEnabled(false);
+        sp = new JScrollPane(uploadTblTbl, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        uploadTblPanel.add(sp, "table");
         
-        msgPane = new JPanel(new FormLayout("fill:m:grow", "fill:pref:grow, fill:pref:grow"));
+        add(uploadTblPanel, cc.xy(2, 6));
+        
+        msgPane = new JPanel(new FormLayout("fill:m:grow", "fill:pref:grow, fill:m:grow"));
         
         msgLbl  = new JLabel(getResourceString("WB_UPLOAD_MSG_LIST"));
         add(msgLbl, cc.xy(4, 4));
@@ -162,8 +299,6 @@ public class UploadMainPanel extends JPanel
         JPanel pbtnPane = new JPanel(new FormLayout("fill:m:grow, right:max(50dlu;pref)", "c:m"));
         pbtnPane.add(printBtn, cc.xy(2, 1));
         validationErrorPanel.add(pbtnPane, BorderLayout.SOUTH);
-        //validationErrorPanel.setVisible(false);
-        //msgPane.add(validationErrorPanel, cc.xy(1, 1));
         
         add(msgPane, cc.xy(4, 6));
                 
@@ -224,7 +359,7 @@ public class UploadMainPanel extends JPanel
         {
             public void mouseClicked(MouseEvent me)
             {
-               msgClick();
+               msgClick(false);
             }
 
             public void mouseEntered(MouseEvent me)
@@ -247,7 +382,35 @@ public class UploadMainPanel extends JPanel
                 // no comment.
             }
         });
-    }
+
+        validationErrorList.addMouseListener(new MouseListener()
+        {
+            public void mouseClicked(MouseEvent me)
+            {
+               msgClick(true);
+            }
+
+            public void mouseEntered(MouseEvent me)
+            {
+                // no comment.
+            }
+
+            public void mouseExited(MouseEvent me)
+            {
+                // no comment.
+            }
+
+            public void mousePressed(MouseEvent me)
+            {
+                // no comment.
+            }
+
+            public void mouseReleased(MouseEvent me)
+            {
+                // no comment.
+            }
+        });
+}
 
     
     /**
@@ -275,11 +438,18 @@ public class UploadMainPanel extends JPanel
     /**
      * Relays user action to listener.
      */
-    protected void msgClick()
+    protected void msgClick(final boolean isValidationErrorMsg)
     {
         if (listener != null)
         {
-            listener.actionPerformed(new ActionEvent(msgList, 0, MSG_CLICK));
+            if (isValidationErrorMsg)
+            {
+                listener.actionPerformed(new ActionEvent(validationErrorList, 0, MSG_CLICK));
+            }
+            else
+            {
+                listener.actionPerformed(new ActionEvent(msgList, 0, MSG_CLICK));
+            }
         }
     }
     /**
@@ -423,26 +593,57 @@ public class UploadMainPanel extends JPanel
     
     public void addMsg(UploadMessage msg)
     {
-        ((DefaultListModel)msgList.getModel()).addElement(msg);
-        if (!msgPane.isVisible())
+        boolean isValErrMsg = false;
+        JList list;
+        if (msg instanceof UploadTableInvalidValue)
         {
-            msgPane.setVisible(true);
+            list = this.validationErrorList;
+            isValErrMsg = true;
+            
         }
-        msgList.ensureIndexIsVisible(msgList.getModel().getSize()-1);
+        else
+        {
+            list = this.msgList;
+        }
+        ((DefaultListModel)list.getModel()).addElement(msg);
+        if (isValErrMsg && !isValidationErrorsVisible())
+        {
+            this.showValidationErrors();
+        }
+        list.ensureIndexIsVisible(list.getModel().getSize()-1);
     }
     
+    /**
+     * 
+     * @param toClear
+     *
+     * Removes messages whose class is contained in toClear from the message lists.
+     * Hides the ValidationError list if it is empty.
+     */
     public void clearMsgs(final Class<?>[] toClear)
     {
-        DefaultListModel model = (DefaultListModel)msgList.getModel();
-        for (int i = model.getSize()-1; i >= 0; i--)
+        DefaultListModel model1 = (DefaultListModel)msgList.getModel();
+        DefaultListModel model2 = (DefaultListModel)this.validationErrorList.getModel();
+        for (int c=0; c<toClear.length; c++)
         {
-            for (int c=0; c<toClear.length; c++)
+            for (int i = model1.getSize()-1; i >= 0; i--)
             {
-                if (model.getElementAt(i).getClass().equals(toClear[c]))
+                if (model1.getElementAt(i).getClass().equals(toClear[c]))
                 {
-                    model.remove(i);
+                    model1.remove(i);
                 }
             }
+            for (int i = model2.getSize()-1; i >= 0; i--)
+            {
+                if (model2.getElementAt(i).getClass().equals(toClear[c]))
+                {
+                    model2.remove(i);
+                }
+            }
+        }
+        if (model2.getSize() == 0)
+        {
+            this.hideValidationErrors();
         }
     }
     
@@ -456,15 +657,28 @@ public class UploadMainPanel extends JPanel
         showObjectsCreated(true);
     }
 
+    /**
+     * @param clear
+     * 
+     * Updates display of 'Affected Tables'.
+     */
     protected void showObjectsCreated(boolean clear)
     {
+        //This is weird, but because Table and List view are using the same
+        //UploadInfoRenderable objects, both views will get refreshed by
+        //using the List view model. Even though, in current version of the interface, 
+        //"objects created" are only being shown in the table view.
         DefaultListModel model = (DefaultListModel)uploadTbls.getModel();
         for (int i = model.getSize()-1; i >= 0; i--)
         {
-            ((UploadInfoRenderable)model.getElementAt(i)).setShowCreatedCnt(!clear);
+            if (clear)
+            {
+                ((UploadInfoRenderable)model.getElementAt(i)).reset();
+            }
             ((UploadInfoRenderable)model.getElementAt(i)).refresh();
         }
         uploadTbls.repaint();
+        this.uploadTblTbl.repaint();
     }
 
     
@@ -554,8 +768,30 @@ public class UploadMainPanel extends JPanel
           }
       });
       menu.add(menuItem);
+      
+      menuItem = new JMenuItem("list");
+      menuItem.addActionListener(new ActionListener()
+      {
+          @Override
+          public void actionPerformed(ActionEvent e)
+          {
+              tf.showUploadTblList();
+          }
+      });
+      menu.add(menuItem);
+      
+      menuItem = new JMenuItem("table");
+      menuItem.addActionListener(new ActionListener()
+      {
+          @Override
+          public void actionPerformed(ActionEvent e)
+          {
+              tf.showUploadTblTbl();
+          }
+      });
+      menu.add(menuItem);
 
-        JFrame frm = new JFrame();
+      JFrame frm = new JFrame();
         frm.setPreferredSize(new Dimension(600,400));
         frm.setContentPane(tf);
         frm.setJMenuBar(menuBar);
@@ -609,5 +845,13 @@ public class UploadMainPanel extends JPanel
     public JPanel getValidationErrorPanel()
     {
         return validationErrorPanel;
+    }
+
+    /**
+     * @return the uploadTblTbl
+     */
+    public JTable getUploadTblTbl()
+    {
+        return uploadTblTbl;
     }
 }
