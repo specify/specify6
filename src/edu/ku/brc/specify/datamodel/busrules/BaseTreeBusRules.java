@@ -64,6 +64,20 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
     @SuppressWarnings("unchecked")
     public boolean okToDeleteNode(T node)
     {
+        if (!node.getDefinition().getNodeNumbersAreUpToDate() && !node.getDefinition().isUploadInProgress())
+        {
+            //Scary. If nodes are not up to date, tree rules may not work.
+            //The application should prevent edits to items/trees whose tree numbers are not up to date except while uploading
+            //workbenches.
+            throw new RuntimeException(node.getDefinition().getName() + " has out of date node numbers.");
+        }
+        
+        if (node.getDefinition().isUploadInProgress())
+        {
+            //don't think this will ever get called during an upload/upload-undo, but just in case.
+            return true;
+        }
+        
         Integer id = node.getTreeId();
         if (id == null)
         {
@@ -130,7 +144,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
      */
     @SuppressWarnings("unchecked")
     protected void updateFullNamesIfNecessary(T node, @SuppressWarnings("unused") DataProviderSessionIFace session)
-    {
+    {        
         if (node.getTreeId() == null)
         {
             // this is a new node
@@ -247,10 +261,18 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
         
         if (dataObj instanceof Treeable)
         {
-            // NOTE: the instanceof check can't check against 'T' since T isn't a class
+           // NOTE: the instanceof check can't check against 'T' since T isn't a class
             //       this has a SMALL amount of risk to it
             T node = (T)dataObj;
             
+            if (!node.getDefinition().getNodeNumbersAreUpToDate() && !node.getDefinition().isUploadInProgress())
+            {
+                //Scary. If nodes are not up to date, tree rules may not work (actually this one is OK. (for now)). 
+                //The application should prevent edits to items/trees whose tree numbers are not up to date except while uploading
+                //workbenches.
+                throw new RuntimeException(node.getDefinition().getName() + " has out of date node numbers.");
+            }
+           
             if (node.getFullName() == null)
             {
                 // set it's fullname
@@ -284,11 +306,19 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
             // NOTE: the instanceof check can't check against 'T' since T isn't a class
             //       this has a SMALL amount of risk to it
             T node = (T)dataObj;
-            
+
+            if (!node.getDefinition().getNodeNumbersAreUpToDate() && !node.getDefinition().isUploadInProgress())
+            {
+                //Scary. If nodes are not up to date, tree rules may not work.
+                //The application should prevent edits to items/trees whose tree numbers are not up to date except while uploading
+                //workbenches.
+                throw new RuntimeException(node.getDefinition().getName() + " has out of date node numbers.");
+            }
+
             // if the node doesn't have any assigned node number, it must be new
             boolean added = (node.getNodeNumber() == null);
 
-            if (added)
+            if (added && node.getDefinition().getDoNodeNumberUpdates() && node.getDefinition().getNodeNumbersAreUpToDate())
             {
                 log.info("Saved tree node was added.  Updating node numbers appropriately.");
                 TreeDataService dataServ = TreeDataServiceFactory.createService();
@@ -306,20 +336,29 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
     @Override
     public boolean beforeDeleteCommit(Object dataObj, DataProviderSessionIFace session) throws Exception
     {
+        boolean result = true;
         if (dataObj instanceof Treeable)
         {
             // NOTE: the instanceof check can't check against 'T' since T isn't a class
             //       this has a SMALL amount of risk to it
             T node = (T)dataObj;
 
-            log.info("A tree node was deleted.  Updating node numbers appropriately.");
-            TreeDataService<T,D,I> dataServ = TreeDataServiceFactory.createService();
-            @SuppressWarnings("unused")
-            boolean success = dataServ.updateNodeNumbersAfterNodeDeletion(node,session);
-            return success;
+            if (!node.getDefinition().getNodeNumbersAreUpToDate() && !node.getDefinition().isUploadInProgress())
+            {
+                //Scary. If nodes are not up to date, tree rules may not work.
+                //The application should prevent edits to items/trees whose tree numbers are not up to date except while uploading
+                //workbenches.
+                throw new RuntimeException(node.getDefinition().getName() + " has out of date node numbers.");
+            }
+
+            if (node.getDefinition().getDoNodeNumberUpdates() && node.getDefinition().getNodeNumbersAreUpToDate())
+            {
+                log.info("A tree node was deleted.  Updating node numbers appropriately.");
+                TreeDataService<T,D,I> dataServ = TreeDataServiceFactory.createService();
+                result = dataServ.updateNodeNumbersAfterNodeDeletion(node,session);
+            }
         }
-        
-        return true;
+        return result;
     }
     
     /**

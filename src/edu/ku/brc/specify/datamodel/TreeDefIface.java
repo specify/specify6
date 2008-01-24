@@ -70,20 +70,35 @@ public interface TreeDefIface<N extends Treeable<N,D,I>,
 	public Class<N> getNodeClass();
 	
 	public I getDefItemByRank(Integer rank);
-	
-	/**
-	 * @return the 'root' item in the tree, not assuming node numbers
-	 * in the tree are up to date.
-	 */
-	public N getTreeRoot();
-	
+		
 	/**
 	 * @return true if the node numbers in the tree are up to date.
 	 */
-	public boolean nodeNumbersAreCurrent();
+	public boolean getNodeNumbersAreUpToDate();
 	
 	/**
 	 * Walks the entire tree and assigns node numbers for every item.
 	 */
-	public void updateAllNodes();
+	public void updateAllNodes(final DataModelObjBase rootObj) throws Exception;
+	
+	/**
+	 * @return true if node numbers are to be kept up to date at all times.
+	 * (i.e. updated in business rule execution.)
+	 */
+	public boolean getDoNodeNumberUpdates();
+	/**
+	 * @param arg - true if node numbers should be kept up to date at all times.
+	 */
+	public void setDoNodeNumberUpdates(final boolean arg);
+	
+	/**
+	 * @return true if a workbench upload is (possibly) modifying the tree.
+	 */
+	public boolean isUploadInProgress();
+	
+	/**
+	 * @param arg - true if a workbench upload is (possibly) modifying the tree.
+	 */
+	public void setUploadInProgress(final boolean arg);
+	
 }

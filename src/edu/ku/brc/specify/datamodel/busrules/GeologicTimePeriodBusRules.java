@@ -154,6 +154,14 @@ public class GeologicTimePeriodBusRules extends BaseTreeBusRules<GeologicTimePer
             //       this has a SMALL amount of risk to it
             GeologicTimePeriod node = (GeologicTimePeriod)dataObj;
             
+            if (!node.getDefinition().getNodeNumbersAreUpToDate() && !node.getDefinition().isUploadInProgress())
+            {
+                //Scary. If nodes are not up to date, tree rules may not work.
+                //The application should prevent edits to items/trees whose tree numbers are not up to date except while uploading
+                //workbenches.
+                throw new RuntimeException(node.getDefinition().getName() + " has out of date node numbers.");
+            }
+            
             // if the node doesn't have any assigned node number, it must be new
             boolean added = (node.getNodeNumber() == null);
 

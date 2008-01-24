@@ -405,10 +405,24 @@ public class UploadTableTree extends UploadTable
      * Gets ready for an upload.
      */
     @Override
-    public void prepareToUpload() 
+    public void prepareToUpload()
     {
         super.prepareToUpload();
         defaultParents.clear();
+        
+        if (parent == null)
+        {
+            System.out.println("HEY! uncomment TreeDef upload sets.");
+//            try
+//            {
+//                getTreeDef().setDoNodeNumberUpdates(false);
+//                getTreeDef().setUploadInProgress(true);
+//            }
+//            catch (UploaderException ex)
+//            {
+//                throw new RuntimeException("Error accessing tree definition.");
+//            }
+        }
     }
     
     /**
@@ -578,4 +592,42 @@ public class UploadTableTree extends UploadTable
         return dataToWrite(recNum);
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#finishUpload()
+     */
+    @Override
+    public void finishUpload() throws UploaderException
+    {
+        super.finishUpload();
+        if (this.parent == null)
+        {
+            System.out.println("HEY! uncomment TreeDef upload sets.");
+//            try
+//            {
+//                getTreeDef().updateAllNodes((DataModelObjBase)getTreeRoot());
+//            }
+//            catch (Exception ex)
+//            {
+//                if (ex instanceof UploaderException) { throw (UploaderException) ex; }
+//                throw new UploaderException(ex);
+//            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#shutdown()
+     */
+    @Override
+    public void shutdown() throws UploaderException
+    {
+        super.shutdown();
+        if (parent == null)
+        {
+            System.out.println("HEY! uncomment TreeDef upload sets.");
+            //getTreeDef().setDoNodeNumberUpdates(true);
+            //getTreeDef().setUploadInProgress(false);
+        }
+    }
+
+    
 }

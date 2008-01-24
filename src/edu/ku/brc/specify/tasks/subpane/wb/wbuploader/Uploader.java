@@ -1935,6 +1935,17 @@ public class Uploader implements ActionListener, WindowStateListener, KeyListene
                 undoUpload(false, true);
                 return true;
             }
+            for (UploadTable ut : uploadTables)
+            {
+                try
+                {
+                    ut.shutdown();
+                }
+                catch (UploaderException ex)
+                {
+                    throw new RuntimeException(ex);
+                }
+            }
             return false;
         }
         return true;
@@ -2431,7 +2442,7 @@ public class Uploader implements ActionListener, WindowStateListener, KeyListene
     /**
      * Uploads dataset.
      */
-    public void uploadIt()
+    public void uploadIt() 
     {
         buildIdentifier();
         setOpKiller(null);
@@ -2481,6 +2492,13 @@ public class Uploader implements ActionListener, WindowStateListener, KeyListene
                         }
                         rowUploading++;
                         showUploadProgress(rowUploading);
+                    }
+                    //But where is the best place to do this?
+                    //Potentially the longest step.
+                    //Need extra progress info...
+                    for (UploadTable t : uploadTables)
+                    {
+                        t.finishUpload();
                     }
                 }
                 catch (Exception ex)

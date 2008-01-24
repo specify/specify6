@@ -238,7 +238,7 @@ public class UploadTable implements Comparable<UploadTable>
     /**
      * Gets ready for an upload.
      */
-    public void prepareToUpload()
+    public void prepareToUpload() 
     {
         uploadedKeys.clear();
         matchSetting.clear();
@@ -1706,10 +1706,10 @@ public class UploadTable implements Comparable<UploadTable>
             //This may be risky. At this time the refresh is required only because
             //of changes made in business rule processing of treeables.
             //But if business rules change...
-            if (rec instanceof Treeable)
-            {
-                tblSession.refresh(rec);
-            }
+            //if (rec instanceof Treeable)
+            //{
+            //    tblSession.refresh(rec);
+            //}
         }
         catch (Exception ex)
         {
@@ -2097,5 +2097,21 @@ public class UploadTable implements Comparable<UploadTable>
             return result.toString();
         }
 
+    }
+    
+    /**
+     * cleans up and stuff?
+     * Currently only used as a way of testing Tree updates.
+     */
+    @SuppressWarnings("unused")
+    public void finishUpload() throws UploaderException
+    {
+        //nothing to do here.
+    }
+    
+    @SuppressWarnings("unused")
+    public void shutdown() throws UploaderException
+    {
+        //nothing to do here.
     }
 }
