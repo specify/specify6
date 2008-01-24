@@ -49,7 +49,7 @@ import org.hibernate.annotations.CascadeType;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "lithostrattreedef")
-public class LithoStratTreeDef extends DataModelObjBase implements java.io.Serializable, TreeDefIface<LithoStrat, LithoStratTreeDef, LithoStratTreeDefItem>
+public class LithoStratTreeDef extends BaseTreeDef<LithoStrat, LithoStratTreeDef, LithoStratTreeDefItem> implements java.io.Serializable
 {
 	protected Integer                    lithoStratTreeDefId;
     protected String                     name;

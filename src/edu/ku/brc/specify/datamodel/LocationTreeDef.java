@@ -27,7 +27,7 @@ import org.hibernate.annotations.CascadeType;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "locationtreedef")
-public class LocationTreeDef extends DataModelObjBase implements java.io.Serializable, TreeDefIface<Location, LocationTreeDef, LocationTreeDefItem>
+public class LocationTreeDef extends BaseTreeDef<Location, LocationTreeDef, LocationTreeDefItem> implements java.io.Serializable
 {
 	protected Integer				    locationTreeDefId;
 	protected String				    name;

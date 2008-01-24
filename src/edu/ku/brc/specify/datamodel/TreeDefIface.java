@@ -68,5 +68,22 @@ public interface TreeDefIface<N extends Treeable<N,D,I>,
     public void setFullNameDirection(Integer direction);
     
 	public Class<N> getNodeClass();
+	
 	public I getDefItemByRank(Integer rank);
+	
+	/**
+	 * @return the 'root' item in the tree, not assuming node numbers
+	 * in the tree are up to date.
+	 */
+	public N getTreeRoot();
+	
+	/**
+	 * @return true if the node numbers in the tree are up to date.
+	 */
+	public boolean nodeNumbersAreCurrent();
+	
+	/**
+	 * Walks the entire tree and assigns node numbers for every item.
+	 */
+	public void updateAllNodes();
 }

@@ -49,7 +49,7 @@ import org.hibernate.annotations.CascadeType;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "geographytreedef")
-public class GeographyTreeDef extends DataModelObjBase implements java.io.Serializable, TreeDefIface<Geography, GeographyTreeDef, GeographyTreeDefItem>
+public class GeographyTreeDef extends BaseTreeDef<Geography, GeographyTreeDef, GeographyTreeDefItem> implements java.io.Serializable
 {
 	protected Integer				    geographyTreeDefId;
 	protected String				    name;

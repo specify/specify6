@@ -27,7 +27,7 @@ import org.hibernate.annotations.CascadeType;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name="taxontreedef")
-public class TaxonTreeDef extends DataModelObjBase implements java.io.Serializable, TreeDefIface<Taxon, TaxonTreeDef, TaxonTreeDefItem>
+public class TaxonTreeDef extends BaseTreeDef<Taxon, TaxonTreeDef, TaxonTreeDefItem> implements java.io.Serializable
 {
 	public static final int TAXONOMY_ROOT = 0;
     public static final int KINGDOM       = 10;
