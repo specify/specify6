@@ -310,7 +310,17 @@ public class SearchTableConfig implements DisplayOrderingIFace,
         
         if (searchTerm.length() > 0)
         {
-            String[] terms = StringUtils.split(searchTerm, ' ');
+            String[] terms;
+            if (searchTerm.startsWith("\"") || searchTerm.startsWith("\"") || searchTerm.startsWith("\""))
+            {
+                searchTerm = StringUtils.stripStart(searchTerm, "\"'`");
+                searchTerm = StringUtils.stripEnd(searchTerm, "\"'`");
+                terms = new String[] {searchTerm};
+                
+            } else
+            {
+                terms = StringUtils.split(searchTerm, ' ');
+            }
             for (String term : terms)
             {
                 //log.debug(term);

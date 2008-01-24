@@ -29,6 +29,8 @@ import org.hibernate.annotations.CascadeType;
 @Table(name="taxontreedef")
 public class TaxonTreeDef extends BaseTreeDef<Taxon, TaxonTreeDef, TaxonTreeDefItem> implements java.io.Serializable
 {
+    private static TaxonTreeDef currentTaxonTreeDef = null;
+    
 	public static final int TAXONOMY_ROOT = 0;
     public static final int KINGDOM       = 10;
     public static final int SUBKINGDOM    = 20;
@@ -279,4 +281,22 @@ public class TaxonTreeDef extends BaseTreeDef<Taxon, TaxonTreeDef, TaxonTreeDefI
     {
         return getIdentityTitle();
     }
+
+    /**
+     * @return the currentTreeDef
+     */
+    public static TaxonTreeDef getCurrentTaxonTreeDef()
+    {
+        return currentTaxonTreeDef;
+    }
+
+    /**
+     * @param currentTreeDef the currentTreeDef to set
+     */
+    public static void setCurrentTaxonTreeDef(final TaxonTreeDef currentTreeDef)
+    {
+        TaxonTreeDef.currentTaxonTreeDef = currentTreeDef;
+    }
+    
+    
 }

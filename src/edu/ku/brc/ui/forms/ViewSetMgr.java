@@ -172,7 +172,26 @@ public class ViewSetMgr
      */
     public ViewIFace getView(final String viewSetName, final String viewName)
     {
-        ViewSetIFace viewSet = viewsHash.get(viewSetName);
+        ViewSetIFace viewSet = null;
+        if (StringUtils.isNotEmpty(viewSetName))
+        {
+            viewSet = viewsHash.get(viewSetName);
+            
+        } else
+        {
+            // Go searching for it.
+            for (ViewSetIFace vs : viewsHash.values())
+            {
+                for (ViewIFace view : vs.getViews().values())
+                {
+                    if (view.getName().equals(viewName))
+                    {
+                        return view;
+                    }
+                }
+            }
+        }
+        
         if (viewSet != null)
         {
             return viewSet.getView(viewName);

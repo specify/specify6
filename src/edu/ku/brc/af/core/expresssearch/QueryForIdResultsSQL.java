@@ -277,7 +277,7 @@ public class QueryForIdResultsSQL implements QueryForIdResultsIFace
             //System.out.println("["+critiera+"]");
             sqlStr = String.format(tableInfo.getViewSql(), new Object[] {joinIdName, critiera});
             //System.out.println("["+sqlStr+"]");
-            sqlStr = ExpressSearchSQLAdjuster.getInstance().adjustSQL(sqlStr);
+            sqlStr = QueryAdjusterForDomain.getInstance().adjustSQL(sqlStr);
         } else
         {
             String vsql = getTableInfo().getViewSql();

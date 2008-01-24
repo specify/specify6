@@ -22,8 +22,6 @@ import javax.swing.JTextField;
 import org.jdesktop.animation.timing.Animator;
 import org.jdesktop.animation.timing.TimingTarget;
 
-import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.tasks.DualViewSearchable;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.MultiStateToggleButton;
@@ -59,9 +57,10 @@ public class FindPanel extends JPanel implements TimingTarget
         String find = getResourceString("Find");
         String next = getResourceString("Next");
 
-        IconManager.setApplicationClass(Specify.class);
-        IconManager.loadIcons(XMLHelper.getConfigDir("icons_datamodel.xml"));
-        IconManager.loadIcons(XMLHelper.getConfigDir("icons_plugins.xml"));
+        // These should already be loaded
+        //IconManager.setApplicationClass(Specify.class);
+        //IconManager.loadIcons(XMLHelper.getConfigDir("icons_datamodel.xml"));
+        //IconManager.loadIcons(XMLHelper.getConfigDir("icons_plugins.xml"));
 
         Icon up    = IconManager.getIcon("Top",IconSize.Std16);
         Icon down  = IconManager.getIcon("Bottom",IconSize.Std16);

@@ -26,8 +26,6 @@ import javax.swing.JPanel;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 
-import org.apache.log4j.Logger;
-
 import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.util.Pair;
 
@@ -43,7 +41,7 @@ import edu.ku.brc.util.Pair;
 public class TreeViewerListHeader extends JPanel implements ListDataListener
 {
     /** Logger for all messages emitted. */
-    private static final Logger log = Logger.getLogger(TreeViewerListHeader.class);
+    //private static final Logger log = Logger.getLogger(TreeViewerListHeader.class);
 
     /** The associated JList. */
 	protected JList list;
@@ -146,10 +144,10 @@ public class TreeViewerListHeader extends JPanel implements ListDataListener
         
         expandingRank = ranksBeingChanged[0];
         mostRecentX = e.getX();
-        log.debug("Setting 'mostRecentX' to " + mostRecentX);
+        //log.debug("Setting 'mostRecentX' to " + mostRecentX);
         resizingColumns = true;
         
-        log.debug("Starting a column resize action for rank " + expandingRank);
+        //log.debug("Starting a column resize action for rank " + expandingRank);
     }
     
     protected void hover(MouseEvent e)
@@ -171,7 +169,7 @@ public class TreeViewerListHeader extends JPanel implements ListDataListener
             int x = e.getX();
             int change = x - mostRecentX;
             
-            log.debug("Resizing tree viewer columns");
+            //log.debug("Resizing tree viewer columns");
             
             // change the column that should expand/contrat
             int currentColWidth = cellRenderer.getColumnWidth(expandingRank);
@@ -180,12 +178,12 @@ public class TreeViewerListHeader extends JPanel implements ListDataListener
                 change = currentColWidth - minColWidth;
             }
             
-            log.debug("Changing width of column for rank " + expandingRank + " by " + change + " pixels");
+            //log.debug("Changing width of column for rank " + expandingRank + " by " + change + " pixels");
             
             // ignore changes that have no effect
             if (change == 0)
             {
-                log.debug("Ignoring change of 0 pixels");
+                //log.debug("Ignoring change of 0 pixels");
                 return;
             }
             
@@ -197,7 +195,7 @@ public class TreeViewerListHeader extends JPanel implements ListDataListener
             
             this.setCursor(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR));
             mostRecentX = x;
-            log.debug("Changing 'mostRecentX' to " + mostRecentX);
+            //log.debug("Changing 'mostRecentX' to " + mostRecentX);
         }
         else
         {
@@ -209,7 +207,7 @@ public class TreeViewerListHeader extends JPanel implements ListDataListener
     {
         if (resizingColumns)
         {
-            log.debug("Ending a column resize action");
+            //log.debug("Ending a column resize action");
             this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             resizingColumns = false;
         }

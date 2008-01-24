@@ -59,8 +59,6 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
-import edu.ku.brc.dbsupport.CustomQueryIFace;
-import edu.ku.brc.dbsupport.CustomQueryListener;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -72,6 +70,7 @@ import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.tasks.BaseTreeTask;
 import edu.ku.brc.specify.tasks.DualViewSearchable;
+import edu.ku.brc.specify.treeutils.ChildNodeCounter;
 import edu.ku.brc.specify.treeutils.TreeDataService;
 import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 import edu.ku.brc.specify.treeutils.TreeFactory;
@@ -941,7 +940,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         {
             userChoice = JOptionPane.showConfirmDialog(this, "This operation will delete "
                     + numNodesToDelete + " nodes", "Continue?", JOptionPane.OK_CANCEL_OPTION,
-                    JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.WARNING_MESSAGE); // I18N
         }
         
         if (userChoice == JOptionPane.OK_OPTION)
@@ -2221,6 +2220,12 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         // get the child nodes
         List<TreeNode> childNodes = dataService.getChildTreeNodes(dbRecord);
         
+        String propName = "TreeEditor.Rank.Threshold."+dbRecord.getClass().getSimpleName();
+        final int rankThreshold = AppPreferences.getRemote().getInt(propName, -1);
+
+        final Class<?> dbRecClass = dbRecord.getClass();
+        final boolean isHQL = TreeFactory.isQueryHQL(dbRecClass);
+        
         for (TreeNode newNode: childNodes)
         {
             final TreeNode node = newNode;
@@ -2230,27 +2235,20 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 {
                     try
                     {
-                        CustomQueryListener listener = new CustomQueryListener()
+                         if (rankThreshold == -1 || dbRecord.getRankId() >= rankThreshold)
                         {
-                            public void exectionDone(final CustomQueryIFace customQuery)
-                            {
-                                List<?> results = customQuery.getDataObjects();
-                                if (results != null && results.get(0) != null && results.get(0) instanceof Integer)
-                                {
-                                    node.setAssociatedRecordCount((Integer)results.get(0));
-                                    lists[0].repaint();
-                                    lists[1].repaint();
-                                }
-                            }
-                            public void executionError(final CustomQueryIFace customQuery)
-                            {
-                            }
-                        };
-                        dataService.getRelatedRecordCount(dbRecord.getClass(), node.getId(), listener);
+                            new ChildNodeCounter(lists[0], lists[1], 1, node, 
+                                    TreeFactory.getRelatedRecordCountSQLSingleNode(dbRecClass), null, isHQL);
+                            
+                            new ChildNodeCounter(lists[0], lists[1], 2, node, 
+                                    TreeFactory.getNodeNumberQuery(dbRecClass), 
+                                    TreeFactory.getRelatedRecordCountSQLForRange(dbRecClass), isHQL);
+                        }
                     }
                     catch (Exception e)
                     {
                         log.error(e);
+                        e.printStackTrace();
                     }
                 }
             };
@@ -2345,4 +2343,5 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         T record = dataService.getNodeById(treeDef.getNodeClass(), node.getId());
         return record;
     }
+    
 }

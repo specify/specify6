@@ -752,7 +752,6 @@ public class UploadMainPanel extends JPanel
                                KeyEvent.VK_F);
       menuItem.addActionListener(new ActionListener()
       {
-          @Override
           public void actionPerformed(ActionEvent e)
           {
               if (tf.isValidationErrorsVisible())
@@ -772,7 +771,6 @@ public class UploadMainPanel extends JPanel
       menuItem = new JMenuItem("list");
       menuItem.addActionListener(new ActionListener()
       {
-          @Override
           public void actionPerformed(ActionEvent e)
           {
               tf.showUploadTblList();
@@ -783,7 +781,6 @@ public class UploadMainPanel extends JPanel
       menuItem = new JMenuItem("table");
       menuItem.addActionListener(new ActionListener()
       {
-          @Override
           public void actionPerformed(ActionEvent e)
           {
               tf.showUploadTblTbl();

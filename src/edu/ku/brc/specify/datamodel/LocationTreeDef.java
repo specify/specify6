@@ -29,6 +29,8 @@ import org.hibernate.annotations.CascadeType;
 @Table(name = "locationtreedef")
 public class LocationTreeDef extends BaseTreeDef<Location, LocationTreeDef, LocationTreeDefItem> implements java.io.Serializable
 {
+    private static LocationTreeDef currentLocationTreeDef = null;
+    
 	protected Integer				    locationTreeDefId;
 	protected String				    name;
 	protected String				    remarks;
@@ -335,9 +337,29 @@ public class LocationTreeDef extends BaseTreeDef<Location, LocationTreeDef, Loca
         return 59;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#toString()
+     */
     @Override
     public String toString()
     {
         return getIdentityTitle();
     }
+
+    /**
+     * @return the currentLocationTreeDef
+     */
+    public static LocationTreeDef getCurrentLocationTreeDef()
+    {
+        return currentLocationTreeDef;
+    }
+
+    /**
+     * @param currentLocationTreeDef the currentLocationTreeDef to set
+     */
+    public static void setCurrentLocationTreeDef(LocationTreeDef currentLocationTreeDef)
+    {
+        LocationTreeDef.currentLocationTreeDef = currentLocationTreeDef;
+    }
+    
 }

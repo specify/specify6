@@ -20,7 +20,7 @@ package edu.ku.brc.specify.conversion;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.expresssearch.ExpressSearchSQLAdjuster;
+import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.CustomQueryFactory;
 import edu.ku.brc.ui.UIRegistry;
@@ -61,7 +61,7 @@ public class CustomDBConverter implements CustomDBConverterListener
         System.setProperty("edu.ku.brc.ui.db.PickListDBAdapterFactory", "edu.ku.brc.specify.ui.db.PickListDBAdapterFactory");   // Needed By the Auto Cosmplete UI
         System.setProperty(CustomQueryFactory.factoryName,              "edu.ku.brc.specify.dbsupport.SpecifyCustomQueryFactory");
         System.setProperty(UIFieldFormatterMgr.factoryName,             "edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr");    // Needed for CatalogNumberign
-        System.setProperty(ExpressSearchSQLAdjuster.factoryName,        "edu.ku.brc.specify.dbsupport.SpecifyExpressSearchSQLAdjuster");    // Needed for ExpressSearch        
+        System.setProperty(QueryAdjusterForDomain.factoryName,        "edu.ku.brc.specify.dbsupport.SpecifyExpressSearchSQLAdjuster");    // Needed for ExpressSearch        
     } 
     
     public void setUpPreferrences()

@@ -29,18 +29,18 @@ import org.apache.commons.lang.StringUtils;
  * @author rods
  *
  */
-public class ExpressSearchSQLAdjuster
+public class QueryAdjusterForDomain
 {
     public static final String factoryName = "edu.ku.brc.af.core.ExpressSearchSQLAdjuster";
     
     //private static final Logger log = Logger.getLogger(ExpressSearchSQLAdjuster.class);
     
-    protected static ExpressSearchSQLAdjuster instance = null;
+    protected static QueryAdjusterForDomain instance = null;
     
     /**
      * Protected Constructor
      */
-    protected ExpressSearchSQLAdjuster()
+    protected QueryAdjusterForDomain()
     {
         // no-op
     }
@@ -49,7 +49,7 @@ public class ExpressSearchSQLAdjuster
      * Returns the instance to the singleton
      * @return  the instance to the singleton
      */
-    public static ExpressSearchSQLAdjuster getInstance()
+    public static QueryAdjusterForDomain getInstance()
     {
         if (instance != null)
         {
@@ -67,7 +67,7 @@ public class ExpressSearchSQLAdjuster
         {
             try 
             {
-                return instance = (ExpressSearchSQLAdjuster)Class.forName(factoryNameStr).newInstance();
+                return instance = (QueryAdjusterForDomain)Class.forName(factoryNameStr).newInstance();
                  
             } catch (Exception e) 
             {
@@ -78,7 +78,7 @@ public class ExpressSearchSQLAdjuster
         }
         // if not factory than pass an instance of this in
         // and this does nothing to the SQL.
-        return instance = new ExpressSearchSQLAdjuster();
+        return instance = new QueryAdjusterForDomain();
     }
 
     /**
@@ -90,14 +90,18 @@ public class ExpressSearchSQLAdjuster
     {
         return sql;
     }
-    
+
     /**
      * Provides an opportunity for the SQL to get adjusted before it is executed.
-     * @param text the incoming text to be passed into the parser
-     * @return the adjusted text
+     * @param tableAbbrev some queries may have multiple CollectionMembers. This is used as
+     * a tablePrefix (i.e. col.CollectionMemberID
+     * @param sql the incoming sql
+     * @param isHQL whether the query is HQL and it should use the field name instead of the Column name
+     * @return the adjusted SQL.
      */
-    public String adjustExpressSearchText(final String text)
+    /*public String adjustSQL(final String tablePrefix, final String sql, final boolean isHQL)
     {
-        return text;
-    }
+        return sql;
+    }*/
+
 }

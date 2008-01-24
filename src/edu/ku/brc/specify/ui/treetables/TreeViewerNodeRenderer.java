@@ -615,7 +615,7 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
             Graphics2D g2d = (Graphics2D)g;
             FontMetrics fm = g.getFontMetrics();
             int cellHeight = list.getFixedCellHeight();
-            String name = treeNode.getName();
+            StringBuilder name = new StringBuilder(treeNode.getName());
             int baselineAdj = (int)(1.0/2.0*fm.getAscent() + 1.0/2.0*cellHeight);
             Pair<Integer,Integer> stringBounds = getTextBoundsForRank(treeNode.getRank());
             int stringStartX = stringBounds.getFirst();
@@ -639,9 +639,28 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
             
             if (treeNode.getAssociatedRecordCount() != 0)
             {
-                name = name + " (" + treeNode.getAssociatedRecordCount() + ")";
+                name.append(" (");
+                name.append(treeNode.getAssociatedRecordCount());
             }
-            String clippedName = GraphicsUtils.clipString(fm, name, stringLength);
+            
+            if (treeNode.getAssociatedRecordCount2() != 0 && treeNode.isHasChildren())
+            {
+                if (treeNode.getAssociatedRecordCount() != 0)
+                {
+                    name.append(", ");
+                } else
+                {
+                    name.append(" (0, ");
+                }
+                name.append(treeNode.getAssociatedRecordCount2());
+                name.append(")");
+                
+            } else if (treeNode.getAssociatedRecordCount() != 0)
+            {
+                name.append(")");
+            }
+            
+            String clippedName = GraphicsUtils.clipString(fm, name.toString(), stringLength);
             g.drawString(clippedName, stringStartX, stringY);
             
             g.setColor(startingColor);

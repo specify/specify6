@@ -205,14 +205,14 @@ public class SQLExecutionProcessor
                 if (sqlStr.trim().toLowerCase().startsWith("select"))
                 {
                     ResultSet rs = dbStatement.executeQuery(sqlStr);
-                    log.debug("SQL*%["+sqlStr+"]");
+                    //log.debug("SQL*%["+sqlStr+"]");
                     listener.exectionDone(this, rs);
                     inError = true;
                     
                 } else
                 {
                     dbStatement.executeUpdate(sqlStr); // int result return is ignored (probably shouldn't be)
-                    log.debug("SQL**["+sqlStr+"]");
+                    //log.debug("SQL**["+sqlStr+"]");
                     listener.exectionDone(this, null);
                 }
                 

@@ -17,6 +17,7 @@
  */
 package edu.ku.brc.dbsupport;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -42,6 +43,7 @@ public class JPAQuery implements CustomQueryIFace
     protected String                    sqlStr;
     protected boolean                   inError     = false;
     protected List<?>                   resultsList = null;
+    protected boolean                   isUnique    = false;
     
     protected CustomQueryListener       cql         = null;
     protected Object                    data        = null;
@@ -80,6 +82,14 @@ public class JPAQuery implements CustomQueryIFace
         this.cql    = cql;
     }
     
+    /**
+     * @param isUnique the isUnique to set
+     */
+    public void setUnique(boolean isUnique)
+    {
+        this.isUnique = isUnique;
+    }
+
     /**
      * @return the inError
      */
@@ -147,7 +157,16 @@ public class JPAQuery implements CustomQueryIFace
             {
                 log.debug("["+sqlStr+"]");
                 Query qry = query != null ? query : session.createQuery(sqlStr);
-                resultsList = qry.list();
+                if (isUnique)
+                {
+                    List<Object> objArray = new ArrayList<Object>(1);
+                    objArray.add(qry.uniqueResult());
+                    resultsList = objArray;
+                    
+                } else
+                {
+                    resultsList = qry.list();
+                }
                 
             } catch (JDBCConnectionException ex)
             {

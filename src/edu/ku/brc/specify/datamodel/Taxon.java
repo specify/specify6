@@ -53,7 +53,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
     protected static final Logger log = Logger.getLogger(Taxon.class);
 
     // ID
-	protected Integer                 taxonId;
+	protected Integer              taxonId;
 	
     // names
 	protected String               name;
@@ -113,7 +113,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
     // relationships with other tables
 	protected Set<Determination>   determinations;
 	protected Set<TaxonCitation>   taxonCitations;
-    protected Set<CommonNameTx>      commonNames;
+    protected Set<CommonNameTx>    commonNames;
 
     // non-user fields
     protected Integer              nodeNumber;

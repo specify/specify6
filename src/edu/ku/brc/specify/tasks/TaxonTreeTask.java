@@ -17,6 +17,7 @@ import java.net.URI;
 import javax.persistence.Transient;
 import javax.swing.JCheckBox;
 import javax.swing.JMenuItem;
+import javax.swing.SwingUtilities;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.specify.datamodel.CollectionObject;
@@ -128,15 +129,20 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
                     }
 
                     int collObjTableID = DBTableIdMgr.getInstance().getIdByClassName(CollectionObject.class.getName());
-                    RecordSet rs = new RecordSet("TTV.showCollectionObjects", collObjTableID);
+                    final RecordSet rs = new RecordSet("TTV.showCollectionObjects", collObjTableID);
                     for(Determination deter : taxon.getDeterminations())
                     {
                         rs.addItem(deter.getCollectionObject().getId());
                     }
 
                     UIRegistry.getStatusBar().setText(getResourceString("TTV_OPENING_CO_FORM"));
-                    CommandAction cmd = new CommandAction(DataEntryTask.DATA_ENTRY,DataEntryTask.EDIT_DATA,rs);
-                    CommandDispatcher.dispatch(cmd);
+                    // This is needed so the StatusBar gets updated
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run()
+                        {
+                            CommandDispatcher.dispatch(new CommandAction(DataEntryTask.DATA_ENTRY, DataEntryTask.EDIT_DATA, rs));
+                        }
+                    });
                 }
             });
             popup.add(getDeters, true);

@@ -89,9 +89,9 @@ public interface TreeDataService <T extends Treeable<T,D,I>,
      * @param id
      * @param listener
      */
-    public void getRelatedRecordCount(final Class<?> clazz, 
-                                      final int       id, 
-                                      final CustomQueryListener listener);
+    public void calcRelatedRecordCount(final Class<?> clazz, 
+                                       final int       id, 
+                                       final CustomQueryListener listener);
     
     /**
      * Deletes the given node from the DB.

@@ -1212,7 +1212,7 @@ public class UIRegistry
     public static void clearGlassPaneMsg()
     {
         Component mainComp = UIRegistry.get(UIRegistry.MAINPANE);
-        if (mainComp != null && getGlassPane() != null)
+        if (mainComp != null && getGlassPane() != null && getGlassPane().isVisible())
         {
             getGlassPane().setVisible(false);
             mainComp.setVisible(true);

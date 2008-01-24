@@ -23,7 +23,6 @@ import edu.ku.brc.dbsupport.CustomQueryListener;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
-import edu.ku.brc.dbsupport.JPAQuery;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
@@ -233,13 +232,13 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.treeutils.TreeDataService#getRelatedRecordCount(java.lang.Class, int, edu.ku.brc.dbsupport.CustomQueryListener)
      */
-    public void getRelatedRecordCount(final Class<?> clazz, 
+    public void calcRelatedRecordCount(final Class<?> clazz, 
                                       final int       id, 
                                       final CustomQueryListener listener)
     {
-        String   queryStr = TreeFactory.getRelatedRecordCountQueryString(clazz, id);
-        JPAQuery jpaQuery = new JPAQuery(queryStr, listener); 
-        jpaQuery.start();
+        //String   queryStr = TreeFactory.getRelatedRecordCountQueryString(clazz, id);
+        //JPAQuery jpaQuery = new JPAQuery(queryStr, listener); 
+        //jpaQuery.start();
     }
 
 	/* (non-Javadoc)

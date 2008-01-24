@@ -41,12 +41,17 @@ import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionType;
+import edu.ku.brc.specify.datamodel.GeographyTreeDef;
+import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
+import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
+import edu.ku.brc.specify.datamodel.LocationTreeDef;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.PickListItem;
 import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.datamodel.SpAppResourceDir;
 import edu.ku.brc.specify.datamodel.SpViewSetObj;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
@@ -300,6 +305,16 @@ public class SpecifyAppContextMgr extends AppContextMgr
         
         Collection.setCurrentCollection(collection);
         Collection.setCurrentCollectionIds(getCollectionIdList(sessionArg));
+        
+        CollectionType colType = collection.getCollectionType();
+        if (colType != null)
+        {
+            TaxonTreeDef.setCurrentTaxonTreeDef(colType.getTaxonTreeDef());
+            GeologicTimePeriodTreeDef.setCurrentGeologicTimePeriodTreeDef(colType.getGeologicTimePeriodTreeDef());
+            LocationTreeDef.setCurrentLocationTreeDef(colType.getLocationTreeDef());
+            LithoStratTreeDef.setCurrentLithoStratTreeDef(colType.getLithoStratTreeDef());
+            GeographyTreeDef.setCurrentGeographyTreeDef(colType.getGeographyTreeDef());
+        }
         
         return collection;
     }
@@ -753,7 +768,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             }
         }
 
-        return backStopViewSetMgr.getView(viewSetName == null ? "Global" : viewSetName, viewName);
+        return backStopViewSetMgr.getView(viewSetName, viewName);
 
     }
 

@@ -5,16 +5,27 @@ import java.util.Set;
 
 import edu.ku.brc.util.Pair;
 
+/**
+ * @author rod
+ * (Original author JDS)
+ *
+ * @code_status Beta
+ *
+ * Jan 23, 2008
+ *
+ */
 public class TreeNode
 {
-    protected String name;
-    protected String fullName;
-    protected boolean hasChildren;
-    protected int id;
-    protected int parentId;
+    protected String   name;
+    protected String   fullName;
+    protected boolean  hasChildren;
+    protected int      id;
+    protected int      parentId;
     protected Class<?> dataObjClass;
-    protected int rank;
-    protected int parentRank;
+    protected int      rank;
+    protected int      parentRank;
+    protected int      nodeNumber;
+    protected int      highestChildNodeNumber;
     
     /** This field will hold a number representing the number of associated records for this node.
      *  For example, if this field represents a Taxon record, the <code>associatedRecordCount</code> would
@@ -22,25 +33,36 @@ public class TreeNode
      *  Geography records, this number might represent the number of CollectingEvents that were in this
      *  geographical area.
      */
-    protected int associatedRecordCount;
+    protected int     associatedRecordCount;
+    protected int     associatedRecordCount2;
     protected Integer acceptedParentId;
-    protected String acceptedParentFullName;
+    protected String  acceptedParentFullName;
     protected Set<Pair<Integer,String>> synonymIdsAndNames;
     
-    public TreeNode(String name, String fullName, int id, int parentId, int rank, int parentRank, boolean hasChildren, Integer acceptedParentId, String acceptedParentFullName, Set<Pair<Integer,String>> synonymIdsAndNames)
+    public TreeNode(final String name, 
+                    final String fullName, 
+                    final int id, 
+                    final int parentId, 
+                    final int rank, 
+                    final int parentRank, 
+                    final boolean hasChildren, 
+                    final Integer acceptedParentId, 
+                    final String acceptedParentFullName, 
+                    final Set<Pair<Integer,String>> synonymIdsAndNames)
     {
         super();
-        this.name = name;
-        this.fullName = fullName;
-        this.id = id;
-        this.parentId = parentId;
-        this.rank = rank;
-        this.parentRank = parentRank;
-        this.hasChildren = hasChildren;
-        this.acceptedParentId = acceptedParentId;
+        this.name                   = name;
+        this.fullName               = fullName;
+        this.id                     = id;
+        this.parentId               = parentId;
+        this.rank                   = rank;
+        this.parentRank             = parentRank;
+        this.hasChildren            = hasChildren;
+        this.acceptedParentId       = acceptedParentId;
         this.acceptedParentFullName = acceptedParentFullName;
-        this.synonymIdsAndNames = synonymIdsAndNames;
-        this.associatedRecordCount = 0;
+        this.synonymIdsAndNames     = synonymIdsAndNames;
+        this.associatedRecordCount  = 0;
+        this.associatedRecordCount2 = 0;
     }
 
     public Class<?> getDataObjClass()
@@ -48,7 +70,7 @@ public class TreeNode
         return dataObjClass;
     }
 
-    public void setDataObjClass(Class<?> dataObjClass)
+    public void setDataObjClass(final Class<?> dataObjClass)
     {
         this.dataObjClass = dataObjClass;
     }
@@ -58,7 +80,7 @@ public class TreeNode
         return hasChildren;
     }
 
-    public void setHasChildren(boolean hasChildren)
+    public void setHasChildren(final boolean hasChildren)
     {
         this.hasChildren = hasChildren;
     }
@@ -68,7 +90,7 @@ public class TreeNode
         return id;
     }
 
-    public void setId(int id)
+    public void setId(final int id)
     {
         this.id = id;
     }
@@ -78,7 +100,7 @@ public class TreeNode
         return name;
     }
 
-    public void setName(String name)
+    public void setName(final String name)
     {
         this.name = name;
     }
@@ -88,7 +110,7 @@ public class TreeNode
         return fullName;
     }
 
-    public void setFullName(String fullName)
+    public void setFullName(final String fullName)
     {
         this.fullName = fullName;
     }
@@ -101,7 +123,7 @@ public class TreeNode
         return parentId;
     }
 
-    public void setParentId(int parentId)
+    public void setParentId(final int parentId)
     {
         this.parentId = parentId;
     }
@@ -114,7 +136,7 @@ public class TreeNode
         return parentRank;
     }
 
-    public void setParentRank(int parentRank)
+    public void setParentRank(final int parentRank)
     {
         this.parentRank = parentRank;
     }
@@ -124,7 +146,7 @@ public class TreeNode
         return rank;
     }
 
-    public void setRank(int rank)
+    public void setRank(final int rank)
     {
         this.rank = rank;
     }
@@ -134,9 +156,25 @@ public class TreeNode
         return associatedRecordCount;
     }
 
-    public void setAssociatedRecordCount(int associatedRecordCount)
+    public void setAssociatedRecordCount(final int associatedRecordCount)
     {
         this.associatedRecordCount = associatedRecordCount;
+    }
+
+    /**
+     * @return the associatedRecordCount2
+     */
+    public int getAssociatedRecordCount2()
+    {
+        return associatedRecordCount2;
+    }
+
+    /**
+     * @param associatedRecordCount2 the associatedRecordCount2 to set
+     */
+    public void setAssociatedRecordCount2(final int associatedRecordCount2)
+    {
+        this.associatedRecordCount2 = associatedRecordCount2;
     }
 
     public Integer getAcceptedParentId()
@@ -149,12 +187,12 @@ public class TreeNode
         return acceptedParentFullName;
     }
 
-    public void setAcceptedParentFullName(String acceptedParentFullName)
+    public void setAcceptedParentFullName(final String acceptedParentFullName)
     {
         this.acceptedParentFullName = acceptedParentFullName;
     }
 
-    public void setAcceptedParentId(Integer acceptedParentId)
+    public void setAcceptedParentId(final Integer acceptedParentId)
     {
         this.acceptedParentId = acceptedParentId;
     }
@@ -164,7 +202,7 @@ public class TreeNode
         return synonymIdsAndNames;
     }
     
-    public void removeSynonym(Integer synonymNodeId)
+    public void removeSynonym(final Integer synonymNodeId)
     {
         Iterator<Pair<Integer,String>> iter = synonymIdsAndNames.iterator();
         while( iter.hasNext() )

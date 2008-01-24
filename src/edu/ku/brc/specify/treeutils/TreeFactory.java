@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDefItem;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
@@ -250,16 +251,16 @@ public class TreeFactory
      * @param id
      * @return
      */
-    public static String getRelatedRecordCountQueryString(final Class<?> clazz, final int id)
+    public static String getRelatedRecordCountQueryStringHQL(final Class<?> clazz, final int id)
     {
         if (clazz.equals(Taxon.class))
         {
-            return "SELECT count(*) FROM CollectionObject AS co INNER JOIN co.determinations AS d INNER JOIN d.taxon AS t WHERE t.id="+Integer.toString(id);
+            return "SELECT count(*) FROM CollectionObject AS co INNER JOIN co.determinations AS d INNER JOIN d.status AS dts INNER JOIN d.taxon AS t WHERE dts.isCurrent = 1 AND t.id="+Integer.toString(id);
         }
         
         if (clazz.equals(Geography.class))
         {
-            return "SELECT count(*) FROM CollectingEvent AS ce INNER JOIN ce.localities AS l INNER JOIN l.geography AS g WHERE g.id="+Integer.toString(id);
+            return "SELECT count(*) FROM CollectionObject AS co INNER JOIN co.collectingEvent AS ce INNER JOIN ce.locality AS l INNER JOIN l.geography AS g WHERE g.id="+Integer.toString(id);
         }
         
         if (clazz.equals(GeologicTimePeriod.class))
@@ -269,12 +270,167 @@ public class TreeFactory
         
         if (clazz.equals(Location.class))
         {
-            return "SELECT count(*) FROM CollectionObject AS co INNER JOIN co..preparations AS prep INNER JOIN prep.location as loc WHERE loc.id="+Integer.toString(id);
+            return "SELECT count(*) FROM CollectionObject AS co INNER JOIN co.preparations AS prep INNER JOIN prep.location as loc WHERE loc.id="+Integer.toString(id);
         }
         
         if (clazz.equals(LithoStrat.class))
         {
             return "SELECT count(*) FROM CollectionObject AS co INNER JOIN co.paleoContext AS pc INNER JOIN pc.lithoStrat as ls WHERE ls.id="+Integer.toString(id);
+        }
+        
+        return null;
+    }
+
+    /**
+     * @param clazz
+     * @param id
+     * @return
+     */
+    public static boolean isQueryHQL(final Class<?> clazz)
+    {
+        if (clazz.equals(GeologicTimePeriod.class) || clazz.equals(LithoStrat.class) || clazz.equals(Location.class))
+        {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @param clazz
+     * @param id
+     * @return
+     */
+    public static StringBuilder getRelatedRecordCountSQLBase(final Class<?> clazz)
+    {
+        StringBuilder sb = new StringBuilder();
+        if (clazz.equals(Taxon.class))
+        {
+            sb.append("SELECT count(*) ");
+            sb.append("FROM taxon AS TX INNER JOIN determination as DET ON TX.TaxonID = DET.TaxonID INNER JOIN determinationstatus ON DET.DeterminationStatusID = determinationstatus.DeterminationStatusID ");
+            sb.append("INNER JOIN collectionobject ON DET.CollectionObjectID = collectionobject.CollectionObjectID ");
+        }
+        
+        if (clazz.equals(Geography.class))
+        {
+            sb.append("SELECT count(*) ");
+            sb.append("FROM geography AS G INNER JOIN locality ON G.GeographyID = locality.GeographyID ");
+            sb.append("INNER JOIN collectingevent AS CE ON locality.LocalityID = CE.LocalityID ");
+            sb.append("INNER JOIN collectionobject ON CE.CollectingEventID = collectionobject.CollectingEventID ");
+        }
+        return sb;
+    }
+
+    /**
+     * @param clazz
+     * @param id
+     * @return
+     */
+    public static String getRelatedRecordCountSQLSingleNode(final Class<?> clazz)
+    {
+        StringBuilder sb = getRelatedRecordCountSQLBase(clazz);
+        
+        if (clazz.equals(Taxon.class))
+        {
+            sb.append(" WHERE DET.CollectionMemberID = COLMEMID AND IsCurrent = 1 AND IsAccepted = 1 AND TX.TaxonID = %d");
+            
+        } else if (clazz.equals(Geography.class))
+        {
+            sb.append(" WHERE CE.CollectionMemberID = COLMEMID AND G.GeographyID = %d");
+            
+        } else if (clazz.equals(Location.class))
+        {
+            // HQL
+            sb.append("SELECT count(*) FROM CollectionObject AS co INNER JOIN co.preparations AS prep INNER JOIN prep.location as loc WHERE prep.collectionMemberId = COLMEMID AND loc.id = %d");
+            
+        } else if (clazz.equals(GeologicTimePeriod.class))
+        {
+            // HQL
+            sb.append("SELECT count(*) FROM CollectionObject AS co INNER JOIN co.paleoContext AS pc INNER JOIN pc.chronosStrat as gtp WHERE pc.collectionMemberId = COLMEMID AND gtp.id = %d");
+            
+        } else if (clazz.equals(LithoStrat.class))
+        {
+            // HQL
+            sb.append("SELECT count(*) FROM CollectionObject AS co INNER JOIN co.paleoContext AS pc INNER JOIN pc.lithoStrat as ls WHERE pc.collectionMemberId = COLMEMID AND ls.id = %d");
+            
+        }
+        
+        if (sb.length() > 0)
+        {
+            return QueryAdjusterForDomain.getInstance().adjustSQL(sb.toString());
+        }
+        
+        return null;
+    }
+
+    /**
+     * @param clazz
+     * @param id
+     * @return
+     */
+    public static String getRelatedRecordCountSQLForRange(final Class<?> clazz)
+    {
+        StringBuilder sb = getRelatedRecordCountSQLBase(clazz);
+        
+        if (clazz.equals(Taxon.class))
+        {
+            sb.append(" WHERE DET.CollectionMemberID = COLMEMID AND IsCurrent = 1 AND IsAccepted = 1 AND NodeNumber > %d AND HighestChildNodeNumber <= %d");
+            
+        } else if (clazz.equals(Geography.class))
+        {
+            sb.append(" WHERE CE.CollectionMemberID = COLMEMID AND NodeNumber > %d AND HighestChildNodeNumber <= %d");
+            
+        } else if (clazz.equals(GeologicTimePeriod.class))
+        {
+            sb.append("SELECT count(*) FROM CollectionObject AS co INNER JOIN co.paleoContext AS pc INNER JOIN pc.chronosStrat as gtp WHERE pc.collectionMemberId = COLMEMID AND gtp.nodeNumber > %d AND gtp.highestChildNodeNumber <= %d");
+            
+        } else if (clazz.equals(Location.class))
+        {
+            sb.append("SELECT count(*) FROM CollectionObject AS co INNER JOIN co.preparations AS prep INNER JOIN prep.location as loc WHERE prep.collectionMemberId = COLMEMID AND loc.nodeNumber > %d AND loc.highestChildNodeNumber <= %d");
+            
+        } else if (clazz.equals(LithoStrat.class))
+        {
+            sb.append("SELECT count(*) FROM CollectionObject AS co INNER JOIN co.paleoContext AS pc INNER JOIN pc.lithoStrat as ls WHERE ls.collectionMemberId = COLMEMID AND ls.nodeNumber > %d AND ls.highestChildNodeNumber <= %d");
+        }
+        
+        if (sb.length() > 0)
+        {
+            return QueryAdjusterForDomain.getInstance().adjustSQL(sb.toString());
+        }
+        
+        return null;
+    }
+
+
+    /**
+     * @param clazz
+     * @param id
+     * @return
+     */
+    public static String getNodeNumberQuery(final Class<?> clazz)
+    {
+        if (clazz.equals(Taxon.class))
+        {
+            return QueryAdjusterForDomain.getInstance().adjustSQL("SELECT TaxonId, NodeNumber, HighestChildNodeNumber FROM Taxon WHERE TaxonTreeDefID = TAXTREEDEFID AND TaxonID = %d");
+        }
+        
+        if (clazz.equals(Geography.class))
+        {
+            return QueryAdjusterForDomain.getInstance().adjustSQL("SELECT GeographyID, NodeNumber, HighestChildNodeNumber FROM geography WHERE GeographyTreeDefID = GEOTREEDEFID AND GeographyID = %d");
+        }
+
+        if (clazz.equals(GeologicTimePeriod.class))
+        {
+            return QueryAdjusterForDomain.getInstance().adjustSQL("SELECT id, nodeNumber, highestChildNodeNumber FROM GeologicTimePeriod WHERE geologicTimePeriodTreeDefId = GTPTREEDEFID AND id = %d");
+        }
+        
+        if (clazz.equals(Location.class))
+        {
+            return QueryAdjusterForDomain.getInstance().adjustSQL("SELECT id, nodeNumber, highestChildNodeNumber FROM Location WHERE locationTreeDefId = LOCTREEDEFID AND id = %d");
+        }
+        
+        if (clazz.equals(LithoStrat.class))
+        {
+            return QueryAdjusterForDomain.getInstance().adjustSQL("SELECT id, nodeNumber, highestChildNodeNumber FROM LithoStrat WHERE lithoStratTreeDefId = LITHOTREEDEFID AND id = %d");
         }
         
         return null;

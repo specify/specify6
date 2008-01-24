@@ -76,7 +76,7 @@ import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.UsageTracker;
-import edu.ku.brc.af.core.expresssearch.ExpressSearchSQLAdjuster;
+import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsEditor;
 import edu.ku.brc.af.prefs.PreferencesDlg;
@@ -241,15 +241,31 @@ public class Specify extends JPanel implements DatabaseLoginListener
     protected void preInitializePrefs()
     {
         AppPreferences remotePrefs = AppPreferences.getRemote();
-        if (remotePrefs.get("Treeeditor.TreeColColor1", null) == null)
+        
+        String propName = "Treeeditor.TreeColColor1";
+        if (remotePrefs.get(propName, null) == null)
         {
             remotePrefs.putColor("Treeeditor.TreeColColor1", new Color(202, 238, 255));
         }
         
+        propName = "Treeeditor.TreeColColor2";
         if (remotePrefs.get("Treeeditor.TreeColColor2", null) == null)
         {
-            remotePrefs.putColor("Treeeditor.TreeColColor2", new Color(151, 221, 255));
+            remotePrefs.putColor(propName, new Color(151, 221, 255));
         }
+        
+        propName = "TreeEditor.Rank.Threshold.Taxon";
+        if (remotePrefs.get(propName, null) == null)
+        {
+            remotePrefs.putInt(propName, 140);
+        }
+
+        propName = "TreeEditor.Rank.Threshold.Geography";
+        if (remotePrefs.get(propName, null) == null)
+        {
+            remotePrefs.putInt(propName, 200);
+        }
+
     }
     
     /**
@@ -420,7 +436,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         System.setProperty("edu.ku.brc.ui.db.PickListDBAdapterFactory", "edu.ku.brc.specify.ui.db.PickListDBAdapterFactory");   // Needed By the Auto Cosmplete UI
         System.setProperty(CustomQueryFactory.factoryName,              "edu.ku.brc.specify.dbsupport.SpecifyCustomQueryFactory");
         System.setProperty(UIFieldFormatterMgr.factoryName,             "edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr");    // Needed for CatalogNumberign
-        System.setProperty(ExpressSearchSQLAdjuster.factoryName,        "edu.ku.brc.specify.dbsupport.SpecifyExpressSearchSQLAdjuster");    // Needed for ExpressSearch
+        System.setProperty(QueryAdjusterForDomain.factoryName,          "edu.ku.brc.specify.dbsupport.SpecifyQueryAdjusterForDomain");    // Needed for ExpressSearch
         System.setProperty(SchemaI18NService.factoryName,               "edu.ku.brc.specify.config.SpecifySchemaI18NService");    // Needed for Localization and Schema
         
     }
@@ -787,6 +803,13 @@ public class Specify extends JPanel implements DatabaseLoginListener
                             UIHelper.centerAndShow(dialog);
                             if (!dialog.isCancelled())
                             {
+                                try
+                                {
+                                    AppPreferences.getLocalPrefs().flush();
+                                } catch (BackingStoreException ex)
+                                {
+                                    
+                                }
                                 CommandDispatcher.dispatch(new CommandAction("Preferences", "Changed", AppPreferences.getLocalPrefs()));
                             }
                         }
@@ -804,6 +827,13 @@ public class Specify extends JPanel implements DatabaseLoginListener
                             UIHelper.centerAndShow(dialog);
                             if (!dialog.isCancelled())
                             {
+                                try
+                                {
+                                    AppPreferences.getRemote().flush();
+                                } catch (BackingStoreException ex)
+                                {
+                                    
+                                }
                                 CommandDispatcher.dispatch(new CommandAction("Preferences", "Changed", AppPreferences.getRemote()));
                             }
                         }
