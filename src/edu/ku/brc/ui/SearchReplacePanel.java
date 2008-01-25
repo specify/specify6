@@ -433,7 +433,7 @@ public class SearchReplacePanel extends JPanel
             {
                 log.debug("replaceCellValue() Need to implement case insensitivity");
                 log.debug("replaceCellValue() Creating replace value");
-                myNewStr = Pattern.compile(myFindValue, Pattern.CASE_INSENSITIVE).matcher(myStrToReplaceValueIn).replaceAll(myReplaceValue);
+                myNewStr = Pattern.compile(Pattern.quote(myFindValue), Pattern.CASE_INSENSITIVE).matcher(myStrToReplaceValueIn).replaceAll(myReplaceValue);
                 log.debug("replaceCellValue()New value is: " + myNewStr);
             }  
             
