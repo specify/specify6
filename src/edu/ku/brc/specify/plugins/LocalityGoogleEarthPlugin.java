@@ -8,11 +8,11 @@ package edu.ku.brc.specify.plugins;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.URL;
 import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.event.ChangeListener;
@@ -53,7 +53,7 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
     protected Locality         locality;
     protected Object           origData  = null;
     protected boolean          hasPoints = false;
-    protected URL              iconURL   = null;
+    protected ImageIcon        imageIcon = null;
     
     /**
      * 
@@ -78,23 +78,23 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
         List<GoogleEarthPlacemarkIFace> items = new Vector<GoogleEarthPlacemarkIFace>();
         if (ce != null)
         {
-            URL url = iconURL != null ? iconURL : IconManager.getURLForIcon(IconManager.getIcon("locality", IconManager.IconSize.Std32), IconManager.IconSize.Std32);
-            items.add(new CEPlacemark(ce, url));
+            ImageIcon img = imageIcon != null ? imageIcon : IconManager.getIcon("locality", IconManager.IconSize.Std32);
+            items.add(new CEPlacemark(ce, img));
             
             
         } else if (locality != null)
         {
             if (locality.getCollectingEvents().size() > 0)
             {
-                URL url = iconURL != null ? iconURL : IconManager.getURLForIcon(IconManager.getIcon("collectingevent", IconManager.IconSize.Std32), IconManager.IconSize.Std32);
+                ImageIcon img = imageIcon != null ? imageIcon : IconManager.getIcon("collectingevent", IconManager.IconSize.Std32);
                 for (CollectingEvent colEv : locality.getCollectingEvents())
                 {
-                    items.add(new CEPlacemark(colEv, url));
+                    items.add(new CEPlacemark(colEv, img));
                 }
             } else
             {
-                URL url = iconURL != null ? iconURL : IconManager.getURLForIcon(IconManager.getIcon("locality", IconManager.IconSize.Std32), IconManager.IconSize.Std32);
-                items.add(new CEPlacemark(locality, url));
+                ImageIcon img = imageIcon != null ? imageIcon : IconManager.getIcon("locality", IconManager.IconSize.Std32);
+                items.add(new CEPlacemark(locality, img));
             }
         }
         
@@ -121,9 +121,9 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
         return origData;
     }
     
-    protected URL getDisciplineIcon(final CollectionObject co)
+    protected ImageIcon getDisciplineIcon(final CollectionObject co)
     {
-        return IconManager.getURLForIcon(IconManager.getIcon(co.getCollection().getCollectionType().getDiscipline()), IconManager.IconSize.Std32);
+        return IconManager.getIcon(co.getCollection().getCollectionType().getDiscipline(),  IconManager.IconSize.Std32);
     }
 
     /* (non-Javadoc)
@@ -143,7 +143,7 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
                 {
                     locality = ce.getLocality();
                 }
-                iconURL = getDisciplineIcon(colObj);
+                imageIcon = getDisciplineIcon(colObj);
                 
             } else if (value instanceof CollectingEvent)
             {
@@ -153,7 +153,7 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
                 if (ce.getCollectionObjects().size() == 1)
                 {
                     colObj  = ce.getCollectionObjects().iterator().next();
-                    iconURL = getDisciplineIcon(colObj);
+                    imageIcon = getDisciplineIcon(colObj);
                 }
                 
             } else if (value instanceof Locality)
@@ -165,7 +165,7 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
                     if (ce.getCollectionObjects().size() == 1)
                     {
                         colObj  = ce.getCollectionObjects().iterator().next();
-                        iconURL = getDisciplineIcon(colObj);
+                        imageIcon = getDisciplineIcon(colObj);
                     }
                 }
             }
@@ -233,13 +233,13 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
         protected CollectingEvent colEv;
         protected Locality        locality;
         protected String          title;
-        protected URL             iconURL = null;
+        protected ImageIcon       iconURL = null;
         
         /**
          * @param ce
          * @param iconURL
          */
-        public CEPlacemark(final CollectingEvent ce, final URL iconURL)
+        public CEPlacemark(final CollectingEvent ce, final ImageIcon iconURL)
         {
             this.colEv    = ce;
             this.locality = ce.getLocality();
@@ -253,7 +253,7 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
          * @param locality
          * @param iconURL
          */
-        public CEPlacemark(final Locality locality, final URL iconURL)
+        public CEPlacemark(final Locality locality, final ImageIcon iconURL)
         {
             this.colEv    = null;
             this.locality = locality;
@@ -264,7 +264,7 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
         /* (non-Javadoc)
          * @see edu.ku.brc.specify.rstools.GoogleEarthPlacemarkIFace#getIconURL()
          */
-        public URL getIconURL()
+        public ImageIcon getImageIcon()
         {
             return iconURL;
         }

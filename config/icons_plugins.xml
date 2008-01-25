@@ -9,6 +9,8 @@
     <icon name="ConvertGeoRef"	  file="LatLong20x20.png" sizes="NonStd"/>
     <icon name="GoogleEarth"      file="GoogleEarth20x20.png" sizes="NonStd"/>
     <icon name="GoogleEarth16"    file="GoogleEarth16x16.png" sizes="16"/>
+    <icon name="DefaultPlacemark" file="specify32White.png" sizes="32"/>
+    
     
     <icon name="SearchBoxMac"      file="SearchBoxMac.gif"  sizes="NonStd"/>
     <icon name="SearchBoxLinux"    file="Search32x32.png" sizes="all"/>

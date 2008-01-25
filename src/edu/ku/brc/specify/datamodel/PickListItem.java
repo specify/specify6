@@ -29,6 +29,7 @@
 package edu.ku.brc.specify.datamodel;
 
 import java.sql.Timestamp;
+import java.util.HashSet;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -38,6 +39,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 
@@ -54,13 +56,12 @@ import edu.ku.brc.ui.db.PickListItemIFace;
  */
 @SuppressWarnings("serial")
 @Entity(name="picklistitem")
-public class PickListItem implements PickListItemIFace, java.io.Serializable
+public class PickListItem extends DataModelObjBase implements PickListItemIFace, java.io.Serializable
 {
     // Fields
-    protected Integer pickListItemId;
-    private String title;
-    private String value;
-    private Timestamp timestampCreated;
+    protected Integer  pickListItemId;
+    private String     title;
+    private String     value;
     protected PickList pickList;
     
     // Non-Persisted Value as an Object
@@ -77,20 +78,34 @@ public class PickListItem implements PickListItemIFace, java.io.Serializable
     public PickListItem(final String title, final String value, final Timestamp timestampCreated)
     {
         super();
+        initialize();
         this.title = title;
         this.value = value;
-        this.timestampCreated = timestampCreated;
     }
 
     public PickListItem(final String title, final Object valueObject, final Timestamp timestampCreated)
     {
         super();
+        initialize();
         this.title       = title;
-        this.value       = null;
         this.valueObject = valueObject;
-        this.timestampCreated = timestampCreated;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#initialize()
+     */
+    @Override
+    public void initialize()
+    {
+        super.init();
+        pickListItemId = null;
+        title          = null;
+        value          = null;
+        pickList       = null;
+    }
+    /**
+     * @return
+     */
     @Id
     @GeneratedValue
     @Column(name = "PickListItemID")
@@ -170,20 +185,6 @@ public class PickListItem implements PickListItemIFace, java.io.Serializable
         return title;
     }
 
-    /**
-     * 
-     */
-    @Column(name = "TimestampCreated", nullable = false)
-    public Timestamp getTimestampCreated()
-    {
-        return this.timestampCreated;
-    }
-
-    public void setTimestampCreated(Timestamp createdDate)
-    {
-        this.timestampCreated = createdDate;
-    }
-    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.PickListItemIFace#getId()
      */
@@ -192,7 +193,44 @@ public class PickListItem implements PickListItemIFace, java.io.Serializable
     {
         return pickListItemId;
     }
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
+     */
+    @Override
+    @Transient
+    public int getTableId()
+    {
+        return getClassTableId();
+    }
     
+    /**
+     * @return the Table ID for the class.
+     */
+    @Transient
+    public static int getClassTableId()
+    {
+        return 501;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getDataClass()
+     */
+    @Override
+    @Transient
+    public Class<?> getDataClass()
+    {
+        return PickListItem.class;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
+     */
+    @Override
+    @Transient
+    public String getIdentityTitle()
+    {
+        return StringUtils.isNotEmpty(title) ? title : super.getIdentityTitle();
+    }    
     //-------------------------------------
     // Comparable
     //-------------------------------------

@@ -40,7 +40,6 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
 import java.net.ConnectException;
-import java.net.URL;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EventObject;
@@ -124,7 +123,6 @@ import edu.ku.brc.services.mapping.LocalityMapper;
 import edu.ku.brc.services.mapping.SimpleMapLocation;
 import edu.ku.brc.services.mapping.LocalityMapper.MapLocationIFace;
 import edu.ku.brc.services.mapping.LocalityMapper.MapperListener;
-import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.RecordSet;
@@ -1967,33 +1965,11 @@ public class WorkbenchPaneSS extends BaseSubPane
         }
         
         // get an icon URL that is specific to the current context
-        String iconUrl = AppPreferences.getRemote().getProperties().getProperty("google.earth.icon", null);
-        if (StringUtils.isEmpty(iconUrl))
-        {
-            String discipline = CollectionType.getCurrentCollectionType().getDiscipline();
-            for ( Pair<String, ImageIcon> pair : IconManager.getListByType("disciplines", IconManager.IconSize.Std16))
-            {
-                if (pair.first.equals(discipline))
-                {
-                    URL pathURL = IconManager.getURLForIcon(pair.second, IconManager.IconSize.Std16);
-                    if (pathURL != null)
-                    {
-                        iconUrl = pathURL.getFile();
-                        break;
-                    }
-                }
-            }
-        }
-        
         CommandAction command = new CommandAction(ToolsTask.TOOLS,ToolsTask.EXPORT_LIST);
         command.setData(selectedRows);
         command.setProperty("tool",           GoogleEarthExporter.class);
         command.setProperty("description",    workbench.getRemarks() != null ? workbench.getRemarks() : "");
         
-        if (iconUrl != null)
-        {
-            command.setProperty("iconURL", iconUrl);
-        }
         JStatusBar statusBar = UIRegistry.getStatusBar();
         statusBar.setText("WB_OPENING_GOOGLE_EARTH");
         CommandDispatcher.dispatch(command);

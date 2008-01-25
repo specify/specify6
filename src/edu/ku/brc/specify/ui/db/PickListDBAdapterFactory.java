@@ -111,7 +111,9 @@ public class PickListDBAdapterFactory extends edu.ku.brc.ui.db.PickListDBAdapter
      */
     public PickListItemIFace createPickListItem()
     {
-        return new PickListItem();
+        PickListItem pli = new PickListItem();
+        pli.initialize();
+        return pli;
     }
 
 

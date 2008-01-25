@@ -240,7 +240,9 @@
         <table name="edu.ku.brc.specify.datamodel.PickList" abbrev="pl" id="500">
             <display view="PickList"/>
         </table>
-        <table name="edu.ku.brc.specify.datamodel.PickListItem" abbrev="pli" id="501"/>
+        <table name="edu.ku.brc.specify.datamodel.PickListItem" abbrev="pli" id="501">
+            <display view="PickListItem"/>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.Preparation" abbrev="pp" id="63" workbench="true" searchable="true">
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.PreparationBusRules</businessrule>
             <display objtitle="Preparation" view="Preparation" newobjdlg="PreparationDisplay"/>

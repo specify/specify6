@@ -7,7 +7,7 @@
 
 package edu.ku.brc.specify.rstools;
 
-import java.net.URL;
+import javax.swing.ImageIcon;
 
 import edu.ku.brc.util.Pair;
 
@@ -44,7 +44,7 @@ public interface GoogleEarthPlacemarkIFace
     /**
      * @return an URL to the image to use or null
      */
-    public abstract URL getIconURL();
+    public abstract ImageIcon getImageIcon();
     
     /**
      * Provides an opportunity for the object to cleanup any internal data.

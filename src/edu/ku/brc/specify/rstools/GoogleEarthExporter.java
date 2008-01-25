@@ -16,7 +16,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URL;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
@@ -60,10 +59,10 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
     /** Logger for all log messages emitted from this class. */
     private static final Logger log = Logger.getLogger(GoogleEarthExporter.class);
     
-    /** The filename of the placemark icon file used if the caller doesn't specify one.  This file must be
-     * successfully located using {@link IconManager#getImagePath(String). */
-    private static final String DEFAULT_ICON_FILE = "specify32White.png";
-            
+    public GoogleEarthExporter()
+    {
+    }
+    
 	/* (non-Javadoc)
 	 * @see edu.ku.brc.specify.tasks.RecordSetExporter#exportRecordSet(edu.ku.brc.specify.datamodel.RecordSet)
 	 */
@@ -79,7 +78,7 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
             exportCollectingEvents(description, 
                                    RecordSetLoader.loadRecordSet(data), 
                                    true, 
-                                   getPlacemarkIconURLPath());
+                                   getPlacemarkIcon());
             
         } else if (dataTableId == DBTableIdMgr.getInstance().getIdByClassName(CollectionObject.class.getName()))
         {
@@ -94,26 +93,19 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
 	/**
 	 * @return
 	 */
-	private String getPlacemarkIconURLPath()
+	private ImageIcon getPlacemarkIcon()
 	{
         // get an icon URL that is specific to the current context
-        String iconUrl = AppPreferences.getRemote().getProperties().getProperty("google.earth.icon", null);
-        if (StringUtils.isEmpty(iconUrl))
+        
+        String discipline = CollectionType.getCurrentCollectionType().getDiscipline();
+        for ( Pair<String, ImageIcon> pair : IconManager.getListByType("disciplines", IconManager.IconSize.Std32))
         {
-            String discipline = CollectionType.getCurrentCollectionType().getDiscipline();
-            for ( Pair<String, ImageIcon> pair : IconManager.getListByType("disciplines", IconManager.IconSize.Std16))
+            if (pair.first.equals(discipline))
             {
-                if (pair.first.equals(discipline))
-                {
-                    URL pathURL = IconManager.getURLForIcon(pair.second, IconManager.IconSize.Std16);
-                    if (pathURL != null)
-                    {
-                        return pathURL.getFile();
-                    }
-                }
+                return pair.second;
             }
         }
-        return iconUrl;
+        return null;
 	}
     
     /* (non-Javadoc)
@@ -137,9 +129,9 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
                 tmpFile.deleteOnExit();
                 log.info("Writing KML output to " + tmpFile.getAbsolutePath());
                 
-                String iconURL = reqParams.getProperty("iconURL");
-
-                List<GoogleEarthPlacemarkIFace> mappedPlacemarks = exportPlacemarkList(reqParams.getProperty("description"), (List<GoogleEarthPlacemarkIFace>)data, iconURL, tmpFile);
+                ImageIcon imageIcon = getIconFromPrefs();
+                List<GoogleEarthPlacemarkIFace> mappedPlacemarks = exportPlacemarkList(reqParams.getProperty("description"), 
+                                                                     (List<GoogleEarthPlacemarkIFace>)data, imageIcon, tmpFile);
                 if (mappedPlacemarks.size() != data.size())
                 {
                     UIRegistry.getStatusBar().setErrorMessage(String.format(getResourceString("NOT_ALL_MAPPED"), new Object[] {(data.size() - mappedPlacemarks.size()), data.size()}));
@@ -196,22 +188,43 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
             {
                 ceList.add(ce);    
             }
-            exportCollectingEvents(description, ceList, true, getPlacemarkIconURLPath());
+
+            exportCollectingEvents(description, ceList, true, getIconFromPrefs());
         }
+    }
+    
+    /**
+     * @return
+     */
+    protected ImageIcon getIconFromPrefs()
+    {
+        String iconUrl = AppPreferences.getRemote().getProperties().getProperty("google.earth.icon", null);
+        if (StringUtils.isNotEmpty(iconUrl))
+        {
+            try
+            {
+                return new ImageIcon(new File(iconUrl).toURL());
+                
+            } catch (Exception ex)
+            {
+            }
+        }
+        return null;
     }
     
     /**
      * Creates a KML file containing the data found in a {@link RecordSet} of {@link CollectingEvent}s and
      * opens the KML file using the default system viewer (most likely Google Earth).
      * 
+     * @param description KMZ description
      * @param ceList list of {@link CollectingEvent}s
      * @param doKMZ whether to export as KMZ or KML
-     * @param iconURL the icon to use for placemarks
+     * @param imgIconArg the icon to use for placemarks
      */
     protected void exportCollectingEvents(final String description,
                                           final List<Object> ceList, 
                                           final boolean      doKMZ,
-                                          final String       iconURLParam) 
+                                          final ImageIcon    imgIconArg) 
     {
         try
         {
@@ -220,47 +233,46 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
                 CollectingEventKMLGenerator kmlGen = new CollectingEventKMLGenerator();
                 kmlGen.setDescription(description);
                 
-                String iconURL = iconURLParam;
-                if (StringUtils.isEmpty(iconURL))
+                ImageIcon defaultIcon = IconManager.getImage("DefaultPlacemark");
+
+                // If an icon isn't passed in then get the default icon for the discipline
+                ImageIcon imageIcon = defaultIcon;
+                if (imgIconArg == null)
                 {
-                    iconURL = getPlacemarkIconURLPath();
+                    imageIcon = getPlacemarkIcon();
+                } else
+                {
+                    imageIcon = imgIconArg;
                 }
                 
                 File defaultIconFile = null;
-                if (StringUtils.isNotEmpty(iconURL))
+                if (imageIcon != null)
                 {
-                    kmlGen.setPlacemarkIconURL(getPlacemarkIconURLPath());
+                    // set it to a standard name that we will put into the KMZ file
+                    kmlGen.setPlacemarkIconURL("files/specify32.png");
                     
-                    // get a copy of the default icon file (we (attempt to) package this with all KMZ files)
-                    URL defaultIconURL = IconManager.getImagePath(DEFAULT_ICON_FILE);
-                    if (defaultIconURL != null)
+                    // Write the image out to the temp directory
+                    defaultIconFile = File.createTempFile("sp6-export-icon-", ".png");
+                    if (!writeImageIconToFile(imageIcon, defaultIconFile))
                     {
-                        defaultIconFile = File.createTempFile("sp6-export-icon-", ".png");
-                        FileUtils.copyURLToFile(defaultIconURL, defaultIconFile);
+                        // if it fails (could be a bad user defined icon)
+                        // check to see if it is the default icon (which should always be good)
+                        // and try to write that
+                        if (imageIcon != defaultIcon)
+                        {
+                            if (!writeImageIconToFile(defaultIcon, defaultIconFile))
+                            {
+                                kmlGen.setPlacemarkIconURL(null); // setting to null means a GE push pin icon
+                            }
+                        } else
+                        {
+                            kmlGen.setPlacemarkIconURL(null); // setting to null means a GE push pin icon
+                        }
                     }
-                    
-                    // else...
-                    // the default icon file was not found, we simply have to leave it out of the KMZ file
-    
-                    // see if an icon URL was specified as a parameter
-                    if (iconURL != null && iconURL instanceof String)
-                    {
-                        //kmlGenerator.setPlacemarkIconURL("files/specify32.png");
-                        //defaultIconFile = File.createTempFile("sp6-export-icon-", ".png");
-                        //FileUtils.copyFile(new File(iconURLparam), defaultIconFile);
-                        kmlGen.setPlacemarkIconURL((String)iconURL);
-                    }
-                    else if (defaultIconFile != null)
-                    {
-                        // the caller didn't specify an icon URL on the web, so try to use the default placemark icon
-                        kmlGen.setPlacemarkIconURL("files/specify32.png");
-                    }
-                    else
-                    {
-                        // the default icon file was not found, so...
-                        // this will force Google Earth to use the default placemark icon that it provides
-                        kmlGen.setPlacemarkIconURL(null);
-                    }
+                        
+                } else
+                {
+                    kmlGen.setPlacemarkIconURL(null);// setting to null means a GE push pin icon
                 }
                 
                 Color  geBGColor = AppPreferences.getRemote().getColor("google.earth.bgcolor", new Color(0, 102, 179));
@@ -289,15 +301,11 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
                     // we need to create a KMZ (zip file containing doc.kml and other files)
                     
                     createKMZ(outputFile, defaultIconFile);
-                    
                 }
                 
-                if (StringUtils.isNotEmpty(iconURL))
+                if (imageIcon != null && defaultIconFile != null)
                 {
-                    if (defaultIconFile != null)
-                    {
-                        defaultIconFile.delete();
-                    }  
+                    defaultIconFile.delete();
                 }
                 
                 openExternalViewer(outputFile);
@@ -327,19 +335,19 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
     
     /**
      * Generates a KMZ file representing the given list of placemarks.
-     * 
+     * @param description description for the KMZ file
      * @param placemarks a List of placemarks to be mapped
-     * @param requestParams request parameters
+     * @param imgIconArg a user defined icon
      * @param outputFile the file to put the KML into
      * @return a List of placemarks that were mapped (does not include any passed in placemarks that couldn't be mapped for some reason)
      * @throws IOException an error occurred while writing the KML to the file
      */
     protected List<GoogleEarthPlacemarkIFace> exportPlacemarkList(final String     description,
                                                                   final List<GoogleEarthPlacemarkIFace> placemarks, 
-                                                                  final String     iconURLparam, 
+                                                                  final ImageIcon  imgIconArg, 
                                                                   final File       outputFile) throws IOException
     {
-        URL  defaultIconURL = IconManager.getImagePath(DEFAULT_ICON_FILE);
+        ImageIcon defaultIcon = IconManager.getImage("DefaultPlacemark");
 
         List<GoogleEarthPlacemarkIFace> mappedPlacemarks = new Vector<GoogleEarthPlacemarkIFace>();
         
@@ -352,9 +360,9 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
         {
             GoogleEarthPlacemarkIFace pm = placemarks.get(0);
             kmlGenerator.setDescription(pm.getTitle());
-            if (pm.getIconURL() != null)
+            if (pm.getImageIcon() != null)
             {
-                defaultIconURL = pm.getIconURL();
+                defaultIcon = pm.getImageIcon();
             }
         }
         
@@ -369,37 +377,44 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
         kmlGenerator.setBalloonStyleTextColor("FF" + fgColor);
         kmlGenerator.setBalloonStyleText(getBalloonText(fgColor));
 
-        // get a copy of the default icon file (we (attempt to) package this with all KMZ files)
-        File defaultIconFile = null;
-        if (defaultIconURL != null)
+        // If an icon isn't passed in then get the default icon for the discipline
+        ImageIcon imageIcon = defaultIcon;
+        if (imgIconArg == null)
         {
-            defaultIconFile = File.createTempFile("sp6-export-icon-", ".png");
-            FileUtils.copyURLToFile(defaultIconURL, defaultIconFile);
+            imageIcon = getPlacemarkIcon();
+        } else
+        {
+            imageIcon = imgIconArg;
         }
         
-        // else...
-        // the default icon file was not found, we simply have to leave it out of the KMZ file
-
-        // see if an icon URL was specified as a parameter
-        if (iconURLparam != null && iconURLparam instanceof String)
+        File defaultIconFile = null;
+        if (imageIcon != null)
         {
+            // set it to a standard name that we will put into the KMZ file
+            kmlGenerator.setPlacemarkIconURL("files/specify32.png");
             
-            kmlGenerator.setPlacemarkIconURL("files/specify32.png");
+            // Write the image out to the temp directory
             defaultIconFile = File.createTempFile("sp6-export-icon-", ".png");
-            FileUtils.copyFile(new File(iconURLparam), defaultIconFile);
-            //kmlGenerator.setPlacemarkIconURL((String)iconURLparam);
-
-        }
-        else if (defaultIconFile != null)
+            if (!writeImageIconToFile(imageIcon, defaultIconFile))
+            {
+                // if it fails (could be a bad user defined icon)
+                // check to see if it is the default icon (which should always be good)
+                // and try to write that
+                if (imageIcon != defaultIcon)
+                {
+                    if (!writeImageIconToFile(defaultIcon, defaultIconFile))
+                    {
+                        kmlGenerator.setPlacemarkIconURL(null); // setting to null means a GE push pin icon
+                    }
+                } else
+                {
+                    kmlGenerator.setPlacemarkIconURL(null); // setting to null means a GE push pin icon
+                }
+            }
+                
+        } else
         {
-            // the caller didn't specify an icon URL on the web, so try to use the default placemark icon
-            kmlGenerator.setPlacemarkIconURL("files/specify32.png");
-        }
-        else
-        {
-            // the default icon file was not found, so...
-            // this will force Google Earth to use the default placemark icon that it provides
-            kmlGenerator.setPlacemarkIconURL(null);
+            kmlGenerator.setPlacemarkIconURL(null);// setting to null means a GE push pin icon
         }
         
         // add all of the placemarks to the KML generator
@@ -433,6 +448,36 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
         }
         
         return mappedPlacemarks;
+    }
+    
+    /**
+     * Takes an ImageIcon (in memory) and writes it out to a file.
+     * @param icon the image icon
+     * @param output the destination file
+     * @return true on success
+     * @throws IOException
+     */
+    protected boolean writeImageIconToFile(final ImageIcon icon, final File output) throws IOException
+    {
+        try
+        {
+            BufferedImage bimage = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
+            if (bimage != null)
+            {
+                Graphics g = bimage.createGraphics();
+                if (g != null)
+                {
+                    g.drawImage(icon.getImage(), 0, 0, null);
+                    g.dispose();
+                    ImageIO.write(bimage, "PNG", output);
+                    return true;
+                }
+            }
+        } catch (Exception ex)
+        {
+            // no need to throw an exception or display it
+        }
+        return false;
     }
     
     /**

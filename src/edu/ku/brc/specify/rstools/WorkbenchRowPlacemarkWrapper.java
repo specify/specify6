@@ -1,10 +1,11 @@
 package edu.ku.brc.specify.rstools;
 
-import java.net.URL;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
+
+import javax.swing.ImageIcon;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -186,12 +187,12 @@ public class WorkbenchRowPlacemarkWrapper implements GoogleEarthPlacemarkIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.rstools.GoogleEarthPlacemarkIFace#getIconURL()
+     * @see edu.ku.brc.specify.rstools.GoogleEarthPlacemarkIFace#getImageIcon()
      */
-    public URL getIconURL()
+    public ImageIcon getImageIcon()
     {
-        // TODO Auto-generated method stub
         return null;
     }
+
 
 }

@@ -216,6 +216,8 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                     tableHash.put(cont.getName(), cont);
                 }
                 
+                Collections.sort(tableDisplayItems);
+                
                 log.info("Syncing with Datamodel.... (ignore errors)");
                 changesBuffer.append("<Center><table border=\"1\">");
                 

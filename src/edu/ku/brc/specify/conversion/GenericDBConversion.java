@@ -2146,6 +2146,7 @@ public class GenericDBConversion
                 {
                     log.info("Permit Type["+typeStr+"]");
                     PickListItem pli = new PickListItem();
+                    pli.initialize();
                     pli.setTitle(typeStr);
                     pli.setValue(typeStr);
                     pli.setTimestampCreated(now);
