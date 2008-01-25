@@ -64,7 +64,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
     @SuppressWarnings("unchecked")
     public boolean okToDeleteNode(T node)
     {
-        if (!node.getDefinition().getNodeNumbersAreUpToDate() && !node.getDefinition().isUploadInProgress())
+        if (node.getDefinition() != null && !node.getDefinition().getNodeNumbersAreUpToDate() && !node.getDefinition().isUploadInProgress())
         {
             //Scary. If nodes are not up to date, tree rules may not work.
             //The application should prevent edits to items/trees whose tree numbers are not up to date except while uploading
@@ -72,7 +72,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
             throw new RuntimeException(node.getDefinition().getName() + " has out of date node numbers.");
         }
         
-        if (node.getDefinition().isUploadInProgress())
+        if (node.getDefinition() != null && node.getDefinition().isUploadInProgress())
         {
             //don't think this will ever get called during an upload/upload-undo, but just in case.
             return true;
