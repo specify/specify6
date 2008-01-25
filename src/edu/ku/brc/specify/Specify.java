@@ -187,7 +187,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private String               appName             = "Specify";
     private String               appVersion          = "6.0";
 
-    private String               appBuildVersion     = "200801220800 (SVN: 3345)";
+    private String               appBuildVersion     = "200801250800 (SVN: 3354)";
     
     protected static CacheManager cacheManager        = new CacheManager();
 
@@ -1514,6 +1514,22 @@ public class Specify extends JPanel implements DatabaseLoginListener
     }
 
 
+    /**
+     * @return the appVersion
+     */
+    public String getAppVersion()
+    {
+        return appVersion;
+    }
+
+    /**
+     * @return the appBuildVersion
+     */
+    public String getAppBuildVersion()
+    {
+        return appBuildVersion;
+    }
+    
     // *******************************************************
     // *****************   Static Methods  *******************
     // *******************************************************

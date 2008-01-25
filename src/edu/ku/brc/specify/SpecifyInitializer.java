@@ -66,6 +66,7 @@ public class SpecifyInitializer
         if (true)//StringUtils.isEmpty(localPrefs.get("login.dbdriver_selected", null)))
         {
             final SetupDialog specifyInitFrame = new SetupDialog(specify);
+            specifyInitFrame.setTitle("SpecifyDBInit - " + specify.getAppBuildVersion());
             // I can't believe I have to do the following....
             UIHelper.centerWindow(specifyInitFrame);
             specifyInitFrame.pack();

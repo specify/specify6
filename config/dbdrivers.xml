@@ -15,12 +15,14 @@ There are three types of connection strings:
         <connection type="open">jdbc:mysql://SERVER/DATABASE</connection>
     </db>
     
+    <!-- 
     <db name="Derby" driver="org.apache.derby.jdbc.EmbeddedDriver" dialect="org.hibernate.dialect.DerbyDialect">
         <connection type="create">jdbc:derby:DATABASE;create=true</connection>
         <connection type="open">jdbc:derby:DATABASE;</connection>
         <connection type="close">jdbc:derby:DATABASE;shutdown=true</connection>
     </db>
-    
+     -->
+     
     <!-- NOTE: you must have Service Pack 4 applied to your SQL Server engine in order for JDBC connection to work -->    
       <db name="SQLServer" driver="net.sourceforge.jtds.jdbc.Driver" dialect="org.hibernate.dialect.SQLServerDialect">
         <connection type="open">jdbc:jtds:sqlserver://SERVER:1433/DATABASE;User=USERNAME;Password=PASSWORD;SelectMethod=cursor</connection>
