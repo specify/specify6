@@ -75,6 +75,10 @@ public interface TreeDefIface<N extends Treeable<N,D,I>,
 	 * @return true if the node numbers in the tree are up to date.
 	 */
 	public boolean getNodeNumbersAreUpToDate();
+	/**
+	 * @param arg 
+	 */
+	public void setNodeNumbersAreUpToDate(final boolean arg);
 	
 	/**
 	 * Walks the entire tree and assigns node numbers for every item.

@@ -42,7 +42,6 @@ import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Field;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Relationship;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
@@ -1702,14 +1701,10 @@ public class UploadTable implements Comparable<UploadTable>
             {
                 busRule.afterSaveCommit(rec);
             }
-            //The refresh call slows performance hugely so only calling it when necessary.
-            //This may be risky. At this time the refresh is required only because
-            //of changes made in business rule processing of treeables.
-            //But if business rules change...
-            //if (rec instanceof Treeable)
-            //{
-            //    tblSession.refresh(rec);
-            //}
+            if (needToRefreshAfterWrite())
+            {
+                tblSession.refresh(rec);
+            }
         }
         catch (Exception ex)
         {
@@ -1725,6 +1720,18 @@ public class UploadTable implements Comparable<UploadTable>
         }
     }
 
+    /**
+     * @return true if current record needs to be refreshed after writes.
+     */
+    protected boolean needToRefreshAfterWrite()
+    {
+        //The refresh call slows performance hugely so only calling it when necessary.
+        //This may be risky. At this time the refresh is required only because
+        //of changes made in business rule processing of treeables.
+        //But if business rules change...
+        return false;
+    }
+    
     /**
      * Creates a new Hibernate session and associates the given objects with it. NOTE: Static for
      * testing reasons only.
@@ -1832,6 +1839,11 @@ public class UploadTable implements Comparable<UploadTable>
                         session.beginTransaction();
                         opened = true;
                         session.delete(obj);
+                        BusinessRulesIFace busRule = DBTableIdMgr.getInstance().getBusinessRule(tblClass);
+                        if (busRule != null)
+                        {
+                            busRule.beforeDeleteCommit(obj, session);
+                        }
                         session.commit();
                         committed = true;
                     }

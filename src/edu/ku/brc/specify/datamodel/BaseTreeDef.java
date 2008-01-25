@@ -27,12 +27,13 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
                               I extends TreeDefItemIface<N,D,I>> extends DataModelObjBase 
                               implements TreeDefIface<N,D,I>
 {
-    protected transient boolean nodeNumbersAreUpToDate = true;
-    protected transient boolean doNodeNumberUpdates = true;
-    protected transient boolean uploadInProgress = false;
+    protected static transient boolean nodeNumbersAreUpToDate = true;
+    protected static transient boolean doNodeNumberUpdates = true;
+    protected static transient boolean uploadInProgress = false;
     protected transient DataProviderSessionIFace nodeUpdateSession = null;
-    protected transient DataModelObjBase nodeUpdateRoot = null;
-    protected N treeRoot;
+    protected transient QueryIFace nodeQ = null;
+    protected transient QueryIFace highestNodeQ = null;
+    protected transient QueryIFace childrenQ = null;
     
     
     /* (non-Javadoc)
@@ -54,23 +55,48 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
         return nodeNumbersAreUpToDate;
     }
     
+    /**
+     * @param rootObj
+     * 
+     * Builds the queries used during the node number update process.
+     */
+    protected void buildQueries(final DataModelObjBase rootObj)
+    {
+        String hql = "select n." + UploadTable.deCapitalize(rootObj.getDataClass().getSimpleName()) + "Id from " 
+            + rootObj.getDataClass().getSimpleName() + " n where parentID=:parent";
+        childrenQ = this.nodeUpdateSession.createQuery(hql);
+
+        hql = "update " + rootObj.getDataClass().getSimpleName() 
+            + " set nodeNumber=:node where " + UploadTable.deCapitalize(rootObj.getDataClass().getSimpleName()) + "Id=:id";
+        nodeQ = this.nodeUpdateSession.createQuery(hql);
+        
+        hql = "update " + rootObj.getDataClass().getSimpleName() 
+            + " set highestChildNodeNumber=:node where " 
+            + UploadTable.deCapitalize(rootObj.getDataClass().getSimpleName()) + "ID=:id";
+        highestNodeQ = this.nodeUpdateSession.createQuery(hql);
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.TreeDefIface#updateAllNodes()
      */
+    @SuppressWarnings("unchecked")
     public void updateAllNodes(final DataModelObjBase rootObj) throws Exception
     {
-        nodeUpdateRoot = rootObj;
         N root = (N)rootObj;
         nodeUpdateSession = DataProviderFactory.getInstance().createSession();
         try
         {
+            buildQueries(rootObj);
             //But there could be thousands and thousands of records affected within the transaction.
             //SQLServer accessed via ADO would blow up for large transactions  ???
             nodeUpdateSession.beginTransaction();
+            
             writeNodeNumber(root.getTreeId(), 1);
             int highestChild = updateAllNodes2(root.getTreeId(), 1);
             writeHighestChildNodeNumber(root.getTreeId(), highestChild);
+            
             nodeUpdateSession.commit();
+            nodeNumbersAreUpToDate = true;
         }
         catch (Exception ex)
         {
@@ -79,47 +105,21 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
         finally
         {
             nodeUpdateSession.close();
+            childrenQ = null;
+            nodeQ = null;
+            highestNodeQ = null;
             nodeUpdateSession = null;
         }
     }
 
-//    protected Object getNodeNumber(final int nodeId)
-//    {
-//        String hql = "select nodeNumber from " + nodeUpdateRoot.getDataClass().getSimpleName()
-//            + " where " + nodeUpdateRoot.getDataClass().getSimpleName() + "Id=" + String.valueOf(nodeId);
-//        QueryIFace q = this.nodeUpdateSession.createQuery(hql);
-//        return q.uniqueResult();
-//    }
-    
-    protected List<?> getChildren(final int nodeId)
-    {
-        String hql = "select n." + UploadTable.deCapitalize(nodeUpdateRoot.getDataClass().getSimpleName()) + "Id from " 
-            + nodeUpdateRoot.getDataClass().getSimpleName() + " n where parentID=" + String.valueOf(nodeId);
-        QueryIFace q = this.nodeUpdateSession.createQuery(hql);
-        return q.list();        
-        
-    }
-    
-    protected void writeNodeNumber(final Object childId, final Integer nodeNumber)
-    {
-        String hql = "update " + nodeUpdateRoot.getDataClass().getSimpleName() 
-            + " set nodeNumber=" + nodeNumber.toString() + " where " + UploadTable.deCapitalize(nodeUpdateRoot.getDataClass().getSimpleName()) + "Id="
-            + childId.toString();
-        QueryIFace q = this.nodeUpdateSession.createQuery(hql);
-        q.executeUpdate();
-    }
-
-    protected void writeHighestChildNodeNumber(final Object childId, final Integer nodeNumber)
-    {
-        String hql = "update " + nodeUpdateRoot.getDataClass().getSimpleName() 
-            + " set highestChildNodeNumber=" + nodeNumber.toString() + " where " 
-            + UploadTable.deCapitalize(nodeUpdateRoot.getDataClass().getSimpleName()) + "ID="
-            + childId.toString();
-        QueryIFace q = this.nodeUpdateSession.createQuery(hql);
-        q.executeUpdate();
-    }
-
-    
+    /**
+     * @param rootId
+     * @param rootNodeNumber
+     * @return the highestChildNodeNumber for rootId
+     * @throws Exception
+     * 
+     * Recursively walks the tree and numbers nodes.
+     */
     protected Integer updateAllNodes2(final Integer rootId, final int rootNodeNumber) throws Exception
     {
         List<?> children = getChildren(rootId);
@@ -130,24 +130,46 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
             nodeNumber = updateAllNodes2((Integer)childId, nodeNumber+1);
             writeHighestChildNodeNumber(childId, nodeNumber);
         }
-//        
-//        
-//        
-//        
-//        
-//        session.attach(root);
-//        Set<N> children = root.getChildren();
-//        session.evict(root);
-//        for (N child : children)// guess its ok if children are not consistently ordered?
-//        {
-//            child.setNodeNumber(nodeNumber + 1);
-//            child.setHighestChildNodeNumber(updateAllNodes2(child, session));
-//            nodeNumber = child.getHighestChildNodeNumber();
-//            session.saveOrUpdate(child);
-//        }
         return nodeNumber;
     }
+
+    /**
+     * @param nodeId
+     * @return children of parent with nodeId
+     */
+    protected List<?> getChildren(final int nodeId)
+    {
+        childrenQ.setParameter("parent", nodeId);
+        return childrenQ.list();
+    }
     
+    /**
+     * @param childId
+     * @param nodeNumber
+     * 
+     * Sets the nodeNumber for the item with key childId.
+     */
+    protected void writeNodeNumber(final Object childId, final Integer nodeNumber)
+    {
+        nodeQ.setParameter("node", nodeNumber);
+        nodeQ.setParameter("id", childId);
+        nodeQ.executeUpdate();
+    }
+
+    /**
+     * @param childId
+     * @param nodeNumber
+     * 
+     * Sets the highestChildNodeNumber for the item with key childId.
+     */
+    protected void writeHighestChildNodeNumber(final Object childId, final Integer nodeNumber)
+    {
+        highestNodeQ.setParameter("node", nodeNumber);
+        highestNodeQ.setParameter("id", childId);
+        highestNodeQ.executeUpdate();
+    }
+
+        
     /*
      * (non-Javadoc)
      * 
@@ -155,7 +177,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
      */
     public boolean getDoNodeNumberUpdates()
     {
-        return this.doNodeNumberUpdates;
+        return doNodeNumberUpdates;
     }
 
     /* (non-Javadoc)
@@ -163,7 +185,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
      */
     public void setDoNodeNumberUpdates(final boolean arg)
     {
-        this.doNodeNumberUpdates = arg;
+        doNodeNumberUpdates = arg;
     }
 
     /* (non-Javadoc)
@@ -171,7 +193,7 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
      */
     public boolean isUploadInProgress()
     {
-        return this.uploadInProgress;
+        return uploadInProgress;
     }
 
     /* (non-Javadoc)
@@ -179,7 +201,16 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
      */
     public void setUploadInProgress(final boolean arg)
     {
-        this.uploadInProgress = arg;
+        uploadInProgress = arg;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.TreeDefIface#setNodeNumbersAreUpToDate(boolean)
+     */
+    @Override
+    public void setNodeNumbersAreUpToDate(boolean arg)
+    {
+        nodeNumbersAreUpToDate = arg;
     }
 
     

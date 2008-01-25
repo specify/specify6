@@ -56,6 +56,7 @@ public class UploadTableTree extends UploadTable
     protected Treeable treeRoot;    
     protected SortedSet<Treeable> defaultParents;
     protected TreeDefIface<?, ?, ?> treeDef;
+    protected boolean incrementalNodeNumberUpdates = false;
     
     
 
@@ -399,6 +400,17 @@ public class UploadTableTree extends UploadTable
             keys.add(((DataModelObjBase)defParent).getId());
         }
         deleteObjects(keys.iterator());
+        if (parent == null && !this.incrementalNodeNumberUpdates)
+        {
+            try
+            {
+                getTreeDef().updateAllNodes((DataModelObjBase)getTreeRoot());
+            }
+            catch (Exception ex)
+            {
+                throw new RuntimeException(ex);
+            }
+        }
     }
 
     /**
@@ -410,18 +422,18 @@ public class UploadTableTree extends UploadTable
         super.prepareToUpload();
         defaultParents.clear();
         
-        if (parent == null)
+        if (parent == null && !this.incrementalNodeNumberUpdates)
         {
-            System.out.println("HEY! uncomment TreeDef upload sets.");
-//            try
-//            {
-//                getTreeDef().setDoNodeNumberUpdates(false);
-//                getTreeDef().setUploadInProgress(true);
-//            }
-//            catch (UploaderException ex)
-//            {
-//                throw new RuntimeException("Error accessing tree definition.");
-//            }
+            //System.out.println("HEY! uncomment TreeDef upload sets.");
+            try
+            {
+                getTreeDef().setDoNodeNumberUpdates(false);
+                getTreeDef().setUploadInProgress(true);
+            }
+            catch (UploaderException ex)
+            {
+                throw new RuntimeException("Error accessing tree definition.");
+            }
         }
     }
     
@@ -599,18 +611,18 @@ public class UploadTableTree extends UploadTable
     public void finishUpload() throws UploaderException
     {
         super.finishUpload();
-        if (this.parent == null)
+        if (this.parent == null  && !this.incrementalNodeNumberUpdates)
         {
-            System.out.println("HEY! uncomment TreeDef upload sets.");
-//            try
-//            {
-//                getTreeDef().updateAllNodes((DataModelObjBase)getTreeRoot());
-//            }
-//            catch (Exception ex)
-//            {
-//                if (ex instanceof UploaderException) { throw (UploaderException) ex; }
-//                throw new UploaderException(ex);
-//            }
+            //System.out.println("HEY! uncomment TreeDef upload sets.");
+            try
+            {
+                getTreeDef().updateAllNodes((DataModelObjBase)getTreeRoot());
+            }
+            catch (Exception ex)
+            {
+                if (ex instanceof UploaderException) { throw (UploaderException) ex; }
+                throw new UploaderException(ex);
+            }
         }
     }
 
@@ -621,12 +633,21 @@ public class UploadTableTree extends UploadTable
     public void shutdown() throws UploaderException
     {
         super.shutdown();
-        if (parent == null)
+        if (parent == null  && !this.incrementalNodeNumberUpdates)
         {
-            System.out.println("HEY! uncomment TreeDef upload sets.");
-            //getTreeDef().setDoNodeNumberUpdates(true);
-            //getTreeDef().setUploadInProgress(false);
+            //System.out.println("HEY! uncomment TreeDef upload sets.");
+            getTreeDef().setDoNodeNumberUpdates(true);
+            getTreeDef().setUploadInProgress(false);
         }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#needToRefreshAfterWrite()
+     */
+    @Override
+    protected boolean needToRefreshAfterWrite()
+    {
+        return incrementalNodeNumberUpdates;
     }
 
     
