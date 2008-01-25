@@ -324,6 +324,10 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
                 TreeDataService dataServ = TreeDataServiceFactory.createService();
                 success = dataServ.updateNodeNumbersAfterNodeAddition(node, session);
             }
+            else if (added)
+            {
+                node.getDefinition().setNodeNumbersAreUpToDate(false);
+            }
         }
         
         return success;
@@ -355,7 +359,15 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
             {
                 log.info("A tree node was deleted.  Updating node numbers appropriately.");
                 TreeDataService<T,D,I> dataServ = TreeDataServiceFactory.createService();
+                //apparently a refresh() is necessary. node can hold obsolete values otherwise.
+                //Possibly needs to be done for all business rules??
+                session.refresh(node);
                 result = dataServ.updateNodeNumbersAfterNodeDeletion(node,session);
+                
+            }
+            else
+            {
+                node.getDefinition().setNodeNumbersAreUpToDate(false);
             }
         }
         return result;
