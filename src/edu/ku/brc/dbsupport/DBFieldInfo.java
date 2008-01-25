@@ -182,6 +182,10 @@ public class DBFieldInfo extends DBInfoBase
                 {
                     dataClass = Boolean.class;
                     
+                } else if (type.equals("byte"))
+                {
+                    dataClass = Byte.class;
+                    
                 } else
                 {
                     try

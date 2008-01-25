@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.swing.JList;
 import javax.swing.SwingUtilities;
 
 import edu.ku.brc.dbsupport.CustomQueryIFace;
@@ -25,6 +24,7 @@ import edu.ku.brc.dbsupport.JPAQuery;
 import edu.ku.brc.dbsupport.SQLExecutionListener;
 import edu.ku.brc.dbsupport.SQLExecutionProcessor;
 import edu.ku.brc.specify.ui.treetables.TreeNode;
+import edu.ku.brc.specify.ui.treetables.TreeTableViewer;
 
 /**
  * Can use one or two query string to calculate the Collection objects for a single node in the tree or for all of the children.
@@ -45,9 +45,8 @@ public class ChildNodeCounter implements SQLExecutionListener, CustomQueryListen
     
     protected String nodeNumQuery;
     protected String countQuery;
-    protected JList  topList;
-    protected JList  bottomList;
     protected int    slotIndex;
+    protected TreeTableViewer<?, ?, ?> viewer;
     
     /**
      * Constructor.
@@ -58,16 +57,14 @@ public class ChildNodeCounter implements SQLExecutionListener, CustomQueryListen
      * @param nodeNumQuery the first query
      * @param countQuery the second query
      */
-    public ChildNodeCounter(final JList    topList,
-                            final JList    bottomList,
+    public ChildNodeCounter(final TreeTableViewer<?, ?, ?> viewer,
                             final int      slotIndex,
                             final TreeNode node, 
                             final String   nodeNumQuery, 
                             final String   countQuery,
                             final boolean  isHQL)
     {
-        this.topList      = topList;
-        this.bottomList   = bottomList;
+        this.viewer       = viewer;
         this.slotIndex    = slotIndex;
         this.node         = node;
         this.countQuery   = countQuery;
@@ -151,13 +148,12 @@ public class ChildNodeCounter implements SQLExecutionListener, CustomQueryListen
             node.setAssociatedRecordCount2(count);
         }
         
-        if (topList != null)
+        if (viewer != null)
         {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run()
                 {
-                    topList.repaint();
-                    bottomList.repaint();
+                    viewer.repaintLists();
                 }
             });
         }
@@ -244,34 +240,32 @@ public class ChildNodeCounter implements SQLExecutionListener, CustomQueryListen
            setCount(count);
            cleanup();
            return;
-           
-       } else
-       {
-           List<List<Object>> dataRows = new ArrayList<List<Object>>();
-           for (Object row : list)
-           {
-               List<Object> rowArray = new ArrayList<Object>();
-               dataRows.add(rowArray);
-               
-               if (row instanceof Collection<?>)
-               {
-                   for (Object obj : (Collection<?>)row)
-                   {
-                       rowArray.add(obj);
-                   }
-               } else if (row instanceof Object[])
-               {
-                   for (Object obj : (Object[])row)
-                   {
-                       rowArray.add(obj);
-                   }
-               } else
-               {
-                   rowArray.add(row);
-               }
-           }
-           doQuery(getQuery(dataRows));
        }
+       
+       List<List<Object>> dataRows = new ArrayList<List<Object>>();
+       for (Object row : list)
+       {
+           List<Object> rowArray = new ArrayList<Object>();
+           dataRows.add(rowArray);
+           
+           if (row instanceof Collection<?>)
+           {
+               for (Object obj : (Collection<?>)row)
+               {
+                   rowArray.add(obj);
+               }
+           } else if (row instanceof Object[])
+           {
+               for (Object obj : (Object[])row)
+               {
+                   rowArray.add(obj);
+               }
+           } else
+           {
+               rowArray.add(row);
+           }
+       }
+       doQuery(getQuery(dataRows));
     }
 
     /* (non-Javadoc)

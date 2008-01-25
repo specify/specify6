@@ -668,7 +668,7 @@ public class BuildSampleDatabase
         persist(dataObjects);
         dataObjects.clear();
         
-        BldrPickList colMethods = createPickLists();;
+        BldrPickList colMethods = createPickLists();
         
         //startTx();
         persist(dataObjects);

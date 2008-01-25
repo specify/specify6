@@ -293,6 +293,11 @@ public class CommandAction implements Cloneable
         obj.srcObj  = srcObj;
         obj.dstObj  = dstObj;
         
+        if (properties != null)
+        {
+            obj.properties = (Properties)properties.clone();
+        }
+        
         return obj;
     }
 

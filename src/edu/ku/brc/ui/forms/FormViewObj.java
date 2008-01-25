@@ -2271,10 +2271,20 @@ public class FormViewObj implements Viewable,
      */
     protected Object getDataObjectViaRecordSet(final int index)
     {
+        Object dObj = null;
         //log.debug("Loading["+recordSetItemList.get(index).getRecordId()+"]");
         DataProviderSessionIFace tmpSession = DataProviderFactory.getInstance().createSession();
-        Object dObj = tmpSession.get(tableInfo.getClassObj(), recordSetItemList.get(index).getRecordId());
-        tmpSession.close();
+        try
+        {
+            dObj = tmpSession.get(tableInfo.getClassObj(), recordSetItemList.get(index).getRecordId());
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            
+        } finally
+        {
+            tmpSession.close();
+        }
         return dObj;
     }
     

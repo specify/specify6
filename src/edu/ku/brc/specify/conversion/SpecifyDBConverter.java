@@ -1,4 +1,4 @@
-package edu.ku.brc.specify;
+package edu.ku.brc.specify.conversion;
 
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.deleteAllRecordsFromTable;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createDataType;
@@ -45,11 +45,6 @@ import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.ResultsPager;
 import edu.ku.brc.helpers.SwingWorker;
-import edu.ku.brc.specify.conversion.BasicSQLUtils;
-import edu.ku.brc.specify.conversion.CustomDBConverterDlg;
-import edu.ku.brc.specify.conversion.CustomDBConverterPanel;
-import edu.ku.brc.specify.conversion.GenericDBConversion;
-import edu.ku.brc.specify.conversion.IdMapperMgr;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
@@ -471,9 +466,9 @@ public class SpecifyDBConverter
         try
         {
         	GenericDBConversion.setShouldCreateMapTables(startfromScratch);
-            GenericDBConversion.setShouldDeleteMapTables(false);
+            GenericDBConversion.setShouldDeleteMapTables(true);
             
-            frame.setOverall(0, 17);
+            frame.setOverall(0, 19);
             SwingUtilities.invokeLater(new Runnable() {
                 public void run()
                 {
@@ -510,14 +505,6 @@ public class SpecifyDBConverter
                 // NOTE: Within BasicSQLUtils the connection is for removing tables and records
                 BasicSQLUtils.setDBConnection(conversion.getNewDBConnection());
                 
-                if (false)
-                {
-                    //conversion.convertLocality();
-                    conversion.doLocalizeSchema();
-                    return;
-                }
-
-
                 //---------------------------------------------------------------------------------------
                 //-- Create basic set of information.
                 //---------------------------------------------------------------------------------------
@@ -659,9 +646,21 @@ public class SpecifyDBConverter
                 if (copyUSYSTables || doAll)
                 {
                     conversion.convertUSYSTables();
+                    frame.incOverall();
+                    
+                    frame.setDesc("Converting Division.");
+                    conversion.createPickListsFromXML();
+                    frame.incOverall();
+                    
+                } else
+                {
+                    frame.incOverall();
+                    frame.incOverall();
                 }
+                
                 conversion.convertDivision();
                 frame.incOverall();
+                
                 
                 frame.setDesc("Converting Determinations Records");
                 log.info("Converting Determinations Records");

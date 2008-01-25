@@ -627,9 +627,9 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         }
     }
     
-    public void addListSelectionListener(ListSelectionListener listSelectionListener)
+    public void addListSelectionListener(ListSelectionListener listSelectionListenerArg)
     {
-        this.listSelectionListener = listSelectionListener;
+        this.listSelectionListener = listSelectionListenerArg;
         textWithQuery.addListSelectionListener(listSelectionListener);
     }
 

@@ -305,7 +305,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                 // Now loop through each of the view queries
                 for (ExpressResultsTableInfo erti : list)
                 {
-                    log.debug("Not Active: "+erti.getId()+"  "+erti.getTitle()+"  "+config.isActiveForRelatedQueryId(erti.getId()));
+                    //log.debug("Not Active: "+erti.getId()+"  "+erti.getTitle()+"  "+config.isActiveForRelatedQueryId(erti.getId()));
                     if (!config.isActiveForRelatedQueryId(erti.getId()))
                     {
                         continue;
@@ -415,7 +415,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
             results.setExpanded(true);
             //results.setShouldInstallServices(false);
             displayResults(esrPane, results, resultsForJoinsHash);
-            addSubPaneToMgr((SubPaneIFace)esrPane);
+            addSubPaneToMgr(esrPane);
         }
     }
 

@@ -410,7 +410,7 @@ public class TreeFactory
     {
         if (clazz.equals(Taxon.class))
         {
-            return QueryAdjusterForDomain.getInstance().adjustSQL("SELECT TaxonId, NodeNumber, HighestChildNodeNumber FROM Taxon WHERE TaxonTreeDefID = TAXTREEDEFID AND TaxonID = %d");
+            return QueryAdjusterForDomain.getInstance().adjustSQL("SELECT TaxonId, NodeNumber, HighestChildNodeNumber FROM taxon WHERE TaxonTreeDefID = TAXTREEDEFID AND TaxonID = %d");
         }
         
         if (clazz.equals(Geography.class))

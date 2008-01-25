@@ -350,7 +350,7 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     /**
      * @return the yesNo1
      */
-    @Column(name = "Yesno1", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "YesNo1", unique = false, nullable = true, insertable = true, updatable = true)
     public Boolean getYesNo1()
     {
         return yesNo1;

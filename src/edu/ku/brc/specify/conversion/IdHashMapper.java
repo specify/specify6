@@ -266,9 +266,13 @@ public class IdHashMapper implements IdMapperIFace
 	            stmtNew.executeUpdate("DROP TABLE `"+mapTableName+"`");
 	            stmtNew.close();
 	            
+	        } catch (com.mysql.jdbc.exceptions.MySQLSyntaxErrorException ex)
+	        {
+	            log.error(ex);
+	            
 	        } catch (Exception ex)
 	        {
-	            ex.printStackTrace();
+	            //ex.printStackTrace();
 	            log.error(ex);
 	        }
 	

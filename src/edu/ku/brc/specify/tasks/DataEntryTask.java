@@ -216,7 +216,7 @@ public class DataEntryTask extends BaseTask
                 {
                     Vector<Object> dataObjList = new Vector<Object>();
                     formDataObj = FormHelper.createAndNewDataObj(Class.forName(view.getClassName()));
-                    dataObjList.add((Object)formDataObj);
+                    dataObjList.add(formDataObj);
                     dataObj = dataObjList;
                     //dataObj = formDataObj;
                     

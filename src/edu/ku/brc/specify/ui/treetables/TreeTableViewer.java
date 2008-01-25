@@ -280,9 +280,11 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         listModel = new TreeViewerListModel(rootNode);
         idsToReexpand.add(rootNode.getId());
 
-        showChildren(rootRecord);
+        List<TreeNode> childNodes = showChildren(rootRecord);
 
         showTree();
+        
+        showCounts(rootRecord, childNodes);
     }
     
 	/**
@@ -1334,7 +1336,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		for( int i = pathToNode.indexOf(visRootRecord); i < pathToNode.size(); ++i )
 		{
             T pathRecord = pathToNode.get(i);
-            showChildren(pathRecord);
+            List<TreeNode> childNodes = showChildren(pathRecord);
+            showCounts(pathRecord, childNodes);
+
 		}
 		return true;
 	}
@@ -1530,7 +1534,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                                 TreeNode parentNode = listModel.getNodeById(parent.getTreeId());
                                 parentNode.setHasChildren(true);
                                 hideChildren(parentNode);
-                                showChildren(parent);
+                                List<TreeNode> childNodes = showChildren(parent);
+                                showCounts(parent, childNodes);
                             }
                         }
                         else
@@ -2212,14 +2217,29 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     }
     
     /**
-     * @param dbRecord
-     * @return the list of children shown
+     * 
      */
-    protected synchronized List<TreeNode> showChildren(final T dbRecord)
+    public void repaintLists()
     {
-        // get the child nodes
-        List<TreeNode> childNodes = dataService.getChildTreeNodes(dbRecord);
-        
+        if (lists != null)
+        {
+            for (TreeDataGhostDropJList lst :  lists)
+            {
+                if (lst != null)
+                {
+                    lst.repaint();
+                }
+            }
+        }
+    }
+    
+    /**
+     * @param dbRecord
+     * @param childNodes
+     */
+    protected synchronized void showCounts(final T dbRecord, 
+                                           final List<TreeNode> childNodes)
+    {
         String propName = "TreeEditor.Rank.Threshold."+dbRecord.getClass().getSimpleName();
         final int rankThreshold = AppPreferences.getRemote().getInt(propName, -1);
 
@@ -2235,12 +2255,11 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 {
                     try
                     {
-                         if (rankThreshold == -1 || dbRecord.getRankId() >= rankThreshold)
+                        if (rankThreshold == -1 || dbRecord.getRankId() >= rankThreshold)
                         {
-                            new ChildNodeCounter(lists[0], lists[1], 1, node, 
-                                    TreeFactory.getRelatedRecordCountSQLSingleNode(dbRecClass), null, isHQL);
+                            new ChildNodeCounter(TreeTableViewer.this, 1, node,  TreeFactory.getRelatedRecordCountSQLSingleNode(dbRecClass), null, isHQL);
                             
-                            new ChildNodeCounter(lists[0], lists[1], 2, node, 
+                            new ChildNodeCounter(TreeTableViewer.this, 2, node, 
                                     TreeFactory.getNodeNumberQuery(dbRecClass), 
                                     TreeFactory.getRelatedRecordCountSQLForRange(dbRecClass), isHQL);
                         }
@@ -2255,6 +2274,52 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             
             countGrabberExecutor.submit(getAssocRecCount);
          }
+    }
+    
+    /**
+     * @param dbRecord
+     * @return the list of children shown
+     */
+    protected synchronized List<TreeNode> showChildren(final T dbRecord)
+    {
+        // get the child nodes
+        List<TreeNode> childNodes = dataService.getChildTreeNodes(dbRecord);
+        
+        /*
+        String propName = "TreeEditor.Rank.Threshold."+dbRecord.getClass().getSimpleName();
+        final int rankThreshold = AppPreferences.getRemote().getInt(propName, -1);
+
+        final Class<?> dbRecClass = dbRecord.getClass();
+        final boolean isHQL = TreeFactory.isQueryHQL(dbRecClass);
+        
+        for (TreeNode newNode: childNodes)
+        {
+            final TreeNode node = newNode;
+            Runnable getAssocRecCount = new Runnable()
+            {
+                public void run()
+                {
+                    try
+                    {
+                        if (rankThreshold == -1 || dbRecord.getRankId() >= rankThreshold)
+                        {
+                            new ChildNodeCounter(TreeTableViewer.this, 1, node,  TreeFactory.getRelatedRecordCountSQLSingleNode(dbRecClass), null, isHQL);
+                            
+                            new ChildNodeCounter(TreeTableViewer.this, 2, node, 
+                                    TreeFactory.getNodeNumberQuery(dbRecClass), 
+                                    TreeFactory.getRelatedRecordCountSQLForRange(dbRecClass), isHQL);
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        log.error(e);
+                        e.printStackTrace();
+                    }
+                }
+            };
+            
+            countGrabberExecutor.submit(getAssocRecCount);
+         }*/
         
         // get the node representing the parent DB record
         TreeNode parentNode = listModel.getNodeById(dbRecord.getTreeId());
@@ -2320,7 +2385,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         // get the DB record that corresponds to this TreeNode
         T dbRecord = getRecordForNode(parent);
 
-        return showChildren(dbRecord);
+        List<TreeNode> childNodes = showChildren(dbRecord);
+        showCounts(dbRecord, childNodes);
+        return childNodes;
     }
 
     /**

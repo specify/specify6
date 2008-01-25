@@ -488,7 +488,7 @@ public class WorkbenchTask extends BaseTask
                     {
         
                         session.beginTransaction();
-                        Workbench mergedWB = (Workbench)session.merge(workbench);
+                        Workbench mergedWB = session.merge(workbench);
                         mergedWB.getWorkbenchTemplate().setName(mergedWB.getName());
                         session.saveOrUpdate(mergedWB);
                         session.commit();
@@ -2460,7 +2460,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 session.beginTransaction();
                 
                 // Merge with current session
-                WorkbenchTemplate workbenchTemplate = (WorkbenchTemplate)session.merge(wbTemplate);
+                WorkbenchTemplate workbenchTemplate = session.merge(wbTemplate);
                 
                 Set<WorkbenchTemplateMappingItem> items = workbenchTemplate.getWorkbenchTemplateMappingItems();
                 for (WorkbenchTemplateMappingItem delItem : deletedItems)
@@ -2961,6 +2961,17 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                 {
                     return;
                 }
+            }
+            
+        } else if (cmdData instanceof RecordSet)
+        {
+            Workbench workbench = loadWorkbench((RecordSet)cmdData);
+            if (workbench != null)
+            {
+                createEditorForWorkbench(workbench, null, false);
+            } else
+            {
+                log.error("Workbench was null!");
             }
             
         } else
