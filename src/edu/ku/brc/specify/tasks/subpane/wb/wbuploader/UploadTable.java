@@ -875,49 +875,57 @@ public class UploadTable implements Comparable<UploadTable>
      * 
      * Converts fld's string value to the correct class for the field being uploaded to.
      */
-    protected Object[] getArgForSetter(UploadField fld) throws NoSuchMethodException,
+    protected Object[] getArgForSetter(UploadField ufld) throws NoSuchMethodException,
             InvocationTargetException, IllegalAccessException, UploaderException
     {
         try
         {
             Object arg[] = new Object[1];
-            Class<?> fldClass = fld.getSetter().getParameterTypes()[0];
+            Class<?> fldClass = ufld.getSetter().getParameterTypes()[0];
+            String fldStr;
+            if (ufld.getValue() == null)
+            {
+                fldStr = null;
+            }
+            else
+            {
+               fldStr = fldClass.equals(String.class) ? ufld.getValue() : ufld.getValue().trim();
+            }
             if (fldClass == java.util.Calendar.class || fldClass == java.util.Date.class)
             {
                 // There are problems with DateConverter (see DateConverter)
-                if (fld.getValue() == null || fld.getValue().equals(""))
+                if (fldStr == null || fldStr.equals(""))
                 {
                     arg[0] = null;
                 }
                 else
                 {
-                    arg[0] = dateConverter.convert(fld.getValue());
+                    arg[0] = dateConverter.convert(fldStr);
                 }
             }
             else if (fldClass == BigDecimal.class)
             {
-                if (fld.getValue() == null || fld.getValue().equals(""))
+                if (fldStr == null || fldStr.equals(""))
                 {
                     arg[0] = null;
                 }
                 else
                 {
-                    arg[0] = new BigDecimal(fld.getValue());
+                    arg[0] = new BigDecimal(fldStr);
                 }
             }
             else if (fldClass == Boolean.class)
             {
-                if (fld.getValue() == null || fld.getValue().equals(""))
+                if (fldStr == null || fldStr.equals(""))
                 {
                     arg[0] = null;
                 }
                 else
                 {
-                    String val = fld.getValue().trim();
                     int i;
                     for (i = 0; i < boolStrings.length; i++)
                     {
-                        if (val.equalsIgnoreCase(boolStrings[i]))
+                        if (fldStr.equalsIgnoreCase(boolStrings[i]))
                             break;
                     }
                     if (i == boolStrings.length) { throw new UploaderException(
@@ -932,7 +940,7 @@ public class UploadTable implements Comparable<UploadTable>
                 stringArg[0] = String.class;
                 Method converter = fldClass.getMethod("valueOf", stringArg);
                 Object converterArg[] = new Object[1];
-                converterArg[0] = fld.getValue();
+                converterArg[0] = fldStr;
                 if (converterArg[0] != null)
                 {
                     arg[0] = converter.invoke(fldClass, converterArg);
@@ -944,13 +952,13 @@ public class UploadTable implements Comparable<UploadTable>
             }
             else
             {
-                if (fld.getValue() == null || fld.getValue().trim().equals(""))
+                if (fldStr == null || fldStr.equals(""))
                 {
                     arg[0] = null;
                 }
                 else
                 {
-                    arg[0] = fld.getValue();
+                    arg[0] = fldStr;
                 }
             }
             return arg;
