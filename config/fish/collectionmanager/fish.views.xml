@@ -112,6 +112,27 @@
             
         </view>
         
+         <view name="CollectionObjectSub"
+              class="edu.ku.brc.specify.datamodel.CollectionObject"
+              resourcelabels="false">
+              <desc><![CDATA[The Collection Object Subform for Accessions.]]></desc>
+              <altviews>
+                  <altview name="Collection Object Sub View" viewdef="CollectionObjectSub" label="View" mode="view"/>
+              </altviews>
+            
+        </view>
+        
+        <view name="ConservationDescription"
+              class="edu.ku.brc.specify.datamodel.ConservDescription"
+              resourcelabels="false">
+              <desc><![CDATA[Conservation Description for Accessions.]]></desc>
+              <altviews>
+                  <altview name="Conservation Description View" viewdef="ConservationDescription" label="View" mode="view"/>
+                  <altview name="Conservation Description Edit" viewdef="ConservationDescription" label="Edit" mode="edit" default="true"/>
+              </altviews>
+         
+        </view>
+        
         <view name="Determination"
               class="edu.ku.brc.specify.datamodel.Determination"
               busrules="edu.ku.brc.specify.datamodel.busrules.DeterminationBusRules"
@@ -321,11 +342,12 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="7" label="Description"/>
-                    <cell type="field" id="7" name="text2" uitype="textarea" cols="30" rows="6" colspan="10"/>
+                    <cell type="field" id="7" name="text2" uitype="textarea" cols="30" rows="3" colspan="10"/>
                 </row>
                 
                 <row>
-                    <cell type="separator" label="Accession Agents" colspan="12"/>
+                    <cell type="separator" label="Accession Agents" colspan="5" collapse="accessionAgents"/>
+                    <cell type="separator" label="Authorizations" colspan="6" collapse="accessionAuthorizations"/>
                 </row>
                 <!--
                     <row>
@@ -333,17 +355,17 @@
                     </row>
                 -->
                 <row>
-                    <cell type="iconview" viewname="AccessionAgent" id="8" name="accessionAgents" desc="Agents" colspan="12"/>
+                    <cell type="iconview" viewname="AccessionAgent" id="8" name="accessionAgents" desc="Agents" colspan="5"/>
+                    <cell type="subview" viewname="AccessionAuthorization" id="9" desc="Authorization" name="accessionAuthorizations" colspan="6"/>
                 </row>
-                
-                <row>
-                    <cell type="separator" label="Authorizations" colspan="12"/>
+                 <row>
+                    <cell type="separator" label="Collection Objects" collapse="collectionObjects" colspan="12"/>
+                </row>
+                <row> 
+                    <cell type="subview" viewname="CollectionObjectSub" id="25" desc="Collection Object" name="collectionObjects" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="AccessionAuthorization" id="9" desc="Authorization" name="accessionAuthorizations" colspan="12"/>
-                </row>
-                <row>
-                    <cell type="separator" label="Attachments" colspan="12"/>
+                    <cell type="separator" label="Attachments" colspan="12" collapse="accessionAttachments"/>
                 </row>
                 <row>
                     <cell type="subview" id="attachments" viewname="ObjectAttachment" name="accessionAttachments" colspan="12" initialize="addsearch=true;btn=true"/>
@@ -370,8 +392,8 @@
             <desc><![CDATA[The Accession form.]]></desc>
             <enableRules/>
 
-            <columnDef>100px,2px,p,2px,100px,2px,p:g</columnDef>
-            <rowDef>p:g,2dlu,p:g,2dlu,p,2dlu,p:g</rowDef>
+            <columnDef>60px,2px,p,2px,35px,2px,120px</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
 
             <rows>
                 <row>
@@ -384,7 +406,7 @@
 
                 <row>
                     <cell type="label" labelfor="3" label="Remarks"/>
-                    <cell type="field" id="3" name="remarks" uitype="textarea" colspan="5" cols="40"/>
+                    <cell type="field" id="3" name="remarks" uitype="textarea" colspan="5" cols="40" rows="3"/>
                 </row>
             </rows>
         </viewdef>
@@ -417,7 +439,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="2" label="Remarks"/>
-                    <cell type="field" id="2" name="remarks" uitype="textarea" colspan="3" />
+                    <cell type="field" id="2" name="remarks" uitype="textarea" colspan="3" rows="3"/>
                 </row>
 
             </rows>
@@ -663,23 +685,19 @@
     			<row>
     			    <cell type="subview" viewname="Determination" id="6" name="determinations" colspan="12" rows="5"/>
     			</row>
-
+    			<row>
+    			    <cell type="separator" label="Preparations" collapse="preparations" colspan="12"/>
+    			</row>
+    			<row>
+    			    <cell type="subview" viewname="Preparation" id="8" name="preparations" defaulttype="table" colspan="12"/>
+    			</row>
     			<row>
     				<cell type="separator" label="Locality" colspan="12"/>
     			</row>
     		    <row>
     		        <!-- <cell type="subview" viewname="Locality" id="7" name="collectingEvent.locality" colspan="12"/> -->
     		        <cell type="field" id="7" name="collectingEvent.locality" uitype="querycbx" initialize="name=Locality;title=Locality" colspan="12"/>
-    		    </row>
-    		    
-    			<row>
-    		        <cell type="separator" label="Preparations" collapse="preparations" colspan="12"/>
-    		    </row>
-    			
-    			<row>
-    			    <cell type="subview" viewname="Preparation" id="8" name="preparations" defaulttype="table" colspan="12"/>
-    			</row>
-   		    
+    		    </row>  		    
     		    <row>
                     <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectionObjectAttachments" colspan="12" initialize="btn=true"/>
                 </row>
@@ -734,6 +752,61 @@
                 </row>
             </rows>
         </viewdef>
+        
+        <viewdef
+              type="form"
+              name="CollectionObjectSub"
+              class="edu.ku.brc.specify.datamodel.CollectionObject"
+              gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+              settable="edu.ku.brc.ui.forms.DataSetterForObj">
+              
+              <desc><![CDATA[The Collection Object Subform for Accessions.]]></desc>
+              <enableRules/>
+              
+              <columnDef>100px,2px,p,2px,100px,2px,p,2px,p,2px,p,p:g</columnDef>
+              <rowDef auto="true" cell="p" sep="2px"/>
+    		  <rows>
+    			<row>
+    			    <cell type="label" labelfor="1"/>
+    			    <cell type="field" id="1" name="catalogNumber" uitype="formattedtext"/>
+    			    <cell type="label" labelfor="13" label="Exchg"/>
+    			    <cell type="field" id="13" name="countAmt" uitype="text"/>
+    			</row>
+    			<row>
+    			    <cell type="label" labelfor="2" label="Collection"/>
+    			    <cell type="field" id="2" name="collection.collectionName" uitype="dsptextfield"/>
+    			    <cell type="label" labelfor="5" label="Date"/>
+    			    <cell type="field" id="5" name="catalogedDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
+    			</row>
+    		</rows>
+    	</viewdef>
+    	
+    	
+        <viewdef
+            type="form"
+            name="ConservationDescription"
+            class="edu.ku.brc.specify.datamodel.ConservDescription"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Conservation Description for Accessions.]]></desc>
+            <enableRules/>
+            
+            <columnDef>70px,2px,p,2px,200px,2px,p,2px,p,2px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+            <rows>
+              <row> 
+                  <cell type="label" labelfor="1" label="Exam Date"/>
+                  <cell type="field" id="1" name="examDate" uitype="formattedtext" isrequired="true" uifieldformatter="Date" default="today"/>
+                  <cell type="label" labelfor="3" label="Treatment Completion Date"/>
+                  <cell type="field" id="3" name="treatmentCompDate" uitype="formattedtext" isrequired="true" uifieldformatter="Date" default="today"/>
+              </row>
+              <row>
+                  <cell type="label" labelfor="2" label="Description"/>
+                  <cell type="field" id="2" name="remarks" uitype="textarea" rows="3" colspan="10"/>
+              </row>
+           </rows>
+       </viewdef>
         
         <viewdef
             name="Determination Table"
