@@ -13,9 +13,12 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -23,6 +26,8 @@ import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringUtils;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 /**
@@ -51,7 +56,8 @@ public class Appraisal extends DataModelObjBase
     protected String     notes;
     
     protected Set<CollectionObject> collectionObjects;
-    protected Set<Accession>        accessions;
+    protected Accession             accession;
+    protected Agent                 agent;
     
     
     /**
@@ -74,9 +80,10 @@ public class Appraisal extends DataModelObjBase
         appraisalValue    = null;
         monetaryUnitType  = null;
         notes             = null;
+        agent             = null;
         
         collectionObjects = new HashSet<CollectionObject>();
-        accessions        = new HashSet<Accession>();
+        accession         = null;
 
     }
     
@@ -139,9 +146,9 @@ public class Appraisal extends DataModelObjBase
     /**
      * @param accessions the accessions to set
      */
-    public void setAccessions(Set<Accession> accessions)
+    public void setAccession(Accession accession)
     {
-        this.accessions = accessions;
+        this.accession = accession;
     }
 
     /**
@@ -212,12 +219,32 @@ public class Appraisal extends DataModelObjBase
     }
 
     /**
-     * @return the accessions
+     * @return the accession
      */
-    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, mappedBy = "appraisal")
-    public Set<Accession> getAccessions()
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    @JoinColumn(name = "AccessionID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Accession getAccession()
     {
-        return accessions;
+        return accession;
+    }
+
+    /**
+     * @return the agent
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "AgentID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Agent getAgent()
+    {
+        return agent;
+    }
+
+    /**
+     * @param agent the agent to set
+     */
+    public void setAgent(Agent agent)
+    {
+        this.agent = agent;
     }
 
     //---------------------------------------------------------------------------

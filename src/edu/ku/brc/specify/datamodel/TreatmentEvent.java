@@ -39,10 +39,13 @@ import edu.ku.brc.ui.DateWrapper;
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "treatmentevent")
 @org.hibernate.annotations.Table(appliesTo="treatmentevent", indexes =
-    {   @Index (name="TEDateCompletedIDX", columnNames={"DateCompleted"}),
-        @Index (name="TEDateInitiatedIDX", columnNames={"DateInitiated"}),
-        @Index (name="TEDateEnteredIsolationIDX", columnNames={"DateEnteredIsolation"}),
-        @Index (name="TEDateLeftIsolationIDX", columnNames={"DateLeftIsolation"}),
+    {   @Index (name="TEDateReceivedIDX",        columnNames={"DateReceived"}),
+        @Index (name="TEDateCompletedIDX",       columnNames={"DateCompleted"}),
+        @Index (name="TEateTreatmentStartedIDX", columnNames={"DateTreatmentStarted"}),
+        @Index (name="TEDateTreatmentEndedIDX",  columnNames={"DateTreatmentEnded"}),
+        @Index (name="TEDateCleanedIDX",         columnNames={"DateCleaned"}),
+        @Index (name="TEDateBoxedIDX",           columnNames={"DateBoxed"}),
+        @Index (name="TEDateToIsolationIDX",    columnNames={"DateToIsolation"}),
         @Index (name="TETypeIDX", columnNames={"Type"}),
         @Index (name="TEFieldNumberIDX", columnNames={"FieldNumber"})
     })
@@ -51,17 +54,27 @@ public class TreatmentEvent extends DataModelObjBase
     protected static DateWrapper scrDateFormat = null;
 
     protected Integer  treatmentEventId;
-    protected Calendar dateInitiated;
+    
+    // Dates for Bubble
+    protected Calendar dateReceived;
     protected Calendar dateCompleted;
-    protected Calendar dateEnteredIsolation;
-    protected Calendar dateLeftIsolation;
+    protected Calendar dateTreatmentStarted;
+    protected Calendar dateTreatmentEnded;
+    
+    // Dates for Bug Room
+    protected Calendar dateCleaned;
+    protected Calendar dateBoxed;
+    protected Calendar dateToIsolation;
+    
     protected String   type;
+    protected String   treatmentNumber;
     protected String   location;
     protected String   fieldNumber;
     protected String   remarks;
     
     protected Accession        accession;
     protected CollectionObject collectionObject;
+    protected Division         division;
     
     /**
      * 
@@ -78,16 +91,21 @@ public class TreatmentEvent extends DataModelObjBase
     public void initialize()
     {
         treatmentEventId     = null;
-        dateInitiated        = null;
+        dateReceived         = null;
         dateCompleted        = null;
-        dateEnteredIsolation = null;
-        dateLeftIsolation    = null;
+        dateTreatmentStarted = null;
+        dateTreatmentEnded   = null;
+        dateCleaned          = null;
+        dateBoxed            = null;
+        dateToIsolation      = null;
         type                 = null;
+        treatmentNumber      = null;
         location             = null;
         fieldNumber          = null;
         remarks              = null;
         accession            = null;
         collectionObject     = null;
+        division             = null;
     }
 
     /**
@@ -106,12 +124,13 @@ public class TreatmentEvent extends DataModelObjBase
         this.treatmentEventId = treatmentEventId;
     }
 
+
     /**
-     * @param dateInitiated the dateInitiated to set
+     * @param dateReceived the dateReceived to set
      */
-    public void setDateInitiated(Calendar dateInitiated)
+    public void setDateReceived(Calendar dateReceived)
     {
-        this.dateInitiated = dateInitiated;
+        this.dateReceived = dateReceived;
     }
 
     /**
@@ -121,23 +140,47 @@ public class TreatmentEvent extends DataModelObjBase
     {
         this.dateCompleted = dateCompleted;
     }
+
+    /**
+     * @param dateTreatmentStarted the dateTreatmentStarted to set
+     */
+    public void setDateTreatmentStarted(Calendar dateTreatmentStarted)
+    {
+        this.dateTreatmentStarted = dateTreatmentStarted;
+    }
+
+    /**
+     * @param dateTreatmentEnded the dateTreatmentEnded to set
+     */
+    public void setDateTreatmentEnded(Calendar dateTreatmentEnded)
+    {
+        this.dateTreatmentEnded = dateTreatmentEnded;
+    }
+
+    /**
+     * @param dateCleaned the dateCleaned to set
+     */
+    public void setDateCleaned(Calendar dateCleaned)
+    {
+        this.dateCleaned = dateCleaned;
+    }
+
+    /**
+     * @param dateBoxed the dateBoxed to set
+     */
+    public void setDateBoxed(Calendar dateBoxed)
+    {
+        this.dateBoxed = dateBoxed;
+    }
+
+    /**
+     * @param dateToIsolation the dateToIsolation to set
+     */
+    public void setDateToIsolation(Calendar dateToIsolation)
+    {
+        this.dateToIsolation = dateToIsolation;
+    }   
     
-    /**
-     * @param dateEnteredIsolation the dateEnteredIsolation to set
-     */
-    public void setDateEnteredIsolation(Calendar dateEnteredIsolation)
-    {
-        this.dateEnteredIsolation = dateEnteredIsolation;
-    }
-
-    /**
-     * @param dateLeftIsolation the dateLeftIsolation to set
-     */
-    public void setDateLeftIsolation(Calendar dateLeftIsolation)
-    {
-        this.dateLeftIsolation = dateLeftIsolation;
-    }
-
     /**
      * @param type the type to set
      */
@@ -152,6 +195,14 @@ public class TreatmentEvent extends DataModelObjBase
     public void setLocation(String location)
     {
         this.location = location;
+    }
+
+    /**
+     * @param treatmentNumber the treatmentNumber to set
+     */
+    public void setTreatmentNumber(String treatmentNumber)
+    {
+        this.treatmentNumber = treatmentNumber;
     }
 
     /**
@@ -187,6 +238,14 @@ public class TreatmentEvent extends DataModelObjBase
     }
 
     /**
+     * @param division the division to set
+     */
+    public void setDivision(Division division)
+    {
+        this.division = division;
+    }
+    
+    /**
      * @return the scrDateFormat
      */
     public static DateWrapper getScrDateFormat()
@@ -206,13 +265,13 @@ public class TreatmentEvent extends DataModelObjBase
     }
 
     /**
-     * @return the dateInitiated
+     * @return the dateReceived
      */
     @Temporal(TemporalType.DATE)
-    @Column(name = "DateInitiated", unique = false, nullable = false, insertable = true, updatable = true)
-    public Calendar getDateInitiated()
+    @Column(name = "DateReceived", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getDateReceived()
     {
-        return dateInitiated;
+        return dateReceived;
     }
 
     /**
@@ -226,24 +285,55 @@ public class TreatmentEvent extends DataModelObjBase
     }
 
     /**
-     * @return the dateEnteredIsolation
+     * @return the dateTreatmentStarted
      */
     @Temporal(TemporalType.DATE)
-    @Column(name = "DateEnteredIsolation", unique = false, nullable = true, insertable = true, updatable = true)
-    public Calendar getDateEnteredIsolation()
+    @Column(name = "DateTreatmentStarted", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getDateTreatmentStarted()
     {
-        return dateEnteredIsolation;
+        return dateTreatmentStarted;
     }
 
     /**
-     * @return the dateLeftIsolation
+     * @return the dateTreatmentEnded
      */
     @Temporal(TemporalType.DATE)
-    @Column(name = "DateLeftIsolation", unique = false, nullable = true, insertable = true, updatable = true)
-    public Calendar getDateLeftIsolation()
+    @Column(name = "DateTreatmentEnded", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getDateTreatmentEnded()
     {
-        return dateLeftIsolation;
+        return dateTreatmentEnded;
     }
+
+    /**
+     * @return the dateCleaned
+     */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "DateCleaned", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getDateCleaned()
+    {
+        return dateCleaned;
+    }
+
+    /**
+     * @return the dateBoxed
+     */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "DateBoxed", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getDateBoxed()
+    {
+        return dateBoxed;
+    }
+
+    /**
+     * @return the dateToIsolation
+     */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "DateToIsolation", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getDateToIsolation()
+    {
+        return dateToIsolation;
+    }
+    
     /**
      * @return the type
      */
@@ -260,6 +350,15 @@ public class TreatmentEvent extends DataModelObjBase
     public String getLocation()
     {
         return location;
+    }
+
+    /**
+     * @return the treatmentNumber
+     */
+    @Column(name = "TreatmentNumber", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    public String getTreatmentNumber()
+    {
+        return treatmentNumber;
     }
 
     /**
@@ -299,6 +398,17 @@ public class TreatmentEvent extends DataModelObjBase
     public CollectionObject getCollectionObject()
     {
         return collectionObject;
+    }
+    
+
+    /**
+     * @return the division
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "DivisionID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Division getDivision()
+    {
+        return division;
     }
 
     //---------------------------------------------------------------------------
@@ -342,9 +452,9 @@ public class TreatmentEvent extends DataModelObjBase
         {
             return scrDateFormat.format(dateCompleted);
         }
-        if (dateInitiated != null)
+        if (dateReceived != null)
         {
-            return scrDateFormat.format(dateInitiated);
+            return scrDateFormat.format(dateReceived);
         }
         return super.getIdentityTitle();
     }
@@ -366,5 +476,5 @@ public class TreatmentEvent extends DataModelObjBase
     {
         return 122;
     }
-
+    
 }

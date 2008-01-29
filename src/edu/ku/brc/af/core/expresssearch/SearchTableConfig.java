@@ -73,7 +73,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
      */
     public void initialize()
     {
-        tableInfo = DBTableIdMgr.getInstance().getInfoByTableName(tableName.toLowerCase()); 
+        tableInfo = DBTableIdMgr.getInstance().getInfoByTableName(tableName.toLowerCase());
         
         for (SearchFieldConfig sfc : searchFields)
         {
@@ -291,6 +291,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
         
         sqlStr.append(" WHERE ");
         
+        boolean addParen = false;
         if (ids != null || searchTerm.length() == 0)
         {
             sqlStr.append(primaryKey);
@@ -301,6 +302,16 @@ public class SearchTableConfig implements DisplayOrderingIFace,
                 sqlStr.append(ids.elementAt(i).toString());
             }
             sqlStr.append(") ");
+            
+        } else
+        {
+            String sqlSnipet = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, false); // false means SQL
+            if (sqlSnipet != null)
+            {
+                sqlStr.append(sqlSnipet);
+                sqlStr.append(" AND (");
+                addParen = true;
+            }
         }
         
         StringBuilder orderBy = new StringBuilder();
@@ -409,6 +420,11 @@ public class SearchTableConfig implements DisplayOrderingIFace,
                         }
                     }
                 }
+            }
+            
+            if (addParen)
+            {
+                sqlStr.append(")");
             }
         } else
         {

@@ -17,6 +17,7 @@ package edu.ku.brc.ui.db;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Frame;
+import java.awt.Window;
 
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -142,15 +143,15 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.db.DatabaseLoginListener#loggedIn(java.lang.String)
+     * @see edu.ku.brc.ui.db.DatabaseLoginListener#loggedIn(java.awt.Window, java.lang.String, java.lang.String)
      */
-    public void loggedIn(final String databaseName, final String userName)
+    public void loggedIn(final Window window, final String databaseName, final String userName)
     {
         setVisible(false);
         dispose();
         if (listener != null)
         {
-            listener.loggedIn(databaseName, userName);
+            listener.loggedIn(window, databaseName, userName);
         }
         //this.setGlassPane(null);
     }

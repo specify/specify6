@@ -15,6 +15,7 @@ package edu.ku.brc.ui.db;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.Component;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -614,10 +615,16 @@ public class DatabaseLoginPanel extends JPanel
      */
     protected void loginOK()
     {
+        Component parent = getParent();
+        while (!(parent instanceof Window))
+        {
+            parent = parent.getParent();
+        }
+        
         isCancelled = false;
         if (dbListener != null)
         {
-            dbListener.loggedIn(getDatabaseName(), getUserName());
+            dbListener.loggedIn((Window)parent, getDatabaseName(), getUserName());
         }
     }
 

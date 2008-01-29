@@ -255,7 +255,7 @@ public class FormattedDateValidator implements FormattedTextValidatorIFace
         fields.add(new UIFieldFormatterField(UIFieldFormatterField.FieldType.numeric,   2, "dd", false));
         fields.add(new UIFieldFormatterField(UIFieldFormatterField.FieldType.separator, 1, "/", false));
         fields.add(new UIFieldFormatterField(UIFieldFormatterField.FieldType.numeric,   4, "YYYY", false));
-        UIFieldFormatter uif = new UIFieldFormatter("Date", "*", UIFieldFormatter.FormatterType.Date, UIFieldFormatter.PartialDateEnum.Full, Date.class, true, false, fields);
+        UIFieldFormatter uif = new UIFieldFormatter("Date", true, "*", UIFieldFormatter.FormatterType.Date, UIFieldFormatter.PartialDateEnum.Full, Date.class, true, false, fields);
         //uif.setDateWrapper(dw);
         formatters.add(uif);
         
@@ -265,7 +265,7 @@ public class FormattedDateValidator implements FormattedTextValidatorIFace
         fields.add(new UIFieldFormatterField(UIFieldFormatterField.FieldType.numeric,   2, "MM", false));
         fields.add(new UIFieldFormatterField(UIFieldFormatterField.FieldType.separator, 1, "/", false));
         fields.add(new UIFieldFormatterField(UIFieldFormatterField.FieldType.numeric,   4, "YYYY", false));
-        uif = new UIFieldFormatter("Date", "*", UIFieldFormatter.FormatterType.Date, UIFieldFormatter.PartialDateEnum.Full, Date.class, true, false, fields);
+        uif = new UIFieldFormatter("Date", true, "*", UIFieldFormatter.FormatterType.Date, UIFieldFormatter.PartialDateEnum.Full, Date.class, true, false, fields);
         //uif.setDateWrapper(dw);
         formatters.add(uif);
 
@@ -275,7 +275,7 @@ public class FormattedDateValidator implements FormattedTextValidatorIFace
         fields.add(new UIFieldFormatterField(UIFieldFormatterField.FieldType.numeric,   2, "MM", false));
         fields.add(new UIFieldFormatterField(UIFieldFormatterField.FieldType.separator, 1, "/", false));
         fields.add(new UIFieldFormatterField(UIFieldFormatterField.FieldType.numeric,   2, "dd", false));
-        uif = new UIFieldFormatter("Date", "*", UIFieldFormatter.FormatterType.Date, UIFieldFormatter.PartialDateEnum.Full, Date.class, true, false, fields);
+        uif = new UIFieldFormatter("Date", true, "*", UIFieldFormatter.FormatterType.Date, UIFieldFormatter.PartialDateEnum.Full, Date.class, true, false, fields);
         //uif.setDateWrapper(dw);
         formatters.add(uif);
 

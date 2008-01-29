@@ -28,6 +28,7 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
@@ -79,7 +80,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
     protected Calendar                    dateReceived;
     protected Calendar                    dateAcknowledged;
     protected String                      accessionCondition;
-    protected String                      aphisStatus;
+    protected BigDecimal                  totalValue;
     
     protected String                      text1;
     protected String                      text2;
@@ -97,7 +98,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
     protected Set<AccessionAgent>         accessionAgents;
     protected Set<AccessionAttachment>    accessionAttachments;
     protected Set<ConservDescription>     conservDescriptions;
-    protected Appraisal                   appraisal;
+    protected Set<Appraisal>              appraisals;
     protected Set<TreatmentEvent>         treatmentEvents;
 
     // Constructors
@@ -127,7 +128,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
         dateAccessioned = null;
         dateReceived = null;
         accessionCondition = null;
-        aphisStatus        = null;
+        totalValue         = null;
         text1 = null;
         text2 = null;
         text3 = null;
@@ -143,7 +144,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
         repositoryAgreement     = null;
         accessionAttachments    = new HashSet<AccessionAttachment>();
         conservDescriptions     = new HashSet<ConservDescription>();
-        appraisal               = null;
+        appraisals              = new HashSet<Appraisal>();
         treatmentEvents         = new HashSet<TreatmentEvent>();
 
         
@@ -260,6 +261,23 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
     }
 
     /**
+     * @return the totalValue
+     */
+    @Column(name = "TotalValue", unique = false, nullable = true, insertable = true, updatable = true, precision = 12, scale = 10)
+    public BigDecimal getTotalValue()
+    {
+        return totalValue;
+    }
+
+    /**
+     * @param totalValue the totalValue to set
+     */
+    public void setTotalValue(BigDecimal totalValue)
+    {
+        this.totalValue = totalValue;
+    }
+
+    /**
      * accomodates historical accessions.
      */
     @Column(name = "VerbatimDate", unique = false, nullable = true, insertable = true, updatable = true, length = 50)
@@ -295,23 +313,6 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
 
     public void setDateReceived(Calendar dateReceived) {
         this.dateReceived = dateReceived;
-    }
-
-    /**
-     * @return the aphisStatus
-     */
-    @Column(name = "AphisStatus", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
-    public String getAphisStatus()
-    {
-        return aphisStatus;
-    }
-
-    /**
-     * @param aphisStatus the aphisStatus to set
-     */
-    public void setAphisStatus(String aphisStatus)
-    {
-        this.aphisStatus = aphisStatus;
     }
 
     /**
@@ -493,20 +494,18 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
     /**
      * @return the appraisal
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    @JoinColumn(name = "AppraisalID", unique = false, nullable = true, insertable = true, updatable = true)
-    public Appraisal getAppraisal()
+    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, mappedBy = "accession")
+    public Set<Appraisal> getAppraisals()
     {
-        return appraisal;
+        return appraisals;
     }
 
     /**
      * @param appraisal the appraisal to set
      */
-    public void setAppraisal(Appraisal appraisal)
+    public void setAppraisals(Set<Appraisal> appraisals)
     {
-        this.appraisal = appraisal;
+        this.appraisals = appraisals;
     }
 
 

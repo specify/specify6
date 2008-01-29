@@ -9,6 +9,8 @@
  */
 package edu.ku.brc.dbsupport;
 
+import static edu.ku.brc.helpers.XMLHelper.*;
+
 import java.util.Calendar;
 import java.util.List;
 import java.util.Properties;
@@ -372,4 +374,22 @@ public class AutoNumberGeneric implements AutoNumberIFace
         return isGeneric;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#toXML(java.lang.StringBuilder)
+     */
+    public void toXML(final StringBuilder sb)
+    {
+        sb.append("  ");
+        xmlNode(sb, "autonumber", getClass().getName(), false);
+        
+        /*sb.append("    <autonumber");
+        if (classObj != null)
+        {
+            xmlAttr(sb, "class", classObj.getName());
+        }
+        xmlAttr(sb, "field", fieldName);
+        sb.append("/>\n");
+        */
+    }
+
 }

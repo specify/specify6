@@ -79,7 +79,7 @@ public class Borrow extends CollectionMember implements java.io.Serializable {
     protected Boolean             yesNo1;
     protected Boolean             yesNo2;
     protected Calendar            currentDueDate;
-    protected Boolean             isFinancialResonsibility;
+    protected Boolean             isFinancialResponsibility;
     
     protected AddressOfRecord     addressOfRecord;
     protected Set<Shipment>       shipments;
@@ -228,20 +228,20 @@ public class Borrow extends CollectionMember implements java.io.Serializable {
     }
 
     /**
-     * @return the isFinancialResonsibility
+     * @return the isFinancialResponsibility
      */
-    @Column(name = "IsFinancialResonsibility", unique = false, nullable = true, insertable = true, updatable = true)
-   public Boolean getIsFinancialResonsibility()
+    @Column(name = "IsFinancialResponsibility", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getIsFinancialResponsibility()
     {
-        return isFinancialResonsibility;
+        return isFinancialResponsibility;
     }
 
     /**
      * @param isFinancialResonsibility the isFinancialResonsibility to set
      */
-    public void setIsFinancialResonsibility(Boolean isFinancialResonsibility)
+    public void setIsFinancialResponsibility(Boolean isFinancialResonsibility)
     {
-        this.isFinancialResonsibility = isFinancialResonsibility;
+        this.isFinancialResponsibility = isFinancialResonsibility;
     }
 
     /**

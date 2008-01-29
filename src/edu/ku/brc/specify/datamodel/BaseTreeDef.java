@@ -23,9 +23,9 @@ import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable;
  *
  */
 public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
-                              D extends TreeDefIface<N,D,I>,
-                              I extends TreeDefItemIface<N,D,I>> extends DataModelObjBase 
-                              implements TreeDefIface<N,D,I>
+                                  D extends TreeDefIface<N,D,I>,
+                                  I extends TreeDefItemIface<N,D,I>> extends DataModelObjBase 
+                                  implements TreeDefIface<N,D,I>
 {
     protected static transient boolean nodeNumbersAreUpToDate = true;
     protected static transient boolean doNodeNumberUpdates = true;
@@ -207,8 +207,8 @@ public abstract class BaseTreeDef<N extends Treeable<N,D,I>,
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.TreeDefIface#setNodeNumbersAreUpToDate(boolean)
      */
-    @Override
-    public void setNodeNumbersAreUpToDate(boolean arg)
+    //@Override
+    public void setNodeNumbersAreUpToDate(final boolean arg)
     {
         nodeNumbersAreUpToDate = arg;
     }

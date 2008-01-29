@@ -18,6 +18,8 @@ import java.security.AccessController;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.dbsupport.DBTableInfo;
+
 /**
  * This is a singleton factory for adjusting the SQL before it is executed by the Express Search.
  * 
@@ -89,6 +91,17 @@ public class QueryAdjusterForDomain
     public String adjustSQL(final String sql)
     {
         return sql;
+    }
+
+    /**
+     * Returns any special columns that must be compared against for this table.
+     * @param tableInfo the table in question
+     * @param isHQL whether to generate HQL or SQL
+     * @return null or a string
+     */
+    public String getSpecialColumns(final DBTableInfo tableInfo, final boolean isHQL)
+    {
+        return null;
     }
 
     /**

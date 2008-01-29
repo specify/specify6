@@ -25,6 +25,7 @@ import java.awt.Frame;
 import java.awt.GraphicsConfiguration;
 import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -137,6 +138,7 @@ import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.ResultSetController;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
+import edu.ku.brc.ui.forms.formatters.UIFormatterDlg;
 import edu.ku.brc.ui.forms.persist.ViewLoader;
 import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
@@ -171,7 +173,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private JMenuBar            menuBar            = null;
     private JFrame              topFrame           = null;
     private MainPanel           mainPanel          = null;
-    private JMenuItem           changeCatSeriesBtn = null;
+    private JMenuItem           changeCollectionMenuItem = null;
 
     protected boolean           hasChanged         = false;
 
@@ -594,9 +596,9 @@ public class Specify extends JPanel implements DatabaseLoginListener
                         class DBListener implements DatabaseLoginListener
                         {
                             @SuppressWarnings("synthetic-access")
-                            public void loggedIn(final String databaseNameArg, final String userNameArg)
+                            public void loggedIn(final Window window, final String databaseNameArg, final String userNameArg)
                             {
-                                specifyApp.loggedIn(databaseNameArg, userNameArg);
+                                specifyApp.loggedIn(window, databaseNameArg, userNameArg);
                             }
 
                             public void cancelled()
@@ -629,8 +631,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
         if (!isWorkbenchOnly)
         {
             // Add Menu for switching Collection
-            changeCatSeriesBtn = UIHelper.createMenuItem(menu, "Change Collection", "C", "Change Collection", false, null);
-            changeCatSeriesBtn.addActionListener(new ActionListener()
+            changeCollectionMenuItem = UIHelper.createMenuItem(menu, "Change Collection", "C", "Change Collection", false, null);
+            changeCollectionMenuItem.addActionListener(new ActionListener()
                     {
                         public void actionPerformed(ActionEvent ae)
                         {
@@ -640,7 +642,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                                 // Actually we really need to start over
                                 // "true" means that it should NOT use any cached values it can find to automatically initialize itself
                                 // instead it should ask the user any questions as if it were starting over
-                                restartApp(databaseName, userName, true, false);
+                                restartApp(null, databaseName, userName, true, false);
                             }
                         }
                     });
@@ -651,7 +653,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 @SuppressWarnings("synthetic-access")
                 @Override
                 public void mousePressed(MouseEvent e) {
-                    changeCatSeriesBtn.setEnabled(((SpecifyAppContextMgr)AppContextMgr.getInstance()).getNumOfCollectionsForUser() > 1);
+                    changeCollectionMenuItem.setEnabled(((SpecifyAppContextMgr)AppContextMgr.getInstance()).getNumOfCollectionsForUser() > 1);
                 }
             });
         }
@@ -763,6 +765,16 @@ public class Specify extends JPanel implements DatabaseLoginListener
                             DBTableIdMgr schema = new DBTableIdMgr(false);
                             schema.initialize(new File(XMLHelper.getConfigDirPath("specify_workbench_datamodel.xml")));
                             doSchemaConfig(SpLocaleContainer.WORKBENCH_SCHEMA, schema);
+                        }
+                    });
+            title = getResourceString("UIF_MENU_TITLE");
+            mi = UIHelper.createMenuItem(menu, title, getResourceString("UIF_MENU_MNU"), title, true, null);
+            mi.addActionListener(new ActionListener()
+                    {
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            UIFormatterDlg dlg = new UIFormatterDlg(topFrame);
+                            dlg.setVisible(true);
                         }
                     });
 
@@ -1241,12 +1253,17 @@ public class Specify extends JPanel implements DatabaseLoginListener
     
     /**
      * Restarts the app with a new or old database and user name and creates the core app UI.
+     * @param window the login window
      * @param databaseNameArg the database name
      * @param userNameArg the user name
      * @param startOver tells the AppContext to start over
      * @param firstTime indicates this is the first time in the app and it should create all the UI for the core app
      */
-    public void restartApp(final String databaseNameArg, final String userNameArg, final boolean startOver, final boolean firstTime)
+    public void restartApp(final Window  window, 
+                           final String  databaseNameArg, 
+                           final String  userNameArg, 
+                           final boolean startOver, 
+                           final boolean firstTime)
     {
         if (dbLoginPanel != null)
         {
@@ -1254,6 +1271,12 @@ public class Specify extends JPanel implements DatabaseLoginListener
         }
         
         AppPreferences.shutdownRemotePrefs();
+        
+        if (window != null)
+        {
+            window.setVisible(false);
+        }
+        
         //moved here because context needs to be set before loading prefs, we need to know the SpecifyUser
         AppContextMgr.CONTEXT_STATUS status = AppContextMgr.getInstance().setContext(databaseNameArg, userNameArg, startOver);
        // AppContextMgr.getInstance().
@@ -1296,9 +1319,9 @@ public class Specify extends JPanel implements DatabaseLoginListener
             
             initStartUpPanels(databaseNameArg, userNameArg);
             
-            if (changeCatSeriesBtn != null)
+            if (changeCollectionMenuItem != null)
             {
-                changeCatSeriesBtn.setEnabled(((SpecifyAppContextMgr)AppContextMgr.getInstance()).getNumOfCollectionsForUser() > 1);
+                changeCollectionMenuItem.setEnabled(((SpecifyAppContextMgr)AppContextMgr.getInstance()).getNumOfCollectionsForUser() > 1);
             }
             
         } else if (status == AppContextMgr.CONTEXT_STATUS.Error)
@@ -1397,9 +1420,9 @@ public class Specify extends JPanel implements DatabaseLoginListener
     //---------------------------------------------------------
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.db.DatabaseLoginListener#loggedIn(java.lang.String, java.lang.String)
+     * @see edu.ku.brc.ui.db.DatabaseLoginListener#loggedIn(java.awt.Window, java.lang.String, java.lang.String)
      */
-    public void loggedIn(final String databaseNameArg, final String userNameArg)
+    public void loggedIn(final Window window, final String databaseNameArg, final String userNameArg)
     {
         boolean firstTime = this.databaseName == null;
         
@@ -1486,7 +1509,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
             }
         }
         
-        restartApp(databaseName, userName, false, firstTime);
+        restartApp(window, databaseName, userName, false, firstTime);
         
         statusField.setSectionText(0, userName);
         

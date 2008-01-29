@@ -234,7 +234,7 @@ public class LocationTreeDef extends BaseTreeDef<Location, LocationTreeDef, Loca
 	{
 		for( LocationTreeDefItem item: treeDefItems )
 		{
-			if( item.getRankId().equals(rank) )
+			if ( item.getRankId().equals(rank) )
 			{
 				return item;
 			}
@@ -253,7 +253,7 @@ public class LocationTreeDef extends BaseTreeDef<Location, LocationTreeDef, Loca
 //	{
 //		for( LocationTreeDefItem item: treeDefItems )
 //		{
-//			if( item.getName().equals(defItemName) )
+//			if ( item.getName().equals(defItemName) )
 //			{
 //				return item;
 //			}
@@ -274,21 +274,21 @@ public class LocationTreeDef extends BaseTreeDef<Location, LocationTreeDef, Loca
 	 */
 	public boolean canChildBeReparentedToNode( Location child, Location newParent )
 	{
-		if( newParent.getRankId().intValue() >= child.getRankId().intValue() )
+		if ( newParent.getRankId().intValue() >= child.getRankId().intValue() )
 		{
 			// a node cannot have a parent that is a peer or of lower rank (larger rank id)
 			return false;
 		}
 		
 		Integer nextEnforcedRank = getRankOfNextHighestEnforcedLevel(child);
-		if( nextEnforcedRank == null )
+		if ( nextEnforcedRank == null )
 		{
 			// no higher ranks are being enforced
 			// the node can be reparented all the way up to the root
 			return true;
 		}
 		
-		if( nextEnforcedRank.intValue() <= newParent.getRankId().intValue() )
+		if ( nextEnforcedRank.intValue() <= newParent.getRankId().intValue() )
 		{
 			// the next enforced rank is equal to or above the new parent rank
 			return true;
@@ -307,10 +307,10 @@ public class LocationTreeDef extends BaseTreeDef<Location, LocationTreeDef, Loca
 	public Integer getRankOfNextHighestEnforcedLevel( Location node )
 	{
 		LocationTreeDefItem defItem = node.getDefinitionItem();
-		while( defItem.getParent() != null )
+		while ( defItem.getParent() != null )
 		{
 			defItem = defItem.getParent();
-			if( defItem.getIsEnforced() != null && defItem.getIsEnforced().booleanValue() == true )
+			if ( defItem.getIsEnforced() != null && defItem.getIsEnforced().booleanValue() == true )
 			{
 				return defItem.getRankId();
 			}

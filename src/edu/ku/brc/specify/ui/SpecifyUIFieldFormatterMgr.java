@@ -17,9 +17,16 @@
  */
 package edu.ku.brc.specify.ui;
 
+import java.io.File;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Vector;
+
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.dbsupport.AutoNumberIFace;
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.CatalogNumberingScheme;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.dbsupport.CollectionAutoNumber;
@@ -64,6 +71,33 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr
             catalogNumberNumeric = new CatalogNumberUIFieldFormatter();
             catalogNumberNumeric.setAutoNumber(new CollectionAutoNumber());
         }
+        
+        File uiffOut = new File(XMLHelper.getConfigDirPath("backstop/uiformatters.out.xml"));
+        StringBuilder sb = new StringBuilder();
+        sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<formats>\n");
+        
+        Vector<UIFieldFormatterIFace> list = new Vector<UIFieldFormatterIFace>(hash.values());
+        Collections.sort(list, new Comparator<UIFieldFormatterIFace>() {
+            public int compare(UIFieldFormatterIFace o1, UIFieldFormatterIFace o2)
+            {
+                return o1.getName().compareTo(o2.getName());
+            }
+            
+        });
+        for (UIFieldFormatterIFace f : list)
+        {
+            f.toXML(sb);
+        }
+        catalogNumberNumeric.toXML(sb);
+        sb.append("</formats>\n");
+        try
+        {
+            FileUtils.writeStringToFile(uiffOut, sb.toString());
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        
         
         //if (catalogNumberAlphaNumeric != null)
         //{

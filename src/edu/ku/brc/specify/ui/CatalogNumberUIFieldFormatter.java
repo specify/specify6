@@ -9,12 +9,15 @@
  */
 package edu.ku.brc.specify.ui;
 
+import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
+
 import java.util.List;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.dbsupport.AutoNumberIFace;
+import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterField;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
@@ -340,4 +343,34 @@ public class CatalogNumberUIFieldFormatter implements UIFieldFormatterIFace
     {
         return title;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#isSystem()
+     */
+    public boolean isSystem()
+    {
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#toXML(java.lang.StringBuilder)
+     */
+    public void toXML(final StringBuilder sb)
+    {
+        sb.append("  <format");
+        xmlAttr(sb, "system", true);
+        xmlAttr(sb, "name", name);
+        xmlAttr(sb, "class", CollectionObject.class.getName());
+        xmlAttr(sb, "default", isDefault);
+        sb.append(">\n");
+        if (autoNumber != null)
+        {
+            autoNumber.toXML(sb);
+        }
+        sb.append("    <external ");
+        xmlAttr(sb, "class", getClass().getName());
+        sb.append("/>\n");
+        sb.append("  </format>\n\n");
+    }
+
 }

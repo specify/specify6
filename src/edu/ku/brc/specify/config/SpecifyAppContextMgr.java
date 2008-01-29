@@ -16,6 +16,7 @@ package edu.ku.brc.specify.config;
 
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
 
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.io.File;
 import java.io.FileInputStream;
@@ -275,15 +276,26 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     }
 
                     ToggleButtonChooserDlg<Collection> dlg = new ToggleButtonChooserDlg<Collection>((Frame)UIRegistry.get(UIRegistry.FRAME),
-                                                                                                  "Choose a Collection",  // TODO I18N
+                                                                                                  UIRegistry.getResourceString("CHOOSE_COLLECTION_TITLE"), 
                                                                                                   null,
                                                                                                   list,
                                                                                                   IconManager.getIcon("Collection"),
-                                                                                                  CustomDialog.OKCANCEL, Type.RadioButton);
+                                                                                                  CustomDialog.OK_BTN, Type.RadioButton);
                     dlg.setSelectedIndex(selectColInx);
                     dlg.setModal(true);
-
-                    UIHelper.centerAndShow(dlg);
+                    dlg.setUseScrollPane(true);
+                    dlg.createUI();
+                    dlg.pack();
+                    Dimension size = dlg.getSize();
+                    size.width  = Math.max(size.width, 300);
+                    if (size.height < 150)
+                    {
+                        size.height += 100;
+                    }
+                    dlg.setSize(size);
+                    
+                    UIHelper.centerWindow(dlg);
+                    dlg.setVisible(true);
 
                     if (!dlg.isCancelled())
                     {
@@ -436,7 +448,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.AppContextMgr#setContext(java.lang.String, java.lang.String, boolean)
+     * @see edu.ku.brc.af.core.AppContextMgr#wa(java.lang.String, java.lang.String, boolean)
      */
     public CONTEXT_STATUS setContext(final String  databaseName,
                                      final String  userName,
@@ -452,8 +464,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
         //
         // We need to search for User, Collection, CollectionType and UserType
         // Then
-        
-        
 
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
 
@@ -517,8 +527,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
             if (debug) log.debug("Adding1 "+getSpAppResDefAsString(appResourceDir));
             spAppResourceList.add(appResourceDir);
         }
-        
-       
         
         backStopViewSetMgr = new ViewSetMgr("BackStop", XMLHelper.getConfigDir("backstop"));
         backStopAppResMgr  = new AppResourceMgr(XMLHelper.getConfigDir("backstop"));

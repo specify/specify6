@@ -1259,13 +1259,13 @@ public final class UIHelper
                 this.doAutoCloseOfListener = doAutoCloseOfListener;
             }
             
-            public void loggedIn(final String databaseName, final String userName)
+            public void loggedIn(final Window window, final String databaseName, final String userName)
             {
                 if (doAutoCloseOfListener)
                 {
                     frame.setVisible(false);
                 }
-                frameDBListener.loggedIn(databaseName, userName);
+                frameDBListener.loggedIn(window, databaseName, userName);
             }
 
             public void cancelled()

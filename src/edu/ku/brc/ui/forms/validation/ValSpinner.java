@@ -111,7 +111,10 @@ public class ValSpinner extends JSpinner implements UIValidatable, GetSetValueIF
             Component c = container.getComponent(i);
             if (c instanceof JTextField)
             {
-                c.setBackground(requiredfieldcolor.getColor());
+                if (requiredfieldcolor != null)
+                {
+                    c.setBackground(requiredfieldcolor.getColor());
+                }
                 
             } else if (c instanceof Container)
             {

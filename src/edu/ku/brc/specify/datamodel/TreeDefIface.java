@@ -78,12 +78,12 @@ public interface TreeDefIface<N extends Treeable<N,D,I>,
 	/**
 	 * @param arg 
 	 */
-	public void setNodeNumbersAreUpToDate(final boolean arg);
+	public void setNodeNumbersAreUpToDate(boolean arg);
 	
 	/**
 	 * Walks the entire tree and assigns node numbers for every item.
 	 */
-	public void updateAllNodes(final DataModelObjBase rootObj) throws Exception;
+	public void updateAllNodes(DataModelObjBase rootObj) throws Exception;
 	
 	/**
 	 * @return true if node numbers are to be kept up to date at all times.
@@ -93,7 +93,7 @@ public interface TreeDefIface<N extends Treeable<N,D,I>,
 	/**
 	 * @param arg - true if node numbers should be kept up to date at all times.
 	 */
-	public void setDoNodeNumberUpdates(final boolean arg);
+	public void setDoNodeNumberUpdates(boolean arg);
 	
 	/**
 	 * @return true if a workbench upload is (possibly) modifying the tree.
@@ -103,6 +103,6 @@ public interface TreeDefIface<N extends Treeable<N,D,I>,
 	/**
 	 * @param arg - true if a workbench upload is (possibly) modifying the tree.
 	 */
-	public void setUploadInProgress(final boolean arg);
+	public void setUploadInProgress(boolean arg);
 	
 }

@@ -14,6 +14,8 @@
  */
 package edu.ku.brc.ui.forms.formatters;
 
+import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
+
 
 /**
  * @author rods
@@ -33,6 +35,13 @@ public class UIFieldFormatterField
     protected boolean   incrementer;
     protected boolean   byYear;
     
+    /**
+     * @param type
+     * @param size
+     * @param value
+     * @param incrementer
+     * @param byYear
+     */
     public UIFieldFormatterField(final FieldType type, 
                                  final int       size, 
                                  final String    value, 
@@ -113,5 +122,30 @@ public class UIFieldFormatterField
     {
         return "Type["+type+"]  size["+size+"]  value["+value+"] incr["+incrementer+"]";
     }
-
+    
+    /**
+     * Appends a presentation of itself in XML to the StringBuilder
+     * @param sb the StringBuilder
+     */
+    public void toXML(StringBuilder sb)
+    {
+        sb.append("    <field");
+        xmlAttr(sb, "type", type.toString());
+        xmlAttr(sb, "size", size);
+        
+        if (type != FieldType.numeric)
+        {
+            xmlAttr(sb, "value", value);
+        }
+        if (incrementer)
+        {
+            xmlAttr(sb, "inc", incrementer);
+        }
+        if (byYear)
+        {
+            xmlAttr(sb, "byyear", byYear);
+        }
+        sb.append("/>\n");
+    }
+    
 }

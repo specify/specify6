@@ -51,7 +51,7 @@ public class UIFieldFormatterMgr
     protected static UIFieldFormatterMgr instance = null;
     protected static boolean             doingLocal = false;
 
-    private Hashtable<String, UIFieldFormatterIFace> hash = new Hashtable<String, UIFieldFormatterIFace>();
+    protected Hashtable<String, UIFieldFormatterIFace> hash = new Hashtable<String, UIFieldFormatterIFace>();
 
     /**
      * Protected Constructor
@@ -108,6 +108,23 @@ public class UIFieldFormatterMgr
     {
         UIFieldFormatterMgr.doingLocal = doingLocal;
     }
+    
+    /**
+     * @return
+     */
+    public static List<UIFieldFormatterIFace> getFormatters()
+    {
+        Vector<UIFieldFormatterIFace> list = new Vector<UIFieldFormatterIFace>();
+        for (UIFieldFormatterIFace fmt : instance.hash.values())
+        {
+            boolean isUIF = fmt instanceof UIFieldFormatter;
+            if (!isUIF || ((UIFieldFormatter)fmt).getType() == UIFieldFormatter.FormatterType.Generic)
+            {
+                list.add(fmt);
+            }
+        }
+        return list;
+    }
 
     /**
      * Returns a formatter by name
@@ -117,7 +134,6 @@ public class UIFieldFormatterMgr
     protected UIFieldFormatterIFace getFormatterInternal(final String name)
     {
         return hash.get(name);
-
     }
 
     /**
@@ -317,7 +333,8 @@ public class UIFieldFormatterMgr
                     String  dataClassName = formatElement.attributeValue("class");
                     int     precision     = XMLHelper.getAttr(formatElement, "precision", 12);
                     int     scale         = XMLHelper.getAttr(formatElement, "scale", 10);
-                    boolean isDefault     = XMLHelper.getAttr(formatElement, "default", true);
+                    boolean isDefault     = XMLHelper.getAttr(formatElement, "default", false);
+                    boolean isSystem      = XMLHelper.getAttr(formatElement, "system", false);
                     
                     AutoNumberIFace autoNumberObj     = null;
                     Element         autoNumberElement = (Element)formatElement.selectSingleNode("autonumber");
@@ -401,7 +418,7 @@ public class UIFieldFormatterMgr
                         
                         UIFieldFormatter.FormatterType type = UIFieldFormatter.FormatterType.Generic;
                         
-                        UIFieldFormatter.PartialDateEnum partialDateType = UIFieldFormatter.PartialDateEnum.Full;
+                        UIFieldFormatter.PartialDateEnum partialDateType = UIFieldFormatter.PartialDateEnum.None;
                         Class<?> dataClass = null;
                         if (StringUtils.isNotEmpty(dataClassName))
                         {
@@ -429,7 +446,7 @@ public class UIFieldFormatterMgr
                               
                         }
 
-                        UIFieldFormatter formatter = new UIFieldFormatter(name, fieldName, type, partialDateType, dataClass, isDefault, isInc, fields);
+                        UIFieldFormatter formatter = new UIFieldFormatter(name, isSystem, fieldName, type, partialDateType, dataClass, isDefault, isInc, fields);
                         if (type == UIFieldFormatter.FormatterType.Date && fields.size() == 0)
                         {
                             addFieldsForDate(formatter);

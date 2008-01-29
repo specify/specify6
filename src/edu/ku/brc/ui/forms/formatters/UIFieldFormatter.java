@@ -14,6 +14,8 @@
  */
 package edu.ku.brc.ui.forms.formatters;
 
+import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
+
 import java.util.Calendar;
 import java.util.List;
 
@@ -38,9 +40,10 @@ import edu.ku.brc.util.Pair;
 public class UIFieldFormatter implements UIFieldFormatterIFace
 {
     public enum PartialDateEnum {None, Full, Month, Year}
-    public enum FormatterType {Generic, Date, Numeric}
+    public enum FormatterType   {Generic, Date, Numeric}
     
     protected String               name;
+    protected boolean              isSystem;
     protected String               title;
     protected String               fieldName;
     protected Class<?>             dataClass;
@@ -66,6 +69,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
      * @param fields the list of fields that make up the formatter
      */
     public UIFieldFormatter(final String          name, 
+                            final boolean         isSystem,
                             final String          fieldName, 
                             final FormatterType   type, 
                             final PartialDateEnum partialDateType,
@@ -75,6 +79,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
                             final List<UIFieldFormatterField> fields)
     {
         this.name            = name;
+        this.isSystem        = isSystem;
         this.fieldName       = fieldName;
         this.dataClass       = dataClass;
         this.partialDateType = partialDateType;
@@ -82,6 +87,14 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
         this.isDefault       = isDefault;
         this.fields          = fields;
         this.isIncrementer   = isIncrementer;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#isSystem()
+     */
+    public boolean isSystem()
+    {
+        return isSystem;
     }
 
     /* (non-Javadoc)
@@ -457,6 +470,55 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
     public void setPrecision(int precision)
     {
         this.precision = precision;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#toXML(java.lang.StringBuilder)
+     */
+    public void toXML(final StringBuilder sb)
+    {
+        sb.append("  <format");
+        xmlAttr(sb, "system", isSystem);
+        xmlAttr(sb, "name", name);
+        
+        if (dataClass != null)
+        {
+            xmlAttr(sb, "class", dataClass.getName());
+        }
+        if (StringUtils.isNotEmpty(fieldName) && !fieldName.equals("*"))
+        {
+            xmlAttr(sb, "fieldname", fieldName);
+        }
+        
+        if (isDefault)
+        {
+            xmlAttr(sb, "default", isDefault);
+        }
+        
+        if (type != FormatterType.Generic)
+        {
+            xmlAttr(sb, "type", type.toString());
+        }
+        
+        if (partialDateType != PartialDateEnum.None)
+        {
+            xmlAttr(sb, "partialdate", partialDateType.toString());
+        }
+        
+        sb.append(">\n");
+        if (autoNumber != null)
+        {
+            autoNumber.toXML(sb);
+        }
+        
+        if (type != FormatterType.Numeric && type != FormatterType.Date)
+        {
+            for (UIFieldFormatterField field : fields)
+            {
+                field.toXML(sb);
+            }
+        }
+        sb.append("  </format>\n\n");
     }
 }
 

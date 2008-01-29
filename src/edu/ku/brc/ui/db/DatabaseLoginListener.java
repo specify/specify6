@@ -14,8 +14,10 @@
  */
 package edu.ku.brc.ui.db;
 
+import java.awt.Window;
+
 /**
- * This interface is used to notify listeners of a successful login or when thethe dialog is cancelled.
+ * This interface is used to notify listeners of a successful login or when the dialog is canceled.
  *
  * @code_status Complete
  * 
@@ -27,14 +29,15 @@ public interface DatabaseLoginListener
     /**
      * The login was successful
      *
+     * @param window the dialog or frame of the login window
      * @param databaseName the name of the database that was logged into
      * @param userName the username
      */
-    public void loggedIn(String databaseName, String userName);
+    public abstract void loggedIn(Window window, String databaseName, String userName);
     
     /**
      * The login dialog was cancelled
      */
-    public void cancelled();
+    public abstract void cancelled();
     
 }

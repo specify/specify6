@@ -27,6 +27,12 @@ import edu.ku.brc.util.Pair;
  */
 public interface UIFieldFormatterIFace
 {
+    
+    /**
+     * @return whether it is a system formatter that cannot be deleted.
+     */
+    public abstract boolean isSystem();
+    
     /**
      * @return the list of fields for the format.
      */
@@ -156,6 +162,12 @@ public interface UIFieldFormatterIFace
      * @return true if part of the format needs user input, false it is auto-generated.
      */
     public abstract boolean isUserInputNeeded();
+    
+    /**
+     * Appends a presentation of itself in XML to the StringBuilder
+     * @param sb the stringbuilder
+     */
+    public abstract void toXML(StringBuilder sb);
     
     //-----------------------------------------------------------------------
     // The Data Specific Methods

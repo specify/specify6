@@ -28,6 +28,7 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
@@ -110,6 +111,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     protected String                        availability;
     protected String                        restrictions;
     protected String                        notifications;
+    protected BigDecimal                    totalValue;
     
     // Security
     protected Integer                       visibility;
@@ -190,6 +192,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         availability          = null;
         restrictions          = null;
         notifications         = null;
+        totalValue            = null;
         visibility            = null;
         visibilitySetBy       = null; 
         
@@ -671,6 +674,23 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     {
         this.notifications = notifications;
     }
+    /**
+     * @return the totalValue
+     */
+    @Column(name = "TotalValue", unique = false, nullable = true, insertable = true, updatable = true, precision = 12, scale = 10)
+    public BigDecimal getTotalValue()
+    {
+        return totalValue;
+    }
+
+    /**
+     * @param totalValue the totalValue to set
+     */
+    public void setTotalValue(BigDecimal totalValue)
+    {
+        this.totalValue = totalValue;
+    }
+
 
     /**
      * @return the projectNumber

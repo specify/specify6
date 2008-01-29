@@ -68,6 +68,7 @@ public class Division extends DataModelObjBase implements java.io.Serializable
      protected Set<Agent>              members;
      protected Set<ConservDescription> conservDescriptions;
      protected Set<Loan>               loans;
+     protected Set<TreatmentEvent>     treatmentEvents;
      
 
     // Constructors
@@ -100,6 +101,7 @@ public class Division extends DataModelObjBase implements java.io.Serializable
         members             = new HashSet<Agent>();
         conservDescriptions = new HashSet<ConservDescription>();
         loans               = new HashSet<Loan>();
+        treatmentEvents     = new HashSet<TreatmentEvent>();
         institution         = null;
         address             = null;
     }
@@ -183,6 +185,16 @@ public class Division extends DataModelObjBase implements java.io.Serializable
     }
 
     /**
+     * @return the treatmentEvents
+     */
+    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "division")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<TreatmentEvent> getTreatmentEvents()
+    {
+        return treatmentEvents;
+    }
+
+    /**
      * @return the title
      */
     @Column(name = "Title", unique = false, nullable = true, insertable = true, updatable = true, length = 255)
@@ -207,6 +219,46 @@ public class Division extends DataModelObjBase implements java.io.Serializable
     public void setAbbrev(String abbrev)
     {
         this.abbrev = abbrev;
+    }
+
+    /**
+     *
+     */
+    @OneToMany(cascade = { }, fetch = FetchType.LAZY, mappedBy = "division")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<ConservDescription> getConservDescriptions()
+    {
+        return this.conservDescriptions;
+    }
+    
+    /**
+     * @return the address
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "AgentID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Address getAddress()
+    {
+        return address;
+    }
+
+    /**
+     * @return the loans
+     */
+    @OneToMany(cascade = { }, fetch = FetchType.LAZY, mappedBy = "division")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<Loan> getLoans()
+    {
+        return loans;
+    }
+
+    /**
+     * @return the collectionTypes
+     */
+    @OneToMany(cascade = { }, fetch = FetchType.LAZY, mappedBy = "division")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<CollectionType> getCollectionTypes()
+    {
+        return collectionTypes;
     }
 
     /**
@@ -273,15 +325,6 @@ public class Division extends DataModelObjBase implements java.io.Serializable
         this.uri = uri;
     }
 
-    /**
-     *
-     */
-    @OneToMany(cascade = { }, fetch = FetchType.LAZY, mappedBy = "division")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<ConservDescription> getConservDescriptions()
-    {
-        return this.conservDescriptions;
-    }
 
     public void setConservDescriptions(final Set<ConservDescription> conservDescriptions)
     {
@@ -306,14 +349,13 @@ public class Division extends DataModelObjBase implements java.io.Serializable
         this.institution = institution;
     }
 
+
     /**
-     * @return the address
+     * @param treatmentEvents the treatmentEvents to set
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "AgentID", unique = false, nullable = true, insertable = true, updatable = true)
-    public Address getAddress()
+    public void setTreatmentEvents(Set<TreatmentEvent> treatmentEvents)
     {
-        return address;
+        this.treatmentEvents = treatmentEvents;
     }
 
     /**
@@ -323,33 +365,13 @@ public class Division extends DataModelObjBase implements java.io.Serializable
     {
         this.address = address;
     }
-
-    /**
-     * @return the loans
-     */
-    @OneToMany(cascade = { }, fetch = FetchType.LAZY, mappedBy = "division")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<Loan> getLoans()
-    {
-        return loans;
-    }
-
+    
     /**
      * @param loans the loans to set
      */
     public void setLoans(Set<Loan> loans)
     {
         this.loans = loans;
-    }
-
-    /**
-     * @return the collectionTypes
-     */
-    @OneToMany(cascade = { }, fetch = FetchType.LAZY, mappedBy = "division")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<CollectionType> getCollectionTypes()
-    {
-        return collectionTypes;
     }
 
     /**

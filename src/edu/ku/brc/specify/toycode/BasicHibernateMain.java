@@ -3,6 +3,8 @@
  */
 package edu.ku.brc.specify.toycode;
 
+import java.awt.Window;
+
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -33,7 +35,7 @@ public class BasicHibernateMain implements DatabaseLoginListener
         // fill-in with your code
     }
     
-    public void loggedIn(final String databaseName, final String userName)
+    public void loggedIn(final Window window, final String databaseName, final String userName)
     {
     	SpecifyAppPrefs.initialPrefs();
 

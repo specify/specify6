@@ -122,6 +122,22 @@ public class ProgressFrame extends JFrame
 
     }
     
+    /**
+     * @return the origMax
+     */
+    public synchronized int getOrigMax()
+    {
+        return origMax;
+    }
+
+    /**
+     * @param origMax the origMax to set
+     */
+    public synchronized void setOrigMax(int origMax)
+    {
+        this.origMax = origMax;
+    }
+
     public synchronized void setProcess(final int min, final int max)
     {
         processProgress.setMinimum(isProcessPercent ? 0 : min);
@@ -140,14 +156,27 @@ public class ProgressFrame extends JFrame
         
         if (isProcessPercent)
         {
-            int percent = (int)(((double)value) / ((double)origMax) * 100.0);
-            processProgress.setValue(percent);
-            processProgress.setString(value > 0 ? Integer.toString(percent) + "%" : "");
+            if (value > origMax || value < 0)
+            {
+                processProgress.setString("100%");
+                
+            } else
+            {
+                int percent = (int)(((double)value) / ((double)origMax) * 100.0);
+                processProgress.setValue(percent);
+                processProgress.setString(value > 0 ? Integer.toString(percent) + "%" : "");
+            }
             
-        } else
+        } else 
         {
-            processProgress.setValue(value);
-            processProgress.setString(value > 0 ? (processProgress.getValue() +" / "+ processProgress.getMaximum()) : "");
+            if (value >=  processProgress.getMaximum())
+            {
+                processProgress.setString(processProgress.getMaximum() +" / "+ processProgress.getMaximum());
+            } else
+            {
+                processProgress.setValue(value);
+                processProgress.setString(value > 0 ? (processProgress.getValue() +" / "+ processProgress.getMaximum()) : "");
+            }
         }
     }
     

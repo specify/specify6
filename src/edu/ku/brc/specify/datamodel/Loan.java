@@ -88,7 +88,7 @@ public class Loan extends CollectionMember implements AttachmentOwnerIFace<LoanA
     
     protected String                  receivedComments;
     protected String                  specialConditions;
-    protected String                  financialResponsibility;
+    protected Boolean                 isFinancialResponsibility;
     protected String                  purposeOfLoan;
     protected Calendar                overdueNotiSentDate;
     protected Calendar                dateReceived;
@@ -140,7 +140,7 @@ public class Loan extends CollectionMember implements AttachmentOwnerIFace<LoanA
         
         receivedComments    = null;
         specialConditions   = null;
-        financialResponsibility = null;
+        isFinancialResponsibility = null;
         purposeOfLoan       = null;
         overdueNotiSentDate = null;
         dateReceived        = null;
@@ -439,21 +439,22 @@ public class Loan extends CollectionMember implements AttachmentOwnerIFace<LoanA
     }
 
     /**
-     * @return the financialResponsibility
+     * @return the isFinancialResponsibility
      */
-    @Column(name = "FinancialResponsibility", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
-    public String getFinancialResponsibility()
+    @Column(name = "IsFinancialResponsibility", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getIsFinancialResponsibility()
     {
-        return financialResponsibility;
+        return isFinancialResponsibility;
     }
 
     /**
-     * @param financialResponsibility the financialResponsibility to set
+     * @param isFinancialResponsibility the isFinancialResponsibility to set
      */
-    public void setFinancialResponsibility(String financialResponsibility)
+    public void setIsFinancialResponsibility(Boolean isFinancialResponsibility)
     {
-        this.financialResponsibility = financialResponsibility;
+        this.isFinancialResponsibility = isFinancialResponsibility;
     }
+
 
     /**
      * @return the purposeOfLoan

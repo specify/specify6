@@ -175,7 +175,7 @@ public class TestAutoNumbering extends TestCase
         ////////////////////////////////
         // build the tree def items and nodes
         ////////////////////////////////
-        List<Object> taxa        = BuildSampleDatabase.createSimpleTaxon(taxonTreeDef, false);
+        List<Object> taxa        = BuildSampleDatabase.createSimpleFishTaxonTree(taxonTreeDef, false);
         List<Object> geos        = BuildSampleDatabase.createSimpleGeography(geoTreeDef);
         List<Object> locs        = BuildSampleDatabase.createSimpleLocation(locTreeDef);
         List<Object> gtps        = BuildSampleDatabase.createSimpleGeologicTimePeriod(gtpTreeDef);

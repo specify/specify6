@@ -20,6 +20,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Frame;
+import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -962,9 +963,9 @@ public class FormEditor implements DatabaseLoginListener
     //---------------------------------------------------------
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.db.DatabaseLoginListener#loggedIn(java.lang.String, java.lang.String)
+     * @see edu.ku.brc.ui.db.DatabaseLoginListener#loggedIn(java.awt.Window, java.lang.String, java.lang.String)
      */
-    public void loggedIn(final String databaseName, final String userName)
+    public void loggedIn(final Window window, final String databaseName, final String userName)
     {
         SpecifyAppPrefs.initialPrefs();
 

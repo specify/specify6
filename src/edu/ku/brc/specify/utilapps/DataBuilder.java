@@ -539,6 +539,11 @@ public class DataBuilder
                                                     final DeterminationStatus status,
                                                     final Calendar calendar)
     {
+        if (collectionObject == null)
+        {
+            int x = 0;
+            x++;
+        }
         // Create Determination
         Determination determination = new Determination();
         determination.initialize();

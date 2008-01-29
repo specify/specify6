@@ -43,4 +43,10 @@ public interface AutoNumberIFace
      */
     public abstract boolean isGeneric();
     
+    /**
+     * Appends a presentation of itself in XML to the StringBuilder
+     * @param sb the StringBuilder
+     */
+    public abstract void toXML(StringBuilder sb);
+    
 }

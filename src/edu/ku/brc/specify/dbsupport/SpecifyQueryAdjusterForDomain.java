@@ -12,12 +12,17 @@ package edu.ku.brc.specify.dbsupport;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
+import edu.ku.brc.specify.datamodel.LithoStrat;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
+import edu.ku.brc.specify.datamodel.Location;
 import edu.ku.brc.specify.datamodel.LocationTreeDef;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 
 /**
@@ -46,6 +51,50 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
         // no op
     }
 
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain#getSpecialColumns(edu.ku.brc.dbsupport.DBTableInfo, boolean)
+     */
+    @Override
+    public String getSpecialColumns(final DBTableInfo tableInfo, final boolean isHQL)
+    {
+        if (tableInfo != null)
+        {
+            if (tableInfo.getFieldByName("collectionMemberId") != null)
+            {
+                String sql = (isHQL ? "collectionMemberId" : "CollectionMemberID") + " = " + COLMEMID;
+                return adjustSQL(sql);
+                
+            } else if (tableInfo.getTableId() == Taxon.getClassTableId())
+            {
+                String sql = (isHQL ? "taxonTreeDefId" : "TaxonTreeDefID") + " = " + TAXTREEDEFID;
+                return adjustSQL(sql);
+                
+            } else if (tableInfo.getTableId() == Location.getClassTableId())
+            {
+                String sql = (isHQL ? "locationTreeDefId" : "LocationTreeDefID") + " = " + LOCTREEDEFID;
+                return adjustSQL(sql);
+                
+            } else if (tableInfo.getTableId() == GeologicTimePeriodTreeDef.getClassTableId())
+            {
+                String sql = (isHQL ? "geologicTimePeriodTreeDefId" : "GeologicTimePeriodTreeDefID") + " = " + GTPTREEDEFID;
+                return adjustSQL(sql);
+                
+            } else if (tableInfo.getTableId() == LithoStrat.getClassTableId())
+            {
+                String sql = (isHQL ? "lithoStratTreeDefID" : "LithoStratTreeDefID") + " = " + LITHOTREEDEFID;
+                return adjustSQL(sql);
+                
+            } else if (tableInfo.getTableId() == Geography.getClassTableId())
+            {
+                String sql = (isHQL ? "geographyTreeDefId" : "GeographyTreeDefID") + " = " + GEOTREEDEFID;
+                return adjustSQL(sql);
+            }
+        }
+        return null;
+    }
+    
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain#adjustSQL(java.lang.String, boolean)
      */
