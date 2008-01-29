@@ -226,9 +226,9 @@ public class QueryFieldPanel extends JPanel
      */
     protected String[] getComparatorList(final FieldQRI field)
     {
-        //CatalogNumber needs to be treated as a number.
+        //CatalogNumber needs special treatment - works better as a number.
         //And other fields? Not sure how to tell. Maybe the formatter?????
-        if (field.getFieldInfo().getName().equalsIgnoreCase("catalognumber") 
+        if (field.getFieldInfo() != null && field.getFieldInfo().getName().equalsIgnoreCase("catalognumber") 
                 && field.getTableInfo().getClassObj().equals(CollectionObject.class))
         {
             return getComparatorListForClass(Number.class);

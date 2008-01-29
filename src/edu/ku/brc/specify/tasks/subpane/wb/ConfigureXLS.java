@@ -27,6 +27,7 @@ import javax.swing.JOptionPane;
 import org.apache.log4j.Logger;
 import org.apache.poi.hpsf.CustomProperties;
 import org.apache.poi.hpsf.DocumentSummaryInformation;
+import org.apache.poi.hpsf.IllegalPropertySetDataException;
 import org.apache.poi.hpsf.MarkUnsupportedException;
 import org.apache.poi.hpsf.NoPropertySetStreamException;
 import org.apache.poi.hpsf.PropertySet;
@@ -232,6 +233,11 @@ public class ConfigureXLS extends ConfigureExternalDataBase
             result = null;
         }
         catch (UnexpectedPropertySetTypeException ex)
+        {
+            log.debug(ex);
+            result = null;
+        }
+        catch (IllegalPropertySetDataException ex)
         {
             log.debug(ex);
             result = null;

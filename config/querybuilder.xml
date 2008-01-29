@@ -126,7 +126,7 @@
     		<table name="LithoStrat"/>
     	</table>
         <alias name="Preparation" field="properation"/>
-        <alias name="CollectingEvent" field="collectingEvent"/>
+        <!--<alias name="CollectingEvent" field="collectingEvent"/>-->
     </table>
     
     <table name="Locality">

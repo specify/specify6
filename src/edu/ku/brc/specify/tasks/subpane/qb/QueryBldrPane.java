@@ -342,6 +342,9 @@ public class QueryBldrPane extends BaseSubPane
         }
         saveBtn.setEnabled(false);
 
+        //Sorry, but a new context can't be selected if any fields are selected from the current context.
+        tableList.setEnabled(queryFieldItems.size() == 0);
+
         this.validate();
     }
 
@@ -887,6 +890,10 @@ public class QueryBldrPane extends BaseSubPane
         queryFieldsPanel.getLayout().removeLayoutComponent(qfp);
         queryFieldsPanel.remove(qfp);
         qfp.getFieldQRI().setIsInUse(false);
+        if (qfp.getQueryField() != null)
+        {
+            query.removeReference(qfp.getQueryField(), "fields");
+        }
         queryFieldsPanel.validate();
         updateAddBtnState();
         
@@ -896,6 +903,9 @@ public class QueryBldrPane extends BaseSubPane
             {
                 try
                 {
+                    //Sorry, but a new context can't be selected if any fields are selected from the current context.
+                    tableList.setEnabled(queryFieldItems.size() == 0);
+                    
                     listBoxList.get(currentInx).repaint();
                 } catch (ArrayIndexOutOfBoundsException ex)
                 {
@@ -1003,6 +1013,8 @@ public class QueryBldrPane extends BaseSubPane
                         queryFieldsPanel.repaint();
                         qfp.repaint();
                         updateAddBtnState();
+                        //Sorry, but a new context can't be selected if any fields are selected from the current context.
+                        tableList.setEnabled(queryFieldItems.size() == 0);
                     }
                 }
             });
