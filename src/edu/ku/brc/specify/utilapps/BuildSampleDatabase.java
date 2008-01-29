@@ -588,7 +588,7 @@ public class BuildSampleDatabase
                                                      final SpecifyUser    user,
                                                      final Agent          userAgent)
     {
-        frame.setProcess(0, 13);
+        frame.setProcess(0, 16);
         frame.setDesc("Creating Botany...");
         
         int createStep = 0;
@@ -600,6 +600,8 @@ public class BuildSampleDatabase
         
         DataType         dataType         = createDataType(discipline.getTitle());
         persist(dataType);
+        
+        frame.setProcess(++createStep);
         
         // create tree defs (later we will make the def items and nodes)
         TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Taxon");
@@ -630,6 +632,8 @@ public class BuildSampleDatabase
         Collection.setCurrentCollection(collection);
 
         commitTx();
+        
+        frame.setProcess(++createStep);
         
         startTx();
         
@@ -1025,7 +1029,7 @@ public class BuildSampleDatabase
         ////////////////////////////////
         log.info("Creating accessions and accession agents");
         calendar.set(2006, 10, 27, 23, 59, 59);
-        Accession acc1 = createAccession("Gift", "Complete", "2000-IC-001", DateFormat.getInstance().format(calendar.getTime()), calendar, calendar);
+        Accession acc1 = createAccession("Gift", "Complete", "2000-PL-001", DateFormat.getInstance().format(calendar.getTime()), calendar, calendar);
         acc1.setText1("Ichthyology");
         acc1.setRepositoryAgreement(repoAg);
         
@@ -1039,7 +1043,7 @@ public class BuildSampleDatabase
         accAgents.add(createAccessionAgent("Receiver", receiver, acc1, null));
         accAgents.add(createAccessionAgent("Reviewer", reviewer, acc1, null));
 
-        Accession acc2 = createAccession("Field Work", "In Process", "2004-IC-002", DateFormat.getInstance().format(calendar.getTime()), calendar, calendar);
+        Accession acc2 = createAccession("Field Work", "In Process", "2004-PL-002", DateFormat.getInstance().format(calendar.getTime()), calendar, calendar);
         
         Agent donor2 =    agents.get(5);
         Agent receiver2 = agents.get(3);
@@ -1228,8 +1232,6 @@ public class BuildSampleDatabase
         persist(dataObjects);
         //commitTx();
         dataObjects.clear();
-        
-
 
         //startTx();
         persist(dataObjects);
@@ -1254,81 +1256,20 @@ public class BuildSampleDatabase
      * @param disciplineName the discipline name
      * @return the entire list of DB object to be persisted
      */
-    public List<Object> createFishCollection(final Discipline     discipline,
-                                             final Division       division,
-                                             final CollectionType colType,
-                                             final CatalogNumberingScheme numberingScheme)
+    public void createFishCollection(final Discipline     discipline,
+                                     final Institution    institution,
+                                     final SpecifyUser    user,
+                                     final Agent          userAgent)
     {
-        // create tree defs (later we will make the def items and nodes)
-        TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Taxon");
-        GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Geography");
-        GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Chronos Stratigraphy");
-        LithoStratTreeDef         lithoStratTreeDef = createLithoStratTreeDef("LithoStrat");
-        LocationTreeDef           locTreeDef        = createLocationTreeDef("Location");
-
-        return null;
-    }
-    
-    /**
-     * Creates a single discipline collection.
-     * @param collTypeName the name of the Collection Type to use
-     * @param disciplineName the discipline name
-     * @return the entire list of DB object to be persisted
-     */
-    public List<Object> createSingleDiscipline(final Discipline discipline)
-    {
-        System.out.println("Creating single discipline database: " + discipline.getTitle());
-        
-        int createStep = 0;
-        
-        frame.setProcess(0, 15);
-        
-        frame.setProcess(++createStep);
-
-        List<Agent>    agents      = new Vector<Agent>();
-        
-        ////////////////////////////////
-        // Create the really high-level stuff
-        ////////////////////////////////
-        String           username         = initPrefs.getProperty("initializer.username", "rods");
-        String           title            = initPrefs.getProperty("useragent.title",    "Mr.");
-        String           firstName        = initPrefs.getProperty("useragent.firstname", "Rod");
-        String           lastName         = initPrefs.getProperty("useragent.lastname", "Spears");
-        String           midInit          = initPrefs.getProperty("useragent.midinit", "C");
-        String           abbrev           = initPrefs.getProperty("useragent.abbrev", "rs");
-        String           email            = initPrefs.getProperty("useragent.email", "rods@ku.edu");
-        String           userType         = initPrefs.getProperty("useragent.usertype", "CollectionManager");
-        
-        System.out.println("----- User Agent -----");
-        System.out.println("Userame:   "+username);
-        System.out.println("Title:     "+title);
-        System.out.println("FirstName: "+firstName);
-        System.out.println("LastName:  "+lastName);
-        System.out.println("MidInit:   "+midInit);
-        System.out.println("Abbrev:    "+abbrev);
-        System.out.println("Email:     "+email);
-        System.out.println("UserType:  "+userType);
-        
-        Institution    institution    = createInstitution("Natural History Museum");
-        
-        Agent            userAgent        = createAgent(title, firstName, midInit, lastName, abbrev, email);
-        userAgent.setCollectionMemberId(0);
-        UserGroup        userGroup        = createUserGroup(discipline.getTitle());
-        
-        
-        Division       division       = createDivision(institution, discipline.getName(), "Icthyology", "IT", "Icthyology");
+        frame.setDesc("Creating Fish Collection Overhead...");
         
         startTx();
-        persist(userGroup);
-        persist(institution);
-        persist(division);
-        
-        SpecifyUser      user             = createSpecifyUser(username, email, (short) 0, userGroup, userType);
-        persist(user);
-        
         DataType         dataType         = createDataType(discipline.getTitle());
         persist(dataType);
-        
+
+        Division       division       = createDivision(institution, discipline.getName(), "Icthyology", "IT", "Icthyology");
+        persist(division);
+
         // create tree defs (later we will make the def items and nodes)
         TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Taxon");
         GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Geography");
@@ -1345,6 +1286,84 @@ public class BuildSampleDatabase
         
         loadSchemaLocalization(collectionType, SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
         
+        commitTx();
+        
+        frame.setDesc("Creating Fish Trees...");
+        
+        ////////////////////////////////
+        // build the tree def items and nodes
+        ////////////////////////////////
+        Journal      journal     = createJournalsAndReferenceWork();
+        List<Object> taxa        = createSimpleFishTaxonTree(taxonTreeDef, doShallowTaxonTree);
+        List<Object> geos        = createSimpleGeography(geoTreeDef);
+        List<Object> locs        = createSimpleLocation(locTreeDef);
+        List<Object> gtps        = createSimpleGeologicTimePeriod(gtpTreeDef);
+        List<Object> lithoStrats = createSimpleLithoStrat(lithoStratTreeDef);
+        
+        startTx();
+        
+        BldrPickList colMethods = createPickLists();
+        
+        persist(journal);
+        persist(taxa);
+        persist(geos);
+        persist(locs);
+        persist(gtps);
+        persist(lithoStrats);
+        commitTx();
+        
+        //frame.setProcess(++createStep);
+        frame.setOverall(steps++);
+        
+        createFishCollection(collectionType, user, userAgent,
+                taxonTreeDef, geoTreeDef, gtpTreeDef,
+                lithoStratTreeDef, locTreeDef,
+                journal, taxa, geos, locs, gtps, lithoStrats,
+                colMethods,
+                "KUFSH", "Fish");
+
+        frame.setOverall(steps++);
+        
+        createFishCollection(collectionType, user, userAgent,
+                taxonTreeDef, geoTreeDef, gtpTreeDef,
+                lithoStratTreeDef, locTreeDef,
+                journal, taxa, geos, locs, gtps, lithoStrats,
+                colMethods,
+                "KUTIS", "Fish Tissue");
+
+    }
+    
+    /**
+     * Creates a single discipline collection.
+     * @param collTypeName the name of the Collection Type to use
+     * @param disciplineName the discipline name
+     * @return the entire list of DB object to be persisted
+     */
+    @SuppressWarnings("unchecked")
+    public List<Object> createFishCollection(final CollectionType            collectionType,
+                                             final SpecifyUser               user,
+                                             final Agent                     userAgent,
+                                             final TaxonTreeDef              taxonTreeDef,
+                                             final GeographyTreeDef          geoTreeDef,
+                                             final GeologicTimePeriodTreeDef gtpTreeDef,
+                                             final LithoStratTreeDef         lithoStratTreeDef,
+                                             final LocationTreeDef           locTreeDef,
+                                             final Journal                   journal,
+                                             final List<Object>              taxa,
+                                             final List<Object>              geos,
+                                             final List<Object>              locs,
+                                             final List<Object>              gtps,
+                                             final List<Object>              lithoStrats,
+                                             final BldrPickList              colMethods,
+                                             final String                    colPrefix,
+                                             final String                    colName)
+    {
+        int createStep = 0;
+        frame.setProcess(0, 15);
+        
+        frame.setDesc("Creating Collection "+  colName);
+        
+        startTx();
         CatalogNumberingScheme cns = createCatalogNumberingScheme("CatalogNumber", "", true);
         
         persist(cns);
@@ -1353,12 +1372,14 @@ public class BuildSampleDatabase
         // Create Collection
         ////////////////////////////////
         log.info("Creating a Collection");
-        Collection collection = createCollection("KUFSH", "Fish", cns, collectionType);
+        Collection collection = createCollection(colPrefix, colName, cns, collectionType);
         persist(collection);
         
         Collection.setCurrentCollection(collection);
 
         commitTx();
+        
+        frame.setProcess(++createStep);
         
         startTx();
         
@@ -1371,29 +1392,9 @@ public class BuildSampleDatabase
         
         persist(user);
 
-        Journal journal = createJournalsAndReferenceWork();
         
         frame.setProcess(++createStep);
         
-        ////////////////////////////////
-        // build the tree def items and nodes
-        ////////////////////////////////
-        List<Object> taxa        = createSimpleFishTaxonTree(taxonTreeDef, doShallowTaxonTree);
-        List<Object> geos        = createSimpleGeography(geoTreeDef);
-        List<Object> locs        = createSimpleLocation(locTreeDef);
-        List<Object> gtps        = createSimpleGeologicTimePeriod(gtpTreeDef);
-        List<Object> lithoStrats = createSimpleLithoStrat(lithoStratTreeDef);
-        
-        //startTx();
-        persist(journal);
-        persist(taxa);
-        persist(geos);
-        persist(locs);
-        persist(gtps);
-        persist(lithoStrats);
-        //commitTx();
-        
-        frame.setProcess(++createStep);
         
         ////////////////////////////////
         // picklists
@@ -1406,8 +1407,6 @@ public class BuildSampleDatabase
         persist(dataObjects);
         dataObjects.clear();
         
-        BldrPickList colMethods = createPickLists();
-        
         //startTx();
         persist(dataObjects);
         //commitTx();
@@ -1418,20 +1417,25 @@ public class BuildSampleDatabase
         ////////////////////////////////
         // localities
         ////////////////////////////////
+        List<Locality> localities = new Vector<Locality>();
+        
+        
         String POINT = "Point";
         String LINE  = "Line";
         String RECT  = "Rectangle";
         
         log.info("Creating localities");
         Locality forestStream = createLocality("Unnamed forest stream pond", (Geography)geos.get(12));
+        localities.add(forestStream);
         forestStream.setLatLongType(POINT);
         forestStream.setOriginalLatLongUnit(0);
         forestStream.setLat1text("38.925467 deg N");
         forestStream.setLatitude1(new BigDecimal(38.925467));
         forestStream.setLong1text("94.984867 deg W");
         forestStream.setLongitude1(new BigDecimal(-94.984867));
-
+        
         Locality lake   = createLocality("Deep, dark lake pond", (Geography)geos.get(17));
+        localities.add(lake);
         lake.setLatLongType(RECT);
         lake.setOriginalLatLongUnit(1);
         lake.setLat1text("41.548842 deg N");
@@ -1445,6 +1449,7 @@ public class BuildSampleDatabase
         lake.setLongitude2(new BigDecimal(-100.403180));
         
         Locality farmpond = createLocality("Shoal Creek at Schermerhorn Park, S of Galena at Rt. 26", (Geography)geos.get(11));
+        localities.add(farmpond);
         farmpond.setLatLongType(LINE);
         farmpond.setOriginalLatLongUnit(2);
         farmpond.setLat1text("41.642187 deg N");
@@ -1469,17 +1474,18 @@ public class BuildSampleDatabase
         // agents and addresses
         ////////////////////////////////
         log.info("Creating agents and addresses");
+        List<Agent>    agents      = new Vector<Agent>();
 
         Agent johnByrn = createAgent("Mr.", "John", "D", "Byrn", "jb", "jb@net.edu");
-        if (!lastName.equals("Smith")) agents.add(createAgent("Mr.", "David", "D", "Smith", "ds", "ds@whitehouse.gov"));
-        if (!lastName.equals("Burk")) agents.add(createAgent("Mr.", "Robert", "H", "Burk", "rb", "beach@net.edu"));
-        if (!lastName.equals("Johnson")) agents.add(createAgent("Mrs.", "Margaret", "H", "Johnson", "jm", "jm@net.edu"));
-        if (!lastName.equals("Spencer")) agents.add(createAgent("Mr.", "Kip", "C", "Spencer", "kcs", "rods@ku.edu"));
-        if (!lastName.equals("Byrn")) agents.add(johnByrn);
-        if (!lastName.equals("Thompson")) agents.add(createAgent("Sir", "Dudley", "X", "Thompson", "dxt", ""));
-        if (!lastName.equals("Campbell")) agents.add(createAgent("Mr.", "Joe", "A", "Campbell", "jb", ""));
-        if (!lastName.equals("Tester")) agents.add(createAgent("Mr.", "Joe", "A", "Tester", "jb", ""));
-        if (!lastName.equals("Smyth")) agents.add(createAgent("Mr.", "Mitch", "A", "Smyth", "mas", "mas@ku.edu"));
+        agents.add(createAgent("Mr.", "David", "D", "Smith", "ds", "ds@whitehouse.gov"));
+        agents.add(createAgent("Mr.", "Robert", "H", "Burk", "rb", "beach@net.edu"));
+        agents.add(createAgent("Mrs.", "Margaret", "H", "Johnson", "jm", "jm@net.edu"));
+        agents.add(createAgent("Mr.", "Kip", "C", "Spencer", "kcs", "rods@ku.edu"));
+        agents.add(johnByrn);
+        agents.add(createAgent("Sir", "Dudley", "X", "Thompson", "dxt", ""));
+        agents.add(createAgent("Mr.", "Joe", "A", "Campbell", "jb", ""));
+        agents.add(createAgent("Mr.", "Joe", "A", "Tester", "jb", ""));
+        agents.add(createAgent("Mr.", "Mitch", "A", "Smyth", "mas", "mas@ku.edu"));
         agents.add(userAgent);
         
         Agent ku = new Agent();
@@ -1765,7 +1771,8 @@ public class BuildSampleDatabase
         ////////////////////////////////
         log.info("Creating accessions and accession agents");
         calendar.set(2006, 10, 27, 23, 59, 59);
-        Accession acc1 = createAccession("Gift", "Complete", "2006-IC-001", DateFormat.getInstance().format(calendar.getTime()), calendar, calendar);
+        int yr = 2000 + (int)(rand.nextDouble() * 7);
+        Accession acc1 = createAccession("Gift", "Complete", yr + "-IC-001", DateFormat.getInstance().format(calendar.getTime()), calendar, calendar);
         acc1.setText1("Ichthyology");
         acc1.setRepositoryAgreement(repoAg);
         
@@ -1779,7 +1786,7 @@ public class BuildSampleDatabase
         accAgents.add(createAccessionAgent("Receiver", receiver, acc1, null));
         accAgents.add(createAccessionAgent("Reviewer", reviewer, acc1, null));
 
-        Accession acc2 = createAccession("Field Work", "In Process", "2006-IC-002", DateFormat.getInstance().format(calendar.getTime()), calendar, calendar);
+        Accession acc2 = createAccession("Field Work", "In Process", yr + "-IC-002", DateFormat.getInstance().format(calendar.getTime()), calendar, calendar);
         
         Agent donor2 =    agents.get(5);
         Agent receiver2 = agents.get(3);
@@ -1818,7 +1825,8 @@ public class BuildSampleDatabase
         List<LoanPreparation>         loanPhysObjs = new Vector<LoanPreparation>();
         Vector<LoanReturnPreparation> returns      = new Vector<LoanReturnPreparation>();
         
-        Loan closedLoan = createLoan("2006-001", loanDate1, currentDueDate1, originalDueDate1, 
+        //yr = 2000 + (int)(rand.nextDouble() * 7);
+        Loan closedLoan = createLoan(yr + "-001", loanDate1, currentDueDate1, originalDueDate1, 
                                      dateClosed1, Loan.LOAN, Loan.CLOSED, null);
         for (int i = 0; i < 7; ++i)
         {
@@ -1854,7 +1862,7 @@ public class BuildSampleDatabase
         currentDueDate2.set(2006, 5, 24);
         
         Calendar originalDueDate2 = currentDueDate2;
-        Loan overdueLoan = createLoan("2006-002", loanDate2, currentDueDate2, originalDueDate2,  
+        Loan overdueLoan = createLoan(yr + "-001", loanDate2, currentDueDate2, originalDueDate2,  
                                       null, Loan.LOAN, Loan.OPEN, null);
         for (int i = 0; i < 5; ++i)
         {
@@ -1881,7 +1889,7 @@ public class BuildSampleDatabase
         Calendar originalDueDate3 = Calendar.getInstance();
         originalDueDate3.set(2006, 9, 21);
         
-        Loan loan3 = createLoan("2006-003", loanDate3, currentDueDate3, originalDueDate3,  
+        Loan loan3 = createLoan(yr + "-003", loanDate3, currentDueDate3, originalDueDate3,  
                                       null, Loan.LOAN, Loan.OPEN, null);
         Vector<LoanPreparation> newLoanLPOs = new Vector<LoanPreparation>();
         int lpoCountInNewLoan = 0;
@@ -1951,11 +1959,11 @@ public class BuildSampleDatabase
         
         Calendar ship1Date = Calendar.getInstance();
         ship1Date.set(2004, 03, 19);
-        Shipment loan1Ship = createShipment(ship1Date, "2006-001", "USPS", (short) 1, "1.25 kg", null, agents.get(0), agents.get(4), agents.get(0));
+        Shipment loan1Ship = createShipment(ship1Date, yr + "-001", "USPS", (short) 1, "1.25 kg", null, agents.get(0), agents.get(4), agents.get(0));
         
         Calendar ship2Date = Calendar.getInstance();
         ship2Date.set(2005, 11, 24);
-        Shipment loan2Ship = createShipment(ship2Date, "2006-002", "FedEx", (short) 2, "6.0 kg", null, agents.get(3), agents.get(4), agents.get(3));
+        Shipment loan2Ship = createShipment(ship2Date, yr + "-002", "FedEx", (short) 2, "6.0 kg", null, agents.get(3), agents.get(4), agents.get(3));
         
         //closedLoan.setShipment(loan1Ship);
         //overdueLoan.setShipment(loan2Ship);
@@ -2263,13 +2271,109 @@ public class BuildSampleDatabase
         
         frame.setProcess(++createStep);
         
+        if (true)
+        {
+            List<Taxon> taxa2 = HibernateUtil.getCurrentSession().createQuery("SELECT t FROM Taxon t WHERE t.name = 'Ammocrypta'").list();
+            List<ReferenceWork> rwList = new Vector<ReferenceWork>();
+
+            startTx();
+            rwList.addAll(journal.getReferenceWorks());
+            
+            TaxonCitation taxonCitation = new TaxonCitation();
+            taxonCitation.initialize();
+            Taxon ammocrypta = (Taxon)taxa2.get(0);
+            taxonCitation.setTaxon(ammocrypta);
+            taxonCitation.setReferenceWork(rwList.get(0));
+            rwList.get(0).addTaxonCitations(taxonCitation);
+            ammocrypta.getTaxonCitations().add(taxonCitation);
+            dataObjects.add(taxonCitation);
+            persist(taxonCitation);
+            
+            Locality locality = (Locality)localities.get(0);
+            LocalityCitation localityCitation = new LocalityCitation();
+            localityCitation.initialize();
+            localityCitation.setLocality(locality);
+            locality.getLocalityCitations().add(localityCitation);
+            localityCitation.setReferenceWork(rwList.get(1));
+            rwList.get(1).addLocalityCitations(localityCitation);
+            dataObjects.add(localityCitation);
+            persist(localityCitation);
+            commitTx();
+        }
+        frame.setProcess(++createStep);
+
+        return null;
+    }
+    
+    /**
+     * Creates a single discipline collection.
+     * @param collTypeName the name of the Collection Type to use
+     * @param disciplineName the discipline name
+     * @return the entire list of DB object to be persisted
+     */
+    public void createSingleDiscipline(final Discipline discipline)
+    {
+        System.out.println("Creating single discipline database: " + discipline.getTitle());
+        
+        int createStep = 0;
+        
+        frame.setProcess(0, 2);
+        
+        frame.setProcess(++createStep);
+
+        ////////////////////////////////
+        // Create the really high-level stuff
+        ////////////////////////////////
+        String           username         = initPrefs.getProperty("initializer.username", "rods");
+        String           title            = initPrefs.getProperty("useragent.title",    "Mr.");
+        String           firstName        = initPrefs.getProperty("useragent.firstname", "Rod");
+        String           lastName         = initPrefs.getProperty("useragent.lastname", "Spears");
+        String           midInit          = initPrefs.getProperty("useragent.midinit", "C");
+        String           abbrev           = initPrefs.getProperty("useragent.abbrev", "rs");
+        String           email            = initPrefs.getProperty("useragent.email", "rods@ku.edu");
+        String           userType         = initPrefs.getProperty("useragent.usertype", "CollectionManager");
+        
+        System.out.println("----- User Agent -----");
+        System.out.println("Userame:   "+username);
+        System.out.println("Title:     "+title);
+        System.out.println("FirstName: "+firstName);
+        System.out.println("LastName:  "+lastName);
+        System.out.println("MidInit:   "+midInit);
+        System.out.println("Abbrev:    "+abbrev);
+        System.out.println("Email:     "+email);
+        System.out.println("UserType:  "+userType);
+        
+        Institution    institution    = createInstitution("Natural History Museum");
+        
+        Agent            userAgent        = createAgent(title, firstName, midInit, lastName, abbrev, email);
+        userAgent.setCollectionMemberId(0);
+        UserGroup        userGroup        = createUserGroup(discipline.getTitle());
+        
+        
+        startTx();
+        persist(userGroup);
+        persist(institution);
+        
+        SpecifyUser      user             = createSpecifyUser(username, email, (short) 0, userGroup, userType);
+        persist(user);
+        
+        commitTx();
+        
+        frame.setProcess(++createStep);
+        
+        createFishCollection(Discipline.getByTitle("Fish"), institution, user, userAgent);
+        
+        frame.setOverall(steps++);
         createSingleBotanyCollection(Discipline.getByTitle("Fish"), institution, user, userAgent);
         
         // done
         log.info("Done creating single discipline database: " + discipline.getTitle());
-        return dataObjects;
     }
 
+    /**
+     * @param def
+     * @return
+     */
     public static List<Object> createSimpleLithoStrat(LithoStratTreeDef def)
     {
         log.info("createSimpleLithoStrat " + def.getName());
@@ -2571,6 +2675,11 @@ public class BuildSampleDatabase
     }
 
 
+    /**
+     * @param taxonTreeDef
+     * @param doShallow
+     * @return
+     */
     public static List<Object> createSimpleFishTaxonTree(final TaxonTreeDef taxonTreeDef, 
                                                          final boolean      doShallow)
     {
@@ -2615,7 +2724,7 @@ public class BuildSampleDatabase
         }
 
 
-        Taxon life            = createTaxon(taxonTreeDef, null,            "Life",            TaxonTreeDef.TAXONOMY_ROOT);
+        Taxon life            = createTaxon(taxonTreeDef, null, "Life", TaxonTreeDef.TAXONOMY_ROOT);
         
         Taxon animalia        = null;
         Taxon chordata        = null;
@@ -2751,6 +2860,10 @@ public class BuildSampleDatabase
         return newObjs;
     }
     
+    /**
+     * @param taxonTreeDef
+     * @return
+     */
     public static List<Object> createSimpleBotanyTaxonTree(final TaxonTreeDef taxonTreeDef)
     {
         log.info("createSimpleBotanyTaxonTree " + taxonTreeDef.getName());
@@ -3320,6 +3433,31 @@ public class BuildSampleDatabase
         }
     }
     
+    protected void persistDataObjects(final List<?> dataObjects)
+    {
+        log.info("Persisting in-memory objects to DB");
+        
+
+        frame.setProcess(0);
+        frame.getProcessProgress().setIndeterminate(true);
+        frame.getProcessProgress().setString("");
+        frame.setDesc("Getting Session...");
+        frame.setOverall(steps++);
+        
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            public void run()
+            {
+                frame.setDesc("Saving data...");
+                frame.setOverall(steps++);
+            }
+        });
+        
+        startTx();
+        persist(dataObjects);
+        commitTx();
+    }
+    
     /** 
      * Drops, Creates and Builds the Database.
      * 
@@ -3339,7 +3477,7 @@ public class BuildSampleDatabase
         frame.setSize(new Dimension(500,125));
         UIHelper.centerAndShow(frame);
         frame.setProcessPercent(true);
-        frame.setOverall(0, 5+(doingDerby ? 1 : 0));
+        frame.setOverall(0, 8+(doingDerby ? 1 : 0));
         frame.getCloseBtn().setVisible(false);
 
         System.setProperty(AppPreferences.factoryName,          "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");    // Needed by AppReferences
@@ -3464,70 +3602,14 @@ public class BuildSampleDatabase
                     // save it all to the DB
                     setSession(HibernateUtil.getCurrentSession());
 
-                    List<Object> dataObjects = createSingleDiscipline(discipline);
+                    createSingleDiscipline(discipline);
 
-                    log.info("Persisting in-memory objects to DB");
-                    
-
-                    frame.setProcess(0);
-                    frame.getProcessProgress().setIndeterminate(true);
-                    frame.getProcessProgress().setString("");
-                    frame.setDesc("Getting Session...");
-                    frame.setOverall(steps++);
-                    
-                    SwingUtilities.invokeLater(new Runnable()
-                    {
-                        public void run()
-                        {
-                            frame.setDesc("Saving data...");
-                            frame.setOverall(steps++);
-                        }
-                    });
-                    
-                    startTx();
-                    //persist(dataObjects.get(0)); // just persist the CollectionType object
-                    persist(dataObjects);
-                    commitTx();
+                    attachMgr.cleanup();
                     
 
                     frame.setDesc("Done Saving data...");
                     frame.setOverall(steps++);
 
-                    
-                    if (true)
-                    {
-                        List<?> journal    = HibernateUtil.getCurrentSession().createCriteria(Journal.class).list();
-                        List<?> taxa       = HibernateUtil.getCurrentSession().createQuery("SELECT t FROM Taxon t WHERE t.name = 'Ammocrypta'").list();
-                        List<?> localities = HibernateUtil.getCurrentSession().createCriteria(Locality.class).list();
-                        List<ReferenceWork> rwList = new Vector<ReferenceWork>();
-
-                        startTx();
-                        rwList.addAll(((Journal)journal.get(0)).getReferenceWorks());
-                        
-                        TaxonCitation taxonCitation = new TaxonCitation();
-                        taxonCitation.initialize();
-                        Taxon ammocrypta = (Taxon)taxa.get(0);
-                        taxonCitation.setTaxon(ammocrypta);
-                        taxonCitation.setReferenceWork(rwList.get(0));
-                        rwList.get(0).addTaxonCitations(taxonCitation);
-                        ammocrypta.getTaxonCitations().add(taxonCitation);
-                        dataObjects.add(taxonCitation);
-                        persist(taxonCitation);
-                        
-                        Locality locality = (Locality)localities.get(0);
-                        LocalityCitation localityCitation = new LocalityCitation();
-                        localityCitation.initialize();
-                        localityCitation.setLocality(locality);
-                        locality.getLocalityCitations().add(localityCitation);
-                        localityCitation.setReferenceWork(rwList.get(1));
-                        rwList.get(1).addLocalityCitations(localityCitation);
-                        dataObjects.add(localityCitation);
-                        persist(localityCitation);
-                        commitTx();
-                    }
-                    
-                    attachMgr.cleanup();
-                    
 
                     frame.setDesc("Copying Preferences...");
                     frame.setOverall(steps++);
