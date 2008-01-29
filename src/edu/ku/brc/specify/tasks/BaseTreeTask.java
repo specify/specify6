@@ -111,6 +111,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
 	{
 		super(name,title);
         CommandDispatcher.register(DataEntryTask.DATA_ENTRY, this);
+        CommandDispatcher.register(APP_CMD_TYPE, this);
 	}
 
 	/* (non-Javadoc)
@@ -123,10 +124,10 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         {
             isInitialized = true;
 
-            currentDef = getCurrentTreeDef();
-            navBoxes = Collections.emptyList();
+            currentDef   = getCurrentTreeDef();
+            navBoxes     = Collections.emptyList();
             toolBarItems = Collections.emptyList();
-            menuItems = createMenus();
+            menuItems    = createMenus();
 
             if (commandTypeString != null)
             {
@@ -401,6 +402,9 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                 // should we do anything here?
             }
             
+        } else if (cmdAction.isType(APP_CMD_TYPE) && cmdAction.isAction(APP_RESTART_ACT))
+        {
+            currentDef = getCurrentTreeDef();
         }
     }
     
