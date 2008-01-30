@@ -290,7 +290,7 @@ public class QueryFieldPanel extends JPanel
     /**
      * @return
      */
-    public String getCriteriaFormula()
+    public String getCriteriaFormula(final TableAbbreviator ta)
     {
         String criteriaStr = criteria.getText();
         
@@ -328,7 +328,7 @@ public class QueryFieldPanel extends JPanel
             }
             if (criteriaStr.length() > 0)
             {
-                str.append(fieldQRI.getSQLFldName() + " ");
+                str.append(fieldQRI.getSQLFldSpec(ta) + " ");
                 if (operStr.equals("="))
                 {
                     str.append(isNotCheckbox.isSelected() ? "!" : "");

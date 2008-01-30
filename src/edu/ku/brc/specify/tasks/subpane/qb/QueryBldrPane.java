@@ -111,6 +111,8 @@ public class QueryBldrPane extends BaseSubPane
     protected int                                            listCellHeight;
 
     protected TableTree                                      tableTree;
+    protected Hashtable<String, TableTree>                   tableTreeHash;    
+    protected TableAbbreviator                               tableAbbreviator;
     protected boolean                                        processingLists  = false;
 
     protected RolloverCommand                                queryNavBtn      = null;
@@ -133,6 +135,8 @@ public class QueryBldrPane extends BaseSubPane
             fieldsToSkipHash.put(nameStr, true);
         }
 
+        tableAbbreviator = new TableAbbreviator();
+        
         tableTree = readTables();
 
         createUI();
@@ -193,7 +197,6 @@ public class QueryBldrPane extends BaseSubPane
         {
             public void valueChanged(ListSelectionEvent e)
             {
-                // fieldList.setSelectedIndex(-1);
                 if (!e.getValueIsAdjusting())
                 {
                     nodeList.clear();
@@ -382,12 +385,6 @@ public class QueryBldrPane extends BaseSubPane
         if (queryFieldItems.size() > 0)
         {
             StringBuilder fieldsStr = new StringBuilder();
-            if (!distinct)
-            {
-                fieldsStr.append(rootTable.getTableTree().getAbbrev());
-                fieldsStr.append(".");
-                fieldsStr.append(rootTable.getTableInfo().getIdFieldName());
-            }
             Vector<BaseQRI> list = new Vector<BaseQRI>();
             StringBuilder criteriaStr = new StringBuilder();
             StringBuilder orderStr = new StringBuilder();
@@ -401,26 +398,12 @@ public class QueryBldrPane extends BaseSubPane
 
                 if (qfi.isForDisplay())
                 {
-                    if (fieldsStr.length() > 0)
-                        fieldsStr.append(", ");
-                    fieldsStr.append(qfi.getFieldQRI().getSQLFldSpec());
                     fldPosition++;
                 }
                 
-                FieldQRI pqri = qfi.getFieldQRI();
                 if (debug)
                 {
                     System.out.println("\nNode: " + qfi.getFieldName());
-                }
-                String criteria = qfi.getCriteriaFormula();
-                boolean isDisplayOnly = StringUtils.isEmpty(criteria);
-                if (!isDisplayOnly)
-                {
-                    if (!isDisplayOnly && criteriaStr.length() > 0)
-                    {
-                        criteriaStr.append(" AND ");
-                    }
-                    criteriaStr.append(criteria);
                 }
 
                 String orderSpec = qfi.getOrderSpec(fldPosition);
@@ -437,8 +420,9 @@ public class QueryBldrPane extends BaseSubPane
                 // the current node up to the top
                 // basically we are creating a path of nodes
                 // to determine if we need to create a new node in the tree
-                TableTree parent = qfi.getFieldQRI().getTableTree();
                 list.clear();
+                FieldQRI pqri = qfi.getFieldQRI();
+                TableTree parent = pqri.getTableTree();
                 list.insertElementAt(pqri, 0);
                 while (parent != tableTree)
                 {
@@ -500,17 +484,48 @@ public class QueryBldrPane extends BaseSubPane
             }
             printTree(root, 0);
 
+            StringBuilder fromStr = new StringBuilder();
+            tableAbbreviator.clear();
+            processTree(root, fromStr, 0);
+            
             StringBuilder sqlStr = new StringBuilder();
             sqlStr.append("select ");
             if (distinct)
             {
                 sqlStr.append(" distinct ");
             }
+            if (!distinct)
+            {
+                fieldsStr.append(tableAbbreviator.getAbbreviation(rootTable.getTableTree()));
+                fieldsStr.append(".");
+                fieldsStr.append(rootTable.getTableInfo().getIdFieldName());
+            }
+            for (QueryFieldPanel qfi : queryFieldItems)
+            {
+                if (qfi.isForDisplay())
+                {
+                    if (fieldsStr.length() > 0)
+                        fieldsStr.append(", ");
+                    fieldsStr.append(qfi.getFieldQRI().getSQLFldSpec(tableAbbreviator));
+                }
+                String criteria = qfi.getCriteriaFormula(tableAbbreviator);
+                boolean isDisplayOnly = StringUtils.isEmpty(criteria);
+                if (!isDisplayOnly)
+                {
+                    if (!isDisplayOnly && criteriaStr.length() > 0)
+                    {
+                        criteriaStr.append(" AND ");
+                    }
+                    criteriaStr.append(criteria);
+                }
+           }
             sqlStr.append(fieldsStr);
+            
+            
             sqlStr.append(" from ");
-
-            processTree(root, sqlStr, 0);
-
+            sqlStr.append(fromStr);
+            
+            
             if (criteriaStr.length() > 0)
             {
                 sqlStr.append(" where ");
@@ -548,7 +563,8 @@ public class QueryBldrPane extends BaseSubPane
                 {
                     sqlStr.append(tt.getName());
                     sqlStr.append(' ');
-                    sqlStr.append(tt.getAbbrev());
+                    //sqlStr.append(tt.getAbbrev());
+                    sqlStr.append(tableAbbreviator.getAbbreviation(tt));
                     sqlStr.append(' ');
 
                 }
@@ -557,11 +573,13 @@ public class QueryBldrPane extends BaseSubPane
                     // really should only use left join when necessary...
                     sqlStr.append(" left join ");
 
-                    sqlStr.append(tt.getParent().getAbbrev());
+                    //sqlStr.append(tt.getParent().getAbbrev());
+                    sqlStr.append(tableAbbreviator.getAbbreviation(tt.getParent()));
                     sqlStr.append('.');
                     sqlStr.append(tt.getField());
                     sqlStr.append(' ');
-                    sqlStr.append(tt.getAbbrev());
+                    //sqlStr.append(tt.getAbbrev());
+                    sqlStr.append(tableAbbreviator.getAbbreviation(tt));
                     sqlStr.append(' ');
                 }
             }
@@ -753,8 +771,11 @@ public class QueryBldrPane extends BaseSubPane
             }
             for (int k=0; k<tblQRI.getTableTree().getKids(); k++)
             {
-                if (!tblQRI.getTableTree().getKid(k).isAlias())
-                    model.addElement(tblQRI.getTableTree().getKid(k).getTableQRI());
+                if (tblQRI.getTableTree().getKid(k).isAlias())
+                {
+                    fixAliases(tblQRI.getTableTree().getKid(k), tableTreeHash);
+                }
+                model.addElement(tblQRI.getTableTree().getKid(k).getTableQRI());
             }
         }
     }
@@ -1021,33 +1042,6 @@ public class QueryBldrPane extends BaseSubPane
         }
     }
 
-    /**
-     * @param parent
-     * @param treeNodes
-     */
-    protected void processForAliases(final Element parent, final Vector<TableTree> treeNodes)
-    {
-        @SuppressWarnings("unused")
-        TableTree treeNode = null;
-        String nameStr = XMLHelper.getAttr(parent, "name", null);
-        for (TableTree tt : treeNodes)
-        {
-            if (tt.getName().equals(nameStr))
-            {
-                treeNode = tt;
-                break;
-            }
-        }
-
-        // if (treeNode != null)
-        // {
-        for (Object obj : parent.selectNodes("alias"))
-        {
-            Element kidElement = (Element) obj;
-            processForAliases(kidElement, treeNodes);
-        }
-        // }
-    }
 
     /**
      * @param parent
@@ -1158,13 +1152,13 @@ public class QueryBldrPane extends BaseSubPane
                 log.error("Couldn't find [" + tbl.getName() + "] in the hash.");
             }
         }
-        else
-        {
-            for (int k = 0; k < tbl.getKids(); k++)
-            {
-                fixAliases(tbl.getKid(k), hash);
-            }
-        }
+        //else
+        //{
+        //    for (int k = 0; k < tbl.getKids(); k++)
+        //    {
+        //        fixAliases(tbl.getKid(k), hash);
+        //    }
+        //}
     }
 
     /**
@@ -1183,18 +1177,18 @@ public class QueryBldrPane extends BaseSubPane
                 processForTables(tableElement, treeRoot);
             }
 
-            Hashtable<String, TableTree> hash = new Hashtable<String, TableTree>();
+            tableTreeHash = new Hashtable<String, TableTree>();
             for (int t=0; t<treeRoot.getKids(); t++)
             {
                 TableTree tt = treeRoot.getKid(t);
-                hash.put(tt.getName(), tt);
+                tableTreeHash.put(tt.getName(), tt);
                 log.debug("Adding[" + tt.getName() + "] to hash");
             }
 
-            for (int t=0; t<treeRoot.getKids(); t++)
-            {
-                fixAliases(treeRoot.getKid(t), hash);
-            }
+            //for (int t=0; t<treeRoot.getKids(); t++)
+            //{
+            //    fixAliases(treeRoot.getKid(t), tableTreeHash);
+            //}
 
         }
         catch (Exception ex)

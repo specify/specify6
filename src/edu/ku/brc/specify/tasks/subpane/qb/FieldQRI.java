@@ -68,14 +68,9 @@ public class FieldQRI extends BaseQRI
         return null;
     }
     
-    public String getSQLFldSpec()
+    public String getSQLFldSpec(final TableAbbreviator ta)
     {
-        return table.getTableTree().getAbbrev() + "." + getFieldName();
-    }
-    
-    public String getSQLFldName()
-    {
-        return getSQLFldSpec();
+        return ta.getAbbreviation(table.getTableTree()) + "." + getFieldName();
     }
     
     public Class<?> getDataClass()

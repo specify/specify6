@@ -62,8 +62,7 @@ public class TreeLevelQRI extends FieldQRI
         return table.getTableTree().getTableInfo();
     }
     
-    @Override
-    public String getSQLFldName()
+    protected String getSQLFldName()
     {
         StringBuilder result = new StringBuilder("(select treelevel.name from ");
         result.append(getTableInfo().getClassObj().getSimpleName());
@@ -76,7 +75,7 @@ public class TreeLevelQRI extends FieldQRI
     }
     
     @Override
-    public String getSQLFldSpec()
+    public String getSQLFldSpec(final TableAbbreviator ta)
     {
         return getSQLFldName() + " as " + getFieldName();
     }

@@ -11,11 +11,7 @@ package edu.ku.brc.specify.tasks.subpane.qb;
 
 import java.util.Vector;
 
-import org.apache.commons.lang.StringUtils;
-
 import edu.ku.brc.dbsupport.DBFieldInfo;
-import edu.ku.brc.dbsupport.DBTableInfo;
-import edu.ku.brc.ui.UIHelper;
 
 /**
  * @author rod
@@ -25,43 +21,13 @@ import edu.ku.brc.ui.UIHelper;
  * Oct 18, 2007
  *
  */
-public class TableQRI extends BaseQRI
+public class TableQRI extends ExpandableQRI
 {
-    protected DBTableInfo ti;
-    protected Vector<FieldQRI> fields = new Vector<FieldQRI>();
-    
-    
     public TableQRI(final TableTree tableTree)
     {
         super(tableTree);
+    }
         
-        this.ti  = tableTree.getTableInfo();
-        iconName = ti.getClassObj().getSimpleName();
-        title    = ti.getTitle();
-        if (StringUtils.isEmpty(title))
-        {
-            title    = UIHelper.makeNamePretty(iconName);
-        }
-    }
-    
-    public DBTableInfo getTableInfo()
-    {
-        return ti;
-    }
-
-    /**
-     * @return the kids
-     */
-    public int getFields()
-    {
-        return fields.size();
-    }
-    
-    public FieldQRI getField(int f)
-    {
-        return fields.get(f);
-    }
-    
     public void addField(final DBFieldInfo fieldInfo)
     {
         fields.add(new FieldQRI(this, fieldInfo));
