@@ -70,8 +70,24 @@ public class TreeLevelQRI extends FieldQRI
         result.append(ta.getAbbreviation(table.getTableTree()));
         result.append(".nodeNumber between treelevel.nodeNumber and treelevel.highestChildNodeNumber and treelevel.rankId = ");
         result.append(String.valueOf(rankId));
+        String treeDef = getTreeDefIdFldName();
+        result.append(" and treelevel.");
+        result.append(treeDef);
+        result.append("=");
+        result.append(ta.getAbbreviation(table.getTableTree()));
+        result.append(".");
+        result.append(treeDef);
         result.append(")");
         return result.toString();
+    }
+    
+    protected String getTreeDefIdFldName()
+    {
+        //sql?
+        //return getTableInfo().getClassObj().getSimpleName() + "treeDefId";
+        
+        //hql
+        return "definition";
     }
     
     @Override
