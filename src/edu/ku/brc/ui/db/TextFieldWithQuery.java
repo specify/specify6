@@ -505,7 +505,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQueryListener#exectionDone(edu.ku.brc.dbsupport.CustomQueryIFace)
      */
-    @Override
+    //@Override
     public void exectionDone(final CustomQueryIFace customQuery)
     {
         if (isDoingCount)
@@ -534,7 +534,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQueryListener#executionError(edu.ku.brc.dbsupport.CustomQueryIFace)
      */
-    @Override
+    //@Override
     public void executionError(final CustomQueryIFace customQuery)
     {
         // TODO Auto-generated method stub
