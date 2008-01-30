@@ -87,6 +87,7 @@ public class RepositoryAgreement extends DataModelObjBase implements AttachmentO
     protected Agent                       originator;
     protected Set<RepositoryAgreementAttachment> repositoryAgreementAttachments;
     protected AddressOfRecord             addressOfRecord;
+    protected Division                    division;
 
     // Constructors
 
@@ -128,6 +129,7 @@ public class RepositoryAgreement extends DataModelObjBase implements AttachmentO
         repositoryAgreementAttachments    = new HashSet<RepositoryAgreementAttachment>();
         originator                        = null;
         addressOfRecord                   = null;
+        division                          = null;
     }
     // End Initializer
 
@@ -408,6 +410,24 @@ public class RepositoryAgreement extends DataModelObjBase implements AttachmentO
     {
         this.addressOfRecord = addressOfRecord;
     }
+    /**
+     * @return the division
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "DivisionID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Division getDivision()
+    {
+        return division;
+    }
+
+    /**
+     * @param division the division to set
+     */
+    public void setDivision(Division division)
+    {
+        this.division = division;
+    }
+    
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()

@@ -1207,7 +1207,8 @@ public class DataBuilder
 
     //-----------------------------------------------------------
 
-    public static Accession createAccession(final String type,
+    public static Accession createAccession(final Division division,
+                                            final String type,
                                             final String status,
                                             final String number,
                                             final String verbatimDate,
@@ -1216,6 +1217,7 @@ public class DataBuilder
     {
         Accession accession = new Accession();
         accession.initialize();
+        accession.setDivision(division);
         accession.setAccessionNumber(number);
         accession.setVerbatimDate(verbatimDate);
         accession.setDateAccessioned(dateAccessioned);
@@ -2076,7 +2078,8 @@ public class DataBuilder
         return referencework;
     }
 
-    public static RepositoryAgreement createRepositoryAgreement(final String number,
+    public static RepositoryAgreement createRepositoryAgreement(final Division division,
+                                                                final String number,
                                                                 final String status,
                                                                 final Calendar startDate,
                                                                 final Calendar endDate,
@@ -2085,6 +2088,7 @@ public class DataBuilder
     {
         RepositoryAgreement repositoryagreement = new RepositoryAgreement();
         repositoryagreement.initialize();
+        repositoryagreement.setDivision(division);
         repositoryagreement.setNumber(number);
         repositoryagreement.setDateReceived(dateReceived);
         repositoryagreement.setTimestampCreated(new Timestamp(System.currentTimeMillis()));

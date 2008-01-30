@@ -73,7 +73,6 @@ public class TypeSearchForQueryFactory
                     if (StringUtils.isNotBlank(name))
                     {
                         hash.put(name, new TypeSearchInfo(XMLHelper.getAttr(tsElement, "tableid", -1),
-                                                          tsElement.attributeValue("searchcol"),
                                                           tsElement.attributeValue("displaycols"),
                                                           tsElement.attributeValue("searchfield"),
                                                           tsElement.attributeValue("format"),
@@ -158,18 +157,12 @@ public class TypeSearchForQueryFactory
             DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(typeSearchInfo.getTableId());
             if (tblInfo != null)
             {
-                return new ValComboBoxFromQuery(tblInfo.getName(),
-                                                tblInfo.getIdColumnName(),
-                                                typeSearchInfo.getSearchColumn(),
+                return new ValComboBoxFromQuery(tblInfo,
+                                                typeSearchInfo.getSearchFieldName(),
                                                 typeSearchInfo.getDisplayColumns(),
-                                                tblInfo.getClassName(),
-                                                tblInfo.getIdFieldName(),
                                                 typeSearchInfo.getSearchFieldName(),
                                                 typeSearchInfo.getFormat(),
                                                 typeSearchInfo.getFormatName(),
-                                                tblInfo.getSearchDialog(),
-                                                tblInfo.getNewObjDialog(),
-                                                tblInfo.getTitle(),
                                                 btnOpts);
 
     
@@ -191,21 +184,18 @@ public class TypeSearchForQueryFactory
     class TypeSearchInfo
     {
         protected int    tableId;
-        protected String searchColumn;
         protected String displayColumns;
         protected String searchFieldName;
         protected String format;
         protected String formatName;
 
         public TypeSearchInfo(int    tableId,
-                              String searchColumn,
                               String displayColumns,
                               String searchFieldName,
                               String format,
                               String formatName)
         {
             this.tableId         = tableId;
-            this.searchColumn    = searchColumn;
             this.displayColumns  = displayColumns;
 
             this.searchFieldName = searchFieldName;
@@ -231,11 +221,6 @@ public class TypeSearchForQueryFactory
         public String getFormatName()
         {
             return formatName;
-        }
-
-        public String getSearchColumn()
-        {
-            return searchColumn;
         }
 
         public String getSearchFieldName()

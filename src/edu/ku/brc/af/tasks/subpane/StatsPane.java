@@ -39,12 +39,14 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.dbsupport.JPAQuery;
+import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.stats.BarChartPanel;
 import edu.ku.brc.stats.StatDataItem;
 import edu.ku.brc.stats.StatGroupTable;
 import edu.ku.brc.stats.StatGroupTableFromCustomQuery;
 import edu.ku.brc.stats.StatGroupTableFromQuery;
 import edu.ku.brc.stats.StatsMgr;
+import edu.ku.brc.ui.CommandAction;
 
 /**
  * A class that loads a page of statistics from an XML description
@@ -57,7 +59,7 @@ import edu.ku.brc.stats.StatsMgr;
 @SuppressWarnings("serial")
 public class StatsPane extends BaseSubPane
 {
-    protected enum QueryType {SQL, JPA, CUSTOM};
+    protected enum QueryType {SQL, JPA, CUSTOM}
     
     // Static Data Members
     private static final Logger log = Logger.getLogger(StatsPane.class);
@@ -117,6 +119,46 @@ public class StatsPane extends BaseSubPane
             log.error(ex);
         }
         return QueryType.SQL;
+    }
+    
+    protected CommandAction createCommandActionFromElement(final Element command)
+    {
+        CommandAction cmdAction = null;
+        if (command != null)
+        {
+            String typeStr   = getAttr(command, "type",  null);
+            String actionStr = getAttr(command, "action", null);
+            String className = getAttr(command, "class",  null);
+            String data      = getAttr(command, "data",  null);
+            
+            
+            
+            if (StringUtils.isNotEmpty(typeStr) && 
+                StringUtils.isNotEmpty(actionStr))
+            {
+                Class<? extends DataModelObjBase> classObj = null;
+                
+                if (StringUtils.isNotEmpty(className))
+                {
+                    try
+                    {
+                        classObj = Class.forName(className).asSubclass(DataModelObjBase.class);
+                        
+                    } catch (Exception ex)
+                    {
+                        
+                    }
+                    if (classObj != null)
+                    {
+                        cmdAction = new CommandAction(typeStr, actionStr, classObj);
+                    }
+                } else
+                {
+                    cmdAction = new CommandAction(typeStr, actionStr, data);
+                }
+            }
+        }
+        return cmdAction;
     }
 
     /**
@@ -197,31 +239,54 @@ public class StatsPane extends BaseSubPane
 
                     } else // The default is "Box"
                     {
-                        int descCol = getAttr(boxElement, "desccol", -1);
-                        int valCol  = getAttr(boxElement, "valcol", -1);
+                        
+                        /*Vector<BoxColumnInfo> colInfo = new Vector<BoxColumnInfo>();
+                        for (Object colObj : boxElement.selectNodes("cols/col"))
+                        {
+                            Element colElement = (Element)colObj;
+                            
+                            BoxColumnInfo.Type colType = BoxColumnInfo.Type.valueOf(getAttr(colElement, "type", (String)null));
+                            
+                            colInfo.add(new BoxColumnInfo(getAttr(colElement, "col", -1),
+                                                          getAttr(colElement, "title", ""),
+                                                          colType));
+                            
+                        }*/
+                        
+                        int    descCol   = getAttr(boxElement, "desccol", -1);
+                        int    valCol    = getAttr(boxElement, "valcol", -1);
+                        String descTitle = getAttr(boxElement, "desctitle", " ");
+                        String title     = getAttr(boxElement, "title", " ");
+                        String noresults = getAttr(boxElement, "noresults", null);
                         
                         String[] colNames = null;
                         if (valCol != -1 && descCol == -1)
                         {
                             colNames = new String[] {getAttr(boxElement, "valtitle", " ")};
+                            
+                        } else if (descCol != -1 && valCol == -1 && StringUtils.isNotEmpty(descTitle))
+                        {
+                            colNames = new String[] {descTitle};
+                            
                         } else
                         {
-                            colNames = new String[] {getAttr(boxElement, "desctitle", " "),
+                            colNames = new String[] {descTitle,
                                                      getAttr(boxElement, "valtitle", " ")};
                         }
 
                         Element sqlElement = (Element)boxElement.selectSingleNode("sql");
-
                         if (valCol > -1 && sqlElement != null)
                         {
                             QueryType queryType = getQueryType(getAttr(sqlElement, "type", "sql"));
-                            String    linkStr   = null;
-                            int       colId     = -1;
-                            Element   link      = (Element)boxElement.selectSingleNode("link");
-                            if (link != null)
+                            
+                            Element       command   = (Element)boxElement.selectSingleNode("command");
+                            int           colId     = -1;
+                            CommandAction cmdAction = null;
+                            
+                            if (command != null)
                             {
-                                linkStr = link.getTextTrim();
-                                colId   = Integer.parseInt(link.attributeValue("colid"));
+                                colId     = getAttr(command, "colid", -1);
+                               cmdAction = createCommandActionFromElement(command);
                             }
                             
                             //System.out.println("["+queryType+"]");
@@ -231,38 +296,47 @@ public class StatsPane extends BaseSubPane
                                 {
                                     case SQL :
                                     {
-                                        StatGroupTableFromQuery group = new StatGroupTableFromQuery(boxElement.attributeValue("title"),
+                                        StatGroupTableFromQuery group = new StatGroupTableFromQuery(title,
                                                                                 colNames,
                                                                                 sqlElement.getText(),
                                                                                 descCol,
                                                                                 valCol,
                                                                                 useSeparatorTitles,
-                                                                                getAttr(boxElement, "noresults", null));
-                                        group.setLinkInfo(linkStr, colId);
+                                                                                noresults);
+                                        if (cmdAction != null)
+                                        {
+                                            group.setCommandAction(cmdAction, colId);
+                                        }
                                         comp = group;
                                         group.relayout();
                                     } break;
                                     
                                     case JPA :
                                     {
-                                        StatGroupTableFromCustomQuery group = new StatGroupTableFromCustomQuery(boxElement.attributeValue("title"),
+                                        StatGroupTableFromCustomQuery group = new StatGroupTableFromCustomQuery(title,
                                                                                         colNames,
                                                                                         new JPAQuery(sqlElement.getText()),
                                                                                         useSeparatorTitles,
-                                                                                        getAttr(boxElement, "noresults", null));
-                                        group.setLinkInfo(linkStr, colId);
+                                                                                        noresults);
+                                        if (cmdAction != null)
+                                        {
+                                            group.setCommandAction(cmdAction, colId);
+                                        }
                                         comp = group;
                                         group.relayout();
                                     } break;
                                     
                                     case CUSTOM :
                                     {
-                                        StatGroupTableFromCustomQuery group = new StatGroupTableFromCustomQuery(boxElement.attributeValue("title"),
+                                        StatGroupTableFromCustomQuery group = new StatGroupTableFromCustomQuery(title,
                                                                                                 colNames,
                                                                                                 sqlElement.getText(), // the name
                                                                                                 useSeparatorTitles,
-                                                                                                getAttr(boxElement, "noresults", null));
-                                        group.setLinkInfo(linkStr, colId);
+                                                                                                noresults);
+                                        if (cmdAction != null)
+                                        {
+                                            group.setCommandAction(cmdAction, colId);
+                                        }
                                         comp = group;
                                         group.relayout();
                                     } break;
@@ -280,21 +354,20 @@ public class StatsPane extends BaseSubPane
                         {
                             
                             List<?> items = boxElement.selectNodes("item");
-                            StatGroupTable groupTable = new StatGroupTable(boxElement.attributeValue("title"),
+                            StatGroupTable groupTable = new StatGroupTable(title,
                                                                            colNames,
                                                                            useSeparatorTitles, 
                                                                            items.size());
                             for (Object io : items)
                             {
                                 Element itemElement = (Element)io;
+                                String  itemTitle   = getAttr(itemElement, "title", "N/A");
 
-                                //log.debug("STAT["+getAttr(itemElement, "title", "N/A")+"]");
-
-                                Element link    = (Element)itemElement.selectSingleNode("link");
-                                String  linkStr = null;
-                                if (link != null)
+                                System.err.println(itemTitle);
+                                if (itemTitle.equals("Cataloged in Last 7 Days"))
                                 {
-                                    linkStr = link.getTextTrim();
+                                    int xx = 0;
+                                    xx++;
                                 }
                                 
                                 String  formatStr  = null;
@@ -303,8 +376,15 @@ public class StatsPane extends BaseSubPane
                                 {
                                     formatStr = formatNode.getTextTrim();
                                 }
+                                
+                                Element       command   = (Element)itemElement.selectSingleNode("command");
+                                CommandAction cmdAction = null;
+                                if (command != null)
+                                {
+                                    cmdAction = createCommandActionFromElement(command);
+                                }
 
-                                StatDataItem statItem       = new StatDataItem(itemElement.attributeValue("title"), linkStr, getAttr(itemElement, "useprogress", false));
+                                StatDataItem statItem       = new StatDataItem(itemTitle, cmdAction, getAttr(itemElement, "useprogress", false));
                                 Element      subSqlElement  = (Element)itemElement.selectSingleNode("sql");
                                 QueryType    queryType      = getQueryType(getAttr(subSqlElement, "type", "sql"));
                                 
@@ -345,7 +425,7 @@ public class StatsPane extends BaseSubPane
                                     {
                                         List<?> statements = itemElement.selectNodes("sql/statement");
                                         String sql = QueryAdjusterForDomain.getInstance().adjustSQL(((Element)statements.get(0)).getText());
-                                        statItem.addCustomQuery(new JPAQuery(sql), StatDataItem.VALUE_TYPE.Value, formatStr);
+                                        statItem.addCustomQuery(new JPAQuery(sql), formatStr);
 
                                     } break;
                                     
@@ -354,7 +434,7 @@ public class StatsPane extends BaseSubPane
                                         String subSqlName = getAttr(subSqlElement, "name", null);
                                         if (StringUtils.isNotEmpty(subSqlName))
                                         {
-                                            statItem.addCustomQuery(subSqlName, StatDataItem.VALUE_TYPE.Value, formatStr);
+                                            statItem.addCustomQuery(subSqlName, formatStr);
                                             
                                         } else
                                         {

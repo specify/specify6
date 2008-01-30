@@ -418,13 +418,13 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
     {
         for (UIFieldFormatterField f : fields)
         {
-            UIFieldFormatterField.FieldType type = f.getType();
-            if (type != UIFieldFormatterField.FieldType.alphanumeric ||
-                type != UIFieldFormatterField.FieldType.alpha)
+            UIFieldFormatterField.FieldType typ = f.getType();
+            if (typ != UIFieldFormatterField.FieldType.alphanumeric ||
+                typ != UIFieldFormatterField.FieldType.alpha)
             {
                 return true;
                 
-            } else if (type != UIFieldFormatterField.FieldType.numeric && !f.isIncrementer())
+            } else if (typ != UIFieldFormatterField.FieldType.numeric && !f.isIncrementer())
             {
                 return true;
             }

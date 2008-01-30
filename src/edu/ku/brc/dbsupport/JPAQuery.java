@@ -171,8 +171,8 @@ public class JPAQuery implements CustomQueryIFace
             } catch (JDBCConnectionException ex)
             {
                 HibernateUtil.rebuildSessionFactory();
-                Query query = session.createQuery(sqlStr);
-                resultsList = query.list();
+                Query localQuery = session.createQuery(sqlStr);
+                resultsList = localQuery.list();
             }
             
             inError = resultsList == null;

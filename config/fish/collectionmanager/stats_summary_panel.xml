@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <panel>
-
   <row>
       <box title="Specimen">
         <item title="Number of Specimens">
@@ -81,7 +80,7 @@
       <box title="Data Entry">
         <item title="Cataloged in Last 7 Days">
             <sql><statement><![CDATA[select count(*) from collectionobject where DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= TimestampCreated]]></statement></sql>
-            <link>CatalogedLast7DaysDetail</link>
+            <command type="Express_Search" action="Search" colid="" class="" data="CatalogedLast7DaysDetail"/>
         </item>
         <item title="Cataloged in Last 30 Days">
             <sql><statement><![CDATA[select count(*) from collectionobject where DATE_SUB(CURDATE(), INTERVAL 1 MONTH) <= TimestampCreated]]></statement></sql>
@@ -163,6 +162,7 @@
             </item>
         </box>
     </row>
+   
 </panel>
 
 <!--

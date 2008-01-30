@@ -91,6 +91,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
     protected Boolean                     yesNo1;
     protected Boolean                     yesNo2;
     
+    protected Division                    division;
     protected AddressOfRecord             addressOfRecord;
     protected RepositoryAgreement         repositoryAgreement;
     protected Set<CollectionObject>       collectionObjects;
@@ -137,6 +138,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
         remarks = null;
         yesNo1 = null;
         yesNo2 = null;
+        division                = null;
         addressOfRecord         = null;
         collectionObjects       = new HashSet<CollectionObject>();
         accessionAuthorizations = new HashSet<AccessionAuthorization>();
@@ -545,10 +547,29 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
         this.addressOfRecord = addressOfRecord;
     }
 
+    /**
+     * @return the division
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "DivisionID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Division getDivision()
+    {
+        return division;
+    }
+
+    /**
+     * @param division the division to set
+     */
+    public void setDivision(Division division)
+    {
+        this.division = division;
+    }
+    
     //---------------------------------------------------------------------------
     // Overrides DataModelObjBase
     //---------------------------------------------------------------------------
-    
+
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
      */

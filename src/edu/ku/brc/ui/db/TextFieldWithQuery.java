@@ -25,10 +25,9 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Formatter;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
@@ -51,8 +50,11 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.dbsupport.SQLExecutionListener;
-import edu.ku.brc.dbsupport.SQLExecutionProcessor;
+import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
+import edu.ku.brc.dbsupport.CustomQueryIFace;
+import edu.ku.brc.dbsupport.CustomQueryListener;
+import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.dbsupport.JPAQuery;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -65,7 +67,7 @@ import edu.ku.brc.ui.UIRegistry;
  * Dec 8, 2007
  *
  */
-public class TextFieldWithQuery extends JPanel implements SQLExecutionListener
+public class TextFieldWithQuery extends JPanel implements CustomQueryListener
 {
     protected static final Logger log = Logger.getLogger(TextFieldWithQuery.class);
             
@@ -81,14 +83,14 @@ public class TextFieldWithQuery extends JPanel implements SQLExecutionListener
     
     protected boolean              addAddItem     = false;
     
+    protected DBTableInfo          tableInfo;
     protected String               sql;
-    protected String               tableName;
     protected String               displayColumns;
-    protected String               idColumn;
     protected String               format;
     protected String               keyColumn;
     protected int                  numColumns          = -1;
     protected Object[]             values;
+    protected Hashtable<Integer, Object[]> duplicatehash = new Hashtable<Integer, Object[]>();
     
     protected List<ListSelectionListener> listSelectionListeners = new ArrayList<ListSelectionListener>();
     protected PopupMenuListener    popupMenuListener   = null;
@@ -96,44 +98,22 @@ public class TextFieldWithQuery extends JPanel implements SQLExecutionListener
     protected String               currentText         = "";
     protected boolean              hasNewText          = false;
     
-    /**
-     * Constructor
-     */
-    public TextFieldWithQuery(final String sql,
-                              final String format)
-    {
-        this(null, null, null, null, format);
-        this.sql = sql;
-    }
-
-    /**
-     * Constructor
-     */
-    public TextFieldWithQuery(final String tableName,
-                              final String idColumn,
-                              final String keyColumn,
-                              final String format)
-    {
-        this(tableName, idColumn, keyColumn, null, format);
-        
-    }
-
+    protected boolean              isDoingCount = false;
+    
     /**
      * Constructor.
      */
-    public TextFieldWithQuery(final String tableName,
-                              final String idColumn,
+    public TextFieldWithQuery(final DBTableInfo tableInfo,
                               final String keyColumn,
                               final String displayColumns,
                               final String format)
     {
         super();
-        this.tableName      = tableName;
+        this.tableInfo      = tableInfo;
         this.keyColumn      = keyColumn;
-        this.idColumn       = idColumn;
         this.displayColumns = displayColumns != null ? displayColumns : keyColumn;
         this.format         = format;
-
+        
         createUI();
     }
     
@@ -259,14 +239,14 @@ public class TextFieldWithQuery extends JPanel implements SQLExecutionListener
      */
     protected void cbxKeyReleased(KeyEvent ev)
     {
-        log.debug(ev.getKeyCode() +"  "+ KeyEvent.VK_TAB);
+        //log.debug(ev.getKeyCode() +"  "+ KeyEvent.VK_TAB);
         if (ev.getKeyCode() == KeyEvent.VK_TAB || ev.getKeyCode() == KeyEvent.VK_SHIFT)
         {
             return;
         }
         
         currentText = textField.getText();
-        log.debug("hasNewText "+hasNewText+"  "+currentText.length());
+        //log.debug("hasNewText "+hasNewText+"  "+currentText.length());
         if (currentText.length() == 0 || !hasNewText)
         {
             if (ev.getKeyCode() != JAutoCompComboBox.SEARCH_KEY &&
@@ -295,7 +275,7 @@ public class TextFieldWithQuery extends JPanel implements SQLExecutionListener
         } else
         {
             hasNewText  = true;
-            log.debug("setting hasNewText to true");
+            //log.debug("setting hasNewText to true");
         }
 
         if (ev.getKeyCode() == JAutoCompComboBox.SEARCH_KEY ||
@@ -316,7 +296,7 @@ public class TextFieldWithQuery extends JPanel implements SQLExecutionListener
     protected void itemSelected(final JMenuItem mi)
     {
         hasNewText = false;
-        log.debug("setting hasNewText to true");
+        //log.debug("setting hasNewText to true");
         
         String selectedStr = mi.getText();
         int inx = popupMenu.getComponentIndex(mi);
@@ -418,85 +398,144 @@ public class TextFieldWithQuery extends JPanel implements SQLExecutionListener
      * @param newEntryStr the string value to be searched
      * @return the full sql string.
      */
-    protected String buildSQL(final String newEntryStr)
+    protected String buildSQL(final String newEntryStr, final boolean isForCount)
     {
         if (sql == null)
         {
-            // XXX MYSQL
-            return "select distinct " + displayColumns + "," + idColumn  + " from " + tableName + " where lower(" + keyColumn +
-                             ") like '"+ newEntryStr.toLowerCase() +"%' order by " + keyColumn + " asc";
+            StringBuilder sb = new StringBuilder();
+            sb.append("SELECT ");
+            if (isForCount)
+            {
+                sb.append("count(");                
+                sb.append(tableInfo.getIdFieldName());                
+                sb.append(")");
+                
+            } else
+            {
+                sb.append(displayColumns);
+                sb.append(",");
+                sb.append(tableInfo.getIdFieldName());                
+            }
+
+            sb.append(" FROM ");
+            sb.append(tableInfo.getClassName());
+            sb.append(" WHERE ");
+            sb.append(QueryAdjusterForDomain.getInstance().adjustSQL(" collectionMemberId = COLMEMID"));
+            sb.append(" AND LOWER(");
+            sb.append(keyColumn);
+            sb.append(") LIKE '");
+            sb.append(newEntryStr.toLowerCase());
+            sb.append("%' ORDER BY ");
+            sb.append(keyColumn);
+            sb.append(" ASC");
+            return sb.toString();
         }
         return sql;
     }
-
-
     
-    /* (non-Javadoc)
-     * @see edu.ku.brc.dbsupport.SQLExecutionListener#exectionDone(edu.ku.brc.dbsupport.SQLExecutionProcessor, java.sql.ResultSet)
-     */
-    public synchronized void exectionDone(SQLExecutionProcessor process, ResultSet resultSet)
+    public void processResults(final CustomQueryIFace customQuery)
     {
-        try
+        List<?> dataObjList =  customQuery.getDataObjects();
+        if (dataObjList == null || dataObjList.size() == 0)
         {
-            if (resultSet != null && resultSet.next())
+            textField.setText("");
+            return;
+        }
+        
+        boolean isFirst = true;
+        duplicatehash.clear();
+        for (Object obj : dataObjList)
+        {
+            Object[] array = (Object[])obj;
+            
+            if (isFirst)
             {
-                if (numColumns == -1)
-                {
-                    numColumns = resultSet.getMetaData().getColumnCount()-1;
-                    values = new Object[numColumns];
-                }
-    
-                do
-                {
-                    if (numColumns == 1)
-                    {
-                        idList.addElement(resultSet.getInt(2));
-                        list.addElement(resultSet.getString(1));
-    
-                    } else
-                    {
-                        try
-                        {
-                            idList.addElement(resultSet.getInt(numColumns+1));
-                            for (int i=0;i<numColumns;i++)
-                            {
-                                Object val = resultSet.getObject(i+1);
-                                values[i] = val != null ? val : "";
-                            }
-                            Formatter formatter = new Formatter();
-                            formatter.format(format, values);
-                            list.addElement(formatter.toString());
-    
-                        } catch (java.util.IllegalFormatConversionException ex)
-                        {
-                            list.addElement(values[0] != null ? values[0].toString() : "(No Value)");
-                        }
-                        
-                    }
-    
-                } while(resultSet.next());
+                numColumns = array.length - 1;
+                values     = new Object[numColumns];
+                isFirst = false;
+            }
+            
+            Integer id = (Integer)array[numColumns];
+            idList.addElement(id);
+            
+            if (duplicatehash.get(id) == null)
+            {
+                duplicatehash.put(id, array);
                 
-                if (idList.size() > 0)
+                if (numColumns == 1)
                 {
-                    showPopup();
+                    list.addElement(array[0].toString());
+                    
                 } else
                 {
-                    textField.setText("");
+                    try
+                    {
+                        for (int i=0;i<numColumns;i++)
+                        {
+                            Object val = array[i];
+                            values[i] = val != null ? val : "";
+                        }
+                        Formatter formatter = new Formatter();
+                        formatter.format(format, values);
+                        list.addElement(formatter.toString());
+
+                    } catch (java.util.IllegalFormatConversionException ex)
+                    {
+                        ex.printStackTrace();
+                        
+                        list.addElement(values[0] != null ? values[0].toString() : "(No Value)");
+                    }
+
                 }
-            } else
-            {
-                textField.setText("");
             }
-        } catch (SQLException ex)
+        }
+        
+        if (idList.size() > 0)
         {
-            ex.printStackTrace();
+            showPopup();
+        } else
+        {
+            textField.setText("");
+        }
+        
+        duplicatehash.clear();
+
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.CustomQueryListener#exectionDone(edu.ku.brc.dbsupport.CustomQueryIFace)
+     */
+    @Override
+    public void exectionDone(final CustomQueryIFace customQuery)
+    {
+        if (isDoingCount)
+        {
+            List<?> dataObjList = customQuery.getDataObjects();
+            if (dataObjList != null && dataObjList.size() > 0)
+            {
+                Integer count = (Integer)dataObjList.get(0);
+                System.out.println(count);
+            }
+            isDoingCount = false;
+            
+            list.clear();
+            idList.clear();
+            
+            JPAQuery jpaQuery = new JPAQuery(buildSQL(((JPAQuery)customQuery).getData().toString(), false), this);
+            isDoingCount = false;
+            jpaQuery.start();
+            
+        } else
+        {
+            processResults(customQuery);
         }
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.dbsupport.SQLExecutionListener#executionError(edu.ku.brc.dbsupport.SQLExecutionProcessor, java.lang.Exception)
+     * @see edu.ku.brc.dbsupport.CustomQueryListener#executionError(edu.ku.brc.dbsupport.CustomQueryIFace)
      */
-    public synchronized void executionError(SQLExecutionProcessor process, Exception ex)
+    @Override
+    public void executionError(final CustomQueryIFace customQuery)
     {
         // TODO Auto-generated method stub
         
@@ -512,10 +551,11 @@ public class TextFieldWithQuery extends JPanel implements SQLExecutionListener
             list.clear();
             idList.clear();
             
-            String queryString = buildSQL(newEntryStr);
-            
-            SQLExecutionProcessor sqlProc = new SQLExecutionProcessor(this, queryString);
-            sqlProc.start();
+            JPAQuery jpaQuery = new JPAQuery(buildSQL(newEntryStr, true), this);
+            jpaQuery.setUnique(true);
+            jpaQuery.setData(newEntryStr);
+            isDoingCount = true;
+            jpaQuery.start();
             
         } else
         {
@@ -573,7 +613,9 @@ public class TextFieldWithQuery extends JPanel implements SQLExecutionListener
         return textField;
     }
     
+    //--------------------------------------------------------------------------
     // Special class for the right visual appearence on the Mac.
+    //--------------------------------------------------------------------------
     class MacGradiantBtn extends JButton
     {
         protected ImageIcon imgIcon;

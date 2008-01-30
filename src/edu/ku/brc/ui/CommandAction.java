@@ -69,7 +69,9 @@ public class CommandAction implements Cloneable
      * @param action the name of the action to be performed (contract between producer and consumer)
      * @param data the data to be passed
      */
-    public CommandAction(final String type, final String action, final Object data)
+    public CommandAction(final String type, 
+                         final String action, 
+                         final Object data)
     {
         this.type    = type;
         this.action  = action;
@@ -85,7 +87,9 @@ public class CommandAction implements Cloneable
      * @param action the name of the action to be performed (contract between producer and consumer)
      * @param tableId the table id that the command is associated with
      */
-    public CommandAction(final String type, final String action, final int tableId)
+    public CommandAction(final String type, 
+                         final String action, 
+                         final int tableId)
     {
         this(type, action, tableId, null);
     }
@@ -97,7 +101,10 @@ public class CommandAction implements Cloneable
      * @param tableId the table id that the command is associated with
      * @param strParams string key/value pairs that will be added to the properties
      */
-    public CommandAction(final String type, final String action, final int tableId, final Hashtable<String, String> strParams)
+    public CommandAction(final String type, 
+                         final String action, 
+                         final int tableId, 
+                         final Hashtable<String, String> strParams)
     {
         this.type    = type;
         this.action  = action;
@@ -121,7 +128,9 @@ public class CommandAction implements Cloneable
      * @param action the name of the action to be performed (contract between producer and consumer)
      * @param strParams string key/value pairs that will be added to the properties
      */
-    public CommandAction(final String type, final String action, final Hashtable<String, String> strParams)
+    public CommandAction(final String type, 
+                         final String action, 
+                         final Hashtable<String, String> strParams)
     {
         this(type, action, -1, strParams);
     }
@@ -131,7 +140,8 @@ public class CommandAction implements Cloneable
      * @param type the type of command determines who listens for it
      * @param action the name of the action to be performed (contract between producer and consumer)
      */
-    public CommandAction(final String type, final String action)
+    public CommandAction(final String type, 
+                         final String action)
     {
         this.type    = type;
         this.action  = action;

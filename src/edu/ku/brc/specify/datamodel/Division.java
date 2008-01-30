@@ -52,24 +52,25 @@ import org.hibernate.annotations.Index;
 public class Division extends DataModelObjBase implements java.io.Serializable 
 {
     // Fields    
-     protected Integer                 divisionId;
-     protected String                  name;
-     protected String                  title;
-     protected String                  abbrev;
-     protected String                  uri;
-     protected String                  iconURI;
-     protected String                  discipline;
-     protected String                  remarks;
+     protected Integer                  divisionId;
+     protected String                   name;
+     protected String                   title;
+     protected String                   abbrev;
+     protected String                   uri;
+     protected String                   iconURI;
+     protected String                   discipline;
+     protected String                   remarks;
      
-     protected Address                 address;
-     protected Institution             institution;
-     protected Set<CollectionType>     collectionTypes;
+     protected Address                  address;
+     protected Institution              institution;
+     protected Set<CollectionType>      collectionTypes;
      
-     protected Set<Agent>              members;
-     protected Set<ConservDescription> conservDescriptions;
-     protected Set<Loan>               loans;
-     protected Set<TreatmentEvent>     treatmentEvents;
-     
+     protected Set<Agent>               members;
+     protected Set<ConservDescription>  conservDescriptions;
+     protected Set<Loan>                loans;
+     protected Set<TreatmentEvent>      treatmentEvents;
+     protected Set<Accession>           accessions;
+     protected Set<RepositoryAgreement> repositoryAgreements;
 
     // Constructors
 
@@ -102,6 +103,8 @@ public class Division extends DataModelObjBase implements java.io.Serializable
         conservDescriptions = new HashSet<ConservDescription>();
         loans               = new HashSet<Loan>();
         treatmentEvents     = new HashSet<TreatmentEvent>();
+        accessions          = new HashSet<Accession>();
+        repositoryAgreements = new HashSet<RepositoryAgreement>();
         institution         = null;
         address             = null;
     }
@@ -192,6 +195,26 @@ public class Division extends DataModelObjBase implements java.io.Serializable
     public Set<TreatmentEvent> getTreatmentEvents()
     {
         return treatmentEvents;
+    }
+
+    /**
+     * @return the accessions
+     */
+    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "division")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<Accession> getAccessions()
+    {
+        return accessions;
+    }
+
+    /**
+     * @return the repositoryAgreements
+     */
+    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "division")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<RepositoryAgreement> getRepositoryAgreements()
+    {
+        return repositoryAgreements;
     }
 
     /**
@@ -356,6 +379,22 @@ public class Division extends DataModelObjBase implements java.io.Serializable
     public void setTreatmentEvents(Set<TreatmentEvent> treatmentEvents)
     {
         this.treatmentEvents = treatmentEvents;
+    }
+
+    /**
+     * @param accessions the accessions to set
+     */
+    public void setAccessions(Set<Accession> accessions)
+    {
+        this.accessions = accessions;
+    }
+    
+    /**
+     * @param repositoryAgreements the repositoryAgreements to set
+     */
+    public void setRepositoryAgreements(Set<RepositoryAgreement> repositoryAgreements)
+    {
+        this.repositoryAgreements = repositoryAgreements;
     }
 
     /**

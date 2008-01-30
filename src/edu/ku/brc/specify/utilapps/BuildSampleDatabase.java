@@ -85,6 +85,7 @@ import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -226,6 +227,7 @@ public class BuildSampleDatabase
     
     protected boolean            copyToUserDir      = true;
     protected boolean            doShallowTaxonTree = false;
+    protected boolean            doExtraCollections = true;
     
     protected Random             rand = new Random(12345678L);
     
@@ -746,18 +748,20 @@ public class BuildSampleDatabase
         log.info("Creating agents and addresses");
         
         List<Agent>    agents      = new Vector<Agent>();
-
+        
+        int colMemId = collection.getCollectionId();
+        
         String lastName = userAgent.getLastName();
-        Agent steveBoyd = createAgent("Mr.", "Steve", "D", "Boyd", "jb", "jb@net.edu");
-        if (!lastName.equals("Cooper")) agents.add(createAgent("Mr.", "Peter", "D", "Cooper", "ds", "ds@whitehouse.gov"));
-        if (!lastName.equals("Peck")) agents.add(createAgent("Mr.", "David", "H", "Peck", "rb", "beach@net.edu"));
-        if (!lastName.equals("Appleton")) agents.add(createAgent("Mrs.", "Sally", "H", "Appleton", "jm", "jm@net.edu"));
-        if (!lastName.equals("Brown")) agents.add(createAgent("Mr.", "Taylor", "C", "Brown", "kcs", "taylor.brown@ku.edu"));
+        Agent steveBoyd = createAgent("Mr.", "Steve", "D", "Boyd", "jb", "jb@net.edu", colMemId);
+        if (!lastName.equals("Cooper")) agents.add(createAgent("Mr.", "Peter", "D", "Cooper", "ds", "ds@whitehouse.gov", colMemId));
+        if (!lastName.equals("Peck")) agents.add(createAgent("Mr.", "David", "H", "Peck", "rb", "beach@net.edu", colMemId));
+        if (!lastName.equals("Appleton")) agents.add(createAgent("Mrs.", "Sally", "H", "Appleton", "jm", "jm@net.edu", colMemId));
+        if (!lastName.equals("Brown")) agents.add(createAgent("Mr.", "Taylor", "C", "Brown", "kcs", "taylor.brown@ku.edu", colMemId));
         if (!lastName.equals("Boyd")) agents.add(steveBoyd);
-        if (!lastName.equals("Thomas")) agents.add(createAgent("Mr", "James", "X", "Thomas", "dxt", ""));
-        if (!lastName.equals("Peterson")) agents.add(createAgent("Mr.", "Pete", "A", "Peterson", "jb", ""));
-        if (!lastName.equals("Guttenburg")) agents.add(createAgent("Mr.", "Mitch", "A", "Guttenburg", "jb", ""));
-        if (!lastName.equals("Ford")) agents.add(createAgent("Mr.", "Daniel", "A", "Ford", "mas", "mas@ku.edu"));
+        if (!lastName.equals("Thomas")) agents.add(createAgent("Mr", "James", "X", "Thomas", "dxt", "", colMemId));
+        if (!lastName.equals("Peterson")) agents.add(createAgent("Mr.", "Pete", "A", "Peterson", "jb", "", colMemId));
+        if (!lastName.equals("Guttenburg")) agents.add(createAgent("Mr.", "Mitch", "A", "Guttenburg", "jb", "", colMemId));
+        if (!lastName.equals("Ford")) agents.add(createAgent("Mr.", "Daniel", "A", "Ford", "mas", "mas@ku.edu", colMemId));
         agents.add(userAgent);
         
         Agent ku = new Agent();
@@ -877,6 +881,7 @@ public class BuildSampleDatabase
         log.info("Creating a repository agreement");
         RepositoryAgreement repoAg = new RepositoryAgreement();
         repoAg.initialize();
+        repoAg.setDivision(division);
         repoAg.setNumber("KU-1990-01");
         repoAg.setOriginator(ku);
         Calendar received = Calendar.getInstance();
@@ -1029,7 +1034,10 @@ public class BuildSampleDatabase
         ////////////////////////////////
         log.info("Creating accessions and accession agents");
         calendar.set(2006, 10, 27, 23, 59, 59);
-        Accession acc1 = createAccession("Gift", "Complete", "2000-PL-001", DateFormat.getInstance().format(calendar.getTime()), calendar, calendar);
+        Accession acc1 = createAccession(division,
+                                         "Gift", "Complete", "2000-PL-001", 
+                                         DateFormat.getInstance().format(calendar.getTime()), 
+                                         calendar, calendar);
         acc1.setText1("Ichthyology");
         acc1.setRepositoryAgreement(repoAg);
         
@@ -1043,7 +1051,9 @@ public class BuildSampleDatabase
         accAgents.add(createAccessionAgent("Receiver", receiver, acc1, null));
         accAgents.add(createAccessionAgent("Reviewer", reviewer, acc1, null));
 
-        Accession acc2 = createAccession("Field Work", "In Process", "2004-PL-002", DateFormat.getInstance().format(calendar.getTime()), calendar, calendar);
+        Accession acc2 = createAccession(division,
+                "Field Work", "In Process", "2004-PL-002", 
+                DateFormat.getInstance().format(calendar.getTime()), calendar, calendar);
         
         Agent donor2 =    agents.get(5);
         Agent receiver2 = agents.get(3);
@@ -1315,7 +1325,7 @@ public class BuildSampleDatabase
         //frame.setProcess(++createStep);
         frame.setOverall(steps++);
         
-        createFishCollection(collectionType, user, userAgent,
+        createFishCollection(collectionType, user, userAgent, division,
                 taxonTreeDef, geoTreeDef, gtpTreeDef,
                 lithoStratTreeDef, locTreeDef,
                 journal, taxa, geos, locs, gtps, lithoStrats,
@@ -1324,12 +1334,15 @@ public class BuildSampleDatabase
 
         frame.setOverall(steps++);
         
-        createFishCollection(collectionType, user, userAgent,
-                taxonTreeDef, geoTreeDef, gtpTreeDef,
-                lithoStratTreeDef, locTreeDef,
-                journal, taxa, geos, locs, gtps, lithoStrats,
-                colMethods,
-                "KUTIS", "Fish Tissue");
+        if (doExtraCollections)
+        {
+            createFishCollection(collectionType, user, userAgent, division,
+                    taxonTreeDef, geoTreeDef, gtpTreeDef,
+                    lithoStratTreeDef, locTreeDef,
+                    journal, taxa, geos, locs, gtps, lithoStrats,
+                    colMethods,
+                    "KUTIS", "Fish Tissue");
+        }
 
     }
     
@@ -1343,6 +1356,7 @@ public class BuildSampleDatabase
     public List<Object> createFishCollection(final CollectionType            collectionType,
                                              final SpecifyUser               user,
                                              final Agent                     userAgent,
+                                             final Division                  division,                  
                                              final TaxonTreeDef              taxonTreeDef,
                                              final GeographyTreeDef          geoTreeDef,
                                              final GeologicTimePeriodTreeDef gtpTreeDef,
@@ -1476,16 +1490,18 @@ public class BuildSampleDatabase
         log.info("Creating agents and addresses");
         List<Agent>    agents      = new Vector<Agent>();
 
-        Agent johnByrn = createAgent("Mr.", "John", "D", "Byrn", "jb", "jb@net.edu");
-        agents.add(createAgent("Mr.", "David", "D", "Smith", "ds", "ds@whitehouse.gov"));
-        agents.add(createAgent("Mr.", "Robert", "H", "Burk", "rb", "beach@net.edu"));
-        agents.add(createAgent("Mrs.", "Margaret", "H", "Johnson", "jm", "jm@net.edu"));
-        agents.add(createAgent("Mr.", "Kip", "C", "Spencer", "kcs", "rods@ku.edu"));
+        int colMemId = collection.getCollectionId();
+        
+        Agent johnByrn = createAgent("Mr.", "John", "D", "Byrn", "jb", "jb@net.edu", colMemId);
+        agents.add(createAgent("Mr.", "David", "D", "Smith", "ds", "ds@whitehouse.gov", colMemId));
+        agents.add(createAgent("Mr.", "Robert", "H", "Burk", "rb", "beach@net.edu", colMemId));
+        agents.add(createAgent("Mrs.", "Margaret", "H", "Johnson", "jm", "jm@net.edu", colMemId));
+        agents.add(createAgent("Mr.", "Kip", "C", "Spencer", "kcs", "rods@ku.edu", colMemId));
         agents.add(johnByrn);
-        agents.add(createAgent("Sir", "Dudley", "X", "Thompson", "dxt", ""));
-        agents.add(createAgent("Mr.", "Joe", "A", "Campbell", "jb", ""));
-        agents.add(createAgent("Mr.", "Joe", "A", "Tester", "jb", ""));
-        agents.add(createAgent("Mr.", "Mitch", "A", "Smyth", "mas", "mas@ku.edu"));
+        agents.add(createAgent("Sir", "Dudley", "X", "Thompson", "dxt", "", colMemId));
+        agents.add(createAgent("Mr.", "Joe", "A", "Campbell", "jb", "", colMemId));
+        agents.add(createAgent("Mr.", "Joe", "A", "Tester", "jb", "", colMemId));
+        agents.add(createAgent("Mr.", "Mitch", "A", "Smyth", "mas", "mas@ku.edu", colMemId));
         agents.add(userAgent);
         
         Agent ku = new Agent();
@@ -1605,6 +1621,7 @@ public class BuildSampleDatabase
         log.info("Creating a repository agreement");
         RepositoryAgreement repoAg = new RepositoryAgreement();
         repoAg.initialize();
+        repoAg.setDivision(division);
         repoAg.setNumber("KU-1992-01");
         repoAg.setOriginator(ku);
         Calendar received = Calendar.getInstance();
@@ -1772,7 +1789,9 @@ public class BuildSampleDatabase
         log.info("Creating accessions and accession agents");
         calendar.set(2006, 10, 27, 23, 59, 59);
         int yr = 2000 + (int)(rand.nextDouble() * 7);
-        Accession acc1 = createAccession("Gift", "Complete", yr + "-IC-001", DateFormat.getInstance().format(calendar.getTime()), calendar, calendar);
+        Accession acc1 = createAccession(division,
+                                         "Gift", "Complete", yr + "-IC-001", 
+                                         DateFormat.getInstance().format(calendar.getTime()), calendar, calendar);
         acc1.setText1("Ichthyology");
         acc1.setRepositoryAgreement(repoAg);
         
@@ -1786,7 +1805,8 @@ public class BuildSampleDatabase
         accAgents.add(createAccessionAgent("Receiver", receiver, acc1, null));
         accAgents.add(createAccessionAgent("Reviewer", reviewer, acc1, null));
 
-        Accession acc2 = createAccession("Field Work", "In Process", yr + "-IC-002", DateFormat.getInstance().format(calendar.getTime()), calendar, calendar);
+        Accession acc2 = createAccession(division,
+                "Field Work", "In Process", yr + "-IC-002", DateFormat.getInstance().format(calendar.getTime()), calendar, calendar);
         
         Agent donor2 =    agents.get(5);
         Agent receiver2 = agents.get(3);
@@ -2364,7 +2384,11 @@ public class BuildSampleDatabase
         createFishCollection(Discipline.getByTitle("Fish"), institution, user, userAgent);
         
         frame.setOverall(steps++);
-        createSingleBotanyCollection(Discipline.getByTitle("Fish"), institution, user, userAgent);
+        
+        if (doExtraCollections)
+        {
+            createSingleBotanyCollection(Discipline.getByTitle("Fish"), institution, user, userAgent);
+        }
         
         // done
         log.info("Done creating single discipline database: " + discipline.getTitle());
@@ -3249,8 +3273,10 @@ public class BuildSampleDatabase
                               final String     driverName, 
                               final Discipline discipline,
                               final String     username, 
-                              final String     password)
+                              final String     password,
+                              final boolean    doExtraCollectionsArg)
     {
+        this.doExtraCollections = doExtraCollectionsArg;
         final SwingWorker worker = new SwingWorker()
         {
             @Override
@@ -3725,6 +3751,7 @@ public class BuildSampleDatabase
         protected JPasswordField     passwdTxtFld;
         protected JTextField         databaseNameTxt;
         protected JComboBox          drivers;
+        protected JCheckBox          extraCollectionsChk;
         protected JComboBox          disciplines;
         protected Vector<DatabaseDriverInfo> driverList;
         protected boolean            wasClosed = false;
@@ -3753,7 +3780,10 @@ public class BuildSampleDatabase
             usernameTxtFld = new JTextField("rods");
             passwdTxtFld   = new JPasswordField("rods");
             
-            PanelBuilder    builder    = new PanelBuilder(new FormLayout("p,2px,p:g", "p,4px,p,4px,p,4px,p,4px,p,10px,p"));
+            extraCollectionsChk = new JCheckBox("Create Extra Collections");
+            extraCollectionsChk.setSelected(true);
+            
+            PanelBuilder    builder    = new PanelBuilder(new FormLayout("p,2px,p:g", "p,4px,p,4px,p,4px,p,4px,p,4px,p,10px,p"));
             CellConstraints cc         = new CellConstraints();
             builder.add(new JLabel("Username:", SwingConstants.RIGHT),      cc.xy(1,1));
             builder.add(usernameTxtFld,                                     cc.xy(3,1));
@@ -3762,13 +3792,15 @@ public class BuildSampleDatabase
             builder.add(new JLabel("Database Name:", SwingConstants.RIGHT), cc.xy(1,5));
             builder.add(databaseNameTxt,                                    cc.xy(3,5));
             builder.add(new JLabel("Discipline Name:", SwingConstants.RIGHT), cc.xy(1,7));
-            builder.add(disciplines,                                    cc.xy(3,7));
+            builder.add(disciplines,                                        cc.xy(3,7));
             builder.add(new JLabel("Driver:", SwingConstants.RIGHT),        cc.xy(1,9));
             builder.add(drivers,                                            cc.xy(3,9));
+            //builder.add(new JLabel("Driver:", SwingConstants.RIGHT),        cc.xy(1,11));
+            builder.add(extraCollectionsChk,                                cc.xy(3,11));
             
             final JButton okBtn     = new JButton("OK");
             final JButton cancelBtn = new JButton("Cancel");
-            builder.add(ButtonBarFactory.buildOKCancelBar(okBtn, cancelBtn), cc.xywh(1,11,3,1));
+            builder.add(ButtonBarFactory.buildOKCancelBar(okBtn, cancelBtn), cc.xywh(1,13,3,1));
             
             cancelBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ae)
@@ -3831,7 +3863,12 @@ public class BuildSampleDatabase
                     {
                         String username = usernameTxtFld.getText();
                         String password = new String(passwdTxtFld.getPassword());
-                        startBuild(databaseName, dbDriver.getName(), (Discipline)disciplines.getSelectedItem(), username, password);
+                        startBuild(databaseName, 
+                                   dbDriver.getName(), 
+                                   (Discipline)disciplines.getSelectedItem(), 
+                                   username, 
+                                   password,
+                                   extraCollectionsChk.isSelected());
                         
                     } catch (Exception ex)
                     {

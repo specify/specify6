@@ -106,6 +106,7 @@ import edu.ku.brc.ui.forms.validation.FormValidator;
 import edu.ku.brc.ui.forms.validation.UIValidatable;
 import edu.ku.brc.ui.forms.validation.UIValidator;
 import edu.ku.brc.ui.forms.validation.ValidationListener;
+import edu.ku.brc.util.Orderable;
 
 /*
  * The Whole idea of the class is that it converts or translates a form/sybform definition into a series of columns.
@@ -629,6 +630,21 @@ public class TableViewObj implements Viewable,
                         parentDataObj.addReference((FormDataObjIFace)daObj, dataSetFieldName);
                         if (isNew)
                         {
+                            if (daObj instanceof Orderable)
+                            {
+                                // They really should all be Orderable, 
+                                // but just in case we check each one.
+                                int maxOrder = -1;
+                                for (Object obj : dataObjList)
+                                {
+                                    if (obj instanceof Orderable)
+                                    {
+                                        maxOrder = Math.max(((Orderable)obj).getOrderIndex(), maxOrder);
+                                    }
+                                }
+                                
+                                ((Orderable)daObj).setOrderIndex(maxOrder+1);
+                            }
                             dataObjList.add(daObj);
                             
                             if (dataObjList != null && dataObjList.size() > 0)

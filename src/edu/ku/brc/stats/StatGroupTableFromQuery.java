@@ -39,39 +39,10 @@ public class StatGroupTableFromQuery extends StatGroupTable implements SQLExecut
     // Data Members
     protected SQLExecutionProcessor sqle;
 
-    protected int     descCol;
-    protected int     valCol;
-    protected String  linkStr = null;
-    protected int     colId   = -1;
-    protected String  noResultsMsg;
-    protected boolean hasData = false;
-
-    /**
-     * Constructor that describes where we get everything from
-     * @param name the name or title
-     * @param sql the SQL statement to be executed
-     * @param descCol the column where the description comes form
-     * @param valCol the column where the value comes from
-     */
-    public StatGroupTableFromQuery(final String name,
-                                   final String[] columnNames,
-                                   final String sql,
-                                   final int    descCol,
-                                   final int    valCol,
-                                   final String noResultsMsg)
-    {
-        super(name, columnNames);
-
-        this.descCol = descCol;
-        this.valCol  = valCol;
-        this.noResultsMsg = noResultsMsg;
-
-        StatDataItem statItem = new StatDataItem("RetrievingData", null , false);
-        model.addDataItem(statItem);
-
-        sqle = new SQLExecutionProcessor(this, sql);
-        sqle.start();
-    }
+    protected int           descCol;
+    protected int           valCol;
+    protected String        noResultsMsg;
+    protected boolean       hasData       = false;
 
     /**
      * Constructor that describes where we get everything from
@@ -95,7 +66,7 @@ public class StatGroupTableFromQuery extends StatGroupTable implements SQLExecut
         this.valCol       = valCol;
         this.noResultsMsg = noResultsMsg;
 
-        StatDataItem statItem = new StatDataItem("RetrievingData", null , false);
+        StatDataItem statItem = new StatDataItem("RetrievingData", null, false);
         model.addDataItem(statItem);
         
         String adjustedSQL = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
@@ -121,16 +92,6 @@ public class StatGroupTableFromQuery extends StatGroupTable implements SQLExecut
         return hasData ? super.getPreferredSize() : new Dimension(100,100);
     }
 
-    /**
-     * Sets info need to make links
-     * @param linkStr the name of the static link
-     * @param colId the column of the id which is used to build the link
-     */
-    public void setLinkInfo(final String linkStr, final int colId)
-    {
-        this.linkStr = linkStr;
-        this.colId   = colId;
-    }
 
      /**
      * Removes the table and adds the None Available message
@@ -160,7 +121,8 @@ public class StatGroupTableFromQuery extends StatGroupTable implements SQLExecut
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.dbsupport.SQLExecutionListener#exectionDone(edu.ku.brc.specify.dbsupport.SQLExecutionProcessor, java.sql.ResultSet)
      */
-    public synchronized void exectionDone(final SQLExecutionProcessor processor, final java.sql.ResultSet resultSet)
+    public synchronized void exectionDone(final SQLExecutionProcessor processor, 
+                                          final java.sql.ResultSet resultSet)
     {
         model.clear();
         hasData = true;
@@ -168,7 +130,7 @@ public class StatGroupTableFromQuery extends StatGroupTable implements SQLExecut
         List<Object> data = new Vector<Object>();
         try
         {
-            if (resultSet.first())
+            if (resultSet.next())
             {
                 do
                 {
@@ -187,10 +149,10 @@ public class StatGroupTableFromQuery extends StatGroupTable implements SQLExecut
                     String desc     = descCol != -1 ? data.get(i++).toString() : "";
                     Object val      = data.get(i++);
                     Object colIdObj = data.get(i);
-                    String columnId = colIdObj != null ? colIdObj.toString() : null;
-                    StatDataItem statItem = new StatDataItem(desc, linkStr == null || columnId == null ? null : (linkStr+",id="+columnId), false);
-                    statItem.setValue(val);
+                    
+                    StatDataItem statItem = new StatDataItem(desc, createCommandAction(colIdObj), false);
                     model.addDataItem(statItem);
+                    statItem.setValue(val);
                 }
                 data.clear();
             } else

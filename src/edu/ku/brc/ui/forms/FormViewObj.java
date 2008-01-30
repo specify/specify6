@@ -2889,6 +2889,13 @@ public class FormViewObj implements Viewable,
             for (FieldInfo fieldInfo : controlsById.values())
             {
                 Component comp = fieldInfo.getComp();
+                
+                String nm = fieldInfo.getFormCell().getName();
+                if (nm.equals("division"))
+                {
+                    int x = 0;
+                    x++;
+                }
 
                 Object data = null;
 

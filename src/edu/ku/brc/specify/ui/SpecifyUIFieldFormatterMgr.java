@@ -72,6 +72,7 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr
             catalogNumberNumeric.setAutoNumber(new CollectionAutoNumber());
         }
         
+        /* This is experimental output
         File uiffOut = new File(XMLHelper.getConfigDirPath("backstop/uiformatters.out.xml"));
         StringBuilder sb = new StringBuilder();
         sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<formats>\n");
@@ -97,7 +98,7 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr
         {
             ex.printStackTrace();
         }
-        
+        */
         
         //if (catalogNumberAlphaNumeric != null)
         //{

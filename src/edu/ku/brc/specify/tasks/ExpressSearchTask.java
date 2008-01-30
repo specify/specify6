@@ -424,10 +424,10 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
      */
     public void doBasicSearch(final String searchName)
     {
-        
         Hashtable<String, ExpressResultsTableInfo> idToTableInfoMap = ExpressSearchConfigCache.getSearchIdToTableInfoHash();
         for (ExpressResultsTableInfo erti : idToTableInfoMap.values())
         {
+            log.error("["+erti.getName()+"]["+searchName+"]");
             if (erti.getName().equals(searchName))
             {
                 // This needs to be fixed in that it might not return any results

@@ -24,6 +24,7 @@ import edu.ku.brc.dbsupport.QueryResultsContainerIFace;
 import edu.ku.brc.dbsupport.QueryResultsDataObj;
 import edu.ku.brc.dbsupport.QueryResultsListener;
 import edu.ku.brc.dbsupport.QueryResultsSerializedGetter;
+import edu.ku.brc.ui.CommandAction;
 
 /**
  * A Single Statitem that creates a QueryResultsContainer and then gets the result and displays it.
@@ -45,16 +46,16 @@ public class StatDataItem implements QueryResultsListener
 
     protected String     description;
     protected String     sql;
-    protected String     link           = null;
-    protected boolean    useProgress    = false;
+    protected boolean    useProgress        = false;
     
-    protected StatGroupTableModel model = null;
+    protected StatGroupTableModel model     = null;
+    protected CommandAction       cmdAction = null;
     
     // The Data 
     protected Object value  = "...";
     
-    protected boolean hasStarted        = false;
-    protected boolean hasData           = false;
+    protected boolean hasStarted            = false;
+    protected boolean hasData               = false;
 
     protected Vector<QueryResultsContainerIFace> qrcs       = new Vector<QueryResultsContainerIFace>();
     protected Vector<VALUE_TYPE>                 valuesType = new Vector<VALUE_TYPE>();
@@ -66,21 +67,23 @@ public class StatDataItem implements QueryResultsListener
     /**
      *  Constructor for a single statistical data item.
      * @param description the textual description of the statistic
-     * @param link
-     * @param useProgress
+     * @param cmdAction the CommandAction to be cloned and sent.
+     * @param colId column containing the primary key id
+     * @param useProgress use progress indicator
      */
-    public StatDataItem(final String description, 
-                        final String link, 
-                        final boolean useProgress)
+    public StatDataItem(final String        description, 
+                        final CommandAction cmdAction, 
+                        final boolean       useProgress)
     {
         this.description = description;
+        this.cmdAction    = cmdAction;
         this.useProgress = useProgress;
-        this.link        = link;
     }
 
     /**
      * Constructor for a single statistical data item.
      * @param description the textual description of the statistic
+     * @param type the type of query "sql" or "hql"
      * @param sql the SQL string that returns a single number
      * @param link the link
      * @param useProgress use progress indicator
@@ -89,11 +92,11 @@ public class StatDataItem implements QueryResultsListener
     public StatDataItem(final String description, 
                         final String type, 
                         final String sql, 
-                        final String link, 
+                        final CommandAction cmdAction, 
                         final boolean useProgress,
                         final String formatStr)
     {
-        this(description, link, useProgress);
+        this(description, cmdAction, useProgress);
         
         if (type.equals("sql"))
         {
@@ -117,9 +120,9 @@ public class StatDataItem implements QueryResultsListener
     /**
      * Adds Custom Query for Stat instead of Query String
      * @param customQuery the custom query
+     * @param formatStr format
      */
     public void addCustomQuery(final String     customQueryName,
-                               final VALUE_TYPE valType,
                                final String     formatStr)
     {
         CustomQueryResultsContainer qrc = new CustomQueryResultsContainer(customQueryName);
@@ -131,9 +134,9 @@ public class StatDataItem implements QueryResultsListener
     /**
      * Adds Custom Query for Stat instead of Query String
      * @param customQuery the custom query
+     * @param formatStr format
      */
     public void addCustomQuery(final CustomQueryIFace customQuery,
-                               final VALUE_TYPE  valType,
                                final String      formatStr)
     {
         CustomQueryResultsContainer qrc = new CustomQueryResultsContainer(customQuery);
@@ -250,31 +253,24 @@ public class StatDataItem implements QueryResultsListener
         getter.add(qrcs); // NOTE: this start up the entire process
 
     }
+    
+    public boolean shouldShowLinkCursor()
+    {
+        return cmdAction != null;
+    }
 
     /**
-     * Returns the link string
-     * @return Returns the link string
+     * @return the cmdAction
      */
-    public String getLink()
+    public CommandAction getCmdAction()
     {
-        return link;
+        return cmdAction;
     }
 
     public String getDescription()
     {
         return description;
     }
-
-    /*public String getValStr()
-    {
-        return value != null ? value.toString() : "";
-    }
-    
-    public void setValStr(String valStr)
-    {
-        this.value = valStr;
-    }*/
-
 
     public Object getValue()
     {
@@ -290,8 +286,6 @@ public class StatDataItem implements QueryResultsListener
     {
         return useProgress && !hasData;
     }
-    
-    
 
     //--------------------------------------
     // QueryResultsListener

@@ -110,10 +110,14 @@ public class PickListBusRules extends BaseBusRules
      */
     private static void tableSelected(final FormViewObj fvo)
     {
+        ValComboBox typesCBX      = (ValComboBox)fvo.getControlByName("typesCBX");
         ValComboBox formatterCBX = (ValComboBox)fvo.getControlByName("formatterCBX");
         ValComboBox tablesCBX     = (ValComboBox)fvo.getControlByName("tablesCBX");
         ValComboBox fieldsCBX     = (ValComboBox)fvo.getControlByName("fieldsCBX");
+        ValSpinner  sizeLimitSp   = (ValSpinner)fvo.getControlByName("sizeLimit");
 
+        int typeIndex = typesCBX.getComboBox().getSelectedIndex();
+        
         String noneStr = getResourceString("None");
         
         PickList pickList = (PickList)fvo.getDataObj();
@@ -134,7 +138,6 @@ public class PickListBusRules extends BaseBusRules
                 
             } else
             {
-
                 pickList.setTableName(tableInfo.getName());
                 
                 DefaultComboBoxModel fldModel = (DefaultComboBoxModel)fieldsCBX.getComboBox().getModel();
@@ -147,7 +150,6 @@ public class PickListBusRules extends BaseBusRules
                         fldModel.addElement(fi);
                     }
                 }
-                fieldsCBX.setEnabled(fldModel.getSize() > 0);
                 
                 Vector<DataObjSwitchFormatter> list = new Vector<DataObjSwitchFormatter>();
                 for (DataObjSwitchFormatter fmt : DataObjFieldFormatMgr.getFormatters())
@@ -268,6 +270,7 @@ public class PickListBusRules extends BaseBusRules
         MultiView pickListItemsMV = (MultiView)fvo.getControlByName("pickListItems");
         
         int typeIndex = typesCBX.getComboBox().getSelectedIndex();
+        log.debug("Type: "+typeIndex);
         switch (typeIndex) 
         {
             case 0:
@@ -277,24 +280,35 @@ public class PickListBusRules extends BaseBusRules
                 sizeLimitSp.setEnabled(true);
                 pickListItemsMV.setVisible(true);
                 readOnlyChk.setEnabled(true);
+                Object val = sizeLimitSp.getValue();
+                if (val != null && val instanceof Integer && ((Integer)val) == -1)
+                {
+                    sizeLimitSp.setValue(50);
+                }
                 break;
                 
             case 1:
                 tablesCBX.setEnabled(true);
                 fieldsCBX.setEnabled(false);
                 formatterCBX.setEnabled(true);
-                sizeLimitSp.setEnabled(false);
                 pickListItemsMV.setVisible(false);
                 readOnlyChk.setEnabled(false);
+                
+                sizeLimitSp.setEnabled(false);
+                //sizeLimitSp.setValue(-1);
+                fieldsCBX.getComboBox().setSelectedIndex(-1);
                 break;
                 
             case 2:
                 tablesCBX.setEnabled(true);
                 fieldsCBX.setEnabled(true);
                 formatterCBX.setEnabled(true);
-                sizeLimitSp.setEnabled(false);
                 pickListItemsMV.setVisible(false);
                 readOnlyChk.setEnabled(false);
+                
+                //sizeLimitSp.setValue(-1);
+                sizeLimitSp.setEnabled(false);
+                fieldsCBX.getComboBox().setSelectedIndex(-1);
                 break;
                 
             default:
@@ -350,7 +364,7 @@ public class PickListBusRules extends BaseBusRules
                 
             } else
             {
-                sizeLimitSp.setEnabled(true);
+                sizeLimitSp.setEnabled(typeIndex == 0);
             }
             
             typeSelected(fvo);
@@ -441,8 +455,9 @@ public class PickListBusRules extends BaseBusRules
         {
             errorList.clear();
             
-            PickList dbPL = (PickList)session.getData(PickList.class, "name", pickList.getName(), DataProviderSessionIFace.CompareType.Equals);
-            if (dbPL != null)
+            PickList dbPL = session.getData(PickList.class, "name", pickList.getName(), DataProviderSessionIFace.CompareType.Equals);
+            log.debug("["+dbPL.getId().intValue()+"]["+pickList.getId().intValue()+"]");
+            if (dbPL != null && dbPL.getId().intValue() != pickList.getId().intValue())
             {
                 errorList.add(UIRegistry.getLocalizedMessage("PL_DUPLICATE_NAME", pickList.getName()));
                 return STATUS.Error;

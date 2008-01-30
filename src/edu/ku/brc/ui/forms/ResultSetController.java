@@ -582,7 +582,7 @@ public class ResultSetController implements ValidationListener
                         if (fvo != null && fvo.getRsController() != null)
                         {
                             rsc = fvo.getRsController();
-                            System.err.println(fvo.getRsController());
+                            //System.err.println(fvo.getRsController());
                             if (commandsHash == null)
                             {
                                 rsc.createRSActions();

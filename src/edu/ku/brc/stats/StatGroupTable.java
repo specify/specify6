@@ -35,18 +35,21 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 
-import org.apache.commons.lang.StringUtils;
-
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CurvedBorder;
@@ -80,6 +83,10 @@ public class StatGroupTable extends JPanel
     protected StatGroupTableModel model;
     protected JScrollPane         scrollPane   = null;
     protected boolean             useSeparator = true;
+    
+    protected int                 colId        = -1;
+    protected CommandAction       cmdAction    = null;
+
 
 
 
@@ -87,7 +94,7 @@ public class StatGroupTable extends JPanel
      * Constructor with the localized name of the Group
      * @param name name of the group (already been localized)
      */
-    public StatGroupTable(final String name, final String[] columnNames)
+    public StatGroupTable(final String name, @SuppressWarnings("unused")final String[] columnNames)
     {
         this.name = name;
 
@@ -129,12 +136,12 @@ public class StatGroupTable extends JPanel
 
         if (table.getColumnModel().getColumnCount() == 1)
         {
-            table.getColumnModel().getColumn(0).setCellRenderer(new MyTableCellRenderer(JLabel.CENTER, 1));
+            table.getColumnModel().getColumn(0).setCellRenderer(new StatGroupTableCellRenderer(SwingConstants.CENTER, 1));
             
         } else
         {
-            table.getColumnModel().getColumn(0).setCellRenderer(new MyTableCellRenderer(JLabel.LEFT, 2));
-            table.getColumnModel().getColumn(1).setCellRenderer(new MyTableCellRenderer(JLabel.RIGHT, 2));
+            table.getColumnModel().getColumn(0).setCellRenderer(new StatGroupTableCellRenderer(SwingConstants.LEFT, 2));
+            table.getColumnModel().getColumn(1).setCellRenderer(new StatGroupTableCellRenderer(SwingConstants.RIGHT, 2));
         }
 
 
@@ -142,7 +149,7 @@ public class StatGroupTable extends JPanel
 
         if (numRows > SCROLLPANE_THRESOLD)
         {
-            scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+            scrollPane = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
             if (table instanceof SortableJTable)
             {
                 ((SortableJTable)table).installColumnHeaderListeners();
@@ -168,6 +175,63 @@ public class StatGroupTable extends JPanel
 
             add(scrollPane != null ? scrollPane : table, BorderLayout.CENTER);
          }
+    }
+    
+
+    /**
+     * Sets info needed to send commands
+     * @param commandAction the command to be cloned and sent
+     * @param colId the column of the id which is used to build the link
+     */
+    public void setCommandAction(final CommandAction commandAction, 
+                                 final int           colId)
+    {
+        this.cmdAction = commandAction;
+        this.colId     = colId;
+    }
+    
+    /**
+     * Clones and sets up the CommandAction
+     * @param colIdObj the data from the column marked as colid
+     * @return null or a new cloned CommandAction
+     */
+    protected CommandAction createCommandAction(final Object colIdObj)
+    {
+        CommandAction commandAction = null;
+        if (cmdAction != null)
+        {
+            try
+            {
+                commandAction = (CommandAction)cmdAction.clone();
+                
+                if (colIdObj instanceof Integer && ((Integer)colIdObj).intValue() != -1)
+                {
+                    commandAction.setProperty("colid", colIdObj);
+                }
+                
+                Object cmdData = commandAction.getData();
+                if (cmdData instanceof Class<?>)
+                {
+                    Class<?>    clazz   = (Class<?>)commandAction.getData();
+                    DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(clazz.getName());
+                    if (tblInfo != null)
+                    {
+                        RecordSet rs = new RecordSet("", tblInfo.getTableId());
+                        rs.addItem((Integer)colIdObj);
+                        commandAction.setData(rs);
+                        
+                    } else
+                    {
+                        commandAction = null;
+                    }
+                }
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+        return commandAction;
     }
 
     /**
@@ -362,7 +426,7 @@ public class StatGroupTable extends JPanel
                 if (rowInx > -1)
                 {
                     StatDataItem sdi = getStatDataItem(table, rowInx);
-                    table.setCursor(sdi != null && StringUtils.isNotEmpty(sdi.getLink()) ? handCursor : defCursor);
+                    table.setCursor(sdi != null && sdi.shouldShowLinkCursor() ? handCursor : defCursor);
 
                 } else
                 {
@@ -375,6 +439,9 @@ public class StatGroupTable extends JPanel
         }
     }
 
+    //-------------------------------------------------------------------------
+    //
+    //-------------------------------------------------------------------------
     class LinkListener extends MouseAdapter
     {
         public void mouseClicked(MouseEvent e)
@@ -386,11 +453,9 @@ public class StatGroupTable extends JPanel
                 if (rowInx > -1)
                 {
                     StatDataItem sdi = getStatDataItem(table, rowInx);
-                    if (sdi != null && StringUtils.isNotEmpty(sdi.getLink()))
+                    if (sdi != null && sdi.getCmdAction() != null)
                     {
-                        //StatsTask statTask = (StatsTask)ContextMgr.getTaskByName(StatsTask.STATISTICS);
-                        //statTask.createStatPane(sdi.getLink());
-                        CommandDispatcher.dispatch(new CommandAction("Express_Search", "Search", sdi.getLink()));
+                        CommandDispatcher.dispatch(sdi.getCmdAction());
                     }
                 }
 
@@ -398,14 +463,16 @@ public class StatGroupTable extends JPanel
         }
     }
 
+    //-------------------------------------------------------------------------
     // This renderer extends a component. It is used each time a
     // cell must be displayed.
-    class MyTableCellRenderer extends JLabel implements TableCellRenderer
+    //-------------------------------------------------------------------------
+    class StatGroupTableCellRenderer extends JLabel implements TableCellRenderer
     {
         protected  int numCols;
         
         @SuppressWarnings("unchecked")
-        public MyTableCellRenderer(final int alignment, final int numCols)
+        public StatGroupTableCellRenderer(final int alignment, final int numCols)
         {
             super("", alignment);
             
@@ -436,7 +503,7 @@ public class StatGroupTable extends JPanel
             {
                 setIcon(null);
 
-                setForeground(StringUtils.isNotEmpty(sdi.getLink()) ? Color.BLUE : Color.BLACK);
+                setForeground(sdi.shouldShowLinkCursor() ? Color.BLUE : Color.BLACK);
 
                 if (numCols == 1)
                 {

@@ -773,7 +773,7 @@ public class TestAutoNumbering extends TestCase
     {
         log.info("testAccessionAlphaNumericDBNumOldYear");
         
-        Accession accession = createAccession("XXX", "XXXX", "2005-IC-001", "XXXX", Calendar.getInstance(), Calendar.getInstance());
+        Accession accession = createAccession(null, "XXX", "XXXX", "2005-IC-001", "XXXX", Calendar.getInstance(), Calendar.getInstance());
         HibernateUtil.beginTransaction();
         persist(accession);
         HibernateUtil.commitTransaction();
@@ -808,7 +808,7 @@ public class TestAutoNumbering extends TestCase
     {
         log.info("testAlphaNumericDBNumOldYear");
         
-        Accession accession = createAccession("XXX", "XXXX", "2005-IC-001", "XXXX", Calendar.getInstance(), Calendar.getInstance());
+        Accession accession = createAccession(null, "XXX", "XXXX", "2005-IC-001", "XXXX", Calendar.getInstance(), Calendar.getInstance());
         HibernateUtil.beginTransaction();
         persist(accession);
         HibernateUtil.commitTransaction();
@@ -838,7 +838,7 @@ public class TestAutoNumbering extends TestCase
     {
         log.info("testAlphaNumericDBNumOldYear");
         
-        Accession accession = createAccession("XXX", "XXXX", "2005-IC-001", "XXXX", Calendar.getInstance(), Calendar.getInstance());
+        Accession accession = createAccession(null, "XXX", "XXXX", "2005-IC-001", "XXXX", Calendar.getInstance(), Calendar.getInstance());
         HibernateUtil.beginTransaction();
         persist(accession);
         HibernateUtil.commitTransaction();

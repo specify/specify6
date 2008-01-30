@@ -8,9 +8,11 @@
       </box>
       -->
       <box title="Workbench DataSets" valcol="1" valtitle="Workbench">
-		<sql><![CDATA[SELECT name FROM workbench WHERE SpecifyUserID = SPECIFYUSERID]]></sql>
+          <sql><![CDATA[SELECT Name,WorkbenchID FROM workbench WHERE SpecifyUserID = SPECIFYUSERID]]></sql>
+          <command type="Workbench" action="WB.SelectedWorkbench" colid="2" class="edu.ku.brc.specify.datamodel.Workbench"/>
       </box>
   </row>
+    
     
     <row>
         <box title="Loans">

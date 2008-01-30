@@ -146,10 +146,8 @@ public class StatGroupTableModel extends AbstractTableModel
             {
                 return sdi.getValue();
                 
-            } else 
-            {
-                return column == 0 ? sdi.getDescription() : sdi.getValue();
             }
+            return column == 0 ? sdi.getDescription() : sdi.getValue();
         }
         return "XXX";
     }

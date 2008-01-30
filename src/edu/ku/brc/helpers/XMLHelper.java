@@ -499,7 +499,7 @@ public class XMLHelper
        }
    }
    
-   public static void xmlAttr(final StringBuilder sb, final String attr, final Boolean val, final Boolean defaultVal)
+   /*public static void xmlAttr(final StringBuilder sb, final String attr, final Boolean val, final Boolean defaultVal)
    {
        if (val != null || (defaultVal != null && val.equals(defaultVal)))
        {
@@ -535,7 +535,7 @@ public class XMLHelper
        {
            xmlAttr(sb, attr, val);
        }
-   }
+   }*/
 
 
 }

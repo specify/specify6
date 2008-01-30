@@ -330,7 +330,7 @@
                     <cell type="field" id="3" name="type" uitype="combobox" picklist="AccessionType" isrequired="true"/>
                     
                     <cell type="label" labelfor="4" label="Division"/>
-                    <cell type="field" id="4" name="text1" uitype="combobox" picklist="Division" isrequired="true"/>
+                    <cell type="field" id="4" name="division" uitype="combobox" picklist="Division" isrequired="true"/>
                     
                 </row>
                 <row>

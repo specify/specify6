@@ -134,7 +134,7 @@ public class QueryForIdResultsSQL implements QueryForIdResultsIFace
     /**
      * @param idStr
      */
-    public void add(String idStr)
+    public void add(final String idStr)
     {
         add(Integer.parseInt(idStr)); 
     }
@@ -153,7 +153,7 @@ public class QueryForIdResultsSQL implements QueryForIdResultsIFace
      * Adds an index.
      * @param index the index to add
      */
-    public void addIndex(int index)
+    public void addIndex(final int index)
     {
         indexes.add(index);
     }
@@ -179,7 +179,7 @@ public class QueryForIdResultsSQL implements QueryForIdResultsIFace
     /**
      * @param searchTerm the searchTerm to set
      */
-    public void setSearchTerm(String searchTerm)
+    public void setSearchTerm(final String searchTerm)
     {
         this.searchTerm = searchTerm;
     }
@@ -278,6 +278,7 @@ public class QueryForIdResultsSQL implements QueryForIdResultsIFace
             sqlStr = String.format(tableInfo.getViewSql(), new Object[] {joinIdName, critiera});
             //System.out.println("["+sqlStr+"]");
             sqlStr = QueryAdjusterForDomain.getInstance().adjustSQL(sqlStr);
+            
         } else
         {
             String vsql = getTableInfo().getViewSql();
@@ -289,7 +290,7 @@ public class QueryForIdResultsSQL implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsIFace#setSQL(java.lang.String)
      */
-    public void setSQL(String sql)
+    public void setSQL(final String sql)
     {
         overrideSQL = sql;
     }
@@ -321,7 +322,7 @@ public class QueryForIdResultsSQL implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#removeIds(java.util.List)
      */
-    public void removeIds(List<Integer> ids)
+    public void removeIds(final List<Integer> ids)
     {
         // no op
     }
@@ -329,7 +330,7 @@ public class QueryForIdResultsSQL implements QueryForIdResultsIFace
     /**
      * @param isExpanded the isExpanded to set
      */
-    public void setExpanded(boolean isExpanded)
+    public void setExpanded(final boolean isExpanded)
     {
         this.isExpanded = isExpanded;
     }

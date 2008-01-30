@@ -498,7 +498,6 @@ class UserGroupCellRenderer extends DefaultListCellRenderer
             setBackground(list.getBackground());
             setForeground(list.getForeground());
         }
-        System.out.println("getlistcellrenderer");
         UserGroup group = (UserGroup) value;
         setText(group.getName());
         return this;

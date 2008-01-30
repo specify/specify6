@@ -3821,7 +3821,7 @@ public class GenericDBConversion
                 "CollectionObjectID", "VisibilitySetBy", "ContainerOwnerID", "InventoryDate",
                 "ObjectCondition", "Notifications", "ProjectNumber", "Restrictions", "YesNo3",
                 "YesNo4", "YesNo5", "YesNo6", "FieldNotebookPageID", "ColObjAttributesID",
-                "DNASequenceID", "AppraisalID" };
+                "DNASequenceID", "AppraisalID", "TotalValue" };
 
         Hashtable<String, String> fieldsToSkipHash = new Hashtable<String, String>();
         for (String fName : fieldsToSkip)

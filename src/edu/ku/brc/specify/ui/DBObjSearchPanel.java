@@ -50,6 +50,7 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.expresssearch.ERTICaptionInfo;
 import edu.ku.brc.af.core.expresssearch.ExpressResultsTableInfo;
 import edu.ku.brc.af.core.expresssearch.ExpressSearchConfigCache;
+import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.core.expresssearch.QueryForIdResultsSQL;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -106,7 +107,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
     protected Color          badSearchColor = new Color(255,235,235);
 
     protected Hashtable<String, ExpressResultsTableInfo> tables = new Hashtable<String, ExpressResultsTableInfo>();
-    protected ExpressResultsTableInfo  tableInfo;
+    protected ExpressResultsTableInfo   esTableInfo;
     protected ESResultsTablePanelIFace  etrb = null;
 
     protected List<Integer>  idList         = null;
@@ -277,15 +278,15 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
         
         if (queryBuilder == null)
         {
-            ExpressResultsTableInfo tblInfo = ExpressSearchConfigCache.getTableInfoByName(searchName);
-            if (tblInfo != null)
+            ExpressResultsTableInfo esTblInfo = ExpressSearchConfigCache.getTableInfoByName(searchName);
+            if (esTblInfo != null)
             {
-               tableInfo = tblInfo;
-               tableInfo.setViewSQLOverridden(true);
+               esTableInfo = esTblInfo;
+               esTableInfo.setViewSQLOverridden(true);
                
-               tables.put(tableInfo.getTableId(), tableInfo);
+               tables.put(esTableInfo.getTableId(), esTableInfo);
                
-               sqlStr = tableInfo.getViewSql();
+               sqlStr = esTableInfo.getViewSql();
     
            } else
            {
@@ -388,7 +389,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
         {
             StringBuilder strBuf = new StringBuilder(256);
             int cnt = 0;
-            for (ERTICaptionInfo captionInfo : tableInfo.getVisibleCaptionInfo())
+            for (ERTICaptionInfo captionInfo : esTableInfo.getVisibleCaptionInfo())
             {
                 Object value  = dataMap.get(captionInfo.getColName());
                 log.debug("Column Name["+captionInfo.getColName()+"] Value["+value+"]");
@@ -401,7 +402,8 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
                         {
                             strBuf.append(" OR ");
                         }
-                        strBuf.append(" lower("+captionInfo.getColName()+") like '#$#"+valStr+"#$#'");
+                        
+                        strBuf.append(" LOWER("+captionInfo.getColName()+") like '#$#"+valStr+"#$#'");
                         cnt++;
                     }
                 } else
@@ -410,7 +412,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
                 }
             }
             
-            String fullStrSql = sqlStr;
+            String fullStrSql = QueryAdjusterForDomain.getInstance().adjustSQL(sqlStr);
             
             //System.out.println("\n1["+sqlStr+"]");
             //System.out.println("2["+strBuf+"]");
@@ -422,7 +424,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
             //tableInfo.setViewSql(fullSQL);
             setUIEnabled(false);
             
-            resultsInfo = new QueryForIdResultsSQL(tableInfo.getId(), null, tableInfo, 0, "");
+            resultsInfo = new QueryForIdResultsSQL(esTableInfo.getId(), null, esTableInfo, 0, "");
             resultsInfo.setSQL(fullSQL);
         }
         

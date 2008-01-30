@@ -267,7 +267,7 @@ public class StatsMgr
             idStr   = statName.substring(inx+4, statName.length());
         }
 
-        Element dom = (Element)getDOM();
+        Element dom = getDOM();
         if (dom != null)
         {
             Element element = (Element)dom.selectSingleNode("/statistics/stat[@name='"+nameStr+"']");

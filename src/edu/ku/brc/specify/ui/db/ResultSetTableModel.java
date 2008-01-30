@@ -706,7 +706,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
      * @see edu.ku.brc.dbsupport.CustomQueryListener#exectionDone(edu.ku.brc.dbsupport.CustomQuery)
      */
     //@Override
-    public void exectionDone(CustomQueryIFace customQuery)
+    public void exectionDone(final CustomQueryIFace customQuery)
     {
         JPAQuery jpaQuery = (JPAQuery)customQuery;
         List<?> list      = jpaQuery.getDataObjects();

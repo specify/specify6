@@ -55,6 +55,7 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.ui.ColorWrapper;
@@ -124,22 +125,18 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     protected JButton            searchBtn  = null;
     protected JButton            createBtn  = null;
     protected JButton            editBtn    = null;
-    protected String             className;
-    protected String             idName;
+    protected DBTableInfo        tableInfo;
+    protected String             frameTitle = null;
     protected String             keyName;
     protected String             format;
     protected String             formatName;
-    protected Class<?>           classObj = null;
     protected DataGetterForObj   getter   = null;
-    protected String             searchDialogName;
     protected String[]           fieldNames;
 
     protected FormDataObjIFace   dataObj     = null;
     protected FormDataObjIFace   newDataObj  = null;
     protected MODE               currentMode = MODE.Unknown;
 
-    protected String             displayInfoDialogName;
-    protected String             frameTitle = null;
 
     protected ViewBasedDisplayIFace frame      = null;
     protected MultiView             multiView  = null;
@@ -157,7 +154,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      *  Constructor.
      * @param tableName name of the table to be searched
      * @param idColumn the column name that contains the record ID
-     * @param keyColumn the column that is searched
+     * @param keyFieldName the column that is searched
      * @param displayColumn a comma separated list of columns to be displayed and formatted by the format clause (null is OK)
      * @param className the Class name of the java object that represents the table
      * @param idName the POJO field name of the ID column
@@ -168,47 +165,38 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      * @param displayInfoDialogName the name to look up to display the info dialog (from the dialog factory)
      * @param objTitle the title of a single object
      */
-    public ValComboBoxFromQuery(final String tableName,
-                                final String idColumn,
-                                final String keyColumn,
-                                final String displayColumn,
-                                final String className,
-                                final String idName,
-                                final String keyName,
-                                final String format,
-                                final String formatName,
-                                final String searchDialogName,
-                                final String displayInfoDialogName,
-                                final String objTitle,
-                                final int    btns)
+    public ValComboBoxFromQuery(final DBTableInfo tableInfo,
+                                final String      keyFieldName,
+                                final String      displayColumn,
+                                final String      keyName,
+                                final String      format,
+                                final String      formatName,
+                                final int         btns)
     
     {
         if (StringUtils.isEmpty(displayColumn))
         {
-            throw new RuntimeException("For ValComboBoxFromQuery table["+tableName+"] displayColumn null.");
+            throw new RuntimeException("For ValComboBoxFromQuery table["+tableInfo.getName()+"] displayColumn null.");
         }
         if (StringUtils.isEmpty(format) && StringUtils.isEmpty(formatName))
         {
-            throw new RuntimeException("For ValComboBoxFromQuery table["+tableName+"] both format and formatName are null.");
+            throw new RuntimeException("For ValComboBoxFromQuery table["+tableInfo.getName()+"] both format and formatName are null.");
         }
-        if (StringUtils.isEmpty(displayInfoDialogName))
+        if (StringUtils.isEmpty(tableInfo.getNewObjDialog()))
         {
-            throw new RuntimeException("For ValComboBoxFromQuery table["+tableName+"] displayInfoDialogName is null.");
+            throw new RuntimeException("For ValComboBoxFromQuery table["+tableInfo.getName()+"] displayInfoDialogName is null.");
         }
         
-        this.className  = className;
-        this.idName     = idName;
-        this.keyName    = keyName;
-        this.format     = format;
-        this.formatName = formatName;
-        this.searchDialogName = searchDialogName;
-        this.displayInfoDialogName = displayInfoDialogName;
-
-        textWithQuery = new TextFieldWithQuery(tableName, idColumn, keyColumn, displayColumn, format);
+        this.tableInfo             = tableInfo;
+        this.keyName               = keyName;
+        this.format                = format;
+        this.formatName            = formatName;
+        
+        textWithQuery = new TextFieldWithQuery(tableInfo, keyFieldName, displayColumn, format);
         textWithQuery.addListSelectionListener(this);
         textWithQuery.setAddAddItem(true);
         
-        init(objTitle, btns);
+        init(tableInfo.getTitle(), btns);
         
         setOpaque(false);
     }
@@ -286,17 +274,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     {
         fieldNames = split(StringUtils.deleteWhitespace(keyName), ",");
 
-        try
-        {
-            classObj = Class.forName(className);
-
-        } catch (ClassNotFoundException ex)
-        {
-           log.error(ex);
-           throw new RuntimeException(ex);
-        }
-
-        boolean hasSearchBtn = StringUtils.isNotEmpty(searchDialogName);
+        boolean hasSearchBtn = StringUtils.isNotEmpty(tableInfo.getSearchDialog());
 
         PanelBuilder    pb = new PanelBuilder(new FormLayout("p:g,1px,p,1px,p"+(hasSearchBtn ? ",1px,p" : ""), "c:p"), this);
         CellConstraints cc = new CellConstraints();
@@ -381,7 +359,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     protected void displaySearchDialog()
     {
-        ViewBasedSearchDialogIFace dlg = UIRegistry.getViewbasedFactory().createSearchDialog(UIHelper.getWindow(searchBtn), searchDialogName);
+        ViewBasedSearchDialogIFace dlg = UIRegistry.getViewbasedFactory().createSearchDialog(UIHelper.getWindow(searchBtn), tableInfo.getSearchDialog());
         if (builder != null)
         {
             dlg.registerQueryBuilder(builder);
@@ -498,7 +476,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     {
         String closeBtnTitle = getResourceString("Save");
         frame = UIRegistry.getViewbasedFactory().createDisplay(UIHelper.getWindow(this),
-                                                                   displayInfoDialogName,
+                                                                   tableInfo.getNewObjDialog(),
                                                                    frameTitle,
                                                                    closeBtnTitle,
                                                                    true,   // false means View Mode
@@ -506,14 +484,14 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                                                                    ViewBasedDialogFactoryIFace.FRAME_TYPE.DIALOG);
         if (isNewObject)
         {
-            newDataObj = FormHelper.createAndNewDataObj(classObj);
+            newDataObj = FormHelper.createAndNewDataObj(tableInfo.getClassObj());
             newDataObj.initialize();
             
             //frame.setData(newDataObj);
 
             // Now get the setter for an object and set the value they typed into the combobox and place it in
             // the first field name
-            DataObjectSettable ds = DataObjectSettableFactory.get(classObj.getName(), "edu.ku.brc.ui.forms.DataSetterForObj");
+            DataObjectSettable ds = DataObjectSettableFactory.get(tableInfo.getClassObj().getName(), "edu.ku.brc.ui.forms.DataSetterForObj");
             if (ds != null)
             {
                 log.error("ID: "+textWithQuery.getSelectedId());
@@ -853,7 +831,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         UIHelper.removeFocusListeners(textWithQuery);
         UIHelper.removeKeyListeners(this);
         
-        classObj  = null;
+        tableInfo = null;
         getter    = null;
         dataObj   = null;
         frame     = null;
@@ -939,14 +917,14 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
             try
             {
-                log.debug(classObj+" " +idName+" " +id);
-                List<?> list = session.getDataList(classObj, idName, id, DataProviderSessionIFace.CompareType.Restriction);
+                log.debug(tableInfo.getClassObj()+" " +tableInfo.getIdFieldName()+" " +id);
+                List<?> list = session.getDataList(tableInfo.getClassObj(), tableInfo.getIdFieldName(), id, DataProviderSessionIFace.CompareType.Restriction);
                 if (list.size() != 0)
                 {
                     value = list.get(0);
                 } else
                 {
-                    log.error("**** Can't find the Object "+classObj+" with ID: "+id);
+                    log.error("**** Can't find the Object "+tableInfo.getClassObj()+" with ID: "+id);
                 }
                 
             } catch (Exception ex)

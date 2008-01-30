@@ -418,7 +418,7 @@ public class UIFieldFormatterMgr
                         
                         UIFieldFormatter.FormatterType type = UIFieldFormatter.FormatterType.Generic;
                         
-                        UIFieldFormatter.PartialDateEnum partialDateType = UIFieldFormatter.PartialDateEnum.None;
+                        UIFieldFormatter.PartialDateEnum partialDateType = UIFieldFormatter.PartialDateEnum.Full;
                         Class<?> dataClass = null;
                         if (StringUtils.isNotEmpty(dataClassName))
                         {

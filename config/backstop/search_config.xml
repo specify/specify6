@@ -30,7 +30,7 @@
  INNER JOIN agent ON determination.DeterminerID = agent.AgentID
  INNER JOIN taxon ON determination.TaxonID = taxon.TaxonID
  INNER JOIN determinationstatus ON determination.DeterminationStatusID = determinationstatus.DeterminationStatusID
- WHERE determination.CollectionMemberID == COLMEMID AND determinationstatus.IsCurrent = 1 AND %s]]>
+ WHERE determination.CollectionMemberID = COLMEMID AND determinationstatus.IsCurrent = 1 AND %s]]>
                 </sql>
                 <captions>
                     <caption tableid="4" col="taxon.TaxonID" visible="false"/>
@@ -383,7 +383,7 @@
                 <sql>
                     <![CDATA[SELECT * FROM (SELECT agent.AgentID,
 agent.FirstName,  agent.LastName, agent.Name, agent.Email, address.Address, address.City,
-address.State, address.PostalCode, address.Country FROM agent  Left Join address ON agent.AgentID = address.AgentID) AS newTable WHERE (%s)]]>
+address.State, address.PostalCode, address.Country FROM agent Left Join address ON agent.AgentID = address.AgentID WHERE agent.CollectionMemberID = COLMEMID) AS newTable WHERE (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="5" col="AgentID" visible="false"/>
@@ -404,7 +404,7 @@ address.State, address.PostalCode, address.Country FROM agent  Left Join address
             <detailView icon="">
                 <sql>
                     <![CDATA[SELECT * FROM (SELECT permit.PermitID, permit.PermitNumber,agent.LastName,permit.IssuedDate,permit.StartDate,
-permit.EndDate,permit.RenewalDate,permit.Type FROM permit left Join agent ON permit.IssuedByID = agent.AgentID) AS newTable WHERE (%s)]]>
+permit.EndDate,permit.RenewalDate,permit.Type FROM permit left Join agent ON permit.IssuedByID = agent.AgentID WHERE permit.CollectionMemberID = COLMEMID) AS newTable WHERE (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="6" col="PermitID" visible="false"/>
@@ -422,7 +422,7 @@ permit.EndDate,permit.RenewalDate,permit.Type FROM permit left Join agent ON per
         <table id="102" tableid="7" name="AccessionSearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
-                    <![CDATA[SELECT AccessionID, AccessionNumber, Status, Type, DateAccessioned, DateReceived FROM accession WHERE (%s)]]>
+                    <![CDATA[SELECT AccessionID, AccessionNumber, Status, Type, DateAccessioned, DateReceived FROM accession WHERE CollectionMemberID = COLMEMID AND (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="7" col="AccessionID" visible="false"/>
@@ -438,7 +438,7 @@ permit.EndDate,permit.RenewalDate,permit.Type FROM permit left Join agent ON per
         <table id="103" tableid="3" name="GeographySearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
-                    <![CDATA[SELECT geography.GeographyID, geography.Name, geography.FullName, geographytreedefitem.Name FROM geography INNER JOIN geographytreedefitem ON geography.GeographyTreeDefItemID = geographytreedefitem.GeographyTreeDefItemID WHERE (%s)]]>
+                    <![CDATA[SELECT geography.GeographyID, geography.Name, geography.FullName, geographytreedefitem.Name FROM geography INNER JOIN geographytreedefitem ON geography.GeographyTreeDefItemID = geographytreedefitem.GeographyTreeDefItemID WHERE geography.CollectionMemberID = COLMEMID AND (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="3" col="geography.GeographyID" visible="false"/>
@@ -453,7 +453,7 @@ permit.EndDate,permit.RenewalDate,permit.Type FROM permit left Join agent ON per
         <table id="104" tableid="65" name="PrepTypeSearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
-                    <![CDATA[select PrepTypeID, Name from preptype where %s]]>
+                    <![CDATA[select PrepTypeID, Name from preptype where CollectionMemberID = COLMEMID AND (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="65" col="PrepTypeID" visible="false"/>
@@ -491,7 +491,7 @@ permit.EndDate,permit.RenewalDate,permit.Type FROM permit left Join agent ON per
         <table id="107" tableid="4" name="TaxonSearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
-                    <![CDATA[SELECT TaxonID, FullName, CommonName FROM taxon WHERE (%s)]]>
+                    <![CDATA[SELECT TaxonID, FullName, CommonName FROM taxon WHERE TaxonTreeDefItemID = TAXTREEDEFID AND (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="4" col="TaxonID" visible="false"/>
@@ -504,7 +504,7 @@ permit.EndDate,permit.RenewalDate,permit.Type FROM permit left Join agent ON per
         <table id="108" tableid="5" name="AgentNameSearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
-                    <![CDATA[SELECT AgentID, FirstName, LastName, Name FROM agent AS newTable WHERE (%s)]]>
+                    <![CDATA[SELECT AgentID, FirstName, LastName, Name FROM agent WHERE CollectionMemberID = COLMEMID AND (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="5" col="AgentID" visible="false"/>
@@ -518,7 +518,7 @@ permit.EndDate,permit.RenewalDate,permit.Type FROM permit left Join agent ON per
         <table id="109" tableid="58" name="LocationSearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
-                    <![CDATA[SELECT LocationID, FullName FROM location WHERE (%s)]]>
+                    <![CDATA[SELECT LocationID, FullName FROM location WHERE LocationTreeDefItemID = LOCTREEDEFID AND (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="58" col="LocationID" visible="false"/>
@@ -530,7 +530,7 @@ permit.EndDate,permit.RenewalDate,permit.Type FROM permit left Join agent ON per
         <table id="110" tableid="46" name="GeologicTimePeriodSearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
-                    <![CDATA[SELECT GeologicTimePeriodID, FullName FROM geologictimeperiod WHERE (%s)]]>
+                    <![CDATA[SELECT GeologicTimePeriodID, FullName FROM geologictimeperiod WHERE GeologicTimePeriodTreeDefItemID = GTPTREEDEFID AND (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="46" col="GeologicTimePeriodID" visible="false"/>
@@ -542,7 +542,7 @@ permit.EndDate,permit.RenewalDate,permit.Type FROM permit left Join agent ON per
         <table id="111" tableid="100" name="LithoStrat" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
-                    <![CDATA[SELECT LithoStratID, FullName FROM lithostrat WHERE (%s)]]>
+                    <![CDATA[SELECT LithoStratID, FullName FROM lithostrat WHERE LithoStratTreeDefItemID = LITHOTREEDEFID AND (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="100" col="LithoStratID" visible="false"/>
@@ -554,7 +554,7 @@ permit.EndDate,permit.RenewalDate,permit.Type FROM permit left Join agent ON per
         <table id="112" tableid="32" name="PaleoContextSearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
-                    <![CDATA[SELECT PaleoContextID, TopDistance, DistanceUnits FROM paleocontext WHERE (%s)]]>
+                    <![CDATA[SELECT PaleoContextID, TopDistance, DistanceUnits FROM paleocontext WHERE CollectionMemberID = COLMEMID AND (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="32" col="PaleoContextID" visible="false"/>
@@ -572,7 +572,8 @@ permit.EndDate,permit.RenewalDate,permit.Type FROM permit left Join agent ON per
  INNER JOIN collectionobject ON preparation.CollectionObjectID = collectionobject.CollectionObjectID
  INNER JOIN collection ON collectionobject.CollectingEventID = collection.CollectionID
  INNER JOIN collectiontype ON collection.CollectionTypeID = collectiontype.CollectionTypeID
- INNER JOIN specifyuser ON collectiontype.SpecifyUserID = specifyuser.SpecifyUserID WHERE specifyuser.SpecifyUserID = SPECIFYUSERID AND
+ INNER JOIN specifyuser ON collectiontype.SpecifyUserID = specifyuser.SpecifyUserID 
+ WHERE specifyuser.SpecifyUserID = SPECIFYUSERID AND loan.CollectionMemberID = COLMEMID AND 
  (not (currentduedate is null)) AND loan.IsGift = false AND (IsClosed = false or IsClosed is null) AND 
                     datediff(CURDATE(), currentduedate) > 0]]>
                 </sql>
@@ -589,7 +590,7 @@ permit.EndDate,permit.RenewalDate,permit.Type FROM permit left Join agent ON per
         <table id="114" tableid="2" name="LocalitySearch" priority="1" color="30, 144, 255">
             <detailView icon="Locality">
                 <sql>
-                    <![CDATA[SELECT LocalityID, LocalityName,Latitude1,Longitude1  FROM locality WHERE (%s)]]>
+                    <![CDATA[SELECT LocalityID, LocalityName,Latitude1,Longitude1 FROM locality WHERE CollectionMemberID = COLMEMID AND (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="2" col="LocalityID" visible="false"/>

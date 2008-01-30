@@ -178,10 +178,6 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
                 {
                     dispLabel.setIcon(IconManager.getIcon(item.first));
                     form.getUIComponent().validate();
-                    /*form.getValidator().setHasChanged(true);
-                    form.getValidator().validateForm();
-                    System.out.println(form.getValidator().isFormValid());
-                    */
                 }
             }
         });
@@ -246,11 +242,7 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
                                 Image img = GraphicsUtils.getScaledImage(icon, 32, 32);
                                 if (img != null)
                                 {
-                                    ImageIcon appImgIcon = new ImageIcon(img);
-                                    if (appImgIcon != null)
-                                    {
-                                        newIcon = appImgIcon;
-                                    }
+                                    newIcon = new ImageIcon(img);
                                 }
                             } else
                             {

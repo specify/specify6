@@ -10,9 +10,10 @@ import javax.swing.JLabel;
 
 import com.jgoodies.forms.layout.CellConstraints;
 
-import edu.ku.brc.dbsupport.CustomQueryIFace;
 import edu.ku.brc.dbsupport.CustomQueryFactory;
+import edu.ku.brc.dbsupport.CustomQueryIFace;
 import edu.ku.brc.dbsupport.CustomQueryListener;
+import edu.ku.brc.ui.CommandAction;
 
 /**
  *
@@ -34,10 +35,8 @@ public class StatGroupTableFromCustomQuery extends StatGroupTable implements Cus
     //private static final Logger log = Logger.getLogger(StatGroupTableFromCustomQuery.class);
 
     // Data Members
-    protected String  linkStr       = null;
-    protected int     colId         = -1;
-    protected String  noResultsMsg;
-    protected boolean hasData       = false;
+    protected String        noResultsMsg;
+    protected boolean       hasData       = false;
 
     /**
      * Constructor that describes where we get everything from.
@@ -115,6 +114,19 @@ public class StatGroupTableFromCustomQuery extends StatGroupTable implements Cus
         CustomQueryIFace customQuery = CustomQueryFactory.getInstance().getQuery(sql);
         customQuery.execute(this);
     }
+    
+
+    /**
+     * Sets info needed to send commands
+     * @param commandAction the command to be cloned and sent
+     * @param colId the column of the id which is used to build the link
+     */
+    public void setCommandAction(final CommandAction commandAction, 
+                                 final int           colId)
+    {
+        this.cmdAction = commandAction;
+        this.colId     = colId;
+    }
 
     /**
      * Requests that all the data be reloaded (Not implemented yet)
@@ -131,17 +143,6 @@ public class StatGroupTableFromCustomQuery extends StatGroupTable implements Cus
     {
         // this is needed to the box isn't huge before it has data
         return hasData ? super.getPreferredSize() : new Dimension(100,100);
-    }
-
-    /**
-     * Sets info need to make links
-     * @param linkStr the name of the static link
-     * @param colId the column of the id which is used to build the link
-     */
-    public void setLinkInfo(final String linkStr, final int colId)
-    {
-        this.linkStr = linkStr;
-        this.colId   = colId;
     }
 
      /**
@@ -176,7 +177,7 @@ public class StatGroupTableFromCustomQuery extends StatGroupTable implements Cus
         model.clear();
         hasData = true;
 
-        List<?> results = customQuery.getResults();
+        List<?> results = customQuery.getDataObjects();
 
         if (results != null && results.size() > 0)
         {
@@ -185,9 +186,8 @@ public class StatGroupTableFromCustomQuery extends StatGroupTable implements Cus
                 String desc     = results.get(i++).toString();
                 Object val      = results.get(i++);
                 Object colIdObj = results.get(i);
-                String columnId = colIdObj != null ? colIdObj.toString() : null;
                 
-                StatDataItem statItem = new StatDataItem(desc, linkStr == null || columnId == null ? null : (linkStr+",id="+columnId), false);
+                StatDataItem statItem = new StatDataItem(desc, createCommandAction(colIdObj), false);
                 statItem.setValue(val);
                 model.addDataItem(statItem);
             }
