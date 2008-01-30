@@ -44,6 +44,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -396,6 +397,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     /**
      * Builds the SQL to be used to do the search.
      * @param newEntryStr the string value to be searched
+     * @param isForCount do query for count of returns
      * @return the full sql string.
      */
     protected String buildSQL(final String newEntryStr, final boolean isForCount)
@@ -420,8 +422,15 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             sb.append(" FROM ");
             sb.append(tableInfo.getClassName());
             sb.append(" WHERE ");
-            sb.append(QueryAdjusterForDomain.getInstance().adjustSQL(" collectionMemberId = COLMEMID"));
-            sb.append(" AND LOWER(");
+            
+            String specialCols = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, true);
+            if (StringUtils.isNotEmpty(specialCols))
+            {
+                sb.append(specialCols);
+                sb.append(" AND ");
+            }
+            
+            sb.append(" LOWER(");
             sb.append(keyColumn);
             sb.append(") LIKE '");
             sb.append(newEntryStr.toLowerCase());
@@ -433,6 +442,10 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         return sql;
     }
     
+    /**
+     * Process the results from the search
+     * @param customQuery the query
+     */
     public void processResults(final CustomQueryIFace customQuery)
     {
         List<?> dataObjList =  customQuery.getDataObjects();
