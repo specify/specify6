@@ -1935,6 +1935,7 @@ public class Uploader implements ActionListener, WindowStateListener, KeyListene
                 undoUpload(false, true);
                 return true;
             }
+            //else rv equals JOptionPane.CANCEL_OPTION or CLOSED_OPTION
             for (UploadTable ut : uploadTables)
             {
                 try

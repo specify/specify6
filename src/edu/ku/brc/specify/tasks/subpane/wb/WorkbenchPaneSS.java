@@ -2479,7 +2479,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                     UIRegistry.clearGlassPaneMsg();
                 }
             }
-            else if (rv == JOptionPane.CANCEL_OPTION)
+            else if (rv == JOptionPane.CANCEL_OPTION || rv == JOptionPane.CLOSED_OPTION)
             {
                 return false;
             }
