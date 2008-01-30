@@ -4,6 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.RenderingHints;
@@ -13,8 +14,14 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
 
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
+
+import org.apache.tools.ant.util.UUEncoder;
+
+import sun.misc.UUDecoder;
 
 /**
  * Provides simple utility functions for drawing circles, arrows, etc.  Some
@@ -199,6 +206,31 @@ public class GraphicsUtils
      * @return the byte array of the scaled image
      * @throws IOException an error occurred while loading the input bytes as a BufferedImage or while encoding the output as a JPEG
      */
+    public static ImageIcon scaleImageToIconImage(final BufferedImage img, 
+                                                  final int maxHeight, 
+                                                  final int maxWidth, 
+                                                  final boolean preserveAspectRatio) throws IOException
+    {
+        
+        
+        byte[] bytes = scaleImage(img, maxHeight, maxWidth, preserveAspectRatio);
+        if (bytes != null && bytes.length > 0)
+        {
+            return new ImageIcon(bytes);
+        }
+        return null;
+    }
+    
+    /**
+     * Scales an image using a relatively fast algorithm.
+     * 
+     * @param imgData the byte array of the original image data (must be readable by {@link ImageIO#read(java.io.InputStream)})
+     * @param maxHeight the max height of the scaled image
+     * @param maxWidth the max width of the scaled image
+     * @param preserveAspectRatio if true, the scaling preserves the aspect ratio of the original image
+     * @return the byte array of the scaled image
+     * @throws IOException an error occurred while loading the input bytes as a BufferedImage or while encoding the output as a JPEG
+     */
     public static byte[] scaleImage(byte[] imgData, int maxHeight, int maxWidth, boolean preserveAspectRatio) throws IOException
     {
         ByteArrayInputStream inputStr = new ByteArrayInputStream(imgData);
@@ -351,5 +383,91 @@ public class GraphicsUtils
             sb.deleteCharAt(sb.length()-4);
         }
         return sb.toString();
+    }
+    
+    /**
+     * Gets a scaled icon and if it doesn't exist it creates one and scales it
+     * @param icon image to be scaled
+     * @param iconSize the icon size (Std)
+     * @param scaledIconSize the new scaled size in pixels
+     * @return the scaled icon
+     */
+    public static Image getScaledImage(final ImageIcon icon, final int newMaxWidth, final int newMaxHeight)
+    {
+        if (icon != null)
+        {
+            int width  = newMaxWidth;
+            int height = newMaxHeight;
+                    
+            if ((width < 0) || (height < 0))
+            {   //image is nonstd, revert to original size
+                width  = icon.getIconWidth();
+                height = icon.getIconHeight();
+            }
+            
+            Image imgMemory = icon.getImage();
+            
+            //make sure all pixels in the image were loaded
+            imgMemory = new ImageIcon(imgMemory).getImage();
+            
+            BufferedImage thumbImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+            
+            Graphics2D    graphics2D = thumbImage.createGraphics();
+            graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, 
+                                        RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            graphics2D.drawImage(imgMemory, 0, 0, 
+                                width, 
+                                height, null);
+            graphics2D.dispose();
+            
+            imgMemory = thumbImage;
+            return imgMemory;
+            
+        }
+        return null;
+    }
+
+    
+    public static String uuencodeImage(final String name, final ImageIcon imgIcon)
+    {
+        try
+        {
+            BufferedImage tmp = new BufferedImage(imgIcon.getIconWidth(), imgIcon.getIconWidth(), BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g2 = tmp.createGraphics();
+            //g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            g2.drawImage(imgIcon.getImage(), 0, 0, imgIcon.getIconWidth(), imgIcon.getIconWidth(), null);
+            g2.dispose();
+            
+            ByteArrayOutputStream output = new ByteArrayOutputStream(8192);
+            ImageIO.write(tmp, "PNG", output);
+            byte[] outputBytes = output.toByteArray();
+            output.close();
+            
+            ByteArrayOutputStream  bos = new ByteArrayOutputStream();
+            UUEncoder uuencode = new UUEncoder(name);
+            uuencode.encode(new ByteArrayInputStream(outputBytes), bos);
+            return bos.toString();
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return "";
+    }
+    
+    public static ImageIcon uudecodeImage(final String name, final String str)
+    {
+        try
+        {
+            UUDecoder decoder = new UUDecoder();
+            ByteBuffer bb = decoder.decodeBufferToByteBuffer(str);
+            ImageIcon img = new ImageIcon(bb.array());
+            return img;
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return null;
     }
 }

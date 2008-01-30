@@ -1,26 +1,38 @@
 package edu.ku.brc.specify.prefs;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.awt.Component;
+import java.awt.FileDialog;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.GraphicsEnvironment;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JTextField;
 
+import org.apache.commons.lang.StringUtils;
+
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.GenericPrefsPanel;
 import edu.ku.brc.af.prefs.PrefsPanelIFace;
 import edu.ku.brc.af.prefs.PrefsSavable;
+import edu.ku.brc.helpers.ImageFilter;
+import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.validation.UIValidator;
 import edu.ku.brc.ui.forms.validation.ValComboBox;
@@ -37,10 +49,15 @@ import edu.ku.brc.util.Pair;
 @SuppressWarnings("serial")
 public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPanelIFace, PrefsSavable
 {
+    protected static final String iconPrefName      = "ui.formatting.user_icon_path";
+    protected static final String iconImagePrefName = "ui.formatting.user_icon_image";
+    
     protected JComboBox    fontNames = null;
     protected JComboBox    fontSizes = null;
     protected JTextField   testField = null;
     protected ValComboBox  disciplineCBX;
+    protected ValComboBox  appIconCBX;
+    protected String       newAppIconName = null;
     
     /**
      * Constructor.
@@ -170,6 +187,106 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
         });
         
         comboBox.setSelectedIndex(inx);
+        
+        //-----------------------------------
+        // Do App Icon
+        //-----------------------------------
+        
+        final JButton getIconBtn    = (JButton)form.getCompById("GetIconImage");
+        final JButton clearIconBtn  = (JButton)form.getCompById("ClearIconImage");
+        final JLabel  appLabel      = (JLabel)form.getCompById("appIcon");
+        
+        String imgEncoded = AppPreferences.getRemote().get(iconImagePrefName, "");
+        ImageIcon appImgIcon = null;
+        if (StringUtils.isNotEmpty(imgEncoded))
+        {
+            appImgIcon = GraphicsUtils.uudecodeImage("", imgEncoded);
+            if (appImgIcon != null && appImgIcon.getIconWidth() != 32 || appImgIcon.getIconHeight() != 32)
+            {
+                appImgIcon = null;
+                clearIconBtn.setEnabled(false);
+            } else
+            {
+                clearIconBtn.setEnabled(true);
+            }
+        }
+        
+        if (appImgIcon == null)
+        {
+            appImgIcon = IconManager.getIcon("AppIcon");
+            clearIconBtn.setEnabled(false);
+        } else
+        {
+            clearIconBtn.setEnabled(true);
+        }
+        appLabel.setIcon(appImgIcon);
+        
+        getIconBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                FileDialog fileDialog = new FileDialog((Frame) UIRegistry.get(UIRegistry.FRAME),
+                                   getResourceString("PREF_CHOOSE_APPICON_TITLE"), FileDialog.LOAD);
+                fileDialog.setFilenameFilter(new ImageFilter());
+                UIHelper.centerAndShow(fileDialog);
+                fileDialog.dispose();
+
+                String path = fileDialog.getDirectory();
+                if (StringUtils.isNotEmpty(path))
+                {
+                    String fullPath = path + File.separator + fileDialog.getFile();
+                    File imageFile = new File(fullPath);
+                    if (imageFile.exists())
+                    {
+                        ImageIcon newIcon = null;
+                        ImageIcon icon = new ImageIcon(fullPath);
+                        if (icon.getIconWidth() != -1 && icon.getIconHeight() != -1)
+                        {
+                            if (icon.getIconWidth() >32 || icon.getIconHeight() > 32)
+                            {
+                                Image img = GraphicsUtils.getScaledImage(icon, 32, 32);
+                                if (img != null)
+                                {
+                                    ImageIcon appImgIcon = new ImageIcon(img);
+                                    if (appImgIcon != null)
+                                    {
+                                        newIcon = appImgIcon;
+                                    }
+                                }
+                            } else
+                            {
+                                newIcon = icon;
+                            }
+                        }
+                        
+                        if (newIcon != null)
+                        {
+                            appLabel.setIcon(newIcon);
+                            clearIconBtn.setEnabled(true);
+                            String imgBufStr = GraphicsUtils.uuencodeImage(newAppIconName, newIcon);
+                            AppPreferences.getRemote().put("ui.formatting.user_icon_image", imgBufStr);
+                            
+                        } else
+                        {
+                            appLabel.setIcon(IconManager.getIcon("AppIcon"));
+                            clearIconBtn.setEnabled(false);
+                            AppPreferences.getRemote().remove("ui.formatting.user_icon_image");
+                        }
+                        //((FormViewObj)form).getMVParent().set
+                        form.getValidator().dataChanged(null, null, null);
+                    }
+                }
+            }
+        });
+        
+        clearIconBtn.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                appLabel.setIcon(IconManager.getIcon("AppIcon"));
+                clearIconBtn.setEnabled(false);
+                AppPreferences.getRemote().remove("ui.formatting.user_icon_image");
+                form.getValidator().dataChanged(null, null, null);
+            }
+        });
         
         UIValidator.setIgnoreAllValidation(this, false);
         fontNamesVCB.setChanged(false);

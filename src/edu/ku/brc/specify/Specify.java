@@ -123,8 +123,10 @@ import edu.ku.brc.specify.tools.schemalocale.SchemaToolsDlg;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.DefaultClassActionHandler;
+import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.RolloverCommand;
@@ -174,6 +176,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private JFrame              topFrame           = null;
     private MainPanel           mainPanel          = null;
     private JMenuItem           changeCollectionMenuItem = null;
+    private JLabel              appIcon            = null;
 
     protected boolean           hasChanged         = false;
 
@@ -189,7 +192,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private String               appName             = "Specify";
     private String               appVersion          = "6.0";
 
-    private String               appBuildVersion     = "200801250800 (SVN: 3354)";
+    private String               appBuildVersion     = "200801291430 (SVN: 3368)";
     
     protected static CacheManager cacheManager        = new CacheManager();
 
@@ -554,7 +557,25 @@ public class Specify extends JPanel implements DatabaseLoginListener
         UIRegistry.setStatusBar(statusField);
 
         add(statusField, BorderLayout.SOUTH);
-
+    }
+    
+    /**
+     * @param imgEncoded uuencoded image string
+     */
+    protected void setAppIcon(final String imgEncoded)
+    {
+        ImageIcon appImgIcon = null;
+        if (StringUtils.isNotEmpty(imgEncoded))
+        {
+            appImgIcon = GraphicsUtils.uudecodeImage("", imgEncoded);
+            if (appImgIcon != null && appImgIcon.getIconWidth() == 32 && appImgIcon.getIconHeight() == 32)
+            {
+                appIcon.setIcon(appImgIcon);
+                return;
+            }
+        }
+        appImgIcon = IconManager.getImage("AppIcon", IconManager.IconSize.Std32);
+        appIcon.setIcon(appImgIcon);
     }
 
     /**
@@ -565,6 +586,21 @@ public class Specify extends JPanel implements DatabaseLoginListener
     {
         JToolBar toolBar = new JToolBar();
         toolBar.setLayout(new ToolbarLayoutManager(2, 2));
+        
+        appIcon = new JLabel("  ");
+        
+        setAppIcon(AppPreferences.getRemote().get("ui.formatting.user_icon_image", null));
+        toolBar.add(appIcon);
+        
+        CommandDispatcher.register("Preferences", new CommandListener() {
+            public void doCommand(CommandAction cmdAction)
+            {
+                if (cmdAction.isAction("Updated"))
+                {
+                    setAppIcon(AppPreferences.getRemote().get("ui.formatting.user_icon_image", null));
+                }
+            }
+        });
 
         return toolBar;
     }

@@ -27,7 +27,7 @@ public class ValBrowseBtnPanel extends BrowseBtnPanel implements UIValidatable
      * @param doDirsOnly
      * @param isForInput
      */
-    public ValBrowseBtnPanel(ValTextField textField, boolean doDirsOnly, boolean isForInput)
+    public ValBrowseBtnPanel(final ValTextField textField, final boolean doDirsOnly, final boolean isForInput)
     {
         super(textField, doDirsOnly, isForInput);
         
@@ -40,7 +40,7 @@ public class ValBrowseBtnPanel extends BrowseBtnPanel implements UIValidatable
      * @see java.awt.Component#setEnabled(boolean)
      */
     @Override
-    public void setEnabled(boolean enabled)
+    public void setEnabled(final boolean enabled)
     {
         // Don't call super
         browseBtn.setEnabled(enabled);
@@ -108,7 +108,7 @@ public class ValBrowseBtnPanel extends BrowseBtnPanel implements UIValidatable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.validation.UIValidatable#setAsNew(boolean)
      */
-    public void setAsNew(boolean isNew)
+    public void setAsNew(final boolean isNew)
     {
         textField.setAsNew(isNew);
     }
@@ -116,7 +116,7 @@ public class ValBrowseBtnPanel extends BrowseBtnPanel implements UIValidatable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.validation.UIValidatable#setChanged(boolean)
      */
-    public void setChanged(boolean isChanged)
+    public void setChanged(final boolean isChanged)
     {
         textField.setChanged(isChanged);
     }
@@ -124,7 +124,7 @@ public class ValBrowseBtnPanel extends BrowseBtnPanel implements UIValidatable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.validation.UIValidatable#setRequired(boolean)
      */
-    public void setRequired(boolean isRequired)
+    public void setRequired(final boolean isRequired)
     {
         textField.setRequired(isRequired);
     }
@@ -132,7 +132,7 @@ public class ValBrowseBtnPanel extends BrowseBtnPanel implements UIValidatable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.validation.UIValidatable#setState(edu.ku.brc.ui.forms.validation.UIValidatable.ErrorType)
      */
-    public void setState(ErrorType state)
+    public void setState(final ErrorType state)
     {
         textField.setState(state);  
     }

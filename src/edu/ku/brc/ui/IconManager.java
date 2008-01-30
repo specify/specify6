@@ -616,12 +616,12 @@ public class IconManager extends Component
      */
     public Image getFastScale(final ImageIcon icon, final IconSize iconSize, final IconSize scaledIconSize)
     {
-    	if(icon != null)
+    	if (icon != null)
     	{
     		int width = scaledIconSize.size();
     		int height = scaledIconSize.size();
     				
-    		if((width < 0) || (height < 0))
+    		if ((width < 0) || (height < 0))
     		{	//image is nonstd, revert to original size
     			width = icon.getIconWidth();
     			height = icon.getIconHeight();

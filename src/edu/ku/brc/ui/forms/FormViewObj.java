@@ -2232,7 +2232,7 @@ public class FormViewObj implements Viewable,
                         String title = fi.getTitle();
                         if (StringUtils.isNotEmpty(title))
                         {
-                            label.setText(title + ":");
+                            label.setText(title + (StringUtils.isNotEmpty(title) ? ":" : ""));
                         }
                     }
                 }
