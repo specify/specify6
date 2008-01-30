@@ -62,12 +62,12 @@ public class TreeLevelQRI extends FieldQRI
         return table.getTableTree().getTableInfo();
     }
     
-    protected String getSQLFldName()
+    protected String getSQLFldName(final TableAbbreviator ta)
     {
         StringBuilder result = new StringBuilder("(select treelevel.name from ");
         result.append(getTableInfo().getClassObj().getSimpleName());
         result.append(" treelevel where ");
-        result.append(table.getTableTree().getAbbrev());
+        result.append(ta.getAbbreviation(table.getTableTree()));
         result.append(".nodeNumber between treelevel.nodeNumber and treelevel.highestChildNodeNumber and treelevel.rankId = ");
         result.append(String.valueOf(rankId));
         result.append(")");
@@ -77,7 +77,7 @@ public class TreeLevelQRI extends FieldQRI
     @Override
     public String getSQLFldSpec(final TableAbbreviator ta)
     {
-        return getSQLFldName() + " as " + getFieldName();
+        return getSQLFldName(ta) + " as " + getFieldName();
     }
     
     public class NoTreeDefItemException extends Exception
