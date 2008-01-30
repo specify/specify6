@@ -8,7 +8,6 @@ package edu.ku.brc.services.biogeomancer;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
-import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -40,6 +39,8 @@ public class GeoCoordBGMProvider implements GeoCoordServiceProviderIFace
 {
     private static final Logger log = Logger.getLogger(GeoCoordBGMProvider.class);
     
+    protected static final String BGM_VIEW_RESULTS_CONFIRM = "BGM_VIEW_RESULTS_CONFIRM";
+    
     protected GeoCoordProviderListenerIFace listener    = null;
     protected String                        helpContext = null;
     /**
@@ -47,7 +48,7 @@ public class GeoCoordBGMProvider implements GeoCoordServiceProviderIFace
      */
     public GeoCoordBGMProvider()
     {
-        
+        //This empty block is properly documented.
     }
     
     /* (non-Javadoc)
@@ -222,14 +223,11 @@ public class GeoCoordBGMProvider implements GeoCoordServiceProviderIFace
                     }
                     
                     // ask the user if they want to review the results
-                    // TODO: i18n
-                    // XXX: i18n
-                    String message = "BioGeomancer returned results for " + numRecordsWithResults
-                            + " records.  Would you like to view them now?"; // I18N
-                    int userChoice = JOptionPane.showConfirmDialog((Frame)UIRegistry.getTopWindow(), message,
+                    String message = String.format(getResourceString(BGM_VIEW_RESULTS_CONFIRM), String.valueOf(numRecordsWithResults));
+                    int userChoice = JOptionPane.showConfirmDialog(UIRegistry.getTopWindow(), message,
                             "Continue?", JOptionPane.YES_NO_OPTION); // I18N
                     
-                    if (userChoice != JOptionPane.OK_OPTION)
+                    if (userChoice != JOptionPane.YES_OPTION)
                     {
                         statusBar.setText("BioGeomancer process terminated by user");
                         return;

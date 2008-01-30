@@ -8,7 +8,6 @@ package edu.ku.brc.services.biogeomancer;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
-import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -50,6 +49,8 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace
 {
     private static final Logger log = Logger.getLogger(GeoCoordGeoLocateProvider.class);
     
+    protected static final String GEOLOCATE_RESULTS_VIEW_CONFIRM = "RESULTS_VIEW_CONFIRM";
+    
     protected GeoCoordProviderListenerIFace listener    = null;
     protected String                        helpContext = null;
     
@@ -58,7 +59,7 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace
      */
     public GeoCoordGeoLocateProvider()
     {
-        
+        //This block is empty.
     }
     
     /* (non-Javadoc)
@@ -261,15 +262,11 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace
         }
         
         // ask the user if they want to review the results
-        // TODO: i18n
-        // XXX: i18n
-        String message = "GEOLocate returned results for " + withResults.size()
-                + " records.  Would you like to view them now?"; // I18N
-        
-        int userChoice = JOptionPane.showConfirmDialog((Frame)UIRegistry.getTopWindow(), message,
+        String message = String.format(getResourceString(GEOLOCATE_RESULTS_VIEW_CONFIRM), String.valueOf(withResults.size()));
+        int userChoice = JOptionPane.showConfirmDialog(UIRegistry.getTopWindow(), message,
                 "Continue?", JOptionPane.YES_NO_OPTION); // I18N
         
-        if (userChoice != JOptionPane.OK_OPTION)
+        if (userChoice != JOptionPane.YES_OPTION)
         {
             statusBar.setText("GEOLocate process terminated by user");
             return;

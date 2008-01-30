@@ -391,19 +391,26 @@ public class QueryTask extends BaseTask
         String sqlStr = "From SpQuery as sq Inner Join sq.specifyUser as user where user.specifyUserId = "+SpecifyUser.getCurrentUser().getSpecifyUserId();
 
         DataProviderSessionIFace session    = DataProviderFactory.getInstance().createSession();
-        List<?> queries = session.getDataList(sqlStr);
-
-        navBox = new DroppableNavBox(getResourceString("Queries"), QUERY_FLAVOR, QUERY, SAVE_QUERY);
-
-        for (Iterator<?> iter=queries.iterator();iter.hasNext();)
+        try
         {
-            Object[] obj = (Object[])iter.next();
-            SpQuery query = (SpQuery)obj[0];
-            RecordSet rs = new RecordSet(query.getName(), SpQuery.getClassTableId());
-            rs.addItem(query.getSpQueryId());
-            addToNavBox(rs);
+            List<?> queries = session.getDataList(sqlStr);
+
+            navBox = new DroppableNavBox(getResourceString("Queries"), QUERY_FLAVOR, QUERY,
+                    SAVE_QUERY);
+
+            for (Iterator<?> iter = queries.iterator(); iter.hasNext();)
+            {
+                Object[] obj = (Object[]) iter.next();
+                SpQuery query = (SpQuery) obj[0];
+                RecordSet rs = new RecordSet(query.getName(), SpQuery.getClassTableId());
+                rs.addItem(query.getSpQueryId());
+                addToNavBox(rs);
+            }
         }
-        session.close();
+        finally
+        {
+            session.close();
+        }
     }
     
     /**
@@ -579,20 +586,29 @@ public class QueryTask extends BaseTask
     {
         // delete from database
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        
+        boolean transOpen = false;
         SpQuery query = session.get(SpQuery.class, rs.getOnlyItem().getRecordId());
         try
         {
             session.beginTransaction();
+            transOpen = true;
             session.delete(query);
             session.commit();
+            transOpen = false;
             
         } catch (Exception ex)
         {
+            if (transOpen)
+            {
+                session.rollback();
+            }
             ex.printStackTrace();
             log.error(ex);
         }
-        session.close();
+        finally
+        {
+            session.close();
+        }
     }
 
 
