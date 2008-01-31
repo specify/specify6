@@ -235,7 +235,7 @@ public class XLSExport implements DataExport
                 workSheet.setColumnWidth(i, (short)(StringUtils.isNotEmpty(headers[i]) ? (256 * headers[i].length()) : 2560));
             }
             
-            if (data.get(0).getClass() == WorkbenchTemplate.class)
+            if (data.get(0).getClass().equals(WorkbenchTemplate.class))
             {
                 mappings = writeMappings((WorkbenchTemplate)data.get(0));
             }
@@ -248,7 +248,7 @@ public class XLSExport implements DataExport
         if (data.size() > 0)
         {
             int[] colTypes;
-            if (data.get(0).getClass() == WorkbenchTemplate.class)
+            if (data.get(0).getClass().equals(WorkbenchTemplate.class))
             {
                 colTypes = bldColTypes((WorkbenchTemplate) data.get(0));
                 // now set up cell types and formats for a bunch of empty rows....
