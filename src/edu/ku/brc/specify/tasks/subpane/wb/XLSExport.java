@@ -235,7 +235,14 @@ public class XLSExport implements DataExport
                 workSheet.setColumnWidth(i, (short)(StringUtils.isNotEmpty(headers[i]) ? (256 * headers[i].length()) : 2560));
             }
             
-            mappings = writeMappings(((WorkbenchRow)data.get(0)).getWorkbench().getWorkbenchTemplate());
+            if (data.get(0).getClass() == WorkbenchTemplate.class)
+            {
+                mappings = writeMappings((WorkbenchTemplate)data.get(0));
+            }
+            else
+            {
+                mappings = writeMappings(((WorkbenchRow)data.get(0)).getWorkbench().getWorkbenchTemplate());
+            }
         }
         
         if (data.size() > 0)
