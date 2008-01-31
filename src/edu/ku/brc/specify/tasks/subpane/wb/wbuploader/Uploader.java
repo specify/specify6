@@ -90,7 +90,19 @@ public class Uploader implements ActionListener, WindowStateListener, KeyListene
     protected final static String                   USER_INPUT               = "WB_UPLOAD_USER_INPUT";
     protected final static String                   UNDOING_UPLOAD           = "WB_UPLOAD_UNDO";
     protected final static String                   CLEANING_UP              = "WB_UPLOAD_CLEANUP";
-
+    
+    /**
+     * Resource string Ids
+     */
+    protected final static String                   WB_CELL_LENGTH_EXCEPTION = "WB_CELL_LENGTH_EXCEPTION";
+    protected final static String                   WB_TOO_MANY_ERRORS = "WB_TOO_MANY_ERRORS";
+    protected final static String                   WB_UPLOAD_FORM_TITLE = "WB_UPLOAD_FORM_TITLE";
+    
+    /**
+     * Maximum number of messages (validation errors) to display. Prevents un-responsiveness when a workbench is REALLY messed up.
+     */
+    protected final static int MAX_MSG_DISPLAY_COUNT = 800;
+    
     /**
      * one of above statics
      */
@@ -1068,6 +1080,32 @@ public class Uploader implements ActionListener, WindowStateListener, KeyListene
         }
     }
 
+    protected Vector<UploadTableInvalidValue> validateLengths(final UploadTable uploadTable)
+    {
+        Vector<UploadTableInvalidValue> result = new Vector<UploadTableInvalidValue>();
+        for (Vector<UploadField> ufs : uploadTable.getUploadFields())
+        {
+            for (UploadField uf : ufs)
+            {
+                if (uf.getIndex() != -1)
+                {
+                    for (int r = 0; r < wbSS.getSpreadSheet().getRowCount(); r++)
+                    {
+                        String value = wbSS.getSpreadSheet().getValueAt(r, uf.getIndex())
+                                .toString();
+                        if (value.length() > wbSS.getColumnMaxWidth(uf.getIndex()))
+                        {
+                            result.add(new UploadTableInvalidValue(null, uploadTable, uf, r,
+                                    new UploaderException(
+                                            getResourceString(WB_CELL_LENGTH_EXCEPTION),
+                                            UploaderException.INVALID_DATA)));
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+    }
     /**
      * Validates contents of all cells in dataset.
      */
@@ -1091,6 +1129,7 @@ public class Uploader implements ActionListener, WindowStateListener, KeyListene
                     for (UploadTable tbl : uploadTables)
                     {
                         setCurrentOpProgress(++progress, false);
+                        issues.addAll(validateLengths(tbl));
                         issues.addAll(tbl.validateValues(uploadData));
                     }
                     Collections.sort(issues);
@@ -2326,9 +2365,20 @@ public class Uploader implements ActionListener, WindowStateListener, KeyListene
         
         if (validationIssues != null)
         {
-            for (UploadTableInvalidValue invalid : validationIssues)
+            for (int m=0; m<validationIssues.size() && m<MAX_MSG_DISPLAY_COUNT; m++)
             {
-                mainPanel.addMsg(invalid);
+                mainPanel.addMsg(validationIssues.get(m));
+            }
+            if (validationIssues.size() > MAX_MSG_DISPLAY_COUNT)
+            {
+                log.info("Only displaying " + String.valueOf(MAX_MSG_DISPLAY_COUNT) + " of " 
+                        + String.valueOf(validationIssues.size()) + " validation errors ");
+                JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
+                        String.format(getResourceString(WB_TOO_MANY_ERRORS), String.valueOf(MAX_MSG_DISPLAY_COUNT),
+                                    String.valueOf(validationIssues.size())), 
+                        getResourceString(WB_UPLOAD_FORM_TITLE), 
+                        JOptionPane.WARNING_MESSAGE,
+                        null);
             }
         }
         mainPanel.getPrintBtn().setEnabled(validationIssues != null && validationIssues.size() > 0);

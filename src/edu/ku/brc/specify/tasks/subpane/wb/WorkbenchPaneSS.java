@@ -190,6 +190,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected GridTableModel        model;
     protected TableColumnExt        imageColExt;
     protected String[]              columns;
+    protected Integer[]             columnMaxWidths;  //the maximum characters allowable for the mapped fields 
     protected Vector<WorkbenchTemplateMappingItem> headers = new Vector<WorkbenchTemplateMappingItem>();
     protected boolean               hasChanged             = false;
     protected boolean               blockChanges           = false;
@@ -2188,6 +2189,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         DBTableIdMgr databaseSchema = WorkbenchTask.getDatabaseSchema();
         
+        columnMaxWidths = new Integer[tableArg.getColumnCount()];
         for (int i = 0; i < tableArg.getColumnCount(); i++) 
         {
             WorkbenchTemplateMappingItem wbtmi = wbtmis.elementAt(i);
@@ -2214,6 +2216,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             {
                 log.error("Can't find table ["+wbtmi.getSrcTableId()+"]");
             }
+            columnMaxWidths[i] = new Integer(fieldWidth);
             GridCellEditor cellEditor = new GridCellEditor(new JTextField(), wbtmi.getCaption(), fieldWidth, theSaveBtn);
             
             column = tableArg.getColumnModel().getColumn(i);
@@ -2825,7 +2828,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     // Inner Classes
     //------------------------------------------------------------
 
-    class GridCellEditor extends DefaultCellEditor implements TableCellEditor//, UndoableTextIFace
+    public class GridCellEditor extends DefaultCellEditor implements TableCellEditor//, UndoableTextIFace
     {
         protected JTextField          textField;
         protected int                 length;
@@ -3117,6 +3120,15 @@ public class WorkbenchPaneSS extends BaseSubPane
     public SpreadSheet getSpreadSheet()
     {
         return spreadSheet;
+    }
+    
+    /**
+     * @param col
+     * @return the max width for column indexed by col.
+     */
+    public Integer getColumnMaxWidth(int col)
+    {
+        return this.columnMaxWidths[col];
     }
 }
 

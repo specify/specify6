@@ -266,59 +266,6 @@ public class UploadMainPanel extends JPanel
               }
           });
         }
-//        getUploadTblTbl().setDefaultRenderer(Object.class, new DefaultTableCellRenderer()
-//        {
-//            @Override
-//            public Component getTableCellRendererComponent(JTable table,
-//                                                           Object value,
-//                                                           boolean isSelected,
-//                                                           boolean hasFocus,
-//                                                           int row,
-//                                                           int column)
-//            {
-//                super
-//                        .getTableCellRendererComponent(table, value, isSelected, hasFocus, row,
-//                                column);
-//
-//                UploadInfoRenderable ti = (UploadInfoRenderable) value;
-//                if (column == 0)
-//                {
-//                    ImageIcon icon = IconManager.getIcon(ti.getIconName(),
-//                            IconManager.IconSize.Std16);
-//                    setIcon(icon != null ? icon : IconManager.getIcon("Blank",
-//                            IconManager.IconSize.Std16));
-//                }
-//                else
-//                {
-//                    setIcon(null);
-//                }
-//                if (isSelected)
-//                {
-//                    setOpaque(true);
-//                    setBackground(table.getSelectionBackground());
-//                    setForeground(table.getSelectionForeground());
-//
-//                }
-//                else
-//                {
-//                    setBackground(table.getBackground());
-//                    setForeground(table.getForeground());
-//                }
-//
-//                if (column == 0)
-//                {
-//                    setText(ti.getTitle());
-//                }
-//                else
-//                {
-//                    if (ti.getCreatedCnt() != null)
-//                    {
-//                        setText(ti.getCreatedCnt().toString());
-//                    }
-//                }
-//                return this;
-//            }
-//        });
 
     
     public void buildUI()
@@ -332,14 +279,11 @@ public class UploadMainPanel extends JPanel
         title.setHorizontalAlignment(SwingConstants.LEFT);
         add(title, cc.xywh(2,2,5,1));
         
-        //JPanel pPane = new JPanel(new BorderLayout());
         JPanel pPane = new JPanel(new FormLayout("fill:pref:grow, fill:pref:none", "center:m:grow"));
         currOpProgress = new JProgressBar();
-        //pPane.add(currOpProgress, BorderLayout.CENTER);
         pPane.add(currOpProgress, cc.xy(1, 1));
         cancelBtn = new JButton(getResourceString("Cancel")); 
         cancelBtn.setActionCommand(CANCEL_OPERATION);
-        //pPane.add(cancelBtn, BorderLayout.EAST);
         pPane.add(cancelBtn, cc.xy(2, 1));
         add(pPane, cc.xywh(4, 2, 3, 1));
 
@@ -848,8 +792,6 @@ public class UploadMainPanel extends JPanel
               {
                   tf.showValidationErrors();
               }
-              //tf.getValidationErrorPanel().setVisible(!tf.getValidationErrorPanel().isVisible());
-              //tf.getMsgPane().layout();
           }
       });
       menu.add(menuItem);
