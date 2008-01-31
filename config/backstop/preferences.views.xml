@@ -187,7 +187,7 @@
                         <rows>
                             <row>
                                 <cell type="field" uitype="label" id="0" label=" " />
-                                <cell type="command" id="GetIconImage" name="GetIconImage"   label="Get Icon" ignore="true"/>
+                                <cell type="command" id="GetIconImage" name="GetIconImage"   label="Set Icon" ignore="true"/>
                                 <cell type="command" id="ClearIconImage" name="ClearIconImage" label="Clear Icon" ignore="true"/>
                             </row>
                         </rows>

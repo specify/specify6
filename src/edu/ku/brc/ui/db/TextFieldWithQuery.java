@@ -11,10 +11,13 @@ package edu.ku.brc.ui.db;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.HeadlessException;
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
@@ -32,12 +35,18 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -52,10 +61,12 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.CustomQueryIFace;
 import edu.ku.brc.dbsupport.CustomQueryListener;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.JPAQuery;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -71,6 +82,8 @@ import edu.ku.brc.ui.UIRegistry;
 public class TextFieldWithQuery extends JPanel implements CustomQueryListener
 {
     protected static final Logger log = Logger.getLogger(TextFieldWithQuery.class);
+    
+    protected int                  popupDlgThreshold = 15;
             
     protected JTextField           textField;
     protected Object               dataObj        = null;
@@ -99,7 +112,8 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     protected String               currentText         = "";
     protected boolean              hasNewText          = false;
     
-    protected boolean              isDoingCount = false;
+    protected boolean              isDoingCount        = false;
+    protected Integer              returnCount         = null;
     
     /**
      * Constructor.
@@ -114,6 +128,8 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         this.keyColumn      = keyColumn;
         this.displayColumns = displayColumns != null ? displayColumns : keyColumn;
         this.format         = format;
+        
+        popupDlgThreshold = AppPreferences.getRemote().getInt("TFQ.POPUPDLD.THRESHOLD", 15);
         
         createUI();
     }
@@ -503,16 +519,122 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             }
         }
         
-        if (idList.size() > 0)
+        if (idList.size() > 0 && returnCount != null)
         {
-            showPopup();
+            if (returnCount > popupDlgThreshold)
+            {
+                showDialog();
+                
+            } else
+            {
+                showPopup();
+            }
+            
         } else
         {
             textField.setText("");
         }
         
         duplicatehash.clear();
+    }
+    
+    /**
+     * 
+     */
+    protected void showDialog()
+    {
+        DefaultListModel model = new DefaultListModel();
+        if (addAddItem)
+        {
+            model.addElement(UIRegistry.getResourceString("TFWQ_ADD_LABEL"));
+        }
+        for (String val : list)
+        {
+            model.addElement(val);
+        }
+        
+        final JList listBox = new JList(model);
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.add(new JLabel("Choose Item", SwingConstants.CENTER), BorderLayout.NORTH);
+        JScrollPane sp = new JScrollPane(listBox, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        panel.add(sp, BorderLayout.CENTER);
+        
+        // Had to do inner class in order to get it to select an item
+        // before being shown
+        class PopUpDialog extends CustomDialog
+        {
+            protected JList pListBox;
+            
+            public PopUpDialog(final Frame     frame, 
+                               final String    title, 
+                               final boolean   isModal,
+                               final Component contentPanel,
+                               JList pListBoxArg) throws HeadlessException
+            {
+                super(frame, title, isModal, contentPanel);
+                this.pListBox = pListBoxArg;
+                
+                pListBox.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+                    public void valueChanged(ListSelectionEvent e)
+                    {
+                        if (!e.getValueIsAdjusting())
+                        {
+                            if (okBtn != null && pListBox != null)
+                            {
+                                okBtn.setEnabled(listBox.getSelectedIndex() != -1);
+                            }
+                        }
+                    }
+                });
+                pListBox.addMouseListener(new MouseAdapter() {
+                    @Override
+                    public void mouseClicked(MouseEvent e)
+                    {
+                        super.mouseClicked(e);
+                        
+                        if (e.getClickCount() == 2)
+                        {
+                            okBtn.setEnabled(true);
+                            okBtn.doClick();
+                        }
+                    }
+                });
+            }
 
+            @Override
+            public void setVisible(boolean visible)
+            {
+                if (visible)
+                {
+                    listBox.setSelectedIndex(addAddItem ? 1 : 0);
+                }
+                super.setVisible(visible);
+            }
+            
+        }
+        
+        CustomDialog dlg = new PopUpDialog((Frame)UIRegistry.getTopWindow(), "Choose", true, panel, listBox);
+        dlg.setVisible(true);
+        
+        if (!dlg.isCancelled())
+        {
+            int inx = listBox.getSelectedIndex();
+            inx = addAddItem ? inx-1 : inx;
+            
+            selectedId = idList.get(inx);
+            textField.setText(list.get(inx));
+            
+            if (listSelectionListeners != null)
+            {
+                ListSelectionEvent lse = new ListSelectionEvent(listBox, 0, 0, false);
+                for (ListSelectionListener l : listSelectionListeners)
+                {
+                    l.valueChanged(lse);
+                }
+            }
+
+        } 
+ 
     }
     
     /* (non-Javadoc)
@@ -526,8 +648,8 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             List<?> dataObjList = customQuery.getDataObjects();
             if (dataObjList != null && dataObjList.size() > 0)
             {
-                Integer count = (Integer)dataObjList.get(0);
-                System.out.println(count);
+                returnCount = (Integer)dataObjList.get(0);
+                System.out.println(returnCount);
             }
             isDoingCount = false;
             
@@ -564,10 +686,12 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             list.clear();
             idList.clear();
             
+            returnCount  = null;
+            isDoingCount = true;
+                       
             JPAQuery jpaQuery = new JPAQuery(buildSQL(newEntryStr, true), this);
             jpaQuery.setUnique(true);
             jpaQuery.setData(newEntryStr);
-            isDoingCount = true;
             jpaQuery.start();
             
         } else

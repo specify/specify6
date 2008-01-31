@@ -258,11 +258,28 @@ public class AppPreferences
      */
     public String get(final String name, final String defaultValue)
     {
+        return get(name, defaultValue, false);
+    }
+
+    /**
+     * Gets a string value.
+     * @param name the name of the pref
+     * @param defaultValue the default value
+     * @param doDefVal set the default value if it isn't there
+     * @return the value as a String.
+     */
+    public String get(final String name, final String defaultValue, boolean doDefVal)
+    {
         if (properties == null)
         {
             load();
         }
+        
         String val = properties.getProperty(name);
+        if (val == null && doDefVal && defaultValue != null)
+        {
+            put(name, defaultValue);
+        }
         return val != null ? val : defaultValue;
     }
 
@@ -271,7 +288,7 @@ public class AppPreferences
      * @param name the name
      * @param value the new value
      */
-    public void put(String name, String value)
+    public void put(final String name, final String value)
     {
         if (properties == null)
         {
@@ -290,7 +307,23 @@ public class AppPreferences
      */
     public Integer getInt(final String name, final Integer defaultValue)
     {
+        return getInt(name, defaultValue, false);
+    }
+    
+    /**
+     * Returns the value as a Integer.
+     * @param name the name
+     * @param defaultValue the default value
+     * @param doDefVal set the default value if it isn't there
+     * @return the value as a Integer.
+     */
+    public Integer getInt(final String name, final Integer defaultValue, boolean doDefVal)
+    {
         String val = get(name, (defaultValue == null ? null : Integer.toString(defaultValue)));
+        if (val == null && doDefVal)
+        {
+            putInt(name, defaultValue);
+        }
         return val == null ? null : Integer.valueOf(val);
     }
     

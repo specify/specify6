@@ -37,6 +37,7 @@ import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.event.DocumentEvent;
@@ -866,10 +867,22 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         //log.debug(e != null ? ((JMenuItem)e.getSource()).getText() : "null");
         if (e != null)
         {
-            if (((JMenuItem)e.getSource()).getText().equals(UIRegistry.getResourceString("TFWQ_ADD_LABEL")))
+            String itemLabel = null;
+            if (e.getSource() instanceof JMenuItem)
             {
-                //displaySearchDialog();
-                defaultEditAction.actionPerformed(null);
+                itemLabel = ((JMenuItem)e.getSource()).getText().toString();
+                
+            } else if (e.getSource() instanceof JList)
+            {
+                itemLabel = ((JList)e.getSource()).getSelectedValue().toString();
+            }
+            
+            if (itemLabel != null && itemLabel.equals(UIRegistry.getResourceString("TFWQ_ADD_LABEL")))
+            {
+                if (defaultNewAction != null)
+                {
+                    defaultNewAction.actionPerformed(null);
+                }
                 return;
             }
         }
