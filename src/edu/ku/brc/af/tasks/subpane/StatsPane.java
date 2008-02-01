@@ -292,13 +292,16 @@ public class StatsPane extends BaseSubPane
                             //System.out.println("["+queryType+"]");
                             try
                             {
+                                String sql =  QueryAdjusterForDomain.getInstance().adjustSQL(sqlElement.getText());
+                                
                                 switch (queryType)
                                 {
                                     case SQL :
                                     {
+                                        sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
                                         StatGroupTableFromQuery group = new StatGroupTableFromQuery(title,
                                                                                 colNames,
-                                                                                sqlElement.getText(),
+                                                                                sql,
                                                                                 descCol,
                                                                                 valCol,
                                                                                 useSeparatorTitles,
@@ -315,7 +318,7 @@ public class StatsPane extends BaseSubPane
                                     {
                                         StatGroupTableFromCustomQuery group = new StatGroupTableFromCustomQuery(title,
                                                                                         colNames,
-                                                                                        new JPAQuery(sqlElement.getText()),
+                                                                                        new JPAQuery(sql),
                                                                                         useSeparatorTitles,
                                                                                         noresults);
                                         if (cmdAction != null)
@@ -330,7 +333,7 @@ public class StatsPane extends BaseSubPane
                                     {
                                         StatGroupTableFromCustomQuery group = new StatGroupTableFromCustomQuery(title,
                                                                                                 colNames,
-                                                                                                sqlElement.getText(), // the name
+                                                                                                sql, // the name
                                                                                                 useSeparatorTitles,
                                                                                                 noresults);
                                         if (cmdAction != null)
@@ -363,13 +366,6 @@ public class StatsPane extends BaseSubPane
                                 Element itemElement = (Element)io;
                                 String  itemTitle   = getAttr(itemElement, "title", "N/A");
 
-                                System.err.println(itemTitle);
-                                if (itemTitle.equals("Cataloged in Last 7 Days"))
-                                {
-                                    int xx = 0;
-                                    xx++;
-                                }
-                                
                                 String  formatStr  = null;
                                 Element formatNode = (Element)itemElement.selectSingleNode("sql/format");
                                 if (formatNode != null)
@@ -409,12 +405,14 @@ public class StatsPane extends BaseSubPane
                                                 int    vRowInx = getAttr(stElement, "row", -1);
                                                 int    vColInx = getAttr(stElement, "col", -1);
                                                 String format  = getAttr(stElement, "format", null);
+                                                String sql     = QueryAdjusterForDomain.getInstance().adjustSQL(stElement.getText());
+                                                
                                                 if (vRowInx == -1 || vColInx == -1)
                                                 {
-                                                    statItem.add(stElement.getText(), format); // ignore return object
+                                                    statItem.add(sql, format); // ignore return object
                                                 } else
                                                 {
-                                                    statItem.add(stElement.getText(), vRowInx, vColInx, StatDataItem.VALUE_TYPE.Value, format); // ignore return object
+                                                    statItem.add(sql, vRowInx, vColInx, StatDataItem.VALUE_TYPE.Value, format); // ignore return object
                                                 }
                                                 cnt++;
                                             }

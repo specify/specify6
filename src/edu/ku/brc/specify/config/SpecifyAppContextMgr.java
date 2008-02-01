@@ -169,7 +169,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     public int getNumOfCollectionsForUser()
     {
-        String sqlStr = "select count(cs) From CollectionType as ct Inner Join ct.specifyUser as user Inner Join ct.collections as cs where user.specifyUserId = "+user.getSpecifyUserId();
+        String sqlStr = "select count(cs) From CollectionType as ct Inner Join ct.agents cta Inner Join cta.specifyUser as user Inner Join ct.collections as cs where user.specifyUserId = "+user.getSpecifyUserId();
         
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         Object                   result     = session.getData(sqlStr);
@@ -190,9 +190,10 @@ public class SpecifyAppContextMgr extends AppContextMgr
         if (spUser != null)
         {
             sessionArg.attach(spUser);
-            for (CollectionType types : spUser.getCollectionTypes())
+            for (Agent agent : spUser.getAgents())
             {
-                for (Collection collection : types.getCollections())
+                CollectionType type = agent.getCollectionType();
+                for (Collection collection : type.getCollections())
                 {
                     list.add(collection.getCollectionId().intValue());
                 }
@@ -203,115 +204,115 @@ public class SpecifyAppContextMgr extends AppContextMgr
         }
         return list;
     }
-
+    
     /**
      * Sets up the "current" Collection by first checking prefs for the most recent primary key,
      * if it can't get it then it asks the user to select one. (Note: if there is only one it automatically chooses it)
+     * @param sessionArg a session
      * @param user the user object of the current object
      * @param alwaysAsk indicates the User should always be asked which Collection to use
      * @return the current Collection or null
      */
     @SuppressWarnings("unchecked")
-    protected Collection setupCurrentCollection(final DataProviderSessionIFace sessionArg, final SpecifyUser user, final boolean alwaysAsk)
+    protected Collection setupCurrentCollection(final DataProviderSessionIFace sessionArg, 
+                                                final SpecifyUser user,
+                                                final boolean startingOver)
     {
         final String prefName = mkUserDBPrefName("recent_collection_id");
         
-        Collection collection = Collection.getCurrentCollection();
-
-        if (Collection.getCurrentCollection() == null || alwaysAsk)
+        // First get the Collections the User has access to.
+        Hashtable<String, Collection> collectionHash = new Hashtable<String, Collection>();
+        String sqlStr = "SELECT cs From CollectionType as ct Inner Join ct.agents cta Inner Join cta.specifyUser as user Inner Join ct.collections as cs where user.specifyUserId = "+user.getSpecifyUserId();
+        for (Object obj : sessionArg.getDataList(sqlStr))
         {
-            AppPreferences appPrefs    = AppPreferences.getRemote();
-            boolean        askToSelect = true;
-            if (!alwaysAsk)
+            Collection cs = (Collection)obj; 
+            collectionHash.put(cs.getCollectionName(), cs);
+        }
+
+        Collection collection = null;
+        
+        AppPreferences appPrefs  = AppPreferences.getRemote();
+        String         recentIds = appPrefs.get(prefName, null);
+        if (StringUtils.isNotEmpty(recentIds))
+        {
+            List<?> list = sessionArg.getDataList("FROM Collection WHERE collectionId = " + recentIds);
+            if (list.size() == 1)
             {
-                String recentIds = appPrefs.get(prefName, null);
-                if (StringUtils.isNotEmpty(recentIds))
-                {
-                    List list = sessionArg.getDataList("From Collection where collectionId = " + recentIds);
-                    if (list.size() == 1)
-                    {
-                        collection  = (Collection)list.get(0);
-                        askToSelect = false;
-                    }
-                }
+                collection = (Collection)list.get(0);
             }
-
-            if (askToSelect)
+        }
+        
+        if (collection != null && collectionHash.get(collection.getCollectionName()) == null)
+        {
+            collection = null;
+        }
+        
+        if (collection == null || startingOver)
+        {
+            if (collectionHash.size() == 1)
             {
-                String queryStr = "SELECT coll FROM Collection coll WHERE coll.collectionType.specifyUser.id = " + user.getSpecifyUserId(); 
-                Hashtable<String, Collection> collectionHash = new Hashtable<String, Collection>();
-                for (Object obj : sessionArg.getDataList(queryStr))
-                {
-                    Collection cs = (Collection)obj;
-                    collectionHash.put(cs.getCollectionName(), cs);
-                    if (debug) log.debug(cs.getCollectionName());
-                }
+                collection = collectionHash.elements().nextElement();
+
+            } else if (collectionHash.size() > 0)
+            {
+                //Collections.sort(list); // Why doesn't this work?
                 
-                if (collectionHash.size() == 1)
-                {
-                    collection = collectionHash.elements().nextElement();
-
-                } else if (collectionHash.size() > 0)
-                {
-                    //Collections.sort(list); // Why doesn't this work?
-                    
-                    List<Collection> list = new Vector<Collection>();
-                    list.addAll(collectionHash.values());
-                    int selectColInx = -1;
-                    if (collection != null)
-                    {
-                        int i = 0;
-                        for (Collection c : list)
-                        {
-                            if (c.getId().intValue() == collection.getId().intValue())
-                            {
-                                selectColInx = i;
-                                break;
-                            }
-                            i++;
-                        }
-                    } else
-                    {
-                        log.error("Collection was null!");
-                    }
-
-                    ToggleButtonChooserDlg<Collection> dlg = new ToggleButtonChooserDlg<Collection>((Frame)UIRegistry.get(UIRegistry.FRAME),
-                                                                                                  UIRegistry.getResourceString("CHOOSE_COLLECTION_TITLE"), 
-                                                                                                  null,
-                                                                                                  list,
-                                                                                                  IconManager.getIcon("Collection"),
-                                                                                                  CustomDialog.OK_BTN, Type.RadioButton);
-                    dlg.setSelectedIndex(selectColInx);
-                    dlg.setModal(true);
-                    dlg.setUseScrollPane(true);
-                    dlg.createUI();
-                    dlg.pack();
-                    Dimension size = dlg.getSize();
-                    size.width  = Math.max(size.width, 300);
-                    if (size.height < 150)
-                    {
-                        size.height += 100;
-                    }
-                    dlg.setSize(size);
-                    
-                    UIHelper.centerWindow(dlg);
-                    dlg.setVisible(true);
-
-                    if (!dlg.isCancelled())
-                    {
-                        collection = dlg.getSelectedObject();
-                    }
-                    
-                } else
-                {
-                    // Accession / Registrar / Director may not be assigned to any Collection
-                    // Or for a stand alone Accessions Database there may not be any 
-                }
-
+                List<Collection> list = new Vector<Collection>();
+                list.addAll(collectionHash.values());
+                int selectColInx = -1;
                 if (collection != null)
                 {
-                    appPrefs.put(prefName, (Long.toString(collection.getCollectionId())));
+                    int i = 0;
+                    for (Collection c : list)
+                    {
+                        if (c.getId().intValue() == collection.getId().intValue())
+                        {
+                            selectColInx = i;
+                            break;
+                        }
+                        i++;
+                    }
+                } else
+                {
+                    log.error("Collection was null!");
                 }
+
+                ToggleButtonChooserDlg<Collection> dlg = new ToggleButtonChooserDlg<Collection>((Frame)UIRegistry.get(UIRegistry.FRAME),
+                                                                                              UIRegistry.getResourceString("CHOOSE_COLLECTION_TITLE"), 
+                                                                                              null,
+                                                                                              list,
+                                                                                              IconManager.getIcon("Collection"),
+                                                                                              CustomDialog.OK_BTN, Type.RadioButton);
+                dlg.setSelectedIndex(selectColInx);
+                dlg.setModal(true);
+                dlg.setUseScrollPane(true);
+                dlg.createUI();
+                dlg.pack();
+                Dimension size = dlg.getSize();
+                size.width  = Math.max(size.width, 300);
+                if (size.height < 150)
+                {
+                    size.height += 100;
+                }
+                dlg.setSize(size);
+                
+                UIHelper.centerWindow(dlg);
+                dlg.setVisible(true);
+
+                if (!dlg.isCancelled())
+                {
+                    collection = dlg.getSelectedObject();
+                }
+                
+            } else
+            {
+                // Accession / Registrar / Director may not be assigned to any Collection
+                // Or for a stand alone Accessions Database there may not be any 
+            }
+
+            if (collection != null)
+            {
+                appPrefs.put(prefName, (Long.toString(collection.getCollectionId())));
             }
         }
         
@@ -321,11 +322,20 @@ public class SpecifyAppContextMgr extends AppContextMgr
         CollectionType colType = collection.getCollectionType();
         if (colType != null)
         {
+            for (Agent uAgent : colType.getAgents())
+            {
+                if (uAgent.getSpecifyUser().getSpecifyUserId().equals(user.getSpecifyUserId()))
+                {
+                    Agent.setUserAgent(uAgent);
+                    break;
+                }
+            }
             TaxonTreeDef.setCurrentTaxonTreeDef(colType.getTaxonTreeDef());
             GeologicTimePeriodTreeDef.setCurrentGeologicTimePeriodTreeDef(colType.getGeologicTimePeriodTreeDef());
             LocationTreeDef.setCurrentLocationTreeDef(colType.getLocationTreeDef());
             LithoStratTreeDef.setCurrentLithoStratTreeDef(colType.getLithoStratTreeDef());
             GeographyTreeDef.setCurrentGeographyTreeDef(colType.getGeographyTreeDef());
+            
         }
         
         return collection;
@@ -471,9 +481,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
         if (list.size() == 1)
         {
             user = (SpecifyUser)list.get(0);
-            user.getAgent(); // makes sure the Agent is not lazy loaded
-            user.getAgent().getName();
-            session.evict( user.getAgent());
+            user.getAgents(); // makes sure the Agent is not lazy loaded
+            session.evict( user.getAgents());
             SpecifyUser.setCurrentUser(user);
 
         } else
@@ -801,7 +810,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         {
             for (SpAppResourceDir appResDef : spAppResourceList)
             {
-                log.error(appResDef.getId());
+                //log.debug(appResDef.getId());
                 
                 if (appResDef.getSpAppResourceDirId() != null)
                 {
@@ -993,7 +1002,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                             session.save(appResourceDef);
                         }
                         appRes.setTimestampModified(new Timestamp(System.currentTimeMillis()));
-                        appRes.setModifiedByAgent(SpecifyUser.getCurrentUser().getAgent());
+                        appRes.setModifiedByAgent(Agent.getUserAgent());
                         appRes.setDataAsString(xmlStr);
                         session.save(appRes);
                         session.commit();

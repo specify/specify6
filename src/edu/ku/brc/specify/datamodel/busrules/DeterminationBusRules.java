@@ -125,14 +125,14 @@ public class DeterminationBusRules extends BaseBusRules
             if (item != null)
             {
                 DeterminationStatus status = (DeterminationStatus)item.getValueObject();
-                if (status != null && status.getIsCurrent())
+                if (status != null && status.getType() == DeterminationStatus.CURRENT)
                 {
                     CollectionObject colObj = determination.getCollectionObject();
                     if (colObj != null)
                     {
                         for (Determination det : colObj.getDeterminations())
                         {
-                            if (det != determination && det.getStatus() != null && det.getStatus().getIsCurrent())
+                            if (det != determination && det.getStatus() != null && det.getStatus().getType() == DeterminationStatus.CURRENT)
                             {
                                 JOptionPane.showMessageDialog(null, "There is already a current Determination."); // I18N 
                                 ignoreSelection = true;

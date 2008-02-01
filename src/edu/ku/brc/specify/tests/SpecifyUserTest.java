@@ -312,7 +312,7 @@ public class SpecifyUserTest extends TestCase
             log.info("createCollectionType");
             Institution    institution    = createInstitution("Natural History Museum");
             Division       division       = createDivision(institution, "fish", "Icthyology", "IT", "Icthyology");
-            CollectionType collectionType = createCollectionType(division, "fish", "fish", dataType, user, taxonTreeDef, null, null, null, lithoStratTreeDef);
+            CollectionType collectionType = createCollectionType(division, "fish", "fish", dataType, taxonTreeDef, null, null, null, lithoStratTreeDef);
 
             //createCollectionType(dataType, testUser, "fish", "fish"); // creates TaxonTreeDef
 
@@ -348,7 +348,7 @@ public class SpecifyUserTest extends TestCase
         String testUserRole = "Test Role";
         try
         {
-            Agent            userAgent        = createAgent("", "John", "", "Doe", "", "jd@ku.edu", -1);
+            Agent            userAgent        = createAgent("", "John", "", "Doe", "", "jd@ku.edu");
             UserGroup        userGroup        = createUserGroup("fish");
             TaxonTreeDef     taxonTreeDef     = createTaxonTreeDef("Sample Taxon Tree Def");
             LithoStratTreeDef lithoStratTreeDef = createLithoStratTreeDef("Sample Litho Tree Def");
@@ -356,7 +356,7 @@ public class SpecifyUserTest extends TestCase
             log.info("Creating SpecifyUser");
             SpecifyUser testUser = createSpecifyUser(testUserName, testUserEmail, (short) 0, testUserRole);
             assertNotNull("SpecifyUser created is null. ", testUser);
-            testUser.setAgent(userAgent);
+            testUser.addReference(userAgent, "agents");
             
             log.info("checking if the SpecifyUser exists in the database ID: " + testUser.getId());
             assertTrue("SpecifyUser was not found in th database.", isSpecifyUserInDB(testUser.getId()));
@@ -369,7 +369,7 @@ public class SpecifyUserTest extends TestCase
 
             Institution    institution    = createInstitution("Natural History Museum");
             Division       division       = createDivision(institution, "fish", "Icthyology", "IT", "Icthyology");
-            CollectionType collectionType = createCollectionType(division, "fish", "fish", dataType, user, taxonTreeDef, null, null, null, lithoStratTreeDef);
+            CollectionType collectionType = createCollectionType(division, "fish", "fish", dataType, taxonTreeDef, null, null, null, lithoStratTreeDef);
             
             UserPermission permission = createUserPermission(testUser, collectionType, true, true);
             assertNotNull("UserPermission is null", permission);

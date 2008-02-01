@@ -76,7 +76,6 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     protected String                    discipline;
     protected DataType                  dataType;
     protected Set<Collection>           collections;
-    protected SpecifyUser               specifyUser;
     protected Set<AttributeDef>         attributeDefs;
     protected GeographyTreeDef          geographyTreeDef;
     protected GeologicTimePeriodTreeDef geologicTimePeriodTreeDef;
@@ -86,7 +85,11 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     protected Set<Locality>             localities;
     protected Set<SpAppResourceDir>     spAppResourceDirs;
     protected Set<UserPermission>       userPermissions;
+    protected Set<Agent>                agents;
     protected Division                  division;
+    
+    protected Set<DeterminationStatus>  determinationStatuss;
+    protected Set<PrepType>             prepTypes;
     
     protected Set<SpLocaleContainer>    spLocaleContainers;
      
@@ -114,9 +117,9 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     /**
      * @param currentCollectionType
      */
-    public static void setCurrentCollectionType(CollectionType currentCollectionType)
+    public static void setCurrentCollectionType(CollectionType collectionType)
     {
-        CollectionType.currentCollectionType = currentCollectionType;
+        CollectionType.currentCollectionType = collectionType;
     }
     
     /**
@@ -139,22 +142,26 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     public void initialize()
     {
         super.init();
-        collectionTypeId = null;
-        name = null;
-        discipline = null;
-        dataType = null;
-        userPermissions = null;
-        collections = new HashSet<Collection>();
-        specifyUser = null;
-        attributeDefs = new HashSet<AttributeDef>();
-        geographyTreeDef = null;
+        
+        collectionTypeId      = null;
+        name                  = null;
+        discipline            = null;
+        dataType              = null;
+        userPermissions       = null;
+        collections           = new HashSet<Collection>();
+        attributeDefs         = new HashSet<AttributeDef>();
+        geographyTreeDef      = null;
         geologicTimePeriodTreeDef = null;
-        locationTreeDef = null;
-        taxonTreeDef = null;
-        lithoStratTreeDef = null;
-        localities = new HashSet<Locality>();
-        spAppResourceDirs = new HashSet<SpAppResourceDir>();
+        locationTreeDef       = null;
+        taxonTreeDef          = null;
+        lithoStratTreeDef     = null;
+        localities            = new HashSet<Locality>();
+        prepTypes             = new HashSet<PrepType>();
+        determinationStatuss  = new HashSet<DeterminationStatus>();
+        localities            = new HashSet<Locality>();
+        spAppResourceDirs     = new HashSet<SpAppResourceDir>();
         spLocaleContainers    = new HashSet<SpLocaleContainer>();
+        agents                = new HashSet<Agent>();
     }
     // End Initializer
 
@@ -245,19 +252,6 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
 
     public void setCollections(Set<Collection> collections) {
         this.collections = collections;
-    }
-
-    /**
-     *
-     */
-    @ManyToOne
-    @JoinColumn(name="SpecifyUserID", nullable=false)
-    public SpecifyUser getSpecifyUser() {
-        return this.specifyUser;
-    }
-
-    public void setSpecifyUser(SpecifyUser specifyUser) {
-        this.specifyUser = specifyUser;
     }
 
     /**
@@ -356,6 +350,42 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
         this.localities = localities;
     } 
 
+    /**
+     * @return the determinationStatuss
+     */
+    @OneToMany(mappedBy="collectionType")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
+    public Set<DeterminationStatus> getDeterminationStatuss()
+    {
+        return determinationStatuss;
+    }
+
+    /**
+     * @param determinationStatuss the determinationStatuss to set
+     */
+    public void setDeterminationStatuss(Set<DeterminationStatus> determinationStatuss)
+    {
+        this.determinationStatuss = determinationStatuss;
+    }
+
+    /**
+     * @return the prepTypes
+     */
+    @OneToMany(mappedBy="collectionType")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
+    public Set<PrepType> getPrepTypes()
+    {
+        return prepTypes;
+    }
+
+    /**
+     * @param prepTypes the prepTypes to set
+     */
+    public void setPrepTypes(Set<PrepType> prepTypes)
+    {
+        this.prepTypes = prepTypes;
+    }
+
     @OneToMany(mappedBy="collectionType")
     @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<SpAppResourceDir> getSpAppResourceDirs()
@@ -397,6 +427,24 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     public void setSpLocaleContainers(Set<SpLocaleContainer> spLocaleContainers)
     {
         this.spLocaleContainers = spLocaleContainers;
+    }
+
+    /**
+     * @return the agents
+     */
+    @OneToMany(mappedBy="collectionType")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
+    public Set<Agent> getAgents()
+    {
+        return agents;
+    }
+
+    /**
+     * @param agents the agents to set
+     */
+    public void setAgents(Set<Agent> agents)
+    {
+        this.agents = agents;
     }
 
     /**

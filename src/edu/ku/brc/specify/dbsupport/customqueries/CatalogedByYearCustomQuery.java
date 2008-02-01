@@ -15,13 +15,17 @@
 
 package edu.ku.brc.specify.dbsupport.customqueries;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.Vector;
 
 import org.apache.commons.lang.NotImplementedException;
 
+import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.dbsupport.CustomQueryIFace;
 import edu.ku.brc.dbsupport.CustomQueryListener;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.QueryResultsContainer;
 import edu.ku.brc.dbsupport.QueryResultsContainerIFace;
 import edu.ku.brc.dbsupport.QueryResultsDataObj;
@@ -83,37 +87,19 @@ public class CatalogedByYearCustomQuery implements CustomQueryIFace
      */
     public List<QueryResultsContainerIFace> getQueryDefinition()
     {
+        int numYears = 5;
+        
         Vector<QueryResultsContainerIFace> list = new Vector<QueryResultsContainerIFace>();
-        QueryResultsContainer ndbrc = new QueryResultsContainer("select count(*) from collectionobject where TimestampCreated < '2001-01-01' and TimestampCreated > '1999-12-31'; ");
-        ndbrc.add(new QueryResultsDataObj("2002"));
-        ndbrc.add(new QueryResultsDataObj(1, 1));
-        list.addElement(ndbrc);
-        
-        ndbrc = new QueryResultsContainer("select count(*) from collectionobject where TimestampCreated < '2002-01-01' and TimestampCreated > '2000-12-31'; ");
-        ndbrc.add(new QueryResultsDataObj("2003"));
-        ndbrc.add(new QueryResultsDataObj(1, 1));
-        list.addElement(ndbrc);
-        
-        ndbrc = new QueryResultsContainer("select count(*) from collectionobject where TimestampCreated < '2003-01-01' and TimestampCreated > '2001-12-31'; ");
-        ndbrc.add(new QueryResultsDataObj("2004"));
-        ndbrc.add(new QueryResultsDataObj(1, 1));
-        list.addElement(ndbrc);
-        
-        ndbrc = new QueryResultsContainer("select count(*) from collectionobject where TimestampCreated < '2004-01-01' and TimestampCreated > '2002-12-31'; ");
-        ndbrc.add(new QueryResultsDataObj("2005"));
-        ndbrc.add(new QueryResultsDataObj(1, 1));
-        list.addElement(ndbrc);
-        
-        ndbrc = new QueryResultsContainer("select count(*) from collectionobject where TimestampCreated < '2005-01-01' and TimestampCreated > '2003-12-31'; ");
-        ndbrc.add(new QueryResultsDataObj("2006"));
-        ndbrc.add(new QueryResultsDataObj(1, 1));
-        list.addElement(ndbrc);
-        
-        /*ndbrc = new QueryResultsContainer("2005", "select count(*) from collectionobject where TimestampCreated < '2006-01-01' and TimestampCreated > '2004-12-31'; ");
-        ndbrc.add(new QueryResultsDataObj("2005"));
-        ndbrc.add(new QueryResultsDataObj(1, 1));
-        list.addElement(ndbrc);
-        */
+        Calendar now = Calendar.getInstance();
+        int year = now.get(Calendar.YEAR);
+        for (int yr=year-numYears+1;yr<=year;yr++)
+        {
+            String sql = QueryAdjusterForDomain.getInstance().adjustSQL("SELECT count(*) FROM collectionobject WHERE CollectionMemberID = COLMEMID AND TimestampCreated < '"+yr+"-01-01' AND TimestampCreated > '"+(yr-1)+"-12-31'");
+            QueryResultsContainer ndbrc = new QueryResultsContainer(sql);
+            ndbrc.add(new QueryResultsDataObj(Integer.toString(yr)));
+            ndbrc.add(new QueryResultsDataObj(1, 1));
+            list.addElement(ndbrc);
+        }
         
         return list;
     }
@@ -126,7 +112,4 @@ public class CatalogedByYearCustomQuery implements CustomQueryIFace
         // TODO Auto-generated method stub
         return getClass().getSimpleName();
     }
-    
-    
-
 }

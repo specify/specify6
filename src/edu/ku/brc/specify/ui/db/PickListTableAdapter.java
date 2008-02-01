@@ -22,6 +22,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -34,7 +35,7 @@ import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 /**
  * @author rods
  *
- * @code_status Alpha
+ * @code_status Complete
  *
  * Created Date: Nov 14, 2006
  *
@@ -46,128 +47,115 @@ public class PickListTableAdapter extends PickListDBAdapter
 
     /**
      * Creates an adapter from a PickList.
-     * @param pickList the picklist
+     * @param pickList the PickList
      */
     public PickListTableAdapter(final PickList pickList)
     {
         this.pickList = pickList;
-        init();
-    }
-    
-    /**
-     * Initializes list from Database. 
-     */
-    protected void init()
-    {
-        PickListDBAdapterIFace.Type type = PickListDBAdapterIFace.Type.valueOf(pickList.getType());
-        switch (type)
-        {
-            //case Item : throw new RuntimeException("This adapter is not intended for PickList's of type '0'");
-            
-            case Table : 
-                fillFromFullTable();
-                break;
-                
-            case TableField : 
-                fillFromTableField();
-                break;
-                
-        } // switch 
-    }
-    
-    /**
-     * 
-     */
-    protected void fillFromFullTable()
-    {
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         
-        //DBTableIdMgr.getInstance().getQueryForTable(tableId, recordId)
-        DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(DBTableIdMgr.getInstance().getIdByShortName(pickList.getTableName()));
-        if (tableInfo != null)
+        if (pickList != null)
         {
-            // This could be moved to DBTableIdMgr but a new method would be needed
-            StringBuffer strBuf = new StringBuffer("from ");
-            strBuf.append(tableInfo.getName());
-            strBuf.append(" in class ");
-            strBuf.append(tableInfo.getShortClassName());
-            
-            String sqlStr = strBuf.toString();//DBTableIdMgr.getInstance().getQueryForTable(tableId, Integer.parseInt(idStr));
-            if (StringUtils.isNotEmpty(sqlStr))
+            fill(PickListDBAdapterIFace.Type.valueOf(pickList.getType()));
+        }
+    }
+    
+    /**
+     * Builds a HQL statement for gathering all all the items in a table. Using the 
+     * QueryAdjusterForDomain to make sure it gets properly filtered per collection or
+     * what ever.
+     * @param tableInfo the table
+     * @param fieldName the field to be retruned
+     * @return the HQL statement
+     */
+    protected String buildHQL(final DBTableInfo tableInfo, final String fieldName)
+    {
+        // This could be moved to DBTableIdMgr but a new method would be needed
+        StringBuffer strBuf = new StringBuffer();
+        if (fieldName != null)
+        {
+            strBuf.append("SELECT "); 
+            strBuf.append(fieldName); 
+        }
+        strBuf.append("FROM ");
+        strBuf.append(tableInfo.getName());
+        strBuf.append(" in class ");
+        strBuf.append(tableInfo.getShortClassName());
+        
+        String specialWhereClause = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, true);
+        if (StringUtils.isNotEmpty(specialWhereClause))
+        {
+            strBuf.append(" WHERE ");
+            strBuf.append(specialWhereClause);
+        }
+        return strBuf.toString();
+    }
+    
+    /**
+     * Fills non-Item type PickLists from a Table.
+     * @param type the type to be filled
+     */
+    protected void fill(final PickListDBAdapterIFace.Type type)
+    {
+        if (type != PickListDBAdapterIFace.Type.Item)
+        {
+            DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(DBTableIdMgr.getInstance().getIdByShortName(pickList.getTableName()));
+            if (tableInfo != null)
             {
+                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
                 try
                 {
-                    List<?> dataList = session.getDataList(sqlStr);
-                    if (dataList != null && dataList.size() > 0)
+                    String sqlStr = buildHQL(tableInfo, type == PickListDBAdapterIFace.Type.TableField ? pickList.getFieldName() : null);
+                    log.debug(sqlStr);
+                    if (StringUtils.isNotEmpty(sqlStr))
                     {
-                        for (Object dataObj : dataList)
+                        List<?> dataList = session.getDataList(sqlStr);
+                        if (dataList != null && !dataList.isEmpty())
                         {
-                            String title = DataObjFieldFormatMgr.format(dataObj, pickList.getFormatter());
-                            items.add(pickList.addItem(title, dataObj));
+                            if (type == PickListDBAdapterIFace.Type.TableField)
+                            {
+                                String   formatterStr = pickList.getFormatter();
+                                boolean  hasFormatter = StringUtils.isNotEmpty(formatterStr);
+                                for (Object dataObj : dataList)
+                                {
+                                    String valStr = hasFormatter ? String.format(formatterStr, dataObj) : dataObj.toString();
+                                    items.add(pickList.addItem(valStr, valStr));
+                                }
+                                
+                            } else
+                            {
+                                for (Object dataObj : dataList)
+                                {
+                                    String title = DataObjFieldFormatMgr.format(dataObj, pickList.getFormatter());
+                                    items.add(pickList.addItem(title, dataObj));
+                                }
+                            }
+                            
+                        } else
+                        {
+                            // No Data Error
                         }
-                        
+
                     } else
                     {
-                        // No Data Error
+                        log.error("Query String is empty for tableId["+tableInfo.getTableId()+"]");
                     }
-        
                 } catch (Exception ex)
                 {
                     log.error(ex);
                     ex.printStackTrace();
+                    
+                } finally
+                {
+                    if (session != null)
+                    {
+                        session.close();
+                    }
                 }
+                
             } else
             {
-                log.error("Query String is empty for tableId["+tableInfo.getTableId()+"]");
+                throw new RuntimeException("Error looking up PickLIst's Table Name ["+pickList.getTableName()+"]");
             }
-            session.close();
-        } else
-        {
-            throw new RuntimeException("Error looking up PickLIst's Table Name ["+pickList.getTableName()+"]");
-        }
-    }
-
-    /**
-     * 
-     */
-    protected void fillFromTableField()
-    {
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        
-        //DBTableIdMgr.getInstance().getQueryForTable(tableId, recordId)
-        DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(DBTableIdMgr.getInstance().getIdByShortName(pickList.getTableName()));
-        if (tableInfo != null)
-        {
-            try
-            {
-                List<?> dataList = session.getDataList(Class.forName(tableInfo.getClassName()), pickList.getFieldName(), true);
-                if (dataList != null && dataList.size() > 0)
-                {
-                    Object[] array = new Object[1];
-                    String   formatterStr   = pickList.getFormatter();
-                    boolean  hasFormatter = StringUtils.isNotEmpty(formatterStr);
-                    for (Object dataObj : dataList)
-                    {
-                        array[0] = dataObj;
-                        String valStr = hasFormatter ? String.format(formatterStr, array) : dataObj.toString();
-                        items.add(pickList.addItem(valStr, valStr));
-                    }
-                    
-                } else
-                {
-                    // No Data Error
-                }
-    
-            } catch (Exception ex)
-            {
-                log.error(ex);
-                ex.printStackTrace();
-            }
-
-            session.close();
-        } else
-        {
-            throw new RuntimeException("Error looking up PickLIst's Table Name ["+pickList.getTableName()+"]");
         }
     }
 

@@ -192,7 +192,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private String               appName             = "Specify";
     private String               appVersion          = "6.0";
 
-    private String               appBuildVersion     = "200801291430 (SVN: 3368)";
+    private String               appBuildVersion     = "200801301530 (SVN: 3374)";
     
     protected static CacheManager cacheManager        = new CacheManager();
 
@@ -1485,7 +1485,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
             if (list.size() == 1)
             {
                 SpecifyUser user      = list.get(0);
-                Agent       userAgent = user.getAgent();
+                Agent       userAgent = Agent.getUserAgent();
                 if (StringUtils.isNotEmpty(userNameStr))
                 {
                     user.setName(userNameStr);

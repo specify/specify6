@@ -36,6 +36,8 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -66,6 +68,7 @@ public class PrepType extends DataModelObjBase implements java.io.Serializable
     protected Integer           prepTypeId;
     protected String            name;
     protected Boolean           isLoanable;
+    protected CollectionType    collectionType;
     protected Set<Preparation>  preparations;
     protected Set<AttributeDef> attributeDefs;
 
@@ -88,11 +91,12 @@ public class PrepType extends DataModelObjBase implements java.io.Serializable
     public void initialize()
     {
         super.init();
-        prepTypeId = null;
-        name = null;
-        isLoanable = true;
-        preparations = new HashSet<Preparation>();
-        attributeDefs = new HashSet<AttributeDef>();
+        prepTypeId     = null;
+        name           = null;
+        isLoanable     = true;
+        collectionType = null;
+        preparations   = new HashSet<Preparation>();
+        attributeDefs  = new HashSet<AttributeDef>();
     }
 
     // End Initializer
@@ -201,35 +205,25 @@ public class PrepType extends DataModelObjBase implements java.io.Serializable
         this.attributeDefs = attributeDefs;
     }
 
-    // Add Methods
-
-    public void addPreparations(final Preparation preparation)
+    /**
+     * @return the collectionType
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "CollectionTypeID", unique = false, nullable = false, insertable = true, updatable = true)
+    public CollectionType getCollectionType()
     {
-        this.preparations.add(preparation);
-        preparation.setPrepType(this);
+        return collectionType;
     }
 
-    public void addAttributeDefs(final AttributeDef attributeDef)
+    /**
+     * @param collectionType the collectionType to set
+     */
+    public void setCollectionType(CollectionType collectionType)
     {
-        this.attributeDefs.add(attributeDef);
-        attributeDef.setPrepType(this);
+        this.collectionType = collectionType;
     }
 
-    // Done Add Methods
 
-    // Delete Methods
-
-    public void removePreparations(final Preparation preparation)
-    {
-        this.preparations.remove(preparation);
-        preparation.setPrepType(null);
-    }
-
-    public void removeAttributeDefs(final AttributeDef attributeDef)
-    {
-        this.attributeDefs.remove(attributeDef);
-        attributeDef.setPrepType(null);
-    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()

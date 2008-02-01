@@ -255,7 +255,7 @@ public class TreeFactory
     {
         if (clazz.equals(Taxon.class))
         {
-            return "SELECT count(*) FROM CollectionObject AS co INNER JOIN co.determinations AS d INNER JOIN d.status AS dts INNER JOIN d.taxon AS t WHERE dts.isCurrent = 1 AND t.id="+Integer.toString(id);
+            return "SELECT count(*) FROM CollectionObject AS co INNER JOIN co.determinations AS d INNER JOIN d.status AS dts INNER JOIN d.taxon AS t WHERE dts.type = 1 AND t.id="+Integer.toString(id);
         }
         
         if (clazz.equals(Geography.class))

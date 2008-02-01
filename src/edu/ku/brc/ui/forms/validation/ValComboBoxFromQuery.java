@@ -862,7 +862,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     /* (non-Javadoc)
      * @see javax.swing.event.ListSelectionListener#valueChanged(javax.swing.event.ListSelectionEvent)
      */
-    public void valueChanged(ListSelectionEvent e)
+    public void valueChanged(final ListSelectionEvent e)
     {
         //log.debug(e != null ? ((JMenuItem)e.getSource()).getText() : "null");
         if (e != null)
@@ -874,7 +874,14 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                 
             } else if (e.getSource() instanceof JList)
             {
-                itemLabel = ((JList)e.getSource()).getSelectedValue().toString();
+                JList listBox = (JList)e.getSource(); 
+                if (listBox.getSelectedIndex() > -1)
+                {
+                    itemLabel = listBox.getSelectedValue().toString();
+                } else
+                {
+                    return;
+                }
             }
             
             if (itemLabel != null && itemLabel.equals(UIRegistry.getResourceString("TFWQ_ADD_LABEL")))

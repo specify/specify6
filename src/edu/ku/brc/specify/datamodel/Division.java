@@ -59,6 +59,7 @@ public class Division extends DataModelObjBase implements java.io.Serializable
      protected String                   uri;
      protected String                   iconURI;
      protected String                   discipline;
+     protected String                   description;
      protected String                   remarks;
      
      protected Address                  address;
@@ -98,6 +99,7 @@ public class Division extends DataModelObjBase implements java.io.Serializable
         uri                 = null;
         iconURI             = null;
         discipline          = null;
+        description         = null;
         remarks             = null;
         members             = new HashSet<Agent>();
         conservDescriptions = new HashSet<ConservDescription>();
@@ -175,6 +177,16 @@ public class Division extends DataModelObjBase implements java.io.Serializable
     public String getRemarks()
     {
         return remarks;
+    }
+
+    /**
+     * @return the description
+     */
+    @Lob
+    @Column(name = "Description", length = 8192)
+    public String getDescription()
+    {
+        return description;
     }
 
     /**
@@ -322,6 +334,14 @@ public class Division extends DataModelObjBase implements java.io.Serializable
     public void setRemarks(String remarks)
     {
         this.remarks = remarks;
+    }
+
+    /**
+     * @param description the description to set
+     */
+    public void setDescription(String description)
+    {
+        this.description = description;
     }
 
     /**

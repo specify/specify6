@@ -152,7 +152,8 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     }
 
     /** constructor with id */
-    public CollectionObject(Integer collectionObjectId) {
+    public CollectionObject(Integer collectionObjectId) 
+    {
         this.collectionObjectId = collectionObjectId;
     }
 

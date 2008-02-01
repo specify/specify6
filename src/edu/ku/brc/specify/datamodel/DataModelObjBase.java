@@ -78,7 +78,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
         Timestamp now     = new Timestamp(System.currentTimeMillis());
         timestampCreated  = now;
         timestampModified = null;
-        createdByAgent    = SpecifyUser.getCurrentUser() != null ? SpecifyUser.getCurrentUser().getAgent() : null;
+        createdByAgent    = SpecifyUser.getCurrentUser() != null ? Agent.getUserAgent() : null;
         modifiedByAgent   = null;
     }
     

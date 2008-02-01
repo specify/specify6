@@ -555,9 +555,10 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         
         final JList listBox = new JList(model);
         JPanel panel = new JPanel(new BorderLayout());
-        panel.add(new JLabel("Choose Item", SwingConstants.CENTER), BorderLayout.NORTH);
+        panel.add(new JLabel(UIRegistry.getResourceString("TFWQ_CHOOSE_LABEL"), SwingConstants.CENTER), BorderLayout.NORTH);
         JScrollPane sp = new JScrollPane(listBox, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         panel.add(sp, BorderLayout.CENTER);
+        panel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         
         // Had to do inner class in order to get it to select an item
         // before being shown
@@ -571,7 +572,8 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                                final Component contentPanel,
                                JList pListBoxArg) throws HeadlessException
             {
-                super(frame, title, isModal, contentPanel);
+                super(frame, UIRegistry.getResourceString("TFWQ_CHOOSE_TITLE"), isModal, contentPanel);
+                
                 this.pListBox = pListBoxArg;
                 
                 pListBox.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -632,9 +634,10 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                     l.valueChanged(lse);
                 }
             }
-
-        } 
- 
+        } else
+        {
+            textField.setText("");
+        }
     }
     
     /* (non-Javadoc)

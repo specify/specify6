@@ -63,6 +63,7 @@ import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.Determination;
+import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.Preparation;
@@ -237,7 +238,7 @@ public class LoanSelectPrepsDlg extends JDialog
     {
         for (Determination d : colObj.getDeterminations())
         {
-            if (d.getStatus().getIsCurrent())
+            if (d.getStatus().getType() == DeterminationStatus.CURRENT)
             {
                 return d;
             }
@@ -323,7 +324,7 @@ public class LoanSelectPrepsDlg extends JDialog
             String taxonName = "";
             for (Determination deter : colObj.getDeterminations())
             {
-                if (deter.getStatus().getIsCurrent())
+                if (deter.getStatus().getType() == DeterminationStatus.CURRENT)
                 {
                     if (deter.getTaxon().getFullName() == null)
                     {

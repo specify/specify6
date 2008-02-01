@@ -21,6 +21,7 @@ import java.util.Vector;
 
 import org.apache.commons.lang.NotImplementedException;
 
+import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.dbsupport.CustomQueryIFace;
 import edu.ku.brc.dbsupport.CustomQueryListener;
 import edu.ku.brc.dbsupport.QueryResultsContainer;
@@ -96,7 +97,8 @@ public class CatByPrev10YearsCustomQuery implements CustomQueryIFace
 
         for (int i=0;i<10;i++)
         {
-            ndbrc = new QueryResultsContainer("select count(*) from collectionobject where CatalogedDate < '"+(year)+"-01-01' and CatalogedDate > '"+(year-10)+"-12-31'; ");
+            String sql = QueryAdjusterForDomain.getInstance().adjustSQL("SELECT count(*) FROM collectionobject WHERE CollecionMemberID = COLMEMID AND CatalogedDate < '"+(year)+"-01-01' and CatalogedDate > '"+(year-10)+"-12-31'; ");
+            ndbrc = new QueryResultsContainer(sql);
             ndbrc.add(new QueryResultsDataObj(createTitle(year, inc)));
             ndbrc.add(new QueryResultsDataObj(1, 1));
             list.addElement(ndbrc);

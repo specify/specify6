@@ -14,6 +14,7 @@
  */package edu.ku.brc.specify.datamodel.busrules;
 
 import edu.ku.brc.specify.datamodel.CollectingEvent;
+import edu.ku.brc.specify.datamodel.Locality;
 
 /**
  * @author rod 
@@ -27,14 +28,43 @@ import edu.ku.brc.specify.datamodel.CollectingEvent;
  */
 public class CollectingEventBusRules extends AttachmentOwnerBaseBusRules
 {
+    /**
+     * 
+     */
     public CollectingEventBusRules()
     {
         super(CollectingEvent.class);
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToEnableDelete(java.lang.Object)
+     */
     @Override
-    public boolean okToEnableDelete(Object dataObj)
+    public boolean okToEnableDelete(final Object dataObj)
     {
         return true;
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#addChildrenToNewDataObjects(java.lang.Object)
+     */
+    @Override
+    public void addChildrenToNewDataObjects(final Object newDataObj)
+    {
+        super.addChildrenToNewDataObjects(newDataObj);
+        
+        if (false)
+        {
+            CollectingEvent ce = (CollectingEvent)newDataObj;
+            
+            if (ce.getLocality() == null)
+            {
+                Locality locality = new Locality();
+                locality.initialize();
+                
+                ce.addReference(locality, "locality");
+            }
+        }
+    }
+    
 }

@@ -61,6 +61,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.SpAppResourceDir;
 import edu.ku.brc.specify.datamodel.SpViewSetObj;
@@ -151,8 +152,9 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
         
         levelsVec.add(user.getUserType());
 
-        for (CollectionType ct : user.getCollectionTypes())
+        for (Agent agent : user.getAgents())
         {
+            CollectionType ct = agent.getCollectionType();
             if (usedColTypes.get(ct) == null)
             {
                 levelsVec.add(ct.getDiscipline());

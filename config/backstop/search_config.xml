@@ -30,7 +30,7 @@
  INNER JOIN agent ON determination.DeterminerID = agent.AgentID
  INNER JOIN taxon ON determination.TaxonID = taxon.TaxonID
  INNER JOIN determinationstatus ON determination.DeterminationStatusID = determinationstatus.DeterminationStatusID
- WHERE determination.CollectionMemberID = COLMEMID AND determinationstatus.IsCurrent = 1 AND %s]]>
+ WHERE determination.CollectionMemberID = COLMEMID AND determinationstatus.Type = 1 AND %s]]>
                 </sql>
                 <captions>
                     <caption tableid="4" col="taxon.TaxonID" visible="false"/>
@@ -131,7 +131,7 @@
  INNER JOIN determination ON collectionobject.CollectionObjectID = determination.CollectionObjectID
  INNER JOIN taxon ON determination.TaxonID = taxon.TaxonID
  INNER JOIN determinationstatus ON determination.DeterminationStatusID = determinationstatus.DeterminationStatusID
- WHERE collectionobject.CollectionMemberID = COLMEMID AND determinationstatus.IsCurrent = 1 AND %s]]>
+ WHERE collectionobject.CollectionMemberID = COLMEMID AND determinationstatus.Type = 1 AND %s]]>
                 </sql>
                 <captions>
                     <caption tableid="4" col="taxon.TaxonID"         visible="false"/>
@@ -174,7 +174,7 @@
  INNER JOIN agent ON collector.AgentID = agent.AgentID
  INNER JOIN taxon ON determination.TaxonID = taxon.TaxonID
  INNER JOIN determinationstatus ON determination.DeterminationStatusID = determinationstatus.DeterminationStatusID 
- WHERE collectionobject.CollectionMemberID = COLMEMID AND determinationstatus.IsCurrent = 1 AND %s ORDER BY collectionobject.CollectionObjectID, collector.OrderNumber]]>
+ WHERE collectionobject.CollectionMemberID = COLMEMID AND determinationstatus.Type = 1 AND %s ORDER BY collectionobject.CollectionObjectID, collector.OrderNumber]]>
                 </sql>
                 <captions>
                     <caption tableid="1"  col="collectionobject.CollectionObjectID" visible="false"/>
@@ -303,7 +303,7 @@
  %s 
  From collectionobject 
  Inner Join determination AS DT ON DT.CollectionObjectID = collectionobject.CollectionObjectID
- Inner Join determinationstatus ON DT.DeterminationStatusID = determinationstatus.DeterminationStatusID AND determinationstatus.IsCurrent = 1
+ Inner Join determinationstatus ON DT.DeterminationStatusID = determinationstatus.DeterminationStatusID AND determinationstatus.Type = 1
  Inner Join taxon ON taxon.TaxonID = DT.TaxonID 
  WHERE DT.CollectionMemberID = COLMEMID AND 
  collectionobject.CollectionMemberID = COLMEMID AND 
@@ -335,7 +335,7 @@
  agent.AgentType,
  %s
  FROM agentvariant INNER JOIN agent ON agentvariant.AgentID = agent.AgentID
- WHERE agent.CollectionMemberID = COLMEMID AND %s order by agentvariant.Name asc]]>
+ WHERE agent.CollectionTypeID = COLTYPID AND %s order by agentvariant.Name asc]]>
                 </sql>
                 <captions>
                     <caption tableid="5" col="agent.AgentID" visible="false"/>
@@ -383,7 +383,7 @@
                 <sql>
                     <![CDATA[SELECT * FROM (SELECT agent.AgentID,
 agent.FirstName,  agent.LastName, agent.Name, agent.Email, address.Address, address.City,
-address.State, address.PostalCode, address.Country FROM agent Left Join address ON agent.AgentID = address.AgentID WHERE agent.CollectionMemberID = COLMEMID) AS newTable WHERE (%s)]]>
+address.State, address.PostalCode, address.Country FROM agent Left Join address ON agent.AgentID = address.AgentID WHERE agent.CollectionTypeID = COLTYPID) AS newTable WHERE (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="5" col="AgentID" visible="false"/>

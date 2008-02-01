@@ -205,7 +205,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         businessRules = DBTableIdMgr.getInstance().getBusinessRule(treeDef.getNodeClass());
         
         // TODO: implement some UI to let the user set this pref
-        restoreTreeState = AppPreferences.getRemote().getBoolean("RestoreTreeExpansionState", false);
+        restoreTreeState = AppPreferences.getRemote().getBoolean("TreeEditor.RestoreTreeExpansionState", false);
+        
         // then take out this line
         restoreTreeState = true;
         

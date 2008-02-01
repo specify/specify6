@@ -13,7 +13,10 @@ import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.CollectionType;
+import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
@@ -21,6 +24,7 @@ import edu.ku.brc.specify.datamodel.LithoStrat;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
 import edu.ku.brc.specify.datamodel.Location;
 import edu.ku.brc.specify.datamodel.LocationTreeDef;
+import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
@@ -38,7 +42,9 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
     
     private static final String SPECIFYUSERID  = "SPECIFYUSERID";
     private static final String DIVISIONID     = "DIVISIONID";
+    private static final String COLTYPID       = "COLTYPID";
     private static final String COLMEMID       = "COLMEMID";
+    //private static final String COLMEMIDGRP    = "COLMEMIDGRP";
     
     private static final String TAXTREEDEFID   = "TAXTREEDEFID";
     private static final String LOCTREEDEFID   = "LOCTREEDEFID";
@@ -63,6 +69,13 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
             if (tableInfo.getFieldByName("collectionMemberId") != null)
             {
                 String sql = (isHQL ? "collectionMemberId" : "CollectionMemberID") + " = " + COLMEMID;
+                return adjustSQL(sql);
+                
+            } else if (tableInfo.getTableId() == Agent.getClassTableId() ||
+                       tableInfo.getTableId() == DeterminationStatus.getClassTableId() ||
+                       tableInfo.getTableId() == PrepType.getClassTableId())
+            {
+                String sql = (isHQL ? "collectionTypeId" : "CollectionTypeID") + " = " + COLTYPID;
                 return adjustSQL(sql);
                 
             } else if (tableInfo.getTableId() == Taxon.getClassTableId())
@@ -116,7 +129,7 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                 
                 if (StringUtils.contains(adjSQL, DIVISIONID))
                 {
-                    Integer divId = user.getAgent().getDivision() != null ? user.getAgent().getDivision().getDivisionId() : null;
+                    Integer divId = Agent.getUserAgent().getDivision() != null ? Agent.getUserAgent().getDivision().getDivisionId() : null;
                     if (divId != null)
                     {
                         adjSQL = StringUtils.replace(adjSQL, DIVISIONID, Integer.toString(divId));
@@ -130,6 +143,15 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                     if (collection != null)
                     {
                         adjSQL = StringUtils.replace(adjSQL, COLMEMID, Integer.toString(collection.getCollectionId()));
+                    }
+                }
+                
+                if (StringUtils.contains(adjSQL, COLTYPID))
+                {
+                    CollectionType collectionType = CollectionType.getCurrentCollectionType();
+                    if (collectionType != null)
+                    {
+                        adjSQL = StringUtils.replace(adjSQL, COLTYPID, Integer.toString(collectionType.getCollectionTypeId()));
                     }
                 }
                 

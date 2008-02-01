@@ -29,7 +29,6 @@
 package edu.ku.brc.specify.datamodel;
 
 import java.sql.Timestamp;
-import java.util.HashSet;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

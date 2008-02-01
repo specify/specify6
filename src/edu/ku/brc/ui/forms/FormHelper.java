@@ -19,6 +19,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -37,6 +38,8 @@ public final class FormHelper
     private static String currentUserEditStr = "";
 
     /**
+     * XXX This needs to be moved! This references the specify packge
+     * 
      * Sets the "timestampModified" and the "lastEditedBy" by fields if the exist, if they don't then 
      * then it just ignores the request (no error is thrown). The lastEditedBy use the value of the string
      * set by the method currentUserEditStr.
@@ -77,7 +80,7 @@ public final class FormHelper
                     descr = PropertyUtils.getPropertyDescriptor(dataObj, "modifiedByAgent");
                     if (descr != null)
                     {
-                        setter.setFieldValue(dataObj, "modifiedByAgent", SpecifyUser.getCurrentUser().getAgent());
+                        setter.setFieldValue(dataObj, "modifiedByAgent", Agent.getUserAgent());
                         foundOne = true;
                     }
                     return foundOne;

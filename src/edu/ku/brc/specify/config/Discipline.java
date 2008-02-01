@@ -56,7 +56,7 @@ public class Discipline implements Comparable<Discipline>
     protected String title;
     protected int    type;
     
-    public Discipline(String name, String title, int type)
+    public Discipline(final String name, final String title, final int type)
     {
         this.name  = name;
         this.title = title;
@@ -104,7 +104,12 @@ public class Discipline implements Comparable<Discipline>
      */
     public static Discipline getDiscipline(final String name)
     {
-        return getDisciplineHash().get(name);
+        Discipline discipline = getDisciplineHash().get(name);
+        if (discipline == null)
+        {
+            log.error("Couldn't locate discipline["+name+"]");
+        }
+        return discipline;
     }
     
 

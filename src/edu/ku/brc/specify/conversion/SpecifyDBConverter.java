@@ -571,7 +571,7 @@ public class SpecifyDBConverter
                     }
                     
                     SpecifyUser specifyUser = DataBuilder.createSpecifyUser(username, email, (short)0, userGroup, userType);
-                    specifyUser.setAgent(userAgent);
+                    specifyUser.addReference(userAgent, "agents");
                     
                     DataBuilder.getSession().getTransaction().commit();
 
@@ -850,7 +850,7 @@ public class SpecifyDBConverter
                 boolean doFurtherTesting = false;
                 if (doFurtherTesting)
                 {
-
+                    /*
                     BasicSQLUtils.deleteAllRecordsFromTable("datatype", BasicSQLUtils.myDestinationServerType);
                     BasicSQLUtils.deleteAllRecordsFromTable("specifyuser", BasicSQLUtils.myDestinationServerType);
                     BasicSQLUtils.deleteAllRecordsFromTable("usergroup", BasicSQLUtils.myDestinationServerType);
@@ -922,7 +922,7 @@ public class SpecifyDBConverter
                     Object obj = collTypeSet.iterator().next();
                     CollectionType collType = (CollectionType)obj;
 
-                    conversion.convertBiologicalAttrs(collType, null, null);
+                    conversion.convertBiologicalAttrs(collType, null, null);*/
                 }
                 //conversion.showStats();
             }

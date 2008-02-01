@@ -108,12 +108,6 @@ public class PercentageGrowthCustomQuery implements CustomQueryIFace
         ndbrc.add(new QueryResultsDataObj(1, 1));
         list.addElement(ndbrc);
         
-        /*ndbrc = new QueryResultsContainer("2005", "select count(*) from collectionobject where TimestampCreated < '2006-01-01' and TimestampCreated > '2004-12-31'; ");
-        ndbrc.add(new QueryResultsDataObj("2005"));
-        ndbrc.add(new QueryResultsDataObj(1, 1));
-        list.addElement(ndbrc);
-        */
-        
         return list;
     }
 

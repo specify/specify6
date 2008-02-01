@@ -160,10 +160,10 @@ public class TestAutoNumbering extends TestCase
         
         Institution    institution    = createInstitution("Natural History Museum");
         Division       division       = createDivision(institution, "fish", "Icthyology", "IT", "Icthyology");
-        CollectionType collectionType = createCollectionType(division, collTypeName, disciplineName, dataType, user, taxonTreeDef, null, null, null, lithoStratTreeDef);
+        CollectionType collectionType = createCollectionType(division, collTypeName, disciplineName, dataType, taxonTreeDef, null, null, null, lithoStratTreeDef);
 
         SpecifyUser.setCurrentUser(user);
-        user.setAgent(userAgent);
+        user.addReference(userAgent, "agents");
 
         dataObjects.add(collectionType);
         dataObjects.add(userGroup);

@@ -60,6 +60,7 @@ public class Institution extends DataModelObjBase implements java.io.Serializabl
      protected String     termsOfUse;
      protected String     disclaimer;
      protected String     remarks;
+     protected String     description;
      
      protected Address       address;
      protected Set<Agent>    technicalContacts;
@@ -95,6 +96,7 @@ public class Institution extends DataModelObjBase implements java.io.Serializabl
         termsOfUse        = null;
         disclaimer        = null;
         remarks           = null;
+        description       = null;
         address           = null;
         technicalContacts = new HashSet<Agent>();
         contentContacts   = new HashSet<Agent>();
@@ -200,6 +202,16 @@ public class Institution extends DataModelObjBase implements java.io.Serializabl
         return remarks;
     }
 
+    /**
+     * @return the description
+     */
+    @Lob
+    @Column(name = "Description", length = 8192)
+    public String getDescription()
+    {
+        return description;
+    }
+    
     /**
      * @return the technicalContacts
      */
@@ -310,6 +322,14 @@ public class Institution extends DataModelObjBase implements java.io.Serializabl
     public void setRemarks(String remarks)
     {
         this.remarks = remarks;
+    }
+
+    /**
+     * @param description the description to set
+     */
+    public void setDescription(String description)
+    {
+        this.description = description;
     }
 
     /**

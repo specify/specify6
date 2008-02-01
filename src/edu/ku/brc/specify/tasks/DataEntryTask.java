@@ -56,12 +56,11 @@ import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DataFlavorTableExt;
@@ -619,7 +618,7 @@ public class DataEntryTask extends BaseTask
                     colObj.setCollectingEvent(ce);
                     ce.getCollectionObjects().add(colObj);
                     
-                    Agent agent = SpecifyUser.getCurrentUser().getAgent();
+                    Agent agent = Agent.getUserAgent();
                     if (agent != null)
                     {
                         colObj.setCataloger(agent);
@@ -631,7 +630,7 @@ public class DataEntryTask extends BaseTask
                 Preparation prep = (Preparation)dataObj;
                 if (prep.getPreparedByAgent() == null)
                 {
-                    prep.setPreparedByAgent(SpecifyUser.getCurrentUser().getAgent());
+                    prep.setPreparedByAgent(Agent.getUserAgent());
                     
                     SpecifyAppContextMgr appContextMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
                     String               prepTitle     = UIRegistry.getLocalizedMessage("CHOOSE_DEFAULT_OBJECT", PrepType.class.getSimpleName());

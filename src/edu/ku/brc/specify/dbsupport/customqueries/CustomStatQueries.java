@@ -25,6 +25,7 @@ import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.QueryResultsContainerIFace;
 import edu.ku.brc.dbsupport.QueryResultsDataObj;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Loan;
 
@@ -171,6 +172,7 @@ public class CustomStatQueries implements CustomQueryIFace
         Criteria criteria = session.createCriteria(CollectionObject.class);
         criteria.add(Expression.ge("timestampCreated", startDate.getTime()));
         criteria.add(Expression.le("timestampCreated", endDate.getTime()));
+        criteria.add(Expression.eq("collectionMemberId", Collection.getCurrentCollection().getCollectionId()));
 
         criteria.setProjection(Projections.rowCount());
         resultsList = criteria.list();
@@ -202,6 +204,7 @@ public class CustomStatQueries implements CustomQueryIFace
         Criteria criteria = session.createCriteria(Loan.class);
         criteria.add(Expression.isNotNull("currentDueDate"));
         criteria.add(Expression.ge("currentDueDate", endDate));
+        criteria.add(Expression.eq("collectionMemberId", Collection.getCurrentCollection().getCollectionId()));
 
         criteria.setProjection(Projections.rowCount());
         resultsList = criteria.list();

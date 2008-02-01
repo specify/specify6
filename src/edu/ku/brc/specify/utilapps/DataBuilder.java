@@ -177,17 +177,6 @@ public class DataBuilder
                                     final String abbreviation,
                                     final String email)
     {
-        return createAgent(title, firstName, middleInit, lastName, abbreviation, email, -1);
-    }
-    
-    public static Agent createAgent(final String title,
-                                    final String firstName,
-                                    final String middleInit,
-                                    final String lastName,
-                                    final String abbreviation,
-                                    final String email,
-                                    final int    collectionMemberId)
-    {
         // Create Collection Type
         Agent agent = new Agent();
         agent.initialize();
@@ -198,7 +187,6 @@ public class DataBuilder
         agent.setAbbreviation(abbreviation);
         agent.setTitle(title);
         agent.setEmail(email);
-        agent.setCollectionMemberId(collectionMemberId);
 
         persist(agent);
         return agent;
@@ -217,14 +205,15 @@ public class DataBuilder
     public static SpQuery createQuery(final String      name, 
                                       final String      contextName, 
                                       final int         contextTableId,
-                                      final SpecifyUser owner)
+                                      final SpecifyUser owner,
+                                      final Agent       agent)
     {
         SpQuery query = new SpQuery();
         query.initialize();
         query.setName(name);
         query.setContextName(contextName);
         query.setContextTableId((short)contextTableId);
-        query.setCreatedByAgent(owner.getAgent());
+        query.setCreatedByAgent(agent);
         query.setSpecifyUser(owner);
         return query;
         
@@ -279,7 +268,6 @@ public class DataBuilder
                                                       final String           name,
                                                       final String           disciplineName,
                                                       final DataType         dataType,
-                                                      final SpecifyUser      user,
                                                       final TaxonTreeDef     taxonTreeDef,
                                                       final GeographyTreeDef geographyTreeDef,
                                                       final GeologicTimePeriodTreeDef geologicTimePeriodTreeDef,
@@ -291,7 +279,6 @@ public class DataBuilder
         collType.setName(name);
         collType.setDiscipline(disciplineName);
         collType.setDataType(dataType);
-        collType.setSpecifyUser(user);
         collType.setTaxonTreeDef(taxonTreeDef);
         collType.setGeographyTreeDef(geographyTreeDef);//meg added to support not-null constraints
         collType.setGeologicTimePeriodTreeDef(geologicTimePeriodTreeDef);//meg added to support not-null constraints
@@ -521,13 +508,18 @@ public class DataBuilder
         return colObj;
     }
 
-    public static DeterminationStatus createDeterminationStatus(final String name, final String remarks, final boolean isCurrent)
+    public static DeterminationStatus createDeterminationStatus(final CollectionType colType,
+                                                                final String name, 
+                                                                final String remarks, 
+                                                                final byte type)
     {
         DeterminationStatus status = new DeterminationStatus();
         status.initialize();
         status.setName(name);
-        status.setIsCurrent(isCurrent);
+        status.setType(type);
         status.setRemarks(remarks);
+        
+        colType.addReference(status, "determinationStatuss");
 
         persist(status);
         return status;
@@ -539,11 +531,6 @@ public class DataBuilder
                                                     final DeterminationStatus status,
                                                     final Calendar calendar)
     {
-        if (collectionObject == null)
-        {
-            int x = 0;
-            x++;
-        }
         // Create Determination
         Determination determination = new Determination();
         determination.initialize();
@@ -1467,7 +1454,6 @@ public class DataBuilder
 
     public static CollectionType createCollectionType(final String name,
                                                           final DataType dataType,
-                                                          final SpecifyUser user,
                                                           final GeographyTreeDef geographyTreeDef,
                                                           final GeologicTimePeriodTreeDef geologicTimePeriodTreeDef,
                                                           final LocationTreeDef locationTreeDef,
@@ -1476,7 +1462,6 @@ public class DataBuilder
         CollectionType collectiontype = new CollectionType();
         collectiontype.initialize();
         collectiontype.setDataType(dataType);
-        collectiontype.setSpecifyUser(user);
         collectiontype.setGeographyTreeDef(geographyTreeDef);
         collectiontype.setGeologicTimePeriodTreeDef(geologicTimePeriodTreeDef);
         collectiontype.setLocationTreeDef(locationTreeDef);
@@ -1965,10 +1950,12 @@ public class DataBuilder
         return otheridentifier;
     }
 
-    public static PrepType createPrepType(final String name)
+    public static PrepType createPrepType(final CollectionType colType,
+                                          final String name)
     {
         PrepType preptype = new PrepType();
         preptype.initialize();
+        colType.addReference(preptype, "prepTypes");
         preptype.setName(name);
         persist(preptype);
         return preptype;

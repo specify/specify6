@@ -29,7 +29,9 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -51,10 +53,18 @@ import org.hibernate.annotations.Index;
     })
 public class DeterminationStatus extends DataModelObjBase implements Serializable
 {
+    
+    public static final byte CURRENT          = 1;
+    public static final byte NOTCURRENT       = 2;
+    public static final byte OLDDETERMINATION = 3;
+    public static final byte USERDEFINED      = 127;
+    
     protected Integer            determinationStatusId;
-    protected Boolean            isCurrent;
+    protected Byte               type;
     protected String             name;
     protected String             remarks;
+    
+    protected CollectionType     collectionType;
     protected Set<Determination> determinations;
 
     public DeterminationStatus()
@@ -76,21 +86,11 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
     {
         super.init();
         determinationStatusId = null;
-        name = null;
-        remarks = null;
-        determinations = new HashSet<Determination>();
-    }
-
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "status")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<Determination> getDeterminations()
-    {
-        return determinations;
-    }
-
-    public void setDeterminations(Set<Determination> determinations)
-    {
-        this.determinations = determinations;
+        type                  = null;
+        name                  = null;
+        remarks               = null;
+        collectionType        = null;
+        determinations        = new HashSet<Determination>();
     }
 
     @Id
@@ -139,21 +139,22 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
         this.name = name;
     }
 
+
     /**
-     * @return the isCurrent
+     * @return the type
      */
-    @Column(name = "IsCurrent", unique = false, nullable = true, insertable = true, updatable = true)
-    public Boolean getIsCurrent()
+    @Column(name = "Type", unique = false, nullable = true, insertable = true, updatable = true)
+    public Byte getType()
     {
-        return isCurrent == null ? false : isCurrent;
+        return type;
     }
 
     /**
-     * @param isCurrent the isCurrent to set
+     * @param type the type to set
      */
-    public void setIsCurrent(Boolean isCurrent)
+    public void setType(Byte type)
     {
-        this.isCurrent = isCurrent;
+        this.type = type;
     }
 
     @Lob
@@ -167,6 +168,37 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
     {
         this.remarks = remarks;
     }
+    
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "status")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<Determination> getDeterminations()
+    {
+        return determinations;
+    }
+
+    public void setDeterminations(Set<Determination> determinations)
+    {
+        this.determinations = determinations;
+    }
+
+    /**
+     * @return the collectionType
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "CollectionTypeID", unique = false, nullable = false, insertable = true, updatable = true)
+    public CollectionType getCollectionType()
+    {
+        return collectionType;
+    }
+
+    /**
+     * @param collectionType the collectionType to set
+     */
+    public void setCollectionType(CollectionType collectionType)
+    {
+        this.collectionType = collectionType;
+    }
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
@@ -183,7 +215,7 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
      */
     public static int getClassTableId()
     {
-        return 501;
+        return 88;
     }
 
     @Override

@@ -962,7 +962,7 @@ public class InteractionsTask extends BaseTask
                     lrpo.initialize();
                     //lrpo.setAgent(agent);
                     lrpo.setReceivedBy(agent);
-                    lrpo.setModifiedByAgent(SpecifyUser.getCurrentUser().getAgent());
+                    lrpo.setModifiedByAgent(Agent.getUserAgent());
                     lrpo.setReturnedDate(Calendar.getInstance());
                     lrpo.setQuantity(lri.getQuantity());
                     lrpo.setRemarks(lri.getRemarks());

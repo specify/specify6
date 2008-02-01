@@ -57,6 +57,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
+import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.RecordSetItem;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
@@ -537,7 +538,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                 {
                     RecordSet rs = (RecordSet)data;
                     rs.setName(rsName);
-                    rs.setModifiedByAgent(SpecifyUser.getCurrentUser().getAgent());
+                    rs.setModifiedByAgent(Agent.getUserAgent());
                     saveNewRecordSet(rs);
                 }
             }

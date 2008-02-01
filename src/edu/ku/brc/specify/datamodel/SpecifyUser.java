@@ -39,7 +39,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -65,7 +64,6 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     protected String                    email;
     protected String                    userType;
     protected Short                     privLevel;
-    protected Set<CollectionType>       collectionTypes;
     protected Set<RecordSet>            recordSets;
     protected Set<Workbench>            workbenches;
     protected Set<WorkbenchTemplate>    workbenchTemplates;
@@ -74,7 +72,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     protected Set<SpAppResourceDir>     spAppResourceDirs;
     protected Set<UserPermission>       userPermissions;
     protected Set<SpQuery>              spQuerys;
-    protected Agent                     agent;
+    protected Set<Agent>                agents;
 
     // Constructors
 
@@ -121,7 +119,6 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
         name               = null;
         email              = null;
         privLevel          = null;
-        collectionTypes    = new HashSet<CollectionType>();
         recordSets         = new HashSet<RecordSet>();
         workbenches        = new HashSet<Workbench>();
         workbenchTemplates = new HashSet<WorkbenchTemplate>();
@@ -130,6 +127,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
         spAppResourceDirs  = new HashSet<SpAppResourceDir>();
         userPermissions    = new HashSet<UserPermission>();
         spQuerys           = new HashSet<SpQuery>();
+        agents             = new HashSet<Agent>();
 
     }
 
@@ -251,25 +249,6 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     public void setPrivLevel(Short privLevel)
     {
         this.privLevel = privLevel;
-    }
-
-    /**
-     * 
-     */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "specifyUser")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<CollectionType> getCollectionTypes()
-    {
-        return this.collectionTypes;
-    }
-
-    /**
-     * @param collectionType - 
-     * void
-     */
-    public void setCollectionTypes(Set<CollectionType> collectionType)
-    {
-        this.collectionTypes = collectionType;
     }
 
     /**
@@ -415,23 +394,21 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
 
     /**
      * @return - 
-     * Agent
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @JoinColumn(name = "AgentID", unique = false, nullable = true, insertable = true, updatable = true)
-    public Agent getAgent()
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "specifyUser")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<Agent> getAgents()
     {
-        // XXX - RELEASE (nullable should be false in final release)
-        return this.agent;
+        return this.agents;
     }
 
     /**
-     * @param agent - 
-     * void
+     * @param agenta
+     * 
      */
-    public void setAgent(Agent agent)
+    public void setAgents(Set<Agent> agents)
     {
-        this.agent = agent;
+        this.agents = agents;
     }
 
     // Add Methods

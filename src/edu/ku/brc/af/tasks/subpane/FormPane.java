@@ -2,6 +2,7 @@ package edu.ku.brc.af.tasks.subpane;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -14,6 +15,7 @@ import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.GhostActionable;
+import edu.ku.brc.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.Viewable;
@@ -301,6 +303,30 @@ public class FormPane extends DroppableTaskPane
                 
                 if (data != null)
                 {
+                    if (MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT))
+                    {
+                        Object newDataObj = data;
+                        if (data instanceof Collection<?>)
+                        {
+                            Collection<?> col = (Collection<?>)data;
+                            if (!col.isEmpty())
+                            {
+                                newDataObj = col.iterator().next();
+                            }
+                        }
+                        
+                        BusinessRulesIFace busRule = DBTableIdMgr.getInstance().getBusinessRule(newDataObj);
+                        if (busRule != null)
+                        {
+                            busRule.addChildrenToNewDataObjects(newDataObj);
+                        }
+                        
+                        /*FormViewObj fvo = multiView.getCurrentViewAsFormViewObj();
+                        if (fvo != null)
+                        {
+                            fvo.getB
+                        }*/
+                    }
                     multiView.setData(data);
                 }
 

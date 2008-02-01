@@ -433,12 +433,12 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     @SuppressWarnings("unchecked")
     protected void adjustNodeForm(final FormViewObj form)
     {
-        log.debug("adjustNodeForm(" + form.getName() + ") in mode " + form.getAltView().getMode());
+        //log.debug("adjustNodeForm(" + form.getName() + ") in mode " + form.getAltView().getMode());
 
         if (form.getAltView().getMode() != CreationMode.EDIT)
         {
             // when we're not in edit mode, we don't need to setup any listeners since the user can't change anything
-            log.debug("form is not in edit mode: no special listeners will be attached");
+            //log.debug("form is not in edit mode: no special listeners will be attached");
             return;
         }
 
@@ -446,8 +446,8 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
 
         final Component parentComboBox = form.getControlByName("parent");
         final ValComboBox rankComboBox = (ValComboBox)form.getControlByName("definitionItem");
-        log.debug("parentComboBox = " + parentComboBox);
-        log.debug("rankComboBox   = " + rankComboBox);
+        //log.debug("parentComboBox = " + parentComboBox);
+        //log.debug("rankComboBox   = " + rankComboBox);
         
         if (parentComboBox instanceof ValComboBoxFromQuery)
         {
@@ -458,7 +458,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
 
         if (parentComboBox != null && rankComboBox != null)
         {
-            log.debug("adding validation listener to form");
+            //log.debug("adding validation listener to form");
             form.getValidator().addValidationListener(new ValidationListener()
             {
                 public void wasValidated(UIValidator validator)
@@ -480,10 +480,10 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                         return;
                     }
                     
-                    log.debug("form was validated: calling adjustRankComboBoxModel()");
+                    //log.debug("form was validated: calling adjustRankComboBoxModel()");
                     
                     Object objInForm = form.getDataObj();
-                    log.debug("form data object = " + objInForm);
+                    //log.debug("form data object = " + objInForm);
                     if (objInForm == null)
                     {
                         return;
@@ -519,7 +519,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         
         if (nodeInForm != null && nodeInForm.getDefinitionItem() != null)
         {
-            log.debug("node in form already has a set rank: forcing a call to adjustRankComboBoxModel()");
+            //log.debug("node in form already has a set rank: forcing a call to adjustRankComboBoxModel()");
             adjustRankComboBoxModel((GetSetValueIFace)parentComboBox, rankComboBox, nodeInForm);
         }
         

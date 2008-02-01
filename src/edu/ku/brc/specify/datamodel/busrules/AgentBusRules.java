@@ -19,6 +19,7 @@ package edu.ku.brc.specify.datamodel.busrules;
 
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace;
 
 /**
@@ -100,6 +101,22 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
         } else
         {
             super.okToDelete(dataObj, session, deletable);
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeSave(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public void beforeSave(final Object dataObj, final DataProviderSessionIFace session)
+    {
+        super.beforeSave(dataObj, session);
+        
+        
+        if (CollectionType.getCurrentCollectionType() != null)
+        {
+            //CollectionType.getCurrentCollectionType().addReference((Agent)dataObj, "agents");
+            ((Agent)dataObj).setCollectionType(CollectionType.getCurrentCollectionType());
         }
     }
     

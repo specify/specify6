@@ -231,6 +231,8 @@ public class BuildSampleDatabase
     
     protected Random             rand = new Random(12345678L);
     
+    protected Vector<Agent>      globalAgents = new Vector<Agent>();
+    
     /**
      * 
      */
@@ -254,7 +256,7 @@ public class BuildSampleDatabase
         return frame;
     }
     
-    protected void standardQueries(final Vector<Object> dataObjects)
+    protected void standardQueries(final Vector<Object> dataObjects, final Agent userAgent)
     {
         //Byte greaterThan = SpQueryField.OperatorType.GREATERTHAN.getOrdinal();
         //Byte lessThan    = SpQueryField.OperatorType.LESSTHAN.getOrdinal();
@@ -266,7 +268,7 @@ public class BuildSampleDatabase
         Byte asc         = SpQueryField.SortType.ASC.getOrdinal();
         //Byte desc        = SpQueryField.SortType.DESC.getOrdinal();
         
-        SpQuery query = createQuery("Collection Objects", "CollectionObject", 1, SpecifyUser.getCurrentUser());
+        SpQuery query = createQuery("Collection Objects", "CollectionObject", 1, SpecifyUser.getCurrentUser(), userAgent);
         createQueryField(query, (short)0, "catalogNumber", false, greq, lteq, "102", "103", asc, true, "1");
         dataObjects.add(query);
     }
@@ -292,7 +294,6 @@ public class BuildSampleDatabase
         Division       division       = createDivision(institution, config.getDiscipline().getName(), config.getDivName(), config.getDivAbbrev(), config.getDivTitle());
         
         Agent            userAgent        = createAgent(config.getLastName(), config.getFirstName(), "", config.getLastName(), "", config.getEmail());
-        userAgent.setCollectionMemberId(0);
         UserGroup        userGroup        = createUserGroup(config.getDiscipline().getTitle());
         
         institution.setTitle(config.getInstTitle());
@@ -327,7 +328,8 @@ public class BuildSampleDatabase
         frame.setProcess(++createStep);
 
         CollectionType collectionType = createCollectionType(division, config.getDiscipline().getName(), config.getDiscipline().getTitle(), 
-                                                             dataType, user, taxonTreeDef, geoTreeDef, gtpTreeDef, locTreeDef, lithoStratTreeDef);
+                                                             dataType, taxonTreeDef, geoTreeDef, gtpTreeDef, locTreeDef, lithoStratTreeDef);
+        CollectionType.setCurrentCollectionType(collectionType);
         
         persist(collectionType);
         persist(userAgent);
@@ -367,7 +369,7 @@ public class BuildSampleDatabase
         //loadSchemaLocalization(collectionType, SpLocaleContainer, schema);
         
         SpecifyUser.setCurrentUser(user);
-        user.setAgent(userAgent);
+        user.addReference(userAgent, "agents");
         
         persist(user);
 
@@ -395,7 +397,7 @@ public class BuildSampleDatabase
 
         frame.setDesc("Creating Std Queries...");
         frame.setProcess(++createStep);
-        standardQueries(dataObjects);
+        standardQueries(dataObjects, userAgent);
         
         persist(dataObjects);
         dataObjects.clear();
@@ -415,9 +417,9 @@ public class BuildSampleDatabase
         // Determination Status (Must be done here)
         ////////////////////////////////
         log.info("Creating determinations status");
-        DeterminationStatus current    = createDeterminationStatus("Current",    "", true);
-        DeterminationStatus notCurrent = createDeterminationStatus("Not current","", false);
-        DeterminationStatus incorrect  = createDeterminationStatus("Incorrect",  "", false);
+        DeterminationStatus current    = createDeterminationStatus(collectionType, "Current",    "", DeterminationStatus.CURRENT);
+        DeterminationStatus notCurrent = createDeterminationStatus(collectionType, "Not current","", DeterminationStatus.NOTCURRENT);
+        DeterminationStatus incorrect  = createDeterminationStatus(collectionType, "Incorrect",  "", DeterminationStatus.USERDEFINED);
         
         frame.setDesc("Commiting...");
         frame.setProcess(++createStep);
@@ -587,23 +589,19 @@ public class BuildSampleDatabase
      */
     public List<Object> createSingleBotanyCollection(final Discipline     discipline,
                                                      final Institution    institution,
-                                                     final SpecifyUser    user,
-                                                     final Agent          userAgent)
+                                                     final SpecifyUser    user)
     {
         frame.setProcess(0, 16);
         frame.setDesc("Creating Botany...");
         
         int createStep = 0;
         
-        Division       division       = createDivision(institution, discipline.getName(), "Botany", "BT", "Botany");
-        
         startTx();
-        persist(division);
-        
-        DataType         dataType         = createDataType(discipline.getTitle());
+
+        DataType         dataType = createDataType(discipline.getTitle());
         persist(dataType);
         
-        frame.setProcess(++createStep);
+        Division       division   = createDivision(institution, discipline.getName(), "Botany", "BT", "Botany");
         
         // create tree defs (later we will make the def items and nodes)
         TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Taxon");
@@ -614,11 +612,46 @@ public class BuildSampleDatabase
         
         lithoStratTreeDef.setRemarks("A simple super, group, formation, member, bed Litho Stratigraphy tree");
         
-        CollectionType collectionType = createCollectionType(division, discipline.getName(), discipline.getTitle(), dataType, user, taxonTreeDef, geoTreeDef, gtpTreeDef, locTreeDef, lithoStratTreeDef);
+        CollectionType collectionType = createCollectionType(division, "Plant", discipline.getName(), 
+                                                             dataType, taxonTreeDef, geoTreeDef, gtpTreeDef, 
+                                                             locTreeDef, lithoStratTreeDef);
+        CollectionType.setCurrentCollectionType(collectionType);
+        
+        persist(division);
+        persist(collectionType);
+
+        loadSchemaLocalization(collectionType, SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
+
+        ////////////////////////////////
+        // Create the really high-level stuff
+        ////////////////////////////////
+        String           title            = initPrefs.getProperty("useragent.title",    "Mr.");
+        String           firstName        = initPrefs.getProperty("useragent.firstname", "Rod");
+        String           lastName         = initPrefs.getProperty("useragent.lastname", "Spears");
+        String           midInit          = initPrefs.getProperty("useragent.midinit", "C");
+        String           abbrev           = initPrefs.getProperty("useragent.abbrev", "rs");
+        String           email            = initPrefs.getProperty("useragent.email", "rods@ku.edu");
+        String           userType         = initPrefs.getProperty("useragent.usertype", "CollectionManager");
+        
+        System.out.println("----- User Agent -----");
+        System.out.println("Title:     "+title);
+        System.out.println("FirstName: "+firstName);
+        System.out.println("LastName:  "+lastName);
+        System.out.println("MidInit:   "+midInit);
+        System.out.println("Abbrev:    "+abbrev);
+        System.out.println("Email:     "+email);
+        System.out.println("UserType:  "+userType);
+        
+        Agent userAgent = createAgent(title, firstName, midInit, lastName, abbrev, email);
+        
+        collectionType.addReference(userAgent, "agents");
+        user.addReference(userAgent, "agents");
         
         persist(collectionType);
+        persist(userAgent);
+        persist(user);
         
-        loadSchemaLocalization(collectionType, SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
+        frame.setProcess(++createStep);
         
         CatalogNumberingScheme cns = createCatalogNumberingScheme("CatalogNumber", "", true);
         
@@ -644,7 +677,7 @@ public class BuildSampleDatabase
         //loadSchemaLocalization(collectionType, SpLocaleContainer, schema);
         
         SpecifyUser.setCurrentUser(user);
-        user.setAgent(userAgent);
+        user.addReference(userAgent, "agents");
         
         persist(user);
 
@@ -679,7 +712,7 @@ public class BuildSampleDatabase
 
         Vector<Object> dataObjects = new Vector<Object>();
         
-        standardQueries(dataObjects);
+        standardQueries(dataObjects, userAgent);
         persist(dataObjects);
         dataObjects.clear();
         
@@ -749,19 +782,17 @@ public class BuildSampleDatabase
         
         List<Agent>    agents      = new Vector<Agent>();
         
-        int colMemId = collection.getCollectionId();
-        
-        String lastName = userAgent.getLastName();
-        Agent steveBoyd = createAgent("Mr.", "Steve", "D", "Boyd", "jb", "jb@net.edu", colMemId);
-        if (!lastName.equals("Cooper")) agents.add(createAgent("Mr.", "Peter", "D", "Cooper", "ds", "ds@whitehouse.gov", colMemId));
-        if (!lastName.equals("Peck")) agents.add(createAgent("Mr.", "David", "H", "Peck", "rb", "beach@net.edu", colMemId));
-        if (!lastName.equals("Appleton")) agents.add(createAgent("Mrs.", "Sally", "H", "Appleton", "jm", "jm@net.edu", colMemId));
-        if (!lastName.equals("Brown")) agents.add(createAgent("Mr.", "Taylor", "C", "Brown", "kcs", "taylor.brown@ku.edu", colMemId));
+        lastName = userAgent.getLastName();
+        Agent steveBoyd = createAgent("Mr.", "Steve", "D", "Boyd", "jb", "jb@net.edu");
+        if (!lastName.equals("Cooper")) agents.add(createAgent("Mr.", "Peter", "D", "Cooper", "ds", "ds@whitehouse.gov"));
+        if (!lastName.equals("Peck")) agents.add(createAgent("Mr.", "David", "H", "Peck", "rb", "beach@net.edu"));
+        if (!lastName.equals("Appleton")) agents.add(createAgent("Mrs.", "Sally", "H", "Appleton", "jm", "jm@net.edu"));
+        if (!lastName.equals("Brown")) agents.add(createAgent("Mr.", "Taylor", "C", "Brown", "kcs", "taylor.brown@ku.edu"));
         if (!lastName.equals("Boyd")) agents.add(steveBoyd);
-        if (!lastName.equals("Thomas")) agents.add(createAgent("Mr", "James", "X", "Thomas", "dxt", "", colMemId));
-        if (!lastName.equals("Peterson")) agents.add(createAgent("Mr.", "Pete", "A", "Peterson", "jb", "", colMemId));
-        if (!lastName.equals("Guttenburg")) agents.add(createAgent("Mr.", "Mitch", "A", "Guttenburg", "jb", "", colMemId));
-        if (!lastName.equals("Ford")) agents.add(createAgent("Mr.", "Daniel", "A", "Ford", "mas", "mas@ku.edu", colMemId));
+        if (!lastName.equals("Thomas")) agents.add(createAgent("Mr", "James", "X", "Thomas", "dxt", ""));
+        if (!lastName.equals("Peterson")) agents.add(createAgent("Mr.", "Pete", "A", "Peterson", "jb", ""));
+        if (!lastName.equals("Guttenburg")) agents.add(createAgent("Mr.", "Mitch", "A", "Guttenburg", "jb", ""));
+        if (!lastName.equals("Ford")) agents.add(createAgent("Mr.", "Daniel", "A", "Ford", "mas", "mas@ku.edu"));
         agents.add(userAgent);
         
         Agent ku = new Agent();
@@ -904,9 +935,9 @@ public class BuildSampleDatabase
         // Determination Status (Must be done here)
         ////////////////////////////////
         log.info("Creating determinations status");
-        DeterminationStatus current    = createDeterminationStatus("Current",    "Test Status", true);
-        DeterminationStatus notCurrent = createDeterminationStatus("Not current","Test Status", false);
-        DeterminationStatus incorrect  = createDeterminationStatus("Incorrect",  "Test Status", false);
+        DeterminationStatus current    = createDeterminationStatus(collectionType, "Current",    "", DeterminationStatus.CURRENT);
+        DeterminationStatus notCurrent = createDeterminationStatus(collectionType, "Not current","", DeterminationStatus.NOTCURRENT);
+        DeterminationStatus incorrect  = createDeterminationStatus(collectionType, "Incorrect",  "", DeterminationStatus.USERDEFINED);
         
         //startTx();
         persist(current);
@@ -991,7 +1022,7 @@ public class BuildSampleDatabase
         // preparations (prep types)
         ////////////////////////////////
         log.info("Creating preparations");
-        PrepType pressed = createPrepType("Pressed");
+        PrepType pressed = createPrepType(collectionType, "Pressed");
 
         List<Preparation> preps = new Vector<Preparation>();
         Calendar prepDate = Calendar.getInstance();
@@ -1268,8 +1299,7 @@ public class BuildSampleDatabase
      */
     public void createFishCollection(final Discipline     discipline,
                                      final Institution    institution,
-                                     final SpecifyUser    user,
-                                     final Agent          userAgent)
+                                     final SpecifyUser    user)
     {
         frame.setDesc("Creating Fish Collection Overhead...");
         
@@ -1279,7 +1309,7 @@ public class BuildSampleDatabase
 
         Division       division       = createDivision(institution, discipline.getName(), "Icthyology", "IT", "Icthyology");
         persist(division);
-
+        
         // create tree defs (later we will make the def items and nodes)
         TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Taxon");
         GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Geography");
@@ -1289,9 +1319,39 @@ public class BuildSampleDatabase
         
         lithoStratTreeDef.setRemarks("A simple super, group, formation, member, bed Litho Stratigraphy tree");
         
-        CollectionType collectionType = createCollectionType(division, discipline.getName(), discipline.getTitle(), dataType, user, taxonTreeDef, geoTreeDef, gtpTreeDef, locTreeDef, lithoStratTreeDef);
+        CollectionType collectionType = createCollectionType(division, discipline.getTitle(), discipline.getName(), dataType, taxonTreeDef, geoTreeDef, gtpTreeDef, locTreeDef, lithoStratTreeDef);
+        CollectionType.setCurrentCollectionType(collectionType);
         
         persist(collectionType);
+        
+        ////////////////////////////////
+        // Create the really high-level stuff
+        ////////////////////////////////
+        String           title            = initPrefs.getProperty("useragent.title",    "Mr.");
+        String           firstName        = initPrefs.getProperty("useragent.firstname", "Rod");
+        String           lastName         = initPrefs.getProperty("useragent.lastname", "Spears");
+        String           midInit          = initPrefs.getProperty("useragent.midinit", "C");
+        String           abbrev           = initPrefs.getProperty("useragent.abbrev", "rs");
+        String           email            = initPrefs.getProperty("useragent.email", "rods@ku.edu");
+        String           userType         = initPrefs.getProperty("useragent.usertype", "CollectionManager");
+        
+        System.out.println("----- User Agent -----");
+        System.out.println("Title:     "+title);
+        System.out.println("FirstName: "+firstName);
+        System.out.println("LastName:  "+lastName);
+        System.out.println("MidInit:   "+midInit);
+        System.out.println("Abbrev:    "+abbrev);
+        System.out.println("Email:     "+email);
+        System.out.println("UserType:  "+userType);
+        Agent userAgent = createAgent(title, firstName, midInit, lastName, abbrev, email);
+        
+        collectionType.addReference(userAgent, "agents");
+        
+        user.addReference(userAgent, "agents");
+        persist(collectionType);
+        persist(userAgent);
+        persist(user);
+
         persist(userAgent);
         
         loadSchemaLocalization(collectionType, SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
@@ -1330,7 +1390,7 @@ public class BuildSampleDatabase
                 lithoStratTreeDef, locTreeDef,
                 journal, taxa, geos, locs, gtps, lithoStrats,
                 colMethods,
-                "KUFSH", "Fish");
+                "KUFSH", "Fish", true);
 
         frame.setOverall(steps++);
         
@@ -1341,7 +1401,7 @@ public class BuildSampleDatabase
                     lithoStratTreeDef, locTreeDef,
                     journal, taxa, geos, locs, gtps, lithoStrats,
                     colMethods,
-                    "KUTIS", "Fish Tissue");
+                    "KUTIS", "Fish Tissue", false);
         }
 
     }
@@ -1370,7 +1430,8 @@ public class BuildSampleDatabase
                                              final List<Object>              lithoStrats,
                                              final BldrPickList              colMethods,
                                              final String                    colPrefix,
-                                             final String                    colName)
+                                             final String                    colName,
+                                             final boolean                   createAgents)
     {
         int createStep = 0;
         frame.setProcess(0, 15);
@@ -1402,7 +1463,8 @@ public class BuildSampleDatabase
         //loadSchemaLocalization(collectionType, SpLocaleContainer, schema);
         
         SpecifyUser.setCurrentUser(user);
-        user.setAgent(userAgent);
+        
+        user.addReference(userAgent, "agents");
         
         persist(user);
 
@@ -1417,7 +1479,7 @@ public class BuildSampleDatabase
 
         Vector<Object> dataObjects = new Vector<Object>();
         
-        standardQueries(dataObjects);
+        standardQueries(dataObjects, userAgent);
         persist(dataObjects);
         dataObjects.clear();
         
@@ -1489,20 +1551,28 @@ public class BuildSampleDatabase
         ////////////////////////////////
         log.info("Creating agents and addresses");
         List<Agent>    agents      = new Vector<Agent>();
-
-        int colMemId = collection.getCollectionId();
+        Agent johnByrn = null;
         
-        Agent johnByrn = createAgent("Mr.", "John", "D", "Byrn", "jb", "jb@net.edu", colMemId);
-        agents.add(createAgent("Mr.", "David", "D", "Smith", "ds", "ds@whitehouse.gov", colMemId));
-        agents.add(createAgent("Mr.", "Robert", "H", "Burk", "rb", "beach@net.edu", colMemId));
-        agents.add(createAgent("Mrs.", "Margaret", "H", "Johnson", "jm", "jm@net.edu", colMemId));
-        agents.add(createAgent("Mr.", "Kip", "C", "Spencer", "kcs", "rods@ku.edu", colMemId));
-        agents.add(johnByrn);
-        agents.add(createAgent("Sir", "Dudley", "X", "Thompson", "dxt", "", colMemId));
-        agents.add(createAgent("Mr.", "Joe", "A", "Campbell", "jb", "", colMemId));
-        agents.add(createAgent("Mr.", "Joe", "A", "Tester", "jb", "", colMemId));
-        agents.add(createAgent("Mr.", "Mitch", "A", "Smyth", "mas", "mas@ku.edu", colMemId));
-        agents.add(userAgent);
+        if (createAgents)
+        {
+            johnByrn = createAgent("Mr.", "John", "D", "Byrn", "jb", "jb@net.edu");
+            agents.add(createAgent("Mr.", "David", "D", "Smith", "ds", "ds@whitehouse.gov"));
+            agents.add(createAgent("Mr.", "Robert", "H", "Burk", "rb", "beach@net.edu"));
+            agents.add(createAgent("Mrs.", "Margaret", "H", "Johnson", "jm", "jm@net.edu"));
+            agents.add(createAgent("Mr.", "Kip", "C", "Spencer", "kcs", "rods@ku.edu"));
+            agents.add(johnByrn);
+            agents.add(createAgent("Sir", "Dudley", "X", "Thompson", "dxt", ""));
+            agents.add(createAgent("Mr.", "Joe", "A", "Campbell", "jb", ""));
+            agents.add(createAgent("Mr.", "Joe", "A", "Tester", "jb", ""));
+            agents.add(createAgent("Mr.", "Mitch", "A", "Smyth", "mas", "mas@ku.edu"));
+            agents.add(userAgent);
+            globalAgents.addAll(agents);
+            
+        } else
+        {
+            agents.addAll(globalAgents);
+            johnByrn = agents.get(4);
+        }
         
         Agent ku = new Agent();
         ku.initialize();
@@ -1644,9 +1714,9 @@ public class BuildSampleDatabase
         // Determination Status (Must be done here)
         ////////////////////////////////
         log.info("Creating determinations status");
-        DeterminationStatus current    = createDeterminationStatus("Current",    "Test Status", true);
-        DeterminationStatus notCurrent = createDeterminationStatus("Not current","Test Status", false);
-        DeterminationStatus incorrect  = createDeterminationStatus("Incorrect",  "Test Status", false);
+        DeterminationStatus current    = createDeterminationStatus(collectionType, "Current",    "", DeterminationStatus.CURRENT);
+        DeterminationStatus notCurrent = createDeterminationStatus(collectionType, "Not current","", DeterminationStatus.NOTCURRENT);
+        DeterminationStatus incorrect  = createDeterminationStatus(collectionType, "Incorrect",  "", DeterminationStatus.USERDEFINED);
         
         //startTx();
         persist(current);
@@ -1739,10 +1809,10 @@ public class BuildSampleDatabase
         // preparations (prep types)
         ////////////////////////////////
         log.info("Creating preparations");
-        PrepType skel = createPrepType("skeleton");
-        PrepType cas = createPrepType("C&S");
-        PrepType etoh = createPrepType("EtOH");
-        PrepType xray = createPrepType("x-ray");
+        PrepType skel = createPrepType(collectionType, "skeleton");
+        PrepType cas  = createPrepType(collectionType, "C&S");
+        PrepType etoh = createPrepType(collectionType, "EtOH");
+        PrepType xray = createPrepType(collectionType, "x-ray");
 
         List<Preparation> preps = new Vector<Preparation>();
         Calendar prepDate = Calendar.getInstance();
@@ -2345,28 +2415,14 @@ public class BuildSampleDatabase
         // Create the really high-level stuff
         ////////////////////////////////
         String           username         = initPrefs.getProperty("initializer.username", "rods");
-        String           title            = initPrefs.getProperty("useragent.title",    "Mr.");
-        String           firstName        = initPrefs.getProperty("useragent.firstname", "Rod");
-        String           lastName         = initPrefs.getProperty("useragent.lastname", "Spears");
-        String           midInit          = initPrefs.getProperty("useragent.midinit", "C");
-        String           abbrev           = initPrefs.getProperty("useragent.abbrev", "rs");
         String           email            = initPrefs.getProperty("useragent.email", "rods@ku.edu");
         String           userType         = initPrefs.getProperty("useragent.usertype", "CollectionManager");
         
         System.out.println("----- User Agent -----");
         System.out.println("Userame:   "+username);
-        System.out.println("Title:     "+title);
-        System.out.println("FirstName: "+firstName);
-        System.out.println("LastName:  "+lastName);
-        System.out.println("MidInit:   "+midInit);
-        System.out.println("Abbrev:    "+abbrev);
-        System.out.println("Email:     "+email);
-        System.out.println("UserType:  "+userType);
         
         Institution    institution    = createInstitution("Natural History Museum");
         
-        Agent            userAgent        = createAgent(title, firstName, midInit, lastName, abbrev, email);
-        userAgent.setCollectionMemberId(0);
         UserGroup        userGroup        = createUserGroup(discipline.getTitle());
         
         
@@ -2374,20 +2430,20 @@ public class BuildSampleDatabase
         persist(userGroup);
         persist(institution);
         
-        SpecifyUser      user             = createSpecifyUser(username, email, (short) 0, userGroup, userType);
+        SpecifyUser user = createSpecifyUser(username, email, (short) 0, userGroup, userType);
         persist(user);
         
         commitTx();
         
         frame.setProcess(++createStep);
         
-        createFishCollection(Discipline.getByTitle("Fish"), institution, user, userAgent);
+        createFishCollection(Discipline.getByTitle("Fish"), institution, user);
         
         frame.setOverall(steps++);
         
         if (doExtraCollections)
         {
-            createSingleBotanyCollection(Discipline.getByTitle("Fish"), institution, user, userAgent);
+            createSingleBotanyCollection(Discipline.getByTitle("Fish"), institution, user);
         }
         
         // done
@@ -3227,6 +3283,7 @@ public class BuildSampleDatabase
                 @Override
                 public Object construct()
                 {
+                    setupDlg.pack();
                     UIHelper.centerAndShow(setupDlg);
                     try
                     {

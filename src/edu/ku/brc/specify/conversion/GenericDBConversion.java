@@ -89,13 +89,11 @@ import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.PickListItem;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
-import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.dbsupport.HibernateDataProviderSession;
-import edu.ku.brc.specify.tools.schemalocale.DisciplineBasedContainer;
 import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.specify.treeutils.TreeHelper;
 import edu.ku.brc.specify.utilapps.BldrPickList;
@@ -403,7 +401,6 @@ public class GenericDBConversion
             creatorAgent.setAgentType(Agent.PERSON);
             creatorAgent.setFirstName("DB");
             creatorAgent.setLastName("Creator");
-            creatorAgent.setCollectionMemberId(-1);
             agentMap.put("Creator", creatorAgent);
 
             modifierAgent = new Agent();
@@ -411,7 +408,6 @@ public class GenericDBConversion
             modifierAgent.setAgentType(Agent.PERSON);
             modifierAgent.setFirstName("DB");
             modifierAgent.setLastName("Modifier");
-            modifierAgent.setCollectionMemberId(-1);
             agentMap.put("Modifier", modifierAgent);
 
             setSession(HibernateUtil.getCurrentSession());
@@ -1592,8 +1588,7 @@ public class GenericDBConversion
             // Meg had to drop explicit insert of CURRENT_DATE, not suported by SQL Server
             // insert.append("(DeterminationStatusID,Name,Remarks,TimestampCreated,TimestampModified,
             // IsCurrent) ");
-            insert
-                    .append("(DeterminationStatusID,Name,Remarks,TimestampCreated,TimestampModified, IsCurrent, CreatedByAgentID, ModifiedByAgentID) ");
+            insert.append("(DeterminationStatusID,Name,Remarks,TimestampCreated,TimestampModified, Type, CreatedByAgentID, ModifiedByAgentID) ");
             insert.append("VALUES ");
             // followed by the 'current status' record
             insert.append("(");
@@ -1603,7 +1598,7 @@ public class GenericDBConversion
             // insert.append(",'Current','mirror of the old schema isCurrent
             // field',CURRENT_DATE,CURRENT_DATE,true)");
             insert.append(",'Current','mirror of the old schema isCurrent field', '" + nowStr
-                    + "','" + nowStr + "',1," + getCreatorAgentId(null) + ","
+                    + "','" + nowStr + "', "+D_STATUS_CURRENT+"," + getCreatorAgentId(null) + ","
                     + getModifiedByAgentId(null) + ")");
 
             // Meg had to split single insert statement into two.
@@ -1611,8 +1606,7 @@ public class GenericDBConversion
             // Meg had to drop explicit insert of CURRENT_DATE, not suported by SQL Server
             // insert.append("(DeterminationStatusID,Name,Remarks,TimestampCreated,TimestampModified,
             // IsCurrent) ");
-            insert2
-                    .append("(DeterminationStatusID, Name, Remarks, TimestampCreated, TimestampModified,  IsCurrent, CreatedByAgentID, ModifiedByAgentID) ");
+            insert2.append("(DeterminationStatusID, Name, Remarks, TimestampCreated, TimestampModified,  IsCurrent, CreatedByAgentID, ModifiedByAgentID) ");
             insert2.append("values ");
             // the 'unknown status' record
             insert2.append("(");
@@ -1620,7 +1614,7 @@ public class GenericDBConversion
             // Meg had to drop explicit insert of CURRENT_DATE, not suported by SQL Server
             // insert.append(",'Unknown','',CURRENT_DATE,CURRENT_DATE, false)");
             // Meg had to drop explicit insert of false, not suported by SQL Server
-            insert2.append(",'Unknown','', '" + nowStr + "','" + nowStr + "',0,"
+            insert2.append(",'Unknown','', '" + nowStr + "','" + nowStr + "',"+D_STATUS_UNKNOWN+","
                     + getCreatorAgentId(null) + "," + getModifiedByAgentId(null) + ")");
 
             Statement st = newDBConn.createStatement();
@@ -4568,11 +4562,11 @@ public class GenericDBConversion
      * @param collection collection
      * @return set of objects
      */
-    public Set<CollectionType> createCollectionType(final String name,
-                                                    final DataType dataType,
-                                                    final SpecifyUser user,
-                                                    final TaxonTreeDef taxaTreeDef,
-                                                    final Collection collection)
+    public CollectionType createCollectionType(final String       name,
+                                               final DataType     dataType,
+                                               final Agent        userAgent,
+                                               final TaxonTreeDef taxaTreeDef,
+                                               final Collection   collection)
     {
         try
         {
@@ -4589,7 +4583,6 @@ public class GenericDBConversion
             collType.initialize();
             collType.setName(name);
             collType.setDataType(dataType);
-            collType.setSpecifyUser(user);
 
             collType.setTaxonTreeDef(taxaTreeDef);
 
@@ -4597,14 +4590,11 @@ public class GenericDBConversion
 
             localSession.save(collType);
 
-            HashSet<CollectionType> set = new HashSet<CollectionType>();
-            set.add(collType);
-            user.setCollectionTypes(set);
-            localSession.saveOrUpdate(user);
+            collType.addReference(userAgent, "agents");
 
             HibernateUtil.commitTransaction();
 
-            return set;
+            return collType;
 
         } catch (Exception e)
         {
@@ -4615,6 +4605,9 @@ public class GenericDBConversion
         }
     }
 
+    /**
+     * @throws SQLException
+     */
     public void convertAllTaxonTreeDefs() throws SQLException
     {
         Statement st = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
@@ -6857,9 +6850,8 @@ public class GenericDBConversion
                 "agentaddress.JobTitle", "agent.FirstName", "agent.LastName",
                 "agent.MiddleInitial", "agent.Title", "agent.Interests", "agent.Abbreviation",
                 "agent.Name", "agentaddress.Email", "agentaddress.URL", "agent.Remarks",
-                "agent.TimestampCreated", "agent.Visibility", "agent.VisibilitySetBy",// User/Security
-                                                                                        // changes
-                "agent.ParentOrganizationID", "agent.CollectionMemberID" };
+                "agent.TimestampCreated", "agent.Visibility", "agent.VisibilitySetBy",// User/Security changes
+                "agent.ParentOrganizationID", "agent.CollectionTypeID" };
 
         // See comments for agent Columns
         String[] addressColumns = { "address.AddressID", "address.TimestampModified",
@@ -7141,7 +7133,7 @@ public class GenericDBConversion
                                 sqlStr.append("NULL");
                             }
 
-                        } else if (agentColumns[i].equalsIgnoreCase("agent.CollectionMemberID"))
+                        } else if (agentColumns[i].equalsIgnoreCase("agent.CollectionTypeID"))
                         {
                             sqlStr.append(getCollectionMemberId());
 
@@ -7440,7 +7432,7 @@ public class GenericDBConversion
                         {
                             sqlStr.append("null");
 
-                        } else if (agentColumns[i].equalsIgnoreCase("agent.CollectionMemberID"))
+                        } else if (agentColumns[i].equalsIgnoreCase("agent.CollectionTypeID"))
                         {
                             sqlStr.append(getCollectionMemberId());
 

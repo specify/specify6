@@ -64,9 +64,10 @@ import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
         @Index (name="CollectorNameIDX", columnNames={"CollectorName"}),
         @Index (name="AgentGuidIDX", columnNames={"GUID"})  
     })
-public class Agent extends CollectionMember implements java.io.Serializable, AttachmentOwnerIFace<AgentAttachment> {
+public class Agent extends DataModelObjBase implements java.io.Serializable, AttachmentOwnerIFace<AgentAttachment> {
 
     // Fields
+    private static Agent                    userAgent = null;
     
     public static final byte                ORG    = 0;
     public static final byte                PERSON = 1;
@@ -126,6 +127,9 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
      
     protected Set<Address>                  addresses;
     protected Set<AgentVariant>             variants;
+    
+    protected CollectionType                collectionType;
+    protected SpecifyUser                   specifyUser;
 
     
     /*
@@ -139,7 +143,6 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     protected Set<BorrowAgent>              borrowAgents;
     protected Set<AccessionAgent>           accessionAgents;
     protected Set<ExchangeOut>              exchangeOutSentToOrganizations;
-    protected Set<SpecifyUser>              specifyUsers;
     
     protected Set<InfoRequest>              infoRequests;
     protected Set<ConservEvent>             examinedByAgentConservEvents;
@@ -216,6 +219,8 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
         division                  = null;
         instTechContact           = null;
         instContentContact        = null;
+        collectionType            = null;
+        specifyUser               = null;
         
         // Agent
         jobTitle                       = null;
@@ -553,6 +558,24 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     }
 
     /**
+     * @return the specifyUser
+     */
+    @ManyToOne
+    @JoinColumn(name = "SpecifyUserID", unique = false, nullable = true, insertable = true, updatable = true)
+    public SpecifyUser getSpecifyUser()
+    {
+        return specifyUser;
+    }
+
+    /**
+     * @param specifyUser the specifyUser to set
+     */
+    public void setSpecifyUser(SpecifyUser specifyUser)
+    {
+        this.specifyUser = specifyUser;
+    }
+
+    /**
      *
      */
     @OneToMany(mappedBy = "agent")
@@ -718,6 +741,24 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
    }
 
    /**
+     * @return the collectionType
+     */
+    @ManyToOne
+    @JoinColumn(name = "CollectionTypeID", unique = false, nullable = true, insertable = true, updatable = true)
+    public CollectionType getCollectionType()
+    {
+        return collectionType;
+    }
+    
+    /**
+     * @param collectionType the collectionType to set
+     */
+    public void setCollectionType(CollectionType collectionType)
+    {
+        this.collectionType = collectionType;
+    }
+    
+    /**
     *  The Institution for Technical Contact.
     */
    @ManyToOne
@@ -1272,6 +1313,22 @@ public class Agent extends CollectionMember implements java.io.Serializable, Att
     public Set<AgentAttachment> getAttachmentReferences()
     {
         return agentAttachments;
+    }
+
+    /**
+     * @return the userAgent
+     */
+    public static Agent getUserAgent()
+    {
+        return userAgent;
+    }
+
+    /**
+     * @param userAgent the userAgent to set
+     */
+    public static void setUserAgent(Agent userAgent)
+    {
+        Agent.userAgent = userAgent;
     }
 
 }

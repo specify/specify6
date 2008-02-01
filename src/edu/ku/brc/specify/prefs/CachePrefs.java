@@ -35,6 +35,7 @@ public class CachePrefs extends GenericPrefsPanel
         createForm("Preferences", "System");
         
         JButton clearCache = (JButton)form.getCompById("clearcache");
+        
         clearCache.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {

@@ -18,7 +18,6 @@ import static edu.ku.brc.specify.utilapps.DataBuilder.createTaxonTreeDef;
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.CollectionType;
-import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 
@@ -108,11 +107,6 @@ public class CollectionTypeBusRules extends BaseBusRules
         super.beforeSave(dataObj,session);
         
         CollectionType ct = (CollectionType)dataObj;
-        if (ct.getSpecifyUser() == null)
-        {
-            ct.setSpecifyUser(SpecifyUser.getCurrentUser());
-        }
-        
         if (ct.getTaxonTreeDef() == null)
         {
             TaxonTreeDef taxonTreeDef = createTaxonTreeDef("Sample Taxon Tree Def");
