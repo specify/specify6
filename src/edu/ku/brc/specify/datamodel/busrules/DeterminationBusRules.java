@@ -22,7 +22,10 @@ import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.ui.db.PickListItemIFace;
@@ -50,7 +53,7 @@ public class DeterminationBusRules extends BaseBusRules
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#beforeFormFill(edu.ku.brc.ui.forms.Viewable)
      */
     @Override
-    public void beforeFormFill(Viewable viewable)
+    public void beforeFormFill(final Viewable viewable)
     {
         determination = null;
     }
@@ -59,7 +62,7 @@ public class DeterminationBusRules extends BaseBusRules
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#fillForm(java.lang.Object, edu.ku.brc.ui.forms.Viewable)
      */
     @Override
-    public void afterFillForm(Object dataObj, Viewable viewable)
+    public void afterFillForm(final Object dataObj, final Viewable viewable)
     {
         determination = null;
         
@@ -182,6 +185,16 @@ public class DeterminationBusRules extends BaseBusRules
     public void formShutdown()
     {
         determination = null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#addChildrenToNewDataObjects(java.lang.Object)
+     */
+    @Override
+    public void addChildrenToNewDataObjects(final Object newDataObj)
+    {
+        super.addChildrenToNewDataObjects(newDataObj);
+
     }
 
 }

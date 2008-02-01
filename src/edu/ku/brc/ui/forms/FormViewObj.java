@@ -1169,6 +1169,11 @@ public class FormViewObj implements Viewable,
             FormHelper.addToParent(parentDataObj, obj);
         }
         
+        if (businessRules != null)
+        {
+            businessRules.addChildrenToNewDataObjects(obj);
+        }
+        
         isNewlyCreatedDataObj = true;
         formValidator.setNewObj(isNewlyCreatedDataObj);
 

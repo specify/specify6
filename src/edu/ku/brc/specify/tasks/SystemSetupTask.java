@@ -30,6 +30,7 @@ import java.util.Vector;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
@@ -41,12 +42,15 @@ import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
+import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.DroppableFormObject;
 import edu.ku.brc.af.tasks.subpane.DroppableTaskPane;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.af.tasks.subpane.FormPane.FormPaneAdjusterIFace;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.SwingWorker;
@@ -366,15 +370,33 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
      * @param iconName
      * @param viewName
      */
-    protected void startEditor(final Class<?> clazz, final String iconName, final String viewName)
+    protected void startEditor(final Class<?> clazz, 
+                               final String iconName, 
+                               final String viewName)
     {
         if (!checkForPaneWithData(clazz))
         {
-            List<?> pickLists = null;
+            List<?> dataItems = null;
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
             try
             {
-                pickLists = session.getDataList(clazz);
+                StringBuffer sb = new StringBuffer();
+                sb.append("FROM ");
+                sb.append(clazz.getName());
+                
+                DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(clazz.getName());
+                if (tableInfo != null)
+                {
+                    String specialWhere = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, true);
+                    if (StringUtils.isNotEmpty(specialWhere))
+                    {
+                        sb.append(" WHERE ");
+                        sb.append(specialWhere);
+                    }
+                }
+                log.debug(sb.toString());
+                dataItems = session.getDataList(sb.toString());
+                
             } catch (Exception ex)
             {
                 log.error(ex);
@@ -384,7 +406,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                 session.close();
             }
             
-            if (pickLists != null)
+            if (dataItems != null)
             {
                 ViewIFace view = AppContextMgr.getInstance().getView("SystemSetup", viewName);
                 
@@ -392,7 +414,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                                 view.getViewSetName(), 
                                 view.getName(), 
                                 "edit", 
-                                pickLists, 
+                                dataItems, 
                                 MultiView.RESULTSET_CONTROLLER,
                                 IconManager.getIcon(iconName, IconManager.IconSize.Std16));
             }

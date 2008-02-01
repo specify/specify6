@@ -22,8 +22,13 @@ import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Iterator;
+import java.util.List;
 
 import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
 
 /**
@@ -101,4 +106,49 @@ public class DeterminationStatusBusRules extends BaseBusRules
 
         return false;
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#addChildrenToNewDataObjects(java.lang.Object)
+     */
+    @Override
+    public void addChildrenToNewDataObjects(final Object newDataObj)
+    {
+        super.addChildrenToNewDataObjects(newDataObj);
+        
+        
+        DeterminationStatus ds = (DeterminationStatus)newDataObj;
+        
+        CollectionType.getCurrentCollectionType().addReference(ds, "determinationStatuss");
+        
+        String sqlStr = "select type From DeterminationStatus WHERE collectionTypeId = " + CollectionType.getCurrentCollectionType().getCollectionTypeId();
+        
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+            Object dataObj = session.getDataList(sqlStr);
+            if (dataObj instanceof List<?>)
+            {
+                byte maxType = DeterminationStatus.USERDEFINED-1;
+                for (Iterator<?> iter = ((List<?>)dataObj).iterator(); iter.hasNext();)
+                {
+                    Byte bType = (Byte)iter.next();
+                    maxType = (byte)Math.max(bType.intValue(), maxType);
+                }
+                maxType++;
+                ds.setType(maxType);
+            }
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();        
+            }
+        }
+        
+    }
+    
+    
 }

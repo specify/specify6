@@ -34,6 +34,7 @@
         
         <view name="PrepType"
             class="edu.ku.brc.specify.datamodel.PrepType"
+            busrules="edu.ku.brc.specify.datamodel.busrules.PrepTypeBusRules"
             resourcelabels="false">
             <desc><![CDATA[The PrepType Object form.]]></desc>
             <altviews>

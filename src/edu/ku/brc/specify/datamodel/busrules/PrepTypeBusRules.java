@@ -25,6 +25,7 @@ import java.sql.Statement;
 import java.util.List;
 
 import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
 
@@ -132,6 +133,20 @@ public class PrepTypeBusRules extends BaseBusRules
     {
         // TODO Auto-generated method stub
 
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#addChildrenToNewDataObjects(java.lang.Object)
+     */
+    @Override
+    public void addChildrenToNewDataObjects(Object newDataObj)
+    {
+        super.addChildrenToNewDataObjects(newDataObj);
+        
+        PrepType prepType = (PrepType)newDataObj;
+        
+        Collection.getCurrentCollection().addReference(prepType, "prepTypes");
+        
     }
 
 }

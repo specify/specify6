@@ -523,6 +523,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         List<?> appResDefList = session.getDataList( "From SpAppResourceDir where specifyUserId = "+user.getSpecifyUserId());
 
         CollectionType ct = collection.getCollectionType();
+        ct.getDeterminationStatuss().size(); // make sure they are loaded
         CollectionType.setCurrentCollectionType(ct);
     
             
