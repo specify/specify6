@@ -68,7 +68,7 @@ public class PrepType extends DataModelObjBase implements java.io.Serializable
     protected Integer           prepTypeId;
     protected String            name;
     protected Boolean           isLoanable;
-    protected CollectionType    collectionType;
+    protected Collection        collection;
     protected Set<Preparation>  preparations;
     protected Set<AttributeDef> attributeDefs;
 
@@ -94,7 +94,7 @@ public class PrepType extends DataModelObjBase implements java.io.Serializable
         prepTypeId     = null;
         name           = null;
         isLoanable     = true;
-        collectionType = null;
+        collection     = null;
         preparations   = new HashSet<Preparation>();
         attributeDefs  = new HashSet<AttributeDef>();
     }
@@ -206,21 +206,21 @@ public class PrepType extends DataModelObjBase implements java.io.Serializable
     }
 
     /**
-     * @return the collectionType
+     * @return the collection
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "CollectionTypeID", unique = false, nullable = false, insertable = true, updatable = true)
-    public CollectionType getCollectionType()
+    @JoinColumn(name = "CollectionID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Collection getCollection()
     {
-        return collectionType;
+        return collection;
     }
 
     /**
-     * @param collectionType the collectionType to set
+     * @param collection the collection to set
      */
-    public void setCollectionType(CollectionType collectionType)
+    public void setCollection(Collection collection)
     {
-        this.collectionType = collectionType;
+        this.collection = collection;
     }
 
 

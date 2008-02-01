@@ -44,6 +44,7 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
     private static final String DIVISIONID     = "DIVISIONID";
     private static final String COLTYPID       = "COLTYPID";
     private static final String COLMEMID       = "COLMEMID";
+    private static final String COLLID         = "COLLID";
     //private static final String COLMEMIDGRP    = "COLMEMIDGRP";
     
     private static final String TAXTREEDEFID   = "TAXTREEDEFID";
@@ -72,12 +73,16 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                 return adjustSQL(sql);
                 
             } else if (tableInfo.getTableId() == Agent.getClassTableId() ||
-                       tableInfo.getTableId() == DeterminationStatus.getClassTableId() ||
-                       tableInfo.getTableId() == PrepType.getClassTableId())
+                       tableInfo.getTableId() == DeterminationStatus.getClassTableId())
             {
                 String sql = (isHQL ? "collectionTypeId" : "CollectionTypeID") + " = " + COLTYPID;
                 return adjustSQL(sql);
                 
+            } else if (tableInfo.getTableId() == PrepType.getClassTableId())
+            {
+                String sql = (isHQL ? "collectionId" : "CollectionID") + " = " + COLLID;
+                return adjustSQL(sql);
+          
             } else if (tableInfo.getTableId() == Taxon.getClassTableId())
             {
                 String sql = (isHQL ? "taxonTreeDefId" : "TaxonTreeDefID") + " = " + TAXTREEDEFID;
@@ -143,6 +148,15 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                     if (collection != null)
                     {
                         adjSQL = StringUtils.replace(adjSQL, COLMEMID, Integer.toString(collection.getCollectionId()));
+                    }
+                }
+                
+                if (StringUtils.contains(adjSQL, COLLID))
+                {
+                    Collection collection = Collection.getCurrentCollection();
+                    if (collection != null)
+                    {
+                        adjSQL = StringUtils.replace(adjSQL, COLLID, Integer.toString(collection.getCollectionId()));
                     }
                 }
                 

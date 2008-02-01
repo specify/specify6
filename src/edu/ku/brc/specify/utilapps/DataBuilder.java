@@ -1950,12 +1950,12 @@ public class DataBuilder
         return otheridentifier;
     }
 
-    public static PrepType createPrepType(final CollectionType colType,
+    public static PrepType createPrepType(final Collection collection,
                                           final String name)
     {
         PrepType preptype = new PrepType();
         preptype.initialize();
-        colType.addReference(preptype, "prepTypes");
+        collection.addReference(preptype, "prepTypes");
         preptype.setName(name);
         persist(preptype);
         return preptype;

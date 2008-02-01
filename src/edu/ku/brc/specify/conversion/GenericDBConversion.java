@@ -1807,12 +1807,9 @@ public class GenericDBConversion
             IdMapperIFace taxonomyTypeMapper = idMapperMgr.get("TaxonomyType", "TaxonomyTypeID");
 
             // Create a Hashtable to track which IDs have been handled during the conversion process
-            BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "datatype",
-                    BasicSQLUtils.myDestinationServerType);
-            BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "collectiontype",
-                    BasicSQLUtils.myDestinationServerType);
-            BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "collection",
-                    BasicSQLUtils.myDestinationServerType);
+            BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "datatype",       BasicSQLUtils.myDestinationServerType);
+            BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "collectiontype", BasicSQLUtils.myDestinationServerType);
+            BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "collection",     BasicSQLUtils.myDestinationServerType);
             // BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "collection_colobjdef");
 
             Hashtable<Integer, Integer> newColObjIDTotaxonomyTypeID = new Hashtable<Integer, Integer>();
@@ -1854,8 +1851,7 @@ public class GenericDBConversion
 
                 // Figure out what type of standard adat type this is from the
                 // CollectionObjectTypeName
-                BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "datatype",
-                        BasicSQLUtils.myDestinationServerType);
+                BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "datatype", BasicSQLUtils.myDestinationServerType);
 
                 int dataTypeId = createDataType(taxonomyTypeName);
                 if (dataTypeId == -1)
@@ -1917,10 +1913,8 @@ public class GenericDBConversion
                 updateStatement.close();
                 updateStatement = null;
                 recordCnt++;
-                BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "collectiontype",
-                        BasicSQLUtils.myDestinationServerType);
-                Integer collTypeID = BasicSQLUtils.getHighestId(newDBConn, "CollectionTypeID",
-                        "collectiontype");
+                BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "collectiontype", BasicSQLUtils.myDestinationServerType);
+                Integer collTypeID = BasicSQLUtils.getHighestId(newDBConn, "CollectionTypeID", "collectiontype");
 
                 newColObjIDTotaxonomyTypeID.put(collTypeID, taxonomyTypeID);
 
@@ -1991,10 +1985,8 @@ public class GenericDBConversion
 
                     Statement updateStatement = newDBConn.createStatement();
                     strBuf.setLength(0);
-                    strBuf
-                            .append("INSERT INTO collection (CollectionTypeID, CollectionName, CollectionPrefix, Remarks, CatalogNumberingSchemeID, ");
-                    strBuf
-                            .append("TimestampCreated, TimestampModified, CreatedByAgentID, ModifiedByAgentID, Version) VALUES (");
+                    strBuf.append("INSERT INTO collection (CollectionTypeID, CollectionName, CollectionPrefix, Remarks, CatalogNumberingSchemeID, ");
+                    strBuf.append("TimestampCreated, TimestampModified, CreatedByAgentID, ModifiedByAgentID, Version) VALUES (");
                     strBuf.append(newColObjdefID + ",");
                     strBuf.append(getStrValue(newSeriesName) + ",");
                     strBuf.append(getStrValue(prefix) + ",");
@@ -2015,8 +2007,7 @@ public class GenericDBConversion
 
                     String hashKey = catalogSeriesID + "_" + taxonomyTypeID;
 
-                    Integer newCatSeriesID = BasicSQLUtils.getHighestId(newDBConn, "CollectionID",
-                            "collection");
+                    Integer newCatSeriesID = BasicSQLUtils.getHighestId(newDBConn, "CollectionID", "collection");
                     collectionHash.put(hashKey, newCatSeriesID);
                     if (StringUtils.isNotEmpty(prefix))
                     {
@@ -2044,6 +2035,7 @@ public class GenericDBConversion
             log.error(e);
             throw new RuntimeException(e);
         }
+        
         return false;
     }
 
@@ -2368,7 +2360,7 @@ public class GenericDBConversion
      * Creates a map from a String Preparation Type to its ID in the table.
      * @return map of name to PrepType
      */
-    public Map<String, PrepType> createPreparationTypesFromUSys()
+    public Map<String, PrepType> createPreparationTypesFromUSys(final Collection collection)
     {
         deleteAllRecordsFromTable("preptype", BasicSQLUtils.myDestinationServerType);
 
@@ -2385,8 +2377,7 @@ public class GenericDBConversion
              * varchar(50) | YES | | NULL | |
              * +-----------------------+-------------+------+-----+---------+-------+
              */
-            Statement stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-                    ResultSet.CONCUR_READ_ONLY);
+            Statement stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             String sqlStr = "select USYSCollObjPrepMethID, InterfaceID, FieldSetSubTypeID, PreparationMethod from usyscollobjprepmeth";
 
             log.info(sqlStr);
@@ -2399,7 +2390,7 @@ public class GenericDBConversion
                 if (rs.getObject(2) != null && rs.getObject(3) != null)
                 {
                     String name = rs.getString(4);
-                    PrepType prepType = AttrUtils.loadPrepType(name);
+                    PrepType prepType = AttrUtils.loadPrepType(name, collection);
                     if (shouldCreateMapTables)
                     {
                         prepTypeMapper.put(name.toLowerCase(), prepType);
@@ -2415,7 +2406,7 @@ public class GenericDBConversion
             if (!foundMisc)
             {
                 String name = "Misc";
-                PrepType prepType = AttrUtils.loadPrepType(name);
+                PrepType prepType = AttrUtils.loadPrepType(name, collection);
                 // if (shouldCreateMapTables)
                 {
                     prepTypeMapper.put(name.toLowerCase(), prepType);
@@ -3050,15 +3041,14 @@ public class GenericDBConversion
      * the new schema Preparation table.
      * @return true if no errors
      */
-    public boolean convertPreparationRecords(final Map<String, PrepType> prepTypeMap)
+    public boolean convertPreparationRecords(final Hashtable<Integer, Map<String, PrepType>> collToPrepTypeHash)
     {
         deleteAllRecordsFromTable(newDBConn, "preparation", BasicSQLUtils.myDestinationServerType);
         // BasicSQLUtils.setIdentityInsertONCommandForSQLServer(newDBConn, "preparation",
         // BasicSQLUtils.myDestinationServerType);
         try
         {
-            Statement stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-                    ResultSet.CONCUR_READ_ONLY);
+            Statement stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             StringBuilder str = new StringBuilder();
 
             List<String> oldFieldNames = new ArrayList<String>();
@@ -3078,16 +3068,13 @@ public class GenericDBConversion
             sql.append(buildSelectFieldList(names, "collectionobjectcatalog"));
             oldFieldNames.addAll(names);
 
-            sql
-                    .append(" From collectionobject Inner Join collectionobjectcatalog ON collectionobject.CollectionObjectID = collectionobjectcatalog.CollectionObjectCatalogID ");
-            sql
-                    .append("Where not (collectionobject.DerivedFromID Is Null) order by collectionobjectcatalog.CollectionObjectCatalogID");
+            sql.append(" From collectionobject Inner Join collectionobjectcatalog ON collectionobject.CollectionObjectID = collectionobjectcatalog.CollectionObjectCatalogID ");
+            sql.append("Where not (collectionobject.DerivedFromID Is Null) order by collectionobjectcatalog.CollectionObjectCatalogID");
 
             log.info(sql);
 
             List<BasicSQLUtils.FieldMetaData> newFieldMetaData = new ArrayList<BasicSQLUtils.FieldMetaData>();
-            getFieldMetaDataFromSchema(newDBConn, "preparation", newFieldMetaData,
-                    BasicSQLUtils.myDestinationServerType);
+            getFieldMetaDataFromSchema(newDBConn, "preparation", newFieldMetaData, BasicSQLUtils.myDestinationServerType);
 
             log.info("Number of Fields in Preparation " + newFieldMetaData.size());
             String sqlStr = sql.toString();
@@ -3100,9 +3087,9 @@ public class GenericDBConversion
                 System.out.println(name + " " + (inx - 1));
             }
             Hashtable<String, String> newToOld = new Hashtable<String, String>();
-            newToOld.put("PreparationID", "CollectionObjectID");
+            newToOld.put("PreparationID",      "CollectionObjectID");
             newToOld.put("CollectionObjectID", "DerivedFromID");
-            newToOld.put("StorageLocation", "Location");
+            newToOld.put("StorageLocation",    "Location");
 
             IdMapperIFace agentIdMapper = idMapperMgr.get("agent", "AgentID");
             // IdMapperIFace prepIdMapper = idMapperMgr.get("preparation", "PreparationID");
@@ -3123,24 +3110,22 @@ public class GenericDBConversion
                 return true;
             }
 
-            Statement prepStmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-                    ResultSet.CONCUR_READ_ONLY);
+            Statement prepStmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 
             // Meg added
             // Map all the Physical IDs
             IdTableMapper idMapper2 = idMapperMgr.addTableMapper("preparation", "PreparationID");
             if (shouldCreateMapTables)
             {
-                idMapper2
-                        .mapAllIds("select CollectionObjectID from collectionobject Where not (collectionobject.DerivedFromID Is Null) order by CollectionObjectID");
+                idMapper2.mapAllIds("select CollectionObjectID from collectionobject Where not (collectionobject.DerivedFromID Is Null) order by CollectionObjectID");
             }
 
             IdMapperIFace colObjIdMapper = idMapperMgr.get("preparation", "PreparationID");
             colObjIdMapper.setShowLogErrors(false);
 
-            int lastEditedByInx = oldNameIndex.get("LastEditedBy") + 1;
-            Integer idIndex = oldNameIndex.get("CollectionObjectID");
-            int count = 0;
+            int     lastEditedByInx = oldNameIndex.get("LastEditedBy") + 1;
+            Integer idIndex         = oldNameIndex.get("CollectionObjectID");
+            int     count           = 0;
             do
             {
                 Integer preparedById = null;
@@ -3149,12 +3134,11 @@ public class GenericDBConversion
                 boolean checkForPreps = false;
                 if (checkForPreps)
                 {
-                    Integer recordId = rs.getInt(idIndex + 1);
-                    Statement subStmt = oldDBConn.createStatement(
-                            ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-                    String subQueryStr = "select PreparedByID,PreparedDate from preparation where PreparationID = "
-                            + recordId;
-                    ResultSet subQueryRS = subStmt.executeQuery(subQueryStr);
+                    Integer   recordId    = rs.getInt(idIndex + 1);
+                    Statement subStmt     = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+                    String    subQueryStr = "select PreparedByID, PreparedDate from preparation where PreparationID = " + recordId;
+                    ResultSet subQueryRS  = subStmt.executeQuery(subQueryStr);
+                    
                     if (subQueryRS.first())
                     {
                         preparedById = subQueryRS.getInt(1);
@@ -3248,9 +3232,8 @@ public class GenericDBConversion
 
                         } else
                         {
-                            ResultSet prepRS = prepStmt
-                                    .executeQuery("select PreparationID from preparation where PreparationID = "
-                                            + id);
+                            ResultSet prepRS = 
+                                prepStmt.executeQuery("select PreparationID from preparation where PreparationID = " + id);
                             if (prepRS.first())
                             {
                                 str.append(getStrValue(data));
@@ -3300,7 +3283,7 @@ public class GenericDBConversion
                             value = "n/a";
                         }
 
-                        PrepType prepType = prepTypeMap.get(value.toLowerCase());
+                        PrepType prepType = null;// ZZZ prepTypeMap.get(value.toLowerCase());
                         if (prepType != null)
                         {
                             Integer prepTypeId = prepType.getPrepTypeId();

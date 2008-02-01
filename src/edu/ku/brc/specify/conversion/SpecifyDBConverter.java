@@ -1,16 +1,10 @@
 package edu.ku.brc.specify.conversion;
 
-import static edu.ku.brc.specify.conversion.BasicSQLUtils.deleteAllRecordsFromTable;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createDataType;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createSpecifyUser;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createUserGroup;
-
 import java.awt.HeadlessException;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.sql.Connection;
-import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -18,7 +12,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -48,8 +41,6 @@ import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.CollectionType;
-import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.PrepType;
@@ -577,8 +568,6 @@ public class SpecifyDBConverter
 
                     conversion.convertCollectionObjectDefs(specifyUser.getSpecifyUserId());
                     SpecifyUser.setCurrentUser(specifyUser);
-                    
-
 
                 } else
                 {
@@ -717,23 +706,44 @@ public class SpecifyDBConverter
                 {
                     if (true)
                     {
-                        Map<String, PrepType> prepTypeMap = conversion.createPreparationTypesFromUSys();
-                        PrepType miscPT = prepTypeMap.get("misc");
-                        if (miscPT != null)
+                        Session session = HibernateUtil.getCurrentSession();
+                        try
                         {
-                            prepTypeMap.put("n/a", miscPT);
-                        } else
+                            Hashtable<Integer, Map<String, PrepType>> collToPrepTypeHash = new Hashtable<Integer, Map<String,PrepType>>();
+                            Query   q = session.createQuery("FROM Collection");
+                            for (Object dataObj :  q.list())
+                            {
+                                Collection collection = (Collection)dataObj;
+                                Map<String, PrepType> prepTypeMap = conversion.createPreparationTypesFromUSys(collection);
+                                PrepType miscPT = prepTypeMap.get("misc");
+                                if (miscPT != null)
+                                {
+                                    prepTypeMap.put("n/a", miscPT);
+                                } else
+                                {
+                                    miscPT = prepTypeMap.get("Misc"); 
+                                    if (miscPT != null)
+                                    {
+                                        prepTypeMap.put("n/a", miscPT);
+                                    } else
+                                    {
+                                        log.error("******************************* Couldn't find 'Misc' PrepType!");
+                                    }
+                                }
+                                collToPrepTypeHash.put(collection.getCollectionId(), prepTypeMap);
+                            }
+                            conversion.convertPreparationRecords(collToPrepTypeHash);
+                        } catch (Exception ex)
                         {
-                            miscPT = prepTypeMap.get("Misc"); 
-                            if (miscPT != null)
+                            throw new RuntimeException(ex);
+                            
+                        } finally
+                        {
+                            if (session != null)
                             {
-                                prepTypeMap.put("n/a", miscPT);
-                            } else
-                            {
-                                log.error("******************************* Couldn't find 'Misc' PrepType!");
+                                session.close();
                             }
                         }
-                        conversion.convertPreparationRecords(prepTypeMap);
                     }
                     
                     // Arg1 - Use Numeric Catalog Number

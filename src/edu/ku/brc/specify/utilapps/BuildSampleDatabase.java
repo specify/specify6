@@ -231,7 +231,11 @@ public class BuildSampleDatabase
     
     protected Random             rand = new Random(12345678L);
     
-    protected Vector<Agent>      globalAgents = new Vector<Agent>();
+    protected Vector<Agent>       globalAgents = new Vector<Agent>();
+    protected DeterminationStatus current      = null;
+    protected DeterminationStatus notCurrent   = null;
+    protected DeterminationStatus incorrect    = null;
+
     
     /**
      * 
@@ -417,9 +421,9 @@ public class BuildSampleDatabase
         // Determination Status (Must be done here)
         ////////////////////////////////
         log.info("Creating determinations status");
-        DeterminationStatus current    = createDeterminationStatus(collectionType, "Current",    "", DeterminationStatus.CURRENT);
-        DeterminationStatus notCurrent = createDeterminationStatus(collectionType, "Not current","", DeterminationStatus.NOTCURRENT);
-        DeterminationStatus incorrect  = createDeterminationStatus(collectionType, "Incorrect",  "", DeterminationStatus.USERDEFINED);
+        current    = createDeterminationStatus(collectionType, "Current",    "", DeterminationStatus.CURRENT);
+        notCurrent = createDeterminationStatus(collectionType, "Not current","", DeterminationStatus.NOTCURRENT);
+        incorrect  = createDeterminationStatus(collectionType, "Incorrect",  "", DeterminationStatus.USERDEFINED);
         
         frame.setDesc("Commiting...");
         frame.setProcess(++createStep);
@@ -935,9 +939,10 @@ public class BuildSampleDatabase
         // Determination Status (Must be done here)
         ////////////////////////////////
         log.info("Creating determinations status");
-        DeterminationStatus current    = createDeterminationStatus(collectionType, "Current",    "", DeterminationStatus.CURRENT);
-        DeterminationStatus notCurrent = createDeterminationStatus(collectionType, "Not current","", DeterminationStatus.NOTCURRENT);
-        DeterminationStatus incorrect  = createDeterminationStatus(collectionType, "Incorrect",  "", DeterminationStatus.USERDEFINED);
+        current    = createDeterminationStatus(collectionType, "Current",    "", DeterminationStatus.CURRENT);
+        notCurrent = createDeterminationStatus(collectionType, "Not current","", DeterminationStatus.NOTCURRENT);
+        incorrect  = createDeterminationStatus(collectionType, "Incorrect",  "", DeterminationStatus.USERDEFINED);
+
         
         //startTx();
         persist(current);
@@ -1022,7 +1027,7 @@ public class BuildSampleDatabase
         // preparations (prep types)
         ////////////////////////////////
         log.info("Creating preparations");
-        PrepType pressed = createPrepType(collectionType, "Pressed");
+        PrepType pressed = createPrepType(collection, "Pressed");
 
         List<Preparation> preps = new Vector<Preparation>();
         Calendar prepDate = Calendar.getInstance();
@@ -1390,7 +1395,7 @@ public class BuildSampleDatabase
                 lithoStratTreeDef, locTreeDef,
                 journal, taxa, geos, locs, gtps, lithoStrats,
                 colMethods,
-                "KUFSH", "Fish", true);
+                "KUFSH", "Fish", true, false);
 
         frame.setOverall(steps++);
         
@@ -1401,7 +1406,7 @@ public class BuildSampleDatabase
                     lithoStratTreeDef, locTreeDef,
                     journal, taxa, geos, locs, gtps, lithoStrats,
                     colMethods,
-                    "KUTIS", "Fish Tissue", false);
+                    "KUTIS", "Fish Tissue", false, true);
         }
 
     }
@@ -1431,7 +1436,8 @@ public class BuildSampleDatabase
                                              final BldrPickList              colMethods,
                                              final String                    colPrefix,
                                              final String                    colName,
-                                             final boolean                   createAgents)
+                                             final boolean                   createAgents,
+                                             final boolean                   doTissues)
     {
         int createStep = 0;
         frame.setProcess(0, 15);
@@ -1714,16 +1720,17 @@ public class BuildSampleDatabase
         // Determination Status (Must be done here)
         ////////////////////////////////
         log.info("Creating determinations status");
-        DeterminationStatus current    = createDeterminationStatus(collectionType, "Current",    "", DeterminationStatus.CURRENT);
-        DeterminationStatus notCurrent = createDeterminationStatus(collectionType, "Not current","", DeterminationStatus.NOTCURRENT);
-        DeterminationStatus incorrect  = createDeterminationStatus(collectionType, "Incorrect",  "", DeterminationStatus.USERDEFINED);
         
-        //startTx();
-        persist(current);
-        persist(notCurrent);
-        persist(incorrect);
-        //commitTx();
-        
+        if (createAgents)
+        {
+            current    = createDeterminationStatus(collectionType, "Current",    "", DeterminationStatus.CURRENT);
+            notCurrent = createDeterminationStatus(collectionType, "Not current","", DeterminationStatus.NOTCURRENT);
+            incorrect  = createDeterminationStatus(collectionType, "Incorrect",  "", DeterminationStatus.USERDEFINED);
+            persist(current);
+            persist(notCurrent);
+            persist(incorrect);
+        }
+
         ////////////////////////////////
         // collection objects
         ////////////////////////////////
@@ -1809,10 +1816,26 @@ public class BuildSampleDatabase
         // preparations (prep types)
         ////////////////////////////////
         log.info("Creating preparations");
-        PrepType skel = createPrepType(collectionType, "skeleton");
-        PrepType cas  = createPrepType(collectionType, "C&S");
-        PrepType etoh = createPrepType(collectionType, "EtOH");
-        PrepType xray = createPrepType(collectionType, "x-ray");
+        
+        PrepType skel = null;
+        PrepType cas  = null;
+        PrepType etoh = null;
+        PrepType xray = null;
+        
+        if (doTissues)
+        {
+            skel = createPrepType(collection, "Tissue");
+            cas  = skel;
+            etoh = skel;
+            xray = skel;
+            
+        } else
+        {
+            skel = createPrepType(collection, "skeleton");
+            cas  = createPrepType(collection, "C&S");
+            etoh = createPrepType(collection, "EtOH");
+            xray = createPrepType(collection, "x-ray");            
+        }
 
         List<Preparation> preps = new Vector<Preparation>();
         Calendar prepDate = Calendar.getInstance();
@@ -1840,6 +1863,7 @@ public class BuildSampleDatabase
         preps.add(createPreparation(xray, agents.get(1), collObjs.get(3), (Location)locs.get(8), rand.nextInt(20)+1, prepDate));
         preps.add(createPreparation(xray, agents.get(1), collObjs.get(4), (Location)locs.get(9), rand.nextInt(20)+1, prepDate));
 
+        dataObjects.add(collection);
         dataObjects.add(skel);
         dataObjects.add(cas);
         dataObjects.add(etoh);

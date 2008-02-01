@@ -101,7 +101,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         if (tableInfo != null)
         {
             
-            String sqlStr = QueryAdjusterForDomain.getInstance().adjustSQL("FROM PrepType WHERE collectionTypeId = COLTYPID");
+            String sqlStr = QueryAdjusterForDomain.getInstance().adjustSQL("FROM PrepType WHERE collectionId = COLLID");
             log.debug(sqlStr);
             if (StringUtils.isNotEmpty(sqlStr))
             {

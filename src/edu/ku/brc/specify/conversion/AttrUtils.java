@@ -26,6 +26,7 @@ import org.hibernate.Session;
 
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.datamodel.AttributeDef;
+import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
@@ -34,7 +35,7 @@ import edu.ku.brc.specify.datamodel.PreparationAttr;
 /**
  * Class to assist in creating the various different types of attributes (Habitat, Biological, Preparation)
  * 
- * @code_status Unknown (auto-generated)
+ * @code_status Beta
  * 
  * @author rods
  *
@@ -56,7 +57,7 @@ public class AttrUtils
      * @param name the name of the PrepType
      * @return a PrepType Object
      */
-    public static PrepType loadPrepType(final String name)
+    public static PrepType loadPrepType(final String name, final Collection collection)
     {
         try 
         {
@@ -66,9 +67,10 @@ public class AttrUtils
             PrepType prepType = new PrepType();
             prepType.initialize();
             prepType.setName(name);
-            //prepType.setPreparation(new HashSet());
             
+            collection.addReference(prepType, "prepTypes");
             session.save(prepType);
+            session.saveOrUpdate(collection);
             
             HibernateUtil.commitTransaction();
             

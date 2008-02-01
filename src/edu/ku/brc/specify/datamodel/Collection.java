@@ -30,6 +30,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 /**
@@ -61,7 +63,10 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
     protected CatalogNumberingScheme     catalogNumberingScheme;
     protected Agent                      contactAgent;
     protected Agent                      curatorAgent;
-    
+    protected Set<PrepType>              prepTypes;
+
+
+
     // Constructors
 
     /** default constructor */
@@ -119,6 +124,8 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
         catalogNumberingScheme = null;
         contactAgent           = null;
         curatorAgent           = null;
+        prepTypes              = new HashSet<PrepType>();
+
     }
     // End Initializer
 
@@ -344,6 +351,23 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
         return collectionName.compareTo(obj.collectionName);
     }
 
+    /**
+     * @return the prepTypes
+     */
+    @OneToMany(mappedBy="collection")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
+    public Set<PrepType> getPrepTypes()
+    {
+        return prepTypes;
+    }
+
+    /**
+     * @param prepTypes the prepTypes to set
+     */
+    public void setPrepTypes(Set<PrepType> prepTypes)
+    {
+        this.prepTypes = prepTypes;
+    }
 
     // Add Methods
 

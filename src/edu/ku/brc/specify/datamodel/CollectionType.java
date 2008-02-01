@@ -89,7 +89,6 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     protected Division                  division;
     
     protected Set<DeterminationStatus>  determinationStatuss;
-    protected Set<PrepType>             prepTypes;
     
     protected Set<SpLocaleContainer>    spLocaleContainers;
      
@@ -156,7 +155,6 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
         taxonTreeDef          = null;
         lithoStratTreeDef     = null;
         localities            = new HashSet<Locality>();
-        prepTypes             = new HashSet<PrepType>();
         determinationStatuss  = new HashSet<DeterminationStatus>();
         localities            = new HashSet<Locality>();
         spAppResourceDirs     = new HashSet<SpAppResourceDir>();
@@ -367,25 +365,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     {
         this.determinationStatuss = determinationStatuss;
     }
-
-    /**
-     * @return the prepTypes
-     */
-    @OneToMany(mappedBy="collectionType")
-    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
-    public Set<PrepType> getPrepTypes()
-    {
-        return prepTypes;
-    }
-
-    /**
-     * @param prepTypes the prepTypes to set
-     */
-    public void setPrepTypes(Set<PrepType> prepTypes)
-    {
-        this.prepTypes = prepTypes;
-    }
-
+    
     @OneToMany(mappedBy="collectionType")
     @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<SpAppResourceDir> getSpAppResourceDirs()
