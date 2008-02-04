@@ -16,6 +16,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
+import edu.ku.brc.specify.datamodel.DeterminationStatus;
 
 /**
  * @author timbo
@@ -117,15 +118,14 @@ class DeterminationStatusSetter extends RelatedClassSetter
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
-            //this is very very iffy. Maybe there needs to be a user settable default non and current determinationStatus??
-            String hql = "from DeterminationStatus where name = ";
+            String hql = "from DeterminationStatus where type = ";
             if (current)
             {
-                hql += "'Current'";
+                hql += String.valueOf(DeterminationStatus.CURRENT);
             }
             else
             {
-                hql += "'Not current'";
+                hql += String.valueOf(DeterminationStatus.NOTCURRENT);
             }
             QueryIFace q = session.createQuery(hql);
             List<?> result = q.list();
@@ -133,6 +133,7 @@ class DeterminationStatusSetter extends RelatedClassSetter
             {
                 return null;
             }
+            //But what if there is more than one current or noncurrent??
             return (DataModelObjBase)result.get(0);
         }
         finally
@@ -140,4 +141,15 @@ class DeterminationStatusSetter extends RelatedClassSetter
             session.close();
         }
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.RelatedClassSetter#refresh(int)
+     */
+    @Override
+    public void refresh(final Object data)
+    {
+        super.refresh(data);
+        this.detCount = (Integer)data;
+    }
+    
 }

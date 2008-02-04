@@ -12,8 +12,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowStateListener;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Calendar;
@@ -76,7 +74,7 @@ import edu.ku.brc.util.Pair;
  * @author timo
  * 
  */
-public class Uploader implements ActionListener, WindowStateListener, KeyListener
+public class Uploader implements ActionListener, KeyListener
 {
     // Phases in the upload process...
     protected final static String                   INITIAL_STATE            = "WB_UPLOAD_INITIAL_STATE";
@@ -2017,15 +2015,6 @@ public class Uploader implements ActionListener, WindowStateListener, KeyListene
             usp.getMatchPanel().apply();
         }
         cwin.dispose();
-        for (UploadTable tbl : uploadTables)
-        {
-            System.out.println(tbl);
-            UploadMatchSetting matchSets = tbl.getMatchSetting();
-            System.out.println("    matchEmptyValues: " + matchSets.matchEmptyValues);
-            System.out.println("    remember: " + matchSets.isRemember());
-            System.out.println("    blanks: " + matchSets.isMatchEmptyValues());
-            System.out.println("    mode: " + UploadMatchSetting.getModeText(matchSets.getMode()));
-        }
     }
 
     /**
@@ -2229,18 +2218,6 @@ public class Uploader implements ActionListener, WindowStateListener, KeyListene
                 ((JList)c).setSelectedIndex(((JList)c).getModel().getSize()-1);
                 goToMsgWBCell(c);
             }
-        }
-    }
-
-    public void windowStateChanged(WindowEvent e)
-    {
-        if (e.getNewState() == WindowEvent.WINDOW_CLOSING)
-        {
-            System.out.println("Closing");
-        }
-        else if (e.getNewState() == WindowEvent.WINDOW_ACTIVATED)
-        {
-            System.out.println("Activated");
         }
     }
 

@@ -406,6 +406,10 @@ public class UploadTable implements Comparable<UploadTable>
         for (RelatedClassSetter rce : this.requiredRelClasses)
         {
             boolean foundEntry = false;
+            
+            //refresh for DeterminationStatusSetters...
+            rce.refresh(this.uploadFields.size());
+            
             for (Vector<ParentTableEntry> its : parentTables)
             {
                 for (ParentTableEntry pt : its)
@@ -881,7 +885,15 @@ public class UploadTable implements Comparable<UploadTable>
         try
         {
             Object arg[] = new Object[1];
-            Class<?> fldClass = ufld.getSetter().getParameterTypes()[0];
+            Class<?> fldClass;
+            if (tblClass.equals(DeterminationStatus.class) && ufld.getField().getName().equalsIgnoreCase("type"))
+            {
+                fldClass = Boolean.class;
+            }
+            else
+            {
+                fldClass = ufld.getSetter().getParameterTypes()[0];
+            }
             String fldStr;
             if (ufld.getValue() == null)
             {
@@ -933,9 +945,28 @@ public class UploadTable implements Comparable<UploadTable>
                             UploaderException.INVALID_DATA); }
                     arg[0] = i % 2 == 0 ? true : false;
                 }
+                //grotesquery
+                //sorry, too much extra processing involved with maintaining one and only one current determination
+                //to mess around with the isCurrent workbench mapping. An uploaded co is current or not current.
+                if (tblClass.equals(DeterminationStatus.class)
+                        && ufld.getField().getName().equalsIgnoreCase("type"))
+                {
+                    if (arg[0] == null) { throw new UploaderException(
+                            getResourceString("WB_INVALID_BOOL_CELL_VALUE"),
+                            UploaderException.INVALID_DATA); }
+                    Boolean c = (Boolean) arg[0];
+                    if (c)
+                    {
+                        arg[0] = DeterminationStatus.CURRENT;
+                    }
+                    else
+                    {
+                        arg[0] = DeterminationStatus.NOTCURRENT;
+                    }
+                }
             }
             else if (fldClass != String.class)
-            {
+            {       
                 Class<?> stringArg[] = new Class<?>[1];
                 stringArg[0] = String.class;
                 Method converter = fldClass.getMethod("valueOf", stringArg);

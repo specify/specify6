@@ -287,6 +287,16 @@ public class RelatedClassSetter
         return (defaultObjs.size() > 0 && defaultObjs.get(0) != null) || getDefaultId(0) != null;
     }
 
+    /**
+     * @param data
+     * 
+     * Update stuff in case anything has changed since initialization.
+     * 
+     */
+    public void refresh(final Object data)
+    {
+        //nothing to do here
+    }
     public static RelatedClassSetter createRelatedClassSetter(final UploadTable uploadTbl, Class<?> relatedClass, String fieldName, Object defaultId,
             Object defaultObj, Method setter, int count)
     {
