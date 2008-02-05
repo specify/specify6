@@ -899,7 +899,6 @@ public class DataEntryTask extends BaseTask
             
         } else if (cmdAction.isType(RecordSetTask.RECORD_SET) && cmdAction.isAction("Clicked"))
         {
-            cmdAction = null;
             processRecordSetCommand(cmdAction);
             
         } else if (cmdAction.isType(DataEntryTask.DATA) && cmdAction.isAction("NewObjDataCreated"))
