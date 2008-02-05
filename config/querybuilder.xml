@@ -38,10 +38,6 @@
         <table name="BorrowReturnMaterial"/>
     </table>
     
-    <table name="Collection">
-    	<alias name="BorrowReturnMaterial"/>
-    </table>
-    
     <table name="CollectingEvent">
     	<alias name="Locality"/>
 	    <table name="Collector" field="collectors">
@@ -50,12 +46,17 @@
         <table name="CollectingEventAttachment">
             <alias name="Attachment"/>
         </table>
+        <alias name="CollectionObject" field="collectionObjects"/>
     </table>
     
     <table name="CollectingTrip">
         <alias name="CollectingEvent"/>
     </table>
 
+    <table name="Collection">
+    	<alias name="BorrowReturnMaterial"/>
+    </table>
+    
     <table name="CollectionObject">
 		<alias name="Accession"/>    	
     	<table name="CollectionObjectAttributes"/>
