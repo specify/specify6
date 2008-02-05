@@ -101,9 +101,19 @@ public class QueryAdjusterForDomain
      */
     public String getSpecialColumns(final DBTableInfo tableInfo, final boolean isHQL)
     {
-        return null;
+        return getSpecialColumns(tableInfo, isHQL, null);
     }
 
+    /**
+     * @param tableInfo
+     * @param isHQL
+     * @param tblAlias
+     * @return
+     */
+    public String getSpecialColumns(final DBTableInfo tableInfo, final boolean isHQL, final String tblAlias)
+    {
+        return null;
+    }
     /**
      * Provides an opportunity for the SQL to get adjusted before it is executed.
      * @param tableAbbrev some queries may have multiple CollectionMembers. This is used as

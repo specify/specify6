@@ -37,9 +37,10 @@ public class TableTree implements Cloneable, Comparable<TableTree>
      * @param name
      * @param isAlias
      */
-    public TableTree(final String name, boolean isAlias)
+    public TableTree(final String name, final String field, boolean isAlias)
     {
         this.name   = name;
+        this.field = field;
         this.isAlias = isAlias;
         processTblInfo();
     }
@@ -219,7 +220,8 @@ public class TableTree implements Cloneable, Comparable<TableTree>
         
         if (tableQRI != null)
         {
-            obj.tableQRI = (TableQRI)tableQRI.clone();
+            //obj.tableQRI = (TableQRI)tableQRI.clone();
+            obj.setTableQRIClone(tableQRI);
         }
         return obj;
     }

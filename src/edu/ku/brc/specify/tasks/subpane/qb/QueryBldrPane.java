@@ -19,6 +19,8 @@ import java.awt.event.ActionListener;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -503,6 +505,7 @@ public class QueryBldrPane extends BaseSubPane
                 fieldsStr.append(rootTable.getTableInfo().getIdFieldName());
             }
             
+            SortedSet<String> checkedForSpecialColumns = new TreeSet<String>();
             for (QueryFieldPanel qfi : queryFieldItems)
             {
                 if (qfi.isForDisplay())
@@ -514,14 +517,20 @@ public class QueryBldrPane extends BaseSubPane
                     fieldsStr.append(qfi.getFieldQRI().getSQLFldSpec(tableAbbreviator));
                 }
                 
-                String specialColumnWhere = QueryAdjusterForDomain.getInstance().getSpecialColumns(qfi.getFieldQRI().getTableInfo(), true);
-                if (StringUtils.isNotEmpty(specialColumnWhere))
+                String alias = tableAbbreviator.getAbbreviation(qfi.getFieldQRI().getTableTree());
+                if (!checkedForSpecialColumns.contains(alias))
                 {
-                    if (criteriaStr.length() > 0)
+                    String specialColumnWhere = QueryAdjusterForDomain.getInstance().getSpecialColumns(qfi.getFieldQRI().getTableInfo(), true, 
+                            alias);
+                    checkedForSpecialColumns.add(alias);
+                    if (StringUtils.isNotEmpty(specialColumnWhere))
                     {
-                        criteriaStr.append(" AND ");
+                        if (criteriaStr.length() > 0)
+                        {
+                            criteriaStr.append(" AND ");
+                        }
+                        criteriaStr.append(specialColumnWhere);
                     }
-                    criteriaStr.append(specialColumnWhere);
                 }
                 String criteria = qfi.getCriteriaFormula(tableAbbreviator);
                 boolean isDisplayOnly = StringUtils.isEmpty(criteria);
@@ -972,7 +981,11 @@ public class QueryBldrPane extends BaseSubPane
         for (int k=0; k<tbl.getKids(); k++)
         {
             TableTree kid = tbl.getKid(k);
-            System.out.println("checking id[" + id + "] [" + kid.getTableInfo().getTableId() + "]");
+            //System.out.println("checking id[" + id + "] [" + kid.getTableInfo().getTableId() + "]");
+            if (kid.isAlias()) 
+            {
+                fixAliases(kid, tableTreeHash);
+            }
             if (kid.getTableInfo().getTableId() == id)
             {
                 if (level == (tableIds.length - 1))
@@ -1131,7 +1144,13 @@ public class QueryBldrPane extends BaseSubPane
                 tableInfo = DBTableIdMgr.getInstance().getByShortClassName(kidClassName);
                 if (!tableInfo.isHidden())
                 {
-                    newTreeNode.addKid(new TableTree(kidClassName, true));
+                    tableName = XMLHelper.getAttr(kidElement, "name", null);
+                    fieldName = XMLHelper.getAttr(kidElement, "field", null);
+                    if (StringUtils.isEmpty(fieldName))
+                    {
+                        fieldName = tableName.substring(0, 1).toLowerCase() + tableName.substring(1);
+                    }
+                    newTreeNode.addKid(new TableTree(kidClassName, fieldName, true));
                 }
             }
         }
@@ -1150,10 +1169,9 @@ public class QueryBldrPane extends BaseSubPane
             {
                 try
                 {
-                    tbl.setField(tt.getField());
                     for (int k = 0; k < tt.getKids(); k++)
                     {
-                        tbl.addKid((TableTree) tt.getKid(k).clone());
+                        tbl.addKid((TableTree)tt.getKid(k).clone());
                     }
                     tbl.setTableInfo(tt.getTableInfo());
                     tbl.setTableQRIClone(tt.getTableQRI());
@@ -1169,13 +1187,6 @@ public class QueryBldrPane extends BaseSubPane
                 log.error("Couldn't find [" + tbl.getName() + "] in the hash.");
             }
         }
-        //else
-        //{
-        //    for (int k = 0; k < tbl.getKids(); k++)
-        //    {
-        //        fixAliases(tbl.getKid(k), hash);
-        //    }
-        //}
     }
 
     /**
@@ -1201,12 +1212,6 @@ public class QueryBldrPane extends BaseSubPane
                 tableTreeHash.put(tt.getName(), tt);
                 log.debug("Adding[" + tt.getName() + "] to hash");
             }
-
-            //for (int t=0; t<treeRoot.getKids(); t++)
-            //{
-            //    fixAliases(treeRoot.getKid(t), tableTreeHash);
-            //}
-
         }
         catch (Exception ex)
         {

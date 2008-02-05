@@ -43,11 +43,12 @@
     </table>
     
     <table name="CollectingEvent">
+    	<alias name="Locality"/>
+	    <table name="Collector" field="collectors">
+             <alias name="Agent"/>
+        </table>
         <table name="CollectingEventAttachment">
             <alias name="Attachment"/>
-        </table>
-	    <table name="Collector">
-             <alias name="Agent"/>
         </table>
     </table>
     
@@ -56,19 +57,7 @@
     </table>
 
     <table name="CollectionObject">
-    	<table name="Accession">
-        	<table name="AccessionAgent" field="accessionAgents">
-             	<table name="Agent" abbrev="AccAg">
-             	</table>
-        	</table>
-        	<table name="AccessionAttachment">
-            	<alias name="Attachment"/>
-        	</table>
-        	<table name="AccessionAuthorization">
-            	<alias name="Permit"/>
-        	</table>
-    	</table>
-    	
+		<alias name="Accession"/>    	
     	<table name="CollectionObjectAttributes"/>
         <table name="CollectionObjectAttachment">
             <alias name="Attachment"/>
@@ -77,56 +66,22 @@
     		<alias name="ReferenceWork"/>
     	</table>
     	
-    	<table name="CollectingEvent">
-	    	<table name="Collector" field="collectors">
-             	<table name="Agent" abbrev="CtrAg">
-             	</table>
-        	</table>
-    		<table name="Locality">
-    			<table name="Geography">
-        			<treelevel rank="100"/>
-            		<treelevel rank="200"/> 
-            		<treelevel rank="300"/>
-            		<treelevel rank="400"/>
-    			</table>
-        		<table name="LocalityNameAlias"/>
-        		<table name="LocalityAttachment">
-        			<alias name="Attachment"/>
-        		</table>
-        		<table name="LocalityCitation">
-            		<alias name="ReferenceWork"/>
-        		</table>
-    		</table>
-    	</table>
+    	<alias name="CollectingEvent"/>
     	
         <table name="Determination" field="determinations" title="Determinations">
-            <table name="Taxon">
-            	<treelevel rank="60"/>
-            	<treelevel rank="100"/> 
-            	<treelevel rank="140"/>
-            	<treelevel rank="180"/>
-            	<treelevel rank="220"/>
-            	<treelevel rank="230"/>
-            	<table name="TaxonAttachment">
-                	<alias name="Attachment"/>
-            	</table>
-                <table name="TaxonCitation">
-                	<alias name="ReferenceWork"/>
-                </table>
-            </table>
+            <alias name="Taxon"/>
             <table name="DeterminationCitation">
                 <alias name="ReferenceWork"/>
             </table>
             <table name="DeterminationStatus" field="status"/>
-            <table name="Agent" field="determiner"/>
+            <alias name="Agent" field="determiner"/>
         </table>
         
         <table name="PaleoContext" field="paleoContext">
     		<table name="GeologicTimePeriod"/>
     		<table name="LithoStrat"/>
     	</table>
-        <alias name="Preparation" field="properation"/>
-        <!--<alias name="CollectingEvent" field="collectingEvent"/>-->
+        <alias name="Preparation" field="preparation"/>
     </table>
     
     <table name="Locality">
@@ -163,6 +118,21 @@
         <table name="Journal"/>
         <table name="Author">
             <alias name="Agent"/>
+        </table>
+    </table>
+    
+    <table name="Taxon">
+    	<treelevel rank="60"/>
+        <treelevel rank="100"/> 
+        <treelevel rank="140"/>
+        <treelevel rank="180"/>
+        <treelevel rank="220"/>
+        <treelevel rank="230"/>
+        <table name="TaxonAttachment">
+           	<alias name="Attachment"/>
+        </table>
+        <table name="TaxonCitation">
+           	<alias name="ReferenceWork"/>
         </table>
     </table>
     

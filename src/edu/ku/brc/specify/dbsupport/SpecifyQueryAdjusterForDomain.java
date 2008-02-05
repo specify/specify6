@@ -63,49 +63,50 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
      * @see edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain#getSpecialColumns(edu.ku.brc.dbsupport.DBTableInfo, boolean)
      */
     @Override
-    public String getSpecialColumns(final DBTableInfo tableInfo, final boolean isHQL)
+    public String getSpecialColumns(final DBTableInfo tableInfo, final boolean isHQL, final String tblAlias)
     {
         if (tableInfo != null)
         {
+            String sql = tblAlias == null ? "" : tblAlias + ".";
             if (tableInfo.getFieldByName("collectionMemberId") != null)
             {
-                String sql = (isHQL ? "collectionMemberId" : "CollectionMemberID") + " = " + COLMEMID;
+                sql += (isHQL ? "collectionMemberId" : "CollectionMemberID") + " = " + COLMEMID;
                 return adjustSQL(sql);
                 
             } else if (tableInfo.getTableId() == Agent.getClassTableId() ||
                        tableInfo.getTableId() == DeterminationStatus.getClassTableId())
             {
-                String sql = (isHQL ? "collectionTypeId" : "CollectionTypeID") + " = " + COLTYPID;
+                sql += (isHQL ? "collectionType" : "CollectionTypeID") + " = " + COLTYPID;
                 return adjustSQL(sql);
                 
             } else if (tableInfo.getTableId() == Geography.getClassTableId())
             {
-                String sql = (isHQL ? "geographyTreeDefId" : "GeographyTreeDefID") + " = " + GEOTREEDEFID;
+                sql += (isHQL ? "geographyTreeDefId" : "GeographyTreeDefID") + " = " + GEOTREEDEFID;
                 return adjustSQL(sql);
                 
             } else if (tableInfo.getTableId() == GeologicTimePeriodTreeDef.getClassTableId())
             {
-                String sql = (isHQL ? "geologicTimePeriodTreeDefId" : "GeologicTimePeriodTreeDefID") + " = " + GTPTREEDEFID;
+                sql += (isHQL ? "geologicTimePeriodTreeDefId" : "GeologicTimePeriodTreeDefID") + " = " + GTPTREEDEFID;
                 return adjustSQL(sql);
                 
             } else if (tableInfo.getTableId() == LithoStrat.getClassTableId())
             {
-                String sql = (isHQL ? "lithoStratTreeDefID" : "LithoStratTreeDefID") + " = " + LITHOTREEDEFID;
+                sql += (isHQL ? "lithoStratTreeDefID" : "LithoStratTreeDefID") + " = " + LITHOTREEDEFID;
                 return adjustSQL(sql);
                 
             } else if (tableInfo.getTableId() == Location.getClassTableId())
             {
-                String sql = (isHQL ? "locationTreeDefId" : "LocationTreeDefID") + " = " + LOCTREEDEFID;
+                sql += (isHQL ? "locationTreeDefId" : "LocationTreeDefID") + " = " + LOCTREEDEFID;
                 return adjustSQL(sql);
                 
             } else if (tableInfo.getTableId() == PrepType.getClassTableId())
             {
-                String sql = (isHQL ? "collectionId" : "CollectionID") + " = " + COLLID;
+                sql += (isHQL ? "collectionId" : "CollectionID") + " = " + COLLID;
                 return adjustSQL(sql);
           
             } else if (tableInfo.getTableId() == Taxon.getClassTableId())
             {
-                String sql = (isHQL ? "taxonTreeDefId" : "TaxonTreeDefID") + " = " + TAXTREEDEFID;
+                sql += (isHQL ? "taxonTreeDefId" : "TaxonTreeDefID") + " = " + TAXTREEDEFID;
                 return adjustSQL(sql);
                 
             }

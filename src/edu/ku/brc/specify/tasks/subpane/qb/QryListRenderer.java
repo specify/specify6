@@ -89,11 +89,19 @@ public class QryListRenderer implements ListCellRenderer
                                                                 // focus
     {
         QryListRendererIFace qri = (QryListRendererIFace) value;
-        ImageIcon icon = qri.getIsInUse() == null ? IconManager
+        ImageIcon icon;
+        if (qri == null) 
+        {
+            icon = blankIcon;
+        }
+        else
+        {
+            icon = qri.getIsInUse() == null ? IconManager
                 .getIcon(qri.getIconName(), iconSize) : (qri.getIsInUse() ? IconManager.getIcon(
                 "Checkmark", iconSize) : blankIcon);
+        }
         iconLabel.setIcon(icon != null ? icon : blankIcon);
-        kidLabel.setIcon(displayKidIndicator ? qri.hasChildren() ? IconManager.getIcon("Forward",
+        kidLabel.setIcon(displayKidIndicator ? qri != null && qri.hasChildren() ? IconManager.getIcon("Forward",
                 iconSize) : blankIcon : blankIcon);
         if (iss)
         {
@@ -108,7 +116,7 @@ public class QryListRenderer implements ListCellRenderer
             panel.setBackground(list.getBackground());
             panel.setForeground(list.getForeground());
         }
-        label.setText(" " + qri.getTitle());
+        label.setText(" " + (qri != null ? qri.getTitle() : "WTF"));
         panel.doLayout();
         return panel;
     }
