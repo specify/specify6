@@ -215,8 +215,11 @@ public class NavBoxLayoutManager implements LayoutManager2
      */
     public void invalidateLayout(Container target)
     {
-        preferredSize.setSize(0, 0);
-        calcPreferredSize();
+        synchronized (target.getTreeLock()) 
+        {
+            preferredSize.setSize(0, 0);
+            calcPreferredSize();
+        }
     }
     
     /* (non-Javadoc)
@@ -224,8 +227,11 @@ public class NavBoxLayoutManager implements LayoutManager2
      */
     public Dimension maximumLayoutSize(Container target)
     {
-        calcPreferredSize();
-        return new Dimension(minimumSize);
+        synchronized (target.getTreeLock()) 
+        {
+            calcPreferredSize();
+            return new Dimension(minimumSize);
+        }
     }
 
 }

@@ -1402,6 +1402,12 @@ public final class UIHelper
      */
     protected static void mailUnhandledException(final Throwable throwable)
     {
+        String userStr = System.getProperty("user.name");
+        if (userStr.equals("rods") || userStr.equals("rod")) // XXX RELEASE
+        {
+            return;
+        }
+        
         try
         {
             final StringBuilder sb = new StringBuilder();
@@ -1410,7 +1416,7 @@ public final class UIHelper
             {
                 sb.append(System.getProperty("os.name")+"\n");
                 sb.append(System.getProperty("os.arch")+"\n");
-                sb.append(System.getProperty("user.name")+"\n");
+                sb.append(userStr+"\n");
                 sb.append(System.getProperty("java.version")+"\n");
                 
                 String desc = AppContextMgr.getInstance().getCurrentContextDescription();

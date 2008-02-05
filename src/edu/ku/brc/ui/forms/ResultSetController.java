@@ -216,7 +216,7 @@ public class ResultSetController implements ValidationListener
         
         if (addNewBtn)
         {
-            if (false)
+            if (true)
             {
                 newRecBtn = new JButton("+")
                 {

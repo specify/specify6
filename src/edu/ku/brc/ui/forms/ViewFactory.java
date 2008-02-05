@@ -127,8 +127,6 @@ public class ViewFactory
 
     // transient - is valid only during a build process
     protected MultiView               rootMultiView    = null; 
-    
-    protected GenericBusRules         genericBusRules = new GenericBusRules();
 
     /**
      * Constructor.

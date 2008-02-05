@@ -395,7 +395,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
      */
     public UIValidatable.ErrorType validateState()
     {
-        System.out.println(isRequired+"  "+ comboBox.getSelectedIndex());
+        //System.out.println(isRequired+"  "+ comboBox.getSelectedIndex());
         valState = isRequired && comboBox.getSelectedIndex() == -1 ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
         return valState;
     }

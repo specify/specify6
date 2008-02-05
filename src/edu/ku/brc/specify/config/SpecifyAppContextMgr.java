@@ -637,33 +637,58 @@ public class SpecifyAppContextMgr extends AppContextMgr
         if (viewSetList == null)
         {
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            if (dir.getSpAppResourceDirId() != null)
+            try
             {
-                session.attach(dir);
-            }
-            viewSetList = new Vector<ViewSetIFace>();
-            for (SpViewSetObj vso : dir.getSpViewSets())
-            {
-                try
+                if (dir.getSpAppResourceDirId() != null)
                 {
-                    Element root = XMLHelper.readStrToDOM4J(vso.getDataAsString());
-                    
-                    // XXX RELEASE this is for testing
-                    if (vso.getFileName().indexOf("viewset.xml") == -1)
+                    session.attach(dir);
+                }
+                viewSetList = new Vector<ViewSetIFace>();
+                for (SpViewSetObj vso : dir.getSpViewSets())
+                {
+                    try
                     {
-                        viewSetList.add(new ViewSet(root, true));
+                        Element root = XMLHelper.readStrToDOM4J(vso.getDataAsString());
+                        
+                        // XXX RELEASE this is for testing
+                        if (vso.getFileName().indexOf("viewset.xml") == -1)
+                        {
+                            viewSetList.add(new ViewSet(root, true));
+                        }
+    
+                    } catch (final Exception ex)
+                    {
+                        log.error(vso.getName());
+                        log.error(ex);
+                        ex.printStackTrace();
+                        
+                        // This way we don't send a stack trace
+                        /*SwingUtilities.invokeLater(new Runnable() {
+                            public void run()
+                            {
+                                //UnhandledExceptionDialog dlg = new UnhandledExceptionDialog(ex);
+                                //dlg.setVisible(true);
+                                String str = ex.toString();
+                                JOptionPane.showConfirmDialog((Frame)UIRegistry.getTopWindow(), "Error parsing Form", ex.toString(), JOptionPane.ERROR_MESSAGE);
+                            }
+                            
+                        });*/
                     }
-
-                } catch (Exception ex)
+                }
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+                
+            } finally
+            {
+                if (session != null)
                 {
-                    log.error(vso.getName());
-                    log.error(ex);
-                    ex.printStackTrace();
-                    throw new RuntimeException(ex);
+                    session.close();
                 }
             }
+            
             viewSetHash.put(dir.getUniqueIdentifer(), viewSetList);
-            session.close();
+            
         }
         return viewSetList;
     }

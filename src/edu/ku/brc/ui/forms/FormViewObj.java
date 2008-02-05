@@ -969,20 +969,23 @@ public class FormViewObj implements Viewable,
      */
     protected void traverseToSetModified(final MultiView parentMV)
     {
-        for (Viewable v : parentMV.getViewables())
+        if (parentMV != null)
         {
-            FormValidator fv = v.getValidator();
-            if (fv != null && fv.hasChanged())
+            for (Viewable v : parentMV.getViewables())
             {
-                //System.out.println(parentMV.getData().getClass().getSimpleName());
-                FormHelper.updateLastEdittedInfo(parentMV.getData());
+                FormValidator fv = v.getValidator();
+                if (fv != null && fv.hasChanged())
+                {
+                    //System.out.println(parentMV.getData().getClass().getSimpleName());
+                    FormHelper.updateLastEdittedInfo(parentMV.getData());
+                }
             }
-        }
-        
-        // if traverseKids is true then the kids have already been walked
-        for (MultiView mv : parentMV.getKids())
-        {
-            traverseToSetModified(mv);
+            
+            // if traverseKids is true then the kids have already been walked
+            for (MultiView mv : parentMV.getKids())
+            {
+                traverseToSetModified(mv);
+            }
         }
     }
 
@@ -1128,19 +1131,21 @@ public class FormViewObj implements Viewable,
             return;
         }
         
-        if (true)
+        if (!list.isEmpty())//rsController != null && rsController.getCurrentIndex() == 0)
         {
-            UIValidator.setIgnoreAllValidation(this, true);
-            for (FieldInfo fieldInfo : controlsById.values())
-            {
-                Component comp = fieldInfo.getComp();
-                if (comp != null && comp instanceof UIValidatable)
-                {
-                    ((UIValidatable)comp).reset();
-                }
-            }
-            UIValidator.setIgnoreAllValidation(this, false);
+            getDataFromUI();
         }
+    
+        UIValidator.setIgnoreAllValidation(this, true);
+        for (FieldInfo fieldInfo : controlsById.values())
+        {
+            Component comp = fieldInfo.getComp();
+            if (comp != null && comp instanceof UIValidatable)
+            {
+                ((UIValidatable)comp).reset();
+            }
+        }
+        UIValidator.setIgnoreAllValidation(this, false);
         
         for (FieldInfo fi : controlsByName.values())
         {
@@ -1189,7 +1194,6 @@ public class FormViewObj implements Viewable,
         
         if (formValidator != null && formValidator.hasChanged())
         {
-            getDataFromUI();
             formValidator.setHasChanged(false);
         }
 
@@ -1635,7 +1639,10 @@ public class FormViewObj implements Viewable,
     
             if (newInx > -1 && (list == null || list.size() > 0))
             {
+                isEditting = false;
                 rsController.setIndex(newInx, mvParent == null); // only send notification about index change top form
+                isEditting = true;
+                
                 dataObj = list.get(newInx);
                 
                 setDataObj(dataObj, true); // true means the dataObj is already in the current "list" of data items we are working with
@@ -1745,6 +1752,9 @@ public class FormViewObj implements Viewable,
             mvParent.getTopLevel().getCurrentValidator().setHasChanged(true);
             mvParent.getTopLevel().getCurrentValidator().validateForm();
             
+            isNewlyCreatedDataObj = false; // shouldn't be needed, but just in case
+            formValidator.setNewObj(isNewlyCreatedDataObj);
+            
             return;
         }
         
@@ -1800,6 +1810,9 @@ public class FormViewObj implements Viewable,
                     {
                         businessRules.afterDeleteCommit(dataObj);
                     }
+                    
+                    isNewlyCreatedDataObj = false; // shouldn't be needed, but just in case
+                    formValidator.setNewObj(isNewlyCreatedDataObj);
                 }
                 
             } catch (edu.ku.brc.dbsupport.StaleObjectException e)

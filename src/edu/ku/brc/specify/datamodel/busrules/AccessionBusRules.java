@@ -24,6 +24,7 @@ import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Hashtable;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -34,7 +35,10 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.Accession;
+import edu.ku.brc.specify.datamodel.AccessionAgent;
+import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
 
 /**
@@ -60,7 +64,7 @@ public class AccessionBusRules extends AttachmentOwnerBaseBusRules
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#processBusiessRules(java.lang.Object)
      */
-    public STATUS processBusinessRules(Object dataObj)
+    public STATUS processBusinessRules(final Object dataObj)
     {
         errorList.clear();
         
@@ -69,8 +73,28 @@ public class AccessionBusRules extends AttachmentOwnerBaseBusRules
             return STATUS.Error;
         }
         
-        Accession accession       = (Accession)dataObj;
-        String    accessionNumber = accession.getAccessionNumber();
+        Accession accession = (Accession)dataObj;
+        // Check for AcccessionAgent and their Roles (for duplicates)
+        Hashtable<String, Boolean> agentRoleHash = new Hashtable<String, Boolean>();
+        for (AccessionAgent aa : accession.getAccessionAgents())
+        {
+            Agent agent = aa.getAgent();
+            if (agent != null)
+            {
+                String key = agent.getId() + " _ " + aa.getRole();
+                if (agentRoleHash.get(key) == null)
+                {
+                    agentRoleHash.put(key, true);
+                } else
+                {
+                    errorList.add(UIRegistry.getLocalizedMessage("ACCESSION_DUP_AGENTROLE", agent.toString(), aa.getRole()));
+                    return STATUS.Error;
+                }
+            }
+        }
+        
+        
+        String accessionNumber = accession.getAccessionNumber();
         if (StringUtils.isNotEmpty(accessionNumber))
         {
             // Start by checking to see if the permit number has changed
