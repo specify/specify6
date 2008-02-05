@@ -14,12 +14,13 @@
  */
 package edu.ku.brc.specify.tasks;
 
-import static edu.ku.brc.helpers.XMLHelper.getAttr;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -28,7 +29,8 @@ import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.dom4j.Element;
+
+import com.thoughtworks.xstream.XStream;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
@@ -65,8 +67,11 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DataFlavorTableExt;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.ToggleButtonChooserDlg;
+import edu.ku.brc.ui.ToggleButtonChooserPanel;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.dnd.DataActionEvent;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.Trash;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
@@ -105,6 +110,9 @@ public class DataEntryTask extends BaseTask
     protected Vector<NavBoxIFace> extendedNavBoxes = new Vector<NavBoxIFace>();
     protected NavBox              viewsNavBox      = null;
     
+    protected Vector<DataEntryView> stdViews       = null;
+    protected Vector<DataEntryView> miscViews      = null;
+    
     // These are needed for changes with the Discipline icon
     protected NavBoxButton        colObjNavBtn        = null;
     protected String              iconClassLookUpName = "";
@@ -118,6 +126,7 @@ public class DataEntryTask extends BaseTask
         super(DATA_ENTRY, getResourceString(DATA_ENTRY));
         
         CommandDispatcher.register(DATA_ENTRY, this);
+        CommandDispatcher.register(RecordSetTask.RECORD_SET , this);
         CommandDispatcher.register(APP_CMD_TYPE, this);
         CommandDispatcher.register(DATA, this);
         CommandDispatcher.register(PreferencesDlg.PREFERENCES, this);
@@ -372,9 +381,115 @@ public class DataEntryTask extends BaseTask
     }
     
     /**
-     * Reads the XML Definition of what Forms to load
+     * @param std
      */
-    protected void initializeViewsNavBox()
+    protected void buildFormNavBoxes(final Vector<DataEntryView> std)
+    {
+        SpecifyAppContextMgr appContextMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
+        
+        for (DataEntryView dev : std)
+        {
+            boolean isColObj = dev.getName().equals("Collection Object");
+            
+            ImageIcon iconImage = IconManager.getIcon(dev.getIconName(), IconManager.IconSize.Std16);
+            if (iconImage != null)
+            {
+                String iconName = createFullName(dev.getViewSet(), dev.getView());
+                iconForFormClass.put(iconName, iconImage);
+                if (isColObj)
+                {
+                    iconClassLookUpName = iconName;
+                }
+                
+            } else
+            {
+                log.error("Icon ["+dev.getIconName()+"] could not be found.");
+            }
+            
+            ViewIFace view = appContextMgr.getView(dev.getViewSet(), dev.getView());
+            if (view != null)
+            {
+                DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
+                dev.setTableInfo(tableInfo);
+                
+                //System.out.println(view.getClassName()+" "+ti);
+                if (tableInfo != null)
+                {
+                    CommandAction cmdAction = new CommandAction(DATA_ENTRY, EDIT_DATA);
+                    cmdAction.setProperty("viewset", dev.getViewSet());
+                    cmdAction.setProperty("view",    dev.getView());
+                    
+                    ContextMgr.registerService(dev.getName(), tableInfo.getTableId(), cmdAction, this, DATA_ENTRY, tableInfo.getTitle(), true);
+                    
+                    if (dev.isSideBar())
+                    {
+                        cmdAction = new CommandAction(DATA_ENTRY, OPEN_NEW_VIEW);
+                        cmdAction.setProperty("viewset",   dev.getViewSet());
+                        cmdAction.setProperty("view",      dev.getView());
+                        cmdAction.setProperty("tableInfo", dev.getTableInfo());
+                        
+                        NavBoxAction nba = new NavBoxAction(cmdAction);
+                        
+                        NavBoxItemIFace nbi = NavBox.createBtnWithTT(dev.getName(), dev.getIconName(), dev.getToolTip(), IconManager.IconSize.Std16, nba);
+                        if (nbi instanceof NavBoxButton)
+                        {
+                            NavBoxButton nbb = (NavBoxButton)nbi;
+                            if (isColObj)
+                            {
+                               colObjNavBtn = nbb; 
+                            }
+                            
+                            //RolloverCommand roc = (RolloverCommand)nbb;
+                            //roc.setData(cmdAction);
+                            
+                            // When Being Dragged
+                            nbb.addDragDataFlavor(Trash.TRASH_FLAVOR);
+                            //roc.addDragDataFlavor(DATAENTRY_FLAVOR);
+                            nbb.addDragDataFlavor(new DataFlavorTableExt(DataEntryTask.class, "Data_Entry", tableInfo.getTableId()));
+                    
+                            // When something is dropped on it
+                            //roc.addDropDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
+                            nbb.addDropDataFlavor(new DataFlavorTableExt(RecordSetTask.class, "RECORD_SET", tableInfo.getTableId()));//RecordSetTask.RECORDSET_FLAVOR);
+
+                        }
+    
+                        viewsNavBox.add(nbi);
+                    }
+                    
+                } else
+                {
+                    log.error("View's Class name["+view.getClassName()+"] was found in the DBTableIdMgr");
+                }
+                
+            } else
+            {
+                log.error("View doesn't exist viewset["+dev.getViewSet()+"] view["+dev.getView()+"]");
+            }
+        }
+    }
+    
+    /**
+     * Initializes the TableInfo data member.
+     * @param list the list of DataEntryView
+     */
+    protected void initDataEntryViews(final Vector<DataEntryView> list)
+    {
+        SpecifyAppContextMgr appContextMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
+        for (DataEntryView dev : list)
+        {
+            ViewIFace view = appContextMgr.getView(dev.getViewSet(), dev.getView());
+            if (view != null)
+            {
+                DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
+                dev.setTableInfo(tableInfo);
+            }
+        }
+    }
+    
+    /**
+     * Use XStream to read in the DataEntryViews and add them to the UI.
+     */
+    protected void initializeViewsNavBoxFromXML()
     {
         boolean cacheDoVerify = ViewLoader.isDoFieldVerification();
         ViewLoader.setDoFieldVerification(false);
@@ -383,106 +498,63 @@ public class DataEntryTask extends BaseTask
         {
             try
             {
-                SpecifyAppContextMgr appContextMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
-
-                Element esDOM = AppContextMgr.getInstance().getResourceAsDOM("DataEntryTaskInit"); // Describes the definitions of the full text search
-                if (esDOM != null)
-                {
-                    List<?> tables = esDOM.selectNodes("/views/view");
-                    for ( Iterator<?> iter = tables.iterator(); iter.hasNext(); )
-                    {
-                        Element element     = (Element)iter.next();
-                        String  nameStr     = getAttr(element, "name", "N/A");
-                        String  iconname    = getAttr(element, "iconname", null);
-                        
-                        String  viewsetName = getAttr(element, "viewset", null);
-                        String  viewName    = getAttr(element, "view", null);
-                        
-                        String  toolTip     = getAttr(element, "tooltip", null);
-                        boolean sidebar     = getAttr(element, "sidebar", false);
-                        
-                        if (StringUtils.isEmpty(toolTip))
-                        {
-                            toolTip = getResourceString("EnterRecordSetTT");
-                        }
-                        
-                        boolean isColObj = nameStr.equals("Collection Object");
-                        
-                        ImageIcon iconImage = IconManager.getIcon(iconname, IconManager.IconSize.Std16);
-                        if (iconImage != null)
-                        {
-                            String iconName = createFullName(viewsetName, viewName);
-                            iconForFormClass.put(iconName, iconImage);
-                            if (isColObj)
-                            {
-                                iconClassLookUpName = iconName;
-                            }
-                            
-                        } else
-                        {
-                            log.error("Icon ["+iconname+"] could not be found.");
-                        }
-                        
-                        ViewIFace view = appContextMgr.getView(viewsetName, viewName);
-                        if (view != null)
-                        {
-                            DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
-                            //System.out.println(view.getClassName()+" "+ti);
-                            if (tableInfo != null)
-                            {
-                                CommandAction cmdAction = new CommandAction(DATA_ENTRY, EDIT_DATA);
-                                cmdAction.setProperty("viewset", viewsetName);
-                                cmdAction.setProperty("view",    viewName);
-                                
-                                ContextMgr.registerService(nameStr, tableInfo.getTableId(), cmdAction, this, DATA_ENTRY, toolTip, true);
-                                
-                                if (sidebar)
-                                {
-                                    cmdAction = new CommandAction(DATA_ENTRY, OPEN_NEW_VIEW);
-                                    cmdAction.setProperty("viewset", viewsetName);
-                                    cmdAction.setProperty("view",    viewName);
-                                    
-                                    NavBoxAction nba = new NavBoxAction(cmdAction);
-                                    
-                                    NavBoxItemIFace nbi = NavBox.createBtnWithTT(nameStr, iconname, toolTip, IconManager.IconSize.Std16, nba);
-                                    if (nbi instanceof NavBoxButton)
-                                    {
-                                        NavBoxButton roc = (NavBoxButton)nbi;
-                                        if (isColObj)
-                                        {
-                                           colObjNavBtn = roc; 
-                                        }
-                                        
-                                        // When Being Dragged
-                                        roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
-                                        //roc.addDragDataFlavor(DATAENTRY_FLAVOR);
-                                        roc.addDragDataFlavor(new DataFlavorTableExt(DataEntryTask.class, "Data_Entry", tableInfo.getTableId()));
-                                
-                                        // When something is dropped on it
-                                        //roc.addDropDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
-                                        roc.addDropDataFlavor(new DataFlavorTableExt(RecordSetTask.class, "RECORD_SET", tableInfo.getTableId()));//RecordSetTask.RECORDSET_FLAVOR);
-
-                                    }
+                XStream xstream = new XStream();
                 
-                                    viewsNavBox.add(nbi);
-                                }
+                config(xstream);
+                
+                DataEntryXML dataEntryXML = (DataEntryXML)xstream.fromXML(AppContextMgr.getInstance().getResourceAsXML("DataEntryTaskInit")); // Describes the definitions of the full text search);
+                buildFormNavBoxes(dataEntryXML.getStd());
+                stdViews  = dataEntryXML.getStd();
+                miscViews = dataEntryXML.getMisc();
+                
+                if (miscViews != null && !miscViews.isEmpty())
+                {
+                    initDataEntryViews(miscViews);
+                    
+                    NavBoxItemIFace nbi = NavBox.createBtnWithTT(getResourceString("DET_MISC_FORMS"),
+                                                                 name, 
+                                                                 getResourceString("DET_CHOOSE_TT"), 
+                                                                 IconManager.IconSize.Std16, new ActionListener() {
+                        public void actionPerformed(ActionEvent e)
+                        {
+                            if (e instanceof DataActionEvent)
+                            {
+                                DataActionEvent dataActionEv = (DataActionEvent)e;
                                 
+                                if (dataActionEv.getSourceObj() != null)
+                                {
+                                    Object data = dataActionEv.getSourceObj().getData();
+                                    if (data instanceof RecordSet)
+                                    {
+                                        RecordSet rs = (RecordSet)data;
+                                        for (DataEntryView deView : miscViews)
+                                        {
+                                            if (deView.getTableInfo().getTableId() == rs.getDbTableId())
+                                            {
+                                                editData(rs, deView.getViewSet(), deView.getView());
+                                                return;
+                                            }
+                                        }
+                                    } else
+                                    {
+                                        showMiscViewsDlg();
+                                    }
+                                }
                             } else
                             {
-                                log.error("View's Class name["+view.getClassName()+"] was found in the DBTableIdMgr");
+                                showMiscViewsDlg();
                             }
-                            
-                        } else
-                        {
-                            log.error("View doesn't exist viewset["+viewsetName+"] view["+viewName+"]");
                         }
-
+                    });
+                    
+                    NavBoxButton roc = (NavBoxButton)nbi;
+                    for (DataEntryView dev : miscViews)
+                    {
+                        roc.addDropDataFlavor(new DataFlavorTableExt(DataEntryTask.class, "RECORD_SET", dev.getTableInfo().getTableId()));
                     }
-                } else
-                {
-                    log.debug("Was unable to load resource [DataEntryTaskInit]");
+                    viewsNavBox.add(nbi);
                 }
-    
+                
             } catch (Exception ex)
             {
                 log.error(ex);
@@ -490,7 +562,34 @@ public class DataEntryTask extends BaseTask
         }
         ViewLoader.setDoFieldVerification(cacheDoVerify);
     }
-
+    
+    /**
+     * Show a dialog letting them choose from a list of available misc views.   
+     */
+    protected void showMiscViewsDlg()
+    {
+        DataEntryView deView = null;
+        if (miscViews.size() == 1)
+        {
+            deView = miscViews.get(0);
+            
+        } else
+        {
+            ToggleButtonChooserDlg<DataEntryView> dlg = new ToggleButtonChooserDlg<DataEntryView>((Frame)UIRegistry.getTopWindow(), 
+                    getResourceString("DET_CHOOSE_TITLE"), miscViews, ToggleButtonChooserPanel.Type.RadioButton);
+            dlg.setVisible(true);
+            if (!dlg.isCancelled())
+            {
+                deView = dlg.getSelectedObject();
+            }
+        }
+        
+        if (deView != null)
+        {
+            openView(this, deView.getViewSet(), deView.getView(), "edit", null, true);
+        }
+    }
+    
     /*
      *  (non-Javadoc)
      * @see edu.ku.brc.specify.core.Taskable#getNavBoxes()
@@ -500,7 +599,7 @@ public class DataEntryTask extends BaseTask
     {
         initialize();
         
-        initializeViewsNavBox();
+        initializeViewsNavBoxFromXML();
 
         extendedNavBoxes.clear();
         extendedNavBoxes.addAll(navBoxes);
@@ -530,9 +629,9 @@ public class DataEntryTask extends BaseTask
     {
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
 
-        String label = getResourceString(DATA_ENTRY);
+        String label     = getResourceString(DATA_ENTRY);
         String iconName = name;
-        String hint = getResourceString("dataentry_hint");
+        String hint     = getResourceString("dataentry_hint");
         ToolBarDropDownBtn btn = createToolbarButton(label, iconName, hint);
 
         list.add(new ToolBarItemDesc(btn));
@@ -739,6 +838,55 @@ public class DataEntryTask extends BaseTask
         }
     }
     
+    /**
+     * @param cmdAction
+     * @param list
+     * @return
+     */
+    protected boolean processRecordSetCommand(final CommandAction cmdAction, final List<DataEntryView> list)
+    {
+        if (ContextMgr.getCurrentContext() == this && cmdAction.getSrcObj() instanceof RecordSet)
+        {
+            RecordSet rs = (RecordSet)cmdAction.getSrcObj();
+            for (DataEntryView dev : list)
+            {
+                if (dev.getTableInfo().getTableId() == rs.getDbTableId())
+                {
+                    editData(rs, dev.getViewSet(), dev.getView());
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    protected void processRecordSetCommand(final CommandAction cmdAction)
+    {
+        if (!processRecordSetCommand(cmdAction, stdViews))
+        {
+            processRecordSetCommand(cmdAction, miscViews);
+        }
+        
+        /*
+        if (ContextMgr.getCurrentContext() == this && cmdAction.getSrcObj() instanceof RecordSet)
+        {
+            RecordSet rs = (RecordSet)cmdAction.getSrcObj();
+            for (NavBoxItemIFace nbi : viewsNavBox.getItems())
+            {
+                RolloverCommand roc = (RolloverCommand)nbi;
+                if (roc.getData() instanceof CommandAction)
+                {
+                    CommandAction ca = (CommandAction)roc.getData();
+                    if (((DBTableInfo)ca.getProperty("tableInfo")).getTableId() == rs.getDbTableId())
+                    {
+                        editData(rs, ca.getPropertyAsString("viewset"), ca.getPropertyAsString("view"));
+                        break;
+                    }
+                }
+            }
+        }*/
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.BaseTask#doCommand(edu.ku.brc.ui.CommandAction)
      */
@@ -748,6 +896,11 @@ public class DataEntryTask extends BaseTask
         if (cmdAction.isType(DATA_ENTRY))
         {
             processDataEntryCommands(cmdAction);
+            
+        } else if (cmdAction.isType(RecordSetTask.RECORD_SET) && cmdAction.isAction("Clicked"))
+        {
+            cmdAction = null;
+            processRecordSetCommand(cmdAction);
             
         } else if (cmdAction.isType(DataEntryTask.DATA) && cmdAction.isAction("NewObjDataCreated"))
         {
@@ -761,7 +914,7 @@ public class DataEntryTask extends BaseTask
         {
             viewsNavBox.clear();
             ContextMgr.removeServicesByTask(this);
-            initializeViewsNavBox();
+            initializeViewsNavBoxFromXML();
         }
             
 
@@ -800,4 +953,211 @@ public class DataEntryTask extends BaseTask
         }
     }
     
+    /**
+     * Configures inner classes for XStream.
+     * @param xstream the xstream
+     */
+    protected static void config(final XStream xstream)
+    {
+        xstream.alias("views", DataEntryXML.class);
+        xstream.alias("view",  DataEntryView.class);
+        
+        xstream.useAttributeFor(DataEntryView.class, "name");
+        xstream.useAttributeFor(DataEntryView.class, "viewSet");
+        xstream.useAttributeFor(DataEntryView.class, "view");
+        xstream.useAttributeFor(DataEntryView.class, "iconName");
+        xstream.useAttributeFor(DataEntryView.class, "toolTip");
+        xstream.useAttributeFor(DataEntryView.class, "isSideBar");
+        
+        xstream.omitField(DataEntryView.class, "tableInfo");
+        
+        xstream.aliasAttribute(DataEntryView.class, "viewSet", "viewset");
+        xstream.aliasAttribute(DataEntryView.class, "iconName", "iconname");
+        xstream.aliasAttribute(DataEntryView.class, "toolTip", "tooltip");
+        xstream.aliasAttribute(DataEntryView.class, "isSideBar", "sidebar");
+    }
+    
+    class DataEntryXML
+    {
+        protected Vector<DataEntryView> std  = new Vector<DataEntryView>();
+        protected Vector<DataEntryView> misc = new Vector<DataEntryView>();
+        /**
+         * 
+         */
+        public DataEntryXML()
+        {
+            super();
+            // TODO Auto-generated constructor stub
+        }
+        /**
+         * @return the std
+         */
+        public Vector<DataEntryView> getStd()
+        {
+            return std;
+        }
+        /**
+         * @param std the std to set
+         */
+        public void setStd(Vector<DataEntryView> std)
+        {
+            this.std = std;
+        }
+        /**
+         * @return the misc
+         */
+        public Vector<DataEntryView> getMisc()
+        {
+            return misc;
+        }
+        /**
+         * @param misc the misc to set
+         */
+        public void setMisc(Vector<DataEntryView> misc)
+        {
+            this.misc = misc;
+        }
+    }
+    
+    class DataEntryView implements Comparable<DataEntryView>
+    {
+        protected String  name;
+        protected String  viewSet;
+        protected String  view;
+        protected String  iconName;
+        protected String  toolTip;
+        protected boolean isSideBar;
+        
+        protected DBTableInfo tableInfo = null;
+        
+        /**
+         * 
+         */
+        public DataEntryView()
+        {
+            super();
+            // TODO Auto-generated constructor stub
+        }
+        
+        /**
+         * @return the name
+         */
+        public String getName()
+        {
+            return name;
+        }
+        /**
+         * @param name the name to set
+         */
+        public void setName(String name)
+        {
+            this.name = name;
+        }
+
+
+        /**
+         * @return the tableInfo
+         */
+        public DBTableInfo getTableInfo()
+        {
+            return tableInfo;
+        }
+
+        /**
+         * @param tableInfo the tableInfo to set
+         */
+        public void setTableInfo(DBTableInfo tableInfo)
+        {
+            this.tableInfo = tableInfo;
+        }
+
+        /**
+         * @return the viewSet
+         */
+        public String getViewSet()
+        {
+            return viewSet;
+        }
+        /**
+         * @param viewSet the viewSet to set
+         */
+        public void setViewSet(String viewSet)
+        {
+            this.viewSet = viewSet;
+        }
+        /**
+         * @return the view
+         */
+        public String getView()
+        {
+            return view;
+        }
+        /**
+         * @param view the view to set
+         */
+        public void setView(String view)
+        {
+            this.view = view;
+        }
+        /**
+         * @return the iconName
+         */
+        public String getIconName()
+        {
+            return iconName;
+        }
+        /**
+         * @param iconName the iconName to set
+         */
+        public void setIconName(String iconName)
+        {
+            this.iconName = iconName;
+        }
+        /**
+         * @return the toolTip
+         */
+        public String getToolTip()
+        {
+            return toolTip;
+        }
+        /**
+         * @param toolTip the toolTip to set
+         */
+        public void setToolTip(String toolTip)
+        {
+            this.toolTip = toolTip;
+        }
+        /**
+         * @return the isSideBar
+         */
+        public boolean isSideBar()
+        {
+            return isSideBar;
+        }
+        /**
+         * @param isSideBar the isSideBar to set
+         */
+        public void setSideBar(boolean isSideBar)
+        {
+            this.isSideBar = isSideBar;
+        }
+        
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        @Override
+        public String toString()
+        {
+            return tableInfo != null ? tableInfo.getTitle() : name;
+        }
+        
+        /* (non-Javadoc)
+         * @see java.lang.Comparable#compareTo(java.lang.Object)
+         */
+        public int compareTo(DataEntryView o)
+        {
+            return toString().compareTo(o.toString());
+        }
+
+    }
 }

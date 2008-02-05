@@ -21,7 +21,9 @@ import java.awt.Frame;
 import java.io.File;
 import java.io.FileInputStream;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -42,8 +44,10 @@ import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionType;
+import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
+import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
 import edu.ku.brc.specify.datamodel.LocationTreeDef;
 import edu.ku.brc.specify.datamodel.PickList;
@@ -324,7 +328,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
         {
             for (Agent uAgent : colType.getAgents())
             {
-                if (uAgent.getSpecifyUser().getSpecifyUserId().equals(user.getSpecifyUserId()))
+                SpecifyUser spu = uAgent.getSpecifyUser();
+                if (spu != null && spu.getSpecifyUserId().equals(user.getSpecifyUserId()))
                 {
                     Agent.setUserAgent(uAgent);
                     break;
@@ -1338,12 +1343,66 @@ public class SpecifyAppContextMgr extends AppContextMgr
         return dObj;
     }
     
+    
+    
     //--------------------------------------------------------
     // There is no greate place for this because the Pref system
     // has to have been initialized and the Prefs are defined
     // in package edu.ku.brc.af.prefs
     //--------------------------------------------------------
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.AppContextMgr#getCurrentContextDescription()
+     */
+    @Override
+    public String getCurrentContextDescription()
+    {
+        StringBuilder sb = new StringBuilder();
+        
+        SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy hh:mm:ss zzz");
+        
+        sb.append(sdf.format(Calendar.getInstance().getTime())+"\n");
+        
+        SpecifyUser spUser = SpecifyUser.getCurrentUser();
+        if (spUser != null)
+        {
+            sb.append(spUser.toString() + "\n");
+        }
+        Agent uAgent = Agent.getUserAgent();
+        if (uAgent != null)
+        {
+            sb.append(uAgent.toString() + "\n");
+            if (StringUtils.isNotEmpty(uAgent.getEmail()))
+            {
+                sb.append(uAgent.getEmail() + "\n");
+            }
+            
+            //if (uAgent.getAddresses())
+            
+            Division div = uAgent.getDivision();
+            if (div != null)
+            {
+                Institution inst = div.getInstitution();
+                if (inst != null)
+                {
+                    sb.append(inst.toString() + "\n");
+                }
+                sb.append(div.toString() + "\n");
+                sb.append(uAgent.toString() + "\n");
+            }
+        }
+
+        Collection collection = Collection.getCurrentCollection();
+        if (collection != null)
+        {
+            sb.append(collection.toString() + "\n");
+        }
+        
+        return sb.toString();
+    }
+
+
+
     protected static Boolean isNewJavaVersion = null;
     
     /**

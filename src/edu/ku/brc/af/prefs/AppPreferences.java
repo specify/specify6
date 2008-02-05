@@ -360,6 +360,24 @@ public class AppPreferences
     }
 
     /**
+     * Gets a value as Boolean.
+     * @param name the name of the pref
+     * @param defaultValue the default value
+     * @param doDefVal set the default value if it isn't there
+     * @return the value as a String.
+     */
+    public Boolean getBoolean(final String name, final Boolean defaultValue, boolean doDefVal)
+    {
+        String val = get(name, (defaultValue == null ? null : Boolean.toString(defaultValue)));
+        if (val == null && doDefVal)
+        {
+            putBoolean(name, defaultValue);
+        }
+        return val == null ? null : Boolean.valueOf(val);
+    }
+
+
+    /**
      * Returns the value as a Boolean.
      * @param name the name
      * @param defaultValue the default value
@@ -367,8 +385,7 @@ public class AppPreferences
      */
     public Boolean getBoolean(final String name, final Boolean defaultValue)
     {
-        String val = get(name, (defaultValue == null ? null : Boolean.toString(defaultValue)));
-        return val == null ? null : Boolean.valueOf(val);
+        return getBoolean(name, defaultValue, false);
     }
 
     /**
@@ -426,11 +443,13 @@ public class AppPreferences
     }
     
     /**
-     * @param name
-     * @param defaultColor
-     * @return
+     * Gets a value as Color
+     * @param name the name of the pref
+     * @param defaultValue the default value
+     * @param doDefVal set the default value if it isn't there
+     * @return the value as a String.
      */
-    public Color getColor(final String name, final Color defaultColor)
+    public Color getColor(final String name, final Color defaultColor, boolean doDefVal)
     {
         String colorStr = get(name, null);
         if (StringUtils.isNotEmpty(colorStr))
@@ -443,8 +462,22 @@ public class AppPreferences
             {
                 
             }
+        } else
+        {
+            putColor(name, defaultColor);
         }
         return defaultColor;
+    }
+
+    /**
+     * Gets a value as Color
+     * @param name the name of the pref
+     * @param defaultValue the default value
+     * @return the value as a String.
+     */
+    public Color getColor(final String name, final Color defaultColor)
+    {
+        return getColor(name, defaultColor, false);
     }
     
     /**

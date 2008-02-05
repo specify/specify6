@@ -8,7 +8,7 @@
         <yaxis>Number of Specimens</yaxis>
       </chartinfo>
       <sql type="text">
-          <![CDATA[select tn,count(tx) as namecnt from (select determination.TaxonId, taxon.TaxonID as tx, taxon.Name as tn from taxon,determination where determination.TaxonId = taxon.TaxonID) as newTable group by tx order by namecnt DESC]]>
+          <![CDATA[select tn,count(tx) as namecnt from (select DT.TaxonId, taxon.TaxonID as tx, taxon.Name as tn from taxon,determination as DT WHERE DT.CollectionMemberID = COLMEMID AND DT.TaxonId = taxon.TaxonID) as newTable group by tx order by namecnt DESC]]>
       </sql>
       <slice>
         <desc row="1" col="1"/>
@@ -37,7 +37,7 @@
         <title>Top Five Species</title>
       </chartinfo>
       <sql type="text">
-          <![CDATA[select tn,count(tx) as namecnt from (select determination.TaxonId, taxon.TaxonID as tx, taxon.Name as tn from taxon,determination where determination.TaxonId = taxon.TaxonID) as newTable group by tx order by namecnt DESC]]>
+          <![CDATA[select tn,count(tx) as namecnt from (select DT.TaxonId, taxon.TaxonID as tx, taxon.Name as tn from taxon,determination as DT WHERE DT.CollectionMemeberID = COLMEMID AND DT.TaxonId = taxon.TaxonID) as newTable group by tx order by namecnt DESC]]>
       </sql>
       <bar>
         <desc row="1" col="1"/>
@@ -93,7 +93,7 @@
         <title>Top 7 Number of Specimens by Country</title>
       </chartinfo>
       <sql type="text">
-          <![CDATA[select g.Name as Country, count(g.Name) AS SpecimenCount from (select CollectionObjectID, CE.LocalityID, LOC.GeographyID, GEO.NodeNumber  from collectionobject as CO inner join collectingevent as CE on CE.CollectingEventID = CO.CollectingEventID inner join locality LOC on CE.LocalityID = LOC.LocalityID inner join geography as GEO on GEO.GeographyID = LOC.GeographyID) as COLGEO, geography as g where g.rankid = 200 and COLGEO.nodenumber between g.nodenumber and g.HighestChildNodeNumber group by g.Name order by SpecimenCount DESC]]>
+          <![CDATA[select g.Name as Country, count(g.Name) AS SpecimenCount from (select CollectionObjectID, CO.CollectionMemberID, CE.LocalityID, LOC.GeographyID, GEO.NodeNumber  from collectionobject as CO inner join collectingevent as CE on CE.CollectingEventID = CO.CollectingEventID inner join locality LOC on CE.LocalityID = LOC.LocalityID inner join geography as GEO on GEO.GeographyID = LOC.GeographyID) as COLGEO, geography as g where COLGEO.CollectionMemberID = COLMEMID AND g.rankid = 200 and COLGEO.nodenumber between g.nodenumber and g.HighestChildNodeNumber group by g.Name order by SpecimenCount DESC]]>
       </sql>
       <bar>
         <desc row="1" col="1"/>

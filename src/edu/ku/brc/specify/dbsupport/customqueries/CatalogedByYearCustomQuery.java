@@ -91,7 +91,7 @@ public class CatalogedByYearCustomQuery implements CustomQueryIFace
         
         Vector<QueryResultsContainerIFace> list = new Vector<QueryResultsContainerIFace>();
         Calendar now = Calendar.getInstance();
-        int year = now.get(Calendar.YEAR);
+        int year = now.get(Calendar.YEAR) - 1;
         for (int yr=year-numYears+1;yr<=year;yr++)
         {
             String sql = QueryAdjusterForDomain.getInstance().adjustSQL("SELECT count(*) FROM collectionobject WHERE CollectionMemberID = COLMEMID AND TimestampCreated < '"+yr+"-01-01' AND TimestampCreated > '"+(yr-1)+"-12-31'");

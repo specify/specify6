@@ -43,8 +43,6 @@ import javax.swing.border.Border;
 
 import org.apache.commons.lang.StringUtils;
 
-import sun.util.logging.resources.logging;
-
 import com.jgoodies.forms.builder.DefaultFormBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -92,7 +90,6 @@ public class ResultSetController implements ValidationListener
     protected int     currentInx = 0;
     protected int     lastInx    = 0;
     protected int     numRecords = 0;
-    
     
     // Global Key Actions
     private enum CommandTypes { First, Previous, Next, Last, Save, NewItem, DelItem}
@@ -219,12 +216,13 @@ public class ResultSetController implements ValidationListener
         
         if (addNewBtn)
         {
-            if (true)
+            if (false)
             {
                 newRecBtn = new JButton("+")
                 {
                     public void setEnabled(boolean enable)
                     {
+                        //System.err.println(formValidator.getName() + " " + hashCode() + " "+enable);
                         if (!enable)
                         {
                             int x = 0;
@@ -541,7 +539,10 @@ public class ResultSetController implements ValidationListener
            updateUI(); 
         }
     }
-    
+
+    /**
+     * 
+     */
     protected void createRSActions()
     {
         if (commandsHash == null)
@@ -555,6 +556,9 @@ public class ResultSetController implements ValidationListener
         }
     }
     
+    /**
+     * 
+     */
     private static void registerFocusListener()
     {
         final KeyboardFocusManager focusManager = KeyboardFocusManager.getCurrentKeyboardFocusManager(); 
@@ -616,6 +620,9 @@ public class ResultSetController implements ValidationListener
         );
     }
     
+    /**
+     * @param mi
+     */
     public static void addMenuItems(final JMenuItem mi)
     {
         ResultSetController rsc = new ResultSetController();

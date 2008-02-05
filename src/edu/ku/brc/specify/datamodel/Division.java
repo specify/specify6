@@ -478,5 +478,14 @@ public class Division extends DataModelObjBase implements java.io.Serializable
     {
         return StringUtils.isNotEmpty(name) ? name : super.getIdentityTitle();
     }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return getIdentityTitle();
+    }
 
  }

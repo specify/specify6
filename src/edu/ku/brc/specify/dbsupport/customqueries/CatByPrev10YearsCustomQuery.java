@@ -89,7 +89,7 @@ public class CatByPrev10YearsCustomQuery implements CustomQueryIFace
      */
     public List<QueryResultsContainerIFace> getQueryDefinition()
     {
-        int inc = 5;
+        int inc  = 5;
         int year = Calendar.getInstance().get(Calendar.YEAR) - 1;
 
         Vector<QueryResultsContainerIFace> list = new Vector<QueryResultsContainerIFace>();

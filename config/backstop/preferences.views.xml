@@ -172,7 +172,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="disciplineIcon" label="Discipline Icon"/>
-                    <cell type="field" uitype="label" id="disciplineIcon" label="" />
+                    <cell type="field" uitype="label" id="disciplineIcon" label="" ignore="true"/>
                     
                     <cell type="label" labelfor="disciplineIconCBX" label="Choose"/>
                     <cell type="field" uitype="combobox" id="disciplineIconCBX" readonly="true" changesonly="true" />
@@ -182,11 +182,11 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="appIcon" label="Application Icon"/>
-                    <cell type="field" uitype="label" id="appIcon" label="" />
+                    <cell type="field" uitype="label" id="appIcon" label="" ignore="true"/>
                     <cell type="panel" id="16" name="btnpanel" coldef="25px,2px,p,5px,p,f:p:g" rowdef="p" colspan="9">
                         <rows>
                             <row>
-                                <cell type="field" uitype="label" id="0" label=" " />
+                                <cell type="field" uitype="label" id="0" label=" " ignore="true"/>
                                 <cell type="command" id="GetIconImage" name="GetIconImage"   label="Set Icon" ignore="true"/>
                                 <cell type="command" id="ClearIconImage" name="ClearIconImage" label="Clear Icon" ignore="true"/>
                             </row>
@@ -304,6 +304,10 @@
                 </row>
                 <row>
                     <cell type="separator" label="Placemark Balloon Configuration" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="8" label=""/>
+                    <cell type="field" id="8" name="google.earth.useorigheaders" uitype="checkbox" label="Use Original Excel Headers" colspan="2"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="2" label="Balloon BG Color"/>

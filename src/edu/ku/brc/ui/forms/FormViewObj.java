@@ -1700,7 +1700,10 @@ public class FormViewObj implements Viewable,
                 public void finished()
                 {
                     UIRegistry.getStatusBar().setIndeterminate(false);
-                    session.close();
+                    if (session != null)
+                    {
+                        session.close();
+                    }
                 }
             };
             worker.start();
@@ -2472,7 +2475,15 @@ public class FormViewObj implements Viewable,
             }
             
             log.debug(view.getName()+"  enableNewBtn "+enableNewBtn+"  isNewlyCreatedDataObj "+isNewlyCreatedDataObj()+" ("+(enableNewBtn && (dataObj == null || !isNewlyCreatedDataObj()))+")");
-            newRecBtn.setEnabled(enableNewBtn && (dataObj == null || !isNewlyCreatedDataObj()));
+            
+            boolean newBtnEnabled = enableNewBtn && (dataObj == null || !isNewlyCreatedDataObj());
+            //if (rsController != null)
+            //{
+            //    rsController.setFormEnabledOK(newBtnEnabled);
+            //} else
+            //{
+               newRecBtn.setEnabled(newBtnEnabled); 
+            //}
             
             if (switcherUI != null)
             {
@@ -3142,25 +3153,27 @@ public class FormViewObj implements Viewable,
                 for (FieldInfo fieldInfo : controlsById.values())
                 {
                     FormCellIFace fc = fieldInfo.getFormCell();
-                    boolean isReadOnly = false;
+                    boolean isInoreGetSet = fc.isIgnoreSetGet();
+                    boolean isReadOnly;
                     boolean useThisData; // meaning the control is using the same data object as what is in the form
                                          // so we don't need to go get the data (skip it)
                     if (fc instanceof FormCellField)
                     {
                         FormCellFieldIFace fcf = (FormCellFieldIFace)fc;
-                        isReadOnly  = fcf.isReadOnly();// || fcf.isEditOnCreate();
-                        useThisData = fcf.useThisData();
+                        isReadOnly    = fcf.isReadOnly();// || fcf.isEditOnCreate();
+                        useThisData   = fcf.useThisData();
                         
                     } else
                     {
-                        useThisData = false;
+                        useThisData   = false;
+                        isReadOnly    = false;
                     }
                     
                     String id = fieldInfo.getFormCell().getIdent();
                     
                     log.debug(fieldInfo.getName()+"\t"+fieldInfo.getFormCell().getName()+"\t   hasChanged: "+(!isReadOnly && hasFormControlChanged(id)));
                     
-                    if (!isReadOnly && hasFormControlChanged(id))
+                    if (!isReadOnly && !isInoreGetSet && hasFormControlChanged(id))
                     {
                         // this ends up calling the getData on the GetSetValueIFace 
                         // which enables the control to set data into the data object

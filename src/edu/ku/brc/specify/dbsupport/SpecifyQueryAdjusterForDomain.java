@@ -78,19 +78,9 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                 String sql = (isHQL ? "collectionTypeId" : "CollectionTypeID") + " = " + COLTYPID;
                 return adjustSQL(sql);
                 
-            } else if (tableInfo.getTableId() == PrepType.getClassTableId())
+            } else if (tableInfo.getTableId() == Geography.getClassTableId())
             {
-                String sql = (isHQL ? "collectionId" : "CollectionID") + " = " + COLLID;
-                return adjustSQL(sql);
-          
-            } else if (tableInfo.getTableId() == Taxon.getClassTableId())
-            {
-                String sql = (isHQL ? "taxonTreeDefId" : "TaxonTreeDefID") + " = " + TAXTREEDEFID;
-                return adjustSQL(sql);
-                
-            } else if (tableInfo.getTableId() == Location.getClassTableId())
-            {
-                String sql = (isHQL ? "locationTreeDefId" : "LocationTreeDefID") + " = " + LOCTREEDEFID;
+                String sql = (isHQL ? "geographyTreeDefId" : "GeographyTreeDefID") + " = " + GEOTREEDEFID;
                 return adjustSQL(sql);
                 
             } else if (tableInfo.getTableId() == GeologicTimePeriodTreeDef.getClassTableId())
@@ -103,10 +93,21 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                 String sql = (isHQL ? "lithoStratTreeDefID" : "LithoStratTreeDefID") + " = " + LITHOTREEDEFID;
                 return adjustSQL(sql);
                 
-            } else if (tableInfo.getTableId() == Geography.getClassTableId())
+            } else if (tableInfo.getTableId() == Location.getClassTableId())
             {
-                String sql = (isHQL ? "geographyTreeDefId" : "GeographyTreeDefID") + " = " + GEOTREEDEFID;
+                String sql = (isHQL ? "locationTreeDefId" : "LocationTreeDefID") + " = " + LOCTREEDEFID;
                 return adjustSQL(sql);
+                
+            } else if (tableInfo.getTableId() == PrepType.getClassTableId())
+            {
+                String sql = (isHQL ? "collectionId" : "CollectionID") + " = " + COLLID;
+                return adjustSQL(sql);
+          
+            } else if (tableInfo.getTableId() == Taxon.getClassTableId())
+            {
+                String sql = (isHQL ? "taxonTreeDefId" : "TaxonTreeDefID") + " = " + TAXTREEDEFID;
+                return adjustSQL(sql);
+                
             }
         }
         return null;

@@ -778,8 +778,10 @@ public class FormValidator implements ValidationListener, DataChangeListener
         }
 
         boolean isValid = getState() == UIValidatable.ErrorType.Valid;
-        enableUIItems(hasChanged && isValid, EnableType.ValidAndChangedItems);
+        System.out.println("* "+isValid+"  "+(!isNewObj));
+        enableUIItems(isValid && !isNewObj, EnableType.ValidAndChangedItems);
         enableUIItems(isValid && !isNewObj, EnableType.ValidItems);
+        //enableUIItems(isValid, EnableType.ValidItems);
         
         log.debug(">>>>>> isValid: "+isValid+" hasCHanged: "+hasChanged+" Val & New: "+(isValid && !isNewObj));
         
@@ -968,7 +970,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
      * @param uiv the UI validator
      * @return the dcn
      */
-    public DataChangeNotifier createDataChangeNotifer(String id, Component comp, UIValidator uiv)
+    public DataChangeNotifier createDataChangeNotifer(final String id, final Component comp, final UIValidator uiv)
     {
         DataChangeNotifier dcn = new DataChangeNotifier(id, comp, uiv);
         dcn.addDataChangeListener(this);
@@ -1302,8 +1304,11 @@ public class FormValidator implements ValidationListener, DataChangeListener
         }
 
         boolean isValid = formValidationState == UIValidatable.ErrorType.Valid;
+        System.out.println(hasChanged+"  "+isValid);
         enableUIItems(hasChanged && isValid, EnableType.ValidAndChangedItems);
         enableUIItems(isValid && !isNewObj, EnableType.ValidItems);
+        //enableUIItems(isValid, EnableType.ValidItems);
+
         
         updateValidationBtnUIState();
     }

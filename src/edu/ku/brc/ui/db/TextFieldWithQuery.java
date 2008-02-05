@@ -620,11 +620,16 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         
         if (!dlg.isCancelled())
         {
-            int inx = listBox.getSelectedIndex();
-            inx = addAddItem ? inx-1 : inx;
+            int     inx        = listBox.getSelectedIndex();
+            boolean isDoingAdd = inx == 0 && addAddItem;
             
-            selectedId = idList.get(inx);
-            textField.setText(list.get(inx));
+            inx = addAddItem ? inx-1 : inx;
+
+            if (!isDoingAdd)
+            {
+                selectedId = idList.get(inx);
+                textField.setText(list.get(inx));
+            }
             
             if (listSelectionListeners != null)
             {

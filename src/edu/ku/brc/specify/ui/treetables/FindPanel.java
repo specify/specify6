@@ -32,19 +32,19 @@ public class FindPanel extends JPanel implements TimingTarget
 {
     protected DualViewSearchable views;
     
-    protected JButton closeButton;
-    protected JLabel findLabel;
+    protected JButton    closeButton;
+    protected JLabel     findLabel;
     protected JTextField entryField;
-    protected JButton findButton;
-    protected JButton nextButton;
+    protected JButton    findButton;
+    protected JButton    nextButton;
     protected MultiStateToggleButton whereToggleButton;
     
-    protected int mode;
-    protected Dimension prefSize;
-    protected Dimension contractedSize;
-    protected boolean animationInProgress = false;
-    protected boolean shrinking = false;
-    protected boolean expanding = false;
+    protected int        mode;
+    protected Dimension  prefSize;
+    protected Dimension  contractedSize;
+    protected boolean    animationInProgress = false;
+    protected boolean    shrinking           = false;
+    protected boolean    expanding           = false;
     
     public static final int EXPANDED = 1;
     public static final int CONTRACTED = -1;

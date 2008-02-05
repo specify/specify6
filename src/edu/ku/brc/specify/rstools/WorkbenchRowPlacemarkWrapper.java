@@ -9,6 +9,7 @@ import javax.swing.ImageIcon;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
@@ -96,6 +97,9 @@ public class WorkbenchRowPlacemarkWrapper implements GoogleEarthPlacemarkIFace
      */
     public String getHtmlContent()
     {
+        
+        boolean useCaptions = AppPreferences.getRemote().getBoolean("google.earth.useorigheaders", true);
+        
         // XXX In the Future this should call a delegate
         // so it isn't hard code in the class
         
@@ -108,7 +112,7 @@ public class WorkbenchRowPlacemarkWrapper implements GoogleEarthPlacemarkIFace
             if (visibleMap.get(wbtmi) != null && wbtmi.getIsExportableToContent())
             {
                 sb.append("<tr><td align=\"right\">");
-                sb.append(wbtmi.getTitle());
+                sb.append(useCaptions ? wbtmi.getCaption() : wbtmi.getTitle());
                 sb.append(":</td><td align=\"left\">");
                 sb.append(wbdi.getCellData());
                 sb.append("</td></tr>\n");

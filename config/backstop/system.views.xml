@@ -285,8 +285,12 @@
                     <cell type="field" id="1" name="name" uitype="text" isrequired="true"/> 
                 </row>
                 <row>
-                    <cell type="label" labelfor="2" label="Is Current"/>
-                    <cell type="field" id="2" name="isCurrent" uitype="checkbox" isrequired="true"/> 
+                    <cell type="label" labelfor="2" label="Type"/>
+                    <cell type="field" id="2" name="type" uitype="text" readonly="true"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="4" label="Type Desc"/>
+                    <cell type="field" id="4" name="typeDesc" uitype="text" ignore="true" readonly="true"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="3" label="Remarks"/>

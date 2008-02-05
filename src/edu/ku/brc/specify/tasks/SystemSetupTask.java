@@ -374,7 +374,10 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                                final String iconName, 
                                final String viewName)
     {
-        if (!checkForPaneWithData(clazz))
+        DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(clazz.getName());
+        String      title     = tableInfo.getTitle();
+        
+        if (!checkForPaneWithName(title))
         {
             List<?> dataItems = null;
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
@@ -384,7 +387,6 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                 sb.append("FROM ");
                 sb.append(clazz.getName());
                 
-                DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(clazz.getName());
                 if (tableInfo != null)
                 {
                     String specialWhere = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, true);
@@ -410,13 +412,13 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             {
                 ViewIFace view = AppContextMgr.getInstance().getView("SystemSetup", viewName);
                 
-                createFormPanel(name, 
+                createFormPanel(title, 
                                 view.getViewSetName(), 
                                 view.getName(), 
                                 "edit", 
-                                dataItems, 
+                                dataItems,  
                                 MultiView.RESULTSET_CONTROLLER,
-                                IconManager.getIcon(iconName, IconManager.IconSize.Std16));
+                                IconManager.getIcon(clazz.getSimpleName(), IconManager.IconSize.Std16));
             }
 
         } 

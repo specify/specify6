@@ -142,7 +142,10 @@ public class BarChartPanel extends ChartPanel implements QueryResultsListener, Q
         {
             Object descObj = list.get(i++);
             Object valObj  = list.get(i);
-            dataset.addValue(getInt(valObj), getString(descObj), cat);
+            if (descObj != null && valObj != null)
+            {
+                dataset.addValue(getInt(valObj), getString(descObj), cat);
+            }
         }
         list.clear();
 

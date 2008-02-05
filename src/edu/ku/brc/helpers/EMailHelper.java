@@ -32,7 +32,6 @@ import javax.activation.FileDataSource;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.AuthenticationFailedException;
 import javax.mail.Multipart;
 import javax.mail.Session;
 import javax.mail.Store;
@@ -95,8 +94,8 @@ public class EMailHelper
     /**
      * Send an email. Also sends it as a gmail if applicable, and does password checking.
      * @param host host of SMTP server
-     * @param userName username of email account
-     * @param password password of email account
+     * @param uName username of email account
+     * @param pWord password of email account
      * @param fromEMailAddr the email address of who the email is coming from typically this is the same as the user's email
      * @param toEMailAddr the email addr of who this is going to
      * @param subject the Textual subject line of the email
@@ -104,18 +103,22 @@ public class EMailHelper
      * @param fileAttachment and optional file to be attached to the email
      * @return true if the msg was sent, false if not
      */
-    public static boolean sendMsg(String host,
-                                  String userName,
-                                  String password,
-                                  String fromEMailAddr,
-                                  String toEMailAddr,
-                                  String subject,
-                                  String bodyText,
-                                  String mimeType,
-                                  File   fileAttachment)
+    public static boolean sendMsg(final String host,
+                                  final String uName,
+                                  final String pWord,
+                                  final String fromEMailAddr,
+                                  final String toEMailAddr,
+                                  final String subject,
+                                  final String bodyText,
+                                  final String mimeType,
+                                  final File   fileAttachment)
     {
-        if (isGmailEmail()){
-            return sendMsgAsGMail(host,userName,password,fromEMailAddr,toEMailAddr,subject,bodyText,mimeType,fileAttachment);
+        String userName = uName;
+        String password = pWord;
+        
+        if (isGmailEmail())
+        {
+            return sendMsgAsGMail(host, userName, password, fromEMailAddr, toEMailAddr, subject, bodyText, mimeType, fileAttachment);
         }
         else
         {
@@ -201,8 +204,10 @@ public class EMailHelper
                 msg.setSentDate(new Date());
     
                 // send the message
-                //Transport.send(msg);
-                do{
+                int cnt = 0;
+                do
+                {
+                    cnt++;
                     SMTPTransport t = (SMTPTransport)session.getTransport("smtp");
                     try {
                         t.connect(host, userName, password);
@@ -211,18 +216,20 @@ public class EMailHelper
                         
                         fail = false;
         
-                    }catch (MessagingException mex)
+                    } catch (MessagingException mex)
                     {
                         instance.lastErrorMsg = mex.toString();
                         
                         Exception ex = null;
-                        if ((ex = mex.getNextException()) != null) {
+                        if ((ex = mex.getNextException()) != null) 
+                        {
                           ex.printStackTrace();
                           instance.lastErrorMsg = instance.lastErrorMsg + ", " + ex.toString();
                         }
                         
                         //wrong username or password, get new one
-                        if (mex.toString().equals("javax.mail.AuthenticationFailedException")){
+                        if (mex.toString().equals("javax.mail.AuthenticationFailedException"))
+                        {
                             fail = true;
                             userAndPass = askForUserAndPassword((Frame)UIRegistry.getTopWindow());
                             
@@ -244,7 +251,7 @@ public class EMailHelper
                         
                     }
                     
-                }while(fail);
+                } while (fail && cnt < 6);
     
             } catch (MessagingException mex)
             {
@@ -253,7 +260,8 @@ public class EMailHelper
                 
                 mex.printStackTrace();
                 Exception ex = null;
-                if ((ex = mex.getNextException()) != null) {
+                if ((ex = mex.getNextException()) != null) 
+                {
                   ex.printStackTrace();
                   instance.lastErrorMsg = instance.lastErrorMsg + ", " + ex.toString();
                 }
@@ -336,7 +344,7 @@ public class EMailHelper
                 getResourceString("PASSWORD_TITLE"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 
         String passwordText = new String(passField.getPassword());
-        String userText = new String(userField.getText());
+        String userText     = new String(userField.getText());
         
         if (savePassword.isSelected())
         {
@@ -666,17 +674,32 @@ public class EMailHelper
         }
     }
 
-    public static boolean sendMsgAsGMail(String host,
-                                  String userName,
-                                  String password,
-                                  String fromEMailAddr,
-                                  String toEMailAddr,
-                                  String subject,
-                                  String bodyText,
-                                  String mimeType,
-                                  File   fileAttachment)
+    /**
+     * Send an email. Also sends it as a gmail if applicable, and does password checking.
+     * @param host host of SMTP server
+     * @param uName username of email account
+     * @param pWord password of email account
+     * @param fromEMailAddr the email address of who the email is coming from typically this is the same as the user's email
+     * @param toEMailAddr the email addr of who this is going to
+     * @param subject the Textual subject line of the email
+     * @param bodyText the body text of the email (plain text???)
+     * @param fileAttachment and optional file to be attached to the email
+     * @return true if the msg was sent, false if not
+     */
+    public static boolean sendMsgAsGMail(final String host,
+                                         final String uName,
+                                         final String pWord,
+                                         final String fromEMailAddr,
+                                         final String toEMailAddr,
+                                         final String subject,
+                                         final String bodyText,
+                                         final String mimeType,
+                                         final File   fileAttachment)
     {
-        Boolean fail = false;
+        String  userName = uName;
+        String  password = pWord;
+        Boolean fail     = false;
+        
         ArrayList<String> userAndPass = new ArrayList<String>();
         
         Properties props = System.getProperties();
@@ -768,20 +791,19 @@ public class EMailHelper
             msg.setSentDate(new Date());
 
             // send the message
-            //Transport.send(msg);
-            do{
+            int cnt = 0;
+            do
+            {
+                cnt++;
                 SMTPTransport t = (SMTPTransport)session.getTransport("smtp");
-                try {
+                try 
+                {
                     t.connect(host, userName, password);
     
                     t.sendMessage(msg, msg.getAllRecipients());
                     
                     fail = false;
-                } /*catch (Exception e)
-                {
-                    log.error(e);
-                    
-                }*/
+                }
                 catch (MessagingException mex)
                 {
                     instance.lastErrorMsg = mex.toString();
@@ -806,7 +828,7 @@ public class EMailHelper
                         // else
                         //try again
                         userName = userAndPass.get(0);
-                            password = userAndPass.get(1);
+                        password = userAndPass.get(1);
                     }
                 }
                 finally
@@ -815,7 +837,7 @@ public class EMailHelper
                      log.debug("Response: " + t.getLastServerResponse());
                      t.close();
                 }
-            } while(fail);
+            } while (fail && cnt < 6);
 
         } catch (MessagingException mex)
         {

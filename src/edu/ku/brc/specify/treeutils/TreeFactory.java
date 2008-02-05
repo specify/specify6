@@ -331,7 +331,7 @@ public class TreeFactory
         
         if (clazz.equals(Taxon.class))
         {
-            sb.append(" WHERE DET.CollectionMemberID = COLMEMID AND IsCurrent = 1 AND IsAccepted = 1 AND TX.TaxonID = %d");
+            sb.append(" WHERE DET.CollectionMemberID = COLMEMID AND Type = 1 AND IsAccepted = 1 AND TX.TaxonID = %d");
             
         } else if (clazz.equals(Geography.class))
         {
@@ -373,7 +373,7 @@ public class TreeFactory
         
         if (clazz.equals(Taxon.class))
         {
-            sb.append(" WHERE DET.CollectionMemberID = COLMEMID AND IsCurrent = 1 AND IsAccepted = 1 AND NodeNumber > %d AND HighestChildNodeNumber <= %d");
+            sb.append(" WHERE DET.CollectionMemberID = COLMEMID AND Type = 1 AND IsAccepted = 1 AND NodeNumber > %d AND HighestChildNodeNumber <= %d");
             
         } else if (clazz.equals(Geography.class))
         {

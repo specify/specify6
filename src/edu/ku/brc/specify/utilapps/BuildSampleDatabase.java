@@ -346,7 +346,7 @@ public class BuildSampleDatabase
         frame.setDesc("Creating CatalogNumberingScheme...");
         frame.setProcess(++createStep);
 
-        CatalogNumberingScheme cns = createCatalogNumberingScheme("CatalogNumber", "", true);
+        CatalogNumberingScheme cns = createCatalogNumberingScheme("CatalogNumber For "+config.getCollectionName(), "", true);
         
         persist(cns);
         
@@ -657,7 +657,7 @@ public class BuildSampleDatabase
         
         frame.setProcess(++createStep);
         
-        CatalogNumberingScheme cns = createCatalogNumberingScheme("CatalogNumber", "", true);
+        CatalogNumberingScheme cns = createCatalogNumberingScheme("CatalogNumber For Plants", "", true);
         
         persist(cns);
         
@@ -806,6 +806,8 @@ public class BuildSampleDatabase
         ku.setName("University of Kansas");
         ku.setEmail("webadmin@ku.edu");
         ku.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        ku.setCollectionType(CollectionType.getCurrentCollectionType());
+        
         agents.add(ku);
         agents.get(0).setOrganization(ku);
         agents.get(1).setOrganization(ku);
@@ -818,27 +820,18 @@ public class BuildSampleDatabase
         agentVariants.add(createAgentVariant(AgentVariant.VERNACULAR, "James VERNACULAR #1", steveBoyd));
      
         List<Address> addrs = new Vector<Address>();
-        // David Smith
         addrs.add(createAddress(agents.get(1), "1600 Pennsylvania Avenue NW", null, "Washington", "DC", "USA", "20500"));
-        // Jim
         addrs.add(createAddress(agents.get(1), "??? Mississippi", null, "Lawrence", "KS", "USA", "66045"));
-        // Meg
         addrs.add(createAddress(agents.get(2), "1 Main St", "", "Lenexa", "KS", "USA", "66071"));
-        // Rod
         addrs.add(createAddress(agents.get(3), "13355 Inverness", "Bldg #3", "Lawrence", "KS", "USA", "66047"));
-        // Wayne Oppenheimer
         addrs.add(createAddress(agents.get(4), "Natural History Museum", "Cromwell Rd", "London", null, "UK", "SW7 5BD"));
-        // no address for agent 5 (Dudley Simmons)
-        // Rod Carew
         addrs.add(createAddress(agents.get(6), "1212 Apple Street", null, "Chicago", "IL", "USA", "01010"));
-        // no address for agent 7 (Joe Tester)
-        // Smyth
         addrs.add(createAddress(agents.get(8), "11911 Oak Ln", null, "Orion", "KS", "USA", "66061"));
-        // KU
         addrs.add(createAddress(ku, null, null, "Lawrence", "KS", "USA", "66045"));
         
         // User Agent Address
         addrs.add(createAddress(userAgent, "1214 East Street", null, "Grinnell", "IA", "USA", "56060"));
+        userAgent.setDivision(division);
                 
         //startTx();
         persist(agents);
@@ -1349,6 +1342,7 @@ public class BuildSampleDatabase
         System.out.println("Email:     "+email);
         System.out.println("UserType:  "+userType);
         Agent userAgent = createAgent(title, firstName, midInit, lastName, abbrev, email);
+        userAgent.setDivision(division);
         
         collectionType.addReference(userAgent, "agents");
         
@@ -1445,7 +1439,7 @@ public class BuildSampleDatabase
         frame.setDesc("Creating Collection "+  colName);
         
         startTx();
-        CatalogNumberingScheme cns = createCatalogNumberingScheme("CatalogNumber", "", true);
+        CatalogNumberingScheme cns = createCatalogNumberingScheme("CatalogNumber For " + colName, "", true);
         
         persist(cns);
         
@@ -1587,6 +1581,8 @@ public class BuildSampleDatabase
         ku.setName("University of Kansas");
         ku.setEmail("webadmin@ku.edu");
         ku.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        ku.setCollectionType(CollectionType.getCurrentCollectionType());
+        
         agents.add(ku);
         agents.get(0).setOrganization(ku);
         agents.get(1).setOrganization(ku);

@@ -14,6 +14,7 @@ import org.dom4j.Element;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.SubPaneMgr;
+import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.tasks.StatsTask;
 import edu.ku.brc.dbsupport.CustomQueryIFace;
 import edu.ku.brc.dbsupport.CustomQueryFactory;
@@ -194,7 +195,7 @@ public class StatsMgr
                 QueryResultsHandlerIFace singlePairs = new PairsSingleQueryResultsHandler();
                 qrProcessable.setHandler(singlePairs);
 
-                container.setSql(sqlElement.getText().trim());
+                container.setSql(QueryAdjusterForDomain.getInstance().adjustSQL(sqlElement.getText().trim()));
 
                 String displayType = element.attributeValue("display");
                 List<?> parts = element.selectNodes(displayType.equals("Pie Chart") ? "slice" : "bar");

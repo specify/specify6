@@ -36,6 +36,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.io.File;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.lang.Thread.UncaughtExceptionHandler;
 import java.lang.reflect.Field;
 import java.math.BigDecimal;
@@ -95,6 +98,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
@@ -102,7 +106,9 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.exceptions.ConfigurationException;
+import edu.ku.brc.helpers.EMailHelper;
 import edu.ku.brc.helpers.MenuItemPropertyChangeListener;
+import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.conversion.CustomDBConverter;
 import edu.ku.brc.specify.conversion.CustomDBConverterDlg;
 import edu.ku.brc.specify.conversion.CustomDBConverterListener;
@@ -1387,6 +1393,69 @@ public final class UIHelper
     }
     
     /**
+     * @param throwable
+     */
+    protected static void mailUnhandledException(final Throwable throwable)
+    {
+        try
+        {
+            final StringBuilder sb = new StringBuilder();
+            
+            try
+            {
+                String desc = AppContextMgr.getInstance().getCurrentContextDescription();
+                sb.append(desc);
+                
+            } catch (Exception ex)
+            {
+                sb.append("No application context.");
+            }
+             
+            StringWriter strWriter = new StringWriter();
+            PrintWriter  pw        = new PrintWriter(strWriter);
+
+            throwable.printStackTrace(pw);
+            
+            if (throwable.getCause() != null)
+            {
+                throwable.getCause().printStackTrace(pw);    
+            }
+            sb.append(strWriter.getBuffer().toString().replace("\t", "    "));
+            
+            SwingWorker workerThread = new SwingWorker()
+            {
+                @Override
+                public Object construct()
+                {
+                    EMailHelper.sendMsgAsGMail("smtp.gmail.com", 
+                            "specifysoftware", 
+                            "ukanbrc606*", 
+                            "specifysoftware@gmail.com", 
+                            "specifysoftware@gmail.com", 
+                            "UnhandledException", 
+                            sb.toString(), 
+                            EMailHelper.PLAIN_TEXT, 
+                            (File)null);
+                    return null;
+                }
+                
+                @Override
+                public void finished()
+                {
+                }
+            };
+            
+            // start the background task
+            workerThread.start();
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        
+    }
+    
+    /**
      * Creates and attaches the UnhandledException handler for piping them to the dialog
      */
     public static void attachUnhandledException()
@@ -1397,6 +1466,8 @@ public final class UIHelper
         {
             public void uncaughtException(Thread t, Throwable e)
             {
+                mailUnhandledException(e);
+                
                 if (isExceptionOKToThrow(e))
                 {
                     UIHelper.showUnhandledException(e);
@@ -1410,6 +1481,8 @@ public final class UIHelper
         {
             public void uncaughtException(Thread t, Throwable e)
             {
+                mailUnhandledException(e);
+                
                 if (isExceptionOKToThrow(e))
                 {
                     UIHelper.showUnhandledException(e);

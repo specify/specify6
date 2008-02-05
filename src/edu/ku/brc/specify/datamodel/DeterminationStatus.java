@@ -55,8 +55,8 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
 {
     
     public static final byte CURRENT          = 1;
-    public static final byte NOTCURRENT       = 2;
-    public static final byte OLDDETERMINATION = 3;
+    public static final byte OLDDETERMINATION = 2;
+    public static final byte NOTCURRENT       = 3;
     public static final byte USERDEFINED      = 64;
     
     protected Integer            determinationStatusId;

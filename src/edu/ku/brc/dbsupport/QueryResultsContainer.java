@@ -57,7 +57,7 @@ public class QueryResultsContainer implements QueryResultsContainerIFace, SQLExe
     }
     
     /**
-     * Constructs it with the SQL statment to be executed.
+     * Constructs it with the SQL statement to be executed.
      * @param sql the SQL statement to be executed
      */
     public QueryResultsContainer(final String sql)
@@ -134,7 +134,7 @@ public class QueryResultsContainer implements QueryResultsContainerIFace, SQLExe
      * Sets the SQL string to be executed.
      * @param sql the string of SQL
      */
-    public void setSql(String sql)
+    public void setSql(final String sql)
     {
         this.sql = sql;
     }

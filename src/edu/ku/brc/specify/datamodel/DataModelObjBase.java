@@ -94,12 +94,19 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
     @Transient
     public String getIdentityTitle()
     {
-        String str = DataObjFieldFormatMgr.format(this, getDataClass());
-        if (StringUtils.isEmpty(str))
+        try
         {
-            return DBTableIdMgr.getInstance().getByClassName(getClass().getName()).getTitle();
+            String str = DataObjFieldFormatMgr.format(this, getDataClass());
+            if (StringUtils.isEmpty(str))
+            {
+                return DBTableIdMgr.getInstance().getByClassName(getClass().getName()).getTitle();
+            }
+            return str;
+        } catch (Exception ex)
+        {
+            
         }
-        return str;
+        return getClass().getName() + hashCode();
     }
     
     /* (non-Javadoc)

@@ -111,9 +111,15 @@ public abstract class AppContextMgr
                                               final boolean startingOver);
     
     /**
-     * @return
+     * @return the hastable of ViewSetIFace objects
      */
     public abstract Hashtable<String, List<ViewSetIFace>> getViewSetHash();
+    
+    
+    /**
+     * @return a textual description of the currrent context, or null.
+     */
+    public abstract String getCurrentContextDescription();
     
     /**
      * Returns the instance of the AppContextMgr.

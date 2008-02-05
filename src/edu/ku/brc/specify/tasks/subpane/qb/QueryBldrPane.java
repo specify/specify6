@@ -49,6 +49,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.core.NavBoxLayoutManager;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.expresssearch.ERTICaptionInfo;
+import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.core.expresssearch.TableFieldPair;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.dbsupport.DBFieldInfo;
@@ -382,6 +383,7 @@ public class QueryBldrPane extends BaseSubPane
      */
     protected void doSearch(final TableQRI rootTable, boolean distinct)
     {
+
         if (queryFieldItems.size() > 0)
         {
             StringBuilder fieldsStr = new StringBuilder();
@@ -500,13 +502,26 @@ public class QueryBldrPane extends BaseSubPane
                 fieldsStr.append(".");
                 fieldsStr.append(rootTable.getTableInfo().getIdFieldName());
             }
+            
             for (QueryFieldPanel qfi : queryFieldItems)
             {
                 if (qfi.isForDisplay())
                 {
                     if (fieldsStr.length() > 0)
+                    {
                         fieldsStr.append(", ");
+                    }
                     fieldsStr.append(qfi.getFieldQRI().getSQLFldSpec(tableAbbreviator));
+                }
+                
+                String specialColumnWhere = QueryAdjusterForDomain.getInstance().getSpecialColumns(qfi.getFieldQRI().getTableInfo(), true);
+                if (StringUtils.isNotEmpty(specialColumnWhere))
+                {
+                    if (criteriaStr.length() > 0)
+                    {
+                        criteriaStr.append(" AND ");
+                    }
+                    criteriaStr.append(specialColumnWhere);
                 }
                 String criteria = qfi.getCriteriaFormula(tableAbbreviator);
                 boolean isDisplayOnly = StringUtils.isEmpty(criteria);
@@ -602,7 +617,9 @@ public class QueryBldrPane extends BaseSubPane
             DBFieldInfo fi = qfp.getFieldInfo();
             DBTableInfo ti = null;
             if (fi != null)
+            {
                ti = fi.getTableInfo();
+            }
             String colName = qfp.getFieldName();
             if (ti != null && fi != null)
             {

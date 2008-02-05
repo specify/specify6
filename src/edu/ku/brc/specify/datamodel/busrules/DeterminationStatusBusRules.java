@@ -19,6 +19,7 @@ package edu.ku.brc.specify.datamodel.busrules;
 
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 
+import java.awt.Component;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -30,6 +31,10 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
+import edu.ku.brc.ui.GetSetValueIFace;
+import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.forms.FormViewObj;
+import edu.ku.brc.ui.forms.Viewable;
 
 /**
  * Business Rules for DeterminationStatus.
@@ -148,6 +153,48 @@ public class DeterminationStatusBusRules extends BaseBusRules
             }
         }
         
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#afterFillForm(java.lang.Object, edu.ku.brc.ui.forms.Viewable)
+     */
+    @Override
+    public void afterFillForm(final Object dataObj, final Viewable viewable)
+    {
+        super.afterFillForm(dataObj, viewable);
+        
+        if (viewable instanceof FormViewObj)
+        {
+            FormViewObj formViewObj = (FormViewObj)viewable;
+            if (formViewObj.getDataObj() instanceof DeterminationStatus)
+            {
+                DeterminationStatus ds = (DeterminationStatus)formViewObj.getDataObj();
+                
+                Component comp = formViewObj.getControlByName("typeDesc");
+                String desc = "";
+                switch (ds.getType())
+                {
+                    case DeterminationStatus.CURRENT :
+                        desc = UIRegistry.getResourceString("DTS_ISCURRENT");
+                        break;
+                        
+                    case DeterminationStatus.OLDDETERMINATION :
+                        desc = UIRegistry.getResourceString("DTS_OLDDET");
+                        break;
+                        
+                    case DeterminationStatus.NOTCURRENT :
+                        desc = UIRegistry.getResourceString("DTS_NOTCURRENT");
+                        break;
+                        
+                    default:
+                        desc = UIRegistry.getResourceString("DTS_USERDEF");
+                }
+                if (comp instanceof GetSetValueIFace)
+                {
+                    ((GetSetValueIFace)comp).setValue(desc, "");
+                }
+            }
+        }
     }
     
     

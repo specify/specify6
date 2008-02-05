@@ -40,7 +40,7 @@ FROM collectionobject INNER JOIN determination ON collectionobject.CollectionObj
 	 INNER JOIN locality ON collectingevent.LocalityID = locality.LocalityID
 	 INNER JOIN determinationstatus ON determination.DeterminationStatusID = determinationstatus.DeterminationStatusID
 	 INNER JOIN taxon ON determination.TaxonID = taxon.TaxonID
-WHERE preptype.Name = 'EtOH' AND IsCurrent = 1 AND collectionobject.CollectionObjectID $P!{itemnum}]]></queryString>
+WHERE preptype.Name = 'EtOH' AND Type = 1 AND collectionobject.CollectionObjectID $P!{itemnum}]]></queryString>
 
 	<field name="cat_no" class="java.lang.String"/>
 	<field name="catalogedBy" class="java.lang.String"/>

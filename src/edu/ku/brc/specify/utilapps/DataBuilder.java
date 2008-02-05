@@ -187,6 +187,8 @@ public class DataBuilder
         agent.setAbbreviation(abbreviation);
         agent.setTitle(title);
         agent.setEmail(email);
+        
+        agent.setCollectionType(CollectionType.getCurrentCollectionType());
 
         persist(agent);
         return agent;

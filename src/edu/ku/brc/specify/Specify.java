@@ -247,29 +247,45 @@ public class Specify extends JPanel implements DatabaseLoginListener
     {
         AppPreferences remotePrefs = AppPreferences.getRemote();
         
-        String propName = "Treeeditor.TreeColColor1";
-        if (remotePrefs.get(propName, null) == null)
+        if (false)
         {
-            remotePrefs.putColor("Treeeditor.TreeColColor1", new Color(202, 238, 255));
+            String propName = "Treeeditor.TreeColColor1";
+            if (remotePrefs.get(propName, null) == null)
+            {
+                remotePrefs.putColor("Treeeditor.TreeColColor1", new Color(202, 238, 255));
+            }
+            
+            propName = "Treeeditor.TreeColColor2";
+            if (remotePrefs.get("Treeeditor.TreeColColor2", null) == null)
+            {
+                remotePrefs.putColor(propName, new Color(151, 221, 255));
+            }
+            
+            propName = "TreeEditor.Rank.Threshold.Taxon";
+            if (remotePrefs.get(propName, null) == null)
+            {
+                remotePrefs.putInt(propName, 140);
+            }
+    
+            propName = "TreeEditor.Rank.Threshold.Geography";
+            if (remotePrefs.get(propName, null) == null)
+            {
+                remotePrefs.putInt(propName, 200);
+            }
+            
+            propName = "TreeEditor.Rank.Threshold.Geography";
+            if (remotePrefs.get(propName, null) == null)
+            {
+                remotePrefs.putInt(propName, 200);
+            }
         }
         
-        propName = "Treeeditor.TreeColColor2";
-        if (remotePrefs.get("Treeeditor.TreeColColor2", null) == null)
-        {
-            remotePrefs.putColor(propName, new Color(151, 221, 255));
-        }
-        
-        propName = "TreeEditor.Rank.Threshold.Taxon";
-        if (remotePrefs.get(propName, null) == null)
-        {
-            remotePrefs.putInt(propName, 140);
-        }
-
-        propName = "TreeEditor.Rank.Threshold.Geography";
-        if (remotePrefs.get(propName, null) == null)
-        {
-            remotePrefs.putInt(propName, 200);
-        }
+        // Set the default values
+        remotePrefs.getColor("Treeeditor.TreeColColor1", new Color(202, 238, 255), true);
+        remotePrefs.getColor("Treeeditor.TreeColColor2", new Color(151, 221, 255), true);
+        remotePrefs.getInt("TreeEditor.Rank.Threshold.Taxon",     140, true);
+        remotePrefs.getInt("TreeEditor.Rank.Threshold.Geography", 200, true);
+        remotePrefs.getBoolean("google.earth.useorigheaders", true, true);
 
     }
     

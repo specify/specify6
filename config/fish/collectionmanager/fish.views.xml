@@ -9,7 +9,7 @@
             <altviews>
                 <altview name="Accession View" viewdef="Accession" label="View" mode="view" default="true"/>
                 <altview name="Accession Edit" viewdef="Accession" label="Edit" mode="edit"/>
-                <altview name="Accession Icon" viewdef="AccessionIconView" label="Icon" mode="view"/>
+                <!--  <altview name="Accession Icon" viewdef="AccessionIconView" label="Icon" mode="view"/>  -->
             </altviews>
         </view>
 
@@ -19,8 +19,6 @@
               resourcelabels="false">
             <desc><![CDATA[Subform within the Accession form.]]></desc>
             <altviews>
-                <altview name="AccessionAgent IconView" viewdef="AccessionAgentIconView" label="IconView " mode="view"/>
-                <altview name="AccessionAgent IconView (Edit Mode)" viewdef="AccessionAgentIconView" label="IconView Edit" mode="edit"/>
                 <altview name="AccessionAgent View" viewdef="AccessionAgent" label="View" mode="view"/>
                 <altview name="AccessionAgent Edit" viewdef="AccessionAgent" label="Edit" mode="edit" default="true"/>
             </altviews>
@@ -311,7 +309,7 @@
             <desc><![CDATA[The Accession form.]]></desc>
             <enableRules/>
 
-            <columnDef>100px,2px,p,2px,100px,2px,p,2px,p,2px,p,p:g</columnDef>
+            <columnDef>100px,2px,p,2px,100px:g,2px,p,2px,p,2px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
 
             <rows>
