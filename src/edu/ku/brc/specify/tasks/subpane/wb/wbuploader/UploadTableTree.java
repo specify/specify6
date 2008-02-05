@@ -27,10 +27,6 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
-import edu.ku.brc.specify.datamodel.GeographyTreeDef;
-import edu.ku.brc.specify.datamodel.GeographyTreeDefItem;
-import edu.ku.brc.specify.datamodel.TaxonTreeDef;
-import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
@@ -150,18 +146,7 @@ public class UploadTableTree extends UploadTable
     {
         return getTreeDef().getDefItemByRank(rank);
     }
-        
-    /**
-     * @param jc the JoinColumn annotation for the relationship.
-     * @return true if the related class needs to be added as a requirement.
-     */
-    @Override
-    protected boolean addToReqRelClasses(Class<?> relatedClass)
-    {
-        return super.addToReqRelClasses(relatedClass) && relatedClass != GeographyTreeDef.class && relatedClass != GeographyTreeDefItem.class
-          && relatedClass != TaxonTreeDef.class && relatedClass != TaxonTreeDefItem.class;
-    }
-    
+            
     /**
      * @param recNum
      * 
@@ -648,6 +633,27 @@ public class UploadTableTree extends UploadTable
     protected boolean needToRefreshAfterWrite()
     {
         return incrementalNodeNumberUpdates;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#findValueForReqRelClass(edu.ku.brc.specify.tasks.subpane.wb.wbuploader.RelatedClassSetter)
+     */
+    @Override
+    protected boolean findValueForReqRelClass(RelatedClassSetter rce) throws ClassNotFoundException, UploaderException
+    {
+        if (rce.setter.getName().equals("setDefinition"))
+        {
+            //strange code, the rce will be get added to the missingReqRelClass list, but
+            //it will have a default id
+            rce.setDefaultId(getTreeDef().getTreeDefId());
+            return false;
+        }
+        if (rce.setter.getName().equals("setDefinitionItem"))
+        {
+            //the definitonItemId gets taken care of by the rankId
+            return true; 
+        }
+        return super.findValueForReqRelClass(rce);
     }
 
     

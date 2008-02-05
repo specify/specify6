@@ -380,64 +380,52 @@ public class UploadTable implements Comparable<UploadTable>
         return true;
     }
 
+    
+    /**
+     * @param rce
+     * @return true if a value for the related class can be determined by the uploader.
+     * @throws ClassNotFoundException
+     */
+    @SuppressWarnings("unused")
+    protected boolean findValueForReqRelClass(final RelatedClassSetter rce) throws ClassNotFoundException, UploaderException
+    {
+        for (Vector<ParentTableEntry> its : parentTables)
+        {
+            for (ParentTableEntry pt : its)
+            {
+                String parentName = capitalize(pt.getImportTable().getWriteTable().getName());
+                Class<?> parentTblClass = Class.forName("edu.ku.brc.specify.datamodel."
+                        + parentName);
+                if (rce.getRelatedClass() == parentTblClass
+                        && pt.getParentRel().getRelatedField().getName().equalsIgnoreCase(
+                                rce.getFieldName()))
+                {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
     /**
      * @return the required classes that are not present in the dataset being uploaded.
      * @throws ClassNotFoundException
      */
-    /*
-     * public final Vector<RelatedClassSetter> getMissingReqRelClasses() throws
-     * ClassNotFoundException { Vector<RelatedClassSetter> result = new Vector<RelatedClassSetter>();
-     * for (RelatedClassSetter rce : this.requiredRelClasses) { boolean foundEntry = false; for
-     * (Vector<ParentTableEntry> its : parentTables) { for (ParentTableEntry pt : its) { String
-     * parentName = capitalize(pt.getImportTable().getWriteTable().getName()); Class<?>
-     * parentTblClass = Class.forName("edu.ku.brc.specify.datamodel." + parentName); if
-     * (rce.getRelatedClass() == parentTblClass &&
-     * pt.getParentRel().getRelatedField().getName().equalsIgnoreCase(rce.getFieldName())) {
-     * foundEntry = true; break; } } if (foundEntry) { break; } } if (!foundEntry) {
-     * result.add(rce); } } return result; }
-     */
-    /**
-     * @return the required classes that are not present in the dataset being uploaded.
-     * @throws ClassNotFoundException
-     */
-    protected void bldMissingReqRelClasses() throws ClassNotFoundException
+    protected void bldMissingReqRelClasses() throws ClassNotFoundException, UploaderException
     {
         relatedClassDefaults = new Vector<RelatedClassSetter>();
         for (RelatedClassSetter rce : this.requiredRelClasses)
         {
-            boolean foundEntry = false;
-            
             //refresh for DeterminationStatusSetters...
             rce.refresh(this.uploadFields.size());
-            
-            for (Vector<ParentTableEntry> its : parentTables)
-            {
-                for (ParentTableEntry pt : its)
-                {
-                    String parentName = capitalize(pt.getImportTable().getWriteTable().getName());
-                    Class<?> parentTblClass = Class.forName("edu.ku.brc.specify.datamodel."
-                            + parentName);
-                    if (rce.getRelatedClass() == parentTblClass
-                            && pt.getParentRel().getRelatedField().getName().equalsIgnoreCase(
-                                    rce.getFieldName()))
-                    {
-                        foundEntry = true;
-                        break;
-                    }
-                }
-                if (foundEntry)
-                {
-                    break;
-                }
-            }
-            if (!foundEntry)
+            if (!findValueForReqRelClass(rce))
             {
                 relatedClassDefaults.add(rce);
             }
         }
     }
 
-    public Iterator<RelatedClassSetter> getRelatedClassDefaults() throws ClassNotFoundException
+    public Iterator<RelatedClassSetter> getRelatedClassDefaults() throws ClassNotFoundException, UploaderException
     {
         if (relatedClassDefaults == null)
         {
