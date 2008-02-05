@@ -41,6 +41,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionType;
@@ -1362,6 +1363,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         SimpleDateFormat sdf = new SimpleDateFormat("dd MMM yyyy hh:mm:ss zzz");
         
         sb.append(sdf.format(Calendar.getInstance().getTime())+"\n");
+        sb.append(Specify.getSpecify().getAppBuildVersion()+"\n");
         
         SpecifyUser spUser = SpecifyUser.getCurrentUser();
         if (spUser != null)
