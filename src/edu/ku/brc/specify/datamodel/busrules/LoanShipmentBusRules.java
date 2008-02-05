@@ -15,6 +15,7 @@ import javax.swing.JTextField;
 
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.Shipment;
+import edu.ku.brc.ui.forms.BaseBusRules;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.Viewable;

@@ -33,6 +33,7 @@ import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.forms.BaseBusRules;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.Viewable;
 

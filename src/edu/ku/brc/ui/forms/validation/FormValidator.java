@@ -41,11 +41,11 @@ import edu.ku.brc.ui.IconManager;
  * This class manages all the validators for a single form. One or all the UI components
  * can be validated and the form can have its own set of validation rukes for enabling or
  * disabling any of the controls depending on the state of other "named" controls.
- * Both UI Controls and thier labels are registered by name. When a component is disabledits
+ * Both UI Controls and thier labels are registered by name. When a component is disabled its
  * label can also be disabled.
-
+ *
  * @code_status Beta
- **
+ *
  * @author rods
  *
  */
@@ -779,9 +779,8 @@ public class FormValidator implements ValidationListener, DataChangeListener
 
         boolean isValid = getState() == UIValidatable.ErrorType.Valid;
         System.out.println("* "+isValid+"  "+(!isNewObj));
-        enableUIItems(isValid && !isNewObj, EnableType.ValidAndChangedItems);
-        enableUIItems(isValid && !isNewObj, EnableType.ValidItems);
-        //enableUIItems(isValid, EnableType.ValidItems);
+        enableUIItems(isValid && hasChanged, EnableType.ValidAndChangedItems);
+        enableUIItems(isValid, EnableType.ValidItems);
         
         log.debug(">>>>>> isValid: "+isValid+" hasCHanged: "+hasChanged+" Val & New: "+(isValid && !isNewObj));
         
@@ -1203,7 +1202,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     protected void enableUIItems(final boolean itsOKToEnable, final EnableType type)
     {
-        log.debug(name+" hasChanged ["+hasChanged+"]     itsOKToEnable ["+itsOKToEnable+ "]    enableItems: [" + type+"]");
+        //log.debug(name+" hasChanged ["+hasChanged+"]     itsOKToEnable ["+itsOKToEnable+ "]    enableItems: [" + type+"]");
         List<Component> list = type == EnableType.ValidItems ? enableItemsValid : enableItemsChanged;
         //log.debug(this.hashCode()+"  "+hasChanged+"  "+itsOKToEnable);
 
@@ -1304,10 +1303,11 @@ public class FormValidator implements ValidationListener, DataChangeListener
         }
 
         boolean isValid = formValidationState == UIValidatable.ErrorType.Valid;
-        System.out.println(hasChanged+"  "+isValid);
+        log.debug(hasChanged+"  "+isValid);
+        
         enableUIItems(hasChanged && isValid, EnableType.ValidAndChangedItems);
-        enableUIItems(isValid && !isNewObj, EnableType.ValidItems);
-        //enableUIItems(isValid, EnableType.ValidItems);
+        //enableUIItems(isValid && !isNewObj, EnableType.ValidItems);
+        enableUIItems(isValid, EnableType.ValidItems);
 
         
         updateValidationBtnUIState();

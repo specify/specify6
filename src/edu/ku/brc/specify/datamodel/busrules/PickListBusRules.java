@@ -34,6 +34,7 @@ import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.SpAppResourceDir;
 import edu.ku.brc.specify.datamodel.SpViewSetObj;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.forms.BaseBusRules;
 import edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;

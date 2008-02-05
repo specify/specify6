@@ -32,6 +32,7 @@ import org.dom4j.io.SAXReader;
 
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
+import edu.ku.brc.ui.forms.GenericBusRules;
 import edu.ku.brc.util.DatamodelHelper;
 
 /**
@@ -563,7 +564,7 @@ public class DBTableIdMgr
                 }
             }
         }
-        return null;
+        return new GenericBusRules();
     }
     
     /**

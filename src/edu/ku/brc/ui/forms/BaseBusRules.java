@@ -12,7 +12,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.specify.datamodel.busrules;
+package edu.ku.brc.ui.forms;
 
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 
@@ -24,16 +24,11 @@ import java.util.Vector;
 
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.ui.forms.BusinessRulesIFace;
-import edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace;
-import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
-import edu.ku.brc.ui.forms.FormDataObjIFace;
-import edu.ku.brc.ui.forms.Viewable;
 
 public abstract class BaseBusRules implements BusinessRulesIFace
 {
     protected List<String> errorList = new Vector<String>();
-    protected Class<?>[] dataClasses;
+    protected Class<?>[]   dataClasses;
     
     /**
      * The data class that is used within the busniess rules.
@@ -48,34 +43,30 @@ public abstract class BaseBusRules implements BusinessRulesIFace
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#beforeFormFill(edu.ku.brc.ui.forms.Viewable)
      */
     //@Overrided
-    public void beforeFormFill(Viewable viewable)
+    public void beforeFormFill(final Viewable viewable)
     {
-        // TODO Auto-generated method stub
-        
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#fillForm(java.lang.Object, edu.ku.brc.ui.forms.Viewable)
      */
-    public void afterFillForm(Object dataObj, Viewable viewable)
+    public void afterFillForm(final Object dataObj, final Viewable viewable)
     {
-        //
     }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#addChildrenToNewDataObjects(java.lang.Object)
      */
-    public void addChildrenToNewDataObjects(Object newDataObj)
+    public void addChildrenToNewDataObjects(final Object newDataObj)
     {
-        // op
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#getDeleteMsg(java.lang.Object)
      */
-    public String getDeleteMsg(Object dataObj)
+    public String getDeleteMsg(final Object dataObj)
     {
-        String title     = "Object";
+        String title = "Object";
         if (dataObj instanceof FormDataObjIFace)
         {
             FormDataObjIFace dObj = (FormDataObjIFace)dataObj;
@@ -244,12 +235,12 @@ public abstract class BaseBusRules implements BusinessRulesIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#okToDelete(java.lang.Object)
      */
-    public abstract boolean okToEnableDelete(Object dataObj);
+    public abstract boolean okToEnableDelete(final Object dataObj);
     
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#afterSave(java.lang.Object)
      */
-    public boolean afterSaveCommit(Object dataObj)
+    public boolean afterSaveCommit(final Object dataObj)
     {
         return true;
     }
@@ -257,7 +248,7 @@ public abstract class BaseBusRules implements BusinessRulesIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#beforeMerge(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */
-    public void beforeMerge(Object dataObj, DataProviderSessionIFace session)
+    public void beforeMerge(final Object dataObj, DataProviderSessionIFace session)
     {
         // do nothing
     }
@@ -265,7 +256,7 @@ public abstract class BaseBusRules implements BusinessRulesIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#beforeSave(java.lang.Object)
      */
-    public void beforeSave(Object dataObj, DataProviderSessionIFace session)
+    public void beforeSave(final Object dataObj, DataProviderSessionIFace session)
     {
         // do nothing
     }
@@ -273,7 +264,7 @@ public abstract class BaseBusRules implements BusinessRulesIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#beforeSave(java.lang.Object)
      */
-    public boolean beforeSaveCommit(Object dataObj, DataProviderSessionIFace session) throws Exception
+    public boolean beforeSaveCommit(final Object dataObj, DataProviderSessionIFace session) throws Exception
     {
         // do nothing
         return true;
@@ -282,7 +273,7 @@ public abstract class BaseBusRules implements BusinessRulesIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#afterDelete(java.lang.Object)
      */
-    public void afterDeleteCommit(Object dataObj)
+    public void afterDeleteCommit(final Object dataObj)
     {
         // do nothing
     }
@@ -290,7 +281,7 @@ public abstract class BaseBusRules implements BusinessRulesIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#beforeDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */
-    public void beforeDelete(Object dataObj, DataProviderSessionIFace session)
+    public void beforeDelete(final Object dataObj, final DataProviderSessionIFace session)
     {
         // do nothing
     }
@@ -298,7 +289,7 @@ public abstract class BaseBusRules implements BusinessRulesIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#beforeDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */
-    public boolean beforeDeleteCommit(Object dataObj, DataProviderSessionIFace session) throws Exception
+    public boolean beforeDeleteCommit(final Object dataObj, final DataProviderSessionIFace session) throws Exception
     {
         // do nothing
         return true;
@@ -307,7 +298,7 @@ public abstract class BaseBusRules implements BusinessRulesIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#processBusinessRules(java.lang.Object)
      */
-    public STATUS processBusinessRules(Object dataObj)
+    public STATUS processBusinessRules(final Object dataObj)
     {
         errorList.clear();
         
@@ -340,7 +331,7 @@ public abstract class BaseBusRules implements BusinessRulesIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#setObjectIdentity(java.lang.Object, edu.ku.brc.ui.forms.DraggableRecordIdentifier)
      */
-    public void setObjectIdentity(Object dataObj, DraggableRecordIdentifier draggableIcon)
+    public void setObjectIdentity(final Object dataObj, final DraggableRecordIdentifier draggableIcon)
     {
         // no op
     }

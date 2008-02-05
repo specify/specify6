@@ -30,6 +30,7 @@ import edu.ku.brc.specify.datamodel.PreparationAttachment;
 import edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment;
 import edu.ku.brc.specify.datamodel.TaxonAttachment;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.forms.BaseBusRules;
 import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
 

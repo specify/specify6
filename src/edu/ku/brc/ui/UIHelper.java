@@ -1379,6 +1379,11 @@ public final class UIHelper
                 return false;
             }
             
+            if (msg != null && doesContain(e, "javax.swing.JComponent._paintImmediately", null))
+            {
+                return false;
+            }
+            
         } else if (e instanceof java.lang.IndexOutOfBoundsException)
         {
             String msg = e.getMessage();
@@ -1403,6 +1408,11 @@ public final class UIHelper
             
             try
             {
+                sb.append(System.getProperty("os.name")+"\n");
+                sb.append(System.getProperty("os.arch")+"\n");
+                sb.append(System.getProperty("user.name")+"\n");
+                sb.append(System.getProperty("java.version")+"\n");
+                
                 String desc = AppContextMgr.getInstance().getCurrentContextDescription();
                 sb.append(desc);
                 

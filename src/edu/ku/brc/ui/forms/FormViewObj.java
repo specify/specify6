@@ -2474,16 +2474,10 @@ public class FormViewObj implements Viewable,
                 enableNewBtn = formValidator.isFormValid();
             }
             
-            log.debug(view.getName()+"  enableNewBtn "+enableNewBtn+"  isNewlyCreatedDataObj "+isNewlyCreatedDataObj()+" ("+(enableNewBtn && (dataObj == null || !isNewlyCreatedDataObj()))+")");
+            //log.debug(view.getName()+"  enableNewBtn "+enableNewBtn+"  isNewlyCreatedDataObj "+isNewlyCreatedDataObj()+" ("+(enableNewBtn && (dataObj == null || !isNewlyCreatedDataObj()))+")");
             
             boolean newBtnEnabled = enableNewBtn && (dataObj == null || !isNewlyCreatedDataObj());
-            //if (rsController != null)
-            //{
-            //    rsController.setFormEnabledOK(newBtnEnabled);
-            //} else
-            //{
-               newRecBtn.setEnabled(newBtnEnabled); 
-            //}
+            newRecBtn.setEnabled(newBtnEnabled); 
             
             if (switcherUI != null)
             {

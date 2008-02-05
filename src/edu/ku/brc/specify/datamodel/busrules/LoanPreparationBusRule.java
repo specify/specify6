@@ -7,6 +7,7 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
 import edu.ku.brc.specify.datamodel.LoanPreparation;
+import edu.ku.brc.ui.forms.BaseBusRules;
 import edu.ku.brc.ui.forms.Viewable;
 
 /**

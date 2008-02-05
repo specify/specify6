@@ -11,6 +11,7 @@ import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.AttachmentOwnerIFace;
 import edu.ku.brc.specify.datamodel.ObjectAttachmentIFace;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.forms.BaseBusRules;
 import edu.ku.brc.util.AttachmentUtils;
 
 public abstract class AttachmentOwnerBaseBusRules extends BaseBusRules

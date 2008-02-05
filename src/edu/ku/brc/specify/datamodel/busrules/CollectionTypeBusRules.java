@@ -19,6 +19,7 @@ import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
+import edu.ku.brc.ui.forms.BaseBusRules;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 public class CollectionTypeBusRules extends BaseBusRules
