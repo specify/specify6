@@ -81,32 +81,32 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                 
             } else if (tableInfo.getTableId() == Geography.getClassTableId())
             {
-                sql += (isHQL ? "geographyTreeDefId" : "GeographyTreeDefID") + " = " + GEOTREEDEFID;
+                sql += (isHQL ? "definition" : "GeographyTreeDefID") + " = " + GEOTREEDEFID;
                 return adjustSQL(sql);
                 
             } else if (tableInfo.getTableId() == GeologicTimePeriodTreeDef.getClassTableId())
             {
-                sql += (isHQL ? "geologicTimePeriodTreeDefId" : "GeologicTimePeriodTreeDefID") + " = " + GTPTREEDEFID;
+                sql += (isHQL ? "definition" : "GeologicTimePeriodTreeDefID") + " = " + GTPTREEDEFID;
                 return adjustSQL(sql);
                 
             } else if (tableInfo.getTableId() == LithoStrat.getClassTableId())
             {
-                sql += (isHQL ? "lithoStratTreeDefID" : "LithoStratTreeDefID") + " = " + LITHOTREEDEFID;
+                sql += (isHQL ? "definition" : "LithoStratTreeDefID") + " = " + LITHOTREEDEFID;
                 return adjustSQL(sql);
                 
             } else if (tableInfo.getTableId() == Location.getClassTableId())
             {
-                sql += (isHQL ? "locationTreeDefId" : "LocationTreeDefID") + " = " + LOCTREEDEFID;
+                sql += (isHQL ? "definition" : "LocationTreeDefID") + " = " + LOCTREEDEFID;
                 return adjustSQL(sql);
                 
             } else if (tableInfo.getTableId() == PrepType.getClassTableId())
             {
-                sql += (isHQL ? "collectionId" : "CollectionID") + " = " + COLLID;
+                sql += (isHQL ? "collection" : "CollectionID") + " = " + COLLID;
                 return adjustSQL(sql);
           
             } else if (tableInfo.getTableId() == Taxon.getClassTableId())
             {
-                sql += (isHQL ? "taxonTreeDefId" : "TaxonTreeDefID") + " = " + TAXTREEDEFID;
+                sql += (isHQL ? "definition" : "TaxonTreeDefID") + " = " + TAXTREEDEFID;
                 return adjustSQL(sql);
                 
             }
