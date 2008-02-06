@@ -1064,6 +1064,7 @@ public class QueryBldrPane extends BaseSubPane
                         queryFieldsPanel.repaint();
                         qfp.repaint();
                         updateAddBtnState();
+                        saveBtn.setEnabled(true);
                         //Sorry, but a new context can't be selected if any fields are selected from the current context.
                         tableList.setEnabled(queryFieldItems.size() == 0);
                     }

@@ -12,6 +12,7 @@
         <table name="AccessionAuthorization">
             <alias name="Permit"/>
         </table>
+        <alias name="CollectionObject" field="collectionObjects"/>
     </table>
 
     <table name="Agent">
@@ -99,6 +100,7 @@
         <table name="LocalityCitation">
             <alias name="ReferenceWork"/>
         </table>
+        <alias name="CollectingEvent" field="collectingEvents"/>
     </table>
     
     <table name="Permit">
@@ -134,6 +136,14 @@
         </table>
         <table name="TaxonCitation">
            	<alias name="ReferenceWork"/>
+        </table>
+        <table name="Determination" field="determinations" title="Determinations">
+            <alias name="CollectionObject"/>
+            <table name="DeterminationCitation">
+                <alias name="ReferenceWork"/>
+            </table>
+            <table name="DeterminationStatus" field="status"/>
+            <alias name="Agent" field="determiner"/>
         </table>
     </table>
     

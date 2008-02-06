@@ -14,6 +14,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.Color;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Calendar;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
@@ -309,7 +310,7 @@ public class QueryFieldPanel extends JPanel
             String operStr     = operatorCBX.getSelectedItem().toString();
             
             //System.out.println(fieldQRI.getFieldInfo().getDataClass().getSimpleName());
-            if (fieldQRI.getDataClass() == Boolean.class)
+            if (fieldQRI.getDataClass().equals(Boolean.class))
             {
                 //kind of a goofy way to handle booleans but works without worrying about disabling/removing isNotCheckbox (and criteria)
                 if (operStr.equals(SpQueryField.OperatorType.getString(SpQueryField.OperatorType.TRUE.getOrdinal())))
@@ -322,11 +323,15 @@ public class QueryFieldPanel extends JPanel
                 }
                 operStr = "=";
             }
-            if (fieldQRI.getDataClass() == String.class)
+            else if (fieldQRI.getDataClass().equals(String.class))
             {
                 criteriaStr = "'" + criteriaStr + "'";
             }
-            if (criteriaStr.length() > 0)
+            else if (fieldQRI.getDataClass().equals(Calendar.class))
+            {
+                criteriaStr = "'" + criteriaStr + "'";
+            }
+            else if (criteriaStr.length() > 0)
             {
                 str.append(fieldQRI.getSQLFldSpec(ta) + " ");
                 if (operStr.equals("="))
