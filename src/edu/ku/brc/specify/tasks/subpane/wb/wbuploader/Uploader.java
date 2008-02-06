@@ -48,6 +48,7 @@ import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
 import edu.ku.brc.specify.tasks.ReportsBaseTask;
@@ -1243,17 +1244,148 @@ public class Uploader implements ActionListener, KeyListener
     }
 
     /**
-     * @return (eventually) tables that, if added to the dataset, will probably make the dataset
-     *         stucturally sufficient for upload.
+     * @param tbl
+     * @return true if tbl is represented in the Workbench schema.
      */
-    protected Vector<Table> getMissingTbls()
+    protected boolean isInWBSchema(final Table tbl)
     {
-        Vector<Table> result = new Vector<Table>();
-        // just add dummy value for now
-        result.add(null);
+        return WorkbenchTask.getDatabaseSchema().getInfoById(tbl.getTableInfo().getTableId()) != null;
+    }
+    
+    /**
+     * @param tbl
+     * @return true if tbl is in uploadGraph.
+     */
+    protected boolean isInUploadGraph(final Vertex<Table> tbl)
+    {
+        return uploadGraph.getVertexByLabel(tbl.getLabel()) != null;
+    }
+    
+    /**
+     * @param tbl
+     * @return true if tbl's class implements Treeable.
+     */
+    protected boolean isTreeable(final Table tbl)
+    {
+        return Treeable.class.isAssignableFrom(tbl.getTableInfo().getClassObj());
+    }
+        
+    /**
+     * @param depth
+     * @return groups of tables that can be added to the upload graph to make it a connected graph.
+     * @throws DirectedGraphException
+     */
+    protected Vector<Vector<Table>> connectUploadGraph(final int depth) throws DirectedGraphException
+    {
+        //no rocket science whatsoever.
+        //just try all ways to add one table. If no luck, then try all ways to add 2, 3, 4 up to depth tables.
+        //This could become very very very inefficient if the number of tables in the Workbench Schema gets larger.
+        Vector<Vector<Table>> result = new Vector<Vector<Table>>();
+        DirectedGraph<Table, Relationship> dbGraph = this.db.getSchema().getGraph();
+        for (Vertex<Table> newTbl : dbGraph.getVertices())
+        {
+            if (!isTreeable(newTbl.getData()) && isInWBSchema(newTbl.getData()))
+            {
+                if (!isInUploadGraph(newTbl))
+                {
+                    uploadGraph.addVertex(newTbl);
+                    for (Vertex<Table> adj : dbGraph.getAdjacentVertices(newTbl))
+                    {
+                        Vertex<Table> endPt = uploadGraph.getVertexByData(adj.getData());
+                        if (endPt != null)
+                        {
+                            uploadGraph.addEdge(newTbl.getLabel(), endPt.getLabel());
+                        }
+                    }
+                    for (Vertex<Table> adj : dbGraph.into(newTbl.getData()))
+                    {
+                        Vertex<Table> endPt = uploadGraph.getVertexByData(adj.getData());
+                        if (endPt != null)
+                        {
+                            uploadGraph.addEdge(endPt.getLabel(), newTbl.getLabel());
+                        }
+                    }
+                    if (uploadGraph.isConnected())
+                    {
+                        Vector<Table> newTblResult = new Vector<Table>();
+                        newTblResult.add(newTbl.getData());
+                        result.add(newTblResult);
+                    }
+                    else if (depth - 1 > 0)
+                    {
+                        Vector<Vector<Table>> results = connectUploadGraph(depth - 1);
+                        for (Vector<Table> tbls : results)
+                        {
+                            tbls.add(newTbl.getData());
+                            result.add(tbls);
+                        }
+                    }
+                    uploadGraph.removeVertex(newTbl);
+                }
+            }
+        }
         return result;
     }
+    /**
+     * @return groups tables that, if added to the dataset, will probably make the dataset
+     *         structurally sufficient for upload.
+     */
+    protected Vector<Vector<Table>> getMissingTbls() throws DirectedGraphException
+    {
+        Vector<Vector<Table>> result = new Vector<Vector<Table>>();
+        int depth = 1;
+        while (result.size() == 0 && depth < 4)
+        {
+            result.addAll(connectUploadGraph(depth++));
+        }
+        
+        if (result.size() == 0)
+        {
+            result.add(null);
+        }
+        
+        //It would make more sense to fix connectUploadGraph to not generate duplicate solutions,
+        //but that would be hard.
+        return removeDuplicateSolutions(result);
+    }
 
+    /**
+     * @param solutions
+     * @return a copy of solutions with only duplicate solutions (i.e same tables, different order) removed.
+     */
+    protected Vector<Vector<Table>> removeDuplicateSolutions(Vector<Vector<Table>> solutions)
+    {
+        SortedSet<Vector<Table>> sorted = new TreeSet<Vector<Table>>(
+                new Comparator<Vector<Table>>()
+                {
+                    /*
+                     * (non-Javadoc)
+                     * 
+                     * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+                     */
+                    @Override
+                    public int compare(Vector<Table> o1, Vector<Table> o2)
+                    {
+                        if (o1.size() == o2.size())
+                        {
+                            if (o1.containsAll(o2)) { return 0; }
+                            // else
+                            return o1.size() == 0 ? 0 /* ?? */: o1.get(0).getName().compareTo(
+                                    o2.get(0).getName());
+                        }
+                        return o1.size() < o2.size() ? -1 : 1;
+                        
+                    }
+                });
+        for (Vector<Table> solution : solutions)
+        {
+            sorted.add(solution);
+        }
+        Vector<Vector<Table>> result = new Vector<Vector<Table>>();
+        result.addAll(sorted);
+        return result;
+    }
+    
     /**
      * @return true if the dataset can be uploaded.
      * 
@@ -1269,15 +1401,28 @@ public class Uploader implements ActionListener, KeyListener
         try
         {
             if (!uploadGraph.isConnected())
-            {
-                for (Table tbl : getMissingTbls())
+            {                
+                for (Vector<Table> tbls : getMissingTbls())
                 {
                     String msg = getResourceString("WB_UPLOAD_MISSING_TBL");
-                    if (tbl != null)
+                    if (tbls != null && tbls.size() > 0)
                     {
-                        msg += " (" + tbl.getTableInfo().getTitle() + ")";
+                        msg += " (";
+                        for (int t=0; t<tbls.size(); t++)
+                        {
+                            if (t > 0)
+                            {
+                                msg += ", ";
+                            }
+                            msg += tbls.get(t).getTableInfo().getTitle();
+                        }
+                        msg += ")";
                     }
-                    errors.add(new InvalidStructure(msg, tbl));
+                    else
+                    {
+                        msg += " (" + getResourceString("WB_UPLOAD_UNKNOWN_MISSING_DATA") + ")";
+                    }
+                    errors.add(new InvalidStructure(msg, tbls));
                 }
 
             }

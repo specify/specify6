@@ -4,6 +4,8 @@
 package edu.ku.brc.specify.tasks.subpane.wb.graph;
 
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -94,7 +96,7 @@ public class DirectedGraph<E, F>
      * @param b
      * @param data
      * 
-     * adds adds vertices a and b and adds an edge with supplied data from a to b.
+     * adds vertices a and b and adds an edge with supplied data from a to b.
      * @throws DirectedGraphException if a or b are already in the graph.
      */
     public void addEdge(Vertex<E> a, Vertex<E> b, F data) throws DirectedGraphException
@@ -268,7 +270,7 @@ public class DirectedGraph<E, F>
      * @param v
      * @return vector of vertices that are endpoints of the edges leaving v.
      */
-    protected Vector<Vertex<E>> getAdjacentVertices(final Vertex<E> v)
+    public Vector<Vertex<E>> getAdjacentVertices(final Vertex<E> v)
     {
         Vector<Vertex<E>> result = new Vector<Vertex<E>>();
         for (Edge<E, F> e : edges)
@@ -281,6 +283,27 @@ public class DirectedGraph<E, F>
         return result;
     }
 
+    /**
+     * @param v the vertex to remove.
+     * 
+     * Removes v and all edges that leave or enter v.
+     */
+    public void removeVertex(final Vertex<E> v)
+    {
+        List<Edge<E, F>> toRemove = new LinkedList<Edge<E, F>>();
+        for (Edge<E, F> e : edges)
+        {
+             if (e.getPointA().equals(v) || e.getPointB().equals(v))
+            {
+                toRemove.add(e);
+            }
+        }
+        for (Edge<E,F> e : toRemove)
+        {
+            edges.remove(e);
+        }
+        vertices.remove(v);
+    }
     /**
      * @param v
      * @param visited
