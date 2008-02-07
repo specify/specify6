@@ -415,9 +415,20 @@ public class EMailPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
     }
 
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.prefs.GenericPrefsPanel#getHelpContext()
+     */
+    @Override
+    public String getHelpContext()
+    {
+        return "PrefsEMail";
+    }
+    
     //----------------------------------------------------------------------------
     // Runnable to check for the email settings
     //----------------------------------------------------------------------------
+
+
 
     public class EMailCheckerRunnable extends SwingWorker
     {

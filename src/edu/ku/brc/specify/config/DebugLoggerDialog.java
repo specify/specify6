@@ -535,7 +535,7 @@ public class DebugLoggerDialog extends CustomDialog
 
             if ((selectionMode == DIG_IN_SELECTION) && (children != null))
             {
-                Enumeration menum = children.elements();
+                Enumeration<?> menum = children.elements();
                 while (menum.hasMoreElements())
                 {
                     CheckNode node = (CheckNode)menum.nextElement();

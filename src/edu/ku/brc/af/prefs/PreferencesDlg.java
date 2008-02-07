@@ -30,9 +30,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Properties;
 import java.util.prefs.BackingStoreException;
 
@@ -52,6 +50,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
@@ -94,7 +93,7 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
     protected Hashtable<String, Component> compsHash      = new Hashtable<String, Component>();
     protected String                       firstPanelName = null;
 
-    protected List<PrefsPanelIFace>        prefPanels = new ArrayList<PrefsPanelIFace>();
+    protected Hashtable<String, PrefsPanelIFace>        prefPanelsHash = new Hashtable<String, PrefsPanelIFace>();
 
     /**
      * Constructor.
@@ -102,7 +101,7 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
      */
     public PreferencesDlg(final boolean addSearchUI)
     {
-        super((Frame)UIRegistry.getTopWindow(), getResourceString("preferences"), true, null);
+        super((Frame)UIRegistry.getTopWindow(), getResourceString("preferences"), true, OKCANCELHELP, null);
 
         createUI();
         initAsToolbar(addSearchUI);
@@ -184,7 +183,7 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
      */
     protected void removeDataChangeListeners()
     {
-        for (PrefsPanelIFace pp : prefPanels)
+        for (PrefsPanelIFace pp : prefPanelsHash.values())
         {
             if (pp.getValidator() != null)
             {
@@ -198,7 +197,7 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
      */
     protected void saveChangedPrefs(final Properties changesHash)
     {
-        for (PrefsPanelIFace pp : prefPanels)
+        for (PrefsPanelIFace pp : prefPanelsHash.values())
         {
             pp.getChangedFields(changesHash);
             
@@ -277,6 +276,12 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
             {
                 makeVis = true;
             }
+            
+            String hContext = prefPanelsHash.get(name).getHelpContext();
+            if (StringUtils.isNotEmpty(hContext))
+            {
+                HelpMgr.registerComponent(helpBtn, hContext);
+            }
     
             if (comp != null)
             {
@@ -328,7 +333,7 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
             {
                 pp.getValidator().addDataChangeListener(this);
             }
-            prefPanels.add(pp);
+            prefPanelsHash.put(name, pp);
         }
 
         if (firstPanelName == null)
@@ -451,7 +456,7 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
     public void dataChanged(String name, Component comp, DataChangeNotifier dcn)
     {
         boolean okToEnable = true;
-        for (PrefsPanelIFace pp : prefPanels)
+        for (PrefsPanelIFace pp : prefPanelsHash.values())
         {
             // but check all the forms
             if (!pp.isFormValid())

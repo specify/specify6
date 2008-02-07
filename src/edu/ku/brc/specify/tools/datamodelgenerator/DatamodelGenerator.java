@@ -45,9 +45,7 @@ import org.hibernate.annotations.Index;
 
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.dbsupport.AttributeIFace;
-import edu.ku.brc.dbsupport.DBRelationshipInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;

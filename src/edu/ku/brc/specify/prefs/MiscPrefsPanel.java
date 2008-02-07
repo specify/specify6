@@ -37,5 +37,15 @@ public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, P
         createForm("Preferences", "Misc");
 
     }
+    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.prefs.GenericPrefsPanel#getHelpContext()
+     */
+    @Override
+    public String getHelpContext()
+    {
+        return "PrefsMisc";
+    }
 
 }

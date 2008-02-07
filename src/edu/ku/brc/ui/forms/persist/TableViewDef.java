@@ -35,14 +35,16 @@ public class TableViewDef extends ViewDef implements Cloneable, TableViewDefIFac
      * @param gettableClassName the class name of the gettable
      * @param settableClassName the class name of the settable
      * @param desc description
+     * @param useResourceLabels whether to use resource string
      */
     public TableViewDef(final String name, 
                         final String className, 
                         final String gettableClassName, 
                         final String settableClassName, 
-                        final String desc)
+                        final String desc,
+                        final boolean useResourceLabels)
     {
-        super(ViewType.table, name, className, gettableClassName, settableClassName, desc);
+        super(ViewType.table, name, className, gettableClassName, settableClassName, desc, useResourceLabels);
         
     }
     

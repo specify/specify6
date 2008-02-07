@@ -8,8 +8,6 @@ package edu.ku.brc.specify.ui;
 
 import javax.swing.ImageIcon;
 
-import edu.ku.brc.dbsupport.DataProviderFactory;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.IconManager.IconSize;

@@ -30,9 +30,11 @@ import org.hibernate.annotations.CascadeType;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "taxontreedefitem")
-public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, TreeDefItemIface<Taxon,TaxonTreeDef,TaxonTreeDefItem>
+public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
+                                                                  TreeDefItemIface<Taxon,TaxonTreeDef,TaxonTreeDefItem>,
+                                                                  Comparable<TaxonTreeDefItem>
 {
-	protected Integer				    taxonTreeDefItemId;
+	protected Integer				taxonTreeDefItemId;
 	protected String				name;
 	protected String				remarks;
 	protected Integer				rankId;
@@ -350,6 +352,9 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
         return name;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
     @Override
     public boolean equals(Object obj)
     {
@@ -369,6 +374,14 @@ public class TaxonTreeDefItem extends DataModelObjBase implements Serializable, 
             return super.equals(obj);
         }
         return false;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(TaxonTreeDefItem o)
+    {
+        return rankId.compareTo(o.rankId);
     }
 
 }

@@ -87,6 +87,7 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
     protected String           rowDef;
     protected Boolean          isAbsoluteLayout;
     protected String           definitionName;// formtable needs this
+    protected String           resourceLabels;
 
     protected Set<SpUIRow>     spRows;
     protected Set<SpUIColumn>  spCols;
@@ -145,6 +146,7 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
         rowDef         = null;
         isAbsoluteLayout = false;
         definitionName = null;
+        resourceLabels = null;
         
         xCoordDB           = null;
         yCoordDB           = null;
@@ -304,6 +306,23 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
         this.spUIViewDefId = spUIViewDefId;
     }
 
+    /**
+     * @return the resourceLabels
+     */
+    @Column(name = "ResourceLabels", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
+    public String getResourceLabels()
+    {
+        return resourceLabels;
+    }
+
+    /**
+     * @param resourceLabels the resourceLabels to set
+     */
+    public void setResourceLabels(String resourceLabels)
+    {
+        this.resourceLabels = resourceLabels;
+    }
+    
     /**
      * @return the type
      */
@@ -527,6 +546,14 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
     //------------------------------------------------
     // ViewDefIFace
     //------------------------------------------------
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#isUseResourceLabels()
+     */
+    public boolean isUseResourceLabels()
+    {
+        return StringUtils.isNotEmpty(resourceLabels) &&  resourceLabels.equals("true") ? true : false;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#cleanUp()
@@ -1012,5 +1039,4 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
         sb.append("</viewdef>");        
         
     }
-    
 }

@@ -99,12 +99,19 @@ public class ViewSetMgr
      * @param nameArg the name
      * @param title the title
      * @param fileName the file name (no path)
+     * @param i18NResourceName the resource file name
      */
-    public void addViewSetDef(final String typeStr, final String nameArg, final String title, final String fileName)
+    public void addViewSetDef(final String typeStr, 
+                              final String nameArg, 
+                              final String title, 
+                              final String fileName,
+                              final String i18NResourceName)
     {
         if (!isViewSetNameInUse(nameArg))
         {
             ViewSet viewSet = new ViewSet(ViewSet.parseType(typeStr), nameArg, title, fileName, contextDir);
+            viewSet.setI18NResourceName(i18NResourceName);
+            
             viewsHash.put(viewSet.getName(), viewSet);
             
         } else
@@ -297,9 +304,9 @@ public class ViewSetMgr
                 String  fName       = getAttr(fileElement, "name", null);
                 if (!isViewSetNameInUse(fName))
                 {
-                    String typeStr   = getAttr(fileElement, "type", "system");
-                    String title     = getAttr(fileElement, "title", null);
-                    String fileName  = getAttr(fileElement, "file", null);
+                    String typeStr     = getAttr(fileElement, "type", "system");
+                    String title       = getAttr(fileElement, "title", null);
+                    String fileName    = getAttr(fileElement, "file", null);
                     
                     // these can go away once we validate the XML
                     if (StringUtils.isEmpty(typeStr))

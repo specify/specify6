@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<viewset name="Preferences" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<viewset name="Preferences" i18nresname="preferences" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
     <views>
         <view
             name="EMail"
-            class="java.util.prefs.Preferences"
-            useresourcelabels="false">
+            class="java.util.prefs.Preferences">
                 <desc><![CDATA[EMail Preference Form.]]></desc>
             <altviews>
                 <altview name="EMail" viewdef="EMail" label="EMail" mode="edit" validated="true"/>
@@ -14,8 +13,7 @@
 
         <view
             name="Formatting"
-            class="java.util.prefs.Preferences"
-            useresourcelabels="false">
+            class="java.util.prefs.Preferences">
             <desc><![CDATA[Formatting Preference Form.]]></desc>
             <altviews>
                 <altview name="Formatting" viewdef="Formatting" label="Formatting" mode="edit" validated="true"/>
@@ -24,8 +22,7 @@
         
         <view
             name="Misc"
-            class="java.util.prefs.Preferences"
-            useresourcelabels="false">
+            class="java.util.prefs.Preferences">
             <desc><![CDATA[Misc Preference Form.]]></desc>
             <altviews>
                 <altview name="Misc" viewdef="Misc" label="Misc." mode="edit" validated="true"/>
@@ -34,8 +31,7 @@
         
         <view
             name="System"
-            class="java.util.prefs.Preferences"
-            useresourcelabels="false">
+            class="java.util.prefs.Preferences">
             <desc><![CDATA[System Preference Form.]]></desc>
             <altviews>
                 <altview name="System" viewdef="System" label="System" mode="edit" validated="true"/>
@@ -44,11 +40,19 @@
         
         <view
             name="GoogleEarth"
-            class="java.util.prefs.Preferences"
-            useresourcelabels="false">
+            class="java.util.prefs.Preferences">
             <desc><![CDATA[GoogleEarth Preference Form.]]></desc>
             <altviews>
                 <altview name="GoogleEarth" viewdef="GoogleEarth" label="Google Earth" mode="edit" validated="true"/>
+            </altviews>
+        </view>
+        
+        <view
+            name="TreeOptions"
+            class="java.util.prefs.Preferences">
+            <desc><![CDATA[Tree Options Preference Form.]]></desc>
+            <altviews>
+                <altview name="TreeOptions" viewdef="TreeOptions" label="Tree Options" mode="edit" validated="true"/>
             </altviews>
         </view>
         
@@ -62,7 +66,8 @@
              name="EMail"
              class="java.util.prefs.Preferences"
              gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
-             settable="edu.ku.brc.af.prefs.PrefsSettableImpl">
+             settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
+             useresourcelabels="false">
 
                 <desc><![CDATA[EMail Preference Form.]]></desc>
 
@@ -84,7 +89,7 @@
 
             <rows>
                 <row>
-                    <cell type="separator" label="Email Account Settings" colspan="7"/>
+                    <cell type="separator" label="EMAIL_ACCT_SETTINGS" colspan="7"/>
                 </row>
                 <row>
                     <cell type="label" name="accounttypeLabel" labelfor="accounttype" label="Account Type"/>
@@ -131,7 +136,8 @@
             name="Formatting"
             class="java.util.prefs.Preferences"
             gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
-            settable="edu.ku.brc.af.prefs.PrefsSettableImpl">
+            settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
+            useresourcelabels="false">
             
             <desc><![CDATA[Formatting Preference Form.]]></desc>
             
@@ -193,22 +199,6 @@
                         </rows>
                     </cell>
                 </row>
-                <row>
-                    <cell type="label" label=""/>
-                   
-                </row>
-                <row>
-                    <cell type="separator" label="Tree Editor Colors" colspan="13"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="TreeColColor1" label="Column Color #1"/>
-                    <cell type="field" uitype="colorchooser" id="TreeColColor1" name="Treeeditor.TreeColColor1"/>
-                </row>
-                
-                <row>
-                    <cell type="label" labelfor="TreeColColor2" label="Column Color #2"/>
-                    <cell type="field" uitype="colorchooser" id="TreeColColor2" name="Treeeditor.TreeColColor2"/>
-                </row>
             </rows>
         </viewdef>
         
@@ -217,7 +207,8 @@
             name="Misc"
             class="java.util.prefs.Preferences"
             gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
-            settable="edu.ku.brc.af.prefs.PrefsSettableImpl">
+            settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
+            useresourcelabels="false">
             
             <desc><![CDATA[Formatting Misc Form.]]></desc>
             
@@ -231,7 +222,8 @@
             name="System"
             class="java.util.prefs.Preferences"
             gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
-            settable="edu.ku.brc.af.prefs.PrefsSettableImpl">
+            settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
+            useresourcelabels="false">
             
             <desc><![CDATA[Cache Preference Form.]]></desc>
             
@@ -284,7 +276,8 @@
             name="GoogleEarth"
             class="java.util.prefs.Preferences"
             gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
-            settable="edu.ku.brc.af.prefs.PrefsSettableImpl">
+            settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
+            useresourcelabels="false">
             
             <desc><![CDATA[GoogleEarth Preference Form.]]></desc>
             
@@ -293,7 +286,7 @@
             
             <rows>
                 <row>
-                    <cell type="field" id="20" name="exporttask.ontaskbar" uitype="checkbox" label="Add Tools to Taskbar (Restart Required)" colspan="4"/>
+                    <cell type="field" id="20" name="exporttask.ontaskbar" uitype="checkbox" label="Add Tools to Taskbar" colspan="4"/>
                 </row>
                 <row>
                     <cell type="separator" label="Google Earth" colspan="5"/>
@@ -336,6 +329,127 @@
             </rows>
         </viewdef>
         
+        <viewdef
+            type="form"
+            name="TreeOptions"
+            class="java.util.prefs.Preferences"
+            gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
+            settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
+            useresourcelabels="false">
+            
+            <desc><![CDATA[Tree Options Preference Form.]]></desc>
+            
+            <columnDef>f:p:g,10px,f:p:g</columnDef>
+            <rowDef>p,4px,p,4px,p,20px,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="separator" label="All Trees" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="field" id="20" name="TreeEditor.RestoreTreeExpansionState" uitype="checkbox" label="Restore Expansion State" colspan="1"/>
+                </row>
+                
+                <row>
+	                <cell type="panel" id="16" name="treepanel" coldef="p,2px,p,p:g,f:p:g" rowdef="p,2px,p,2px,p,2px,p">
+	                    <rows>
+			                <row>
+			                    <cell type="separator" label="Taxon Tree" colspan="5"/>
+			                </row>
+			                <row>
+			                    <cell type="label" labelfor="1" label="Show Counts Below"/>
+			                    <cell type="field" id="1" name="TreeEditor.Rank.Threshold.Taxon" uitype="combobox" colspan="3" ignore="true"/>
+			                </row>
+			                <row>
+			                    <cell type="label" labelfor="TreeColColor1.Taxon" label="Column Color #1"/>
+			                    <cell type="field" uitype="colorchooser" id="TreeColColor1.Taxon" name="Treeeditor.TreeColColor1.Taxon"/>
+			                </row>
+			                <row>
+			                    <cell type="label" labelfor="TreeColColor2.Taxon" label="Column Color #2"/>
+			                    <cell type="field" uitype="colorchooser" id="TreeColColor2.Taxon" name="Treeeditor.TreeColColor2.Taxon"/>
+			                </row>
+			            </rows>
+			        </cell>
+	                <cell type="panel" id="16" name="treepanel" coldef="p,2px,p,p:g,f:p:g" rowdef="p,2px,p,2px,p,2px,p">
+	                    <rows>
+			                <row>
+			                    <cell type="separator" label="Geography Tree" colspan="5"/>
+			                </row>
+			                <row>
+			                    <cell type="label" labelfor="2" label="Show Counts Below"/>
+			                    <cell type="field" id="2" name="TreeEditor.Rank.Threshold.Geography" uitype="combobox" colspan="3" ignore="true"/>
+			                </row>
+			               <row>
+			                    <cell type="label" labelfor="TreeColColor1.Geography" label="Column Color #1"/>
+			                    <cell type="field" uitype="colorchooser" id="TreeColColor1.Geography" name="Treeeditor.TreeColColor1.Geography"/>
+			                </row>
+			                <row>
+			                    <cell type="label" labelfor="TreeColColor2.Geography" label="Column Color #2"/>
+			                    <cell type="field" uitype="colorchooser" id="TreeColColor2.Geography" name="Treeeditor.TreeColColor2.Geography"/>
+			                </row>
+			            </rows>
+			        </cell>
+			    </row>
+			                
+                <row>
+	                <cell type="panel" id="16" name="treepanel" coldef="p,2px,p,p:g,f:p:g" rowdef="p,2px,p,2px,p,2px,p">
+	                    <rows>
+			                <row>
+			                    <cell type="separator" label="Litho Tree" colspan="5"/>
+			                </row>
+			                <row>
+			                    <cell type="label" labelfor="3" label="Show Counts Below"/>
+			                    <cell type="field" id="3" name="TreeEditor.Rank.Threshold.LithoStrat" uitype="combobox" colspan="3" ignore="true"/>
+			                </row>
+			               <row>
+			                    <cell type="label" labelfor="TreeColColor1.LithoStrat" label="Column Color #1"/>
+			                    <cell type="field" uitype="colorchooser" id="TreeColColor1.LithoStrat" name="Treeeditor.TreeColColor1.LithoStrat"/>
+			                </row>
+			                <row>
+			                    <cell type="label" labelfor="TreeColColor2.LithoStrat" label="Column Color #2"/>
+			                    <cell type="field" uitype="colorchooser" id="TreeColColor2.LithoStrat" name="Treeeditor.TreeColColor2.LithoStrat"/>
+			                </row>
+			            </rows>
+			        </cell>
+	                <cell type="panel" id="16" name="treepanel" coldef="p,2px,p,p:g,f:p:g" rowdef="p,2px,p,2px,p,2px,p">
+	                    <rows>
+			              <row>
+			                    <cell type="separator" label="Geologic Time Period Tree" colspan="5"/>
+			                </row>
+			                <row>
+			                    <cell type="label" labelfor="4" label="Show Counts Below"/>
+			                    <cell type="field" id="4" name="TreeEditor.Rank.Threshold.GeologicTimePeriod" uitype="combobox" colspan="3" ignore="true"/>
+			                </row>
+			               <row>
+			                    <cell type="label" labelfor="TreeColColor1.GeologicTimePeriod" label="Column Color #1"/>
+			                    <cell type="field" uitype="colorchooser" id="TreeColColor1.GeologicTimePeriod" name="Treeeditor.TreeColColor1.GeologicTimePeriod"/>
+			                </row>
+			                <row>
+			                    <cell type="label" labelfor="TreeColColor2.GeologicTimePeriod" label="Column Color #2"/>
+			                    <cell type="field" uitype="colorchooser" id="TreeColColor2.GeologicTimePeriod" name="Treeeditor.TreeColColor2.GeologicTimePeriod"/>
+			                </row>
+			            </rows>
+			        </cell>
+			    </row>
+<!-- 
+                <row>
+                    <cell type="separator" label="Storage LocationTree" colspan="6"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5" label="Show Counts Below"/>
+                    <cell type="field" id="5" name="TreeEditor.Rank.Threshold.Storage" uitype="combobox" colspan="3" ignore="true"/>
+                </row>
+               <row>
+                    <cell type="label" labelfor="TreeColColor1.Storage" label="Column Color #1"/>
+                    <cell type="field" uitype="colorchooser" id="TreeColColor1.Storage" name="Treeeditor.TreeColColor1.Storage"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="TreeColColor2.Storage" label="Column Color #2"/>
+                    <cell type="field" uitype="colorchooser" id="TreeColColor2.Storage" name="Treeeditor.TreeColColor2.Storage"/>
+                </row>
+ -->
+            </rows>
+        </viewdef>
         
     </viewdefs>
 

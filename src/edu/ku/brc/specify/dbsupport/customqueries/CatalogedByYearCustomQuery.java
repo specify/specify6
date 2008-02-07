@@ -24,8 +24,6 @@ import org.apache.commons.lang.NotImplementedException;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.dbsupport.CustomQueryIFace;
 import edu.ku.brc.dbsupport.CustomQueryListener;
-import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.QueryResultsContainer;
 import edu.ku.brc.dbsupport.QueryResultsContainerIFace;
 import edu.ku.brc.dbsupport.QueryResultsDataObj;

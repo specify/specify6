@@ -149,7 +149,7 @@ public class ViewSetMgrManager
                 {
                     FileUtils.copyFile(srcFile, dstFile);
                     
-                    dstVM.addViewSetDef(vs.getType().toString(), vs.getName(), vs.getTitle(), vs.getFileName());
+                    dstVM.addViewSetDef(vs.getType().toString(), vs.getName(), vs.getTitle(), vs.getFileName(), vs.getI18NResourceName());
                     
                 } catch (IOException ex)
                 {

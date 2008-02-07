@@ -17,16 +17,9 @@
  */
 package edu.ku.brc.specify.ui;
 
-import java.io.File;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Vector;
-
-import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.dbsupport.AutoNumberIFace;
-import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.CatalogNumberingScheme;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.dbsupport.CollectionAutoNumber;

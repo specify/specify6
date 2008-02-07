@@ -31,7 +31,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
-import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ScrollPaneConstants;
@@ -83,7 +82,7 @@ public class ViewLoader
     private static final String CLASSNAME  = "class";
     private static final String GETTABLE   = "gettable";
     private static final String SETTABLE   = "settable";
-    private static final String RESOURCELABELS = "resourcelabels";
+    private static final String RESOURCELABELS = "useresourcelabels";
     
     private static ViewSetMgr backStopViewSetMgr = null;
     
@@ -134,16 +133,13 @@ public class ViewLoader
     protected static ViewIFace createView(final Element element,
                                           final Hashtable<AltViewIFace, String> altViewsViewDefName) throws Exception
     {
-       boolean useResourceLabels = getAttr(element, "useresourcelabels", "false").equals("true");
-
         String   name              = element.attributeValue(NAME);
         String   objTitle          = getAttr(element, "objtitle", null);
         String   className         = element.attributeValue(CLASSNAME);
-        String   resLabels         = element.attributeValue(RESOURCELABELS);
         String   desc              = getDesc(element);
         String   businessRules     = getAttr(element, "busrules", null);
         
-        View view = new View(instance.viewSetName, name, objTitle, className, businessRules != null ? businessRules.trim() : null, desc, useResourceLabels, resLabels);
+        View view = new View(instance.viewSetName, name, objTitle, className, businessRules != null ? businessRules.trim() : null, desc);
 
         Element altviews = (Element)element.selectSingleNode("altviews");
         if (altviews != null)
@@ -232,13 +228,16 @@ public class ViewLoader
      * @return a viewdef
      * @throws Exception
      */
-    public static ViewDef createViewDef(final Element element) throws Exception
+    private static ViewDef createViewDef(final Element element) throws Exception
     {
         String   name              = element.attributeValue(NAME);
         String   className         = element.attributeValue(CLASSNAME);
         String   gettableClassName = element.attributeValue(GETTABLE);
         String   settableClassName = element.attributeValue(SETTABLE);
         String   desc              = getDesc(element);
+        
+        String   resLabels         = getAttr(element, RESOURCELABELS, "false");
+        boolean  useResourceLabels = resLabels.equals("true");
         
         if (StringUtils.isEmpty(name))
         {
@@ -280,7 +279,7 @@ public class ViewLoader
             case rstable:
             case formtable :
             case form :
-                viewDef = createFormViewDef(element, type, name, className, gettableClassName, settableClassName, desc, tableinfo);
+                viewDef = createFormViewDef(element, type, name, className, gettableClassName, settableClassName, desc, useResourceLabels, tableinfo);
                 break;
 
             case table :
@@ -294,7 +293,7 @@ public class ViewLoader
                break;
                
             case iconview:
-                viewDef = createIconViewDef(type, name, className, gettableClassName, settableClassName, desc);
+                viewDef = createIconViewDef(type, name, className, gettableClassName, settableClassName, desc, useResourceLabels);
                 break;
         }
         return viewDef;
@@ -947,8 +946,8 @@ public class ViewLoader
      * @param gettableClassName the class name of the getter
      * @param settableClassName the class name of the setter
      * @param desc the description
-     * @param resLabels indicates whether the labels are really resource identifiers so the labels should come froma resource bundle
-     * @param isValidated whether to turn on validation
+     * @param useResourceLabels whether to use resource labels
+     * @param tableinfo table info
      * @return a form view of type "form"
      */
     protected static FormViewDef createFormViewDef(final Element element,
@@ -958,9 +957,10 @@ public class ViewLoader
                                                    final String  gettableClassName,
                                                    final String  settableClassName,
                                                    final String  desc,
+                                                   final boolean useResourceLabels,
                                                    final DBTableInfo tableinfo)
     {
-        FormViewDef formViewDef = new FormViewDef(type, name, className, gettableClassName, settableClassName, desc);
+        FormViewDef formViewDef = new FormViewDef(type, name, className, gettableClassName, settableClassName, desc, useResourceLabels);
         
         fldVerTableInfo = null;
 
@@ -992,7 +992,11 @@ public class ViewLoader
             }
             List<FormRowIFace> rows = formViewDef.getRows();
             
+            instance.doingResourceLabels = useResourceLabels;
+            
             processRows(element, rows, tableinfo);
+            
+            instance.doingResourceLabels = false;
             
             createDef(element, "columnDef", rows.size(), formViewDef.getColumnDefItem());
             createDef(element, "rowDef",    rows.size(), formViewDef.getRowDefItem());
@@ -1025,6 +1029,7 @@ public class ViewLoader
      * @param gettableClassName the class name of the getter
      * @param settableClassName the class name of the setter
      * @param desc the description
+     * @param useResourceLabels whether to use resource labels
      * @return a form view of type "form"
      */
     protected static ViewDef createIconViewDef(final ViewDef.ViewType type,
@@ -1032,9 +1037,11 @@ public class ViewLoader
                                                final String  className,
                                                final String  gettableClassName,
                                                final String  settableClassName,
-                                               final String  desc)
+                                               final String  desc,
+                                               final boolean useResourceLabels)
     {
-        ViewDef formView = new ViewDef(type, name, className, gettableClassName, settableClassName, desc);
+        
+        ViewDef formView = new ViewDef(type, name, className, gettableClassName, settableClassName, desc, useResourceLabels);
 
         //formView.setEnableRules(getEnableRules(element));
 
@@ -1050,6 +1057,7 @@ public class ViewLoader
      * @param gettableClassName the class name of the getter
      * @param settableClassName the class name of the setter
      * @param desc the description
+     * @param useResourceLabels whether to use resource labels
      * @return a form view of type "table"
      */
     protected static TableViewDefIFace createTableView(final Element element,
@@ -1057,9 +1065,10 @@ public class ViewLoader
                                                    final String  className,
                                                    final String  gettableClassName,
                                                    final String  settableClassName,
-                                                   final String  desc)
+                                                   final String  desc,
+                                                   final boolean useResourceLabels)
     {
-        TableViewDefIFace tableView = new TableViewDef( name, className, gettableClassName, settableClassName, desc);
+        TableViewDefIFace tableView = new TableViewDef( name, className, gettableClassName, settableClassName, desc, useResourceLabels);
 
         //tableView.setResourceLabels(resLabels);
 

@@ -319,12 +319,12 @@ public class AppPreferences
      */
     public Integer getInt(final String name, final Integer defaultValue, boolean doDefVal)
     {
-        String val = get(name, (defaultValue == null ? null : Integer.toString(defaultValue)));
+        String val = get(name, null);
         if (val == null && doDefVal)
         {
             putInt(name, defaultValue);
         }
-        return val == null ? null : Integer.valueOf(val);
+        return val == null ? defaultValue : Integer.valueOf(val);
     }
     
     /**

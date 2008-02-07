@@ -46,9 +46,12 @@ public class ViewDef implements Cloneable, ViewDefIFace
     protected String               dataSettableName;
     protected boolean              isAbsoluteLayout = false;
     
-    protected DataObjectGettable   dataGettable   = null;
-    protected DataObjectSettable   dataSettable   = null;
+    protected DataObjectGettable   dataGettable     = null;
+    protected DataObjectSettable   dataSettable     = null;
     
+    protected boolean              useResourceLabels;
+    protected String               resourceLabels   = null;
+
     protected int                  xCoord  = -1;
     protected int                  yCoord  = -1;
     protected int                  width   = -1;
@@ -71,13 +74,15 @@ public class ViewDef implements Cloneable, ViewDefIFace
      * @param dataGettableName the gettable name
      * @param dataSettableName the settable name
      * @param desc a description of the view def
+     * @param useResourceLabels whether to use resource string
      */
     public ViewDef(final ViewType type, 
                    final String   name, 
                    final String   className, 
                    final String   dataGettableName, 
                    final String   dataSettableName, 
-                   final String   desc)
+                   final String   desc,
+                   final boolean useResourceLabels)
     {
         this.type = type;
         this.name = name;
@@ -85,6 +90,8 @@ public class ViewDef implements Cloneable, ViewDefIFace
         this.dataGettableName = dataGettableName;
         this.dataSettableName = dataSettableName;
         this.desc = desc;
+        this.useResourceLabels = useResourceLabels;
+        this.resourceLabels    = useResourceLabels ? "true" : "false";
         
         try
         {
@@ -116,7 +123,14 @@ public class ViewDef implements Cloneable, ViewDefIFace
      */
     public ViewDef(final ViewDef viewDef)
     {
-        this(viewDef.type, viewDef.name, viewDef.className, viewDef.dataGettableName, viewDef.dataSettableName, viewDef.desc);
+        this(viewDef.type, 
+             viewDef.name, 
+             viewDef.className, 
+             viewDef.dataGettableName, 
+             viewDef.dataSettableName, 
+             viewDef.desc, 
+             viewDef.useResourceLabels);
+        
         dataGettable = viewDef.dataGettable;
         dataSettable = viewDef.dataSettable;
     }
@@ -251,6 +265,22 @@ public class ViewDef implements Cloneable, ViewDefIFace
         return dataSettable;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#isUseResourceLabels()
+     */
+    public boolean isUseResourceLabels()
+    {
+        return useResourceLabels;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#getResourceLabels()
+     */
+    public String getResourceLabels()
+    {
+        return resourceLabels;
+    }
+    
     /**
      * @return the isAbsoluteLayout
      */
@@ -364,6 +394,8 @@ public class ViewDef implements Cloneable, ViewDefIFace
         sb.append(indent);
         xmlAttr(sb, "class", className);
         sb.append(indent);
+        xmlAttr(sb, "resourcelabels", useResourceLabels);
+        sb.append(indent);
         xmlAttr(sb, "gettable", dataGettableName);
         sb.append(indent);
         xmlAttr(sb, "settable", dataSettableName);
@@ -428,6 +460,8 @@ public class ViewDef implements Cloneable, ViewDefIFace
         viewDef.desc             = desc;
         viewDef.dataGettable     = dataGettable;
         viewDef.dataSettable     = dataSettable;
+        viewDef.useResourceLabels = useResourceLabels;
+        viewDef.resourceLabels    = resourceLabels;
         return viewDef;      
     }
     

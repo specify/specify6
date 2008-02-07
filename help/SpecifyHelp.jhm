@@ -74,6 +74,15 @@
 	<mapID target="WorkbenchGoogleEarth"       url="SpecifyHelp/Workbench/GoogleEarth.html"/>
 	<mapID target="WorkbenchBGM"               url="SpecifyHelp/Workbench/BioGiomancer.html"/>
 	
+	<!-- Preferences -->
+	<mapID target="PrefsCache"                 url="SpecifyHelp/Prefs/Cache.html"/>
+	<mapID target="PrefsEMail"                 url="SpecifyHelp/Prefs/EMail.html"/>
+	<mapID target="PrefsFormatting"            url="SpecifyHelp/Prefs/Formatting.html"/>
+	<mapID target="PrefsMisc"                  url="SpecifyHelp/Prefs/Misc.html"/>
+	<mapID target="PrefsTree"                  url="SpecifyHelp/Prefs/Tree.html"/>
+	<mapID target="PrefsGoogleEarth"           url="SpecifyHelp/Prefs/GoogleEarth.html"/>
+	
+	
 	<!--
 	<mapID target="GlossMouse"                 url="SpecifyHelp/Glossary/GlossMouse.html" />
 	<mapID target="GlossSpecimen"              url="SpecifyHelp/Glossary/GlossSpecimen.html" />

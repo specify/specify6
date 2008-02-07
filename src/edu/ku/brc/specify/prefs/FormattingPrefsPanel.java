@@ -287,6 +287,15 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
         form.getValidator().validateForm();
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.prefs.GenericPrefsPanel#getHelpContext()
+     */
+    @Override
+    public String getHelpContext()
+    {
+        return "PrefsFormatting";
+    }
+    
     //--------------------------------------------------------------------
     // PrefsSavable Interface
     //--------------------------------------------------------------------

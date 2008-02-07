@@ -5,7 +5,8 @@
             <pref title="ui" icon="Data_Entry" panelClass="edu.ku.brc.af.prefs.UIPrefsPanel"/>
         -->
         <pref title="Formatting" icon="Data_Entry"   panelClass="edu.ku.brc.specify.prefs.FormattingPrefsPanel"/>
-        <pref title="System"     icon="SystemSetup" panelClass="edu.ku.brc.specify.prefs.CachePrefs"/>
+        <pref title="System"     icon="SystemSetup"  panelClass="edu.ku.brc.specify.prefs.CachePrefs"/>
+        <pref title="Tree"       icon="SystemSetup"  panelClass="edu.ku.brc.specify.prefs.TreePrefs"/>
      </section>
     
     
@@ -20,7 +21,7 @@
     --> 
     
     <section title="GoogleEarth">
-        <pref title="GoogleEarth" icon="GoogleEarth" panelClass="edu.ku.brc.af.prefs.GenericPrefsPanel" viewsetname="Preferences" viewname="GoogleEarth"/>
+        <pref title="GoogleEarth" icon="GoogleEarth" panelClass="edu.ku.brc.af.prefs.GenericPrefsPanel" viewsetname="Preferences" viewname="GoogleEarth" help="PrefsGoogleEarth"/>
     </section>
    
     

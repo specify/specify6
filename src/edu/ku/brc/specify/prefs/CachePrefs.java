@@ -52,4 +52,15 @@ public class CachePrefs extends GenericPrefsPanel
             }
         });
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.prefs.GenericPrefsPanel#getHelpContext()
+     */
+    @Override
+    public String getHelpContext()
+    {
+        return "PrefsCache";
+    }
+    
+    
 }

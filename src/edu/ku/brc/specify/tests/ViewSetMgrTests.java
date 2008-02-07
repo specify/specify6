@@ -99,7 +99,7 @@ public class ViewSetMgrTests extends TestCase
         
         // Add an entry and copy the "real" file over to the source dir
         ViewSetMgr srcVM = new ViewSetMgr("", srcDir);
-        srcVM.addViewSetDef("user", "Fish Views", "Fish Views Title", viewsetFileName);
+        srcVM.addViewSetDef("user", "Fish Views", "Fish Views Title", viewsetFileName, null);
         
 
         assertTrue(copyTestViewSetFile(new File("config"), new File(srcDirName), viewsetFileName));

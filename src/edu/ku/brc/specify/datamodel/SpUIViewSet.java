@@ -66,6 +66,7 @@ public class SpUIViewSet extends DataModelObjBase implements ViewSetIFace
     protected String           name;
     protected String           title;
     protected String           fileName;
+    protected String           i18NResourceName;
     protected File             dirPath;
 
     protected SpViewSetObj     spViewSetObj;
@@ -94,16 +95,17 @@ public class SpUIViewSet extends DataModelObjBase implements ViewSetIFace
     {
         super.init();
         
-        spUIViewSetId = null;
-        viewType = null;
-        name = null;
-        title = null;
-        fileName = null;
-        dirPath = null;
+        spUIViewSetId    = null;
+        viewType         = null;
+        name             = null;
+        title            = null;
+        fileName         = null;
+        dirPath          = null;
+        i18NResourceName = null;
 
-        spViewSetObj = null;
-        spViews      = new HashSet<SpUIView>();
-        spViewDefs   = new HashSet<SpUIViewDef>();
+        spViewSetObj     = null;
+        spViews          = new HashSet<SpUIView>();
+        spViewDefs       = new HashSet<SpUIViewDef>();
 
     }
     
@@ -201,6 +203,25 @@ public class SpUIViewSet extends DataModelObjBase implements ViewSetIFace
     public void setTitle(String title)
     {
         this.title = title;
+    }
+
+
+    /**
+     * @return the i18NResourceName
+     */
+    @Column(name = "I18NResourceName", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    public String getI18NResourceName()
+    {
+        return i18NResourceName;
+    }
+
+
+    /**
+     * @param resourceName the i18NResourceName to set
+     */
+    public void setI18NResourceName(String resourceName)
+    {
+        i18NResourceName = resourceName;
     }
 
 

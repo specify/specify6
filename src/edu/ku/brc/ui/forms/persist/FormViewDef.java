@@ -46,15 +46,17 @@ public class FormViewDef extends ViewDef implements Cloneable, FormViewDefIFace
      * @param gettableClassName the class name of the gettable
      * @param settableClassName the class name of the settable
      * @param desc description
-      */
+     * @param useResourceLabels whether to use resource string
+     */
     public FormViewDef(final ViewDef.ViewType type, 
                        final String  name, 
                        final String  className, 
                        final String  gettableClassName, 
                        final String  settableClassName, 
-                       final String  desc)
+                       final String  desc,
+                       final boolean useResourceLabels)
     {
-        super(type, name, className, gettableClassName, settableClassName, desc);
+        super(type, name, className, gettableClassName, settableClassName, desc, useResourceLabels);
         
     }
     

@@ -36,13 +36,24 @@ public interface PrefsPanelIFace
     
     
     /**
-     * @return
+     * @return whether the panel is valid
      */
     public abstract boolean isFormValid();
     
     /**
-     * @param changeHash
+     * Fills in a Properties object with the values that have changed.
+     * @param changeHash  the properties
      */
     public abstract void getChangedFields(Properties changeHash);
+    
+    /**
+     * @return the help context for the panel.
+     */
+    public abstract String getHelpContext();
+    
+    /**
+     * @param hContext the context
+     */
+    public abstract void setHelpContext(String hContext);
     
 }

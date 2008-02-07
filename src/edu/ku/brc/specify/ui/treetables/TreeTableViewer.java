@@ -306,9 +306,11 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		//listModel = new TreeDataListModel<T,D,I>(treeDef);
 		AppPreferences remotePrefs = AppPreferences.getRemote();
 		
+		Class<?> clazz = treeDef.getNodeClass();
+		
 		Color[] bgs = new Color[2];
-		bgs[0] = remotePrefs.getColor("Treeeditor.TreeColColor1", new Color(202, 238, 255));
-		bgs[1] = remotePrefs.getColor("Treeeditor.TreeColColor2", new Color(151, 221, 255));
+		bgs[0] = remotePrefs.getColor("Treeeditor.TreeColColor1."+clazz.getSimpleName(), new Color(202, 238, 255));
+		bgs[1] = remotePrefs.getColor("Treeeditor.TreeColColor2."+clazz.getSimpleName(), new Color(151, 221, 255));
 		
         Color lineColor = new Color(0x00, 0x00, 0x00, 0x66);
 		listCellRenderer = new TreeViewerNodeRenderer(this, listModel, bgs, lineColor);

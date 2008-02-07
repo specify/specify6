@@ -14,6 +14,8 @@
  */
 package edu.ku.brc.ui.forms.persist;
 
+import static edu.ku.brc.helpers.XMLHelper.getAttr;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -27,6 +29,7 @@ import org.dom4j.Element;
 
 import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * Class that manages all the View (forms) for a given view set (which is read from a single file).<br><br>
@@ -47,8 +50,9 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
     protected String                     title             = null;
     protected String                     fileName          = null;
     protected File                       dirPath           = null;
+    protected String                     i18NResourceName  = null;
 
-    protected boolean                    hasLoadedViews    = false;
+    protected boolean                         hasLoadedViews    = false;
     protected Hashtable<String, ViewIFace>    transientViews    = null;
     protected Hashtable<String, ViewDefIFace> transientViewDefs = null;
     protected Hashtable<String, ViewIFace>    views             = new Hashtable<String, ViewIFace>();
@@ -82,6 +86,7 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
      * @param title human readable title (short description)
      * @param fileName the filename of the ViewSet
      * @param dirPath the directory path to the viewset
+     * @param i18NResourceName the name of the resource file
       */
     public ViewSet(final Type type,
                    final String name,
@@ -94,6 +99,7 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
         this.title    = title;
         this.fileName = fileName;
         this.dirPath  = dirPath;
+        //this.i18NResourceName  = i18NResourceName;
     }
 
     /**
@@ -240,7 +246,23 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
     {
         return fileName;
     }
+    
+    /**
+     * @return the i18NResourceName
+     */
+    public String getI18NResourceName()
+    {
+        return i18NResourceName;
+    }
 
+    /**
+     * @param resourceName the i18NResourceName to set
+     */
+    public void setI18NResourceName(String resourceName)
+    {
+        i18NResourceName = resourceName;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.ViewSetIFace#isSystem()
      */
@@ -333,6 +355,8 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
             views.clear();
             
             Hashtable<AltViewIFace, String> altViewsViewDefName = new Hashtable<AltViewIFace, String>();
+            
+            i18NResourceName = getAttr(rootDOM, "i18nresname", null);
 
             String viewsName = ViewLoader.getViews(rootDOM, views, altViewsViewDefName);
             if (doSetName)
@@ -346,8 +370,28 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
                 throw new ConfigurationException(msg);
             }
             
-            // Do these first so the view can check their altViews against them 
-            ViewLoader.getViewDefs(rootDOM, viewDefs, views, doMapDefinitions);
+            boolean hasResBundleName = StringUtils.isNotEmpty(i18NResourceName);
+            if (hasResBundleName)
+            {
+                UIRegistry.loadAndPushResourceBundle(i18NResourceName);
+            }
+            
+            try
+            {
+                // Do these first so the view can check their altViews against them 
+                ViewLoader.getViewDefs(rootDOM, viewDefs, views, doMapDefinitions);
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+                
+            } finally
+            {
+                if (hasResBundleName)
+                {
+                    UIRegistry.popResourceBundle();
+                }
+            }
 
             verifyViewsAndViewDefs(altViewsViewDefName);
             

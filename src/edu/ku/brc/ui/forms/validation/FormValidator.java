@@ -778,7 +778,6 @@ public class FormValidator implements ValidationListener, DataChangeListener
         }
 
         boolean isValid = getState() == UIValidatable.ErrorType.Valid;
-        System.out.println("* "+isValid+"  "+(!isNewObj));
         enableUIItems(isValid && hasChanged, EnableType.ValidAndChangedItems);
         enableUIItems(isValid, EnableType.ValidItems);
         

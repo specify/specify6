@@ -42,8 +42,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.text.JTextComponent;
 
-import org.apache.log4j.Logger;
-
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.MultiStateIconButon;
 
@@ -65,7 +63,7 @@ public class DataChangeNotifier implements FocusListener,
                                            ActionListener,
                                            DocumentListener
 {
-    private static final Logger log = Logger.getLogger(DataChangeNotifier.class);
+    //private static final Logger log = Logger.getLogger(DataChangeNotifier.class);
     
     protected UIValidator                uiv;
     protected boolean                    hasDataChanged = false;

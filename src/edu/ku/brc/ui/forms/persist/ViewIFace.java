@@ -109,16 +109,6 @@ public interface ViewIFace  extends Comparable<ViewIFace>
     public abstract List<AltViewIFace> getAltViews();
 
     /**
-     * @return whether it should localize the labels
-     */
-    public abstract boolean isUseResourceLabels();
-
-    /**
-     * @return whether it should localize the labels
-     */
-    public abstract String getResourceLabels();
-
-    /**
      * @return the human readable explanation for the View
      */
     public abstract String getDesc();

@@ -132,6 +132,7 @@ public class PrefsToolbar extends JPanel
                 String panelClass  = pref.attributeValue("panelClass");
                 String viewSetName = pref.attributeValue("viewsetname");
                 String viewName    = pref.attributeValue("viewname");
+                String hContext    = pref.attributeValue("help");
 
                 if (StringUtils.isNotEmpty(prefTitle) && 
                     StringUtils.isNotEmpty(iconPath) && 
@@ -171,6 +172,7 @@ public class PrefsToolbar extends JPanel
                             if (StringUtils.isNotEmpty(viewSetName) && StringUtils.isNotEmpty(viewName))
                             {
                                 GenericPrefsPanel genericPrefsPanel = (GenericPrefsPanel)comp;
+                                genericPrefsPanel.setHelpContext(hContext);
                                 genericPrefsPanel.createForm(viewSetName, viewName);
                                 
                             } else

@@ -192,7 +192,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private String               appName             = "Specify";
     private String               appVersion          = "6.0";
 
-    private String               appBuildVersion     = "200802051100 (SVN: 3390)";
+    private String               appBuildVersion     = "200802051500 (SVN: 3393)";
     
     protected static CacheManager cacheManager        = new CacheManager();
 
@@ -281,10 +281,18 @@ public class Specify extends JPanel implements DatabaseLoginListener
         }
         
         // Set the default values
-        remotePrefs.getColor("Treeeditor.TreeColColor1", new Color(202, 238, 255), true);
-        remotePrefs.getColor("Treeeditor.TreeColColor2", new Color(151, 221, 255), true);
-        remotePrefs.getInt("TreeEditor.Rank.Threshold.Taxon",     140, true);
-        remotePrefs.getInt("TreeEditor.Rank.Threshold.Geography", 200, true);
+        int i = 0;
+        String[] classNames = {"Taxon", "Geography", "LithoStrat", "GeologicTimePeriod", "Storage"};
+        int[]    ranks      = {140,     200,         200,           200,                 200};
+        for (String className : classNames)
+        {
+            remotePrefs.getColor("Treeeditor.TreeColColor1."+className, new Color(202, 238, 255), true);
+            remotePrefs.getColor("Treeeditor.TreeColColor2."+className, new Color(151, 221, 255), true);
+            remotePrefs.getInt("TreeEditor.Rank.Threshold."+className, ranks[i], true);
+            i++;
+        }
+        
+        remotePrefs.getBoolean("TreeEditor.RestoreTreeExpansionState", true, true);
         remotePrefs.getBoolean("google.earth.useorigheaders", true, true);
 
     }

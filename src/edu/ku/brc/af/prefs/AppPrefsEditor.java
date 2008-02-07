@@ -26,6 +26,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
@@ -75,7 +76,7 @@ public class AppPrefsEditor extends JPanel implements TableModelListener, ListSe
         table = new JTable(model);
         table.getSelectionModel().addListSelectionListener(this);
        
-        add(new JScrollPane(table), BorderLayout.NORTH);
+        add(new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER), BorderLayout.NORTH);
         
         table.setRowSelectionAllowed(true);
         table.setColumnSelectionAllowed(false);

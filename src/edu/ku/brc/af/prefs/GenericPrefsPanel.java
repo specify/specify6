@@ -42,6 +42,7 @@ public class GenericPrefsPanel extends JPanel implements PrefsSavable, PrefsPane
 
     protected ViewIFace formView  = null;
     protected Viewable  form      = null;
+    protected String    hContext  = null;
     
     /**
      * Constructor.
@@ -132,4 +133,19 @@ public class GenericPrefsPanel extends JPanel implements PrefsSavable, PrefsPane
         return form != null ? form.getValidator().getState() == UIValidatable.ErrorType.Valid : false;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.prefs.PrefsPanelIFace#getHelpContext()
+     */
+    public String getHelpContext()
+    {
+        return hContext;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.prefs.PrefsPanelIFace#setHelpContext(java.lang.String)
+     */
+    public void setHelpContext(String context)
+    {
+        hContext = context;
+    }
 }

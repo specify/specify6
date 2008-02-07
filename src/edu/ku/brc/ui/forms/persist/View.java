@@ -44,8 +44,6 @@ public class View implements ViewIFace
     protected String               className;
     protected String               businessRulesClassName;
     protected List<AltViewIFace>   altViews       = new Vector<AltViewIFace>();
-    protected boolean              useResourceLabels;
-    protected String               resourceLabels = null;
     
     protected AltViewIFace.CreationMode defaultMode = AltViewIFace.CreationMode.VIEW;
     protected String               selectorName     = null;
@@ -69,9 +67,7 @@ public class View implements ViewIFace
                 final String objTitle, 
                 final String className, 
                 final String businessRulesClassName,
-                final String desc,
-                final boolean useResourceLabels,
-                final String resourceLabels)
+                final String desc)
     {
         this.viewSetName    = viewSetName;
         this.name           = name;
@@ -79,8 +75,6 @@ public class View implements ViewIFace
         this.className      = className;
         this.businessRulesClassName = businessRulesClassName;
         this.desc           = desc;
-        this.useResourceLabels = useResourceLabels;
-        this.resourceLabels = resourceLabels;
 
     }
     
@@ -308,22 +302,6 @@ public class View implements ViewIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.persist.ViewIFace#isUseResourceLabels()
-     */
-    public boolean isUseResourceLabels()
-    {
-        return useResourceLabels;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.persist.ViewIFace#getResourceLabels()
-     */
-    public String getResourceLabels()
-    {
-        return resourceLabels;
-    }
-
-    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.ViewIFace#getDesc()
      */
     public String getDesc()
@@ -410,7 +388,6 @@ public class View implements ViewIFace
         xmlAttr(sb, "name", name);
         xmlAttr(sb, "class", className);
         xmlAttr(sb, "busrule", businessRulesClassName);
-        xmlAttr(sb, "resourcelabels", useResourceLabels);
         sb.append(">\n    ");
         xmlNode(sb, "desc", desc, true);
         sb.append("      <altviews");

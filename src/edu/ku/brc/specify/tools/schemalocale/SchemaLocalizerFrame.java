@@ -36,10 +36,7 @@ import com.apple.eawt.Application;
 import com.apple.eawt.ApplicationAdapter;
 import com.apple.eawt.ApplicationEvent;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
-import com.jgoodies.looks.plastic.theme.DesertBlue;
-import com.jgoodies.looks.plastic.theme.DesertGreen;
 import com.jgoodies.looks.plastic.theme.ExperienceBlue;
-import com.jgoodies.looks.plastic.theme.ExperienceRoyale;
 import com.jgoodies.looks.plastic.theme.SkyKrupp;
 
 import edu.ku.brc.af.core.SchemaI18NService;
@@ -53,7 +50,6 @@ import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
-import edu.ku.brc.ui.forms.persist.FormViewDef.JGDefItem;
 
 /**
  * @author rod

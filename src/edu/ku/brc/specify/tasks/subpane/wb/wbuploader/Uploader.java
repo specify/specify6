@@ -1363,7 +1363,6 @@ public class Uploader implements ActionListener, KeyListener
                      * 
                      * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
                      */
-                    @Override
                     public int compare(Vector<Table> o1, Vector<Table> o2)
                     {
                         if (o1.size() == o2.size())

@@ -257,7 +257,10 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     protected void cbxKeyReleased(KeyEvent ev)
     {
         //log.debug(ev.getKeyCode() +"  "+ KeyEvent.VK_TAB);
-        if (ev.getKeyCode() == KeyEvent.VK_TAB || ev.getKeyCode() == KeyEvent.VK_SHIFT)
+        if (ev.getKeyCode() == KeyEvent.VK_TAB || 
+            ev.getKeyCode() == KeyEvent.VK_SHIFT || 
+            ev.getKeyCode() == KeyEvent.VK_LEFT || 
+            ev.getKeyCode() == KeyEvent.VK_RIGHT)
         {
             return;
         }

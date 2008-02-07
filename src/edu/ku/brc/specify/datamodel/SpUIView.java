@@ -76,7 +76,6 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
     protected String  businessRulesClassName;
     protected Boolean useResourceLabels;
     protected String  description;
-    protected String  resourceLabels;
     protected String  selectorName;
     protected String  objTitle;
     protected String  defaultModeName;
@@ -103,9 +102,7 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
                     final String objTitle, 
                     final String className, 
                     final String businessRulesClassName,
-                    final String desc,
-                    final boolean useResourceLabels,
-                    final String resourceLabels)
+                    final String desc)
     {
         super.init();
         
@@ -115,8 +112,6 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
         this.javaClassName     = className;
         this.businessRulesClassName = businessRulesClassName;
         this.description       = desc;
-        this.useResourceLabels = useResourceLabels;
-        this.resourceLabels   = resourceLabels;
         
         spUIViewId        = null;
         selectorName      = null;
@@ -141,7 +136,6 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
         businessRulesClassName = null;
         useResourceLabels = null;
         description       = null;
-        resourceLabels    = null;
         selectorName      = null;
         objTitle          = null;
         defaultModeName   = null;
@@ -263,23 +257,6 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
     public void setObjTitle(String objTitle)
     {
         this.objTitle = objTitle;
-    }
-
-    /**
-     * @return the resourceLabels
-     */
-    @Column(name = "ResourceLabels", unique = false, nullable = true, insertable = true, updatable = true, length = 128)
-    public String getResourceLabels()
-    {
-        return resourceLabels;
-    }
-
-    /**
-     * @param resourceLabels the resourceLabels to set
-     */
-    public void setResourceLabels(String resourceLabels)
-    {
-        this.resourceLabels = resourceLabels;
     }
 
     /* (non-Javadoc)
@@ -726,9 +703,7 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
         name              = view.getName();
         javaClassName     = view.getClassName();
         businessRulesClassName = view.getBusinessRulesClassName();
-        useResourceLabels = view.isUseResourceLabels();
         description       = view.getDesc();
-        resourceLabels    = view.getResourceLabels();
         selectorName      = view.getSelectorName();
         objTitle          = view.getObjTitle();
         defaultModeName   = view.getDefaultMode().toString().toLowerCase();

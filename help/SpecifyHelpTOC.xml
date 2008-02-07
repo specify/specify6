@@ -16,6 +16,15 @@
       <tocitem text="Statistics" target="Statistics"/>
       <tocitem text="Search" target="Search"/>
 -->
+          <tocitem text="Preferences" target="PreferencesOverview">
+          	<tocitem text="Cache" target="PrefsCache"/>
+          	<tocitem text="EMail" target="PrefsEMail"/>
+          	<tocitem text="Formatting" target="PrefsFormatting"/>
+          	<tocitem text="GoogleEarth" target="PrefsGoogleEarth"/>
+          	<tocitem text="Misc" target="PrefsMisc"/>
+          	<tocitem text="Tree" target="PrefsTree"/>
+	      </tocitem>
+	      
           <tocitem text="WorkBench" target="WorkbenchOverview">
           
           	<tocitem text="Examples" target="WorkbenchExamples"/>

@@ -72,7 +72,6 @@ public interface ViewDefIFace extends Comparable<ViewDefIFace>
      */
     public abstract DataObjectSettable getDataSettable();
     
-    
     /**
      * @return the Settable's class name for getting the data out of the form
      */
@@ -86,12 +85,23 @@ public interface ViewDefIFace extends Comparable<ViewDefIFace>
     /**
      * @param dataSettableName the dataSettableName to set
      */
-    public void setDataSettableName(String dataSettableName);
+    public abstract void setDataSettableName(String dataSettableName);
     
     /**
      * @param dataGettableName the dataGettableName to set
      */
-    public void setDataGettableName(String dataGettableName);
+    public abstract void setDataGettableName(String dataGettableName);
+    
+    /**
+     * @return whether it should localize the labels
+     */
+    public abstract boolean isUseResourceLabels();
+
+    /**
+     * @return whether it should localize the labels
+     */
+    public abstract String getResourceLabels();
+
     
     /**
      * @return whether this form support absolute layout or JGoodies

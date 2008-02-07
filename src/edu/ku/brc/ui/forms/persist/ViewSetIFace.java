@@ -73,6 +73,11 @@ public interface ViewSetIFace extends Comparable<ViewSetIFace>
      * @return file name (no path)
      */
     public abstract String getFileName();
+    
+    /**
+     * @return the name of the string resource file.
+     */
+    public abstract String getI18NResourceName();
 
     /**
      * Indicates that is contains the core set of forms that can be referred in other places with specifying the viewset name.
