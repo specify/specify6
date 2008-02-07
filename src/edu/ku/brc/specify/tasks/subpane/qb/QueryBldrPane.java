@@ -562,8 +562,10 @@ public class QueryBldrPane extends BaseSubPane
                 sqlStr.append(orderStr);
             }
 
-            System.out.println(sqlStr.toString());
-
+            if (debug)
+            {
+                System.out.println(sqlStr.toString());
+            }
             processSQL(queryFieldItems, sqlStr.toString(), rootTable.getTableInfo(), distinct);
 
         }
@@ -582,12 +584,10 @@ public class QueryBldrPane extends BaseSubPane
             if (qri instanceof TableQRI)
             {
                 TableTree tt = qri.getTableTree();
-                System.out.println("processTree " + tt.getName());
                 if (level == 1)
                 {
                     sqlStr.append(tt.getName());
                     sqlStr.append(' ');
-                    //sqlStr.append(tt.getAbbrev());
                     sqlStr.append(tableAbbreviator.getAbbreviation(tt));
                     sqlStr.append(' ');
 
@@ -597,12 +597,10 @@ public class QueryBldrPane extends BaseSubPane
                     // really should only use left join when necessary...
                     sqlStr.append(" left join ");
 
-                    //sqlStr.append(tt.getParent().getAbbrev());
                     sqlStr.append(tableAbbreviator.getAbbreviation(tt.getParent()));
                     sqlStr.append('.');
                     sqlStr.append(tt.getField());
                     sqlStr.append(' ');
-                    //sqlStr.append(tt.getAbbrev());
                     sqlStr.append(tableAbbreviator.getAbbreviation(tt));
                     sqlStr.append(' ');
                 }
@@ -785,27 +783,76 @@ public class QueryBldrPane extends BaseSubPane
      * @param tableTree
      * @param model
      */
-    protected void createNewList(final TableQRI tblQRI,
-                                 final DefaultListModel model)
+    protected void createNewList(final TableQRI tblQRI, final DefaultListModel model)
     {
         model.clear();
         if (tblQRI != null)
         {
-            for (int f=0; f<tblQRI.getFields(); f++)
+            for (int f = 0; f < tblQRI.getFields(); f++)
             {
                 model.addElement(tblQRI.getField(f));
             }
-            for (int k=0; k<tblQRI.getTableTree().getKids(); k++)
+            for (int k = 0; k < tblQRI.getTableTree().getKids(); k++)
             {
+                boolean addIt = true;
                 if (tblQRI.getTableTree().getKid(k).isAlias())
                 {
-                    fixAliases(tblQRI.getTableTree().getKid(k), tableTreeHash);
+                    addIt = fixAliases(tblQRI.getTableTree().getKid(k));
                 }
-                model.addElement(tblQRI.getTableTree().getKid(k).getTableQRI());
+                if (addIt)
+                {
+                    model.addElement(tblQRI.getTableTree().getKid(k).getTableQRI());
+                }
             }
         }
     }
 
+    /**
+     * @param aliasTbl
+     * @param tblInfo
+     * @return true if aliasTbl should be displayed in the fields list for the current
+     *         context.
+     */
+    protected boolean tblIsDisplayable(final TableTree aliasTbl, final DBTableInfo tblInfo)
+    {
+        if (aliasTbl.isAlias())
+        {
+            return !isCyclic(aliasTbl, tblInfo.getTableId()) || isCyclicable(aliasTbl, tblInfo);
+        }
+        //else
+        return true;
+    }
+    
+    /**
+     * @param alias
+     * @param tblId
+     * @return true if the specified alias represents a table that is already
+     * present in the alias' tabletree.
+     */
+    protected boolean isCyclic(final TableTree alias, final int tblId)
+    {
+        TableTree parent = alias.getParent();
+        while (parent != null)
+        {
+            if (parent.getTableInfo() != null && parent.getTableInfo().getTableId() == tblId)
+            {
+                return true;
+            }
+            parent = parent.getParent();
+        }
+        return false;
+    }
+    
+    /**
+     * @param alias
+     * @param tblInfo
+     * @return true if it is OK for the specified alias to create a cycle.
+     */
+    protected boolean isCyclicable(final TableTree alias, final DBTableInfo tblInfo)
+    {
+        return Treeable.class.isAssignableFrom(tblInfo.getClassObj());
+    }
+    
     /**
      * @param parentList
      */
@@ -977,31 +1024,31 @@ public class QueryBldrPane extends BaseSubPane
                                    final int level)
     {
         int id = tableIds[level];
-        System.out.println("getFieldQRI id[" + id + "] level[" + level + "]");
         for (int k=0; k<tbl.getKids(); k++)
         {
             TableTree kid = tbl.getKid(k);
-            //System.out.println("checking id[" + id + "] [" + kid.getTableInfo().getTableId() + "]");
+            boolean checkKid = true;
             if (kid.isAlias()) 
             {
-                fixAliases(kid, tableTreeHash);
+                checkKid = fixAliases(kid);
             }
-            if (kid.getTableInfo().getTableId() == id)
+            if (checkKid)
             {
-                if (level == (tableIds.length - 1))
+                if (kid.getTableInfo().getTableId() == id)
                 {
-                    for (int f=0; f<kid.getTableQRI().getFields(); f++)
+                    if (level == (tableIds.length - 1))
                     {
-                        if (kid.getTableQRI().getField(f).getFieldName().equals(field.getFieldName())) 
-                        { 
-                            return kid.getTableQRI().getField(f); 
+                        for (int f = 0; f < kid.getTableQRI().getFields(); f++)
+                        {
+                            if (kid.getTableQRI().getField(f).getFieldName().equals(
+                                    field.getFieldName())) { return kid.getTableQRI().getField(f); }
                         }
                     }
-                }
-                else
-                {
-                    FieldQRI fi = getFieldQRI(kid, field, tableIds, level + 1);
-                    if (fi != null) { return fi; }
+                    else
+                    {
+                        FieldQRI fi = getFieldQRI(kid, field, tableIds, level + 1);
+                        if (fi != null) { return fi; }
+                    }
                 }
             }
         }
@@ -1017,7 +1064,6 @@ public class QueryBldrPane extends BaseSubPane
     {
         if (field != null)
         {
-            System.out.println(field.getTableList());
             FieldQRI fieldQRI = getFieldQRI(tableTree, field, field.getTableIds(), 0);
             if (fieldQRI != null)
             {
@@ -1161,33 +1207,37 @@ public class QueryBldrPane extends BaseSubPane
      * @param tbl
      * @param hash
      */
-    protected void fixAliases(final TableTree tbl, Hashtable<String, TableTree> hash)
+    protected boolean fixAliases(final TableTree tbl)
     {
         if (tbl.isAlias())
         {
-            TableTree tt = hash.get(tbl.getName());
+            TableTree tt = tableTreeHash.get(tbl.getName());
             if (tt != null)
             {
-                try
+                if (tblIsDisplayable(tbl, tt.getTableInfo()))
                 {
-                    for (int k = 0; k < tt.getKids(); k++)
+                    tbl.clearKids();
+                    try
                     {
-                        tbl.addKid((TableTree)tt.getKid(k).clone());
+                        for (int k = 0; k < tt.getKids(); k++)
+                        {
+                            tbl.addKid((TableTree) tt.getKid(k).clone());
+                        }
+                        tbl.setTableInfo(tt.getTableInfo());
+                        tbl.setTableQRIClone(tt.getTableQRI());
+                        return true;
                     }
-                    tbl.setTableInfo(tt.getTableInfo());
-                    tbl.setTableQRIClone(tt.getTableQRI());
-                    tbl.setAlias(false);
+                    catch (CloneNotSupportedException ex)
+                    {
+                        throw new RuntimeException(ex);
+                    }
                 }
-                catch (CloneNotSupportedException ex)
-                {
-                    throw new RuntimeException(ex);
-                }
+                return false;
             }
-            else
-            {
-                log.error("Couldn't find [" + tbl.getName() + "] in the hash.");
-            }
+            log.error("Couldn't find [" + tbl.getName() + "] in the hash.");
+            return false;
         }
+        return true;
     }
 
     /**

@@ -163,6 +163,14 @@ public class TableTree implements Cloneable, Comparable<TableTree>
         }
         return null;
     }
+    
+    /**
+     * Clears kids.
+     */
+    public void clearKids()
+    {
+        kids.clear();
+    }
     /**
      * @return the isAlias
      */

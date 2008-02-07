@@ -1401,9 +1401,18 @@ public class Uploader implements ActionListener, KeyListener
         {
             if (!uploadGraph.isConnected())
             {                
+                boolean first = true;
                 for (Vector<Table> tbls : getMissingTbls())
                 {
-                    String msg = getResourceString("WB_UPLOAD_MISSING_TBL");
+                    String msg = "";
+                    if (first)
+                    {
+                        msg = getResourceString("WB_UPLOAD_MISSING_TBL");
+                    }
+                    else
+                    {
+                        msg += "    ";
+                    }
                     if (tbls != null && tbls.size() > 0)
                     {
                         msg += " (";
@@ -1419,9 +1428,20 @@ public class Uploader implements ActionListener, KeyListener
                     }
                     else
                     {
-                        msg += " (" + getResourceString("WB_UPLOAD_UNKNOWN_MISSING_DATA") + ")";
+                        if (first)
+                        {
+                            msg += " (" + getResourceString("WB_UPLOAD_UNKNOWN_MISSING_DATA") + ")";
+                        }
+                        else
+                        {
+                            msg = "";
+                        }
                     }
-                    errors.add(new InvalidStructure(msg, tbls));
+                    if (!msg.equals(""))
+                    {
+                        errors.add(new InvalidStructure(msg, tbls));
+                    }
+                    first = false;
                 }
 
             }
