@@ -237,7 +237,7 @@ public class TreeDefEditorTableModel <T extends Treeable<T,D,I>,
      * Adds a new row to the table model.
      * 
 	 * @see java.util.Vector#add(int, Object)
-     * @param index the location of the new row
+     * @param index the storage of the new row
 	 * @param element the new row data
 	 */
 	public synchronized void add(I newDefItem, I parentDefItem)

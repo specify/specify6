@@ -17,9 +17,9 @@ import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem;
 import edu.ku.brc.specify.datamodel.LithoStrat;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDefItem;
-import edu.ku.brc.specify.datamodel.Location;
-import edu.ku.brc.specify.datamodel.LocationTreeDef;
-import edu.ku.brc.specify.datamodel.LocationTreeDefItem;
+import edu.ku.brc.specify.datamodel.Storage;
+import edu.ku.brc.specify.datamodel.StorageTreeDef;
+import edu.ku.brc.specify.datamodel.StorageTreeDefItem;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
@@ -66,10 +66,10 @@ public class TreeFactory
 			t = (T)new GeologicTimePeriod();
 			((GeologicTimePeriod)t).initialize();
 		}
-		else if( implementingClass.equals(Location.class) )
+		else if( implementingClass.equals(Storage.class) )
 		{
-			t = (T)new Location();			
-			((Location)t).initialize();
+			t = (T)new Storage();			
+			((Storage)t).initialize();
 		}
         else if( implementingClass.equals(Taxon.class) )
         {
@@ -83,7 +83,7 @@ public class TreeFactory
         }
 		else
 		{
-			throw new IllegalArgumentException("Provided class must be one of Geography, GeologicTimePeriod, Location, LithoStrat or Taxon");
+			throw new IllegalArgumentException("Provided class must be one of Geography, GeologicTimePeriod, Storage, LithoStrat or Taxon");
 		}
 
 		t.setName(name);
@@ -118,11 +118,11 @@ public class TreeFactory
         {
             return (T)createNewTreeable(LithoStrat.class,name);
         }
-        if (nodeOfSameClass instanceof Location)
+        if (nodeOfSameClass instanceof Storage)
         {
-            return (T)createNewTreeable(Location.class,name);
+            return (T)createNewTreeable(Storage.class,name);
         }
-        throw new IllegalArgumentException("Provided node must be instance of Geography, GeologicTimePeriod, Location, LithoStrat or Taxon");
+        throw new IllegalArgumentException("Provided node must be instance of Geography, GeologicTimePeriod, Storage, LithoStrat or Taxon");
     }
 		
 	/**
@@ -148,9 +148,9 @@ public class TreeFactory
 		{
 			t = (I)new GeologicTimePeriodTreeDefItem();
 		}
-		else if( implementingClass.equals(LocationTreeDefItem.class) )
+		else if( implementingClass.equals(StorageTreeDefItem.class) )
 		{
-			t = (I)new LocationTreeDefItem();			
+			t = (I)new StorageTreeDefItem();			
 		}
         else if( implementingClass.equals(TaxonTreeDefItem.class) )
         {
@@ -199,9 +199,9 @@ public class TreeFactory
             return "SELECT n.id, n.name, n.fullName, n.nodeNumber, n.highestChildNodeNumber, n.rankId, n2.id, n2.fullName FROM GeologicTimePeriod n LEFT OUTER JOIN n.acceptedGeologicTimePeriod n2 WHERE n.parent=:PARENT ORDER BY n.startPeriod, n.endPeriod, n.name";
         }
         
-        if (parent instanceof Location)
+        if (parent instanceof Storage)
         {
-            return "SELECT n.id, n.name, n.fullName, n.nodeNumber, n.highestChildNodeNumber, n.rankId, n2.id, n2.fullName FROM Location n LEFT OUTER JOIN n.acceptedLocation n2 WHERE n.parent=:PARENT ORDER BY n.rankId, n.name";
+            return "SELECT n.id, n.name, n.fullName, n.nodeNumber, n.highestChildNodeNumber, n.rankId, n2.id, n2.fullName FROM Storage n LEFT OUTER JOIN n.acceptedStorage n2 WHERE n.parent=:PARENT ORDER BY n.rankId, n.name";
         }
         
         if (parent instanceof LithoStrat)
@@ -233,9 +233,9 @@ public class TreeFactory
             return "SELECT n.id, n.fullName FROM " + clazz.getName() + " n WHERE n.acceptedGeologicTimePeriod.id=:NODEID";
         }
         
-        if (clazz.equals(Location.class))
+        if (clazz.equals(Storage.class))
         {
-            return "SELECT n.id, n.fullName FROM " + clazz.getName() + " n WHERE n.acceptedLocation.id=:NODEID";
+            return "SELECT n.id, n.fullName FROM " + clazz.getName() + " n WHERE n.acceptedStorage.id=:NODEID";
         }
         
         if (clazz.equals(LithoStrat.class))
@@ -268,9 +268,9 @@ public class TreeFactory
             return "SELECT count(*) FROM CollectionObject AS co INNER JOIN co.paleoContext AS pc INNER JOIN pc.chronosStrat as gtp WHERE gtp.id="+Integer.toString(id);
         }
         
-        if (clazz.equals(Location.class))
+        if (clazz.equals(Storage.class))
         {
-            return "SELECT count(*) FROM CollectionObject AS co INNER JOIN co.preparations AS prep INNER JOIN prep.location as loc WHERE loc.id="+Integer.toString(id);
+            return "SELECT count(*) FROM CollectionObject AS co INNER JOIN co.preparations AS prep INNER JOIN prep.storage as sto WHERE sto.id="+Integer.toString(id);
         }
         
         if (clazz.equals(LithoStrat.class))
@@ -288,7 +288,7 @@ public class TreeFactory
      */
     public static boolean isQueryHQL(final Class<?> clazz)
     {
-        if (clazz.equals(GeologicTimePeriod.class) || clazz.equals(LithoStrat.class) || clazz.equals(Location.class))
+        if (clazz.equals(GeologicTimePeriod.class) || clazz.equals(LithoStrat.class) || clazz.equals(Storage.class))
         {
             return true;
         }
@@ -337,10 +337,10 @@ public class TreeFactory
         {
             sb.append(" WHERE CE.CollectionMemberID = COLMEMID AND G.GeographyID = %d");
             
-        } else if (clazz.equals(Location.class))
+        } else if (clazz.equals(Storage.class))
         {
             // HQL
-            sb.append("SELECT count(*) FROM CollectionObject AS co INNER JOIN co.preparations AS prep INNER JOIN prep.location as loc WHERE prep.collectionMemberId = COLMEMID AND loc.id = %d");
+            sb.append("SELECT count(*) FROM CollectionObject AS co INNER JOIN co.preparations AS prep INNER JOIN prep.storage as loc WHERE prep.collectionMemberId = COLMEMID AND loc.id = %d");
             
         } else if (clazz.equals(GeologicTimePeriod.class))
         {
@@ -383,9 +383,9 @@ public class TreeFactory
         {
             sb.append("SELECT count(*) FROM CollectionObject AS co INNER JOIN co.paleoContext AS pc INNER JOIN pc.chronosStrat as gtp WHERE pc.collectionMemberId = COLMEMID AND gtp.nodeNumber > %d AND gtp.highestChildNodeNumber <= %d");
             
-        } else if (clazz.equals(Location.class))
+        } else if (clazz.equals(Storage.class))
         {
-            sb.append("SELECT count(*) FROM CollectionObject AS co INNER JOIN co.preparations AS prep INNER JOIN prep.location as loc WHERE prep.collectionMemberId = COLMEMID AND loc.nodeNumber > %d AND loc.highestChildNodeNumber <= %d");
+            sb.append("SELECT count(*) FROM CollectionObject AS co INNER JOIN co.preparations AS prep INNER JOIN prep.storage as loc WHERE prep.collectionMemberId = COLMEMID AND loc.nodeNumber > %d AND loc.highestChildNodeNumber <= %d");
             
         } else if (clazz.equals(LithoStrat.class))
         {
@@ -423,9 +423,9 @@ public class TreeFactory
             return QueryAdjusterForDomain.getInstance().adjustSQL("SELECT id, nodeNumber, highestChildNodeNumber FROM GeologicTimePeriod WHERE geologicTimePeriodTreeDefId = GTPTREEDEFID AND id = %d");
         }
         
-        if (clazz.equals(Location.class))
+        if (clazz.equals(Storage.class))
         {
-            return QueryAdjusterForDomain.getInstance().adjustSQL("SELECT id, nodeNumber, highestChildNodeNumber FROM Location WHERE locationTreeDefId = LOCTREEDEFID AND id = %d");
+            return QueryAdjusterForDomain.getInstance().adjustSQL("SELECT id, nodeNumber, highestChildNodeNumber FROM Storage WHERE storageTreeDefId = STORTREEDEFID AND id = %d");
         }
         
         if (clazz.equals(LithoStrat.class))
@@ -461,9 +461,9 @@ public class TreeFactory
             return new Pair<String,String>("Global","LithoStrat");
         }
         
-		if( node instanceof Location )
+		if( node instanceof Storage )
 		{
-			return new Pair<String,String>("Global","Location");
+			return new Pair<String,String>("Global","Storage");
 		}
 
         if( node instanceof Taxon )
@@ -506,14 +506,14 @@ public class TreeFactory
             return new Pair<String, String>("Global","LithoStratTreeDefItem");
         }
         
-        if( node instanceof LocationTreeDefItem)
+        if( node instanceof StorageTreeDefItem)
         {
             TreeDefItemIface<?,?,?> defItem = (TreeDefItemIface<?,?,?>)node;
             if (defItem.getParent() == null)
             {
-                return new Pair<String, String>("Global","RootLocationTreeDefItem");
+                return new Pair<String, String>("Global","RootStorageTreeDefItem");
             }
-            return new Pair<String, String>("Global","LocationTreeDefItem");
+            return new Pair<String, String>("Global","StorageTreeDefItem");
         }
         
         if( node instanceof TaxonTreeDefItem)
@@ -530,27 +530,27 @@ public class TreeFactory
 	}
     
 	/**
-     * Creates a standard {@link Location} tree.
+     * Creates a standard {@link Storage} tree.
      * 
 	 * @param defName the name of the new tree
 	 * @param remarks the remarks about the new tree
 	 * @return the new tree
 	 */
-	public static LocationTreeDef createStdLocationTreeDef(String defName,String remarks)
+	public static StorageTreeDef createStdStorageTreeDef(String defName,String remarks)
 	{
-		LocationTreeDef def = new LocationTreeDef();
+		StorageTreeDef def = new StorageTreeDef();
 		def.initialize();
 		def.setName(defName);
 		def.setRemarks(remarks);
 		
-		LocationTreeDefItem defItem = new LocationTreeDefItem();
+		StorageTreeDefItem defItem = new StorageTreeDefItem();
 		defItem.initialize();
 		defItem.setName("Root");
 		defItem.setRankId(0);
 		defItem.setIsEnforced(true);
         defItem.setIsInFullName(false);
 		
-		Location rootNode = new Location();
+		Storage rootNode = new Storage();
 		rootNode.initialize();
 		rootNode.setName("Root");
         rootNode.setFullName("Root");
@@ -599,10 +599,10 @@ public class TreeFactory
         return items;
     }
     
-//	/** An array describing the standard levels of a {@link Location} tree. */
+//	/** An array describing the standard levels of a {@link Storage} tree. */
 //	@SuppressWarnings("unused")
 //	private static Object[][] stdLocItems = {
-//			{   0,"Location Root",true},
+//			{   0,"Storage Root",true},
 //            { 200,"Building",false},
 //         	{ 400,"Floor",false},
 //         	{ 600,"Room",true},

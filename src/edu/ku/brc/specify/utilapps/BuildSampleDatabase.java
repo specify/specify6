@@ -42,9 +42,6 @@ import static edu.ku.brc.specify.utilapps.DataBuilder.createLoanAgent;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createLoanPreparation;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createLoanReturnPreparation;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createLocality;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createLocation;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createLocationTreeDef;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createLocationTreeDefItem;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createPermit;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createPickList;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createPrepType;
@@ -54,6 +51,9 @@ import static edu.ku.brc.specify.utilapps.DataBuilder.createQueryField;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createReferenceWork;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createShipment;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createSpecifyUser;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createStorage;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createStorageTreeDef;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createStorageTreeDefItem;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createTaxon;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createTaxonChildren;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createTaxonTreeDef;
@@ -163,9 +163,6 @@ import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.LoanReturnPreparation;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.LocalityCitation;
-import edu.ku.brc.specify.datamodel.Location;
-import edu.ku.brc.specify.datamodel.LocationTreeDef;
-import edu.ku.brc.specify.datamodel.LocationTreeDefItem;
 import edu.ku.brc.specify.datamodel.Permit;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.PrepType;
@@ -179,6 +176,9 @@ import edu.ku.brc.specify.datamodel.SpLocaleItemStr;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpQueryField;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.datamodel.Storage;
+import edu.ku.brc.specify.datamodel.StorageTreeDef;
+import edu.ku.brc.specify.datamodel.StorageTreeDefItem;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonCitation;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
@@ -324,7 +324,7 @@ public class BuildSampleDatabase
         GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Geography");
         GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Chronos Stratigraphy");
         LithoStratTreeDef         lithoStratTreeDef = createLithoStratTreeDef("LithoStrat");
-        LocationTreeDef           locTreeDef        = createLocationTreeDef("Location");
+        StorageTreeDef           locTreeDef        = createStorageTreeDef("Storage");
         
         lithoStratTreeDef.setRemarks("A simple super, group, formation, member, bed Litho Stratigraphy tree");
         
@@ -384,7 +384,7 @@ public class BuildSampleDatabase
         frame.setProcess(++createStep);
         //List<Object> taxa        = createSimpleTaxon(taxonTreeDef, doShallowTaxonTree);
         List<Object> geos        = createSimpleGeography(geoTreeDef);
-        //List<Object> locs        = createSimpleLocation(locTreeDef);
+        //List<Object> locs        = createSimpleStorage(locTreeDef);
         //List<Object> gtps        = createSimpleGeologicTimePeriod(gtpTreeDef);
         //List<Object> lithoStrats = createSimpleLithoStrat(lithoStratTreeDef);
         
@@ -612,7 +612,7 @@ public class BuildSampleDatabase
         GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Geography");
         GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Chronos Stratigraphy");
         LithoStratTreeDef         lithoStratTreeDef = createLithoStratTreeDef("LithoStrat");
-        LocationTreeDef           locTreeDef        = createLocationTreeDef("Location");
+        StorageTreeDef           locTreeDef        = createStorageTreeDef("Storage");
         
         lithoStratTreeDef.setRemarks("A simple super, group, formation, member, bed Litho Stratigraphy tree");
         
@@ -694,7 +694,7 @@ public class BuildSampleDatabase
         ////////////////////////////////
         List<Object> taxa        = createSimpleBotanyTaxonTree(taxonTreeDef);
         List<Object> geos        = createSimpleGeography(geoTreeDef);
-        List<Object> locs        = createSimpleLocation(locTreeDef);
+        List<Object> locs        = createSimpleStorage(locTreeDef);
         List<Object> gtps        = createSimpleGeologicTimePeriod(gtpTreeDef);
         List<Object> lithoStrats = createSimpleLithoStrat(lithoStratTreeDef);
         
@@ -1024,29 +1024,29 @@ public class BuildSampleDatabase
 
         List<Preparation> preps = new Vector<Preparation>();
         Calendar prepDate = Calendar.getInstance();
-        preps.add(createPreparation(pressed, agents.get(0), collObjs.get(0), (Location)locs.get(7), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(pressed, agents.get(0), collObjs.get(1), (Location)locs.get(7), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(pressed, agents.get(1), collObjs.get(2), (Location)locs.get(7), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(pressed, agents.get(1), collObjs.get(3), (Location)locs.get(7), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(pressed, agents.get(2), collObjs.get(4), (Location)locs.get(8), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(pressed, agents.get(2), collObjs.get(5), (Location)locs.get(8), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(pressed, agents.get(3), collObjs.get(6), (Location)locs.get(8), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(pressed, agents.get(3), collObjs.get(7), (Location)locs.get(8), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(pressed, agents.get(1), collObjs.get(0), (Location)locs.get(11), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(pressed, agents.get(1), collObjs.get(1), (Location)locs.get(11), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(pressed, agents.get(1), collObjs.get(2), (Location)locs.get(10), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(pressed, agents.get(2), collObjs.get(3), (Location)locs.get(9), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(pressed, agents.get(3), collObjs.get(4), (Location)locs.get(9), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(pressed, agents.get(0), collObjs.get(5), (Location)locs.get(9), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(pressed, agents.get(1), collObjs.get(6), (Location)locs.get(9), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(pressed, agents.get(1), collObjs.get(7), (Location)locs.get(9), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(pressed, agents.get(1), collObjs.get(2), (Location)locs.get(8), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pressed, agents.get(0), collObjs.get(0), (Storage)locs.get(7), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pressed, agents.get(0), collObjs.get(1), (Storage)locs.get(7), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pressed, agents.get(1), collObjs.get(2), (Storage)locs.get(7), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pressed, agents.get(1), collObjs.get(3), (Storage)locs.get(7), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pressed, agents.get(2), collObjs.get(4), (Storage)locs.get(8), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pressed, agents.get(2), collObjs.get(5), (Storage)locs.get(8), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pressed, agents.get(3), collObjs.get(6), (Storage)locs.get(8), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pressed, agents.get(3), collObjs.get(7), (Storage)locs.get(8), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pressed, agents.get(1), collObjs.get(0), (Storage)locs.get(11), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pressed, agents.get(1), collObjs.get(1), (Storage)locs.get(11), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pressed, agents.get(1), collObjs.get(2), (Storage)locs.get(10), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pressed, agents.get(2), collObjs.get(3), (Storage)locs.get(9), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pressed, agents.get(3), collObjs.get(4), (Storage)locs.get(9), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pressed, agents.get(0), collObjs.get(5), (Storage)locs.get(9), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pressed, agents.get(1), collObjs.get(6), (Storage)locs.get(9), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pressed, agents.get(1), collObjs.get(7), (Storage)locs.get(9), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pressed, agents.get(1), collObjs.get(2), (Storage)locs.get(8), rand.nextInt(20)+1, prepDate));
 
-        preps.add(createPreparation(pressed, agents.get(1), collObjs.get(0), (Location)locs.get(7), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(pressed, agents.get(1), collObjs.get(1), (Location)locs.get(7), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(pressed, agents.get(1), collObjs.get(2), (Location)locs.get(8), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(pressed, agents.get(1), collObjs.get(3), (Location)locs.get(8), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(pressed, agents.get(1), collObjs.get(4), (Location)locs.get(9), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pressed, agents.get(1), collObjs.get(0), (Storage)locs.get(7), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pressed, agents.get(1), collObjs.get(1), (Storage)locs.get(7), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pressed, agents.get(1), collObjs.get(2), (Storage)locs.get(8), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pressed, agents.get(1), collObjs.get(3), (Storage)locs.get(8), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pressed, agents.get(1), collObjs.get(4), (Storage)locs.get(9), rand.nextInt(20)+1, prepDate));
 
         dataObjects.add(pressed);
         dataObjects.addAll(preps);
@@ -1313,7 +1313,7 @@ public class BuildSampleDatabase
         GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Geography");
         GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Chronos Stratigraphy");
         LithoStratTreeDef         lithoStratTreeDef = createLithoStratTreeDef("LithoStrat");
-        LocationTreeDef           locTreeDef        = createLocationTreeDef("Location");
+        StorageTreeDef           locTreeDef        = createStorageTreeDef("Storage");
         
         lithoStratTreeDef.setRemarks("A simple super, group, formation, member, bed Litho Stratigraphy tree");
         
@@ -1365,7 +1365,7 @@ public class BuildSampleDatabase
         Journal      journal     = createJournalsAndReferenceWork();
         List<Object> taxa        = createSimpleFishTaxonTree(taxonTreeDef, doShallowTaxonTree);
         List<Object> geos        = createSimpleGeography(geoTreeDef);
-        List<Object> locs        = createSimpleLocation(locTreeDef);
+        List<Object> locs        = createSimpleStorage(locTreeDef);
         List<Object> gtps        = createSimpleGeologicTimePeriod(gtpTreeDef);
         List<Object> lithoStrats = createSimpleLithoStrat(lithoStratTreeDef);
         
@@ -1420,7 +1420,7 @@ public class BuildSampleDatabase
                                              final GeographyTreeDef          geoTreeDef,
                                              final GeologicTimePeriodTreeDef gtpTreeDef,
                                              final LithoStratTreeDef         lithoStratTreeDef,
-                                             final LocationTreeDef           locTreeDef,
+                                             final StorageTreeDef           locTreeDef,
                                              final Journal                   journal,
                                              final List<Object>              taxa,
                                              final List<Object>              geos,
@@ -1835,29 +1835,29 @@ public class BuildSampleDatabase
 
         List<Preparation> preps = new Vector<Preparation>();
         Calendar prepDate = Calendar.getInstance();
-        preps.add(createPreparation(etoh, agents.get(0), collObjs.get(0), (Location)locs.get(7), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(etoh, agents.get(0), collObjs.get(1), (Location)locs.get(7), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(etoh, agents.get(1), collObjs.get(2), (Location)locs.get(7), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(etoh, agents.get(1), collObjs.get(3), (Location)locs.get(7), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(etoh, agents.get(2), collObjs.get(4), (Location)locs.get(8), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(etoh, agents.get(2), collObjs.get(5), (Location)locs.get(8), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(etoh, agents.get(3), collObjs.get(6), (Location)locs.get(8), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(etoh, agents.get(3), collObjs.get(7), (Location)locs.get(8), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(skel, agents.get(1), collObjs.get(0), (Location)locs.get(11), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(skel, agents.get(1), collObjs.get(1), (Location)locs.get(11), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(skel, agents.get(1), collObjs.get(2), (Location)locs.get(10), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(skel, agents.get(2), collObjs.get(3), (Location)locs.get(9), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(skel, agents.get(3), collObjs.get(4), (Location)locs.get(9), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(skel, agents.get(0), collObjs.get(5), (Location)locs.get(9), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(cas, agents.get(1), collObjs.get(6), (Location)locs.get(9), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(cas, agents.get(1), collObjs.get(7), (Location)locs.get(9), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(cas, agents.get(1), collObjs.get(2), (Location)locs.get(8), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(etoh, agents.get(0), collObjs.get(0), (Storage)locs.get(7), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(etoh, agents.get(0), collObjs.get(1), (Storage)locs.get(7), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(etoh, agents.get(1), collObjs.get(2), (Storage)locs.get(7), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(etoh, agents.get(1), collObjs.get(3), (Storage)locs.get(7), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(etoh, agents.get(2), collObjs.get(4), (Storage)locs.get(8), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(etoh, agents.get(2), collObjs.get(5), (Storage)locs.get(8), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(etoh, agents.get(3), collObjs.get(6), (Storage)locs.get(8), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(etoh, agents.get(3), collObjs.get(7), (Storage)locs.get(8), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(skel, agents.get(1), collObjs.get(0), (Storage)locs.get(11), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(skel, agents.get(1), collObjs.get(1), (Storage)locs.get(11), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(skel, agents.get(1), collObjs.get(2), (Storage)locs.get(10), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(skel, agents.get(2), collObjs.get(3), (Storage)locs.get(9), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(skel, agents.get(3), collObjs.get(4), (Storage)locs.get(9), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(skel, agents.get(0), collObjs.get(5), (Storage)locs.get(9), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(cas, agents.get(1), collObjs.get(6), (Storage)locs.get(9), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(cas, agents.get(1), collObjs.get(7), (Storage)locs.get(9), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(cas, agents.get(1), collObjs.get(2), (Storage)locs.get(8), rand.nextInt(20)+1, prepDate));
 
-        preps.add(createPreparation(xray, agents.get(1), collObjs.get(0), (Location)locs.get(7), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(xray, agents.get(1), collObjs.get(1), (Location)locs.get(7), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(xray, agents.get(1), collObjs.get(2), (Location)locs.get(8), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(xray, agents.get(1), collObjs.get(3), (Location)locs.get(8), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(xray, agents.get(1), collObjs.get(4), (Location)locs.get(9), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(xray, agents.get(1), collObjs.get(0), (Storage)locs.get(7), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(xray, agents.get(1), collObjs.get(1), (Storage)locs.get(7), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(xray, agents.get(1), collObjs.get(2), (Storage)locs.get(8), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(xray, agents.get(1), collObjs.get(3), (Storage)locs.get(8), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(xray, agents.get(1), collObjs.get(4), (Storage)locs.get(9), rand.nextInt(20)+1, prepDate));
 
         dataObjects.add(collection);
         dataObjects.add(skel);
@@ -2691,40 +2691,40 @@ public class BuildSampleDatabase
     }
 
 
-    public static List<Object> createSimpleLocation(final LocationTreeDef locTreeDef)
+    public static List<Object> createSimpleStorage(final StorageTreeDef locTreeDef)
     {
-        log.info("createSimpleLocation " + locTreeDef.getName());
+        log.info("createSimpleStorage " + locTreeDef.getName());
 
         List<Object> newObjs = new Vector<Object>();
 
-        LocationTreeDefItem building = createLocationTreeDefItem(null, locTreeDef, "building", 0);
+        StorageTreeDefItem building = createStorageTreeDefItem(null, locTreeDef, "building", 0);
         building.setIsEnforced(true);
-        LocationTreeDefItem room = createLocationTreeDefItem(building, locTreeDef, "room", 100);
+        StorageTreeDefItem room = createStorageTreeDefItem(building, locTreeDef, "room", 100);
         room.setIsInFullName(true);
-        LocationTreeDefItem freezer = createLocationTreeDefItem(room, locTreeDef, "freezer", 200);
+        StorageTreeDefItem freezer = createStorageTreeDefItem(room, locTreeDef, "freezer", 200);
         freezer.setIsInFullName(true);
-        LocationTreeDefItem shelf = createLocationTreeDefItem(freezer, locTreeDef, "shelf", 300);
+        StorageTreeDefItem shelf = createStorageTreeDefItem(freezer, locTreeDef, "shelf", 300);
         shelf.setIsInFullName(true);
 
         // Create the building
-        Location dyche        = createLocation(locTreeDef, null,         "Dyche Hall", building.getRankId());
-        Location rm606        = createLocation(locTreeDef, dyche,        "Room 606",   room.getRankId());
-        Location freezerA     = createLocation(locTreeDef, rm606,        "Freezer A",  freezer.getRankId());
-        Location shelf5       = createLocation(locTreeDef, freezerA,     "Shelf 5",    shelf.getRankId());
-        Location shelf4       = createLocation(locTreeDef, freezerA,     "Shelf 4",    shelf.getRankId());
-        Location shelf3       = createLocation(locTreeDef, freezerA,     "Shelf 3",    shelf.getRankId());
-        Location shelf2       = createLocation(locTreeDef, freezerA,     "Shelf 2",    shelf.getRankId());
-        Location shelf1       = createLocation(locTreeDef, freezerA,     "Shelf 1",    shelf.getRankId());
+        Storage dyche        = createStorage(locTreeDef, null,         "Dyche Hall", building.getRankId());
+        Storage rm606        = createStorage(locTreeDef, dyche,        "Room 606",   room.getRankId());
+        Storage freezerA     = createStorage(locTreeDef, rm606,        "Freezer A",  freezer.getRankId());
+        Storage shelf5       = createStorage(locTreeDef, freezerA,     "Shelf 5",    shelf.getRankId());
+        Storage shelf4       = createStorage(locTreeDef, freezerA,     "Shelf 4",    shelf.getRankId());
+        Storage shelf3       = createStorage(locTreeDef, freezerA,     "Shelf 3",    shelf.getRankId());
+        Storage shelf2       = createStorage(locTreeDef, freezerA,     "Shelf 2",    shelf.getRankId());
+        Storage shelf1       = createStorage(locTreeDef, freezerA,     "Shelf 1",    shelf.getRankId());
 
-        Location rm701        = createLocation(locTreeDef, dyche,        "Room 701",   room.getRankId());
-        Location freezerA_701 = createLocation(locTreeDef, rm701,        "Freezer A",  freezer.getRankId());
-        Location shelf1_701   = createLocation(locTreeDef, freezerA_701, "Shelf 1",    shelf.getRankId());
+        Storage rm701        = createStorage(locTreeDef, dyche,        "Room 701",   room.getRankId());
+        Storage freezerA_701 = createStorage(locTreeDef, rm701,        "Freezer A",  freezer.getRankId());
+        Storage shelf1_701   = createStorage(locTreeDef, freezerA_701, "Shelf 1",    shelf.getRankId());
         
-        Location rm703        = createLocation(locTreeDef, dyche,        "Room 703",   room.getRankId());
-        Location freezerA_703 = createLocation(locTreeDef, rm703,        "Freezer A",  freezer.getRankId());
-        Location shelf1_703   = createLocation(locTreeDef, freezerA_703, "Shelf 1",    shelf.getRankId());
-        Location shelf2_703   = createLocation(locTreeDef, freezerA_703, "Shelf 2",    shelf.getRankId());
-        Location shelf3_703   = createLocation(locTreeDef, freezerA_703, "Shelf 3",    shelf.getRankId());
+        Storage rm703        = createStorage(locTreeDef, dyche,        "Room 703",   room.getRankId());
+        Storage freezerA_703 = createStorage(locTreeDef, rm703,        "Freezer A",  freezer.getRankId());
+        Storage shelf1_703   = createStorage(locTreeDef, freezerA_703, "Shelf 1",    shelf.getRankId());
+        Storage shelf2_703   = createStorage(locTreeDef, freezerA_703, "Shelf 2",    shelf.getRankId());
+        Storage shelf3_703   = createStorage(locTreeDef, freezerA_703, "Shelf 3",    shelf.getRankId());
         
         // 0
         newObjs.add(building);

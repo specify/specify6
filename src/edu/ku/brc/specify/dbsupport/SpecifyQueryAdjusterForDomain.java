@@ -22,8 +22,8 @@ import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.LithoStrat;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
-import edu.ku.brc.specify.datamodel.Location;
-import edu.ku.brc.specify.datamodel.LocationTreeDef;
+import edu.ku.brc.specify.datamodel.Storage;
+import edu.ku.brc.specify.datamodel.StorageTreeDef;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Taxon;
@@ -48,7 +48,7 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
     //private static final String COLMEMIDGRP    = "COLMEMIDGRP";
     
     private static final String TAXTREEDEFID   = "TAXTREEDEFID";
-    private static final String LOCTREEDEFID   = "LOCTREEDEFID";
+    private static final String STORTREEDEFID  = "STORTREEDEFID";
     private static final String LITHOTREEDEFID = "LITHOTREEDEFID";
     private static final String GTPTREEDEFID   = "GTPTREEDEFID";
     private static final String GEOTREEDEFID   = "GEOTREEDEFID";
@@ -94,9 +94,9 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                 sql += (isHQL ? "definition" : "LithoStratTreeDefID") + " = " + LITHOTREEDEFID;
                 return adjustSQL(sql);
                 
-            } else if (tableInfo.getTableId() == Location.getClassTableId())
+            } else if (tableInfo.getTableId() == Storage.getClassTableId())
             {
-                sql += (isHQL ? "definition" : "LocationTreeDefID") + " = " + LOCTREEDEFID;
+                sql += (isHQL ? "definition" : "StorageTreeDefID") + " = " + STORTREEDEFID;
                 return adjustSQL(sql);
                 
             } else if (tableInfo.getTableId() == PrepType.getClassTableId())
@@ -189,12 +189,12 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                     }
                 }
                 
-                if (StringUtils.contains(adjSQL, LOCTREEDEFID))
+                if (StringUtils.contains(adjSQL, STORTREEDEFID))
                 {
-                    LocationTreeDef locTreeDef = LocationTreeDef.getCurrentLocationTreeDef();
+                    StorageTreeDef locTreeDef = StorageTreeDef.getCurrentStorageTreeDef();
                     if (locTreeDef != null)
                     {
-                        adjSQL = StringUtils.replace(adjSQL, LOCTREEDEFID, Integer.toString(locTreeDef.getLocationTreeDefId()));
+                        adjSQL = StringUtils.replace(adjSQL, STORTREEDEFID, Integer.toString(locTreeDef.getStorageTreeDefId()));
                     }
                 }
                 

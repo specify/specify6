@@ -9,7 +9,7 @@
     <dialog type="search" viewset="Search" view="GeologicTimePeriodSearch" name="GeologicTimePeriodSearch" title="GeologicTimePeriodSearch"  class="edu.ku.brc.specify.datamodel.GeologicTimePeriod" idfield="geologicTimePeriodId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="LithoStratSearch"         name="LithoStratSearch"         title="LithoStratSearchTitle"     class="edu.ku.brc.specify.datamodel.LithoStrat"     idfield="lithoStratId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="LocalitySearch"           name="LocalitySearch"           title="LocalitySearchTitle"       class="edu.ku.brc.specify.datamodel.Locality"       idfield="localityId" helpcontext="CBXQSearch"/>
-    <dialog type="search" viewset="Search" view="LocationSearch"           name="LocationSearch"           title="LocationSearchTitle"       class="edu.ku.brc.specify.datamodel.Location"       idfield="locationId" helpcontext="CBXQSearch"/>
+    <dialog type="search" viewset="Search" view="StorageSearch"           name="StorageSearch"           title="StorageSearchTitle"       class="edu.ku.brc.specify.datamodel.Storage"           idfield="storageId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="PaleoContextSearch"       name="PaleoContextSearch"       title="PaleoContextSearchTitle"   class="edu.ku.brc.specify.datamodel.PaleoContext"   idfield="paleoContextId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="PermitSearch"             name="PermitSearch"             title="PermitSearchTitle"         class="edu.ku.brc.specify.datamodel.Permit"         idfield="permitId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="PrepTypeSearch"           name="PrepTypeSearch"           title="PrepTypeSearch"            class="edu.ku.brc.specify.datamodel.PrepType"       idfield="prepTypeId" helpcontext="CBXQSearch"/>
@@ -26,7 +26,7 @@
     <dialog type="display" viewset="Global"      view="Geography"          name="GeographyDisplay"         title="GeographyTitle"            class="edu.ku.brc.specify.datamodel.Geography"/>
     <dialog type="display" viewset="Global"      view="LithoStrat"         name="LithoStratDisplay"        title="Lithostratigraphy"         class="edu.ku.brc.specify.datamodel.LithoStrat"/>
     <dialog type="display" viewset="Global"      view="Locality"           name="LocalityDisplay"          title="LocalityTitle"             class="edu.ku.brc.specify.datamodel.Locality"/>
-    <dialog type="display" viewset="Global"      view="Location"           name="LocationDisplay"          title="LocationTitle"             class="edu.ku.brc.specify.datamodel.Location"/>
+    <dialog type="display" viewset="Global"      view="Storage"           name="StorageDisplay"          title="StorageTitle"             class="edu.ku.brc.specify.datamodel.Storage"/>
     <dialog type="display" viewset="Global"      view="Permit"             name="PermitDisplay"            title="PermitTitle"               class="edu.ku.brc.specify.datamodel.Agent"/>
     <dialog type="display" viewset="Fish Views"  view="Preparation"        name="PreparationDisplay"       title="Preparation"               class="edu.ku.brc.specify.datamodel.Preparation"/>
     <dialog type="display" viewset="Global"      view="Taxon"              name="TaxonDisplay"             title="TaxonTitle"                class="edu.ku.brc.specify.datamodel.Taxon"/>

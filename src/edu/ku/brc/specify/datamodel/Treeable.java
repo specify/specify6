@@ -159,12 +159,12 @@ public interface Treeable<N extends Treeable<N,D,I>,
 	public void setDefinition(D treeDef);
 	
 	/**
-	 * @return the TreeDefinitionItemIface object representing this Treeable's location in the tree
+	 * @return the TreeDefinitionItemIface object representing this Treeable's storage in the tree
 	 */
 	public I getDefinitionItem();
 	
 	/**
-	 * @param defItem the new TreeDefinitionItemIface object representing this Treeable's location in the tree
+	 * @param defItem the new TreeDefinitionItemIface object representing this Treeable's storage in the tree
 	 * 
 	 * @throws IllegalArgumentException if defItem isn't an object of the correct type to represent this Treeable's tree definition
 	 */

@@ -11,34 +11,34 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import javax.persistence.Transient;
 
 import edu.ku.brc.specify.datamodel.CollectionType;
-import edu.ku.brc.specify.datamodel.Location;
-import edu.ku.brc.specify.datamodel.LocationTreeDef;
-import edu.ku.brc.specify.datamodel.LocationTreeDefItem;
+import edu.ku.brc.specify.datamodel.Storage;
+import edu.ku.brc.specify.datamodel.StorageTreeDef;
+import edu.ku.brc.specify.datamodel.StorageTreeDefItem;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.forms.FormViewObj;
 
 /**
- * Task that handles the UI for viewing location data.
+ * Task that handles the UI for viewing storage data.
  * 
  * @code_status Beta
  * @author jstewart
  */
-public class LocationTreeTask extends BaseTreeTask<Location,LocationTreeDef,LocationTreeDefItem>
+public class StorageTreeTask extends BaseTreeTask<Storage,StorageTreeDef,StorageTreeDefItem>
 {
-	public static final String LOCATION = "LocationTree";
+	public static final String LOCATION = "StorageTree";
 	
 	/**
 	 * Constructor.
 	 */
-	public LocationTreeTask()
+	public StorageTreeTask()
 	{
         super(LOCATION, getResourceString(LOCATION));
-        treeDefClass = LocationTreeDef.class;
+        treeDefClass = StorageTreeDef.class;
         icon = IconManager.getIcon(LOCATION,IconManager.IconSize.Std24);
         
-        menuItemText      = getResourceString("LocationMenu");
-        menuItemMnemonic  = getResourceString("LocationMnemonic");
-        starterPaneText   = getResourceString("LocationStarterPaneText");
+        menuItemText      = getResourceString("StorageMenu");
+        menuItemMnemonic  = getResourceString("StorageMnemonic");
+        starterPaneText   = getResourceString("StorageStarterPaneText");
         commandTypeString = LOCATION;
         
         initialize();
@@ -46,9 +46,9 @@ public class LocationTreeTask extends BaseTreeTask<Location,LocationTreeDef,Loca
     
     @Transient
     @Override
-    protected LocationTreeDef getCurrentTreeDef()
+    protected StorageTreeDef getCurrentTreeDef()
     {
-        return CollectionType.getCurrentCollectionType().getLocationTreeDef();
+        return CollectionType.getCurrentCollectionType().getStorageTreeDef();
     }
 
 //    protected void adjustTreeDefForm(FormViewObj form)
@@ -62,15 +62,15 @@ public class LocationTreeTask extends BaseTreeTask<Location,LocationTreeDef,Loca
     @Override
     public void adjustForm(FormViewObj form)
     {
-        if (form.getDataObj() instanceof Location || form.getViewDef().getClassName().equals(Location.class.getName()))
+        if (form.getDataObj() instanceof Storage || form.getViewDef().getClassName().equals(Storage.class.getName()))
         {
             adjustNodeForm(form);
         }
-//        else if (form.getDataObj() instanceof LocationTreeDef)
+//        else if (form.getDataObj() instanceof StorageTreeDef)
 //        {
 //            adjustTreeDefForm(form);
 //        }
-//        else if (form.getDataObj() instanceof LocationTreeDefItem)
+//        else if (form.getDataObj() instanceof StorageTreeDefItem)
 //        {
 //            adjustTreeDefItemForm(form);
 //        }

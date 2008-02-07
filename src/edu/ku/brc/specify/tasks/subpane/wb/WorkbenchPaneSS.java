@@ -1559,7 +1559,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 newLoc = new SimpleMapLocation(latitude,longitude,null,null);
             }
             
-            // add the location to the list
+            // add the storage to the list
             mapLocations.add(newLoc);
         }
         
@@ -2927,7 +2927,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         {
             // This is needed for Mac OS X, not Linux and I am not sure about Windows
             // If the fonts aren't the same then the double click doesn't find the correct
-            // location to insert the cursor
+            // storage to insert the cursor
             if (table.getCellRenderer(row, column) instanceof JComponent)
             {
                 JComponent jcomp = (JComponent)table.getCellRenderer(row, column);

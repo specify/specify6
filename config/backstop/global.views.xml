@@ -272,24 +272,24 @@
             </altviews>
         </view>
         
-        <view name="Location"
-            class="edu.ku.brc.specify.datamodel.Location"
+        <view name="Storage"
+            class="edu.ku.brc.specify.datamodel.Storage"
             resourcelabels="false">
-            <desc><![CDATA[Location data entry form.]]></desc>
+            <desc><![CDATA[Storage data entry form.]]></desc>
             <altviews>
-                <altview name="Location View" viewdef="Location" label="View" mode="view"/>
-                <altview name="Location Edit" viewdef="Location" label="Edit" mode="edit" default="true"/>
+                <altview name="Storage View" viewdef="Storage" label="View" mode="view"/>
+                <altview name="Storage Edit" viewdef="Storage" label="Edit" mode="edit" default="true"/>
             </altviews>
         </view>
         
-        <view name="LocationSubform"
-            class="edu.ku.brc.specify.datamodel.Location"
+        <view name="StorageSubform"
+            class="edu.ku.brc.specify.datamodel.Storage"
             resourcelabels="false">
-            <desc><![CDATA[Location data entry form.]]></desc>
+            <desc><![CDATA[Storage data entry form.]]></desc>
             <altviews>
-                <altview name="Location Children View" viewdef="LocationSubform" label="View" mode="view"/>
+                <altview name="Storage Children View" viewdef="StorageSubform" label="View" mode="view"/>
                 <!--
-                <altview name="Location Children Table View" viewdef="LocationSubform Table" label="Grid" mode="view" default="true"/>
+                <altview name="Storage Children Table View" viewdef="StorageSubform Table" label="Grid" mode="view" default="true"/>
 				-->
             </altviews>
         </view>
@@ -326,21 +326,21 @@
             </altviews>
         </view>
         
-        <view name="LocationTreeDefItem"
-            class="edu.ku.brc.specify.datamodel.LocationTreeDefItem"
+        <view name="StorageTreeDefItem"
+            class="edu.ku.brc.specify.datamodel.StorageTreeDefItem"
             resourcelabels="false">
-            <desc><![CDATA[LocationTreeDefItem Form]]></desc>
+            <desc><![CDATA[StorageTreeDefItem Form]]></desc>
             <altviews>
-                <altview name="Tree Def Item Edit" viewdef="LocationTreeDefItem" label="Edit" mode="edit" validated="true"/>
+                <altview name="Tree Def Item Edit" viewdef="StorageTreeDefItem" label="Edit" mode="edit" validated="true"/>
             </altviews>
         </view>
         
-        <view name="RootLocationTreeDefItem"
-            class="edu.ku.brc.specify.datamodel.LocationTreeDefItem"
+        <view name="RootStorageTreeDefItem"
+            class="edu.ku.brc.specify.datamodel.StorageTreeDefItem"
             resourcelabels="false">
-            <desc><![CDATA[Root LocationTreeDefItem Form]]></desc>
+            <desc><![CDATA[Root StorageTreeDefItem Form]]></desc>
             <altviews>
-                <altview name="Root Tree Def Item Edit" viewdef="RootLocationTreeDefItem" label="Edit" mode="edit" validated="true"/>
+                <altview name="Root Tree Def Item Edit" viewdef="RootStorageTreeDefItem" label="Edit" mode="edit" validated="true"/>
             </altviews>
         </view>
         
@@ -1382,13 +1382,13 @@
         </viewdef>
         
         <viewdef
-            name="Location"
+            name="Storage"
             type="form"
-            class="edu.ku.brc.specify.datamodel.Location"
+            class="edu.ku.brc.specify.datamodel.Storage"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             
-            <desc><![CDATA[New Location Node Form]]></desc>
+            <desc><![CDATA[New Storage Node Form]]></desc>
             <enableRules>
                 <rule id="definitionItem"><![CDATA[parent.getValue() != null]]></rule>
             </enableRules>
@@ -1397,7 +1397,7 @@
 
             <rows>
                 <row>
-                	<cell type="label" label="Location" icon="Location" recordobj="true" colspan="3"/>
+                	<cell type="label" label="Storage" icon="Storage" recordobj="true" colspan="3"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="name" label="Name"/>
@@ -1409,7 +1409,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="parent" label="Parent"/>
-                	<cell type="field" id="parent" valtype="Focus" isrequired="true" uitype="querycbx" initialize="name=Location;title=Location;editbtn=false;newbtn=false;editoncreate=true" name="parent"/>
+                	<cell type="field" id="parent" valtype="Focus" isrequired="true" uitype="querycbx" initialize="name=Storage;title=Storage;editbtn=false;newbtn=false;editoncreate=true" name="parent"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="definitionItem" label="Rank"/>
@@ -1419,7 +1419,7 @@
                     <cell type="separator" label="Children" colspan="3"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="LocationSubform" id="children" name="children" colspan="3"/>
+                    <cell type="subview" viewname="StorageSubform" id="children" name="children" colspan="3"/>
                 </row>
             </rows>
         </viewdef>
@@ -1563,13 +1563,13 @@
         </viewdef>
         
         <viewdef
-            name="LocationSubform"
+            name="StorageSubform"
             type="form"
-            class="edu.ku.brc.specify.datamodel.Location"
+            class="edu.ku.brc.specify.datamodel.Storage"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             
-            <desc><![CDATA[New Location Node Form]]></desc>
+            <desc><![CDATA[New Storage Node Form]]></desc>
             <enableRules>
             </enableRules>
             <columnDef>100px,3dlu,p:g</columnDef>
@@ -1627,14 +1627,14 @@
         </viewdef>
 
         <viewdef
-            name="LocationSubform Table"
+            name="StorageSubform Table"
             type="formtable"
-            class="edu.ku.brc.specify.datamodel.Location"
+            class="edu.ku.brc.specify.datamodel.Storage"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             
-            <desc><![CDATA[Location children table view.]]></desc>
-            <definition>LocationSubform</definition>
+            <desc><![CDATA[Storage children table view.]]></desc>
+            <definition>StorageSubform</definition>
         </viewdef>
 
         <viewdef
@@ -1650,12 +1650,12 @@
 
         <viewdef
             type="form"
-            name="LocationTreeDefItem"
-            class="edu.ku.brc.specify.datamodel.LocationTreeDefItem"
+            name="StorageTreeDefItem"
+            class="edu.ku.brc.specify.datamodel.StorageTreeDefItem"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             
-            <desc><![CDATA[Location Tree Definition Item Form]]></desc>
+            <desc><![CDATA[Storage Tree Definition Item Form]]></desc>
             <columnDef>p,3dlu,p,6dlu,p</columnDef>
             <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
             
@@ -1695,12 +1695,12 @@
 
         <viewdef
             type="form"
-            name="RootLocationTreeDefItem"
-            class="edu.ku.brc.specify.datamodel.LocationTreeDefItem"
+            name="RootStorageTreeDefItem"
+            class="edu.ku.brc.specify.datamodel.StorageTreeDefItem"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             
-            <desc><![CDATA[Root Location Tree Definition Item Form]]></desc>
+            <desc><![CDATA[Root Storage Tree Definition Item Form]]></desc>
             <columnDef>p,3dlu,p,6dlu,p</columnDef>
             <rowDef>p,2dlu,p,2dlu,p,2dlu,p</rowDef>
             

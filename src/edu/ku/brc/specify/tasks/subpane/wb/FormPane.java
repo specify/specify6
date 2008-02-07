@@ -213,7 +213,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
             uiComps.add(panel);
             add(panel);
             
-            // NOTE: that the constructor sets the x,y location from WorkbenchTemplateMappingItem object
+            // NOTE: that the constructor sets the x,y storage from WorkbenchTemplateMappingItem object
             // so the ones with XCoord and YCoord set do not need to be positioned
             if (wbtmi.getXCoord() == null || wbtmi.getYCoord() == null || wbtmi.getXCoord() == -1 || wbtmi.getYCoord() == -1)
             {

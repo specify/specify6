@@ -457,7 +457,7 @@ public class SpecifyDBConverter
         try
         {
         	GenericDBConversion.setShouldCreateMapTables(startfromScratch);
-            GenericDBConversion.setShouldDeleteMapTables(true);
+            GenericDBConversion.setShouldDeleteMapTables(false);
             
             frame.setOverall(0, 19);
             SwingUtilities.invokeLater(new Runnable() {
@@ -526,7 +526,9 @@ public class SpecifyDBConverter
                 
                 frame.incOverall();
 
-
+                conversion.convertDivision();
+                frame.incOverall();
+                
                 frame.setDesc("Converting CollectionObjectDefs.");
                 log.info("Converting CollectionObjectDefs.");
                 boolean convertCollectionType = false;
@@ -575,6 +577,7 @@ public class SpecifyDBConverter
                     idMapperMgr.addTableMapper("CollectionObjectType", "CollectionObjectTypeID");
                 }
                 frame.incOverall();
+
                 
                 frame.setDesc("Converting Agents.");
                 log.info("Converting Agents.");
@@ -646,10 +649,6 @@ public class SpecifyDBConverter
                     frame.incOverall();
                     frame.incOverall();
                 }
-                
-                conversion.convertDivision();
-                frame.incOverall();
-                
                 
                 frame.setDesc("Converting Determinations Records");
                 log.info("Converting Determinations Records");
@@ -775,12 +774,12 @@ public class SpecifyDBConverter
                     frame.incOverall();
                 }
                 
-                frame.setDesc("Creating Location");
-                log.info("Creating Location");
-                boolean doLocation = false;
-                if (doLocation || doAll )
+                frame.setDesc("Creating Storage");
+                log.info("Creating Storage");
+                boolean doStorage = false;
+                if (doStorage || doAll )
                 {
-                    conversion.buildSampleLocationTreeDef();
+                    conversion.buildSampleStorageTreeDef();
                 }
                 frame.incOverall();
                 

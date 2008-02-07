@@ -120,9 +120,6 @@
 		<mapping class="edu.ku.brc.specify.datamodel.LocalityDetail"/>
 		<mapping class="edu.ku.brc.specify.datamodel.LocalityAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.LocalityNameAlias"/>
-		<mapping class="edu.ku.brc.specify.datamodel.Location"/>
-		<mapping class="edu.ku.brc.specify.datamodel.LocationTreeDef"/>
-		<mapping class="edu.ku.brc.specify.datamodel.LocationTreeDefItem"/>
 		<mapping class="edu.ku.brc.specify.datamodel.OtherIdentifier"/>
 		<mapping class="edu.ku.brc.specify.datamodel.PaleoContext"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Permit"/>
@@ -161,6 +158,9 @@
 		<mapping class="edu.ku.brc.specify.datamodel.SpQuery"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpQueryField"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpViewSetObj"/>
+		<mapping class="edu.ku.brc.specify.datamodel.Storage"/>
+		<mapping class="edu.ku.brc.specify.datamodel.StorageTreeDef"/>
+		<mapping class="edu.ku.brc.specify.datamodel.StorageTreeDefItem"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Taxon"/>
 		<mapping class="edu.ku.brc.specify.datamodel.TaxonAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.TaxonCitation"/>

@@ -242,8 +242,8 @@
     </format>
 
     <format
-        name="Location"
-        class="edu.ku.brc.specify.datamodel.Location"
+        name="Storage"
+        class="edu.ku.brc.specify.datamodel.Storage"
         default="true"
         >
         <switch single="true">
@@ -314,8 +314,8 @@
     </format>
 
    <format
-        name="LocationTreeDef"
-        class="edu.ku.brc.specify.datamodel.LocationTreeDef"
+        name="StorageTreeDef"
+        class="edu.ku.brc.specify.datamodel.StorageTreeDef"
         default="true"
         >
         <switch single="true">
@@ -326,8 +326,8 @@
     </format>
 
     <format
-        name="LocationTreeDefItem"
-        class="edu.ku.brc.specify.datamodel.LocationTreeDefItem"
+        name="StorageTreeDefItem"
+        class="edu.ku.brc.specify.datamodel.StorageTreeDefItem"
         default="true"
         >
         <switch single="true">

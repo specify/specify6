@@ -17,7 +17,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
 import edu.ku.brc.specify.datamodel.LithoStrat;
-import edu.ku.brc.specify.datamodel.Location;
+import edu.ku.brc.specify.datamodel.Storage;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
@@ -173,9 +173,9 @@ public class TreeHelper
             return;
         }
         
-        if (treeNode instanceof Location)
+        if (treeNode instanceof Storage)
         {
-            fixFullnameForNodeAndDescendants((Location)treeNode);
+            fixFullnameForNodeAndDescendants((Storage)treeNode);
             return;
         }
         
@@ -239,14 +239,14 @@ public class TreeHelper
 
     /**
      * @see #fixFullnameForNodeAndDescendants(Treeable)
-     * @param a {@link Location} node
+     * @param a {@link Storage} node
      */
-    public static void fixFullnameForNodeAndDescendants(Location loc)
+    public static void fixFullnameForNodeAndDescendants(Storage loc)
     {
         String generated = generateFullname(loc);
         loc.setFullName(generated);
         
-        for (Location child: loc.getChildren())
+        for (Storage child: loc.getChildren())
         {
             fixFullnameForNodeAndDescendants(child);
         }
@@ -297,9 +297,9 @@ public class TreeHelper
             return;
         }
         
-        if (treeNode instanceof Location)
+        if (treeNode instanceof Storage)
         {
-            initializeRelatedObjects((Location)treeNode);
+            initializeRelatedObjects((Storage)treeNode);
             return;
         }
         
@@ -316,7 +316,7 @@ public class TreeHelper
         }
     }
     
-    public static void initializeRelatedObjects(Location loc)
+    public static void initializeRelatedObjects(Storage loc)
     {
         loc.getContainers().size();
         loc.getPreparations().size();

@@ -314,7 +314,7 @@ public class CollectingEvent extends CollectionMember implements AttachmentOwner
     }
 
     /**
-     *      * Original statement (literal quotation) of the location of the CollectingEvent as given by the Collector.
+     *      * Original statement (literal quotation) of the storage of the CollectingEvent as given by the Collector.
      */
     @Lob
     @Column(name = "VerbatimLocality", length=2048)

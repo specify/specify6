@@ -217,13 +217,13 @@
         </table>
         <table name="edu.ku.brc.specify.datamodel.LocalityCitation" abbrev="locc" id="57" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.LocalityNameAlias" abbrev="locna" id="120" searchable="true"/>
-        <table name="edu.ku.brc.specify.datamodel.Location" abbrev="lcn" id="58" searchable="true">
-            <display objtitle="Location" view="Location" dataobjformatter="Location" searchdlg="LocationSearch" newobjdlg="LocationDisplay"/>
-            <businessrule>edu.ku.brc.specify.datamodel.busrules.LocationBusRules</businessrule>            
+        <table name="edu.ku.brc.specify.datamodel.Storage" abbrev="lcn" id="58" searchable="true">
+            <display objtitle="Storage" view="Storage" dataobjformatter="Storage" searchdlg="StorageSearch" newobjdlg="StorageDisplay"/>
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.StorageBusRules</businessrule>            
         </table>
-        <table name="edu.ku.brc.specify.datamodel.LocationTreeDef" abbrev="lntd" id="59"/>
-        <table name="edu.ku.brc.specify.datamodel.LocationTreeDefItem" abbrev="lntdi" id="60">
-            <businessrule>edu.ku.brc.specify.datamodel.busrules.LocationBusRules</businessrule>            
+        <table name="edu.ku.brc.specify.datamodel.StorageTreeDef" abbrev="lntd" id="59"/>
+        <table name="edu.ku.brc.specify.datamodel.StorageTreeDefItem" abbrev="lntdi" id="60">
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.StorageBusRules</businessrule>            
 		</table>
         <table name="edu.ku.brc.specify.datamodel.OtherIdentifier" abbrev="oi" id="61" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.PaleoContext" abbrev="pc" id="32" searchable="true">

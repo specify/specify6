@@ -1375,11 +1375,12 @@ public class BasicSQLUtils
                         }
                         if (i > 0) str.append(", ");
                         
-                        if (newFieldName.getName().equals("Version"))
+                        if (newFieldName.getName().equals("DivisionID"))
                         {
                             int x= 0;
                             x++;
                         }
+                        
                         BasicSQLUtilsMapValueIFace valueMapper = columnValueMapper.get(newFieldName.getName());
                         if (valueMapper != null)
                         {

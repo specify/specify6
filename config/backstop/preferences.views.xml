@@ -340,7 +340,7 @@
             <desc><![CDATA[Tree Options Preference Form.]]></desc>
             
             <columnDef>f:p:g,10px,f:p:g</columnDef>
-            <rowDef>p,4px,p,4px,p,20px,p</rowDef>
+            <rowDef>p,4px,p,15px,p,15px,p,15px,p</rowDef>
             
             <rows>
                 <row>
@@ -431,23 +431,27 @@
 			            </rows>
 			        </cell>
 			    </row>
-<!-- 
                 <row>
-                    <cell type="separator" label="Storage LocationTree" colspan="6"/>
+                    <cell type="panel" id="16" name="treepanel" coldef="p,2px,p,p:g,f:p:g" rowdef="p,2px,p,2px,p,2px,p">
+                        <rows>
+                            <row>
+                                <cell type="separator" label="Storage Location Tree" colspan="5"/>
+                            </row>
+                            <row>
+                                <cell type="label" labelfor="5" label="Show Counts Below"/>
+                                <cell type="field" id="5" name="TreeEditor.Rank.Threshold.Storage" uitype="combobox" colspan="3" ignore="true"/>
+                            </row>
+                            <row>
+                                <cell type="label" labelfor="TreeColColor1.Storage" label="Column Color #1"/>
+                                <cell type="field" uitype="colorchooser" id="TreeColColor1.Storage" name="Treeeditor.TreeColColor1.Storage"/>
+                            </row>
+                            <row>
+                                <cell type="label" labelfor="TreeColColor2.Storage" label="Column Color #2"/>
+                                <cell type="field" uitype="colorchooser" id="TreeColColor2.Storage" name="Treeeditor.TreeColColor2.Storage"/>
+                            </row>
+                        </rows>
+                    </cell>
                 </row>
-                <row>
-                    <cell type="label" labelfor="5" label="Show Counts Below"/>
-                    <cell type="field" id="5" name="TreeEditor.Rank.Threshold.Storage" uitype="combobox" colspan="3" ignore="true"/>
-                </row>
-               <row>
-                    <cell type="label" labelfor="TreeColColor1.Storage" label="Column Color #1"/>
-                    <cell type="field" uitype="colorchooser" id="TreeColColor1.Storage" name="Treeeditor.TreeColColor1.Storage"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="TreeColColor2.Storage" label="Column Color #2"/>
-                    <cell type="field" uitype="colorchooser" id="TreeColColor2.Storage" name="Treeeditor.TreeColColor2.Storage"/>
-                </row>
- -->
             </rows>
         </viewdef>
         

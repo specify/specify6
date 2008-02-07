@@ -105,7 +105,7 @@ public class JasperReportsCache implements DataCacheIFace
     }
     
     /**
-     * XXX This really needs to be moved to a more centralized location
+     * XXX This really needs to be moved to a more centralized storage
      *
      */
     public static File checkAndCreateReportsCache()

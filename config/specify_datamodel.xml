@@ -686,8 +686,8 @@
     <table classname="edu.ku.brc.specify.datamodel.Attachment" table="attachment" tableid="41" searchable="true" businessrule="edu.ku.brc.specify.datamodel.busrules.AttachmentBusRules" abbrv="att">
       <desc language="en">This represents the actual attachment. The attachment itself is not sorted in the database. The information in this record identifies everything the application will need to load and display the attachment. The attachment location is an absolute path to t</desc>
       <display objtitle="Attachment" view="AttachmentsForm" newobjdlg="AttachmentsForm"/>
-      <field column="AttachmentLocation" name="attachmentLocation" type="java.lang.String" length="128" updatable="true" required="false" unique="false" indexed="false">
-        <nameDesc language="en">Attachment Location</nameDesc>
+      <field column="AttachmentStorage" name="attachmentStorage" type="java.lang.String" length="128" updatable="true" required="false" unique="false" indexed="false">
+        <nameDesc language="en">Attachment Storage</nameDesc>
       </field>
       <field column="CopyrightDate" name="copyrightDate" type="java.lang.String" length="64" updatable="true" required="false" unique="false" indexed="false">
         <nameDesc language="en">Copyright Date</nameDesc>
@@ -2385,8 +2385,8 @@
       <relationship type="many-to-many" classname="edu.ku.brc.specify.datamodel.Locality" relationshipname="localities" othersidename="collectionTypes" updatable="false" required="false">
         <nameDesc language="en">Localities</nameDesc>
       </relationship>
-      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.LocationTreeDef" relationshipname="locationTreeDef" columnname="LocationTreeDefID" othersidename="collectionTypes" updatable="false" required="false">
-        <nameDesc language="en">Location Tree Def</nameDesc>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.StorageTreeDef" relationshipname="storageTreeDef" columnname="StorageTreeDefID" othersidename="collectionTypes" updatable="false" required="false">
+        <nameDesc language="en">Storage Tree Def</nameDesc>
       </relationship>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="modifiedByAgent" columnname="ModifiedByAgentID" updatable="false" required="false">
         <nameDesc language="en">Modified By Agent</nameDesc>
@@ -2829,8 +2829,8 @@
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="createdByAgent" columnname="CreatedByAgentID" updatable="false" required="false">
         <nameDesc language="en">Created By Agent</nameDesc>
       </relationship>
-      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Location" relationshipname="location" columnname="LocationID" othersidename="containers" updatable="false" required="false">
-        <nameDesc language="en">Location</nameDesc>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Storage" relationshipname="storage" columnname="StorageID" othersidename="containers" updatable="false" required="false">
+        <nameDesc language="en">Storage</nameDesc>
       </relationship>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="modifiedByAgent" columnname="ModifiedByAgentID" updatable="false" required="false">
         <nameDesc language="en">Modified By Agent</nameDesc>
@@ -3511,8 +3511,8 @@
       <field column="EndDate" name="endDate" type="java.util.Calendar" indexName="FNBEndDateIDX" updatable="true" required="false" unique="false" indexed="true">
         <nameDesc language="en">End Date</nameDesc>
       </field>
-      <field column="Location" name="location" type="java.lang.String" length="64" updatable="true" required="false" unique="false" indexed="false">
-        <nameDesc language="en">Location</nameDesc>
+      <field column="Storage" name="storage" type="java.lang.String" length="64" updatable="true" required="false" unique="false" indexed="false">
+        <nameDesc language="en">Storage</nameDesc>
       </field>
       <field column="Name" name="name" type="java.lang.String" length="32" indexName="FNBNameIDX" updatable="true" required="false" unique="false" indexed="true">
         <nameDesc language="en">Name</nameDesc>
@@ -5194,8 +5194,8 @@
         <nameDesc language="en">Modified By Agent</nameDesc>
       </relationship>
     </table>
-    <table classname="edu.ku.brc.specify.datamodel.Location" table="location" tableid="58" searchable="true" businessrule="edu.ku.brc.specify.datamodel.busrules.LocationBusRules" abbrv="lcn">
-      <display objtitle="Location" view="Location" dataobjformatter="Location" searchdlg="LocationSearch" newobjdlg="LocationDisplay"/>
+    <table classname="edu.ku.brc.specify.datamodel.Storage" table="storage" tableid="58" searchable="true" businessrule="edu.ku.brc.specify.datamodel.busrules.StorageBusRules" abbrv="lcn">
+      <display objtitle="Storage" view="Storage" dataobjformatter="Storage" searchdlg="StorageSearch" newobjdlg="StorageDisplay"/>
       <field column="Abbrev" name="abbrev" type="java.lang.String" length="16" updatable="true" required="false" unique="false" indexed="false">
         <nameDesc language="en">Abbreviation</nameDesc>
       </field>
@@ -5251,30 +5251,30 @@
       <field column="Version" name="version" type="java.lang.Integer" updatable="true" required="false" unique="false" indexed="false">
         <nameDesc language="en">Version</nameDesc>
       </field>
-      <id column="LocationID" name="locationId" type="java.lang.Integer"/>
+      <id column="StorageID" name="storageId" type="java.lang.Integer"/>
       <tableindex indexName="LocNameIDX" columnNames="Name"/>
       <tableindex indexName="LocFullNameIDX" columnNames="FullName"/>
-      <nameDesc language="en">Location</nameDesc>
-      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Container" relationshipname="containers" othersidename="location" updatable="false" required="false">
+      <nameDesc language="en">Storage</nameDesc>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Container" relationshipname="containers" othersidename="storage" updatable="false" required="false">
         <nameDesc language="en">Containers</nameDesc>
       </relationship>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="createdByAgent" columnname="CreatedByAgentID" updatable="false" required="false">
         <nameDesc language="en">Created By Agent</nameDesc>
       </relationship>
-      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.LocationTreeDef" relationshipname="definition" columnname="LocationTreeDefID" othersidename="treeEntries" updatable="false" required="true">
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.StorageTreeDef" relationshipname="definition" columnname="StorageTreeDefID" othersidename="treeEntries" updatable="false" required="true">
         <nameDesc language="en">Definition</nameDesc>
       </relationship>
-      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.LocationTreeDefItem" relationshipname="definitionItem" columnname="LocationTreeDefItemID" othersidename="treeEntries" updatable="false" required="true">
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.StorageTreeDefItem" relationshipname="definitionItem" columnname="StorageTreeDefItemID" othersidename="treeEntries" updatable="false" required="true">
         <nameDesc language="en">Definition Item</nameDesc>
       </relationship>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="modifiedByAgent" columnname="ModifiedByAgentID" updatable="false" required="false">
         <nameDesc language="en">Modified By Agent</nameDesc>
       </relationship>
-      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Preparation" relationshipname="preparations" othersidename="location" updatable="false" required="false">
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Preparation" relationshipname="preparations" othersidename="storage" updatable="false" required="false">
         <nameDesc language="en">Preparations</nameDesc>
       </relationship>
     </table>
-    <table classname="edu.ku.brc.specify.datamodel.LocationTreeDef" table="locationtreedef" tableid="59" searchable="false" abbrv="lntd">
+    <table classname="edu.ku.brc.specify.datamodel.StorageTreeDef" table="storagetreedef" tableid="59" searchable="false" abbrv="lntd">
       <field column="FullNameDirection" name="fullNameDirection" type="java.lang.Integer" updatable="true" required="false" unique="false" indexed="false">
         <nameDesc language="en">Full Name Direction</nameDesc>
       </field>
@@ -5294,9 +5294,9 @@
       <field column="Version" name="version" type="java.lang.Integer" updatable="true" required="false" unique="false" indexed="false">
         <nameDesc language="en">Version</nameDesc>
       </field>
-      <id column="LocationTreeDefID" name="locationTreeDefId" type="java.lang.Integer"/>
-      <nameDesc language="en">Location Tree Definition</nameDesc>
-      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.CollectionType" relationshipname="collectionTypes" othersidename="locationTreeDef" updatable="false" required="false">
+      <id column="StorageTreeDefID" name="storageTreeDefId" type="java.lang.Integer"/>
+      <nameDesc language="en">Storage Tree Definition</nameDesc>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.CollectionType" relationshipname="collectionTypes" othersidename="storageTreeDef" updatable="false" required="false">
         <nameDesc language="en">Collection Types</nameDesc>
       </relationship>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="createdByAgent" columnname="CreatedByAgentID" updatable="false" required="false">
@@ -5305,14 +5305,14 @@
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="modifiedByAgent" columnname="ModifiedByAgentID" updatable="false" required="false">
         <nameDesc language="en">Modified By Agent</nameDesc>
       </relationship>
-      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.LocationTreeDefItem" relationshipname="treeDefItems" othersidename="treeDef" updatable="false" required="false">
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.StorageTreeDefItem" relationshipname="treeDefItems" othersidename="treeDef" updatable="false" required="false">
         <nameDesc language="en">Tree Def Items</nameDesc>
       </relationship>
-      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Location" relationshipname="treeEntries" othersidename="definition" updatable="false" required="false">
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Storage" relationshipname="treeEntries" othersidename="definition" updatable="false" required="false">
         <nameDesc language="en">Tree Entries</nameDesc>
       </relationship>
     </table>
-    <table classname="edu.ku.brc.specify.datamodel.LocationTreeDefItem" table="locationtreedefitem" tableid="60" searchable="false" businessrule="edu.ku.brc.specify.datamodel.busrules.LocationBusRules" abbrv="lntdi">
+    <table classname="edu.ku.brc.specify.datamodel.StorageTreeDefItem" table="storagetreedefitem" tableid="60" searchable="false" businessrule="edu.ku.brc.specify.datamodel.busrules.StorageBusRules" abbrv="lntdi">
       <field column="FullNameSeparator" name="fullNameSeparator" type="java.lang.String" length="32" updatable="true" required="false" unique="false" indexed="false">
         <nameDesc language="en">Full Name Separator</nameDesc>
       </field>
@@ -5351,18 +5351,18 @@
       <field column="Version" name="version" type="java.lang.Integer" updatable="true" required="false" unique="false" indexed="false">
         <nameDesc language="en">Version</nameDesc>
       </field>
-      <id column="LocationTreeDefItemID" name="locationTreeDefItemId" type="java.lang.Integer"/>
-      <nameDesc language="en">Location Tree Definition Item</nameDesc>
+      <id column="StorageTreeDefItemID" name="storageTreeDefItemId" type="java.lang.Integer"/>
+      <nameDesc language="en">Storage Tree Definition Item</nameDesc>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="createdByAgent" columnname="CreatedByAgentID" updatable="false" required="false">
         <nameDesc language="en">Created By Agent</nameDesc>
       </relationship>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="modifiedByAgent" columnname="ModifiedByAgentID" updatable="false" required="false">
         <nameDesc language="en">Modified By Agent</nameDesc>
       </relationship>
-      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.LocationTreeDef" relationshipname="treeDef" columnname="LocationTreeDefID" othersidename="treeDefItems" updatable="false" required="true">
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.StorageTreeDef" relationshipname="treeDef" columnname="StorageTreeDefID" othersidename="treeDefItems" updatable="false" required="true">
         <nameDesc language="en">Tree Def</nameDesc>
       </relationship>
-      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Location" relationshipname="treeEntries" othersidename="definitionItem" updatable="false" required="false">
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Storage" relationshipname="treeEntries" othersidename="definitionItem" updatable="false" required="false">
         <nameDesc language="en">Tree Entries</nameDesc>
       </relationship>
     </table>
@@ -5751,8 +5751,8 @@
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.LoanPreparation" relationshipname="loanPreparations" othersidename="preparation" updatable="false" required="false">
         <nameDesc language="en">Loan Physical Objects</nameDesc>
       </relationship>
-      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Location" relationshipname="location" columnname="LocationID" othersidename="preparations" updatable="false" required="false">
-        <nameDesc language="en">Location</nameDesc>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Storage" relationshipname="storage" columnname="StorageID" othersidename="preparations" updatable="false" required="false">
+        <nameDesc language="en">Storage</nameDesc>
       </relationship>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="modifiedByAgent" columnname="ModifiedByAgentID" updatable="false" required="false">
         <nameDesc language="en">Modified By Agent</nameDesc>
@@ -6588,7 +6588,7 @@
       </relationship>
     </table>
     <table classname="edu.ku.brc.specify.datamodel.SpAppResourceDir" table="spappresourcedir" tableid="516" searchable="false" abbrv="spard">
-      <desc language="en">This represents the actual attachment. The attachment itself is not sorted in the database. The information in this record identifies everything the application will need to load and display the attachment. The attachment location is an absolute path to t</desc>
+      <desc language="en">This represents the actual attachment. The attachment itself is not sorted in the database. The information in this record identifies everything the application will need to load and display the attachment. The attachment storage is an absolute path to t</desc>
       <field column="DisciplineType" name="disciplineType" type="java.lang.String" length="64" indexName="SpAppResourceDirDispTypeIDX" updatable="true" required="false" unique="false" indexed="true">
         <nameDesc language="en">Discipline Type</nameDesc>
       </field>

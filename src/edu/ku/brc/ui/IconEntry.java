@@ -236,8 +236,8 @@ public class IconEntry
     //---------------------------------------------------
     public class IconSizeEntry 
     {
-        protected IconSize  size;
-        protected ImageIcon imageIcon;
+        protected IconSize  iseSize;
+        protected ImageIcon iseImageIcon;
         
         /**
          * @param url
@@ -245,21 +245,21 @@ public class IconEntry
         public IconSizeEntry(final IconSize size)
         {
             super();
-            this.size      = size;
-            this.imageIcon = null;
+            this.iseSize      = size;
+            this.iseImageIcon = null;
         }
         
         public IconSizeEntry(final IconSize size, 
                              final ImageIcon imageIcon)
         {
             super();
-            this.size      = size;
-            this.imageIcon = imageIcon;
+            this.iseSize      = size;
+            this.iseImageIcon = imageIcon;
         }
         
         public boolean isIconAvailable()
         {
-            return imageIcon != null;
+            return iseImageIcon != null;
         }
         
         /**
@@ -267,11 +267,11 @@ public class IconEntry
          */
         public ImageIcon getImageIcon()
         {
-            if (imageIcon == null)
+            if (iseImageIcon == null)
             {
-                imageIcon = new ImageIcon(url);
+                iseImageIcon = new ImageIcon(url);
             }
-            return imageIcon;
+            return iseImageIcon;
         }
 
         /**
@@ -279,7 +279,7 @@ public class IconEntry
          */
         public IconSize getSize()
         {
-            return size;
+            return iseSize;
         }
     }
 }

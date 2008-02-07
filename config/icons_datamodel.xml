@@ -147,7 +147,7 @@
     <icon name="LoanReturnPreparation"  alias="loanreturnpreparation"/>
     <icon name="Locality"               alias="locality"/>
     <icon name="LocalityNameAlias"      alias="localitynamealias"/>
-    <icon name="Location"               alias="location"/>
+    <icon name="Storage"                alias="location"/>
     <icon name="Permit"                 alias="permit"/>
     <icon name="Preparation"            alias="preparation"/>
     <icon name="PrepType"               alias="preptype"/>
@@ -185,7 +185,7 @@
     
     <!-- Tree Task icons -->
     <icon name="Geography_Tree"          alias="geography"/>
-    <icon name="Location_Tree"           alias="location"/>
+    <icon name="Storage_Tree"           alias="location"/>
     <icon name="GeoTimePeriod_Tree"      alias="geologictimeperiod"/>
     
     <icon name="TreeDefEditor"           alias="taxon"/>

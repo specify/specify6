@@ -79,7 +79,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     protected Set<AttributeDef>         attributeDefs;
     protected GeographyTreeDef          geographyTreeDef;
     protected GeologicTimePeriodTreeDef geologicTimePeriodTreeDef;
-    protected LocationTreeDef           locationTreeDef;
+    protected StorageTreeDef            storageTreeDef;
     protected TaxonTreeDef              taxonTreeDef;
     protected LithoStratTreeDef         lithoStratTreeDef;
     protected Set<Locality>             localities;
@@ -151,7 +151,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
         attributeDefs         = new HashSet<AttributeDef>();
         geographyTreeDef      = null;
         geologicTimePeriodTreeDef = null;
-        locationTreeDef       = null;
+        storageTreeDef       = null;
         taxonTreeDef          = null;
         lithoStratTreeDef     = null;
         localities            = new HashSet<Locality>();
@@ -298,13 +298,13 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
      */
     @ManyToOne( fetch = FetchType.LAZY )
     @Cascade( {CascadeType.ALL} )
-    @JoinColumn(name="LocationTreeDefID")
-    public LocationTreeDef getLocationTreeDef() {
-        return this.locationTreeDef;
+    @JoinColumn(name="StorageTreeDefID")
+    public StorageTreeDef getStorageTreeDef() {
+        return this.storageTreeDef;
     }
 
-    public void setLocationTreeDef(LocationTreeDef locationTreeDef) {
-        this.locationTreeDef = locationTreeDef;
+    public void setStorageTreeDef(StorageTreeDef storageTreeDef) {
+        this.storageTreeDef = storageTreeDef;
     }
 
     /**

@@ -9,26 +9,26 @@ package edu.ku.brc.specify.datamodel.busrules;
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.specify.datamodel.Location;
-import edu.ku.brc.specify.datamodel.LocationTreeDef;
-import edu.ku.brc.specify.datamodel.LocationTreeDefItem;
+import edu.ku.brc.specify.datamodel.Storage;
+import edu.ku.brc.specify.datamodel.StorageTreeDef;
+import edu.ku.brc.specify.datamodel.StorageTreeDefItem;
 
 /**
  * A business rules class that handles various safety checking and housekeeping tasks
- * that must be performed when editing {@link Location} or
- * {@link LocationTreeDefItem} objects.
+ * that must be performed when editing {@link Storage} or
+ * {@link StorageTreeDefItem} objects.
  *
  * @author jstewart
  * @code_status Beta
  */
-public class LocationBusRules extends BaseTreeBusRules<Location, LocationTreeDef, LocationTreeDefItem>
+public class StorageBusRules extends BaseTreeBusRules<Storage, StorageTreeDef, StorageTreeDefItem>
 {
     /**
      * Constructor.
      */
-    public LocationBusRules()
+    public StorageBusRules()
     {
-        super(Location.class, LocationTreeDefItem.class);
+        super(Storage.class, StorageTreeDefItem.class);
     }
 
     /* (non-Javadoc)
@@ -37,9 +37,9 @@ public class LocationBusRules extends BaseTreeBusRules<Location, LocationTreeDef
     @Override
     public String getDeleteMsg(Object dataObj)
     {
-        if (dataObj instanceof Location)
+        if (dataObj instanceof Storage)
         {
-            return getLocalizedMessage("LOCATION_DELETED", ((Location)dataObj).getName());
+            return getLocalizedMessage("STORAGE_DELETED", ((Storage)dataObj).getName());
         }
         // else
         return super.getDeleteMsg(dataObj);
@@ -53,13 +53,13 @@ public class LocationBusRules extends BaseTreeBusRules<Location, LocationTreeDef
     {
         super.beforeSave(dataObj, session);
         
-        if (dataObj instanceof Location)
+        if (dataObj instanceof Storage)
         {
-            Location loc = (Location)dataObj;
-            beforeSaveLocation(loc);
+            Storage stor = (Storage)dataObj;
+            beforeSaveStorage(stor);
             
             // this might not do anything (if no names need to be changed)
-            super.updateFullNamesIfNecessary(loc, session);
+            super.updateFullNamesIfNecessary(stor, session);
 
             return;
         }
@@ -67,15 +67,15 @@ public class LocationBusRules extends BaseTreeBusRules<Location, LocationTreeDef
     
     /**
      * Handles the {@link #beforeSave(Object)} method if the passed in {@link Object}
-     * is an instance of {@link Location}.  The real work of this method is to
-     * update the 'fullname' field of all {@link Location} objects effected by the changes
-     * to the passed in {@link Location}.
+     * is an instance of {@link Storage}.  The real work of this method is to
+     * update the 'fullname' field of all {@link Storage} objects effected by the changes
+     * to the passed in {@link Storage}.
      * 
-     * @param loc the {@link Location} being saved
+     * @param stor the {@link Storage} being saved
      */
-    protected void beforeSaveLocation(@SuppressWarnings("unused") Location loc)
+    protected void beforeSaveStorage(@SuppressWarnings("unused") Storage stor)
     {
-        // nothing specific to Location
+        // nothing specific to Storage
     }
     
     @Override
@@ -83,9 +83,9 @@ public class LocationBusRules extends BaseTreeBusRules<Location, LocationTreeDef
     {
         String[] relationships = 
         {
-                "preparation", "LocationID",
-                "container",   "LocationID",
-                "location",    "AcceptedID"
+                "preparation", "StorageID",
+                "container",   "StorageID",
+                "storage",    "AcceptedID"
         };
 
         return relationships;
@@ -97,13 +97,13 @@ public class LocationBusRules extends BaseTreeBusRules<Location, LocationTreeDef
     @Override
     public boolean okToEnableDelete(Object dataObj)
     {
-        if (dataObj instanceof Location)
+        if (dataObj instanceof Storage)
         {
-            return super.okToDeleteNode((Location)dataObj);
+            return super.okToDeleteNode((Storage)dataObj);
         }
-        if (dataObj instanceof LocationTreeDefItem)
+        if (dataObj instanceof StorageTreeDefItem)
         {
-            return okToDeleteDefItem((LocationTreeDefItem)dataObj);
+            return okToDeleteDefItem((StorageTreeDefItem)dataObj);
         }
         
         return false;
@@ -111,12 +111,12 @@ public class LocationBusRules extends BaseTreeBusRules<Location, LocationTreeDef
     
     /**
      * Handles the {@link #okToEnableDelete(Object)} method in the case that the passed in
-     * {@link Object} is an instance of {@link LocationTreeDefItem}.
+     * {@link Object} is an instance of {@link StorageTreeDefItem}.
      * 
-     * @param defItem the {@link LocationTreeDefItem} being inspected
+     * @param defItem the {@link StorageTreeDefItem} being inspected
      * @return true if the passed in item is deletable
      */
-    public boolean okToDeleteDefItem(LocationTreeDefItem defItem)
+    public boolean okToDeleteDefItem(StorageTreeDefItem defItem)
     {
         // never let the root level be deleted
         if (defItem.getRankId() == 0)
@@ -125,7 +125,7 @@ public class LocationBusRules extends BaseTreeBusRules<Location, LocationTreeDef
         }
         
         // don't let 'used' levels be deleted
-        if (!okToDelete("location", "LocationTreeDefItemID", defItem.getId()))
+        if (!okToDelete("storage", "StorageTreeDefItemID", defItem.getId()))
         {
             return false;
         }

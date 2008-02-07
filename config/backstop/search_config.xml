@@ -515,14 +515,14 @@ permit.EndDate,permit.RenewalDate,permit.Type FROM permit left Join agent ON per
             </detailView>
         </table>
         
-        <table id="109" tableid="58" name="LocationSearch" priority="1" color="30, 144, 255">
+        <table id="109" tableid="58" name="StorageSearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
-                    <![CDATA[SELECT LocationID, FullName FROM location WHERE LocationTreeDefItemID = LOCTREEDEFID AND (%s)]]>
+                    <![CDATA[SELECT StorageID, FullName FROM location WHERE StorageTreeDefItemID = STORTREEDEFID AND (%s)]]>
                 </sql>
                 <captions>
-                    <caption tableid="58" col="LocationID" visible="false"/>
-                    <caption tableid="58" col="FullName" key="LocationName"/>
+                    <caption tableid="58" col="StorageID" visible="false"/>
+                    <caption tableid="58" col="FullName" key="StorageName"/>
                 </captions>
             </detailView>
         </table>

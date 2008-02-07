@@ -47,7 +47,7 @@ import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Journal;
 import edu.ku.brc.specify.datamodel.Locality;
-import edu.ku.brc.specify.datamodel.Location;
+import edu.ku.brc.specify.datamodel.Storage;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.ReferenceWork;
 import edu.ku.brc.specify.datamodel.Shipment;
@@ -471,7 +471,7 @@ public class SiteGen
         Collection.setCurrentCollection(collection);
         
         Class<?>[] classes = {CollectionObject.class, CollectingEvent.class, Determination.class, Preparation.class, 
-                              Agent.class, Locality.class, Taxon.class, Location.class,Geography.class, Collector.class,
+                              Agent.class, Locality.class, Taxon.class, Storage.class,Geography.class, Collector.class,
                               Shipment.class, TaxonCitation.class, ReferenceWork.class, Journal.class,
                               //LithoStrat.class,
         };
@@ -581,7 +581,7 @@ public class SiteGen
         siteGen.doAlphaIndexPage(Taxon.class,      "fullName");
         siteGen.doAlphaIndexPage(Geography.class,  "name");
         //siteGen.doAlphaIndexPage(LithoStrat.class, "name");
-        siteGen.doAlphaIndexPage(Location.class,   "fullName");
+        siteGen.doAlphaIndexPage(Storage.class,   "fullName");
         siteGen.doAlphaIndexPage(CollectionObject.class,   "catalogNumber");
     }
     

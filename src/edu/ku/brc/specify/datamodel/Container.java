@@ -68,7 +68,7 @@ public class Container extends CollectionMember implements java.io.Serializable 
      protected Container             parent;
      protected Set<CollectionObject> collectionObjects;
      protected Set<CollectionObject> collectionObjectOwners;
-     protected Location              location;
+     protected Storage               storage;
 
 
     // Constructors
@@ -96,7 +96,7 @@ public class Container extends CollectionMember implements java.io.Serializable 
         parent = null;
         collectionObjects = new HashSet<CollectionObject>();
         collectionObjectOwners = new HashSet<CollectionObject>();
-        location = null;
+        storage = null;
     }
     // End Initializer
 
@@ -230,13 +230,13 @@ public class Container extends CollectionMember implements java.io.Serializable 
      *
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "LocationID", unique = false, nullable = true, insertable = true, updatable = true)
-    public Location getLocation() {
-        return this.location;
+    @JoinColumn(name = "StorageID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Storage getStorage() {
+        return this.storage;
     }
 
-    public void setLocation(Location location) {
-        this.location = location;
+    public void setStorage(Storage storage) {
+        this.storage = storage;
     }
 
 

@@ -14,7 +14,7 @@
 	    <view sidebar="true"  name="GeologicTimePeriod" viewset="Global"       view="GeologicTimePeriod" iconname="GeologicTimePeriod" tooltip=""/> 
 	    <view sidebar="false" name="Loan"               viewset="Fish Views"   view="Loan"               iconname="Loan"               tooltip=""/>    
 	    <view sidebar="true"  name="Locality"           viewset="Fish Views"   view="Locality"           iconname="Locality"           tooltip=""/> 
-	    <view sidebar="true"  name="Location"           viewset="Global"       view="Location"           iconname="Location"           tooltip=""/>
+	    <view sidebar="true"  name="Storage"            viewset="Global"       view="Storage"           iconname="Storage"           tooltip=""/>
 	</std>
 	
 	<misc>

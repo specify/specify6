@@ -69,9 +69,9 @@ import edu.ku.brc.specify.datamodel.LoanReturnPreparation;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.LocalityCitation;
 import edu.ku.brc.specify.datamodel.LocalityDetail;
-import edu.ku.brc.specify.datamodel.Location;
-import edu.ku.brc.specify.datamodel.LocationTreeDef;
-import edu.ku.brc.specify.datamodel.LocationTreeDefItem;
+import edu.ku.brc.specify.datamodel.Storage;
+import edu.ku.brc.specify.datamodel.StorageTreeDef;
+import edu.ku.brc.specify.datamodel.StorageTreeDefItem;
 import edu.ku.brc.specify.datamodel.OtherIdentifier;
 import edu.ku.brc.specify.datamodel.Permit;
 import edu.ku.brc.specify.datamodel.PickList;
@@ -273,7 +273,7 @@ public class DataBuilder
                                                       final TaxonTreeDef     taxonTreeDef,
                                                       final GeographyTreeDef geographyTreeDef,
                                                       final GeologicTimePeriodTreeDef geologicTimePeriodTreeDef,
-                                                      final LocationTreeDef  locationTreeDef,
+                                                      final StorageTreeDef  storageTreeDef,
                                                       final LithoStratTreeDef lithoStratTreeDef)
     {
         CollectionType collType = new CollectionType();
@@ -284,7 +284,7 @@ public class DataBuilder
         collType.setTaxonTreeDef(taxonTreeDef);
         collType.setGeographyTreeDef(geographyTreeDef);//meg added to support not-null constraints
         collType.setGeologicTimePeriodTreeDef(geologicTimePeriodTreeDef);//meg added to support not-null constraints
-        collType.setLocationTreeDef(locationTreeDef);//meg added to support not-null constraints
+        collType.setStorageTreeDef(storageTreeDef);//meg added to support not-null constraints
         collType.setLithoStratTreeDef(lithoStratTreeDef);
         taxonTreeDef.setCollectionType(collType);
         
@@ -659,15 +659,15 @@ public class DataBuilder
 
 
     /**
-     * Create a <code>LocationTreeDef</code> with the given name.  The object is also
+     * Create a <code>StorageTreeDef</code> with the given name.  The object is also
      * persisted with a call to {@link #persist(Object)}.
      * 
      * @param name tree def name
-     * @return the location tree def
+     * @return the storage tree def
      */
-    public static LocationTreeDef createLocationTreeDef(final String name)
+    public static StorageTreeDef createStorageTreeDef(final String name)
     {
-        LocationTreeDef ltd = new LocationTreeDef();
+        StorageTreeDef ltd = new StorageTreeDef();
         ltd.initialize();
         ltd.setName(name);
         ltd.setFullNameDirection(TreeDefIface.REVERSE);
@@ -677,7 +677,7 @@ public class DataBuilder
     }
 
     /**
-     * Creates a <code>LocationTreeDefItem</code> using the given values.  The object is also
+     * Creates a <code>StorageTreeDefItem</code> using the given values.  The object is also
      * persisted with a call to {@link #persist(Object)}.
      * 
      * @param parent the parent node
@@ -687,12 +687,12 @@ public class DataBuilder
      * @return the new item
      */
     @SuppressWarnings("unchecked")
-    public static LocationTreeDefItem createLocationTreeDefItem(final LocationTreeDefItem parent,
-                                                                final LocationTreeDef ltd,
+    public static StorageTreeDefItem createStorageTreeDefItem(final StorageTreeDefItem parent,
+                                                                final StorageTreeDef ltd,
                                                                 final String name,
                                                                 final int rankId)
     {
-        LocationTreeDefItem ltdi = new LocationTreeDefItem();
+        StorageTreeDefItem ltdi = new StorageTreeDefItem();
         ltdi.initialize();
         ltdi.setName(name);
         ltdi.setParent(parent);
@@ -709,7 +709,7 @@ public class DataBuilder
     }
 
     /**
-     * Creates a new <code>Location</code> object using the given values.  The object is also
+     * Creates a new <code>Storage</code> object using the given values.  The object is also
      * persisted with a call to {@link #persist(Object)}.
      * 
      * @param ltd the associated definition
@@ -719,33 +719,33 @@ public class DataBuilder
      * @return the new node
      */
     @SuppressWarnings("unchecked")
-    public static Location createLocation(final LocationTreeDef ltd, final Location parent,
+    public static Storage createStorage(final StorageTreeDef ltd, final Storage parent,
     //final String abbrev,
                                           final String name,
                                           //final int highNode,
                                           //final int nodeNum,
                                           final int rankId)
     {
-        Location location = new Location();
-        location.initialize();
-        location.setDefinition(ltd);
-        location.setName(name);
-        location.setParent(parent);
+        Storage storage = new Storage();
+        storage.initialize();
+        storage.setDefinition(ltd);
+        storage.setName(name);
+        storage.setParent(parent);
         if (parent!=null)
         {
-            parent.getChildren().add(location);
+            parent.getChildren().add(storage);
         }
-        LocationTreeDefItem defItem = ltd.getDefItemByRank(rankId);
+        StorageTreeDefItem defItem = ltd.getDefItemByRank(rankId);
         if (defItem != null)
         {
-            location.setDefinitionItem(defItem);
+            storage.setDefinitionItem(defItem);
         }
 
-        location.setRankId(rankId);
-        ltd.getTreeEntries().add(location);
+        storage.setRankId(rankId);
+        ltd.getTreeEntries().add(storage);
 
-        persist(location);
-        return location;
+        persist(storage);
+        return storage;
     }
 
     /**
@@ -1085,7 +1085,7 @@ public class DataBuilder
     public static Preparation createPreparation(final PrepType prepType,
                                                 final Agent preparedBy,
                                                 final CollectionObject colObj,
-                                                final Location location,
+                                                final Storage storage,
                                                 final int count,
                                                 final Calendar preparedDate)
     {
@@ -1095,7 +1095,7 @@ public class DataBuilder
         prep.setCollectionObject(colObj);
         prep.setCount(count);
         prep.setModifiedByAgent(null);
-        prep.setLocation(location);
+        prep.setStorage(storage);
         prep.setPreparedByAgent(preparedBy);
         prep.setPreparedDate(preparedDate);
         prep.setPrepType(prepType);
@@ -1458,7 +1458,7 @@ public class DataBuilder
                                                           final DataType dataType,
                                                           final GeographyTreeDef geographyTreeDef,
                                                           final GeologicTimePeriodTreeDef geologicTimePeriodTreeDef,
-                                                          final LocationTreeDef locationTreeDef,
+                                                          final StorageTreeDef storageTreeDef,
                                                           final TaxonTreeDef taxonTreeDef)
     {
         CollectionType collectiontype = new CollectionType();
@@ -1466,7 +1466,7 @@ public class DataBuilder
         collectiontype.setDataType(dataType);
         collectiontype.setGeographyTreeDef(geographyTreeDef);
         collectiontype.setGeologicTimePeriodTreeDef(geologicTimePeriodTreeDef);
-        collectiontype.setLocationTreeDef(locationTreeDef);
+        collectiontype.setStorageTreeDef(storageTreeDef);
         collectiontype.setTaxonTreeDef(taxonTreeDef);
         collectiontype.setName(name);
         persist(collectiontype);
@@ -1562,7 +1562,7 @@ public class DataBuilder
                                             final String description,
                                             final Integer number,
                                             final CollectionObject colObj,
-                                            final Location location)
+                                            final Storage storage)
     {
         Container container = new Container();
         container.initialize();
@@ -1570,7 +1570,7 @@ public class DataBuilder
         container.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
         container.getCollectionObjects().add(colObj);
         container.setName(name);
-        container.setLocation(location);
+        container.setStorage(storage);
         container.setDescription(description);
         container.setType(type);
         persist(container);
@@ -1969,7 +1969,7 @@ public class DataBuilder
                                                 final PrepType prepType,
                                                 final CollectionObject collectionObject,
                                                 final Agent preparedByAgent,
-                                                final Location location)
+                                                final Storage storage)
     {
         Preparation preparation = new Preparation();
         preparation.initialize();
@@ -1980,7 +1980,7 @@ public class DataBuilder
         preparation.setPrepType(prepType);
         preparation.setCollectionObject(collectionObject);
         preparation.setPreparedByAgent(preparedByAgent);
-        preparation.setLocation(location);
+        preparation.setStorage(storage);
         persist(preparation);
         return preparation;
     }

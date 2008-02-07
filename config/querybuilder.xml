@@ -182,8 +182,8 @@
     <table name="GeologicTimePeriodTreeDefItem" id="48">
     <table name="LithoStratTreeDef" id="101"/>
     <table name="LithoStratTreeDefItem" id="102"/>
-    <table name="LocationTreeDef" id="59"/>
-    <table name="LocationTreeDefItem" id="60">
+    <table name="StorageTreeDef" id="59"/>
+    <table name="StorageTreeDefItem" id="60">
     <table name="TaxonTreeDef" id="76"/>
     -->
         
@@ -218,7 +218,7 @@
     <table name="LoanAttachment" id="114">
     <table name="LoanPreparation" id="54"/>
     <table name="LoanReturnPreparation" id="55">
-    <table name="Location" id="58">
+    <table name="Storage" id="58">
     <table name="OtherIdentifier" id="61"/>
     <table name="Project" id="66"/>
     <table name="ProjectCollectionObject" id="67"/>

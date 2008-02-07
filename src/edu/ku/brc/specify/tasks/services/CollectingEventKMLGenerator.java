@@ -200,7 +200,7 @@ public class CollectingEventKMLGenerator
 	{
 		// get all of the important information
 
-		// get location information
+		// get storage information
 		Locality   loc = ce.getLocality();
         BigDecimal lat = loc.getLatitude1();
         BigDecimal lon = loc.getLongitude1();

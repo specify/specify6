@@ -29,6 +29,9 @@ import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem;
 import edu.ku.brc.specify.datamodel.LithoStrat;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDefItem;
+import edu.ku.brc.specify.datamodel.Storage;
+import edu.ku.brc.specify.datamodel.StorageTreeDef;
+import edu.ku.brc.specify.datamodel.StorageTreeDefItem;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
@@ -89,9 +92,9 @@ public class TreePrefs extends GenericPrefsPanel
             gtpFiller.fill("4", session, GeologicTimePeriodTreeDef.getCurrentGeologicTimePeriodTreeDef(), GeologicTimePeriod.class);
             fillers.put(GeologicTimePeriod.class, gtpFiller);
             
-            //DefModelFiller<Storage, StorageTreeDef, StorageTreeDefItem> storageFiller = new DefModelFiller<Storage, StorageTreeDef, StorageTreeDefItem>();
-            //storageFiller.fill("5", session, StorageTreeDef.getCurrentStorageTreeDef(), Storage.class);
-            //fillers.put(Storage.class, storageFiller);
+            DefModelFiller<Storage, StorageTreeDef, StorageTreeDefItem> storageFiller = new DefModelFiller<Storage, StorageTreeDef, StorageTreeDefItem>();
+            storageFiller.fill("5", session, StorageTreeDef.getCurrentStorageTreeDef(), Storage.class);
+            fillers.put(Storage.class, storageFiller);
             
         } catch (Exception ex)
         {

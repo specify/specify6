@@ -50,7 +50,7 @@ import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
-import edu.ku.brc.specify.datamodel.LocationTreeDef;
+import edu.ku.brc.specify.datamodel.StorageTreeDef;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.PickListItem;
 import edu.ku.brc.specify.datamodel.SpAppResource;
@@ -338,7 +338,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             }
             TaxonTreeDef.setCurrentTaxonTreeDef(colType.getTaxonTreeDef());
             GeologicTimePeriodTreeDef.setCurrentGeologicTimePeriodTreeDef(colType.getGeologicTimePeriodTreeDef());
-            LocationTreeDef.setCurrentLocationTreeDef(colType.getLocationTreeDef());
+            StorageTreeDef.setCurrentStorageTreeDef(colType.getStorageTreeDef());
             LithoStratTreeDef.setCurrentLithoStratTreeDef(colType.getLithoStratTreeDef());
             GeographyTreeDef.setCurrentGeographyTreeDef(colType.getGeographyTreeDef());
             

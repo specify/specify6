@@ -204,7 +204,7 @@ public class FishConversion
                 "collectionObjectType",
                 "taxonName",
                 "agent",
-                "location" // from the Physical Record
+                "storage" // from the Physical Record
                 };
         
         String[] bioAttrs = {

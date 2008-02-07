@@ -122,7 +122,7 @@ public class UsageTracker
         
         if (installIdEnd == null || !installIdEnd.equals(lastModString))
         {
-            // somebody must have copied this install to a new location
+            // somebody must have copied this install to a new storage
             // reset the InstallIdEnd preference
             clearUsageStats();
             appPrefs.put("InstallIdEnd", lastModString);

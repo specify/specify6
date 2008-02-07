@@ -182,7 +182,7 @@ public class Attachment extends DataModelObjBase implements Serializable
         
         this.origFilename = origFilename;
 
-//        // if there isn't a set location yet, set one
+//        // if there isn't a set storage yet, set one
 //        if (origFilename != null && this.attachmentLocation == null)
 //        {
 //            // set the attachmentLocation field

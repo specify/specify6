@@ -54,7 +54,7 @@ public class FieldNotebook extends CollectionMember
     protected String     name;
     protected Calendar   startDate;
     protected Calendar   endDate;
-    protected String     location;      // physical location of notebook
+    protected String     location;      // physical storage of notebook
     protected String     description;
     
     protected Collection                   collection;
@@ -129,7 +129,7 @@ public class FieldNotebook extends CollectionMember
     }
 
     /**
-     * @param location the location to set
+     * @param storage the storage to set
      */
     public void setLocation(String location)
     {
@@ -211,9 +211,9 @@ public class FieldNotebook extends CollectionMember
     }
 
     /**
-     * @return the location
+     * @return the storage
      */
-    @Column(name = "Location", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    @Column(name = "Storage", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getLocation()
     {
         return location;

@@ -89,7 +89,7 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     protected PrepType                    prepType;
     protected CollectionObject            collectionObject;
     protected Agent                       preparedByAgent;
-    protected Location                    location;
+    protected Storage                     storage;
     protected Set<DeaccessionPreparation> deaccessionPreparations;
 
     protected PreparationAttributes       preparationAttributes;   // Specify 5 Attributes table
@@ -137,7 +137,7 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
         prepType = null;
         collectionObject = null;
         preparedByAgent = null;
-        location = null;
+        storage = null;
         deaccessionPreparations = new HashSet<DeaccessionPreparation>();
         
         preparationAttributes  = null;
@@ -503,13 +503,13 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
      * 
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "LocationID", unique = false, nullable = true, insertable = true, updatable = true)
-    public Location getLocation() {
-        return this.location;
+    @JoinColumn(name = "StorageID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Storage getStorage() {
+        return this.storage;
     }
     
-    public void setLocation(Location location) {
-        this.location = location;
+    public void setStorage(Storage storage) {
+        this.storage = storage;
     }
 
     /**

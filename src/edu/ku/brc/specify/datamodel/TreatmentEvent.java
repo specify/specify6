@@ -190,7 +190,7 @@ public class TreatmentEvent extends DataModelObjBase
     }
 
     /**
-     * @param location the location to set
+     * @param storage the storage to set
      */
     public void setLocation(String location)
     {
@@ -344,9 +344,9 @@ public class TreatmentEvent extends DataModelObjBase
     }
 
     /**
-     * @return the location
+     * @return the storage
      */
-    @Column(name = "Location", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    @Column(name = "Storage", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getLocation()
     {
         return location;

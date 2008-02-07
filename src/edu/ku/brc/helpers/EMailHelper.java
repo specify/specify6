@@ -45,6 +45,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -120,163 +121,156 @@ public class EMailHelper
         {
             return sendMsgAsGMail(host, userName, password, fromEMailAddr, toEMailAddr, subject, bodyText, mimeType, fileAttachment);
         }
-        else
+        
+        Boolean fail = false;
+        ArrayList<String> userAndPass = new ArrayList<String>();
+        
+        Properties props = System.getProperties();
+        props.put("mail.smtp.host", host);
+        props.put( "mail.smtp.auth", "true");
+
+        Session session = Session.getInstance(props, null);
+
+        session.setDebug(instance.isDebugging);
+        if (instance.isDebugging)
         {
-        
-            Boolean fail = false;
-            ArrayList<String> userAndPass = new ArrayList<String>();
-            
-            Properties props = System.getProperties();
-            props.put("mail.smtp.host", host);
-            props.put( "mail.smtp.auth", "true");
-    
-            Session session = Session.getInstance(props, null);
-    
-            session.setDebug(instance.isDebugging);
-            if (instance.isDebugging)
+            log.debug("Host:     " + host);
+            log.debug("UserName: " + userName);
+            log.debug("Password: " + password);
+            log.debug("From:     " + fromEMailAddr);
+            log.debug("To:       " + toEMailAddr);
+            log.debug("Subject:  " + subject);
+        }
+
+
+        try
+        {
+            // create a message
+            MimeMessage msg = new MimeMessage(session);
+
+            msg.setFrom(new InternetAddress(fromEMailAddr));
+            if (toEMailAddr.indexOf(",") > -1)
             {
-                log.debug("Host:     " + host);
-                log.debug("UserName: " + userName);
-                log.debug("Password: " + password);
-                log.debug("From:     " + fromEMailAddr);
-                log.debug("To:       " + toEMailAddr);
-                log.debug("Subject:  " + subject);
+                StringTokenizer st = new StringTokenizer(toEMailAddr, ",");
+                InternetAddress[] address = new InternetAddress[st.countTokens()];
+                int i = 0;
+                while (st.hasMoreTokens())
+                {
+                    String toStr = st.nextToken().trim();
+                    address[i++] = new InternetAddress(toStr);
+                }
+                msg.setRecipients(Message.RecipientType.TO, address);
+            } else
+            {
+                InternetAddress[] address = {new InternetAddress(toEMailAddr)};
+                msg.setRecipients(Message.RecipientType.TO, address);
             }
-    
-    
-            try
+            msg.setSubject(subject);
+            
+            //msg.setContent( aBodyText , "text/html;charset=\"iso-8859-1\"");
+
+            // create the second message part
+            if (fileAttachment != null)
             {
-                // create a message
-                MimeMessage msg = new MimeMessage(session);
+                // create and fill the first message part
+                MimeBodyPart mbp1 = new MimeBodyPart();
+                mbp1.setContent(bodyText, mimeType);//"text/html;charset=\"iso-8859-1\"");
+                //mbp1.setContent(bodyText, "text/html;charset=\"iso-8859-1\"");
+
+                MimeBodyPart mbp2 = new MimeBodyPart();
+
+               // attach the file to the message
+                FileDataSource fds = new FileDataSource(fileAttachment);
+                mbp2.setDataHandler(new DataHandler(fds));
+                mbp2.setFileName(fds.getName());
+
+                // create the Multipart and add its parts to it
+                Multipart mp = new MimeMultipart();
+                mp.addBodyPart(mbp1);
+                mp.addBodyPart(mbp2);
+
+                // add the Multipart to the message
+                msg.setContent(mp);
+
+            } else
+            {
+                // add the Multipart to the message
+                msg.setContent(bodyText, mimeType);
+            }
+
+
+            // set the Date: header
+            msg.setSentDate(new Date());
+
+            // send the message
+            int cnt = 0;
+            do
+            {
+                cnt++;
+                SMTPTransport t = (SMTPTransport)session.getTransport("smtp");
+                try {
+                    t.connect(host, userName, password);
     
-                msg.setFrom(new InternetAddress(fromEMailAddr));
-                if (toEMailAddr.indexOf(",") > -1)
+                    t.sendMessage(msg, msg.getAllRecipients());
+                    
+                    fail = false;
+    
+                } catch (MessagingException mex)
                 {
-                    StringTokenizer st = new StringTokenizer(toEMailAddr, ",");
-                    InternetAddress[] address = new InternetAddress[st.countTokens()];
-                    int i = 0;
-                    while (st.hasMoreTokens())
+                    instance.lastErrorMsg = mex.toString();
+                    
+                    Exception ex = null;
+                    if ((ex = mex.getNextException()) != null) 
                     {
-                        String toStr = st.nextToken().trim();
-                        address[i++] = new InternetAddress(toStr);
-                    }
-                    msg.setRecipients(Message.RecipientType.TO, address);
-                } else
-                {
-                    InternetAddress[] address = {new InternetAddress(toEMailAddr)};
-                    msg.setRecipients(Message.RecipientType.TO, address);
-                }
-                msg.setSubject(subject);
-                
-                //msg.setContent( aBodyText , "text/html;charset=\"iso-8859-1\"");
-    
-                // create the second message part
-                if (fileAttachment != null)
-                {
-                    // create and fill the first message part
-                    MimeBodyPart mbp1 = new MimeBodyPart();
-                    mbp1.setContent(bodyText, mimeType);//"text/html;charset=\"iso-8859-1\"");
-                    //mbp1.setContent(bodyText, "text/html;charset=\"iso-8859-1\"");
-    
-                    MimeBodyPart mbp2 = new MimeBodyPart();
-    
-                   // attach the file to the message
-                    FileDataSource fds = new FileDataSource(fileAttachment);
-                    mbp2.setDataHandler(new DataHandler(fds));
-                    mbp2.setFileName(fds.getName());
-    
-                    // create the Multipart and add its parts to it
-                    Multipart mp = new MimeMultipart();
-                    mp.addBodyPart(mbp1);
-                    mp.addBodyPart(mbp2);
-    
-                    // add the Multipart to the message
-                    msg.setContent(mp);
-    
-                } else
-                {
-                    // add the Multipart to the message
-                    msg.setContent(bodyText, mimeType);
-                }
-    
-    
-                // set the Date: header
-                msg.setSentDate(new Date());
-    
-                // send the message
-                int cnt = 0;
-                do
-                {
-                    cnt++;
-                    SMTPTransport t = (SMTPTransport)session.getTransport("smtp");
-                    try {
-                        t.connect(host, userName, password);
-        
-                        t.sendMessage(msg, msg.getAllRecipients());
-                        
-                        fail = false;
-        
-                    } catch (MessagingException mex)
-                    {
-                        instance.lastErrorMsg = mex.toString();
-                        
-                        Exception ex = null;
-                        if ((ex = mex.getNextException()) != null) 
-                        {
-                          ex.printStackTrace();
-                          instance.lastErrorMsg = instance.lastErrorMsg + ", " + ex.toString();
-                        }
-                        
-                        //wrong username or password, get new one
-                        if (mex.toString().equals("javax.mail.AuthenticationFailedException"))
-                        {
-                            fail = true;
-                            userAndPass = askForUserAndPassword((Frame)UIRegistry.getTopWindow());
-                            
-                            if (userAndPass == null)
-                            {//the user is done
-                                return false;
-                            }else
-                            {//try again
-                                userName = userAndPass.get(0);
-                                password = userAndPass.get(1);
-                            }
-                        }
-                    }
-                    finally
-                    {
-        
-                         log.debug("Response: " + t.getLastServerResponse());
-                         t.close();
-                        
+                      ex.printStackTrace();
+                      instance.lastErrorMsg = instance.lastErrorMsg + ", " + ex.toString();
                     }
                     
-                } while (fail && cnt < 6);
-    
-            } catch (MessagingException mex)
-            {
-                instance.lastErrorMsg = mex.toString();
-                
-                
-                mex.printStackTrace();
-                Exception ex = null;
-                if ((ex = mex.getNextException()) != null) 
+                    //wrong username or password, get new one
+                    if (mex.toString().equals("javax.mail.AuthenticationFailedException"))
+                    {
+                        fail = true;
+                        userAndPass = askForUserAndPassword((Frame)UIRegistry.getTopWindow());
+                        
+                        if (userAndPass == null)
+                        {//the user is done
+                            return false;
+                        }
+                        userName = userAndPass.get(0);
+                        password = userAndPass.get(1);
+                    }
+                } finally
                 {
-                  ex.printStackTrace();
-                  instance.lastErrorMsg = instance.lastErrorMsg + ", " + ex.toString();
+                     log.debug("Response: " + t.getLastServerResponse());
+                     t.close();
                 }
-                return false;
                 
-            } catch (Exception ex)
-            {
-                ex.printStackTrace();
-            }
+            } while (fail && cnt < 6);
+
+        } catch (MessagingException mex)
+        {
+            instance.lastErrorMsg = mex.toString();
             
-            if (fail){
-                return false;
-            }//else
-            return true;
+            mex.printStackTrace();
+            Exception ex = null;
+            if ((ex = mex.getNextException()) != null) 
+            {
+              ex.printStackTrace();
+              instance.lastErrorMsg = instance.lastErrorMsg + ", " + ex.toString();
+            }
+            return false;
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
         }
+        
+        if (fail)
+        {
+            return false;
+        }//else
+        
+        return true;
     }
     
     /**
@@ -288,7 +282,7 @@ public class EMailHelper
     {
         PanelBuilder    builder   = new PanelBuilder(new FormLayout("p,2px,p", "p,2px,p"));
         CellConstraints cc        = new CellConstraints();
-        JLabel          label     = new JLabel(getResourceString("password")+":", JLabel.RIGHT);
+        JLabel          label     = new JLabel(getResourceString("password")+":", SwingConstants.RIGHT);
         JPasswordField  passField = new JPasswordField(25);
         JCheckBox       savePassword = new JCheckBox(getResourceString("SAVE_PASSWORD"));
 
@@ -327,8 +321,8 @@ public class EMailHelper
         
         PanelBuilder    builder   = new PanelBuilder(new FormLayout("p,2px,p", "p,2px,p,2px,p"));
         CellConstraints cc        = new CellConstraints();
-        JLabel          plabel     = new JLabel(getResourceString("password")+":", JLabel.RIGHT);
-        JLabel          ulabel     = new JLabel(getResourceString("username")+":", JLabel.RIGHT);
+        JLabel          plabel    = new JLabel(getResourceString("password")+":", SwingConstants.RIGHT);
+        JLabel          ulabel    = new JLabel(getResourceString("username")+":", SwingConstants.RIGHT);
         JPasswordField  passField = new JPasswordField(25);
         JTextField      userField = new JTextField(remoteUsername, 25);
         JCheckBox       savePassword = new JCheckBox(getResourceString("SAVE_PASSWORD"));

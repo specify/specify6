@@ -325,9 +325,9 @@ public class FormEditor implements DatabaseLoginListener
         TaxonTreeDef     taxonTreeDef     = createTaxonTreeDef("TreeDef");
         GeographyTreeDef geographyTreeDef = createGeographyTreeDef("GeographyDef");//meg added to allow for not-null constraints
         GeologicTimePeriodTreeDef geologicTimePeriodTreeDef = createGeologicTimePeriodTreeDef("GeologicTimePeriodTreeDef");//meg added to allow for not-null constraints
-        LocationTreeDef locationTreeDef = createLocationTreeDef("LocationDef");
+        StorageTreeDef storageTreeDef = createLocationTreeDef("StorageDef");
         
-        CollectionType collectionType = createCollectionType(collTypeName, disciplineName, dType, user, taxonTreeDef, geographyTreeDef, geologicTimePeriodTreeDef,locationTreeDef);
+        CollectionType collectionType = createCollectionType(collTypeName, disciplineName, dType, user, taxonTreeDef, geographyTreeDef, geologicTimePeriodTreeDef,storageTreeDef);
        
         //CollectionType collectionType = createCollectionType(collTypeName, disciplineName, dType, user, taxonTreeDef);
 
@@ -337,7 +337,7 @@ public class FormEditor implements DatabaseLoginListener
         localities[0] = createLocality("This is the place", geographies[0]);
         localities[1] = createLocality("My Private Forest", geographies[1]);
 
-        Location[] locations = createLocations(collectionType, "GLocationTree");
+        Storage[] locations = createStorages(collectionType, "StorageTree");
         Taxon[]    taxonomy  = createTaxonomy(taxonTreeDef);
 
         Agent[] agents = createAgentsInMemory();

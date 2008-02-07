@@ -84,7 +84,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     protected ImageIcon                                      imgIcon       = null;
 
     
-    // A temporary storage location for results from BG.  These results ARE NOT stored into the DB
+    // A temporary storage storage for results from BG.  These results ARE NOT stored into the DB
     // unless they are also set into 'bioGeomancerResults'.
     protected String tmpBgResults;
     

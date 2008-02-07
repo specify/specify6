@@ -1828,7 +1828,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			return false;
 		}
 
-        //log.debug("dropAcceptable setting drop location to " + droppedOn);
+        //log.debug("dropAcceptable setting drop storage to " + droppedOn);
 		listModel.setDropLocationNode(droppedOn);
 		repaint();
 		

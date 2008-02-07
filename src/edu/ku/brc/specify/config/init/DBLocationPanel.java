@@ -59,7 +59,7 @@ class DBLocationPanel extends BaseSetupPanel
      */
     public DBLocationPanel(final JButton nextBtn)
     {
-        super("Location", nextBtn);
+        super("Storage", nextBtn);
 
         
         localDirOK = true;
@@ -91,7 +91,7 @@ class DBLocationPanel extends BaseSetupPanel
         });
 
         int numRows = 3;
-        StringBuilder header = new StringBuilder("<html>This step requires you to select a location for the database.");
+        StringBuilder header = new StringBuilder("<html>This step requires you to select a storage for the database.");
         //localDirOK = false; // DEBUG
         if (localDirOK)
         {
@@ -105,11 +105,11 @@ class DBLocationPanel extends BaseSetupPanel
         } else
         {
             header.append("<br>The database cannot be stored on the media you are currently running Workbench from, ");
-            header.append("so you can allow it to default to your '<i>home</i>' directory. Or choose a different location.</html>");
+            header.append("so you can allow it to default to your '<i>home</i>' directory. Or choose a different storage.</html>");
             useHomeRB.setSelected(true);
         }
         
-        useUserDefinedRB  = new JRadioButton("Use other location:");
+        useUserDefinedRB  = new JRadioButton("Use other storage:");
         grp.add(useUserDefinedRB);
         useUserDefinedRB.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)

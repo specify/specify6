@@ -78,11 +78,11 @@ public class TreeViewerListModel extends AbstractListModel
 		if (dropLocationNode instanceof TreeNode)
 		{
 			this.dropLocationNode = (TreeNode)dropLocationNode;
-            //log.debug("Setting drop location node to " + this.dropLocationNode.getName());
+            //log.debug("Setting drop storage node to " + this.dropLocationNode.getName());
 		}
 		else
 		{
-            //log.debug("Setting drop location node to NULL");
+            //log.debug("Setting drop storage node to NULL");
 			this.dropLocationNode = null;
 		}
         

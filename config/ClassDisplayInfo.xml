@@ -57,7 +57,7 @@
 		</skip>
 	</class>
 	
-    <class name="Location" linkfield="name" indexfield="fullName">
+    <class name="Storage" linkfield="name" indexfield="fullName">
     	<skip>
 			<field>visibility</field>
 			<field>visibilitySetBy</field>

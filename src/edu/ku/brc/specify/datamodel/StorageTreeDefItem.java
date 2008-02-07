@@ -51,11 +51,11 @@ import org.hibernate.annotations.CascadeType;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
-@Table(name = "locationtreedefitem")
-public class LocationTreeDefItem extends DataModelObjBase implements Serializable, TreeDefItemIface<Location,LocationTreeDef,LocationTreeDefItem>
+@Table(name = "storagetreedefitem")
+public class StorageTreeDefItem extends DataModelObjBase implements Serializable, TreeDefItemIface<Storage,StorageTreeDef,StorageTreeDefItem>
 {
 
-	protected Integer   				locationTreeDefItemId;
+	protected Integer   				storageTreeDefItemId;
 	protected String				name;
 	protected String				remarks;
 	protected Integer				rankId;
@@ -64,28 +64,28 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
     protected String                textBefore;
     protected String                textAfter;
     protected String                fullNameSeparator;
-	protected LocationTreeDef			treeDef;
-	protected LocationTreeDefItem		parent;
-	protected Set<Location>			treeEntries;
-	protected Set<LocationTreeDefItem>	children;
+	protected StorageTreeDef			treeDef;
+	protected StorageTreeDefItem		parent;
+	protected Set<Storage>			treeEntries;
+	protected Set<StorageTreeDefItem>	children;
 
 	/** default constructor */
-	public LocationTreeDefItem()
+	public StorageTreeDefItem()
 	{
 		// do nothing
 	}
 
 	/** constructor with id */
-	public LocationTreeDefItem(Integer locationTreeDefItemId)
+	public StorageTreeDefItem(Integer storageTreeDefItemId)
 	{
-		this.locationTreeDefItemId = locationTreeDefItemId;
+		this.storageTreeDefItemId = storageTreeDefItemId;
 	}
 
     @Override
     public void initialize()
 	{
         super.init();
-		locationTreeDefItemId = null;
+		storageTreeDefItemId = null;
 		name = null;
 		remarks = null;
 		rankId = null;
@@ -95,17 +95,17 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
         textAfter = null;
         fullNameSeparator = ", ";
 		treeDef = null;
-		treeEntries = new HashSet<Location>();
+		treeEntries = new HashSet<Storage>();
 		parent = null;
-		children = new HashSet<LocationTreeDefItem>();
+		children = new HashSet<StorageTreeDefItem>();
 	}
 
     @Id
     @GeneratedValue
-    @Column(name = "LocationTreeDefItemID", unique = false, nullable = false, insertable = true, updatable = true, length = 10)
-	public Integer getLocationTreeDefItemId()
+    @Column(name = "StorageTreeDefItemID", unique = false, nullable = false, insertable = true, updatable = true, length = 10)
+	public Integer getStorageTreeDefItemId()
 	{
-		return this.locationTreeDefItemId;
+		return this.storageTreeDefItemId;
 	}
 
     /**
@@ -116,7 +116,7 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
     @Override
     public Integer getId()
     {
-        return this.locationTreeDefItemId;
+        return this.storageTreeDefItemId;
     }
 
     /* (non-Javadoc)
@@ -126,12 +126,12 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
     @Override
     public Class<?> getDataClass()
     {
-        return LocationTreeDefItem.class;
+        return StorageTreeDefItem.class;
     }
 
-	public void setLocationTreeDefItemId(Integer locationTreeDefItemId)
+	public void setStorageTreeDefItemId(Integer storageTreeDefItemId)
 	{
-		this.locationTreeDefItemId = locationTreeDefItemId;
+		this.storageTreeDefItemId = storageTreeDefItemId;
 	}
 
     @Column(name = "Name", nullable=false, length = 64)
@@ -224,48 +224,48 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
     }
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
-    @JoinColumn(name = "LocationTreeDefID", unique = false, nullable = false, insertable = true, updatable = true)
-    public LocationTreeDef getTreeDef()
+    @JoinColumn(name = "StorageTreeDefID", unique = false, nullable = false, insertable = true, updatable = true)
+    public StorageTreeDef getTreeDef()
 	{
 		return this.treeDef;
 	}
 
-	public void setTreeDef(LocationTreeDef treeDef)
+	public void setTreeDef(StorageTreeDef treeDef)
 	{
 		this.treeDef = treeDef;
 	}
 
     @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "ParentItemID", unique = false, nullable = true, insertable = true, updatable = true)
-	public LocationTreeDefItem getParent()
+	public StorageTreeDefItem getParent()
 	{
 		return this.parent;
 	}
 
-	public void setParent(LocationTreeDefItem parent)
+	public void setParent(StorageTreeDefItem parent)
 	{
 		this.parent = parent;
 	}
 
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "definitionItem")
     @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK, CascadeType.MERGE })
-	public Set<Location> getTreeEntries()
+	public Set<Storage> getTreeEntries()
 	{
 		return this.treeEntries;
 	}
 
-	public void setTreeEntries(Set<Location> treeEntries)
+	public void setTreeEntries(Set<Storage> treeEntries)
 	{
 		this.treeEntries = treeEntries;
 	}
 
     @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.EAGER, mappedBy = "parent")
-	public Set<LocationTreeDefItem> getChildren()
+	public Set<StorageTreeDefItem> getChildren()
 	{
 		return this.children;
 	}
 
-	public void setChildren(Set<LocationTreeDefItem> children)
+	public void setChildren(Set<StorageTreeDefItem> children)
 	{
 		this.children = children;
 	}
@@ -273,19 +273,19 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
     @Transient
 	public Integer getTreeDefItemId()
 	{
-		return getLocationTreeDefItemId();
+		return getStorageTreeDefItemId();
 	}
 
 	public void setTreeDefItemId(Integer id)
 	{
-		setLocationTreeDefItemId(id);
+		setStorageTreeDefItemId(id);
 	}
 
-	public void setChild(LocationTreeDefItem child)
+	public void setChild(StorageTreeDefItem child)
 	{
         if (!children.isEmpty())
         {
-            LocationTreeDefItem currentChild = children.iterator().next();
+            StorageTreeDefItem currentChild = children.iterator().next();
             currentChild.setParent(null);
         }
         
@@ -298,7 +298,7 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
 	}
 	
     @Transient
-	public LocationTreeDefItem getChild()
+	public StorageTreeDefItem getChild()
 	{
 		if(children.isEmpty())
 		{
@@ -307,19 +307,19 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
 		return children.iterator().next();
 	}
 
-	public void addTreeEntry(Location entry)
+	public void addTreeEntry(Storage entry)
 	{
 		treeEntries.add(entry);
 		entry.setDefinitionItem(this);
 	}
 
-	public void removeTreeEntry(Location entry)
+	public void removeTreeEntry(Storage entry)
 	{
 		treeEntries.remove(entry);
 		entry.setDefinitionItem(null);
 	}
 
-	public void removeChild(LocationTreeDefItem child)
+	public void removeChild(StorageTreeDefItem child)
 	{
 		children.remove(child);
 		child.setParent(null);
@@ -364,12 +364,12 @@ public class LocationTreeDefItem extends DataModelObjBase implements Serializabl
     @Override
     public boolean equals(Object obj)
     {
-        if (obj instanceof LocationTreeDefItem)
+        if (obj instanceof StorageTreeDefItem)
         {
-            LocationTreeDefItem item = (LocationTreeDefItem)obj;
-            if (item.locationTreeDefItemId != null)
+            StorageTreeDefItem item = (StorageTreeDefItem)obj;
+            if (item.storageTreeDefItemId != null)
             {
-                if (item.locationTreeDefItemId.equals(this.locationTreeDefItemId))
+                if (item.storageTreeDefItemId.equals(this.storageTreeDefItemId))
                 {
                     return true;
                 }

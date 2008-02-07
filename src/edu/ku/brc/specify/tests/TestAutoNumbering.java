@@ -22,7 +22,7 @@ import static edu.ku.brc.specify.utilapps.DataBuilder.createGeographyTreeDef;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createGeologicTimePeriodTreeDef;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createInstitution;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createLithoStratTreeDef;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createLocationTreeDef;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createStorageTreeDef;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createSpecifyUser;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createTaxonTreeDef;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createUserGroup;
@@ -61,7 +61,7 @@ import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
-import edu.ku.brc.specify.datamodel.LocationTreeDef;
+import edu.ku.brc.specify.datamodel.StorageTreeDef;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.UserGroup;
@@ -156,7 +156,7 @@ public class TestAutoNumbering extends TestCase
         GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Sample Geography Tree");
         GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Sample Geologic Time Period Tree");
         LithoStratTreeDef         lithoStratTreeDef = createLithoStratTreeDef("Sample LithoStrat Tree");
-        LocationTreeDef           locTreeDef        = createLocationTreeDef("Sample Location Tree");
+        StorageTreeDef           locTreeDef        = createStorageTreeDef("Sample Storage Tree");
         
         Institution    institution    = createInstitution("Natural History Museum");
         Division       division       = createDivision(institution, "fish", "Icthyology", "IT", "Icthyology");
@@ -177,7 +177,7 @@ public class TestAutoNumbering extends TestCase
         ////////////////////////////////
         List<Object> taxa        = BuildSampleDatabase.createSimpleFishTaxonTree(taxonTreeDef, false);
         List<Object> geos        = BuildSampleDatabase.createSimpleGeography(geoTreeDef);
-        List<Object> locs        = BuildSampleDatabase.createSimpleLocation(locTreeDef);
+        List<Object> locs        = BuildSampleDatabase.createSimpleStorage(locTreeDef);
         List<Object> gtps        = BuildSampleDatabase.createSimpleGeologicTimePeriod(gtpTreeDef);
         List<Object> lithoStrats = BuildSampleDatabase.createSimpleLithoStrat(lithoStratTreeDef);
         

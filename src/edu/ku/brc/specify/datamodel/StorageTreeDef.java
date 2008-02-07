@@ -26,42 +26,42 @@ import org.hibernate.annotations.CascadeType;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
-@Table(name = "locationtreedef")
-public class LocationTreeDef extends BaseTreeDef<Location, LocationTreeDef, LocationTreeDefItem> implements java.io.Serializable
+@Table(name = "storagetreedef")
+public class StorageTreeDef extends BaseTreeDef<Storage, StorageTreeDef, StorageTreeDefItem> implements java.io.Serializable
 {
-    private static LocationTreeDef currentLocationTreeDef = null;
+    private static StorageTreeDef currentStorageTreeDef = null;
     
-	protected Integer				    locationTreeDefId;
+	protected Integer				    storageTreeDefId;
 	protected String				    name;
 	protected String				    remarks;
     protected Integer                   fullNameDirection;
 	protected Set<CollectionType>       collectionTypes;
-	protected Set<Location>			    treeEntries;
-	protected Set<LocationTreeDefItem>	treeDefItems;
+	protected Set<Storage>			    treeEntries;
+	protected Set<StorageTreeDefItem>	treeDefItems;
 
 	/** default constructor */
-	public LocationTreeDef()
+	public StorageTreeDef()
 	{
 		// do nothing
 	}
 
 	/** constructor with id */
-	public LocationTreeDef(Integer locationTreeDefId)
+	public StorageTreeDef(Integer storageTreeDefId)
 	{
-		this.locationTreeDefId = locationTreeDefId;
+		this.storageTreeDefId = storageTreeDefId;
 	}
 
 	@Override
     public void initialize()
 	{
         super.init();
-		locationTreeDefId = null;
+		storageTreeDefId = null;
 		name = null;
 		remarks = null;
         fullNameDirection = null;
 		collectionTypes = new HashSet<CollectionType>();
-		treeEntries = new HashSet<Location>();
-		treeDefItems = new HashSet<LocationTreeDefItem>();
+		treeEntries = new HashSet<Storage>();
+		treeDefItems = new HashSet<StorageTreeDefItem>();
 	}
 
 	/**
@@ -69,10 +69,10 @@ public class LocationTreeDef extends BaseTreeDef<Location, LocationTreeDef, Loca
 	 */
     @Id
     @GeneratedValue
-    @Column(name = "LocationTreeDefID", unique = false, nullable = false, insertable = true, updatable = true)
-	public Integer getLocationTreeDefId()
+    @Column(name = "StorageTreeDefID", unique = false, nullable = false, insertable = true, updatable = true)
+	public Integer getStorageTreeDefId()
 	{
-		return this.locationTreeDefId;
+		return this.storageTreeDefId;
 	}
 
     /**
@@ -83,7 +83,7 @@ public class LocationTreeDef extends BaseTreeDef<Location, LocationTreeDef, Loca
     @Transient
     public Integer getId()
     {
-        return this.locationTreeDefId;
+        return this.storageTreeDefId;
     }
 
     /* (non-Javadoc)
@@ -93,12 +93,12 @@ public class LocationTreeDef extends BaseTreeDef<Location, LocationTreeDef, Loca
     @Override
     public Class<?> getDataClass()
     {
-        return LocationTreeDef.class;
+        return StorageTreeDef.class;
     }
 
-	public void setLocationTreeDefId(Integer locationTreeDefId)
+	public void setStorageTreeDefId(Integer storageTreeDefId)
 	{
-		this.locationTreeDefId = locationTreeDefId;
+		this.storageTreeDefId = storageTreeDefId;
 	}
 
     @Column(name = "Name", nullable=false, length = 64)
@@ -135,7 +135,7 @@ public class LocationTreeDef extends BaseTreeDef<Location, LocationTreeDef, Loca
         this.fullNameDirection = fullNameDirection;
     }
 
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "locationTreeDef")
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "storageTreeDef")
     public Set<CollectionType> getCollectionTypes()
 	{
 		return this.collectionTypes;
@@ -149,35 +149,35 @@ public class LocationTreeDef extends BaseTreeDef<Location, LocationTreeDef, Loca
     public void addCollObjDef( CollectionType ct )
     {
         this.collectionTypes.add(ct);
-        ct.setLocationTreeDef(this);
+        ct.setStorageTreeDef(this);
     }
     
     public void removeCollObjDef( CollectionType ct )
     {
         this.collectionTypes.remove(ct);
-        ct.setLocationTreeDef(null);
+        ct.setStorageTreeDef(null);
     }
 
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "definition")
     @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
-	public Set<Location> getTreeEntries()
+	public Set<Storage> getTreeEntries()
 	{
 		return this.treeEntries;
 	}
 
-	public void setTreeEntries(Set<Location> treeEntries)
+	public void setTreeEntries(Set<Storage> treeEntries)
 	{
 		this.treeEntries = treeEntries;
 	}
 
     @OneToMany(cascade = {}, fetch = FetchType.EAGER, mappedBy = "treeDef")
     @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.LOCK })
-	public Set<LocationTreeDefItem> getTreeDefItems()
+	public Set<StorageTreeDefItem> getTreeDefItems()
 	{
 		return this.treeDefItems;
 	}
 
-	public void setTreeDefItems(Set<LocationTreeDefItem> treeDefItems)
+	public void setTreeDefItems(Set<StorageTreeDefItem> treeDefItems)
 	{
 		this.treeDefItems = treeDefItems;
 	}
@@ -185,42 +185,42 @@ public class LocationTreeDef extends BaseTreeDef<Location, LocationTreeDef, Loca
     @Transient
 	public Integer getTreeDefId()
 	{
-		return getLocationTreeDefId();
+		return getStorageTreeDefId();
 	}
 
 	public void setTreeDefId(Integer id)
 	{
-		setLocationTreeDefId(id);
+		setStorageTreeDefId(id);
 	}
 
-	public void addTreeEntry(Location loc)
+	public void addTreeEntry(Storage loc)
 	{
 		treeEntries.add(loc);
         loc.setDefinition(this);
 	}
 
-	public void removeTreeEntry(Location loc)
+	public void removeTreeEntry(Storage loc)
 	{
 		treeEntries.remove(loc);
         loc.setDefinition(null);
 	}
 
-	public void addTreeDefItem(LocationTreeDefItem item)
+	public void addTreeDefItem(StorageTreeDefItem item)
 	{
 		treeDefItems.add(item);
 		item.setTreeDef(this);
 	}
 
-	public void removeTreeDefItem(LocationTreeDefItem item)
+	public void removeTreeDefItem(StorageTreeDefItem item)
 	{
 		treeDefItems.remove(item);
 		item.setTreeDef(null);
 	}
 
     @Transient
-	public Class<Location> getNodeClass()
+	public Class<Storage> getNodeClass()
 	{
-		return Location.class;
+		return Storage.class;
 	}
 	
 	/**
@@ -230,9 +230,9 @@ public class LocationTreeDef extends BaseTreeDef<Location, LocationTreeDef, Loca
 	 * @param rank the rank of the returned def item
 	 * @return the definition item
 	 */
-    public LocationTreeDefItem getDefItemByRank(Integer rank)
+    public StorageTreeDefItem getDefItemByRank(Integer rank)
 	{
-		for( LocationTreeDefItem item: treeDefItems )
+		for( StorageTreeDefItem item: treeDefItems )
 		{
 			if ( item.getRankId().equals(rank) )
 			{
@@ -249,9 +249,9 @@ public class LocationTreeDef extends BaseTreeDef<Location, LocationTreeDef, Loca
 //	 * @param name the name of the returned def item
 //	 * @return the definition item
 //	 */
-//	public LocationTreeDefItem getDefItemByName(String defItemName)
+//	public StorageTreeDefItem getDefItemByName(String defItemName)
 //	{
-//		for( LocationTreeDefItem item: treeDefItems )
+//		for( StorageTreeDefItem item: treeDefItems )
 //		{
 //			if ( item.getName().equals(defItemName) )
 //			{
@@ -272,7 +272,7 @@ public class LocationTreeDef extends BaseTreeDef<Location, LocationTreeDef, Loca
 	 * 
 	 * @return <code>true</code> if the action will not violate any reparenting rules, false otherwise
 	 */
-	public boolean canChildBeReparentedToNode( Location child, Location newParent )
+	public boolean canChildBeReparentedToNode( Storage child, Storage newParent )
 	{
 		if ( newParent.getRankId().intValue() >= child.getRankId().intValue() )
 		{
@@ -304,9 +304,9 @@ public class LocationTreeDef extends BaseTreeDef<Location, LocationTreeDef, Loca
 	 * @param node the node to find the next highest enforced rank for
 	 * @return the next highest rank
 	 */
-	public Integer getRankOfNextHighestEnforcedLevel( Location node )
+	public Integer getRankOfNextHighestEnforcedLevel( Storage node )
 	{
-		LocationTreeDefItem defItem = node.getDefinitionItem();
+		StorageTreeDefItem defItem = node.getDefinitionItem();
 		while ( defItem.getParent() != null )
 		{
 			defItem = defItem.getParent();
@@ -347,19 +347,19 @@ public class LocationTreeDef extends BaseTreeDef<Location, LocationTreeDef, Loca
     }
 
     /**
-     * @return the currentLocationTreeDef
+     * @return the currentStorageTreeDef
      */
-    public static LocationTreeDef getCurrentLocationTreeDef()
+    public static StorageTreeDef getCurrentStorageTreeDef()
     {
-        return currentLocationTreeDef;
+        return currentStorageTreeDef;
     }
 
     /**
-     * @param currentLocationTreeDef the currentLocationTreeDef to set
+     * @param currentStorageTreeDef the currentStorageTreeDef to set
      */
-    public static void setCurrentLocationTreeDef(LocationTreeDef currentLocationTreeDef)
+    public static void setCurrentStorageTreeDef(StorageTreeDef currentStorageTreeDef)
     {
-        LocationTreeDef.currentLocationTreeDef = currentLocationTreeDef;
+        StorageTreeDef.currentStorageTreeDef = currentStorageTreeDef;
     }
     
 }
