@@ -25,6 +25,7 @@ import javax.swing.SwingUtilities;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.ui.forms.BaseBusRules;
 import edu.ku.brc.ui.forms.FormViewObj;
@@ -135,7 +136,7 @@ public class DeterminationBusRules extends BaseBusRules
                         {
                             if (det != determination && det.getStatus() != null && det.getStatus().getType() == DeterminationStatus.CURRENT)
                             {
-                                JOptionPane.showMessageDialog(null, "There is already a current Determination."); // I18N 
+                                JOptionPane.showMessageDialog(null, UIRegistry.getResourceString("DT_ALREADY_DETERMINATION"));
                                 ignoreSelection = true;
                                 cbx.setSelectedIndex(-1);
                                 ignoreSelection = false;

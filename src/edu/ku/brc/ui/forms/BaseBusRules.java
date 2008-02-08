@@ -19,15 +19,21 @@ import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
+
 import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.DBRelationshipInfo;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 
 public abstract class BaseBusRules implements BusinessRulesIFace
 {
-    protected List<String> errorList = new Vector<String>();
+    protected List<String> reasonList = new Vector<String>();
     protected Class<?>[]   dataClasses;
     
     /**
@@ -81,7 +87,7 @@ public abstract class BaseBusRules implements BusinessRulesIFace
      */
     public List<String> getWarningsAndErrors()
     {
-        return errorList;
+        return reasonList;
     }
 
     /**
@@ -189,6 +195,12 @@ public abstract class BaseBusRules implements BusinessRulesIFace
             {
                 if (!okToDelete(conn, stmt, nameCombos[i], nameCombos[i+1], ids))
                 {
+                    //log.info("Found["+ nameCombos[i]+"]["+nameCombos[i+1]+"]");
+                    DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoByTableName(nameCombos[i]);
+                    if (tableInfo != null)
+                    {
+                        reasonList.add(tableInfo.getTitle());
+                    }
                     return false;
                 }
                 i++;
@@ -217,6 +229,89 @@ public abstract class BaseBusRules implements BusinessRulesIFace
             }
         }
         return true;
+    }
+    
+    /**
+     * Adds a standard found table message to the reason list.
+     * @param tableId the table if where it was found
+     */
+    protected void addDeleteReason(final int tableId)
+    {
+        DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(tableId);
+        if (tableInfo != null)
+        {
+            reasonList.add(tableInfo.getTitle());
+        }
+    }
+    
+    /**
+     * @param skipTableNames
+     * @param idColName
+     * @return
+     */
+    protected String[] gatherTableFieldsForDelete(final String[] skipTableNames, 
+                                                  final DBTableInfo tableInfo)
+    {
+        boolean debug = true;
+        String idColName = tableInfo.getIdColumnName();
+        
+        int fieldCnt = 0;
+        Hashtable<String, Vector<String>> fieldHash = new Hashtable<String, Vector<String>>();
+        
+        for (DBTableInfo ti : DBTableIdMgr.getInstance().getTables())
+        {
+            Hashtable<String, Boolean> skipHash = new Hashtable<String, Boolean>();
+            for (String name : skipTableNames)
+            {
+                skipHash.put(name, true);
+            }
+            
+            for (DBRelationshipInfo ri : ti.getRelationships())
+            {
+                
+                if (ri.getDataClass() == tableInfo.getClassObj())
+                {
+                    String colName = ri.getColName();
+                    if (StringUtils.isNotEmpty(colName) && !(skipHash.get(ti.getName()) != null && colName.equals(idColName)))
+                    {
+                        Vector<String> fieldList = fieldHash.get(ti.getName());
+                        if (fieldList == null)
+                        {
+                            fieldList = new Vector<String>();
+                            fieldHash.put(ti.getName(), fieldList);
+                        }
+                        fieldList.add(ri.getColName());
+                        fieldCnt++;
+                    }
+                }
+            }
+        }
+        
+        if (debug)
+        {
+            System.out.println("Fields to be checked:");
+            for (String tableName : fieldHash.keySet())
+            {
+                System.out.println(" Table:" + tableName + " ");
+                for (String fName : fieldHash.get(tableName))
+                {
+                    System.out.println("   Field:" + fName); 
+                }
+            }
+        }
+        
+        int inx = 0;
+        String[] tableFieldNamePairs = new String[fieldCnt * 2];
+        for (String tableName : fieldHash.keySet())
+        {
+            for (String fName : fieldHash.get(tableName))
+            {
+                ///System.out.println("["+tableName+"]["+fName+"]");
+                tableFieldNamePairs[inx++] = tableName;
+                tableFieldNamePairs[inx++] = fName;
+            }
+        }
+        return tableFieldNamePairs;
     }
 
     /* (non-Javadoc)
@@ -300,7 +395,7 @@ public abstract class BaseBusRules implements BusinessRulesIFace
      */
     public STATUS processBusinessRules(final Object dataObj)
     {
-        errorList.clear();
+        reasonList.clear();
         
         if (dataObj == null)
         {

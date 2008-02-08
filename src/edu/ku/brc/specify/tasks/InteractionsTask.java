@@ -75,7 +75,6 @@ import edu.ku.brc.specify.datamodel.LoanReturnPreparation;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Shipment;
-import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.ui.LoanReturnDlg;
 import edu.ku.brc.specify.ui.LoanSelectPrepsDlg;
 import edu.ku.brc.specify.ui.LoanReturnDlg.LoanReturnInfo;
@@ -421,11 +420,30 @@ public class InteractionsTask extends BaseTask
      */
     protected void createNewLoan(final InfoRequest infoRequest)
     {   
+        RecordSetIFace rs = null;
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        session.attach(infoRequest);
-        RecordSetIFace rs = infoRequest.getRecordSet();
-        session.close();   
-        createNewLoan(infoRequest, rs);
+        try
+        {
+            session.attach(infoRequest);
+            rs = infoRequest.getRecordSet();
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            // Error Dialog
+            
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
+        }
+        
+        if (rs != null)
+        {
+            createNewLoan(infoRequest, rs);
+        }
     }
     
     /**
@@ -442,12 +460,12 @@ public class InteractionsTask extends BaseTask
         DataProviderFactory.getInstance().evict(tableInfo.getClassObj()); // XXX Not sure if this is really needed
         
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        
-        // OK, it COULD be a RecordSet contain one or more InfoRequest, 
-        // we will only accept an RS with one InfoRequest
-        if (infoRequest == null && recordSet.getDbTableId() == infoRequestTableId)
+        try
         {
-            try
+            
+            // OK, it COULD be a RecordSet contain one or more InfoRequest, 
+            // we will only accept an RS with one InfoRequest
+            if (infoRequest == null && recordSet.getDbTableId() == infoRequestTableId)
             {
                 if (recordSet.getNumItems() == 1)
                 {
@@ -462,122 +480,125 @@ public class InteractionsTask extends BaseTask
                         } else
                         {
                             // error about missing info request
+                            // Error Dialog
                         }
                     } else
                     {
                         // error about item being null for some unbelievable reason 
+                     // Error Dialog
                     }
                 } else 
                 {
                     // error about item having more than one or none
+                    // Error Dialog
                 }
-                
-            } catch (Exception ex)
-            {
-                log.error(ex);
-                ex.printStackTrace();
-                
-            } finally
-            {
-                if (session != null)
-                {
-                    session.close();
-                }
+                return;
             }
-            return;
-        }
-        
-        // OK, here we have a recordset of CollectionObjects
-        // First we process all the CollectionObjects in the RecordSet
-        // and create a list of Preparations that can be loaned
-        String sqlStr = DBTableIdMgr.getInstance().getQueryForTable(recordSet);
-        if (StringUtils.isNotBlank(sqlStr))
-        {
-            final LoanSelectPrepsDlg loanSelectPrepsDlg = new LoanSelectPrepsDlg((List<CollectionObject>)session.getDataList(sqlStr));
-            loanSelectPrepsDlg.setModal(true);
             
-            UIHelper.centerAndShow(loanSelectPrepsDlg);
-
-            final Taskable thisTask = this;
-            final Hashtable<Preparation, Integer> prepsHash = loanSelectPrepsDlg.getPreparationCounts();
-            if (prepsHash.size() > 0)
+            // OK, here we have a recordset of CollectionObjects
+            // First we process all the CollectionObjects in the RecordSet
+            // and create a list of Preparations that can be loaned
+            String sqlStr = DBTableIdMgr.getInstance().getQueryForTable(recordSet);
+            if (StringUtils.isNotBlank(sqlStr))
             {
-                final SwingWorker worker = new SwingWorker()
+                final LoanSelectPrepsDlg loanSelectPrepsDlg = new LoanSelectPrepsDlg((List<CollectionObject>)session.getDataList(sqlStr));
+                loanSelectPrepsDlg.setModal(true);
+                
+                UIHelper.centerAndShow(loanSelectPrepsDlg);
+    
+                final Taskable thisTask = this;
+                final Hashtable<Preparation, Integer> prepsHash = loanSelectPrepsDlg.getPreparationCounts();
+                if (prepsHash.size() > 0)
                 {
-                    @Override
-                    public Object construct()
+                    final SwingWorker worker = new SwingWorker()
                     {
-                        JStatusBar statusBar = UIRegistry.getStatusBar();
-                        statusBar.setIndeterminate(true);
-                        statusBar.setText(getResourceString("CreatingLoan"));
-                        
-                        Loan loan = new Loan();
-                        loan.initialize();
-                        
-                        Calendar dueDate = Calendar.getInstance();
-                        dueDate.add(Calendar.MONTH, 6);                 // XXX PREF Due Date
-                        loan.setCurrentDueDate(dueDate);
-                        
-                        Shipment shipment = new Shipment();
-                        shipment.initialize();
-                        
-                        // Get Defaults for Certain fields
-                        SpecifyAppContextMgr appContextMgr     = (SpecifyAppContextMgr)AppContextMgr.getInstance();
-                        PickListItemIFace    defShipmentMethod = appContextMgr.getDefaultPickListItem("ShipmentMethod", getResourceString("SHIPMENT_METHOD"));
-                        if (defShipmentMethod != null)
+                        @Override
+                        public Object construct()
                         {
-                             shipment.setShipmentMethod(defShipmentMethod.getValue());
-                        }
-                        
-                        FormDataObjIFace shippedBy = appContextMgr.getDefaultObject(Agent.class, "ShippedBy", getResourceString("SHIPPED_BY"), true, false);
-                        if (shippedBy != null)
-                        {
-                            shipment.setShippedBy((Agent)shippedBy);
-                        }
-                        
-                        if (infoRequest != null && infoRequest.getAgent() != null)
-                        {
-                            shipment.setShippedTo(infoRequest.getAgent());
-                        }
-                        
-                        loan.addReference(shipment, "shipments");
-                        
-                        for (Preparation prep : prepsHash.keySet())
-                        {
-                            Integer count = prepsHash.get(prep);
+                            JStatusBar statusBar = UIRegistry.getStatusBar();
+                            statusBar.setIndeterminate(true);
+                            statusBar.setText(getResourceString("CreatingLoan"));
                             
-                            LoanPreparation lpo = new LoanPreparation();
-                            lpo.initialize();
-                            lpo.setPreparation(prep);
-                            lpo.setQuantity(count);
-                            lpo.setLoan(loan);
-                            loan.getLoanPreparations().add(lpo);
+                            Loan loan = new Loan();
+                            loan.initialize();
+                            
+                            Calendar dueDate = Calendar.getInstance();
+                            dueDate.add(Calendar.MONTH, 6);                 // XXX PREF Due Date
+                            loan.setCurrentDueDate(dueDate);
+                            
+                            Shipment shipment = new Shipment();
+                            shipment.initialize();
+                            
+                            // Get Defaults for Certain fields
+                            SpecifyAppContextMgr appContextMgr     = (SpecifyAppContextMgr)AppContextMgr.getInstance();
+                            PickListItemIFace    defShipmentMethod = appContextMgr.getDefaultPickListItem("ShipmentMethod", getResourceString("SHIPMENT_METHOD"));
+                            if (defShipmentMethod != null)
+                            {
+                                 shipment.setShipmentMethod(defShipmentMethod.getValue());
+                            }
+                            
+                            FormDataObjIFace shippedBy = appContextMgr.getDefaultObject(Agent.class, "ShippedBy", getResourceString("SHIPPED_BY"), true, false);
+                            if (shippedBy != null)
+                            {
+                                shipment.setShippedBy((Agent)shippedBy);
+                            }
+                            
+                            if (infoRequest != null && infoRequest.getAgent() != null)
+                            {
+                                shipment.setShippedTo(infoRequest.getAgent());
+                            }
+                            
+                            loan.addReference(shipment, "shipments");
+                            
+                            for (Preparation prep : prepsHash.keySet())
+                            {
+                                Integer count = prepsHash.get(prep);
+                                
+                                LoanPreparation lpo = new LoanPreparation();
+                                lpo.initialize();
+                                lpo.setPreparation(prep);
+                                lpo.setQuantity(count);
+                                lpo.setLoan(loan);
+                                loan.getLoanPreparations().add(lpo);
+                            }
+                            
+                            DataEntryTask dataEntryTask = (DataEntryTask)TaskMgr.getTask(DataEntryTask.DATA_ENTRY);
+                            if (dataEntryTask != null)
+                            {
+                                DBTableInfo loanTableInfo = DBTableIdMgr.getInstance().getInfoById(loan.getTableId());
+                                dataEntryTask.openView(thisTask, null, loanTableInfo.getDefaultFormName(), "edit", loan, true);
+                            }
+                            return null;
                         }
-                        
-                        DataEntryTask dataEntryTask = (DataEntryTask)TaskMgr.getTask(DataEntryTask.DATA_ENTRY);
-                        if (dataEntryTask != null)
+    
+                        //Runs on the event-dispatching thread.
+                        @Override
+                        public void finished()
                         {
-                            DBTableInfo loanTableInfo = DBTableIdMgr.getInstance().getInfoById(loan.getTableId());
-                            dataEntryTask.openView(thisTask, null, loanTableInfo.getDefaultFormName(), "edit", loan, true);
+                            JStatusBar statusBar = UIRegistry.getStatusBar();
+                            statusBar.setIndeterminate(false);
+                            statusBar.setText("");
                         }
-                        return null;
-                    }
-
-                    //Runs on the event-dispatching thread.
-                    @Override
-                    public void finished()
-                    {
-                        JStatusBar statusBar = UIRegistry.getStatusBar();
-                        statusBar.setIndeterminate(false);
-                        statusBar.setText("");
-                    }
-                };
-                worker.start();
+                    };
+                    worker.start();
+                }
+                
+            } else
+            {
+                log.error("Query String empty for RecordSet tableId["+recordSet.getDbTableId()+"]");
             }
             
-        } else
+        } catch (Exception ex)
         {
-            log.error("Query String empty for RecordSet tableId["+recordSet.getDbTableId()+"]");
+            log.error(ex);
+            ex.printStackTrace();
+            
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
         }
     }
     

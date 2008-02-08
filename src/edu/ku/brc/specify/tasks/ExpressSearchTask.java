@@ -38,6 +38,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.ContextMgr;
@@ -49,6 +50,7 @@ import edu.ku.brc.af.core.expresssearch.ERTIJoinColInfo;
 import edu.ku.brc.af.core.expresssearch.ExpressResultsTableInfo;
 import edu.ku.brc.af.core.expresssearch.ExpressSearchConfigCache;
 import edu.ku.brc.af.core.expresssearch.ExpressSearchConfigDlg;
+import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL;
 import edu.ku.brc.af.core.expresssearch.QueryForIdResultsSQL;
 import edu.ku.brc.af.core.expresssearch.SearchConfig;
@@ -185,9 +187,16 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         String searchTerm = searchText.getText().toLowerCase();
         if (isNotEmpty(searchTerm))
         {
-            ESResultsSubPane expressSearchPane = new ESResultsSubPane(searchTerm, this, true);
-            doQuery(searchText, null, badSearchColor, expressSearchPane);
-            AppPreferences.getLocalPrefs().put(LAST_SEARCH, searchTerm);
+            if (QueryAdjusterForDomain.getInstance().isUerInputNotInjectable(searchTerm))
+            {
+                ESResultsSubPane expressSearchPane = new ESResultsSubPane(searchTerm, this, true);
+                doQuery(searchText, null, badSearchColor, expressSearchPane);
+                AppPreferences.getLocalPrefs().put(LAST_SEARCH, searchTerm);
+                
+            } else
+            {
+                setUserInputToNotFound("ES_SUSPICIOUS_SQL", true);
+            }
         }
     }
     
@@ -738,6 +747,30 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         
     }
     
+    /**
+     * Changes the UI component to show that nothing was found.
+     */
+    protected void setUserInputToNotFound(final String msgKey, final boolean isInError)
+    {
+        if (badSearchColor != null)
+        {
+            searchText.setBackground(badSearchColor);
+        }
+        searchText.setSelectionStart(0);
+        searchText.setSelectionEnd(searchText.getText().length());
+        searchText.getToolkit().beep();
+        searchText.repaint();
+        searchText.requestFocus();
+        
+        if (isInError)
+        {
+            UIRegistry.getStatusBar().setErrorMessage(getResourceString(msgKey));
+        } else
+        {
+            UIRegistry.displayLocalizedStatusBarText(StringUtils.isNotEmpty(msgKey) ? msgKey : "NoExpressSearchResults");
+        }
+    }
+    
     //-------------------------------------------------------------------------
     //-- CustomQueryListener Interface
     //-------------------------------------------------------------------------
@@ -757,15 +790,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
             
             if (!sqlHasResults)
             {
-                if (badSearchColor != null)
-                {
-                    searchText.setBackground(badSearchColor);
-                }
-                searchText.setSelectionStart(0);
-                searchText.setSelectionEnd(searchText.getText().length());
-                searchText.getToolkit().beep();
-                searchText.repaint();
-                UIRegistry.displayLocalizedStatusBarText("NoExpressSearchResults");
+                setUserInputToNotFound(null, false);
                 
             } else
             {

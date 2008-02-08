@@ -111,13 +111,13 @@ public class PickListBusRules extends BaseBusRules
      */
     private static void tableSelected(final FormViewObj fvo)
     {
-        ValComboBox typesCBX      = (ValComboBox)fvo.getControlByName("typesCBX");
+        //ValComboBox typesCBX      = (ValComboBox)fvo.getControlByName("typesCBX");
         ValComboBox formatterCBX = (ValComboBox)fvo.getControlByName("formatterCBX");
         ValComboBox tablesCBX     = (ValComboBox)fvo.getControlByName("tablesCBX");
         ValComboBox fieldsCBX     = (ValComboBox)fvo.getControlByName("fieldsCBX");
-        ValSpinner  sizeLimitSp   = (ValSpinner)fvo.getControlByName("sizeLimit");
+        //ValSpinner  sizeLimitSp   = (ValSpinner)fvo.getControlByName("sizeLimit");
 
-        int typeIndex = typesCBX.getComboBox().getSelectedIndex();
+        //int typeIndex = typesCBX.getComboBox().getSelectedIndex();
         
         String noneStr = getResourceString("None");
         
@@ -454,13 +454,13 @@ public class PickListBusRules extends BaseBusRules
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
-            errorList.clear();
+            reasonList.clear();
             
             PickList dbPL = session.getData(PickList.class, "name", pickList.getName(), DataProviderSessionIFace.CompareType.Equals);
             log.debug("["+dbPL.getId().intValue()+"]["+pickList.getId().intValue()+"]");
             if (dbPL != null && dbPL.getId().intValue() != pickList.getId().intValue())
             {
-                errorList.add(UIRegistry.getLocalizedMessage("PL_DUPLICATE_NAME", pickList.getName()));
+                reasonList.add(UIRegistry.getLocalizedMessage("PL_DUPLICATE_NAME", pickList.getName()));
                 return STATUS.Error;
             }
         } catch (Exception ex)

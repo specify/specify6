@@ -17,10 +17,13 @@
  */
 package edu.ku.brc.specify.datamodel.busrules;
 
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace;
+import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 /**
  * @author rods
@@ -51,50 +54,27 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace, edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace)
      */
     @Override
-    public void okToDelete(Object dataObj,
-                           DataProviderSessionIFace session,
-                           BusinessRulesOkDeleteIFace deletable)
+    public void okToDelete(final Object dataObj,
+                           final DataProviderSessionIFace session,
+                           final BusinessRulesOkDeleteIFace deletable)
     {
-        boolean isOK = false;
+        reasonList.clear();
         
+        boolean isOK = false;
         if (deletable != null)
         {
-            String[] tableInfo = 
-            {
-                    "specifyuser",  "AgentID",
-                    "agent",        "ParentOrganizationID",
-                    "groupperson",  "GroupID",
-                    "loanreturnpreparation", "ReceivedByID",
-                    "author",       "AgentID",
-                    "borrowreturnmaterial", "ReturnedByID",
-                    "preparation",  "PreparedByID",
-                    "exchangein",   "CatalogedByID",
-                    "exchangein",   "ReceivedFromOrganizationID",
-                    "project",      "ProjectAgentID",
-                    "shipment",     "ShippedByID",
-                    "shipment",     "ShipperID",
-                    "shipment",     "ShippedToID",
-                    "collector",   "AgentID",
-                    "exchangeout",  "CatalogedByID",
-                    "exchangeout",  "SentToOrganizationID",
-                    "repositoryagreement",  "AgentID",
-                    "deaccessionagent",  "AgentID",
-                    "permit",       "IssuedToID",
-                    "permit",       "IssuedByID",
-                    "borrowagent",  "AgentID",
-                };
-    
-            Agent agent = (Agent)dataObj;
+            FormDataObjIFace dbObj = (FormDataObjIFace)dataObj;
             
-            Integer agentId = agent.getId();
-            if (agentId == null)
+            Integer id = dbObj.getId();
+            if (id == null)
             {
                 isOK = false;
                 
             } else
             {
-            
-                isOK = okToDelete(tableInfo, agent.getId());
+                DBTableInfo tableInfo      = DBTableIdMgr.getInstance().getInfoById(Agent.getClassTableId());
+                String[]    tableFieldList = gatherTableFieldsForDelete(new String[] {"agent", "address", "agentvariant"}, tableInfo);
+                isOK = okToDelete(tableFieldList, dbObj.getId());
             }
             deletable.doDeleteDataObj(dataObj, session, isOK);
             

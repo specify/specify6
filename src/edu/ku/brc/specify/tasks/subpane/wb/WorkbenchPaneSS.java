@@ -2524,6 +2524,11 @@ public class WorkbenchPaneSS extends BaseSubPane
     @Override
     public void shutdown()
     {
+        if (spreadSheet == null)
+        {
+            return;
+        }
+        
         //--------------------------------------------------------------------------------
         // I really don't know how much of all this is necessary
         // but using the JProfiler it seems things got better when I did certain things.
@@ -2553,6 +2558,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         if (spreadSheet != null)
         {
+            spreadSheet.setVisible(false);
             spreadSheet.getSelectionModel().removeListSelectionListener(workbenchRowChangeListener);
             spreadSheet.cleanUp();
             workbenchRowChangeListener = null;

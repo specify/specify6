@@ -52,7 +52,7 @@ public class PermitBusRules extends AttachmentOwnerBaseBusRules
      */
     public STATUS processBusinessRules(Object dataObj)
     {
-        errorList.clear();
+        reasonList.clear();
         
         if (!(dataObj instanceof Permit))
         {
@@ -91,7 +91,7 @@ public class PermitBusRules extends AttachmentOwnerBaseBusRules
                 List<?>                  permitNumbers = session.getDataList(Permit.class, "permitNumber", permitNum);
                 if (permitNumbers.size() > 0)
                 {
-                    errorList.add(getLocalizedMessage("PERMIT_NUM_IN_USE", permitNum));
+                    reasonList.add(getLocalizedMessage("PERMIT_NUM_IN_USE", permitNum));
                 } else
                 {
                     return STATUS.OK;
@@ -104,7 +104,7 @@ public class PermitBusRules extends AttachmentOwnerBaseBusRules
             
         } else
         {
-            errorList.add(getLocalizedMessage("PERMIT_NUM_MISSING"));
+            reasonList.add(getLocalizedMessage("PERMIT_NUM_MISSING"));
         }
 
         return STATUS.Error;

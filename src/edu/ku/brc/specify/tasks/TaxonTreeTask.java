@@ -55,7 +55,7 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
 	{
         super(TAXON, getResourceString(TAXON));
         treeDefClass = TaxonTreeDef.class;
-        icon = IconManager.getIcon(TAXON,IconManager.IconSize.Std24);
+        icon = IconManager.getIcon(TAXON, IconManager.IconSize.Std24);
         
         menuItemText      = getResourceString("TaxonMenu");
         menuItemMnemonic  = getResourceString("TaxonMnemonic");
@@ -80,7 +80,7 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
     {
         final TreeTableViewer<Taxon, TaxonTreeDef, TaxonTreeDefItem> ttv = super.createTreeViewer();
 
-        if(ttv != null)
+        if (ttv != null)
         {
             final TreeNodePopupMenu popup = ttv.getPopupMenu();
             // install custom popup menu items

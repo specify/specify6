@@ -33,6 +33,7 @@ import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.core.expresssearch.ERTICaptionInfo;
+import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
@@ -658,21 +659,25 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         
         public String buildSQL(String searchText)
         {
-            int collTypeID = CollectionType.getCurrentCollectionType().getId();
-
-            // get node table and primary key column names
-            DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(nodeInForm.getClass().getName());
-            String tableName = tableInfo.getName();
-            String idColName = tableInfo.getIdColumnName();
-            
-            // get definition table and primary key column names
-            DBTableInfo defTableInfo = DBTableIdMgr.getInstance().getByClassName(tableInfo.getRelationshipByName("definition").getClassName());
-            String defTableName = defTableInfo.getName();
-            String defIdColName = defTableInfo.getIdColumnName();
-            
-            String queryFormatStr = "SELECT n.FullName, n.%s from %s n INNER JOIN %s d ON n.%s = d.%s INNER JOIN collectiontype ct ON d.%s = ct.%s WHERE lower(n.FullName) LIKE \'%s\' AND ct.CollectionTypeID = %d ORDER BY n.FullName asc";
-            String queryStr = String.format(queryFormatStr, idColName, tableName, defTableName, defIdColName, defIdColName, defIdColName, defIdColName, searchText.toLowerCase() + "%", collTypeID);
-            log.debug(queryStr);
+            String queryStr = "";
+            if (QueryAdjusterForDomain.getInstance().isUerInputNotInjectable(searchText))
+            {
+                int collTypeID = CollectionType.getCurrentCollectionType().getId();
+    
+                // get node table and primary key column names
+                DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(nodeInForm.getClass().getName());
+                String tableName = tableInfo.getName();
+                String idColName = tableInfo.getIdColumnName();
+                
+                // get definition table and primary key column names
+                DBTableInfo defTableInfo = DBTableIdMgr.getInstance().getByClassName(tableInfo.getRelationshipByName("definition").getClassName());
+                String defTableName = defTableInfo.getName();
+                String defIdColName = defTableInfo.getIdColumnName();
+                
+                String queryFormatStr = "SELECT n.FullName, n.%s from %s n INNER JOIN %s d ON n.%s = d.%s INNER JOIN collectiontype ct ON d.%s = ct.%s WHERE lower(n.FullName) LIKE \'%s\' AND ct.CollectionTypeID = %d ORDER BY n.FullName asc";
+                queryStr = String.format(queryFormatStr, idColName, tableName, defTableName, defIdColName, defIdColName, defIdColName, defIdColName, searchText.toLowerCase() + "%", collTypeID);
+                log.debug(queryStr);
+            }
             return queryStr;
         }
 

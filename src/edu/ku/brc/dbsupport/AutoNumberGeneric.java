@@ -285,51 +285,47 @@ public class AutoNumberGeneric implements AutoNumberIFace
      * @param yearAndIncVal a year,incVal pair
      * @return the new formatted value
      */
-    public String buildNewNumber(final UIFieldFormatterIFace formatter, final String value, final Pair<Integer, Integer> yearAndIncVal)
+    public String buildNewNumber(final UIFieldFormatterIFace  formatter, 
+                                 final String                 value, 
+                                 final Pair<Integer, Integer> yearAndIncVal)
     {
-        if (yearAndIncVal.first != null && yearAndIncVal.second != null)
+        if (StringUtils.isNotEmpty(value) && value.length() == formatter.getLength())
         {
-            if (StringUtils.isNotEmpty(value) && value.length() == formatter.getLength())
+            Pair<Integer, Integer> pos = formatter.getIncPosition();
+            if (pos != null)
             {
-                Pair<Integer, Integer> pos = formatter.getIncPosition();
-                if (pos != null)
+                if (pos.first != null && pos.second != null)
                 {
-                    if (pos.first != null && pos.second != null)
+                    int incVal = yearAndIncVal.second + 1;
+                    
+                    StringBuilder sb        = new StringBuilder(value.substring(0, pos.first));
+                    String        formatStr = "%0" + (pos.second - pos.first) + "d";
+                    sb.append(String.format(formatStr, incVal));
+                    if (formatter.getLength() > pos.second)
                     {
-                        int incVal = yearAndIncVal.second + 1;
-                        
-                        StringBuilder sb        = new StringBuilder(value.substring(0, pos.first));
-                        String        formatStr = "%0" + (pos.second - pos.first) + "d";
-                        sb.append(String.format(formatStr, incVal));
-                        if (formatter.getLength() > pos.second)
-                        {
-                            sb.append(value.substring(pos.second, formatter.getLength()));
-                        }
-                        
-                        UIFieldFormatterField  yearField = formatter.getYear();
-                        if (yearField != null && yearField.isByYear())
-                        {
-                            Pair<Integer, Integer> yrPos = formatter.getYearPosition();
-                            if (yrPos != null)
-                            {
-                                sb.replace(yrPos.first, yrPos.second, Integer.toString(yearAndIncVal.first));
-                            }
-                        }
-                        
-                        return sb.toString();
-                        
-                    } else
-                    {
-                        throw new RuntimeException("There was an error trying to obtain the highest number, there may be a bad value in the database.");
+                        sb.append(value.substring(pos.second, formatter.getLength()));
                     }
+                    
+                    UIFieldFormatterField  yearField = formatter.getYear();
+                    if (yearField != null && yearField.isByYear())
+                    {
+                        Pair<Integer, Integer> yrPos = formatter.getYearPosition();
+                        if (yrPos != null)
+                        {
+                            sb.replace(yrPos.first, yrPos.second, Integer.toString(yearAndIncVal.first));
+                        }
+                    }
+                    
+                    return sb.toString();
+                    
+                } else
+                {
+                    throw new RuntimeException("There was an error trying to obtain the highest number, there may be a bad value in the database.");
                 }
-                // else
-                throw new RuntimeException("Formatter ["+formatter.getName()+"] doesn't have an incrementer field.");
-            }   
-        } else
-        {
-            throw new RuntimeException("yearAndIncVal.first is null["+(yearAndIncVal.first == null)+"] yearAndIncVal.second is null["+(yearAndIncVal.second == null)+"]");
-        }
+            }
+            // else
+            throw new RuntimeException("Formatter ["+formatter.getName()+"] doesn't have an incrementer field.");
+        }   
         return null;
     }
 

@@ -99,7 +99,8 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     // Constructors
 
     /** default constructor */
-    public Preparation() {
+    public Preparation() 
+    {
         //
         // do nothing
     }

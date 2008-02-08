@@ -40,6 +40,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -57,6 +58,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanel;
 import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.ui.db.ViewBasedSearchQueryBuilderIFace;
 import edu.ku.brc.ui.forms.MultiView;
@@ -382,12 +384,23 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
         if (queryBuilder != null)
         {
             sqlStr      = queryBuilder.buildSQL(dataMap, fieldNames);
-            resultsInfo = queryBuilder.createQueryForIdResults();
-            resultsInfo.setSQL(sqlStr);
+            if (StringUtils.isNotEmpty(sqlStr))
+            {
+                resultsInfo = queryBuilder.createQueryForIdResults();
+                resultsInfo.setSQL(sqlStr);
+                
+            } else
+            {
+                UIRegistry.getStatusBar().setErrorMessage(getResourceString("ES_SUSPICIOUS_SQL"));
+                panel.validate();
+                panel.repaint();
+                return;
+            }
             
         } else
         {
-            StringBuilder strBuf = new StringBuilder(256);
+            QueryAdjusterForDomain qafd   = QueryAdjusterForDomain.getInstance();
+            StringBuilder          strBuf = new StringBuilder(256);
             int cnt = 0;
             for (ERTICaptionInfo captionInfo : esTableInfo.getVisibleCaptionInfo())
             {
@@ -396,7 +409,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
                 if (value != null)
                 {
                     String valStr = value.toString();
-                    if (valStr.length() > 0)
+                    if (valStr.length() > 0 && qafd.isUerInputNotInjectable(valStr))
                     {
                         if (cnt > 0)
                         {
@@ -405,6 +418,12 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
                         
                         strBuf.append(" LOWER("+captionInfo.getColName()+") like '#$#"+valStr+"#$#'");
                         cnt++;
+                    } else
+                    {
+                        UIRegistry.getStatusBar().setErrorMessage(getResourceString("ES_SUSPICIOUS_SQL"));
+                        panel.validate();
+                        panel.repaint();
+                        return;
                     }
                 } else
                 {

@@ -180,6 +180,7 @@ public class PickListDBAdapter extends AbstractListModel implements PickListDBAd
             if (pickList != null)
             {
                 pickList.addItem(item);
+                item.setPickList(pickList);
             }
 
             save();

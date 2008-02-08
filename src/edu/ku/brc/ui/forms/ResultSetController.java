@@ -338,7 +338,16 @@ public class ResultSetController implements ValidationListener
      */
     public void setEnabled(final boolean enabled)
     {
-        currentInx = enabled ? 0 : -1;
+        if (enabled)
+        {
+            currentInx = 0;
+            
+        } else
+        {
+            currentInx = -1;
+            numRecords = 0;
+            lastInx    = -1;
+        }
         updateUI();
     }
 

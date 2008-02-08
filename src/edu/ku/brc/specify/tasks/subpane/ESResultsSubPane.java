@@ -194,12 +194,12 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
             contentPanel.add(etr.getUIComponent()); 
         }
         
-        List<Component> comps = layoutMgr.getComponentList();
-        comps.clear();
+        layoutMgr.removeAll();
         for (ESResultsTablePanelIFace etr : expTblResults)
         {
-            comps.add(etr.getUIComponent()); 
+            layoutMgr.addLayoutComponent(etr.getUIComponent(), null); 
         }
+        
         
         if (explainPanel != null)
         {

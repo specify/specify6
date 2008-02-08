@@ -424,38 +424,41 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         if (sql == null)
         {
             StringBuilder sb = new StringBuilder();
-            sb.append("SELECT ");
-            if (isForCount)
+            if (QueryAdjusterForDomain.getInstance().isUerInputNotInjectable(newEntryStr))
             {
-                sb.append("count(");                
-                sb.append(tableInfo.getIdFieldName());                
-                sb.append(")");
+                sb.append("SELECT ");
+                if (isForCount)
+                {
+                    sb.append("count(");                
+                    sb.append(tableInfo.getIdFieldName());                
+                    sb.append(")");
+                    
+                } else
+                {
+                    sb.append(displayColumns);
+                    sb.append(",");
+                    sb.append(tableInfo.getIdFieldName());                
+                }
+    
+                sb.append(" FROM ");
+                sb.append(tableInfo.getClassName());
+                sb.append(" WHERE ");
                 
-            } else
-            {
-                sb.append(displayColumns);
-                sb.append(",");
-                sb.append(tableInfo.getIdFieldName());                
+                String specialCols = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, true);
+                if (StringUtils.isNotEmpty(specialCols))
+                {
+                    sb.append(specialCols);
+                    sb.append(" AND ");
+                }
+                
+                sb.append(" LOWER(");
+                sb.append(keyColumn);
+                sb.append(") LIKE '");
+                sb.append(newEntryStr.toLowerCase());
+                sb.append("%' ORDER BY ");
+                sb.append(keyColumn);
+                sb.append(" ASC");
             }
-
-            sb.append(" FROM ");
-            sb.append(tableInfo.getClassName());
-            sb.append(" WHERE ");
-            
-            String specialCols = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, true);
-            if (StringUtils.isNotEmpty(specialCols))
-            {
-                sb.append(specialCols);
-                sb.append(" AND ");
-            }
-            
-            sb.append(" LOWER(");
-            sb.append(keyColumn);
-            sb.append(") LIKE '");
-            sb.append(newEntryStr.toLowerCase());
-            sb.append("%' ORDER BY ");
-            sb.append(keyColumn);
-            sb.append(" ASC");
             return sb.toString();
         }
         return sql;

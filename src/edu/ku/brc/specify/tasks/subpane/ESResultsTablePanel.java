@@ -135,7 +135,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         setBackground(table.getBackground());
         
-        //if (enableEditing)
+        if (enableEditing)
         {
             addContextMenu();
         }

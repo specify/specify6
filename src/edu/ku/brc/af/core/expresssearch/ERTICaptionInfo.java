@@ -109,8 +109,17 @@ public class ERTICaptionInfo
         String key = getAttr(element, "key", null);
         if (StringUtils.isNotEmpty(key))
         {
-            colLabel    = resBundle.getString(key);
-            description = resBundle.getString(key+"_desc");
+            try
+            {
+                colLabel    = resBundle.getString(key);
+                description = resBundle.getString(key+"_desc");
+                
+            } catch (java.util.MissingResourceException ex)
+            {
+                log.error("Missing resource ["+key+"] or ["+key+"_desc]");
+                colLabel    = key;
+                description = key+"_desc";
+            }
             
         } else
         {

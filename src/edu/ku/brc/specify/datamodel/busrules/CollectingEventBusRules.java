@@ -13,8 +13,11 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */package edu.ku.brc.specify.datamodel.busrules;
 
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Locality;
+import edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace;
+import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 /**
  * @author rod 
@@ -67,4 +70,34 @@ public class CollectingEventBusRules extends AttachmentOwnerBaseBusRules
         }
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace, edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace)
+     */
+    @Override
+    public void okToDelete(final Object dataObj,
+                           final DataProviderSessionIFace session,
+                           final BusinessRulesOkDeleteIFace deletable)
+    {
+        boolean isOK = false;
+        if (deletable != null)
+        {
+            FormDataObjIFace dbObj = (FormDataObjIFace)dataObj;
+            
+            Integer id = dbObj.getId();
+            if (id == null)
+            {
+                isOK = false;
+                
+            } else
+            {
+               isOK = okToDelete(new String[] {"collectionobject", "CollectingEventID"}, dbObj.getId());
+            }
+            deletable.doDeleteDataObj(dataObj, session, isOK);
+            
+        } else
+        {
+            super.okToDelete(dataObj, session, deletable);
+        }
+    }
+
 }

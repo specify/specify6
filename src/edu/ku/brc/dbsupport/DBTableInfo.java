@@ -28,6 +28,7 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.forms.BusinessRulesIFace;
 
 /**
  * Holds the Schema information for a table.
@@ -47,7 +48,7 @@ public class DBTableInfo extends DBInfoBase
     protected String   primaryKeyName;
     protected Class<?> classObj;
     protected boolean  isSearchable       = false;
-    protected String   businessRule;
+    protected String   businessRuleName;
     protected String   abbrev;
     
     // ID Fields
@@ -239,14 +240,34 @@ public class DBTableInfo extends DBInfoBase
         this.isSearchable = isSearchable;
     }
 
-    public String getBusinessRule()
+    public String getBusinessRuleName()
     {
-        return businessRule;
+        return businessRuleName;
     }
 
-    public void setBusinessRule(String busniessRule)
+    public void setBusinessRuleName(String businessRule)
     {
-        this.businessRule = busniessRule;
+        this.businessRuleName = businessRule;
+    }
+    
+    public BusinessRulesIFace getBusinessRule()
+    {
+        if (StringUtils.isNotEmpty(businessRuleName))
+        {
+            try
+            {
+                Class<?> clazz = Class.forName(businessRuleName);
+                if (clazz.isAssignableFrom(BusinessRulesIFace.class))
+                {
+                    return (BusinessRulesIFace)clazz.newInstance();
+                }
+                
+            } catch (Exception ex)
+            {
+                log.error(ex);
+            }
+        }
+        return null;
     }
     
     /**

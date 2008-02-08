@@ -76,7 +76,7 @@ public class DeterminationStatusBusRules extends BaseBusRules
      */
     public boolean okToEnableDelete(Object dataObj)
     {
-        errorList.clear();
+        reasonList.clear();
         
         DeterminationStatus DeterminationStatus = (DeterminationStatus)dataObj;
         if (DeterminationStatus.getId() == null)

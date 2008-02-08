@@ -70,7 +70,7 @@ public class PrepTypeBusRules extends BaseBusRules
     public List<String> getWarningsAndErrors()
     {
         // TODO Auto-generated method stub
-        return errorList;
+        return reasonList;
     }
 
     /* (non-Javadoc)
@@ -118,7 +118,7 @@ public class PrepTypeBusRules extends BaseBusRules
      */
     public STATUS processBusinessRules(Object dataObj)
     {
-        errorList.clear();
+        reasonList.clear();
         
         if (dataObj == null || !(dataObj instanceof PrepType))
         {

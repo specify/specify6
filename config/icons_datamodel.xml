@@ -47,7 +47,6 @@
     <icon name="loanreturnpreparation" file="loan_return_prep.png" sizes="all"/>
     <icon name="locality"             file="locality.png" sizes="all"/>
     <icon name="localitynamealias"    file="locality_name_alias.png" sizes="all"/>
-    <icon name="location"             file="location.png" sizes="all"/>
     <icon name="permit"               file="permit.png" sizes="all"/>
     <icon name="preparation"          file="preparation.png" sizes="all"/>
     <icon name="preptype"             file="prep_type.png" sizes="all"/>
@@ -55,7 +54,13 @@
     <icon name="referencework"        file="reference_work.png" sizes="all"/>
     <icon name="repositoryagreement"  file="repository_agreement.png" sizes="all"/>
     <icon name="shipment"             file="shipment.png" sizes="all"/>
+    <icon name="storage"              file="storage.png" sizes="all"/>
     <icon name="taxon"                file="taxon.png" sizes="all"/>
+    
+    <!--  Extra Icons -->
+    <icon name="group"                file="group.png" sizes="all"/>
+    <icon name="person"               file="person.png" sizes="all"/>
+    
 
     <!-- Aliases -->
 	<icon name="accessionattachment"            alias="attachment"/>
@@ -147,7 +152,6 @@
     <icon name="LoanReturnPreparation"  alias="loanreturnpreparation"/>
     <icon name="Locality"               alias="locality"/>
     <icon name="LocalityNameAlias"      alias="localitynamealias"/>
-    <icon name="Storage"                alias="location"/>
     <icon name="Permit"                 alias="permit"/>
     <icon name="Preparation"            alias="preparation"/>
     <icon name="PrepType"               alias="preptype"/>
@@ -155,6 +159,7 @@
     <icon name="ReferenceWork"          alias="referencework"/>
     <icon name="Stratigraphy"           alias="lithostrat"/>
     <icon name="Shipment"               alias="shipment"/>
+    <icon name="Storage"                alias="storage"/>
     <icon name="Taxon"                  alias="taxon"/>
     
     <!-- Attachment Capitalized -->
@@ -181,18 +186,19 @@
     <icon name="taxontreedef"              alias="taxon"/>
     <icon name="geographytreedef"          alias="geography"/>
     <icon name="geologictimePeriodtreedef" alias="geologictimeperiod"/>
-    <icon name="locationlreedef"           alias="location"/>
+    <icon name="locationltreedef"          alias="location"/>
     
     <!-- Tree Task icons -->
-    <icon name="Geography_Tree"          alias="geography"/>
-    <icon name="Storage_Tree"           alias="location"/>
-    <icon name="GeoTimePeriod_Tree"      alias="geologictimeperiod"/>
+    <icon name="GeographyTree"             alias="geography"/>
+    <icon name="StorageTree"               alias="location"/>
+    <icon name="GeoTimePeriodTree"         alias="geologictimeperiod"/>
+    <icon name="LithoStratTree"            alias="lithostrat"/>
     
-    <icon name="TreeDefEditor"           alias="taxon"/>
-    <icon name="TreeViewer"			     alias="taxon"/>
-    <icon name="Taxon_Tree"              alias="taxon"/>
+    <icon name="TreeDefEditor"             alias="taxon"/>
+    <icon name="TreeViewer"			       alias="taxon"/>
+    <icon name="TaxonTree"                 alias="taxon"/>
     
-    <icon name="Person"              alias="agent"/>
-    <icon name="People"              alias="agent"/>
+    <icon name="Person"                    alias="person"/>
+    <icon name="People"                    alias="group"/>
     
 </icons>

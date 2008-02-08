@@ -14,9 +14,11 @@
  */
 package edu.ku.brc.specify.datamodel.busrules;
 
+import java.io.File;
 import java.util.Calendar;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -26,12 +28,16 @@ import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.config.Discipline;
+import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionType;
+import edu.ku.brc.specify.datamodel.DeaccessionPreparation;
+import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
+import edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.ui.forms.Viewable;
 
 /**
@@ -58,32 +64,12 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToDelete(java.lang.Object)
      */
     @Override
-    public boolean okToEnableDelete(Object dataObj)
+    public boolean okToEnableDelete(final Object dataObj)
     {
         if (!(dataObj instanceof CollectionObject))
         {
             return false;
         }
-        
-        /*
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        HibernateDataProviderSession hibSession = (HibernateDataProviderSession)session;
-
-        //hibSession.getSession().getSessionFactory().
-        SessionFactory.
-        session.attach(dataObj);
-
-        CollectionObject colObj = (CollectionObject)dataObj;
-        for (Preparation prep : colObj.getPreparations())
-        {
-            if (prep.getLoanPreparations().size() > 0)
-            {
-                session.close();
-                return false;
-            }
-        }
-        session.close();
-        */
         
         return true;
     }
@@ -193,5 +179,69 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         super.beforeFormFill(viewable);
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace, edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace)
+     */
+    @Override
+    public void okToDelete(final Object dataObj,
+                           final DataProviderSessionIFace sessionArg,
+                           final BusinessRulesOkDeleteIFace deletable)
+    {
+        reasonList.clear();
+        
+        boolean isOK = true;
+        if (deletable != null)
+        {
+            DataProviderSessionIFace session = sessionArg != null ? sessionArg : DataProviderFactory.getInstance().createSession();
+            try
+            {
+                session.attach(dataObj);
     
+                CollectionObject colObj = (CollectionObject)dataObj;
+                for (Preparation prep : colObj.getPreparations())
+                {
+                    if (!prep.getLoanPreparations().isEmpty())
+                    {
+                        isOK = false;
+                        addDeleteReason(LoanPreparation.getClassTableId());
+                    }
+                    
+                    if (!prep.getDeaccessionPreparations().isEmpty())
+                    {
+                        isOK = false;
+                        addDeleteReason(DeaccessionPreparation.getClassTableId());
+                    }
+                    
+                    if (colObj.getAccession() != null)
+                    {
+                        isOK = false;
+                        addDeleteReason(Accession.getClassTableId());
+                    }
+                    
+                    if (!isOK)
+                    {
+                        break;
+                    }
+                }
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+                // Error Dialog
+                
+            } finally
+            {
+                if (sessionArg == null && session != null)
+                {
+                    session.close();
+                }
+            }
+            
+            deletable.doDeleteDataObj(dataObj, session, isOK);
+            
+        } else
+        {
+            super.okToDelete(dataObj, sessionArg, deletable);
+        }
+    }
+
 }

@@ -90,7 +90,7 @@ public class ShipmentBusRules extends BaseBusRules
      */
     public STATUS processBusinessRules(Object dataObj)
     {
-        errorList.clear();
+        reasonList.clear();
         
         if (dataObj == null || !(dataObj instanceof Shipment))
         {
@@ -106,13 +106,13 @@ public class ShipmentBusRules extends BaseBusRules
             Set<Address> addr = agent.getAddresses();
             if (addr.size() == 0)
             {
-                errorList.add(getLocalizedMessage("LOAN_MISSING_AGENT_ADDR")); // This shouldn't ever happen
+                reasonList.add(getLocalizedMessage("LOAN_MISSING_AGENT_ADDR")); // This shouldn't ever happen
                 return STATUS.Error;
             }
             
         } else
         {
-            errorList.add(getLocalizedMessage("Loan Agent is missing an Agent")); // This shouldn't ever happen
+            reasonList.add(getLocalizedMessage("Loan Agent is missing an Agent")); // This shouldn't ever happen
             return STATUS.Error;
         }     
 

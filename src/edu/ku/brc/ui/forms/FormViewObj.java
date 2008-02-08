@@ -1724,7 +1724,25 @@ public class FormViewObj implements Viewable,
     {
         if (doDelete)
         {
-            removeObject();
+            //removeObject();
+            
+        } else
+        {
+            DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(dataObj.getClass().getName());
+            StringBuilder sb = new StringBuilder();
+            sb.append(String.format(getResourceString("COULDNT_DELETE_OBJ"), ti.getTitle(), ((FormDataObjIFace)dataObj).getIdentityTitle()));
+            sb.append("\n");
+            sb.append(getResourceString("BR_FOUNDINTABLE_LABEL"));
+            sb.append("\n");
+            for (String s : businessRules.getWarningsAndErrors())
+            {
+                sb.append("  ");
+                sb.append(s);
+                sb.append("\n");
+            }
+            JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
+                    sb.toString(), 
+                    getResourceString("COULDNT_DELETE_OBJ_TITLE"), JOptionPane.WARNING_MESSAGE);
         }
     }
 
@@ -2482,9 +2500,23 @@ public class FormViewObj implements Viewable,
                 log.debug(formViewDef.getName()+" ["+(dataObj != null) + "] ["+(parentDataObj != null)+"]["+(mvParent.isTopLevel())+"] "+enableNewBtn);
                 log.debug(formViewDef.getName()+" Enabling The New Btn: "+enableNewBtn);
             }*/
-            if (formValidator != null)
+            if (formValidator != null && dataObj != null)
             {
                 enableNewBtn = formValidator.isFormValid();
+                
+            } else 
+            {
+                //if (formValidator != null) log.debug(formValidator.getName());
+                //log.debug("mvParent.getData() "+mvParent.getData() +"  data "+dataObj + (!mvParent.isTopLevel() ? mvParent.getMultiViewParent().getData() : "null"));
+                
+                if (mvParent.isTopLevel())
+                {
+                    enableNewBtn = true;
+                } else
+                {
+                    enableNewBtn = mvParent.getMultiViewParent() != null && mvParent.getMultiViewParent().getData() != null;
+                }
+                //enableNewBtn = mvParent.isTopLevel() || !mvParent.isTopLevel() ? mvParent.getMultiViewParent().getData() != null : false;
             }
             
             //log.debug(view.getName()+"  enableNewBtn "+enableNewBtn+"  isNewlyCreatedDataObj "+isNewlyCreatedDataObj()+" ("+(enableNewBtn && (dataObj == null || !isNewlyCreatedDataObj()))+")");

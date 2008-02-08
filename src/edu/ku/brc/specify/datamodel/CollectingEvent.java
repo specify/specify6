@@ -347,21 +347,22 @@ public class CollectingEvent extends CollectionMember implements AttachmentOwner
         return this.remarks;
     }
     
-    public void setRemarks(String remarks) {
+    public void setRemarks(String remarks) 
+    {
         this.remarks = remarks;
     }
-    
-    
     
     /**
      *      * Indicates whether this record can be viewed - by owner, by instituion, or by all
      */
     @Column(name = "Visibility")
-    public Integer getVisibility() {
+    public Integer getVisibility() 
+    {
         return this.visibility;
     }
     
-    public void setVisibility(Integer visibility) {
+    public void setVisibility(Integer visibility) 
+    {
         this.visibility = visibility;
     }
      
@@ -369,11 +370,13 @@ public class CollectingEvent extends CollectionMember implements AttachmentOwner
      * 
      */
     @Column(name = "VisibilitySetBy", length = 50)
-    public String getVisibilitySetBy() {
+    public String getVisibilitySetBy() 
+    {
         return this.visibilitySetBy;
     }
     
-    public void setVisibilitySetBy(String visibilitySetBy) {
+    public void setVisibilitySetBy(String visibilitySetBy) 
+    {
         this.visibilitySetBy = visibilitySetBy;
     }
     
@@ -403,11 +406,13 @@ public class CollectingEvent extends CollectionMember implements AttachmentOwner
     @OneToMany(mappedBy = "collectingEvent")
     @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
     @OrderBy("orderNumber ASC")
-    public Set<Collector> getCollectors() {
+    public Set<Collector> getCollectors() 
+    {
         return this.collectors;
     }
     
-    public void setCollectors(Set<Collector> collectors) {
+    public void setCollectors(Set<Collector> collectors) 
+    {
         this.collectors = collectors;
     }
 
@@ -416,11 +421,13 @@ public class CollectingEvent extends CollectionMember implements AttachmentOwner
      */
     @ManyToOne
     @JoinColumn(name = "LocalityID")
-    public Locality getLocality() {
+    public Locality getLocality() 
+    {
         return this.locality;
     }
     
-    public void setLocality(Locality locality) {
+    public void setLocality(Locality locality) 
+    {
         this.locality = locality;
     }
 

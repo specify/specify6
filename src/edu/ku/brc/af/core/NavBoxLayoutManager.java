@@ -57,7 +57,7 @@ public class NavBoxLayoutManager implements LayoutManager2
     /* (non-Javadoc)
      * @see java.awt.LayoutManager#addLayoutComponent(java.lang.String, java.awt.Component)
      */
-    public void addLayoutComponent(String arg0, Component arg1)
+    public void addLayoutComponent(final String arg0, final Component arg1)
     {
         if (arg1 == null)
         {
@@ -70,7 +70,7 @@ public class NavBoxLayoutManager implements LayoutManager2
     /* (non-Javadoc)
      * @see java.awt.LayoutManager#removeLayoutComponent(java.awt.Component)
      */
-    public void removeLayoutComponent(Component arg0)
+    public void removeLayoutComponent(final Component arg0)
     {
         if (arg0 == null)
         {
@@ -83,7 +83,7 @@ public class NavBoxLayoutManager implements LayoutManager2
     /* (non-Javadoc)
      * @see java.awt.LayoutManager#preferredLayoutSize(java.awt.Container)
      */
-    public Dimension preferredLayoutSize(Container target)
+    public Dimension preferredLayoutSize(final Container target)
     {
         synchronized (target.getTreeLock()) 
         {
@@ -95,7 +95,7 @@ public class NavBoxLayoutManager implements LayoutManager2
     /* (non-Javadoc)
      * @see java.awt.LayoutManager#minimumLayoutSize(java.awt.Container)
      */
-    public Dimension minimumLayoutSize(Container arg0)
+    public Dimension minimumLayoutSize(final Container arg0)
     {
          return new Dimension(minimumSize);
     }
@@ -103,7 +103,7 @@ public class NavBoxLayoutManager implements LayoutManager2
     /* (non-Javadoc)
      * @see java.awt.LayoutManager#layoutContainer(java.awt.Container)
      */
-    public void layoutContainer(Container target)
+    public void layoutContainer(final Container target)
     {
         synchronized (target.getTreeLock()) 
         {
@@ -161,19 +161,9 @@ public class NavBoxLayoutManager implements LayoutManager2
     }
 
     /**
-     * Return the list of all the components that have been added to the layout manager.
-     * Returns a vector so other can sort or reposition items.
-     * @return the list of all the components that have been added to the layout manager
-     */
-    public Vector<Component> getComponentList()
-    {
-        return comps;
-    }
-
-    /**
      * Remove all the componets that have been added to the layout manager.
      */
-    public void removeAll()
+    public synchronized void removeAll()
     {
         comps.clear();
     }
@@ -185,7 +175,7 @@ public class NavBoxLayoutManager implements LayoutManager2
     /* (non-Javadoc)
      * @see java.awt.LayoutManager2#addLayoutComponent(java.awt.Component, java.lang.Object)
      */
-    public void  addLayoutComponent(Component comp, Object constraints)
+    public synchronized void addLayoutComponent(final Component comp, final Object constraints)
     {
         if (comp == null)
         {
@@ -197,7 +187,7 @@ public class NavBoxLayoutManager implements LayoutManager2
     /* (non-Javadoc)
      * @see java.awt.LayoutManager2#getLayoutAlignmentX(java.awt.Container)
      */
-    public float   getLayoutAlignmentX(Container target)
+    public float getLayoutAlignmentX(final Container target)
     {
         return (float)0.0;
     }
@@ -205,7 +195,7 @@ public class NavBoxLayoutManager implements LayoutManager2
     /* (non-Javadoc)
      * @see java.awt.LayoutManager2#getLayoutAlignmentY(java.awt.Container)
      */
-    public float   getLayoutAlignmentY(Container target)
+    public float getLayoutAlignmentY(final Container target)
     {
         return (float)0.0;
     }
@@ -213,7 +203,7 @@ public class NavBoxLayoutManager implements LayoutManager2
     /* (non-Javadoc)
      * @see java.awt.LayoutManager2#invalidateLayout(java.awt.Container)
      */
-    public void invalidateLayout(Container target)
+    public void invalidateLayout(final Container target)
     {
         synchronized (target.getTreeLock()) 
         {
@@ -225,7 +215,7 @@ public class NavBoxLayoutManager implements LayoutManager2
     /* (non-Javadoc)
      * @see java.awt.LayoutManager2#maximumLayoutSize(java.awt.Container)
      */
-    public Dimension maximumLayoutSize(Container target)
+    public Dimension maximumLayoutSize(final Container target)
     {
         synchronized (target.getTreeLock()) 
         {

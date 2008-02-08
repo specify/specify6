@@ -185,7 +185,7 @@ public class JPAQuery implements CustomQueryIFace
         } catch (Exception ex)
         {
             log.error(ex);
-            ex.printStackTrace();
+            //ex.printStackTrace();
             inError = true;
             
         } finally

@@ -66,7 +66,7 @@ public class AccessionBusRules extends AttachmentOwnerBaseBusRules
      */
     public STATUS processBusinessRules(final Object dataObj)
     {
-        errorList.clear();
+        reasonList.clear();
         
         if (!(dataObj instanceof Accession))
         {
@@ -87,7 +87,7 @@ public class AccessionBusRules extends AttachmentOwnerBaseBusRules
                     agentRoleHash.put(key, true);
                 } else
                 {
-                    errorList.add(UIRegistry.getLocalizedMessage("ACCESSION_DUP_AGENTROLE", agent.toString(), aa.getRole()));
+                    reasonList.add(UIRegistry.getLocalizedMessage("ACCESSION_DUP_AGENTROLE", agent.toString(), aa.getRole()));
                     return STATUS.Error;
                 }
             }
@@ -125,7 +125,7 @@ public class AccessionBusRules extends AttachmentOwnerBaseBusRules
                 List <?> accessionNumbers        = session.getDataList(Accession.class, "accessionNumber", accessionNumber);
                 if (accessionNumbers.size() > 0)
                 {
-                    errorList.add("ACCESSION_IN_USE");
+                    reasonList.add("ACCESSION_IN_USE");
                 } else
                 {
                     return STATUS.OK;
@@ -139,7 +139,7 @@ public class AccessionBusRules extends AttachmentOwnerBaseBusRules
             
         } else
         {
-            errorList.add("ACCESSION_NUM_MISSING");
+            reasonList.add("ACCESSION_NUM_MISSING");
         }
 
         return STATUS.Error;

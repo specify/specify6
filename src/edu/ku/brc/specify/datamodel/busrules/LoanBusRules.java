@@ -142,7 +142,7 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
      */
     public STATUS processBusinessRules(Object dataObj)
     {
-        errorList.clear();
+        reasonList.clear();
         
         if (dataObj == null || !(dataObj instanceof Loan))
         {

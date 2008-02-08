@@ -145,7 +145,7 @@ public class DBTableIdMgr
                     
                     DBTableInfo tblInfo = new DBTableInfo(tableId, classname, tablename, primaryKeyField, tableNode.attributeValue("abbrv"));
                     tblInfo.setIsSearchable(isSearchable);
-                    tblInfo.setBusinessRule(XMLHelper.getAttr(tableNode, "businessrule", null));
+                    tblInfo.setBusinessRuleName(XMLHelper.getAttr(tableNode, "businessrule", null));
                     
                     if (hash.get(tableId) != null)
                     {
@@ -550,7 +550,7 @@ public class DBTableIdMgr
         DBTableInfo ti = getByClassName(classOfObj.getName());
         if (ti != null)
         {
-            String br = ti.getBusinessRule();
+            String br = ti.getBusinessRuleName();
             if (StringUtils.isNotEmpty(br))
             {
                 try

@@ -14,9 +14,10 @@
  */
 package edu.ku.brc.af.core.expresssearch;
 
-import java.security.AccessController;
+import static org.apache.commons.lang.StringUtils.contains;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
-import org.apache.commons.lang.StringUtils;
+import java.security.AccessController;
 
 import edu.ku.brc.dbsupport.DBTableInfo;
 
@@ -65,7 +66,7 @@ public class QueryAdjusterForDomain
                     }
                 });
             
-        if (StringUtils.isNotEmpty(factoryNameStr)) 
+        if (isNotEmpty(factoryNameStr)) 
         {
             try 
             {
@@ -114,6 +115,29 @@ public class QueryAdjusterForDomain
     {
         return null;
     }
+    
+    /**
+     * Checks to make sure the user isn't trying to type in some SQL 
+     * to get at some tables they shouldn't.
+     * 
+     * @param userInputStr user entered string
+     * @return true is ok, false if problematic
+     */
+    public boolean isUerInputNotInjectable(final String userInputStr)
+    {
+        if (isNotEmpty(userInputStr))
+        {
+            if (contains(userInputStr, ";") ||
+                contains(userInputStr.toLowerCase(), "select") ||
+                contains(userInputStr.toLowerCase(), "'") ||
+                (contains(userInputStr.toLowerCase(), "drop") && contains(userInputStr.toLowerCase(), "table")))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    
     /**
      * Provides an opportunity for the SQL to get adjusted before it is executed.
      * @param tableAbbrev some queries may have multiple CollectionMembers. This is used as

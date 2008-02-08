@@ -1482,10 +1482,10 @@ public final class UIHelper
         {
             public void uncaughtException(Thread t, Throwable e)
             {
-                mailUnhandledException(e);
-                
                 if (isExceptionOKToThrow(e))
                 {
+                    mailUnhandledException(e);
+                    
                     UIHelper.showUnhandledException(e);
                 }
                 UsageTracker.incrUsageCount("UncaughtException");
@@ -1497,10 +1497,10 @@ public final class UIHelper
         {
             public void uncaughtException(Thread t, Throwable e)
             {
-                mailUnhandledException(e);
-                
                 if (isExceptionOKToThrow(e))
                 {
+                    mailUnhandledException(e);
+                    
                     UIHelper.showUnhandledException(e);
                 }
                 UsageTracker.incrUsageCount("UncaughtException");
