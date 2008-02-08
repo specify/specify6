@@ -287,6 +287,10 @@ public class UploadTable implements Comparable<UploadTable>
                         {
                             fldName = "DiscplineID";
                         }
+                        if (fldName.equalsIgnoreCase("CollectionMemberID"))
+                        {
+                            fldName = "CollectionMemberID";
+                        }
                         missingRequiredFlds.add(new DefaultFieldEntry(this, m.getReturnType(),
                                 setter, fldName));
                     }
