@@ -21,7 +21,7 @@ import static edu.ku.brc.specify.utilapps.DataBuilder.createCollectingTrip;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createCollection;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createCollectionObject;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createCollectionObjectAttr;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createCollectionType;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createDiscipline;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createCollector;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createDataType;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createDetermination;
@@ -118,7 +118,7 @@ import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.config.Discipline;
+import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.config.init.DBConfigInfo;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAgent;
@@ -136,7 +136,7 @@ import edu.ku.brc.specify.datamodel.CollectingTrip;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttr;
-import edu.ku.brc.specify.datamodel.CollectionType;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.ConservDescription;
 import edu.ku.brc.specify.datamodel.ConservEvent;
@@ -278,9 +278,9 @@ public class BuildSampleDatabase
     }
 
     /**
-     * Creates a single discipline collection.
-     * @param collTypeName the name of the Collection Type to use
-     * @param disciplineName the discipline name
+     * Creates a single disciplineType collection.
+     * @param disciplineName the name of the Discipline to use
+     * @param disciplineName the disciplineType name
      * @return the entire list of DB object to be persisted
      */
     public List<Object> createEmptyDiscipline(final DBConfigInfo config)
@@ -328,20 +328,20 @@ public class BuildSampleDatabase
         
         lithoStratTreeDef.setRemarks("A simple super, group, formation, member, bed Litho Stratigraphy tree");
         
-        frame.setDesc("Creating CollectionType...");
+        frame.setDesc("Creating Discipline...");
         frame.setProcess(++createStep);
 
-        CollectionType collectionType = createCollectionType(division, config.getDiscipline().getName(), config.getDiscipline().getTitle(), 
+        Discipline discipline = createDiscipline(division, config.getDiscipline().getName(), config.getDiscipline().getTitle(), 
                                                              dataType, taxonTreeDef, geoTreeDef, gtpTreeDef, locTreeDef, lithoStratTreeDef);
-        CollectionType.setCurrentCollectionType(collectionType);
+        Discipline.setCurrentDiscipline(discipline);
         
-        persist(collectionType);
+        persist(discipline);
         persist(userAgent);
         
         frame.setDesc("Localizing Schema...");
         frame.setProcess(++createStep);
 
-        loadSchemaLocalization(collectionType, SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
+        loadSchemaLocalization(discipline, SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
         
         frame.setDesc("Creating CatalogNumberingScheme...");
         frame.setProcess(++createStep);
@@ -357,7 +357,7 @@ public class BuildSampleDatabase
         frame.setDesc("Creating Collection...");
         frame.setProcess(++createStep);
 
-        Collection collection = createCollection(config.getCollectionPrefix(), config.getCollectionName(), cns, collectionType);
+        Collection collection = createCollection(config.getCollectionPrefix(), config.getCollectionName(), cns, discipline);
         persist(collection);
         
         Collection.setCurrentCollection(collection);
@@ -370,7 +370,7 @@ public class BuildSampleDatabase
         
         //DBTableIdMgr schema = new DBTableIdMgr(false);
         //schema.initialize(new File(XMLHelper.getConfigDirPath("specify_datamodel.xml")));
-        //loadSchemaLocalization(collectionType, SpLocaleContainer, schema);
+        //loadSchemaLocalization(discipline, SpLocaleContainer, schema);
         
         SpecifyUser.setCurrentUser(user);
         user.addReference(userAgent, "agents");
@@ -421,9 +421,9 @@ public class BuildSampleDatabase
         // Determination Status (Must be done here)
         ////////////////////////////////
         log.info("Creating determinations status");
-        current    = createDeterminationStatus(collectionType, "Current",    "", DeterminationStatus.CURRENT);
-        notCurrent = createDeterminationStatus(collectionType, "Not current","", DeterminationStatus.NOTCURRENT);
-        incorrect  = createDeterminationStatus(collectionType, "Incorrect",  "", DeterminationStatus.USERDEFINED);
+        current    = createDeterminationStatus(discipline, "Current",    "", DeterminationStatus.CURRENT);
+        notCurrent = createDeterminationStatus(discipline, "Not current","", DeterminationStatus.NOTCURRENT);
+        incorrect  = createDeterminationStatus(discipline, "Incorrect",  "", DeterminationStatus.USERDEFINED);
         
         frame.setDesc("Commiting...");
         frame.setProcess(++createStep);
@@ -586,12 +586,12 @@ public class BuildSampleDatabase
     }
     
     /**
-     * Creates a single discipline collection.
-     * @param collTypeName the name of the Collection Type to use
-     * @param disciplineName the discipline name
+     * Creates a single disciplineType collection.
+     * @param disciplineName the name of the Discipline to use
+     * @param disciplineName the disciplineType name
      * @return the entire list of DB object to be persisted
      */
-    public List<Object> createSingleBotanyCollection(final Discipline     discipline,
+    public List<Object> createSingleBotanyCollection(final DisciplineType     disciplineType,
                                                      final Institution    institution,
                                                      final SpecifyUser    user)
     {
@@ -602,10 +602,10 @@ public class BuildSampleDatabase
         
         startTx();
 
-        DataType         dataType = createDataType(discipline.getTitle());
+        DataType         dataType = createDataType(disciplineType.getTitle());
         persist(dataType);
         
-        Division       division   = createDivision(institution, discipline.getName(), "Botany", "BT", "Botany");
+        Division       division   = createDivision(institution, disciplineType.getName(), "Botany", "BT", "Botany");
         
         // create tree defs (later we will make the def items and nodes)
         TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Taxon");
@@ -616,15 +616,15 @@ public class BuildSampleDatabase
         
         lithoStratTreeDef.setRemarks("A simple super, group, formation, member, bed Litho Stratigraphy tree");
         
-        CollectionType collectionType = createCollectionType(division, "Plant", discipline.getName(), 
+        Discipline discipline = createDiscipline(division, "Plant", disciplineType.getName(), 
                                                              dataType, taxonTreeDef, geoTreeDef, gtpTreeDef, 
                                                              locTreeDef, lithoStratTreeDef);
-        CollectionType.setCurrentCollectionType(collectionType);
+        Discipline.setCurrentDiscipline(discipline);
         
         persist(division);
-        persist(collectionType);
+        persist(discipline);
 
-        loadSchemaLocalization(collectionType, SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
+        loadSchemaLocalization(discipline, SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
 
         ////////////////////////////////
         // Create the really high-level stuff
@@ -648,10 +648,10 @@ public class BuildSampleDatabase
         
         Agent userAgent = createAgent(title, firstName, midInit, lastName, abbrev, email);
         
-        collectionType.addReference(userAgent, "agents");
+        discipline.addReference(userAgent, "agents");
         user.addReference(userAgent, "agents");
         
-        persist(collectionType);
+        persist(discipline);
         persist(userAgent);
         persist(user);
         
@@ -665,7 +665,7 @@ public class BuildSampleDatabase
         // Create Collection
         ////////////////////////////////
         log.info("Creating a Collection");
-        Collection collection = createCollection("KUBOT", "Plant", cns, collectionType);
+        Collection collection = createCollection("KUBOT", "Plant", cns, discipline);
         persist(collection);
         
         Collection.setCurrentCollection(collection);
@@ -678,7 +678,7 @@ public class BuildSampleDatabase
         
         //DBTableIdMgr schema = new DBTableIdMgr(false);
         //schema.initialize(new File(XMLHelper.getConfigDirPath("specify_datamodel.xml")));
-        //loadSchemaLocalization(collectionType, SpLocaleContainer, schema);
+        //loadSchemaLocalization(discipline, SpLocaleContainer, schema);
         
         SpecifyUser.setCurrentUser(user);
         user.addReference(userAgent, "agents");
@@ -806,7 +806,7 @@ public class BuildSampleDatabase
         ku.setName("University of Kansas");
         ku.setEmail("webadmin@ku.edu");
         ku.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        ku.setCollectionType(CollectionType.getCurrentCollectionType());
+        ku.setDiscipline(Discipline.getCurrentDiscipline());
         
         agents.add(ku);
         agents.get(0).setOrganization(ku);
@@ -856,7 +856,7 @@ public class BuildSampleDatabase
         ce1.setEndDateVerbatim("21 Apr 1994, 1:03 PM");   
         ce1.setMethod("Picked");
         
-        AttributeDef cevAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "ParkName", collectionType, null);//meg added cod
+        AttributeDef cevAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "ParkName", discipline, null);//meg added cod
         
         //startTx();
         persist(cevAttrDef);
@@ -932,9 +932,9 @@ public class BuildSampleDatabase
         // Determination Status (Must be done here)
         ////////////////////////////////
         log.info("Creating determinations status");
-        current    = createDeterminationStatus(collectionType, "Current",    "", DeterminationStatus.CURRENT);
-        notCurrent = createDeterminationStatus(collectionType, "Not current","", DeterminationStatus.NOTCURRENT);
-        incorrect  = createDeterminationStatus(collectionType, "Incorrect",  "", DeterminationStatus.USERDEFINED);
+        current    = createDeterminationStatus(discipline, "Current",    "", DeterminationStatus.CURRENT);
+        notCurrent = createDeterminationStatus(discipline, "Not current","", DeterminationStatus.NOTCURRENT);
+        incorrect  = createDeterminationStatus(discipline, "Incorrect",  "", DeterminationStatus.USERDEFINED);
 
         
         //startTx();
@@ -1285,27 +1285,27 @@ public class BuildSampleDatabase
         
 
         // done
-        log.info("Done creating Botany discipline database: " + discipline.getTitle());
+        log.info("Done creating Botany disciplineType database: " + disciplineType.getTitle());
         return dataObjects;
     }
     
     /**
-     * Creates a single discipline collection.
-     * @param collTypeName the name of the Collection Type to use
-     * @param disciplineName the discipline name
+     * Creates a single disciplineType collection.
+     * @param disciplineName the name of the Discipline to use
+     * @param disciplineName the disciplineType name
      * @return the entire list of DB object to be persisted
      */
-    public void createFishCollection(final Discipline     discipline,
+    public void createFishCollection(final DisciplineType     disciplineType,
                                      final Institution    institution,
                                      final SpecifyUser    user)
     {
         frame.setDesc("Creating Fish Collection Overhead...");
         
         startTx();
-        DataType         dataType         = createDataType(discipline.getTitle());
+        DataType         dataType         = createDataType(disciplineType.getTitle());
         persist(dataType);
 
-        Division       division       = createDivision(institution, discipline.getName(), "Icthyology", "IT", "Icthyology");
+        Division       division       = createDivision(institution, disciplineType.getName(), "Icthyology", "IT", "Icthyology");
         persist(division);
         
         // create tree defs (later we will make the def items and nodes)
@@ -1317,10 +1317,10 @@ public class BuildSampleDatabase
         
         lithoStratTreeDef.setRemarks("A simple super, group, formation, member, bed Litho Stratigraphy tree");
         
-        CollectionType collectionType = createCollectionType(division, discipline.getTitle(), discipline.getName(), dataType, taxonTreeDef, geoTreeDef, gtpTreeDef, locTreeDef, lithoStratTreeDef);
-        CollectionType.setCurrentCollectionType(collectionType);
+        Discipline discipline = createDiscipline(division, disciplineType.getTitle(), disciplineType.getName(), dataType, taxonTreeDef, geoTreeDef, gtpTreeDef, locTreeDef, lithoStratTreeDef);
+        Discipline.setCurrentDiscipline(discipline);
         
-        persist(collectionType);
+        persist(discipline);
         
         ////////////////////////////////
         // Create the really high-level stuff
@@ -1344,16 +1344,16 @@ public class BuildSampleDatabase
         Agent userAgent = createAgent(title, firstName, midInit, lastName, abbrev, email);
         userAgent.setDivision(division);
         
-        collectionType.addReference(userAgent, "agents");
+        discipline.addReference(userAgent, "agents");
         
         user.addReference(userAgent, "agents");
-        persist(collectionType);
+        persist(discipline);
         persist(userAgent);
         persist(user);
 
         persist(userAgent);
         
-        loadSchemaLocalization(collectionType, SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
+        loadSchemaLocalization(discipline, SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
         
         commitTx();
         
@@ -1384,7 +1384,7 @@ public class BuildSampleDatabase
         //frame.setProcess(++createStep);
         frame.setOverall(steps++);
         
-        createFishCollection(collectionType, user, userAgent, division,
+        createFishCollection(discipline, user, userAgent, division,
                 taxonTreeDef, geoTreeDef, gtpTreeDef,
                 lithoStratTreeDef, locTreeDef,
                 journal, taxa, geos, locs, gtps, lithoStrats,
@@ -1395,7 +1395,7 @@ public class BuildSampleDatabase
         
         if (doExtraCollections)
         {
-            createFishCollection(collectionType, user, userAgent, division,
+            createFishCollection(discipline, user, userAgent, division,
                     taxonTreeDef, geoTreeDef, gtpTreeDef,
                     lithoStratTreeDef, locTreeDef,
                     journal, taxa, geos, locs, gtps, lithoStrats,
@@ -1406,13 +1406,13 @@ public class BuildSampleDatabase
     }
     
     /**
-     * Creates a single discipline collection.
-     * @param collTypeName the name of the Collection Type to use
-     * @param disciplineName the discipline name
+     * Creates a single disciplineType collection.
+     * @param disciplineName the name of the Discipline to use
+     * @param disciplineName the disciplineType name
      * @return the entire list of DB object to be persisted
      */
     @SuppressWarnings("unchecked")
-    public List<Object> createFishCollection(final CollectionType            collectionType,
+    public List<Object> createFishCollection(final Discipline            discipline,
                                              final SpecifyUser               user,
                                              final Agent                     userAgent,
                                              final Division                  division,                  
@@ -1447,7 +1447,7 @@ public class BuildSampleDatabase
         // Create Collection
         ////////////////////////////////
         log.info("Creating a Collection");
-        Collection collection = createCollection(colPrefix, colName, cns, collectionType);
+        Collection collection = createCollection(colPrefix, colName, cns, discipline);
         persist(collection);
         
         Collection.setCurrentCollection(collection);
@@ -1460,7 +1460,7 @@ public class BuildSampleDatabase
         
         //DBTableIdMgr schema = new DBTableIdMgr(false);
         //schema.initialize(new File(XMLHelper.getConfigDirPath("specify_datamodel.xml")));
-        //loadSchemaLocalization(collectionType, SpLocaleContainer, schema);
+        //loadSchemaLocalization(discipline, SpLocaleContainer, schema);
         
         SpecifyUser.setCurrentUser(user);
         
@@ -1581,7 +1581,7 @@ public class BuildSampleDatabase
         ku.setName("University of Kansas");
         ku.setEmail("webadmin@ku.edu");
         ku.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        ku.setCollectionType(CollectionType.getCurrentCollectionType());
+        ku.setDiscipline(Discipline.getCurrentDiscipline());
         
         agents.add(ku);
         agents.get(0).setOrganization(ku);
@@ -1639,7 +1639,7 @@ public class BuildSampleDatabase
         ce1.setEndDateVerbatim("19 Mar 1993, 1:03 PM");   
         ce1.setMethod(colMethods.getItem(1).getValue());
         
-        AttributeDef        cevAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "ParkName", collectionType, null);//meg added cod
+        AttributeDef        cevAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "ParkName", discipline, null);//meg added cod
         
         //startTx();
         persist(cevAttrDef);
@@ -1719,9 +1719,9 @@ public class BuildSampleDatabase
         
         if (createAgents)
         {
-            current    = createDeterminationStatus(collectionType, "Current",    "", DeterminationStatus.CURRENT);
-            notCurrent = createDeterminationStatus(collectionType, "Not current","", DeterminationStatus.NOTCURRENT);
-            incorrect  = createDeterminationStatus(collectionType, "Incorrect",  "", DeterminationStatus.USERDEFINED);
+            current    = createDeterminationStatus(discipline, "Current",    "", DeterminationStatus.CURRENT);
+            notCurrent = createDeterminationStatus(discipline, "Not current","", DeterminationStatus.NOTCURRENT);
+            incorrect  = createDeterminationStatus(discipline, "Incorrect",  "", DeterminationStatus.USERDEFINED);
             persist(current);
             persist(notCurrent);
             persist(incorrect);
@@ -1752,9 +1752,9 @@ public class BuildSampleDatabase
         collObjs.add(createCollectionObject(prefix + "106", "RSC106", agents.get(2), col,  1, ce2, catDates[6], "BuildSampleDatabase"));
         collObjs.add(createCollectionObject(prefix + "107", "RSC107", agents.get(3), col,  1, ce2, catDates[7], "BuildSampleDatabase"));
         
-        AttributeDef colObjAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "MoonPhase", collectionType, null);//meg added cod
-        colObjAttrDef.setCollectionType(collectionType);
-        collectionType.getAttributeDefs().add(colObjAttrDef);
+        AttributeDef colObjAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "MoonPhase", discipline, null);//meg added cod
+        colObjAttrDef.setDiscipline(discipline);
+        discipline.getAttributeDefs().add(colObjAttrDef);
         
         CollectionObjectAttr colObjAttr = createCollectionObjectAttr(collObjs.get(0), colObjAttrDef, "Full", null);
         dataObjects.add(colObjAttrDef);
@@ -2416,14 +2416,14 @@ public class BuildSampleDatabase
     }
     
     /**
-     * Creates a single discipline collection.
-     * @param collTypeName the name of the Collection Type to use
-     * @param disciplineName the discipline name
+     * Creates a single disciplineType collection.
+     * @param disciplineName the name of the Discipline to use
+     * @param disciplineName the disciplineType name
      * @return the entire list of DB object to be persisted
      */
-    public void createSingleDiscipline(final Discipline discipline)
+    public void createSingleDiscipline(final DisciplineType disciplineType)
     {
-        System.out.println("Creating single discipline database: " + discipline.getTitle());
+        System.out.println("Creating single disciplineType database: " + disciplineType.getTitle());
         
         int createStep = 0;
         
@@ -2443,7 +2443,7 @@ public class BuildSampleDatabase
         
         Institution    institution    = createInstitution("Natural History Museum");
         
-        UserGroup        userGroup        = createUserGroup(discipline.getTitle());
+        UserGroup        userGroup        = createUserGroup(disciplineType.getTitle());
         
         
         startTx();
@@ -2457,17 +2457,17 @@ public class BuildSampleDatabase
         
         frame.setProcess(++createStep);
         
-        createFishCollection(Discipline.getByTitle("Fish"), institution, user);
+        createFishCollection(DisciplineType.getByTitle("Fish"), institution, user);
         
         frame.setOverall(steps++);
         
         if (doExtraCollections)
         {
-            createSingleBotanyCollection(Discipline.getByTitle("Fish"), institution, user);
+            createSingleBotanyCollection(DisciplineType.getByTitle("Fish"), institution, user);
         }
         
         // done
-        log.info("Done creating single discipline database: " + discipline.getTitle());
+        log.info("Done creating single disciplineType database: " + disciplineType.getTitle());
     }
 
     /**
@@ -3287,10 +3287,10 @@ public class BuildSampleDatabase
         {
             ensureDerbyDirectory(driverName);
             
-            Discipline         discipline = Discipline.getDiscipline("fish");
+            DisciplineType         disciplineType = DisciplineType.getDiscipline("fish");
             DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver(driverName);
             DBConfigInfo config = new DBConfigInfo(driverInfo, "localhost", "WorkBench", "guest", "guest", 
-                                                   "guest", "guest", "guest@ku.edu", discipline, 
+                                                   "guest", "guest", "guest@ku.edu", disciplineType, 
                                                    "Institution", "Division");
             buildEmptyDatabase(config);
 
@@ -3348,7 +3348,7 @@ public class BuildSampleDatabase
      */
     protected void startBuild(final String     dbName, 
                               final String     driverName, 
-                              final Discipline discipline,
+                              final DisciplineType disciplineType,
                               final String     username, 
                               final String     password,
                               final boolean    doExtraCollectionsArg)
@@ -3364,12 +3364,12 @@ public class BuildSampleDatabase
                     if (false) // XXX Debug
                     {
                         DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver("Derby");
-                        DBConfigInfo       config     = new DBConfigInfo(driverInfo, "localhost", "mydata", username, password, "Rod", "Spears", "rods@ku.edu", discipline, "Institition", "Division");
+                        DBConfigInfo       config     = new DBConfigInfo(driverInfo, "localhost", "mydata", username, password, "Rod", "Spears", "rods@ku.edu", disciplineType, "Institition", "Division");
                         buildEmptyDatabase(config);
 
                     } else
                     {
-                        build(dbName, driverName, discipline, username, password);
+                        build(dbName, driverName, disciplineType, username, password);
                     }
                     
                 } catch (Exception ex)
@@ -3568,7 +3568,7 @@ public class BuildSampleDatabase
      */
     protected void build(final String     dbName, 
                          final String     driverName, 
-                         final Discipline discipline,
+                         final DisciplineType disciplineType,
                          final String     username, 
                          final String     passwordStr) throws SQLException
     {
@@ -3705,7 +3705,7 @@ public class BuildSampleDatabase
                     // save it all to the DB
                     setSession(HibernateUtil.getCurrentSession());
 
-                    createSingleDiscipline(discipline);
+                    createSingleDiscipline(disciplineType);
 
                     attachMgr.cleanup();
                     
@@ -3848,9 +3848,9 @@ public class BuildSampleDatabase
             drivers     = new JComboBox(driverList);
             drivers.setSelectedIndex(inx);
             
-            //Vector<Discipline> disciplinesList = Discipline.getDisciplineList();
-            disciplines     = new JComboBox(Discipline.getDisciplineList());
-            disciplines.setSelectedItem(Discipline.getDiscipline("fish"));
+            //Vector<DisciplineType> disciplinesList = DisciplineType.getDisciplineList();
+            disciplines     = new JComboBox(DisciplineType.getDisciplineList());
+            disciplines.setSelectedItem(DisciplineType.getDiscipline("fish"));
             
             databaseNameTxt = new JTextField(databaseName);
             
@@ -3868,7 +3868,7 @@ public class BuildSampleDatabase
             builder.add(passwdTxtFld,                                       cc.xy(3,3));
             builder.add(new JLabel("Database Name:", SwingConstants.RIGHT), cc.xy(1,5));
             builder.add(databaseNameTxt,                                    cc.xy(3,5));
-            builder.add(new JLabel("Discipline Name:", SwingConstants.RIGHT), cc.xy(1,7));
+            builder.add(new JLabel("DisciplineType Name:", SwingConstants.RIGHT), cc.xy(1,7));
             builder.add(disciplines,                                        cc.xy(3,7));
             builder.add(new JLabel("Driver:", SwingConstants.RIGHT),        cc.xy(1,9));
             builder.add(drivers,                                            cc.xy(3,9));
@@ -3942,7 +3942,7 @@ public class BuildSampleDatabase
                         String password = new String(passwdTxtFld.getPassword());
                         startBuild(databaseName, 
                                    dbDriver.getName(), 
-                                   (Discipline)disciplines.getSelectedItem(), 
+                                   (DisciplineType)disciplines.getSelectedItem(), 
                                    username, 
                                    password,
                                    extraCollectionsChk.isSelected());
@@ -4055,7 +4055,7 @@ public class BuildSampleDatabase
      * @param schemaType
      * @param tableMgr
      */
-    public static void loadSchemaLocalization(final CollectionType collTyp, final Byte schemaType, final DBTableIdMgr tableMgr)
+    public static void loadSchemaLocalization(final Discipline collTyp, final Byte schemaType, final DBTableIdMgr tableMgr)
     {
         SchemaLocalizerXMLHelper schemaLocalizer = new SchemaLocalizerXMLHelper(schemaType, tableMgr);
         schemaLocalizer.load();
@@ -4071,7 +4071,7 @@ public class BuildSampleDatabase
             loadLocalization(table, container);
             
             collTyp.getSpLocaleContainers().add(container);
-            container.setCollectionType(collTyp);
+            container.setDiscipline(collTyp);
         }
     }
     

@@ -844,11 +844,11 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
                             // ImportColumnInfo.getType(getDataType(wbItem));
                             // if (type == ImportColumnInfo.ColumnType.Date)
                             // {
-                            // ImportColumnInfo.ColumnType colType = fileItem.getColType();
-                            // if (colType != ImportColumnInfo.ColumnType.String && colType !=
+                            // ImportColumnInfo.ColumnType disciplinee = fileItem.getColType();
+                            // if (disciplinee != ImportColumnInfo.ColumnType.String && disciplinee !=
                             // ImportColumnInfo.ColumnType.Double)
                             // {
-                            // //log.error("["+wbItem.getImportedColName()+"]["+fileItem.getColName()+"]["+colType+"]");
+                            // //log.error("["+wbItem.getImportedColName()+"]["+fileItem.getColName()+"]["+disciplinee+"]");
                             // match = false;
                             // break;
                             // }

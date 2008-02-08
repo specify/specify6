@@ -314,14 +314,14 @@ public class AutoNumberGeneric implements AutoNumberIFace
                         {
                             sb.replace(yrPos.first, yrPos.second, Integer.toString(yearAndIncVal.first));
                         }
-                    }
-                    
-                    return sb.toString();
-                    
-                } else
-                {
+                        
+                        return sb.toString();
+                        
+                    } // else
                     throw new RuntimeException("There was an error trying to obtain the highest number, there may be a bad value in the database.");
-                }
+                    
+                } // else
+                throw new RuntimeException("There was an error trying to obtain the highest number, there may be a bad value in the database.");
             }
             // else
             throw new RuntimeException("Formatter ["+formatter.getName()+"] doesn't have an incrementer field.");

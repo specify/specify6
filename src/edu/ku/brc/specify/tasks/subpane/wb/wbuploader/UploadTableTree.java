@@ -123,7 +123,7 @@ public class UploadTableTree extends UploadTable
         {
             try
             {
-                treeDef = Collection.getCurrentCollection().getCollectionType().getTreeDef(capitalize(tblClass.getSimpleName()) + "TreeDef");
+                treeDef = Collection.getCurrentCollection().getDiscipline().getTreeDef(capitalize(tblClass.getSimpleName()) + "TreeDef");
             }
             catch (Exception ex)
             {

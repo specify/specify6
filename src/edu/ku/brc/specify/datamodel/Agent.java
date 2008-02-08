@@ -128,7 +128,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     protected Set<Address>                  addresses;
     protected Set<AgentVariant>             variants;
     
-    protected CollectionType                collectionType;
+    protected Discipline                discipline;
     protected SpecifyUser                   specifyUser;
 
     
@@ -219,7 +219,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
         division                  = null;
         instTechContact           = null;
         instContentContact        = null;
-        collectionType            = null;
+        discipline            = null;
         specifyUser               = null;
         
         // Agent
@@ -741,21 +741,21 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
    }
 
    /**
-     * @return the collectionType
+     * @return the discipline
      */
     @ManyToOne
-    @JoinColumn(name = "CollectionTypeID", unique = false, nullable = true, insertable = true, updatable = true)
-    public CollectionType getCollectionType()
+    @JoinColumn(name = "DisciplineID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Discipline getDiscipline()
     {
-        return collectionType;
+        return discipline;
     }
     
     /**
-     * @param collectionType the collectionType to set
+     * @param discipline the discipline to set
      */
-    public void setCollectionType(CollectionType collectionType)
+    public void setDiscipline(Discipline discipline)
     {
-        this.collectionType = collectionType;
+        this.discipline = discipline;
     }
     
     /**

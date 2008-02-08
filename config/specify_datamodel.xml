@@ -511,8 +511,8 @@
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.CollectionObject" relationshipname="catalogers" othersidename="cataloger" updatable="false" required="false">
         <nameDesc language="en">Catalogers</nameDesc>
       </relationship>
-      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.CollectionType" relationshipname="collectionType" columnname="CollectionTypeID" othersidename="agents" updatable="false" required="false">
-        <nameDesc language="en">Collection Type</nameDesc>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Discipline" relationshipname="discipline" columnname="DisciplineID" othersidename="agents" updatable="false" required="false">
+        <nameDesc language="en">Discipline</nameDesc>
       </relationship>
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Collector" relationshipname="collectors" othersidename="agent" updatable="false" required="false">
         <nameDesc language="en">Collectors</nameDesc>
@@ -890,8 +890,8 @@
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.CollectionObjectAttr" relationshipname="collectionObjectAttrs" othersidename="definition" updatable="false" required="false">
         <nameDesc language="en">Collection Object Attrs</nameDesc>
       </relationship>
-      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.CollectionType" relationshipname="collectionType" columnname="CollectionTypeID" othersidename="attributeDefs" updatable="false" required="true">
-        <nameDesc language="en">Collection Type</nameDesc>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Discipline" relationshipname="discipline" columnname="DisciplineID" othersidename="attributeDefs" updatable="false" required="true">
+        <nameDesc language="en">Discipline</nameDesc>
       </relationship>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="createdByAgent" columnname="CreatedByAgentID" updatable="false" required="false">
         <nameDesc language="en">Created By Agent</nameDesc>
@@ -1652,8 +1652,8 @@
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.CollectionObject" relationshipname="collectionObjects" othersidename="collection" updatable="false" required="false">
         <nameDesc language="en">Collection Objects</nameDesc>
       </relationship>
-      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.CollectionType" relationshipname="collectionType" columnname="CollectionTypeID" othersidename="collections" updatable="false" required="true">
-        <nameDesc language="en">Collection Type</nameDesc>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Discipline" relationshipname="discipline" columnname="DisciplineID" othersidename="collections" updatable="false" required="true">
+        <nameDesc language="en">Discipline</nameDesc>
       </relationship>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="contactAgent" columnname="ContactID" updatable="false" required="false">
         <nameDesc language="en">Contact Agent</nameDesc>
@@ -2326,15 +2326,15 @@
         <nameDesc language="en">Right Side</nameDesc>
       </relationship>
     </table>
-    <table classname="edu.ku.brc.specify.datamodel.CollectionType" table="collectiontype" tableid="26" searchable="false" businessrule="edu.ku.brc.specify.datamodel.busrules.CollectionTypeBusRules" abbrv="ct">
+    <table classname="edu.ku.brc.specify.datamodel.Discipline" table="collectiontype" tableid="26" searchable="false" businessrule="edu.ku.brc.specify.datamodel.busrules.DisciplineBusRules" abbrv="ct">
       <desc language="en">Describe the type of collection, for example &amp;apos;fish&amp;apos;, &amp;apos;birds&amp;apos;</desc>
-      <display objtitle="Collection Object Def" view="CollectionType" dataobjformatter="CollectionType" searchdlg="CollectionTypeSearch" newobjdlg="CollectionType"/>
+      <display objtitle="Collection Object Def" view="Discipline" dataobjformatter="Discipline" searchdlg="DisciplineSearch" newobjdlg="Discipline"/>
       <field column="Discipline" name="discipline" type="java.lang.String" length="64" indexName="DisciplineIDX" updatable="true" required="false" unique="false" indexed="true">
         <desc language="en">The Discipline of all the Collections that reference this</desc>
         <nameDesc language="en">Discipline</nameDesc>
       </field>
       <field column="Name" name="name" type="java.lang.String" length="64" indexName="ColTypeNameIDX" updatable="true" required="false" unique="false" indexed="true">
-        <desc language="en">The name of the Collection Type, often the same as the discipline</desc>
+        <desc language="en">The name of the Discipline, often the same as the discipline</desc>
         <nameDesc language="en">Name</nameDesc>
       </field>
       <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" updatable="false" required="true" unique="false" indexed="false">
@@ -2348,59 +2348,59 @@
       <field column="Version" name="version" type="java.lang.Integer" updatable="true" required="false" unique="false" indexed="false">
         <nameDesc language="en">Version</nameDesc>
       </field>
-      <id column="CollectionTypeID" name="collectionTypeId" type="java.lang.Integer"/>
+      <id column="DisciplineID" name="disciplineId" type="java.lang.Integer"/>
       <tableindex indexName="ColTypeNameIDX" columnNames="Name"/>
       <tableindex indexName="DisciplineIDX" columnNames="Discipline"/>
-      <nameDesc language="en">Collection Type</nameDesc>
-      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="agents" othersidename="collectionType" updatable="false" required="false">
+      <nameDesc language="en">Discipline</nameDesc>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="agents" othersidename="discipline" updatable="false" required="false">
         <nameDesc language="en">Agents</nameDesc>
       </relationship>
-      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.AttributeDef" relationshipname="attributeDefs" othersidename="collectionType" updatable="false" required="false">
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.AttributeDef" relationshipname="attributeDefs" othersidename="discipline" updatable="false" required="false">
         <nameDesc language="en">Attribute Defs</nameDesc>
       </relationship>
-      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Collection" relationshipname="collections" othersidename="collectionType" updatable="false" required="false">
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Collection" relationshipname="collections" othersidename="discipline" updatable="false" required="false">
         <nameDesc language="en">Collections</nameDesc>
       </relationship>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="createdByAgent" columnname="CreatedByAgentID" updatable="false" required="false">
         <nameDesc language="en">Created By Agent</nameDesc>
       </relationship>
-      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.DataType" relationshipname="dataType" columnname="DataTypeID" othersidename="collectionType" updatable="false" required="true">
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.DataType" relationshipname="dataType" columnname="DataTypeID" othersidename="discipline" updatable="false" required="true">
         <nameDesc language="en">Data Type</nameDesc>
       </relationship>
-      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.DeterminationStatus" relationshipname="determinationStatuss" othersidename="collectionType" updatable="false" required="false">
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.DeterminationStatus" relationshipname="determinationStatuss" othersidename="discipline" updatable="false" required="false">
         <nameDesc language="en">Determination Statuss</nameDesc>
       </relationship>
-      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Division" relationshipname="division" columnname="DivisionID" othersidename="collectionTypes" updatable="false" required="true">
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Division" relationshipname="division" columnname="DivisionID" othersidename="disciplines" updatable="false" required="true">
         <nameDesc language="en">Division</nameDesc>
       </relationship>
-      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.GeographyTreeDef" relationshipname="geographyTreeDef" columnname="GeographyTreeDefID" othersidename="collectionTypes" updatable="false" required="true">
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.GeographyTreeDef" relationshipname="geographyTreeDef" columnname="GeographyTreeDefID" othersidename="disciplines" updatable="false" required="true">
         <nameDesc language="en">Geography Tree Def</nameDesc>
       </relationship>
-      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef" relationshipname="geologicTimePeriodTreeDef" columnname="GeologicTimePeriodTreeDefID" othersidename="collectionTypes" updatable="false" required="true">
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef" relationshipname="geologicTimePeriodTreeDef" columnname="GeologicTimePeriodTreeDefID" othersidename="disciplines" updatable="false" required="true">
         <nameDesc language="en">Geologic Time Period Tree Def</nameDesc>
       </relationship>
-      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.LithoStratTreeDef" relationshipname="lithoStratTreeDef" columnname="LithoStratTreeDefID" othersidename="collectionTypes" updatable="false" required="false">
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.LithoStratTreeDef" relationshipname="lithoStratTreeDef" columnname="LithoStratTreeDefID" othersidename="disciplines" updatable="false" required="false">
         <nameDesc language="en">Litho Strat Tree Def</nameDesc>
       </relationship>
-      <relationship type="many-to-many" classname="edu.ku.brc.specify.datamodel.Locality" relationshipname="localities" othersidename="collectionTypes" updatable="false" required="false">
+      <relationship type="many-to-many" classname="edu.ku.brc.specify.datamodel.Locality" relationshipname="localities" othersidename="disciplines" updatable="false" required="false">
         <nameDesc language="en">Localities</nameDesc>
       </relationship>
-      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.StorageTreeDef" relationshipname="storageTreeDef" columnname="StorageTreeDefID" othersidename="collectionTypes" updatable="false" required="false">
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.StorageTreeDef" relationshipname="storageTreeDef" columnname="StorageTreeDefID" othersidename="disciplines" updatable="false" required="false">
         <nameDesc language="en">Storage Tree Def</nameDesc>
       </relationship>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="modifiedByAgent" columnname="ModifiedByAgentID" updatable="false" required="false">
         <nameDesc language="en">Modified By Agent</nameDesc>
       </relationship>
-      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.SpAppResourceDir" relationshipname="spAppResourceDirs" othersidename="collectionType" updatable="false" required="false">
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.SpAppResourceDir" relationshipname="spAppResourceDirs" othersidename="discipline" updatable="false" required="false">
         <nameDesc language="en">Sp App Resource Dirs</nameDesc>
       </relationship>
-      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.SpLocaleContainer" relationshipname="spLocaleContainers" othersidename="collectionType" updatable="false" required="false">
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.SpLocaleContainer" relationshipname="spLocaleContainers" othersidename="discipline" updatable="false" required="false">
         <nameDesc language="en">Sp Locale Containers</nameDesc>
       </relationship>
-      <relationship type="one-to-one" classname="edu.ku.brc.specify.datamodel.TaxonTreeDef" relationshipname="taxonTreeDef" columnname="TaxonTreeDefID" othersidename="collectionType" updatable="false" required="false">
+      <relationship type="one-to-one" classname="edu.ku.brc.specify.datamodel.TaxonTreeDef" relationshipname="taxonTreeDef" columnname="TaxonTreeDefID" othersidename="discipline" updatable="false" required="false">
         <nameDesc language="en">Taxon Tree Def</nameDesc>
       </relationship>
-      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.UserPermission" relationshipname="userPermissions" othersidename="collectionType" updatable="false" required="false">
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.UserPermission" relationshipname="userPermissions" othersidename="discipline" updatable="false" required="false">
         <nameDesc language="en">User Permissions</nameDesc>
       </relationship>
     </table>
@@ -2948,8 +2948,8 @@
       </field>
       <id column="DataTypeID" name="dataTypeId" type="java.lang.Integer"/>
       <nameDesc language="en">Data Type</nameDesc>
-      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.CollectionType" relationshipname="collectionType" othersidename="dataType" updatable="false" required="false">
-        <nameDesc language="en">Collection Type</nameDesc>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Discipline" relationshipname="discipline" othersidename="dataType" updatable="false" required="false">
+        <nameDesc language="en">Discipline</nameDesc>
       </relationship>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="createdByAgent" columnname="CreatedByAgentID" updatable="false" required="false">
         <nameDesc language="en">Created By Agent</nameDesc>
@@ -3255,8 +3255,8 @@
       <id column="DeterminationStatusID" name="determinationStatusId" type="java.lang.Integer"/>
       <tableindex indexName="DeterStatusNameIDX" columnNames="Name"/>
       <nameDesc language="en">Determination Status</nameDesc>
-      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.CollectionType" relationshipname="collectionType" columnname="CollectionTypeID" othersidename="determinationStatuss" updatable="false" required="true">
-        <nameDesc language="en">Collection Type</nameDesc>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Discipline" relationshipname="discipline" columnname="DisciplineID" othersidename="determinationStatuss" updatable="false" required="true">
+        <nameDesc language="en">Discipline</nameDesc>
       </relationship>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="createdByAgent" columnname="CreatedByAgentID" updatable="false" required="false">
         <nameDesc language="en">Created By Agent</nameDesc>
@@ -3322,9 +3322,9 @@
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Address" relationshipname="address" columnname="AgentID" othersidename="divisions" updatable="false" required="false">
         <nameDesc language="en">Address</nameDesc>
       </relationship>
-      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.CollectionType" relationshipname="collectionTypes" othersidename="division" updatable="false" required="false">
-        <desc language="en">The list of Collection Types that belong to this Division</desc>
-        <nameDesc language="en">Collection Types</nameDesc>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Discipline" relationshipname="disciplines" othersidename="division" updatable="false" required="false">
+        <desc language="en">The list of Disciplines that belong to this Division</desc>
+        <nameDesc language="en">Disciplines</nameDesc>
       </relationship>
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.ConservDescription" relationshipname="conservDescriptions" othersidename="division" updatable="false" required="false">
         <nameDesc language="en">Conserv Descriptions</nameDesc>
@@ -3930,8 +3930,8 @@
       </field>
       <id column="GeographyTreeDefID" name="geographyTreeDefId" type="java.lang.Integer"/>
       <nameDesc language="en">Geography Tree Definition</nameDesc>
-      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.CollectionType" relationshipname="collectionTypes" othersidename="geographyTreeDef" updatable="false" required="false">
-        <nameDesc language="en">Collection Types</nameDesc>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Discipline" relationshipname="disciplines" othersidename="geographyTreeDef" updatable="false" required="false">
+        <nameDesc language="en">Disciplines</nameDesc>
       </relationship>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="createdByAgent" columnname="CreatedByAgentID" updatable="false" required="false">
         <nameDesc language="en">Created By Agent</nameDesc>
@@ -4103,8 +4103,8 @@
       </field>
       <id column="GeologicTimePeriodTreeDefID" name="geologicTimePeriodTreeDefId" type="java.lang.Integer"/>
       <nameDesc language="en">Geological Time Period Tree Definition</nameDesc>
-      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.CollectionType" relationshipname="collectionTypes" othersidename="geologicTimePeriodTreeDef" updatable="false" required="false">
-        <nameDesc language="en">Collection Types</nameDesc>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Discipline" relationshipname="disciplines" othersidename="geologicTimePeriodTreeDef" updatable="false" required="false">
+        <nameDesc language="en">Disciplines</nameDesc>
       </relationship>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="createdByAgent" columnname="CreatedByAgentID" updatable="false" required="false">
         <nameDesc language="en">Created By Agent</nameDesc>
@@ -4458,8 +4458,8 @@
       </field>
       <id column="LithoStratTreeDefID" name="lithoStratTreeDefId" type="java.lang.Integer"/>
       <nameDesc language="en">Lithostratigraphy Tree Definition</nameDesc>
-      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.CollectionType" relationshipname="collectionTypes" othersidename="lithoStratTreeDef" updatable="false" required="false">
-        <nameDesc language="en">Collection Types</nameDesc>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Discipline" relationshipname="disciplines" othersidename="lithoStratTreeDef" updatable="false" required="false">
+        <nameDesc language="en">Disciplines</nameDesc>
       </relationship>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="createdByAgent" columnname="CreatedByAgentID" updatable="false" required="false">
         <nameDesc language="en">Created By Agent</nameDesc>
@@ -4954,8 +4954,8 @@
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.CollectingEvent" relationshipname="collectingEvents" othersidename="locality" updatable="false" required="false">
         <nameDesc language="en">Collecting Events</nameDesc>
       </relationship>
-      <relationship type="many-to-many" classname="edu.ku.brc.specify.datamodel.CollectionType" relationshipname="collectionTypes" othersidename="localities" updatable="false" required="false">
-        <nameDesc language="en">Collection Types</nameDesc>
+      <relationship type="many-to-many" classname="edu.ku.brc.specify.datamodel.Discipline" relationshipname="disciplines" othersidename="localities" updatable="false" required="false">
+        <nameDesc language="en">Disciplines</nameDesc>
       </relationship>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="createdByAgent" columnname="CreatedByAgentID" updatable="false" required="false">
         <nameDesc language="en">Created By Agent</nameDesc>
@@ -5296,8 +5296,8 @@
       </field>
       <id column="StorageTreeDefID" name="storageTreeDefId" type="java.lang.Integer"/>
       <nameDesc language="en">Storage Tree Definition</nameDesc>
-      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.CollectionType" relationshipname="collectionTypes" othersidename="storageTreeDef" updatable="false" required="false">
-        <nameDesc language="en">Collection Types</nameDesc>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Discipline" relationshipname="disciplines" othersidename="storageTreeDef" updatable="false" required="false">
+        <nameDesc language="en">Disciplines</nameDesc>
       </relationship>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="createdByAgent" columnname="CreatedByAgentID" updatable="false" required="false">
         <nameDesc language="en">Created By Agent</nameDesc>
@@ -6612,8 +6612,8 @@
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Collection" relationshipname="collection" columnname="CollectionID" othersidename="spAppResourceDirs" updatable="false" required="false">
         <nameDesc language="en">Collection</nameDesc>
       </relationship>
-      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.CollectionType" relationshipname="collectionType" columnname="CollectionTypeID" othersidename="spAppResourceDirs" updatable="false" required="false">
-        <nameDesc language="en">Collection Type</nameDesc>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Discipline" relationshipname="discipline" columnname="DisciplineID" othersidename="spAppResourceDirs" updatable="false" required="false">
+        <nameDesc language="en">Discipline</nameDesc>
       </relationship>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="createdByAgent" columnname="CreatedByAgentID" updatable="false" required="false">
         <nameDesc language="en">Created By Agent</nameDesc>
@@ -6663,8 +6663,8 @@
       <id column="SpLocaleContainerID" name="spLocaleContainerId" type="java.lang.Integer"/>
       <tableindex indexName="SpLocaleContainerNameIDX" columnNames="Name"/>
       <nameDesc language="en">Locale Container</nameDesc>
-      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.CollectionType" relationshipname="collectionType" columnname="CollectionTypeID" othersidename="spLocaleContainers" updatable="false" required="true">
-        <nameDesc language="en">Collection Type</nameDesc>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Discipline" relationshipname="discipline" columnname="DisciplineID" othersidename="spLocaleContainers" updatable="false" required="true">
+        <nameDesc language="en">Discipline</nameDesc>
       </relationship>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="createdByAgent" columnname="CreatedByAgentID" updatable="false" required="false">
         <nameDesc language="en">Created By Agent</nameDesc>
@@ -7221,8 +7221,8 @@
       </field>
       <id column="TaxonTreeDefID" name="taxonTreeDefId" type="java.lang.Integer"/>
       <nameDesc language="en">Taxon Tree Definition</nameDesc>
-      <relationship type="one-to-one" classname="edu.ku.brc.specify.datamodel.CollectionType" relationshipname="collectionType" othersidename="taxonTreeDef" updatable="false" required="false">
-        <nameDesc language="en">Collection Type</nameDesc>
+      <relationship type="one-to-one" classname="edu.ku.brc.specify.datamodel.Discipline" relationshipname="discipline" othersidename="taxonTreeDef" updatable="false" required="false">
+        <nameDesc language="en">Discipline</nameDesc>
       </relationship>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="createdByAgent" columnname="CreatedByAgentID" updatable="false" required="false">
         <nameDesc language="en">Created By Agent</nameDesc>
@@ -7428,8 +7428,8 @@
       </field>
       <id column="UserPermissionID" name="userPermissionId" type="java.lang.Integer"/>
       <nameDesc language="en">User Permission</nameDesc>
-      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.CollectionType" relationshipname="collectionType" columnname="CollectionTypeID" othersidename="userPermissions" updatable="false" required="true">
-        <nameDesc language="en">Collection Type</nameDesc>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Discipline" relationshipname="discipline" columnname="DisciplineID" othersidename="userPermissions" updatable="false" required="true">
+        <nameDesc language="en">Discipline</nameDesc>
       </relationship>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="createdByAgent" columnname="CreatedByAgentID" updatable="false" required="false">
         <nameDesc language="en">Created By Agent</nameDesc>

@@ -335,7 +335,7 @@
  agent.AgentType,
  %s
  FROM agentvariant INNER JOIN agent ON agentvariant.AgentID = agent.AgentID
- WHERE agent.CollectionTypeID = COLTYPID AND %s order by agentvariant.Name asc]]>
+ WHERE agent.DisciplineID = DSPLNID AND %s order by agentvariant.Name asc]]>
                 </sql>
                 <captions>
                     <caption tableid="5" col="agent.AgentID" visible="false"/>
@@ -383,7 +383,7 @@
                 <sql>
                     <![CDATA[SELECT * FROM (SELECT agent.AgentID,
 agent.FirstName,  agent.LastName, agent.Name, agent.Email, address.Address, address.City,
-address.State, address.PostalCode, address.Country FROM agent Left Join address ON agent.AgentID = address.AgentID WHERE agent.CollectionTypeID = COLTYPID) AS newTable WHERE (%s)]]>
+address.State, address.PostalCode, address.Country FROM agent Left Join address ON agent.AgentID = address.AgentID WHERE agent.DisciplineID = DSPLNID) AS newTable WHERE (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="5" col="AgentID" visible="false"/>
@@ -462,13 +462,13 @@ permit.EndDate,permit.RenewalDate,permit.Type FROM permit left Join agent ON per
             </detailView>
         </table>
         
-        <table id="105" tableid="26" name="CollectionTypeSearch" priority="1" color="30, 144, 255">
+        <table id="105" tableid="26" name="DisciplineSearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
-                    <![CDATA[SELECT CollectionTypeID, Name, Discipline FROM collectiontype WHERE (%s)]]>
+                    <![CDATA[SELECT DisciplineID, Name, Discipline FROM collectiontype WHERE (%s)]]>
                 </sql>
                 <captions>
-                    <caption tableid="26" col="CollectionTypeID" visible="false"/>
+                    <caption tableid="26" col="DisciplineID" visible="false"/>
                     <caption tableid="26" col="Name"/>
                     <caption tableid="26" col="Discipline"/>
                 </captions>
@@ -571,7 +571,7 @@ permit.EndDate,permit.RenewalDate,permit.Type FROM permit left Join agent ON per
  INNER JOIN preparation ON loanpreparation.PreparationID = preparation.PreparationID
  INNER JOIN collectionobject ON preparation.CollectionObjectID = collectionobject.CollectionObjectID
  INNER JOIN collection ON collectionobject.CollectingEventID = collection.CollectionID
- INNER JOIN collectiontype ON collection.CollectionTypeID = collectiontype.CollectionTypeID
+ INNER JOIN collectiontype ON collection.DisciplineID = collectiontype.DisciplineID
  INNER JOIN specifyuser ON collectiontype.SpecifyUserID = specifyuser.SpecifyUserID 
  WHERE specifyuser.SpecifyUserID = SPECIFYUSERID AND loan.CollectionMemberID = COLMEMID AND 
  (not (currentduedate is null)) AND loan.IsGift = false AND (IsClosed = false or IsClosed is null) AND 

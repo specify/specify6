@@ -54,7 +54,7 @@ import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.SwingWorker;
-import edu.ku.brc.specify.datamodel.CollectionType;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.PickList;
@@ -133,10 +133,10 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                     startEditor(DataType.class, SYSTEMSETUPTASK, "DataType");
                 }
             })); // I18N
-            sysNavBox.add(NavBox.createBtnWithTT("Collection Type", SYSTEMSETUPTASK, "", IconManager.IconSize.Std16, new ActionListener() {
+            sysNavBox.add(NavBox.createBtnWithTT("Discipline", SYSTEMSETUPTASK, "", IconManager.IconSize.Std16, new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
-                    startEditor(CollectionType.class, SYSTEMSETUPTASK, "CollectionType");
+                    startEditor(Discipline.class, SYSTEMSETUPTASK, "Discipline");
                 }
             })); // I18N
             sysNavBox.add(NavBox.createBtnWithTT("Prep Type", SYSTEMSETUPTASK, "", IconManager.IconSize.Std16, new ActionListener() {
@@ -575,7 +575,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
     @Override
     public SubPaneIFace getStarterPane()
     {
-       // View view = appContextMgr.getView("SystemSetup", CollectionType.getCurrentCollectionType());
+       // View view = appContextMgr.getView("SystemSetup", Discipline.getCurrentDiscipline());
         //createFormPanel(view.getViewSetName(), view.getName(), "edit", infoRequest, MultiView.IS_NEW_OBJECT);
 
         //recentFormPane = new FormPane(null, name, this, "");

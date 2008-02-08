@@ -49,7 +49,7 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.config.Discipline;
+import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Collection;
@@ -291,7 +291,7 @@ public class SpecifyExplorer extends HttpServlet
                                  final String firstName, 
                                  final String lastName, 
                                  final String email,
-                                 final Discipline  discipline)
+                                 final DisciplineType  disciplineType)
     {
         
         log.info("Logging into "+dbName+"....");
@@ -353,10 +353,10 @@ public class SpecifyExplorer extends HttpServlet
         
         setUpSystemProperties();
         
-        Discipline         discipline = Discipline.getDiscipline("fish");
+        DisciplineType         disciplineType = DisciplineType.getDiscipline("fish");
         DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver("MySQL");
         
-        setupDatabase(driverInfo, "localhost", "fish", "rods", "rods", "rods", "rods", "guest@ku.edu", discipline);
+        setupDatabase(driverInfo, "localhost", "fish", "rods", "rods", "rods", "rods", "guest@ku.edu", disciplineType);
     }
     
     /**
@@ -407,10 +407,8 @@ public class SpecifyExplorer extends HttpServlet
         if (classHash.get(fdi.getDataClass().getSimpleName()) != null)
         {
             return "<a href=\"SpecifyExplorer?cls="+fdi.getDataClass().getSimpleName()+"&id="+fdi.getId()+"\">"+title+"</a>";
-        } else
-        {
-            System.out.println(">>>>>>>>>>>>>>> class not in hash["+fdi.getDataClass().getSimpleName()+"]");
         }
+        System.out.println(">>>>>>>>>>>>>>> class not in hash["+fdi.getDataClass().getSimpleName()+"]");
         return fdi.getIdentityTitle();
     }
     

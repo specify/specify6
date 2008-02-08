@@ -56,7 +56,7 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
     protected String                     description;
     protected String                     remarks;
     
-    protected CollectionType             collectionType;
+    protected Discipline             discipline;
     protected Set<SpAppResourceDir>      spAppResourceDirs;
     protected Set<FieldNotebook>         fieldNoteBooks;
     protected Set<CollectionObject>      collectionObjects;
@@ -117,7 +117,7 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
         collectionPrefix       = null;
         description            = null;
         remarks                = null;
-        collectionType         = null;
+        discipline         = null;
         spAppResourceDirs      = new HashSet<SpAppResourceDir>();
         collectionObjects      = new HashSet<CollectionObject>();
         fieldNoteBooks         = new HashSet<FieldNotebook>();
@@ -250,13 +250,13 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
      *
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "CollectionTypeID", unique = false, nullable = false, insertable = true, updatable = true)
-    public CollectionType getCollectionType() {
-        return this.collectionType;
+    @JoinColumn(name = "DisciplineID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Discipline getDiscipline() {
+        return this.discipline;
     }
 
-    public void setCollectionType(CollectionType collectionType) {
-        this.collectionType = collectionType;
+    public void setDiscipline(Discipline discipline) {
+        this.discipline = discipline;
     }
     
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collection")

@@ -81,7 +81,7 @@ public class AppResourceTest extends TestCase
         SpecifyUser user = (SpecifyUser)list.get(0); // assumes user is already there
 
         // Now get the List of Collection owned by this user
-        String queryStr = "select cs From CollectionType as ct Inner Join ct.specifyUser as user Inner Join ct.collection as cs where user.specifyUserId = "+user.getSpecifyUserId();
+        String queryStr = "select cs From Discipline as ct Inner Join ct.specifyUser as user Inner Join ct.collection as cs where user.specifyUserId = "+user.getSpecifyUserId();
         Query query = HibernateUtil.getCurrentSession().createQuery(queryStr);
         list = query.list();
         log.info("Found "+list.size()+" Collection for User");
@@ -103,13 +103,13 @@ public class AppResourceTest extends TestCase
 
         assertNotNull(contextMgr.getView("Ento Views", "CollectionObject"));
 
-        // Now find the CollectionType for Bees (which should be owned by the user in question)
-        Criteria criteria2 = HibernateUtil.getCurrentSession().createCriteria(CollectionType.class);
+        // Now find the Discipline for Bees (which should be owned by the user in question)
+        Criteria criteria2 = HibernateUtil.getCurrentSession().createCriteria(Discipline.class);
         criteria2.add(Expression.eq("name", "Bees"));
         List list2 = criteria2.list();
 
-        // Search by CollectionType
-        assertNotNull(contextMgr.getView("CollectionObject", (CollectionType)list2.get(0)));
+        // Search by Discipline
+        assertNotNull(contextMgr.getView("CollectionObject", (Discipline)list2.get(0)));
 
         // Now Test For the other user "Josh"
         // this should to backstops
@@ -127,7 +127,7 @@ public class AppResourceTest extends TestCase
         SpecifyUser.setCurrentUser(user);
 
         // Now get the List of Collection owned by this user
-        queryStr = "select cs From CollectionType as ct Inner Join ct.specifyUser as user Inner Join ct.collection as cs where user.specifyUserId = "+user.getSpecifyUserId();
+        queryStr = "select cs From Discipline as ct Inner Join ct.specifyUser as user Inner Join ct.collection as cs where user.specifyUserId = "+user.getSpecifyUserId();
         query = HibernateUtil.getCurrentSession().createQuery(queryStr);
         list = query.list();
         log.info("Found "+list.size()+" Collection for User");
@@ -149,14 +149,14 @@ public class AppResourceTest extends TestCase
 
         assertNull(contextMgr.getView("Ento Views", "CollectionObject")); // Should come back null
 
-        // Now find the CollectionType for Bees (which should be owned by the user in question)
-        criteria2 = HibernateUtil.getCurrentSession().createCriteria(CollectionType.class);
+        // Now find the Discipline for Bees (which should be owned by the user in question)
+        criteria2 = HibernateUtil.getCurrentSession().createCriteria(Discipline.class);
         criteria2.add(Expression.eq("name", "fish"));
         list2 = criteria2.list();
         assertTrue(list2.size() > 0);
         
-        // Search by CollectionType
-        assertNotNull(contextMgr.getView("CollectionObject", (CollectionType)list2.get(0)));
+        // Search by Discipline
+        assertNotNull(contextMgr.getView("CollectionObject", (Discipline)list2.get(0)));
         
         log.info("Looking up StartUpPanel for user");
         assertNotNull(contextMgr.getResource("StartUpPanel"));

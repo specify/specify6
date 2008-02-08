@@ -35,7 +35,7 @@ public class StorageTreeDef extends BaseTreeDef<Storage, StorageTreeDef, Storage
 	protected String				    name;
 	protected String				    remarks;
     protected Integer                   fullNameDirection;
-	protected Set<CollectionType>       collectionTypes;
+	protected Set<Discipline>       disciplines;
 	protected Set<Storage>			    treeEntries;
 	protected Set<StorageTreeDefItem>	treeDefItems;
 
@@ -59,7 +59,7 @@ public class StorageTreeDef extends BaseTreeDef<Storage, StorageTreeDef, Storage
 		name = null;
 		remarks = null;
         fullNameDirection = null;
-		collectionTypes = new HashSet<CollectionType>();
+		disciplines = new HashSet<Discipline>();
 		treeEntries = new HashSet<Storage>();
 		treeDefItems = new HashSet<StorageTreeDefItem>();
 	}
@@ -136,25 +136,25 @@ public class StorageTreeDef extends BaseTreeDef<Storage, StorageTreeDef, Storage
     }
 
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "storageTreeDef")
-    public Set<CollectionType> getCollectionTypes()
+    public Set<Discipline> getDisciplines()
 	{
-		return this.collectionTypes;
+		return this.disciplines;
 	}
 
-	public void setCollectionTypes(Set<CollectionType> collObjDefs)
+	public void setDisciplines(Set<Discipline> collObjDefs)
 	{
-		this.collectionTypes = collObjDefs;
+		this.disciplines = collObjDefs;
 	}
 
-    public void addCollObjDef( CollectionType ct )
+    public void addCollObjDef( Discipline ct )
     {
-        this.collectionTypes.add(ct);
+        this.disciplines.add(ct);
         ct.setStorageTreeDef(this);
     }
     
-    public void removeCollObjDef( CollectionType ct )
+    public void removeCollObjDef( Discipline ct )
     {
-        this.collectionTypes.remove(ct);
+        this.disciplines.remove(ct);
         ct.setStorageTreeDef(null);
     }
 

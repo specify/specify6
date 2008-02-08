@@ -17,21 +17,21 @@ package edu.ku.brc.specify.datamodel.busrules;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createTaxonTreeDef;
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.specify.datamodel.CollectionType;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.ui.forms.BaseBusRules;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 
-public class CollectionTypeBusRules extends BaseBusRules
+public class DisciplineBusRules extends BaseBusRules
 {   
-    //private final Logger         log      = Logger.getLogger(CollectionTypeBusRules.class);
+    //private final Logger         log      = Logger.getLogger(DisciplineBusRules.class);
     
     /**
      * 
      */
-    public CollectionTypeBusRules()
+    public DisciplineBusRules()
     {
-        super(CollectionType.class);    
+        super(Discipline.class);    
     }
 
     /* (non-Javadoc)
@@ -41,7 +41,7 @@ public class CollectionTypeBusRules extends BaseBusRules
     public boolean okToEnableDelete(Object dataObj)
     {
         /*
-        CollectionType ct = (CollectionType)dataObj;
+        Discipline ct = (Discipline)dataObj;
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
@@ -77,22 +77,22 @@ public class CollectionTypeBusRules extends BaseBusRules
         }
 */
         
-        if (!okToDelete("colobjdef_locality", "CollectionTypeID", ((FormDataObjIFace)dataObj).getId()))
+        if (!okToDelete("colobjdef_locality", "DisciplineID", ((FormDataObjIFace)dataObj).getId()))
         {
             return false;
         }
         
-        if (!okToDelete("collection", "CollectionTypeID", ((FormDataObjIFace)dataObj).getId()))
+        if (!okToDelete("collection", "DisciplineID", ((FormDataObjIFace)dataObj).getId()))
         {
             return false;
         }
         
-        if (!okToDelete("attributedef", "CollectionTypeID", ((FormDataObjIFace)dataObj).getId()))
+        if (!okToDelete("attributedef", "DisciplineID", ((FormDataObjIFace)dataObj).getId()))
         {
             return false;
         }
         
-        if (!okToDelete("appresourcedefault", "CollectionTypeID", ((FormDataObjIFace)dataObj).getId()))
+        if (!okToDelete("appresourcedefault", "DisciplineID", ((FormDataObjIFace)dataObj).getId()))
         {
             return false;
         }
@@ -107,7 +107,7 @@ public class CollectionTypeBusRules extends BaseBusRules
     {
         super.beforeSave(dataObj,session);
         
-        CollectionType ct = (CollectionType)dataObj;
+        Discipline ct = (Discipline)dataObj;
         if (ct.getTaxonTreeDef() == null)
         {
             TaxonTreeDef taxonTreeDef = createTaxonTreeDef("Sample Taxon Tree Def");
@@ -126,9 +126,9 @@ public class CollectionTypeBusRules extends BaseBusRules
     @Override
     public String getDeleteMsg(final Object dataObj)
     {
-        if (dataObj instanceof CollectionType)
+        if (dataObj instanceof Discipline)
         {
-            return getLocalizedMessage("COLLECTIONTYPE_DELETED", ((CollectionType)dataObj).getName());
+            return getLocalizedMessage("DISCIPLINE_DELETED", ((Discipline)dataObj).getName());
         }
         // else
         return super.getDeleteMsg(dataObj);

@@ -137,7 +137,7 @@ public class FieldNotebook extends CollectionMember
     }
 
     /**
-     * @param collectionType the collectionType to set
+     * @param discipline the discipline to set
      */
     public void setCollection(Collection collection)
     {
@@ -230,7 +230,7 @@ public class FieldNotebook extends CollectionMember
     }
 
     /**
-     * @return the collectionType
+     * @return the discipline
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "CollectionID", unique = false, nullable = false, insertable = true, updatable = true)

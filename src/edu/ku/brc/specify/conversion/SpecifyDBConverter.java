@@ -531,8 +531,8 @@ public class SpecifyDBConverter
                 
                 frame.setDesc("Converting CollectionObjectDefs.");
                 log.info("Converting CollectionObjectDefs.");
-                boolean convertCollectionType = false;
-                if (convertCollectionType || doAll)
+                boolean convertDiscipline = false;
+                if (convertDiscipline || doAll)
                 {
                     DataBuilder.getSession().beginTransaction();
                     
@@ -863,7 +863,7 @@ public class SpecifyDBConverter
                     BasicSQLUtils.deleteAllRecordsFromTable("datatype", BasicSQLUtils.myDestinationServerType);
                     BasicSQLUtils.deleteAllRecordsFromTable("specifyuser", BasicSQLUtils.myDestinationServerType);
                     BasicSQLUtils.deleteAllRecordsFromTable("usergroup", BasicSQLUtils.myDestinationServerType);
-                    BasicSQLUtils.deleteAllRecordsFromTable("collectiontype", BasicSQLUtils.myDestinationServerType);
+                    BasicSQLUtils.deleteAllRecordsFromTable("discipline", BasicSQLUtils.myDestinationServerType);
 
                     DataType          dataType  = createDataType("Animal");
                     UserGroup         userGroup = createUserGroup("Fish");
@@ -925,13 +925,13 @@ public class SpecifyDBConverter
                         return;
                     }
 
-                    Set<CollectionType>  collTypeSet = conversion.createCollectionType("Fish", dataType, user, null, null);
+                    Set<Discipline>  disciplineSet = conversion.createDiscipline("Fish", dataType, user, null, null);
 
 
-                    Object obj = collTypeSet.iterator().next();
-                    CollectionType collType = (CollectionType)obj;
+                    Object obj = disciplineSet.iterator().next();
+                    Discipline discipline = (Discipline)obj;
 
-                    conversion.convertBiologicalAttrs(collType, null, null);*/
+                    conversion.convertBiologicalAttrs(discipline, null, null);*/
                 }
                 //conversion.showStats();
             }

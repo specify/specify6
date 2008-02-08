@@ -21,7 +21,7 @@ import static edu.ku.brc.specify.tests.SpecifyUserTestHelper.isSpecifyUserInDB;
 import static edu.ku.brc.specify.tests.SpecifyUserTestHelper.isUserGroupInDB;
 import static edu.ku.brc.specify.tests.SpecifyUserTestHelper.isUserPermissionInDB;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createAgent;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createCollectionType;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createDiscipline;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createDataType;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createDivision;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createInstitution;
@@ -38,7 +38,7 @@ import org.hibernate.Session;
 
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.datamodel.Agent;
-import edu.ku.brc.specify.datamodel.CollectionType;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.Institution;
@@ -309,15 +309,15 @@ public class SpecifyUserTest extends TestCase
 
             HibernateUtil.commitTransaction();
 
-            log.info("createCollectionType");
+            log.info("createDiscipline");
             Institution    institution    = createInstitution("Natural History Museum");
             Division       division       = createDivision(institution, "fish", "Icthyology", "IT", "Icthyology");
-            CollectionType collectionType = createCollectionType(division, "fish", "fish", dataType, taxonTreeDef, null, null, null, lithoStratTreeDef);
+            Discipline discipline = createDiscipline(division, "fish", "fish", dataType, taxonTreeDef, null, null, null, lithoStratTreeDef);
 
-            //createCollectionType(dataType, testUser, "fish", "fish"); // creates TaxonTreeDef
+            //createDiscipline(dataType, testUser, "fish", "fish"); // creates TaxonTreeDef
 
             
-            UserPermission permission = createUserPermission(testUser, collectionType, true, true);
+            UserPermission permission = createUserPermission(testUser, discipline, true, true);
             assertNotNull("UserPermission is null", permission);
             assertTrue("UserPermission failed to be deleted from the database.", deleteUserPermissionFromDB(permission.getId()));
             assertTrue("SpecifyUser failed to be deleted from the database.", deleteSpecifyUserDB(testUser.getId()));
@@ -369,9 +369,9 @@ public class SpecifyUserTest extends TestCase
 
             Institution    institution    = createInstitution("Natural History Museum");
             Division       division       = createDivision(institution, "fish", "Icthyology", "IT", "Icthyology");
-            CollectionType collectionType = createCollectionType(division, "fish", "fish", dataType, taxonTreeDef, null, null, null, lithoStratTreeDef);
+            Discipline discipline = createDiscipline(division, "fish", "fish", dataType, taxonTreeDef, null, null, null, lithoStratTreeDef);
             
-            UserPermission permission = createUserPermission(testUser, collectionType, true, true);
+            UserPermission permission = createUserPermission(testUser, discipline, true, true);
             assertNotNull("UserPermission is null", permission);
             HibernateUtil.commitTransaction();
             

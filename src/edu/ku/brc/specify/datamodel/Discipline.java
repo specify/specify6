@@ -51,7 +51,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
-import edu.ku.brc.specify.config.Discipline;
+import edu.ku.brc.specify.config.DisciplineType;
 
 /**
 
@@ -59,19 +59,19 @@ import edu.ku.brc.specify.config.Discipline;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 //@org.hibernate.annotations.Proxy(lazy = false)
-@Table(name="collectiontype")
-@org.hibernate.annotations.Table(appliesTo="collectiontype", indexes =
-    {   @Index (name="ColTypeNameIDX", columnNames={"Name"}),
-        @Index (name="DisciplineIDX", columnNames={"Discipline"})
+@Table(name="discipline")
+@org.hibernate.annotations.Table(appliesTo="discipline", indexes =
+    {   @Index (name="DisciplineNameIDX", columnNames={"Name"}),
+        @Index (name="DisciplineTypeIDX", columnNames={"DisciplineType"})
     })
-public class CollectionType extends DataModelObjBase implements java.io.Serializable, Comparable<CollectionType>
+public class Discipline extends DataModelObjBase implements java.io.Serializable, Comparable<Discipline>
 {
 
-    protected static CollectionType currentCollectionType = null;
+    protected static Discipline currentDiscipline = null;
     
     // Fields
 
-    protected Integer                   collectionTypeId;
+    protected Integer                   disciplineId;
     protected String                    name;
     protected String                    discipline;
     protected DataType                  dataType;
@@ -96,41 +96,41 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     // Constructors
 
     /** default constructor */
-    public CollectionType() {
+    public Discipline() {
         //
     }
 
     /** constructor with id */
-    public CollectionType(Integer collectionTypeId) {
-        this.collectionTypeId = collectionTypeId;
+    public Discipline(Integer disciplineId) {
+        this.disciplineId = disciplineId;
     }
 
     /**
      * @return
      */
-    public static CollectionType getCurrentCollectionType()
+    public static Discipline getCurrentDiscipline()
     {
-        return currentCollectionType;
+        return currentDiscipline;
     }
 
     /**
-     * @param currentCollectionType
+     * @param currentDiscipline
      */
-    public static void setCurrentCollectionType(CollectionType collectionType)
+    public static void setCurrentDiscipline(Discipline discipline)
     {
-        CollectionType.currentCollectionType = collectionType;
+        Discipline.currentDiscipline = discipline;
     }
     
     /**
-     * Returns true if the the discipline matches the current one
+     * Returns true if the the disciplineType matches the current one
      * @param disciplineArg the one in question
-     * @return true if the the discipline matches the current one
+     * @return true if the the disciplineType matches the current one
      */
-    public static boolean isCurrentDiscipline(final Discipline.STD_DISCIPLINES disciplineArg)
+    public static boolean isCurrentDiscipline(final DisciplineType.STD_DISCIPLINES disciplineArg)
     {
-        if (CollectionType.currentCollectionType != null)
+        if (Discipline.currentDiscipline != null)
         {
-            String dsc = CollectionType.currentCollectionType.getDiscipline();
+            String dsc = Discipline.currentDiscipline.getDiscipline();
             return StringUtils.isNotEmpty(dsc) && dsc.equals(disciplineArg.toString());
         }
         return false;
@@ -142,7 +142,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     {
         super.init();
         
-        collectionTypeId      = null;
+        disciplineId      = null;
         name                  = null;
         discipline            = null;
         dataType              = null;
@@ -170,9 +170,9 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
      */
     @Id
     @GeneratedValue
-    @Column(name="CollectionTypeID")
-    public Integer getCollectionTypeId() {
-        return this.collectionTypeId;
+    @Column(name="DisciplineID")
+    public Integer getDisciplineId() {
+        return this.disciplineId;
     }
 
     /**
@@ -183,7 +183,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     @Override
     public Integer getId()
     {
-        return this.collectionTypeId;
+        return this.disciplineId;
     }
 
     /* (non-Javadoc)
@@ -193,11 +193,11 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     @Override
     public Class<?> getDataClass()
     {
-        return CollectionType.class;
+        return Discipline.class;
     }
 
-    public void setCollectionTypeId(Integer collectionTypeId) {
-        this.collectionTypeId = collectionTypeId;
+    public void setDisciplineId(Integer disciplineId) {
+        this.disciplineId = disciplineId;
     }
 
     /**
@@ -215,7 +215,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     /**
     *
     */
-    @Column(name="Discipline", length=64)
+    @Column(name="DisciplineType", length=64)
     public String getDiscipline()
     {
         return discipline;
@@ -242,7 +242,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     /**
      *
      */
-    @OneToMany(mappedBy="collectionType")
+    @OneToMany(mappedBy="discipline")
     @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<Collection> getCollections() {
         return this.collections;
@@ -255,7 +255,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     /**
      *
      */
-    @OneToMany(mappedBy="collectionType")
+    @OneToMany(mappedBy="discipline")
     @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<AttributeDef> getAttributeDefs() {
         return this.attributeDefs;
@@ -338,7 +338,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     /**
      *
      */
-    @ManyToMany(mappedBy="collectionTypes")
+    @ManyToMany(mappedBy="disciplines")
     @Cascade( {CascadeType.SAVE_UPDATE} )
     public Set<Locality> getLocalities() {
         return this.localities;
@@ -351,7 +351,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     /**
      * @return the determinationStatuss
      */
-    @OneToMany(mappedBy="collectionType")
+    @OneToMany(mappedBy="discipline")
     @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<DeterminationStatus> getDeterminationStatuss()
     {
@@ -366,7 +366,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
         this.determinationStatuss = determinationStatuss;
     }
     
-    @OneToMany(mappedBy="collectionType")
+    @OneToMany(mappedBy="discipline")
     @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<SpAppResourceDir> getSpAppResourceDirs()
     {
@@ -378,7 +378,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
         this.spAppResourceDirs = spAppResourceDirs;
     }
     
-    @OneToMany(mappedBy="collectionType")
+    @OneToMany(mappedBy="discipline")
     @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<UserPermission> getUserPermissions() 
     {
@@ -394,7 +394,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     /**
      * @return the localeContainers
      */
-    @OneToMany(mappedBy="collectionType")
+    @OneToMany(mappedBy="discipline")
     @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<SpLocaleContainer> getSpLocaleContainers()
     {
@@ -412,7 +412,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     /**
      * @return the agents
      */
-    @OneToMany(mappedBy="collectionType")
+    @OneToMany(mappedBy="discipline")
     @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<Agent> getAgents()
     {
@@ -496,7 +496,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-    public int compareTo(CollectionType obj)
+    public int compareTo(Discipline obj)
     {
         if (name != null && obj != null && StringUtils.isNotEmpty(obj.name))
         {
@@ -519,7 +519,7 @@ public class CollectionType extends DataModelObjBase implements java.io.Serializ
     @Transient
     public TreeDefIface<?,?,?> getTreeDef(final String defName) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException
     {
-        Method getter = CollectionType.class.getMethod("get" + defName, (Class<?>[])null);
+        Method getter = Discipline.class.getMethod("get" + defName, (Class<?>[])null);
         return (TreeDefIface<?,?,?>)getter.invoke(this,  (Object[])null);
     }
 

@@ -440,8 +440,8 @@
     </format>
     
     <format
-        name="CollectionType"
-        class="edu.ku.brc.specify.datamodel.CollectionType"
+        name="Discipline"
+        class="edu.ku.brc.specify.datamodel.Discipline"
         default="true"
         >
         <switch single="true">

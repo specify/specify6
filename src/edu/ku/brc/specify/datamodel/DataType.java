@@ -56,7 +56,7 @@ public class DataType extends DataModelObjBase implements java.io.Serializable {
 
      protected Integer dataTypeId;
      protected String name;
-     protected Set<CollectionType> collectionType;
+     protected Set<Discipline> discipline;
 
 
     // Constructors
@@ -81,7 +81,7 @@ public class DataType extends DataModelObjBase implements java.io.Serializable {
         super.init();
         dataTypeId = null;
         name = null;
-        collectionType = new HashSet<CollectionType>();
+        discipline = new HashSet<Discipline>();
     }
     // End Initializer
 
@@ -139,12 +139,12 @@ public class DataType extends DataModelObjBase implements java.io.Serializable {
      */
     @OneToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "dataType")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<CollectionType> getCollectionType() {
-        return this.collectionType;
+    public Set<Discipline> getDiscipline() {
+        return this.discipline;
     }
 
-    public void setCollectionType(Set<CollectionType> collectionType) {
-        this.collectionType = collectionType;
+    public void setDiscipline(Set<Discipline> discipline) {
+        this.discipline = discipline;
     }
 
   /*

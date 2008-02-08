@@ -164,7 +164,7 @@
     <table name="WorkbenchTemplate"/>
     <table name="WorkbenchTemplateMappingItem"/>
     
-    <table name="CollectionType"/>
+    <table name="Discipline"/>
     <table name="TaxonTreeDefItem" id="77">
     </table>
     <table name="UserGroup" id="78"/>

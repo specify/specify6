@@ -64,7 +64,7 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
     protected String             name;
     protected String             remarks;
     
-    protected CollectionType     collectionType;
+    protected Discipline     discipline;
     protected Set<Determination> determinations;
 
     public DeterminationStatus()
@@ -89,7 +89,7 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
         type                  = null;
         name                  = null;
         remarks               = null;
-        collectionType        = null;
+        discipline        = null;
         determinations        = new HashSet<Determination>();
     }
 
@@ -182,21 +182,21 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
     }
 
     /**
-     * @return the collectionType
+     * @return the discipline
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "CollectionTypeID", unique = false, nullable = false, insertable = true, updatable = true)
-    public CollectionType getCollectionType()
+    @JoinColumn(name = "DisciplineID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Discipline getDiscipline()
     {
-        return collectionType;
+        return discipline;
     }
 
     /**
-     * @param collectionType the collectionType to set
+     * @param discipline the discipline to set
      */
-    public void setCollectionType(CollectionType collectionType)
+    public void setDiscipline(Discipline discipline)
     {
-        this.collectionType = collectionType;
+        this.discipline = discipline;
     }
 
 

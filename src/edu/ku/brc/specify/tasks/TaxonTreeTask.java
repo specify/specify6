@@ -21,7 +21,7 @@ import javax.swing.SwingUtilities;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.CollectionType;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Taxon;
@@ -69,7 +69,7 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
     @Override
     protected TaxonTreeDef getCurrentTreeDef()
     {
-        return CollectionType.getCurrentCollectionType().getTaxonTreeDef();
+        return Discipline.getCurrentDiscipline().getTaxonTreeDef();
     }
 
     /* (non-Javadoc)

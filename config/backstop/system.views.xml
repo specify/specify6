@@ -65,14 +65,14 @@
             </altviews>
         </view>
         
-        <view name="CollectionType"
-            class="edu.ku.brc.specify.datamodel.CollectionType"
-            busrules="edu.ku.brc.specify.datamodel.busrules.CollectionTypeBusRules"
+        <view name="Discipline"
+            class="edu.ku.brc.specify.datamodel.Discipline"
+            busrules="edu.ku.brc.specify.datamodel.busrules.DisciplineBusRules"
             resourcelabels="false">
-            <desc><![CDATA[The CollectionType Object form.]]></desc>
+            <desc><![CDATA[The Discipline Object form.]]></desc>
             <altviews>
-                <altview name="CollectionType Edit View" viewdef="CollectionType" label="View" mode="view" validated="false"/>
-                <altview name="CollectionType Edit" viewdef="CollectionType" label="Edit" mode="edit" validated="true" default="true"/>
+                <altview name="Discipline Edit View" viewdef="Discipline" label="View" mode="view" validated="false"/>
+                <altview name="Discipline Edit" viewdef="Discipline" label="Edit" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
         
@@ -323,18 +323,18 @@
         
         <viewdef
             type="form"
-            name="CollectionType"
-            class="edu.ku.brc.specify.datamodel.CollectionType"
+            name="Discipline"
+            class="edu.ku.brc.specify.datamodel.Discipline"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             
-            <desc><![CDATA[CollectionType Data Entry Form]]></desc>
+            <desc><![CDATA[Discipline Data Entry Form]]></desc>
             <columnDef>p,3dlu,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>            
             
             <rows>
                 <row>
-                    <cell type="separator" label="Collection Type" colspan="4"/>
+                    <cell type="separator" label="Discipline" colspan="4"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="1" label="Name"/>
@@ -384,7 +384,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="3" label="Collection Object Def"/>
-                    <cell type="field" id="3" name="collectionType" uitype="combobox" picklist="CollectionType" isrequired="true"/>
+                    <cell type="field" id="3" name="discipline" uitype="combobox" picklist="Discipline" isrequired="true"/>
                 </row>
                 
                 <row>

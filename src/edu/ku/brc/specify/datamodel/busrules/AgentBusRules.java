@@ -21,7 +21,7 @@ import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Agent;
-import edu.ku.brc.specify.datamodel.CollectionType;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 
@@ -93,10 +93,10 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
         super.beforeSave(dataObj, session);
         
         
-        if (CollectionType.getCurrentCollectionType() != null)
+        if (Discipline.getCurrentDiscipline() != null)
         {
-            //CollectionType.getCurrentCollectionType().addReference((Agent)dataObj, "agents");
-            ((Agent)dataObj).setCollectionType(CollectionType.getCurrentCollectionType());
+            //Discipline.getCurrentDiscipline().addReference((Agent)dataObj, "agents");
+            ((Agent)dataObj).setDiscipline(Discipline.getCurrentDiscipline());
         }
     }
     

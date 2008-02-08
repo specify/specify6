@@ -35,7 +35,7 @@ public class DataTypeBusRules extends BaseBusRules
     @Override
     public boolean okToEnableDelete(Object dataObj)
     {
-        return okToDelete("collectiontype", "DataTypeID", ((FormDataObjIFace)dataObj).getId());
+        return okToDelete("discipline", "DataTypeID", ((FormDataObjIFace)dataObj).getId());
     }
     
     /* (non-Javadoc)

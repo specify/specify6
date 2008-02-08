@@ -32,7 +32,7 @@ public class TreeLevelQRI extends FieldQRI
         this.rankId = rankId;
         String treeDefName = parent.getTableTree().getTableInfo().getShortClassName()
                 + "TreeDef";
-        TreeDefIface<?, ?, ?> treeDef = Collection.getCurrentCollection().getCollectionType()
+        TreeDefIface<?, ?, ?> treeDef = Collection.getCurrentCollection().getDiscipline()
                 .getTreeDef(treeDefName);
         TreeDefItemIface<?, ?, ?> treeDefItem = treeDef.getDefItemByRank(rankId);
         if (treeDefItem != null)

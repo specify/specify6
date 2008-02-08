@@ -67,7 +67,7 @@ import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.CollectionType;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.InfoRequest;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
@@ -694,7 +694,7 @@ public class InteractionsTask extends BaseTask
         
         SpecifyAppContextMgr appContextMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
         
-        ViewIFace view = appContextMgr.getView(tableInfo.getDefaultFormName(), CollectionType.getCurrentCollectionType());
+        ViewIFace view = appContextMgr.getView(tableInfo.getDefaultFormName(), Discipline.getCurrentDiscipline());
 
         InfoRequest infoRequest = new InfoRequest();
         infoRequest.initialize();

@@ -64,7 +64,7 @@ public class Division extends DataModelObjBase implements java.io.Serializable
      
      protected Address                  address;
      protected Institution              institution;
-     protected Set<CollectionType>      collectionTypes;
+     protected Set<Discipline>      disciplines;
      
      protected Set<Agent>               members;
      protected Set<ConservDescription>  conservDescriptions;
@@ -151,10 +151,10 @@ public class Division extends DataModelObjBase implements java.io.Serializable
     }
 
     /**
-     * Discipline.
+     * DisciplineType.
      * @return the ipr
      */
-    @Column(name = "Discipline", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    @Column(name = "DisciplineType", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
     public String getDiscipline()
     {
         return discipline;
@@ -287,13 +287,13 @@ public class Division extends DataModelObjBase implements java.io.Serializable
     }
 
     /**
-     * @return the collectionTypes
+     * @return the disciplines
      */
     @OneToMany(cascade = { }, fetch = FetchType.LAZY, mappedBy = "division")
     @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<CollectionType> getCollectionTypes()
+    public Set<Discipline> getDisciplines()
     {
-        return collectionTypes;
+        return disciplines;
     }
 
     /**
@@ -313,7 +313,7 @@ public class Division extends DataModelObjBase implements java.io.Serializable
     }
 
     /**
-     * @param ipr the discipline to set
+     * @param ipr the disciplineType to set
      */
     public void setDiscipline(String discipline)
     {
@@ -434,11 +434,11 @@ public class Division extends DataModelObjBase implements java.io.Serializable
     }
 
     /**
-     * @param collectionTypes the collectionTypes to set
+     * @param disciplines the disciplines to set
      */
-    public void setCollectionTypes(Set<CollectionType> collectionTypes)
+    public void setDisciplines(Set<Discipline> disciplines)
     {
-        this.collectionTypes = collectionTypes;
+        this.disciplines = disciplines;
     }
 
     /* (non-Javadoc)

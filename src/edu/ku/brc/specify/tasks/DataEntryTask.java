@@ -59,7 +59,7 @@ import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.CollectionType;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.RecordSet;
@@ -113,7 +113,7 @@ public class DataEntryTask extends BaseTask
     protected Vector<DataEntryView> stdViews       = null;
     protected Vector<DataEntryView> miscViews      = null;
     
-    // These are needed for changes with the Discipline icon
+    // These are needed for changes with the DisciplineType icon
     protected NavBoxButton        colObjNavBtn        = null;
     protected String              iconClassLookUpName = "";
 
@@ -212,7 +212,7 @@ public class DataEntryTask extends BaseTask
                          final FormDataObjIFace data,
                          final boolean          isNewForm)
     {
-        ViewIFace view = viewSetName == null ? SpecifyAppContextMgr.getInstance().getView(viewName, CollectionType.getCurrentCollectionType()) : 
+        ViewIFace view = viewSetName == null ? SpecifyAppContextMgr.getInstance().getView(viewName, Discipline.getCurrentDiscipline()) : 
                                           AppContextMgr.getInstance().getView(viewSetName, viewName);
         Object           dataObj     = data;
         FormDataObjIFace formDataObj = data;
@@ -339,7 +339,7 @@ public class DataEntryTask extends BaseTask
             
             if (StringUtils.isNotEmpty(viewSetName) && StringUtils.isNotEmpty(viewName))
             {
-                view = viewSetName == null ? SpecifyAppContextMgr.getInstance().getView(viewName, CollectionType.getCurrentCollectionType()) : 
+                view = viewSetName == null ? SpecifyAppContextMgr.getInstance().getView(viewName, Discipline.getCurrentDiscipline()) : 
                                              AppContextMgr.getInstance().getView(viewSetName, viewName);
             } else
             {
@@ -349,7 +349,7 @@ public class DataEntryTask extends BaseTask
                 {
                     SpecifyAppContextMgr appContextMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
                     
-                    view = appContextMgr.getView(defaultFormName, CollectionType.getCurrentCollectionType());
+                    view = appContextMgr.getView(defaultFormName, Discipline.getCurrentDiscipline());
                      
                 } else
                 {

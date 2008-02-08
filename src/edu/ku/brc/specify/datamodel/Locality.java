@@ -97,7 +97,7 @@ public class Locality extends CollectionMember implements AttachmentOwnerIFace<L
     protected Integer               visibility;
     protected String                visibilitySetBy;
      
-    protected Set<CollectionType>     collectionTypes;
+    protected Set<Discipline>     disciplines;
     protected Geography               geography;
     protected Set<LocalityCitation>   localityCitations;
     protected Set<CollectingEvent>    collectingEvents;
@@ -608,15 +608,15 @@ public class Locality extends CollectionMember implements AttachmentOwnerIFace<L
      * 
      */
     @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
-    @JoinTable(name = "coltype_locality", joinColumns = { @JoinColumn(name = "LocalityID", unique = false, nullable = false, insertable = true, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "CollectionTypeID", unique = false, nullable = false, insertable = true, updatable = false) })
-    public Set<CollectionType> getCollectionTypes()
+    @JoinTable(name = "coltype_locality", joinColumns = { @JoinColumn(name = "LocalityID", unique = false, nullable = false, insertable = true, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "DisciplineID", unique = false, nullable = false, insertable = true, updatable = false) })
+    public Set<Discipline> getDisciplines()
     {
-        return this.collectionTypes;
+        return this.disciplines;
     }
 
-    public void setCollectionTypes(Set<CollectionType> collectionTypes)
+    public void setDisciplines(Set<Discipline> disciplines)
     {
-        this.collectionTypes = collectionTypes;
+        this.disciplines = disciplines;
     }
 
     /**

@@ -67,7 +67,7 @@ public class DisciplineBasedContainer extends SpLocaleContainer implements Clone
     }
     
     /**
-     * @param discipline
+     * @param disciplineType
      * @return
      */
     public Set<SpLocaleContainerItem> getDisciplineItems(final String discipline)
@@ -88,7 +88,7 @@ public class DisciplineBasedContainer extends SpLocaleContainer implements Clone
     }
     
     /**
-     * @param discipline
+     * @param disciplineType
      * @param item
      */
     public void add(final String discipline, final SpLocaleContainerItem item)
@@ -114,7 +114,7 @@ public class DisciplineBasedContainer extends SpLocaleContainer implements Clone
     }
     
     /**
-     * @param discipline
+     * @param disciplineType
      */
     public void remove(final String discipline)
     {
@@ -127,7 +127,7 @@ public class DisciplineBasedContainer extends SpLocaleContainer implements Clone
                 
             } else
             {
-                log.error("dispSet can't be null for discipline["+discipline+"]");
+                log.error("dispSet can't be null for disciplineType["+discipline+"]");
             }
             
         } else
@@ -137,7 +137,7 @@ public class DisciplineBasedContainer extends SpLocaleContainer implements Clone
     }
     
     /**
-     * @param discipline
+     * @param disciplineType
      */
     public void merge(final String discipline)
     {
@@ -163,7 +163,7 @@ public class DisciplineBasedContainer extends SpLocaleContainer implements Clone
         DisciplineBasedContainer dbc = new DisciplineBasedContainer();
         dbc.initialize();
         dbc.schemaType     = schemaType;
-        dbc.collectionType = collectionType;
+        dbc.discipline = discipline;
         dbc.name           = name;
         dbc.type           = type;
         

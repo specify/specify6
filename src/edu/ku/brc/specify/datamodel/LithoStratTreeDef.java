@@ -57,7 +57,7 @@ public class LithoStratTreeDef extends BaseTreeDef<LithoStrat, LithoStratTreeDef
     protected String                     name;
     protected String                     remarks;
     protected Integer                    fullNameDirection;
-    protected Set<CollectionType>        collectionTypes;
+    protected Set<Discipline>        disciplines;
     protected Set<LithoStrat>            treeEntries;
     protected Set<LithoStratTreeDefItem> treeDefItems;
 
@@ -84,7 +84,7 @@ public class LithoStratTreeDef extends BaseTreeDef<LithoStrat, LithoStratTreeDef
 		name = null;
 		remarks = null;
         fullNameDirection = null;
-		collectionTypes = new HashSet<CollectionType>();
+		disciplines = new HashSet<Discipline>();
 		treeEntries = new HashSet<LithoStrat>();
 		treeDefItems = new HashSet<LithoStratTreeDefItem>();
 	}
@@ -174,25 +174,25 @@ public class LithoStratTreeDef extends BaseTreeDef<LithoStrat, LithoStratTreeDef
 	 * 
 	 */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "lithoStratTreeDef")
-	public Set<CollectionType> getCollectionTypes()
+	public Set<Discipline> getDisciplines()
 	{
-		return this.collectionTypes;
+		return this.disciplines;
 	}
 
-	public void setCollectionTypes(Set<CollectionType> collectionTypes)
+	public void setDisciplines(Set<Discipline> disciplines)
 	{
-		this.collectionTypes = collectionTypes;
+		this.disciplines = disciplines;
 	}
     
-    public void addCollectionType( CollectionType ct )
+    public void addDiscipline( Discipline ct )
     {
-        this.collectionTypes.add(ct);
+        this.disciplines.add(ct);
         ct.setLithoStratTreeDef(this);
     }
     
-    public void removeCollectionType( CollectionType ct )
+    public void removeDiscipline( Discipline ct )
     {
-        this.collectionTypes.remove(ct);
+        this.disciplines.remove(ct);
         ct.setLithoStratTreeDef(null);
     }
 

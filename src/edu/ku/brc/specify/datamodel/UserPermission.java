@@ -30,7 +30,7 @@ public class UserPermission extends DataModelObjBase implements java.io.Serializ
      protected Boolean dataAccessPrivilege;
      protected Boolean adminPrivilege;
      protected SpecifyUser specifyUser;
-     protected CollectionType collectionType;
+     protected Discipline discipline;
 
 
     // Constructors
@@ -56,7 +56,7 @@ public class UserPermission extends DataModelObjBase implements java.io.Serializ
         dataAccessPrivilege = null;
         adminPrivilege = null;
         specifyUser = null;
-        collectionType = null;
+        discipline = null;
     }  
 
     // Property accessors
@@ -116,13 +116,13 @@ public class UserPermission extends DataModelObjBase implements java.io.Serializ
      * 
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "CollectionTypeID", unique = false, nullable = false, insertable = true, updatable = true)
-    public CollectionType getCollectionType() {
-        return this.collectionType;
+    @JoinColumn(name = "DisciplineID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Discipline getDiscipline() {
+        return this.discipline;
     }
     
-    public void setCollectionType(CollectionType collectionType) {
-        this.collectionType = collectionType;
+    public void setDiscipline(Discipline discipline) {
+        this.discipline = discipline;
     }
     /**
      * Generic Getter for the ID Property.

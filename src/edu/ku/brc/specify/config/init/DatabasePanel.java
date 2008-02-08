@@ -27,7 +27,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
-import edu.ku.brc.specify.config.Discipline;
+import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -65,12 +65,12 @@ public class DatabasePanel extends BaseSetupPanel
         
         String header = "Fill in following information for the database:";
 
-        Vector<Discipline> dispList = new Vector<Discipline>();
-        for (Discipline discipline : Discipline.getDisciplineList())
+        Vector<DisciplineType> dispList = new Vector<DisciplineType>();
+        for (DisciplineType disciplineType : DisciplineType.getDisciplineList())
         {
-            if (discipline.getType() == 0)
+            if (disciplineType.getType() == 0)
             {
-                dispList.add(discipline);
+                dispList.add(disciplineType);
             }
         }
         
@@ -98,7 +98,7 @@ public class DatabasePanel extends BaseSetupPanel
         
         if (!doLoginOnly)
         {
-            builder.add(new JLabel("Discipline:", SwingConstants.RIGHT), cc.xy(1, row));
+            builder.add(new JLabel("DisciplineType:", SwingConstants.RIGHT), cc.xy(1, row));
             builder.add(disciplines, cc.xy(3, row));
             row += 2;
             
@@ -112,11 +112,11 @@ public class DatabasePanel extends BaseSetupPanel
 
         
         // Select Fish as the default
-        for (Discipline discipline : dispList)
+        for (DisciplineType disciplineType : dispList)
         {
-            if (discipline.getName().equals("fish"))
+            if (disciplineType.getName().equals("fish"))
             {
-                disciplines.setSelectedItem(discipline);
+                disciplines.setSelectedItem(disciplineType);
             }
         }
         
@@ -228,8 +228,8 @@ public class DatabasePanel extends BaseSetupPanel
         return usernameTxt.getText();
     }
 
-    public Discipline getDiscipline()
+    public DisciplineType getDiscipline()
     {
-        return (Discipline)disciplines.getSelectedItem();
+        return (DisciplineType)disciplines.getSelectedItem();
     }
 }

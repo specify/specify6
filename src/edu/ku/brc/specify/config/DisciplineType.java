@@ -41,22 +41,22 @@ import edu.ku.brc.helpers.XMLHelper;
  * Created Date: Mar 2, 2007
  *
  */
-public class Discipline implements Comparable<Discipline>
+public class DisciplineType implements Comparable<DisciplineType>
 {
-    private static final Logger  log = Logger.getLogger(Discipline.class);
+    private static final Logger  log = Logger.getLogger(DisciplineType.class);
     
-    public enum STD_DISCIPLINES {fish, paleo, bird, mammal, insect, plant, invertebrate, minerals, fungi};
+    public enum STD_DISCIPLINES {fish, paleo, bird, mammal, insect, plant, invertebrate, minerals, fungi}
             
     // Static WeakReference Data Members
-    protected static WeakReference<Vector<Discipline>>            disciplineList  = null;
-    protected static WeakReference<Hashtable<String, Discipline>> disciplineHash  = null;
+    protected static WeakReference<Vector<DisciplineType>>            disciplineList  = null;
+    protected static WeakReference<Hashtable<String, DisciplineType>> disciplineHash  = null;
     
     // Data Members
     protected String name;
     protected String title;
     protected int    type;
     
-    public Discipline(final String name, final String title, final int type)
+    public DisciplineType(final String name, final String title, final int type)
     {
         this.name  = name;
         this.title = title;
@@ -87,7 +87,7 @@ public class Discipline implements Comparable<Discipline>
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-    public int compareTo(Discipline obj)
+    public int compareTo(DisciplineType obj)
     {
         return name.compareTo(obj.name);
     }
@@ -98,33 +98,33 @@ public class Discipline implements Comparable<Discipline>
     
 
     /**
-     * Returns a Discipline by name.
-     * @param name the name of the discipline
-     * @return a Discipline by name.
+     * Returns a DisciplineType by name.
+     * @param name the name of the disciplineType
+     * @return a DisciplineType by name.
      */
-    public static Discipline getDiscipline(final String name)
+    public static DisciplineType getDiscipline(final String name)
     {
-        Discipline discipline = getDisciplineHash().get(name);
-        if (discipline == null)
+        DisciplineType disciplineType = getDisciplineHash().get(name);
+        if (disciplineType == null)
         {
-            log.error("Couldn't locate discipline["+name+"]");
+            log.error("Couldn't locate disciplineType["+name+"]");
         }
-        return discipline;
+        return disciplineType;
     }
     
 
     /**
-     * Returns a Discipline by title.
-     * @param title the title of the discipline
-     * @return a Discipline by title.
+     * Returns a DisciplineType by title.
+     * @param title the title of the disciplineType
+     * @return a DisciplineType by title.
      */
-    public static Discipline getByTitle(final String title)
+    public static DisciplineType getByTitle(final String title)
     {
-        for (Discipline discipline : getDisciplineList())
+        for (DisciplineType disciplineType : getDisciplineList())
         {
-            if (title.equals(discipline.getTitle()))
+            if (title.equals(disciplineType.getTitle()))
             {
-                return discipline;
+                return disciplineType;
             }
         }
         return null;
@@ -133,9 +133,9 @@ public class Discipline implements Comparable<Discipline>
     /**
      * Reads in the disciplines file (is loaded when the class is loaded).
      */
-    public static Vector<Discipline> getDisciplineList()
+    public static Vector<DisciplineType> getDisciplineList()
     {
-        Vector<Discipline> list = null;
+        Vector<DisciplineType> list = null;
         
         if (disciplineList != null)
         {
@@ -144,7 +144,7 @@ public class Discipline implements Comparable<Discipline>
         
         if (list == null)
         {
-            disciplineList = new WeakReference<Vector<Discipline>>(loadDisciplineList());
+            disciplineList = new WeakReference<Vector<DisciplineType>>(loadDisciplineList());
         }
         
         return disciplineList.get();
@@ -153,9 +153,9 @@ public class Discipline implements Comparable<Discipline>
     /**
      * Reads in the disciplines file (is loaded when the class is loaded).
      */
-    protected static Vector<Discipline> loadDisciplineList()
+    protected static Vector<DisciplineType> loadDisciplineList()
     {
-        Vector<Discipline> list = new Vector<Discipline>();
+        Vector<DisciplineType> list = new Vector<DisciplineType>();
         try
         {
             Element root = XMLHelper.readFileToDOM4J(new FileInputStream(XMLHelper.getConfigDirPath("disciplines.xml")));
@@ -169,8 +169,8 @@ public class Discipline implements Comparable<Discipline>
                     String title  = getAttr(disciplineNode, "title", null);
                     int    type   = getAttr(disciplineNode, "type", 0);
 
-                    Discipline discipline = new Discipline(name, title, type);
-                    list.add(discipline);
+                    DisciplineType disciplineType = new DisciplineType(name, title, type);
+                    list.add(disciplineType);
                 }
             } else
             {
@@ -191,9 +191,9 @@ public class Discipline implements Comparable<Discipline>
     /**
      * Reads in the disciplines file (is loaded when the class is loaded).
      */
-    public static Hashtable<String, Discipline> getDisciplineHash()
+    public static Hashtable<String, DisciplineType> getDisciplineHash()
     {
-        Hashtable<String, Discipline> hash = null;
+        Hashtable<String, DisciplineType> hash = null;
         
         if (disciplineHash != null)
         {
@@ -202,7 +202,7 @@ public class Discipline implements Comparable<Discipline>
         
         if (hash == null)
         {
-            disciplineHash = new WeakReference<Hashtable<String, Discipline>>(loadDisciplineHash());
+            disciplineHash = new WeakReference<Hashtable<String, DisciplineType>>(loadDisciplineHash());
         }
         
         return disciplineHash.get();
@@ -212,12 +212,12 @@ public class Discipline implements Comparable<Discipline>
     /**
      * Reads in the disciplines file (is loaded when the class is loaded).
      */
-    protected static Hashtable<String, Discipline> loadDisciplineHash()
+    protected static Hashtable<String, DisciplineType> loadDisciplineHash()
     {
-        Hashtable<String, Discipline> dispHash = new Hashtable<String, Discipline>();
-        for (Discipline discipline : getDisciplineList())
+        Hashtable<String, DisciplineType> dispHash = new Hashtable<String, DisciplineType>();
+        for (DisciplineType disciplineType : getDisciplineList())
         {
-            dispHash.put(discipline.getName(), discipline);
+            dispHash.put(disciplineType.getName(), disciplineType);
         }
         return dispHash;
     }

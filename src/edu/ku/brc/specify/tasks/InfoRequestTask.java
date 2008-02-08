@@ -60,7 +60,7 @@ import edu.ku.brc.helpers.EMailHelper;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Agent;
-import edu.ku.brc.specify.datamodel.CollectionType;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.InfoRequest;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.ui.CommandAction;
@@ -251,7 +251,7 @@ public class InfoRequestTask extends BaseTask
         
         SpecifyAppContextMgr appContextMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
         
-        ViewIFace view = appContextMgr.getView(tableInfo.getDefaultFormName(), CollectionType.getCurrentCollectionType());
+        ViewIFace view = appContextMgr.getView(tableInfo.getDefaultFormName(), Discipline.getCurrentDiscipline());
 
         InfoRequest infoRequest = new InfoRequest();
         infoRequest.initialize();

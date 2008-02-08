@@ -29,7 +29,7 @@ import java.util.List;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.specify.datamodel.CollectionType;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.UIRegistry;
@@ -124,9 +124,9 @@ public class DeterminationStatusBusRules extends BaseBusRules
         
         DeterminationStatus ds = (DeterminationStatus)newDataObj;
         
-        CollectionType.getCurrentCollectionType().addReference(ds, "determinationStatuss");
+        Discipline.getCurrentDiscipline().addReference(ds, "determinationStatuss");
         
-        String sqlStr = "select type From DeterminationStatus WHERE collectionTypeId = " + CollectionType.getCurrentCollectionType().getCollectionTypeId();
+        String sqlStr = "select type From DeterminationStatus WHERE disciplineId = " + Discipline.getCurrentDiscipline().getDisciplineId();
         
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try

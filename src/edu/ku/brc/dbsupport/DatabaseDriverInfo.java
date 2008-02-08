@@ -123,13 +123,11 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
                 connStr = connStr.replaceFirst("USERNAME", username);
                 connStr = connStr.replaceFirst("PASSWORD", password);
                 return StringUtils.isNotEmpty(server) ? connStr.replaceFirst("SERVER", server): connStr;
-            } else
-            {
-                connStr = connStr.replaceFirst("DATABASE", database);
-                connStr = connStr.replaceFirst("USERNAME", username);
-                connStr = connStr.replaceFirst("PASSWORD", password);
-                return StringUtils.isNotEmpty(server) ? connStr.replaceFirst("SERVER", server): connStr;
             }
+            connStr = connStr.replaceFirst("DATABASE", database);
+            connStr = connStr.replaceFirst("USERNAME", username);
+            connStr = connStr.replaceFirst("PASSWORD", password);
+            return StringUtils.isNotEmpty(server) ? connStr.replaceFirst("SERVER", server): connStr;
         }
         return null;
     }
@@ -163,13 +161,11 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
                 connStr = connStr.replaceFirst("USERNAME", username);
                 connStr = connStr.replaceFirst("PASSWORD", password);
                 return StringUtils.isNotEmpty(server) ? connStr.replaceFirst("SERVER", server): connStr;
-            } else
-            {
-                connStr = connStr.replaceFirst("DATABASE", database);
-                connStr = connStr.replaceFirst("USERNAME", username);
-                connStr = connStr.replaceFirst("PASSWORD", password);
-                return StringUtils.isNotEmpty(server) ? connStr.replaceFirst("SERVER", server): connStr;
             }
+            connStr = connStr.replaceFirst("DATABASE", database);
+            connStr = connStr.replaceFirst("USERNAME", username);
+            connStr = connStr.replaceFirst("PASSWORD", password);
+            return StringUtils.isNotEmpty(server) ? connStr.replaceFirst("SERVER", server): connStr;
         }        
         return null;
     }

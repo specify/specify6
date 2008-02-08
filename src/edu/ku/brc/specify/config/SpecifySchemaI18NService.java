@@ -58,13 +58,13 @@ public class SpecifySchemaI18NService extends SchemaI18NService
      */
     @Override
     public void loadWithLocale(final Byte         schemaType, 
-                               final int          collectionTypeId,
+                               final int          disciplineId,
                                final DBTableIdMgr mgr, 
                                final Locale       locale)
     {
         String sql = "SELECT splocalecontainer.Name, Text, IsHidden FROM splocalecontainer INNER JOIN splocaleitemstr ON " +
                      "splocalecontainer.SpLocaleContainerID = splocaleitemstr.SpLocaleContainerNameID where Language = '"+locale.getLanguage()+"' AND " +
-                     "splocalecontainer.SchemaType = " + schemaType +" AND splocalecontainer.CollectionTypeID = " + collectionTypeId;
+                     "splocalecontainer.SchemaType = " + schemaType +" AND splocalecontainer.DisciplineID = " + disciplineId;
         
         retrieveString(sql);
         
@@ -84,7 +84,7 @@ public class SpecifySchemaI18NService extends SchemaI18NService
         
         sql = "SELECT splocalecontainer.Name,Text FROM splocalecontainer INNER JOIN splocaleitemstr ON " +
               "splocalecontainer.SpLocaleContainerID = splocaleitemstr.SpLocaleContainerDescID where Language = '"+locale.getLanguage()+"' AND " +
-              "splocalecontainer.SchemaType = " + schemaType +" AND splocalecontainer.CollectionTypeID = " + collectionTypeId;
+              "splocalecontainer.SchemaType = " + schemaType +" AND splocalecontainer.DisciplineID = " + disciplineId;
         
         retrieveString(sql);
         for (Vector<String> p : results)
@@ -103,7 +103,7 @@ public class SpecifySchemaI18NService extends SchemaI18NService
               "FROM splocalecontainer INNER JOIN splocalecontaineritem ON splocalecontainer.SpLocaleContainerID = splocalecontaineritem.SpLocaleContainerID "+
               "INNER JOIN splocaleitemstr ON splocalecontaineritem.SpLocaleContainerItemID = splocaleitemstr.SpLocaleContainerItemNameID "+
               " where splocaleitemstr.Language = '"+locale.getLanguage()+"' AND " +
-              "splocalecontainer.SchemaType = " + schemaType +" AND splocalecontainer.CollectionTypeID = " + collectionTypeId + " order by splocalecontainer.Name";
+              "splocalecontainer.SchemaType = " + schemaType +" AND splocalecontainer.DisciplineID = " + disciplineId + " order by splocalecontainer.Name";
         
         retrieveString(sql);
         
@@ -163,7 +163,7 @@ public class SpecifySchemaI18NService extends SchemaI18NService
               "FROM splocalecontainer INNER JOIN splocalecontaineritem ON splocalecontainer.SpLocaleContainerID = splocalecontaineritem.SpLocaleContainerID "+
               "INNER JOIN splocaleitemstr ON splocalecontaineritem.SpLocaleContainerItemID = splocaleitemstr.SpLocaleContainerItemDescID "+
               " where splocaleitemstr.Language = '"+locale.getLanguage()+"' AND " +
-              "splocalecontainer.SchemaType = " + schemaType +" AND splocalecontainer.CollectionTypeID = " + collectionTypeId + " order by splocalecontainer.Name";
+              "splocalecontainer.SchemaType = " + schemaType +" AND splocalecontainer.DisciplineID = " + disciplineId + " order by splocalecontainer.Name";
         
         retrieveString(sql);
         

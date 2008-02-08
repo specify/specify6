@@ -57,7 +57,7 @@ public class GeologicTimePeriodTreeDef extends BaseTreeDef<GeologicTimePeriod, G
     protected String                             name;
     protected String                             remarks;
     protected Integer                            fullNameDirection;
-    protected Set<CollectionType>                collectionTypes;
+    protected Set<Discipline>                disciplines;
     protected Set<GeologicTimePeriod>            treeEntries;
     protected Set<GeologicTimePeriodTreeDefItem> treeDefItems;
 
@@ -84,7 +84,7 @@ public class GeologicTimePeriodTreeDef extends BaseTreeDef<GeologicTimePeriod, G
 		name = null;
 		remarks = null;
         fullNameDirection = null;
-		collectionTypes = new HashSet<CollectionType>();
+		disciplines = new HashSet<Discipline>();
 		treeEntries = new HashSet<GeologicTimePeriod>();
 		treeDefItems = new HashSet<GeologicTimePeriodTreeDefItem>();
 	}
@@ -174,25 +174,25 @@ public class GeologicTimePeriodTreeDef extends BaseTreeDef<GeologicTimePeriod, G
 	 * 
 	 */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "geologicTimePeriodTreeDef")
-	public Set<CollectionType> getCollectionTypes()
+	public Set<Discipline> getDisciplines()
 	{
-		return this.collectionTypes;
+		return this.disciplines;
 	}
 
-	public void setCollectionTypes(Set<CollectionType> collectionTypes)
+	public void setDisciplines(Set<Discipline> disciplines)
 	{
-		this.collectionTypes = collectionTypes;
+		this.disciplines = disciplines;
 	}
     
-    public void addCollectionType( CollectionType ct )
+    public void addDiscipline( Discipline ct )
     {
-        this.collectionTypes.add(ct);
+        this.disciplines.add(ct);
         ct.setGeologicTimePeriodTreeDef(this);
     }
     
-    public void removeCollectionType( CollectionType ct )
+    public void removeDiscipline( Discipline ct )
     {
-        this.collectionTypes.remove(ct);
+        this.disciplines.remove(ct);
         ct.setGeologicTimePeriodTreeDef(null);
     }
 

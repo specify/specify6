@@ -64,7 +64,7 @@ public class SpAppResourceDir extends DataModelObjBase implements java.io.Serial
 
      protected Integer            spAppResourceDirId;
      protected Collection         collection;
-     protected CollectionType     collectionType;
+     protected Discipline     discipline;
      protected SpecifyUser        specifyUser;
      protected Set<SpAppResource> spPersistedAppResources;
      protected Set<SpViewSetObj>  spPersistedViewSets;
@@ -98,7 +98,7 @@ public class SpAppResourceDir extends DataModelObjBase implements java.io.Serial
         
         spAppResourceDirId      = null;
         collection              = null;
-        collectionType          = null;
+        discipline          = null;
         specifyUser             = null;
         
         spPersistedAppResources = new HashSet<SpAppResource>();
@@ -183,21 +183,21 @@ public class SpAppResourceDir extends DataModelObjBase implements java.io.Serial
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.AppResourceDefaultIFace#getCollectionType()
+     * @see edu.ku.brc.specify.datamodel.AppResourceDefaultIFace#getDiscipline()
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "CollectionTypeID", unique = false, nullable = true, insertable = true, updatable = true)
-    public CollectionType getCollectionType() 
+    @JoinColumn(name = "DisciplineID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Discipline getDiscipline() 
     {
-        return this.collectionType;
+        return this.discipline;
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.AppResourceDefaultIFace#setCollectionType(edu.ku.brc.specify.datamodel.CollectionType)
+     * @see edu.ku.brc.specify.datamodel.AppResourceDefaultIFace#setDiscipline(edu.ku.brc.specify.datamodel.Discipline)
      */
-    public void setCollectionType(CollectionType collectionType) 
+    public void setDiscipline(Discipline discipline) 
     {
-        this.collectionType = collectionType;
+        this.discipline = discipline;
     }
 
     /**
@@ -345,7 +345,7 @@ public class SpAppResourceDir extends DataModelObjBase implements java.io.Serial
         StringBuilder strBuf = new StringBuilder();
         strBuf.append(""+(collection != null ? collection.getCollectionName() : ""));
         strBuf.append(" "+(specifyUser != null ? specifyUser.getName() : ""));
-        strBuf.append(" "+(collectionType != null ? collectionType.getName() : ""));
+        strBuf.append(" "+(discipline != null ? discipline.getName() : ""));
         strBuf.append(" "+(disciplineType != null ? disciplineType : ""));
         strBuf.append(" "+(userType != null ? userType : ""));
         return strBuf.toString(); 

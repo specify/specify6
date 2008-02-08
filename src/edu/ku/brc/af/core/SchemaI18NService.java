@@ -118,12 +118,12 @@ public abstract class SchemaI18NService
     /**
      * Method for loading the Locale String from a persistent store into the DBTableInfo classes.
      * @param schemaType the type of schema 'core' or 'workbench'
-     * @param collectionTypeId the collection type of the schema
+     * @param disciplineId the discipline of the schema
      * @param mgr the DBTableIDMgr to use (could be the main one or the workbench)
      * @param locale the Locale to load
      */
     public abstract void loadWithLocale(final Byte schemaType, 
-                                        final int  collectionTypeId,
+                                        final int  disciplineId,
                                         final DBTableIdMgr mgr, 
                                         final Locale locale);
 

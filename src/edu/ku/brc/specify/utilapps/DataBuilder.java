@@ -39,7 +39,7 @@ import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttr;
 import edu.ku.brc.specify.datamodel.CollectionObjectCitation;
-import edu.ku.brc.specify.datamodel.CollectionType;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.Container;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
@@ -141,7 +141,7 @@ public class DataBuilder
     
     public static Institution createInstitution(final String name)
     {
-        // Create Collection Type
+        // Create Discipline
         Institution inst = new Institution();
         inst.initialize();
         inst.setName(name);
@@ -156,7 +156,7 @@ public class DataBuilder
                                           final String abbrev, 
                                           final String title)
     {
-        // Create Collection Type
+        // Create Discipline
         Division division = new Division();
         division.initialize();
         division.setName(name);
@@ -177,7 +177,7 @@ public class DataBuilder
                                     final String abbreviation,
                                     final String email)
     {
-        // Create Collection Type
+        // Create Discipline
         Agent agent = new Agent();
         agent.initialize();
         agent.setAgentType((byte) 1);
@@ -188,7 +188,7 @@ public class DataBuilder
         agent.setTitle(title);
         agent.setEmail(email);
         
-        agent.setCollectionType(CollectionType.getCurrentCollectionType());
+        agent.setDiscipline(Discipline.getCurrentDiscipline());
 
         persist(agent);
         return agent;
@@ -251,7 +251,7 @@ public class DataBuilder
                                               
     public static AttributeDef createAttributeDef(final AttributeIFace.FieldType type,
                                                   final String name,
-                                                  final CollectionType collectionType,
+                                                  final Discipline discipline,
                                                   final PrepType prepType)
     {
         AttributeDef attrDef = new AttributeDef();
@@ -259,14 +259,14 @@ public class DataBuilder
         attrDef.setDataType(type.getType());
         attrDef.setFieldName(name);
         attrDef.setPrepType(prepType);
-        attrDef.setCollectionType(collectionType);
+        attrDef.setDiscipline(discipline);
         
-        collectionType.getAttributeDefs().add(attrDef);
+        discipline.getAttributeDefs().add(attrDef);
         
         return attrDef;
     }
 
-    public static CollectionType createCollectionType(final Division         division,
+    public static Discipline createDiscipline(final Division         division,
                                                       final String           name,
                                                       final String           disciplineName,
                                                       final DataType         dataType,
@@ -276,28 +276,28 @@ public class DataBuilder
                                                       final StorageTreeDef  storageTreeDef,
                                                       final LithoStratTreeDef lithoStratTreeDef)
     {
-        CollectionType collType = new CollectionType();
-        collType.initialize();
-        collType.setName(name);
-        collType.setDiscipline(disciplineName);
-        collType.setDataType(dataType);
-        collType.setTaxonTreeDef(taxonTreeDef);
-        collType.setGeographyTreeDef(geographyTreeDef);//meg added to support not-null constraints
-        collType.setGeologicTimePeriodTreeDef(geologicTimePeriodTreeDef);//meg added to support not-null constraints
-        collType.setStorageTreeDef(storageTreeDef);//meg added to support not-null constraints
-        collType.setLithoStratTreeDef(lithoStratTreeDef);
-        taxonTreeDef.setCollectionType(collType);
+        Discipline discipline = new Discipline();
+        discipline.initialize();
+        discipline.setName(name);
+        discipline.setDiscipline(disciplineName);
+        discipline.setDataType(dataType);
+        discipline.setTaxonTreeDef(taxonTreeDef);
+        discipline.setGeographyTreeDef(geographyTreeDef);//meg added to support not-null constraints
+        discipline.setGeologicTimePeriodTreeDef(geologicTimePeriodTreeDef);//meg added to support not-null constraints
+        discipline.setStorageTreeDef(storageTreeDef);//meg added to support not-null constraints
+        discipline.setLithoStratTreeDef(lithoStratTreeDef);
+        taxonTreeDef.setDiscipline(discipline);
         
-        division.addReference(collType, "collectionTypes");
+        division.addReference(discipline, "disciplines");
 
-        persist(collType);
-        return collType;
+        persist(discipline);
+        return discipline;
     }
 
     public static Collection createCollection(final String prefix,
                                               final String name,
                                               final CatalogNumberingScheme catalogNumberingScheme,
-                                              final CollectionType[] collTypes)
+                                              final Discipline[] disciplines)
     {
         Collection collection = new Collection();
         collection.initialize();
@@ -308,9 +308,9 @@ public class DataBuilder
         collection.setCatalogNumberingScheme(catalogNumberingScheme);
         catalogNumberingScheme.getCollections().add(collection);
         
-        for (CollectionType cod: collTypes)
+        for (Discipline cod: disciplines)
         {
-            collection.setCollectionType(cod);
+            collection.setDiscipline(cod);
         }
 
         persist(collection);
@@ -320,15 +320,15 @@ public class DataBuilder
     /**
      * @param prefix
      * @param name
-     * @param collType
+     * @param discipline
      * @return
      */
     public static Collection createCollection(final String prefix,
                                               final String name,
                                               final CatalogNumberingScheme numberingScheme,
-                                              final CollectionType collType)
+                                              final Discipline discipline)
     {
-        return createCollection(prefix, name, numberingScheme, new CollectionType[] { collType });
+        return createCollection(prefix, name, numberingScheme, new Discipline[] { discipline });
     }
 
     /**
@@ -510,7 +510,7 @@ public class DataBuilder
         return colObj;
     }
 
-    public static DeterminationStatus createDeterminationStatus(final CollectionType colType,
+    public static DeterminationStatus createDeterminationStatus(final Discipline disciplinee,
                                                                 final String name, 
                                                                 final String remarks, 
                                                                 final byte type)
@@ -521,7 +521,7 @@ public class DataBuilder
         status.setType(type);
         status.setRemarks(remarks);
         
-        colType.addReference(status, "determinationStatuss");
+        disciplinee.addReference(status, "determinationStatuss");
 
         persist(status);
         return status;
@@ -1277,12 +1277,12 @@ public class DataBuilder
     public static AttributeDef createAttributeDef(final Short tableType,
                                                   final String fieldName,
                                                   final Short dataType,
-                                                  final CollectionType collectionType,
+                                                  final Discipline discipline,
                                                   final PrepType prepType)
     {
         AttributeDef attributedef = new AttributeDef();
         attributedef.initialize();
-        attributedef.setCollectionType(collectionType);
+        attributedef.setDiscipline(discipline);
         attributedef.setPrepType(prepType);
         attributedef.setTableType(tableType);
         attributedef.setFieldName(fieldName);
@@ -1454,23 +1454,23 @@ public class DataBuilder
         return collectingeventattr;
     }
 
-    public static CollectionType createCollectionType(final String name,
+    public static Discipline createDiscipline(final String name,
                                                           final DataType dataType,
                                                           final GeographyTreeDef geographyTreeDef,
                                                           final GeologicTimePeriodTreeDef geologicTimePeriodTreeDef,
                                                           final StorageTreeDef storageTreeDef,
                                                           final TaxonTreeDef taxonTreeDef)
     {
-        CollectionType collectiontype = new CollectionType();
-        collectiontype.initialize();
-        collectiontype.setDataType(dataType);
-        collectiontype.setGeographyTreeDef(geographyTreeDef);
-        collectiontype.setGeologicTimePeriodTreeDef(geologicTimePeriodTreeDef);
-        collectiontype.setStorageTreeDef(storageTreeDef);
-        collectiontype.setTaxonTreeDef(taxonTreeDef);
-        collectiontype.setName(name);
-        persist(collectiontype);
-        return collectiontype;
+        Discipline discipline = new Discipline();
+        discipline.initialize();
+        discipline.setDataType(dataType);
+        discipline.setGeographyTreeDef(geographyTreeDef);
+        discipline.setGeologicTimePeriodTreeDef(geologicTimePeriodTreeDef);
+        discipline.setStorageTreeDef(storageTreeDef);
+        discipline.setTaxonTreeDef(taxonTreeDef);
+        discipline.setName(name);
+        persist(discipline);
+        return discipline;
     }
 
     public static CollectionObject createCollectionObject(final String fieldNumber,
@@ -2173,13 +2173,13 @@ public class DataBuilder
     }
     
     public static UserPermission createUserPermission(SpecifyUser owner, 
-                                                      CollectionType objDef, 
+                                                      Discipline objDef, 
                                                       boolean adminPrivilege, 
                                                       boolean dataAccessPrivilege)
     {
         UserPermission permission = new UserPermission();
         permission.setAdminPrivilege(adminPrivilege);
-        permission.setCollectionType(objDef);
+        permission.setDiscipline(objDef);
         permission.setDataAccessPrivilege(dataAccessPrivilege);
         permission.setSpecifyUser(owner);
         persist(permission);

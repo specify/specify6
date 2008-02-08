@@ -308,129 +308,6 @@ public class FormEditor implements DatabaseLoginListener
     }
 
 
-    /**
-     * @param disciplineName fish, birds, bees etc
-     * @return true on success
-     */
-    public CollectionObject[] createSingleDiscipline(final String collTypeName, final String disciplineName)
-    {
-        CollectionObject[] colObjs = null;
-        
-        /*
-        UserGroup        userGroup        = createUserGroup(disciplineName);
-        SpecifyUser      user             = createSpecifyUser("rods", "rods@ku.edu", (short)0, new UserGroup[] {userGroup}, "CollectionManager");
-        DataType         dType            = createDataType(disciplineName);
-
-
-        TaxonTreeDef     taxonTreeDef     = createTaxonTreeDef("TreeDef");
-        GeographyTreeDef geographyTreeDef = createGeographyTreeDef("GeographyDef");//meg added to allow for not-null constraints
-        GeologicTimePeriodTreeDef geologicTimePeriodTreeDef = createGeologicTimePeriodTreeDef("GeologicTimePeriodTreeDef");//meg added to allow for not-null constraints
-        StorageTreeDef storageTreeDef = createLocationTreeDef("StorageDef");
-        
-        CollectionType collectionType = createCollectionType(collTypeName, disciplineName, dType, user, taxonTreeDef, geographyTreeDef, geologicTimePeriodTreeDef,storageTreeDef);
-       
-        //CollectionType collectionType = createCollectionType(collTypeName, disciplineName, dType, user, taxonTreeDef);
-
-        Geography[] geographies = createGeographies(collectionType, "GeoTree");
-
-        Locality[] localities = new Locality[2];
-        localities[0] = createLocality("This is the place", geographies[0]);
-        localities[1] = createLocality("My Private Forest", geographies[1]);
-
-        Storage[] locations = createStorages(collectionType, "StorageTree");
-        Taxon[]    taxonomy  = createTaxonomy(taxonTreeDef);
-
-        Agent[] agents = createAgentsInMemory();
-
-        Collection collection = createCollection("KUFSH", "Fish", collectionType);
-
-
-        // Create Collecting Event
-        CollectingEvent colEv = createCollectingEvent(localities[0],
-                new Collector[] {createCollector(agents[0], 0), createCollector(agents[1], 1)});
-
-        // Create AttributeDef for Collecting Event
-        //AttributeDef cevAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "ParkName", null);
-
-        // Create CollectingEventAttr
-        //CollectingEventAttr cevAttr = createCollectingEventAttr(colEv, cevAttrDef, "Clinton Park", null);
-
-        // Create Collection Object
-        Object[]  values = {1001010.1f, "RCS101", agents[0], 5,
-                            1101011.1f, "RCS102", agents[1], 20,
-                            1201012.1f, "RCS103", agents[2], 15,
-                            1301013.1f, "RCS104", agents[3], 25,
-                            1401014.1f, "RCS105", agents[4], 35,
-                            1501015.1f, "RCS106", agents[5], 45,
-                            1601016.1f, "RCS107", agents[0], 55,
-                            1701017.1f, "RCS108", agents[1], 65};
-        colObjs = new CollectionObject[values.length/4];
-        for (int i=0;i<values.length;i+=4)
-        {
-            colObjs[i/4] = createCollectionObject((Float)values[i],
-                                                  (String)values[i+1],
-                                                  null,
-                                                  (Agent)values[i+2],
-                                                  collection,
-                                                  collectionType,
-                                                  (Integer)values[+3],
-                                                  colEv);
-        }
-
-        // Create AttributeDef for Collection Object
-        //AttributeDef colObjAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "MoonPhase", null);
-
-        // Create CollectionObjectAttr
-        //CollectionObjectAttr colObjAttr = createCollectionObjectAttr(colObjs[0], colObjAttrDef, "Full", null);
-
-        int agentInx = 0;
-        int taxonInx = 0;
-        // Create DeterminationStatus
-        DeterminationStatus current = createDeterminationStatus("Current","Test Status");
-        DeterminationStatus notCurrent = createDeterminationStatus("Not current","Test Status");
-        // Create Determination
-        for (int i=0;i<colObjs.length;i++)
-        {
-            for (int j=0;j<i+2;j++)
-            {
-                Calendar cal = Calendar.getInstance();
-                cal.clear();
-                cal.set(1990-i, 11-i, 28-(i+j));
-                DeterminationStatus status = (j==0) ? current : notCurrent;
-                createDetermination(colObjs[i], agents[agentInx % agents.length], taxonomy[taxonInx % taxonomy.length], status, cal);
-                agentInx++;
-                taxonInx++;
-            }
-        }
-
-        // Create Preparation Type
-        PrepType prepType = createPrepType("Skeleton");
-        //PrepType prepType2 = createPrepType("C&S");
-
-        // Create Preparation for each CollectionObject
-        agentInx = 3; // arbitrary
-        Preparation[] preps = new Preparation[colObjs.length];
-        for (int i=0;i<preps.length;i++)
-        {
-            preps[i] = createPreparation(prepType,  agents[agentInx % agents.length], colObjs[i], locations[0], 10+i);
-            agentInx++;
-        }
-
-        // Create AttributeDef for Preparation
-        AttributeDef prepAttrDefSize = createAttributeDef(AttributeIFace.FieldType.IntegerType, "size", prepType);
-        AttributeDef prepAttrDefSex  = createAttributeDef(AttributeIFace.FieldType.StringType, "sex", prepType);
-
-        // Create PreparationAttr
-        for (int i=0;i<preps.length;i++)
-        {
-            createPreparationAttr(prepAttrDefSize, preps[i], null, 100.0);
-            createPreparationAttr(prepAttrDefSex,  preps[i], i % 2 == 0 ? "Male" : "Female", null);
-        }
-*/
-        return colObjs;
-
-    }
-
 
     /**
      * Creates a Standard set of DataTypes for Collections
@@ -455,7 +332,7 @@ public class FormEditor implements DatabaseLoginListener
                 {
                     DataType dType = new DataType();
                     dType.setName(name);
-                    dType.setCollectionType(null);
+                    dType.setDiscipline(null);
                     session.save(dType);
 
                     if (returnName != null && name.equals(returnName))
@@ -652,7 +529,7 @@ public class FormEditor implements DatabaseLoginListener
                 boolean doMemoryCollection = false;
                 if (doMemoryCollection)
                 {
-                    CollectionObject[] colObjs = createSingleDiscipline("Fish", "fish");
+                    CollectionObject[] colObjs = null;//createSingleDiscipline("Fish", "fish");
 
                     Set<CollectionObject> set = new HashSet<CollectionObject>();
                     for (int i=0;i<colObjs.length;i++)

@@ -10,7 +10,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import javax.persistence.Transient;
 
-import edu.ku.brc.specify.datamodel.CollectionType;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Storage;
 import edu.ku.brc.specify.datamodel.StorageTreeDef;
 import edu.ku.brc.specify.datamodel.StorageTreeDefItem;
@@ -48,7 +48,7 @@ public class StorageTreeTask extends BaseTreeTask<Storage,StorageTreeDef,Storage
     @Override
     protected StorageTreeDef getCurrentTreeDef()
     {
-        return CollectionType.getCurrentCollectionType().getStorageTreeDef();
+        return Discipline.getCurrentDiscipline().getStorageTreeDef();
     }
 
 //    protected void adjustTreeDefForm(FormViewObj form)

@@ -72,7 +72,7 @@ public class SpLocaleContainer extends SpLocaleBase implements LocalizableContai
     protected Set<SpLocaleItemStr>       names;
     protected Set<SpLocaleItemStr>       descs;
     
-    protected CollectionType             collectionType;
+    protected Discipline             discipline;
     
     // Transient
     protected Vector<LocalizableItemIFace> containerItems = null;
@@ -195,21 +195,21 @@ public class SpLocaleContainer extends SpLocaleBase implements LocalizableContai
     }
 
     /**
-     * @return the collectionType
+     * @return the discipline
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "CollectionTypeID", unique = false, nullable = false, insertable = true, updatable = true)
-    public CollectionType getCollectionType()
+    @JoinColumn(name = "DisciplineID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Discipline getDiscipline()
     {
-        return collectionType;
+        return discipline;
     }
 
     /**
-     * @param collectionType the collectionType to set
+     * @param discipline the discipline to set
      */
-    public void setCollectionType(CollectionType collectionType)
+    public void setDiscipline(Discipline discipline)
     {
-        this.collectionType = collectionType;
+        this.discipline = discipline;
     }
 
     /* (non-Javadoc)

@@ -83,7 +83,7 @@ public class AppContextTests extends TestCase
         hash.put(2, "Accessions");
 
         log.info("List Disciplines:");
-        for (Discipline d : AppContextMgr.getInstance().getDisciplines())
+        for (DisciplineType d : AppContextMgr.getInstance().getDisciplines())
         {
             log.info("[" + hash.get(d.getType()) + "][" + d.getName() + "][" + d.getTitle() + "]");
         }
@@ -118,15 +118,15 @@ public class AppContextTests extends TestCase
         
         log.info("Selected Collection: ["+cs.getSeriesName()+"]");
         
-        CollectionType ct = AppContextMgr.getInstance().setupCurrentColObjDef(cs, false); // false means don't ask if you already have one
+        Discipline ct = AppContextMgr.getInstance().setupCurrentColObjDef(cs, false); // false means don't ask if you already have one
         assertNotNull(ct);
         
-        log.info("Selected CollectionType: ["+ct.getName()+"]");
+        log.info("Selected Discipline: ["+ct.getName()+"]");
         
         ct = AppContextMgr.getInstance().setupCurrentColObjDef(cs, true); // false means don't ask if you already have one
         assertNotNull(ct);
         
-        log.info("Selected CollectionType: ["+ct.getName()+"]");
+        log.info("Selected Discipline: ["+ct.getName()+"]");
         */
     }
 }

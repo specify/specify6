@@ -247,10 +247,10 @@ public class XLSExport implements DataExport
         
         if (data.size() > 0)
         {
-            int[] colTypes;
+            int[] disciplinees;
             if (data.get(0).getClass().equals(WorkbenchTemplate.class))
             {
-                colTypes = bldColTypes((WorkbenchTemplate) data.get(0));
+                disciplinees = bldColTypes((WorkbenchTemplate) data.get(0));
                 // now set up cell types and formats for a bunch of empty rows....
                 
             }
@@ -263,7 +263,7 @@ public class XLSExport implements DataExport
                 boolean geoDataPresent = false;
                 int imgCols = 0;
                 
-                colTypes = bldColTypes(template);
+                disciplinees = bldColTypes(template);
                 for (Object rowObj : data)
                 {
                     WorkbenchRow row     = (WorkbenchRow)rowObj;
@@ -274,7 +274,7 @@ public class XLSExport implements DataExport
                     for (colNum = 0; colNum < numCols; colNum++)
                     {
                         HSSFCell cell = hssfRow.createCell(colNum);
-                        cell.setCellType(colTypes[colNum]);
+                        cell.setCellType(disciplinees[colNum]);
                         setCellValue(cell, row.getData(colNum));
                     }
                     

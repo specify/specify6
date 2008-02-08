@@ -95,7 +95,7 @@ public class SpecifySchemaI18NServiceXML extends SchemaI18NService
      */
     @Override
     public void loadWithLocale(final Byte         schemaType, 
-                               final int          collectionTypeId,
+                               final int          disciplineId,
                                final DBTableIdMgr tableMgr, 
                                final Locale       locale)
     {

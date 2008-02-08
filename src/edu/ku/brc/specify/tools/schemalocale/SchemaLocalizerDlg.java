@@ -46,7 +46,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.SwingWorker;
-import edu.ku.brc.specify.datamodel.CollectionType;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpLocaleContainerItem;
 import edu.ku.brc.specify.datamodel.SpLocaleItemStr;
@@ -200,8 +200,8 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
                 save();
                 
                 //SchemaI18NService.getInstance().loadWithLocale(new Locale("de", "", ""));
-                int colTypeId = CollectionType.getCurrentCollectionType().getCollectionTypeId();
-                SchemaI18NService.getInstance().loadWithLocale(schemaType, colTypeId, tableMgr, Locale.getDefault());
+                int disciplineeId = Discipline.getCurrentDiscipline().getDisciplineId();
+                SchemaI18NService.getInstance().loadWithLocale(schemaType, disciplineeId, tableMgr, Locale.getDefault());
                 
                 return null;
             }

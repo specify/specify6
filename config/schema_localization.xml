@@ -2100,10 +2100,10 @@
         <descs/>
         <version>0</version>
       </item>
-      <item name="collectionType">
+      <item name="discipline">
         <names>
           <str language="en">
-            <text>Collection Type</text>
+            <text>Discipline</text>
             <version>0</version>
           </str>
         </names>
@@ -3319,14 +3319,14 @@
         <descs/>
         <version>0</version>
       </item>
-      <item name="collectionType" type="ManyToOne">
+      <item name="discipline" type="ManyToOne">
         <names>
           <str language="de" country="" variant="">
-            <text>Collection Type</text>
+            <text>Discipline</text>
             <version>0</version>
           </str>
           <str language="en" country="" variant="">
-            <text>Collection Type</text>
+            <text>Discipline</text>
             <version>0</version>
           </str>
         </names>
@@ -4213,14 +4213,14 @@
         <descs/>
         <version>0</version>
       </item>
-      <item name="collectionType" type="ManyToOne">
+      <item name="discipline" type="ManyToOne">
         <names>
           <str language="de" country="" variant="">
-            <text>Collection Type</text>
+            <text>Discipline</text>
             <version>0</version>
           </str>
           <str language="en" country="" variant="">
-            <text>Collection Type</text>
+            <text>Discipline</text>
             <version>0</version>
           </str>
         </names>
@@ -6934,14 +6934,14 @@
   </container>
   <container name="collection" type="">
     <items>
-      <item name="collectionType" type="ManyToOne">
+      <item name="discipline" type="ManyToOne">
         <names>
           <str language="en" country="" variant="">
-            <text>Collection Type</text>
+            <text>Discipline</text>
             <version>0</version>
           </str>
           <str language="de" country="" variant="">
-            <text>Collection Type</text>
+            <text>Discipline</text>
             <version>0</version>
           </str>
         </names>
@@ -9103,11 +9103,11 @@
         </names>
         <descs>
           <str language="de" country="" variant="">
-            <text>The name of the Collection Type, often the same as the discipline</text>
+            <text>The name of the Discipline, often the same as the discipline</text>
             <version>0</version>
           </str>
           <str language="en" country="" variant="">
-            <text>The name of the Collection Type, often the same as the discipline</text>
+            <text>The name of the Discipline, often the same as the discipline</text>
             <version>0</version>
           </str>
         </descs>
@@ -9323,11 +9323,11 @@
     </items>
     <names>
       <str language="en" country="" variant="">
-        <text>Collection Type</text>
+        <text>Discipline</text>
         <version>0</version>
       </str>
       <str language="de" country="" variant="">
-        <text>Collection Type</text>
+        <text>Discipline</text>
         <version>0</version>
       </str>
     </names>
@@ -12991,14 +12991,14 @@
         <descs/>
         <version>0</version>
       </item>
-      <item name="collectionType" type="OneToMany">
+      <item name="discipline" type="OneToMany">
         <names>
           <str language="de" country="" variant="">
-            <text>Collection Type</text>
+            <text>Discipline</text>
             <version>0</version>
           </str>
           <str language="en" country="" variant="">
-            <text>Collection Type</text>
+            <text>Discipline</text>
             <version>0</version>
           </str>
         </names>
@@ -14413,10 +14413,10 @@
         <isHidden>false</isHidden>
         <version>0</version>
       </item>
-      <item name="collectionType">
+      <item name="discipline">
         <names>
           <str language="en">
-            <text>Collection Type</text>
+            <text>Discipline</text>
             <version>0</version>
           </str>
         </names>
@@ -14766,16 +14766,16 @@
         </descs>
         <version>0</version>
       </item>
-      <item name="collectionTypes">
+      <item name="disciplines">
         <names>
           <str language="en">
-            <text>Collection Types</text>
+            <text>Disciplines</text>
             <version>0</version>
           </str>
         </names>
         <descs>
           <str language="en" country="" variant="">
-            <text>The list of Collection Types that belong to this Division</text>
+            <text>The list of Disciplines that belong to this Division</text>
             <version>0</version>
           </str>
         </descs>
@@ -16258,14 +16258,14 @@
         <isHidden>false</isHidden>
         <version>0</version>
       </item>
-      <item name="collectionTypes" type="OneToMany">
+      <item name="disciplines" type="OneToMany">
         <names>
           <str language="de" country="" variant="">
-            <text>Collection Types</text>
+            <text>Disciplines</text>
             <version>0</version>
           </str>
           <str language="en" country="" variant="">
-            <text>Collection Types</text>
+            <text>Disciplines</text>
             <version>0</version>
           </str>
         </names>
@@ -16948,14 +16948,14 @@
   </container>
   <container name="geologictimeperiodtreedef" type="">
     <items>
-      <item name="collectionTypes" type="OneToMany">
+      <item name="disciplines" type="OneToMany">
         <names>
           <str language="en" country="" variant="">
-            <text>Collection Types</text>
+            <text>Disciplines</text>
             <version>0</version>
           </str>
           <str language="de" country="" variant="">
-            <text>Collection Types</text>
+            <text>Disciplines</text>
             <version>0</version>
           </str>
         </names>
@@ -19405,14 +19405,14 @@
         <descs/>
         <version>0</version>
       </item>
-      <item name="collectionTypes" type="OneToMany">
+      <item name="disciplines" type="OneToMany">
         <names>
           <str language="de" country="" variant="">
-            <text>Collection Types</text>
+            <text>Disciplines</text>
             <version>0</version>
           </str>
           <str language="en" country="" variant="">
-            <text>Collection Types</text>
+            <text>Disciplines</text>
             <version>0</version>
           </str>
         </names>
@@ -21545,14 +21545,14 @@
         </descs>
         <version>0</version>
       </item>
-      <item name="collectionTypes" type="ManyToMany">
+      <item name="disciplines" type="ManyToMany">
         <names>
           <str language="en" country="" variant="">
-            <text>Collection Types</text>
+            <text>Disciplines</text>
             <version>0</version>
           </str>
           <str language="de" country="" variant="">
-            <text>Collection Types</text>
+            <text>Disciplines</text>
             <version>0</version>
           </str>
         </names>
@@ -22866,14 +22866,14 @@
         <descs/>
         <version>0</version>
       </item>
-      <item name="collectionTypes" type="OneToMany">
+      <item name="disciplines" type="OneToMany">
         <names>
           <str language="en" country="" variant="">
-            <text>Collection Types</text>
+            <text>Disciplines</text>
             <version>0</version>
           </str>
           <str language="de" country="" variant="">
-            <text>Collection Types</text>
+            <text>Disciplines</text>
             <version>0</version>
           </str>
         </names>
@@ -28775,14 +28775,14 @@
         <isHidden>false</isHidden>
         <version>0</version>
       </item>
-      <item name="collectionType" type="ManyToOne">
+      <item name="discipline" type="ManyToOne">
         <names>
           <str language="de" country="" variant="">
-            <text>Collection Type</text>
+            <text>Discipline</text>
             <version>0</version>
           </str>
           <str language="en" country="" variant="">
-            <text>Collection Type</text>
+            <text>Discipline</text>
             <version>0</version>
           </str>
         </names>
@@ -29088,14 +29088,14 @@
   </container>
   <container name="splocalecontainer" type="">
     <items>
-      <item name="collectionType" type="ManyToOne">
+      <item name="discipline" type="ManyToOne">
         <names>
           <str language="de" country="" variant="">
-            <text>Collection Type</text>
+            <text>Discipline</text>
             <version>0</version>
           </str>
           <str language="en" country="" variant="">
-            <text>Collection Type</text>
+            <text>Discipline</text>
             <version>0</version>
           </str>
         </names>
@@ -30878,14 +30878,14 @@
         <isHidden>false</isHidden>
         <version>0</version>
       </item>
-      <item name="collectionType" type="OneToOne">
+      <item name="discipline" type="OneToOne">
         <names>
           <str language="de" country="" variant="">
-            <text>Collection Type</text>
+            <text>Discipline</text>
             <version>0</version>
           </str>
           <str language="en" country="" variant="">
-            <text>Collection Type</text>
+            <text>Discipline</text>
             <version>0</version>
           </str>
         </names>

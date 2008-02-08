@@ -42,7 +42,7 @@ import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.SwingWorker;
-import edu.ku.brc.specify.datamodel.CollectionType;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
@@ -662,7 +662,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
             String queryStr = "";
             if (QueryAdjusterForDomain.getInstance().isUerInputNotInjectable(searchText))
             {
-                int collTypeID = CollectionType.getCurrentCollectionType().getId();
+                int disciplineID = Discipline.getCurrentDiscipline().getId();
     
                 // get node table and primary key column names
                 DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(nodeInForm.getClass().getName());
@@ -674,16 +674,19 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                 String defTableName = defTableInfo.getName();
                 String defIdColName = defTableInfo.getIdColumnName();
                 
-                String queryFormatStr = "SELECT n.FullName, n.%s from %s n INNER JOIN %s d ON n.%s = d.%s INNER JOIN collectiontype ct ON d.%s = ct.%s WHERE lower(n.FullName) LIKE \'%s\' AND ct.CollectionTypeID = %d ORDER BY n.FullName asc";
-                queryStr = String.format(queryFormatStr, idColName, tableName, defTableName, defIdColName, defIdColName, defIdColName, defIdColName, searchText.toLowerCase() + "%", collTypeID);
+                String queryFormatStr = "SELECT n.FullName, n.%s from %s n INNER JOIN %s d ON n.%s = d.%s INNER JOIN discipline ct ON d.%s = ct.%s WHERE lower(n.FullName) LIKE \'%s\' AND ct.DisciplineID = %d ORDER BY n.FullName asc";
+                queryStr = String.format(queryFormatStr, idColName, tableName, defTableName, defIdColName, defIdColName, defIdColName, defIdColName, searchText.toLowerCase() + "%", disciplineID);
                 log.debug(queryStr);
             }
             return queryStr;
         }
 
-        public String buildSQL(Map<String, Object> dataMap, final List<String> fieldNames)
+        /* (non-Javadoc)
+         * @see edu.ku.brc.ui.db.ViewBasedSearchQueryBuilderIFace#buildSQL(java.util.Map, java.util.List)
+         */
+        public String buildSQL(final Map<String, Object> dataMap, final List<String> fieldNames)
         {
-            int collTypeID = CollectionType.getCurrentCollectionType().getId();
+            int disciplineId = Discipline.getCurrentDiscipline().getId();
 
             // get node table and primary key column names
             DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(nodeInForm.getClass().getName());
@@ -733,9 +736,9 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                 }
             }
             
-            String queryFormatStr = "SELECT n.%s, %s from %s n INNER JOIN %s d ON n.%s = d.%s INNER JOIN collectiontype ct ON d.%s = ct.%s WHERE (%s) AND ct.CollectionTypeID = %d ORDER BY %s";
+            String queryFormatStr = "SELECT n.%s, %s from %s n INNER JOIN %s d ON n.%s = d.%s INNER JOIN discipline ct ON d.%s = ct.%s WHERE (%s) AND ct.DisciplineID = %d ORDER BY %s";
             String queryStr = String.format(queryFormatStr, idColName, colNames.toString(), tableName, defTableName, defIdColName, defIdColName, 
-                                            defIdColName, defIdColName, criteria.toString(), collTypeID, orderBy.toString());
+                                            defIdColName, defIdColName, criteria.toString(), disciplineId, orderBy.toString());
             return queryStr;
         }
 

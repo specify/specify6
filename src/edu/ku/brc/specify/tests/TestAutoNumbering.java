@@ -15,15 +15,15 @@ import static edu.ku.brc.specify.utilapps.DataBuilder.createAgent;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createCatalogNumberingScheme;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createCollection;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createCollectionObject;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createCollectionType;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createDataType;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createDiscipline;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createDivision;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createGeographyTreeDef;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createGeologicTimePeriodTreeDef;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createInstitution;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createLithoStratTreeDef;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createStorageTreeDef;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createSpecifyUser;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createStorageTreeDef;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createTaxonTreeDef;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createUserGroup;
 
@@ -48,21 +48,21 @@ import edu.ku.brc.dbsupport.CustomQueryFactory;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.config.Discipline;
+import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CatalogNumberingScheme;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.CollectionType;
 import edu.ku.brc.specify.datamodel.DataType;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
-import edu.ku.brc.specify.datamodel.StorageTreeDef;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.datamodel.StorageTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.dbsupport.CollectionAutoNumber;
@@ -131,13 +131,13 @@ public class TestAutoNumbering extends TestCase
     }
     
     /**
-     * Creates a single discipline collection.
-     * @param collTypeName the name of the Collection Type to use
-     * @param disciplineName the discipline name
+     * Creates a single disciplineType collection.
+     * @param disciplineName the name of the Discipline to use
+     * @param disciplineTypeName the disciplineType name
      * @return the entire list of DB object to be persisted
      */
-    public List<Object> createEmptyDiscipline(final String collTypeName, 
-                                              final String disciplineName,
+    public List<Object> createEmptyDiscipline(final String disciplineName, 
+                                              final String disciplineTypeName,
                                               final String username, 
                                               final String userType, 
                                               final String firstName, 
@@ -147,9 +147,9 @@ public class TestAutoNumbering extends TestCase
         Vector<Object> dataObjects = new Vector<Object>();
 
         Agent             userAgent         = createAgent("", firstName, "", lastName, "", email);
-        UserGroup         userGroup         = createUserGroup(disciplineName);
+        UserGroup         userGroup         = createUserGroup(disciplineTypeName);
         SpecifyUser       user              = createSpecifyUser(username, email, (short) 0, userGroup, userType);
-        DataType          dataType          = createDataType(disciplineName);
+        DataType          dataType          = createDataType(disciplineTypeName);
 
         // create tree defs (later we will make the def items and nodes)
         TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Sample Taxon Tree");
@@ -160,12 +160,12 @@ public class TestAutoNumbering extends TestCase
         
         Institution    institution    = createInstitution("Natural History Museum");
         Division       division       = createDivision(institution, "fish", "Icthyology", "IT", "Icthyology");
-        CollectionType collectionType = createCollectionType(division, collTypeName, disciplineName, dataType, taxonTreeDef, null, null, null, lithoStratTreeDef);
+        Discipline discipline = createDiscipline(division, disciplineName, disciplineTypeName, dataType, taxonTreeDef, null, null, null, lithoStratTreeDef);
 
         SpecifyUser.setCurrentUser(user);
         user.addReference(userAgent, "agents");
 
-        dataObjects.add(collectionType);
+        dataObjects.add(discipline);
         dataObjects.add(userGroup);
         dataObjects.add(user);
         dataObjects.add(dataType);
@@ -191,7 +191,7 @@ public class TestAutoNumbering extends TestCase
         CatalogNumberingScheme cns = createCatalogNumberingScheme("CatalogNumber", "", true);
         dataObjects.add(cns);
 
-        Collection collection = createCollection("Fish", "Fish", cns, collectionType);
+        Collection collection = createCollection("Fish", "Fish", cns, discipline);
         dataObjects.add(collection);
 
         return dataObjects;
@@ -212,7 +212,7 @@ public class TestAutoNumbering extends TestCase
                                  final String firstName, 
                                  final String lastName, 
                                  final String email,
-                                 final Discipline  discipline)
+                                 final DisciplineType  disciplineType)
     {
         String actionStr = fillDB ? "Creating" : "Initializing";
         log.info(actionStr + " Specify Database Username["+username+"]");
@@ -276,8 +276,8 @@ public class TestAutoNumbering extends TestCase
         {
             log.info("Creating Empty Database");
             
-            List<Object> dataObjects = createEmptyDiscipline(discipline.getTitle(), 
-                                                             discipline.getName(),
+            List<Object> dataObjects = createEmptyDiscipline(disciplineType.getTitle(), 
+                                                             disciplineType.getName(),
                                                              username,
                                                              "CollectionManager",
                                                              firstName,
@@ -343,11 +343,11 @@ public class TestAutoNumbering extends TestCase
             
             setUpSystemProperties();
             
-            Discipline         discipline = Discipline.getDiscipline("fish");
+            DisciplineType         disciplineType = DisciplineType.getDiscipline("fish");
             DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver("MySQL");
             
             // This may just initialize the DB and not build it, check data member 'fillDB'
-            setupDatabase(driverInfo, "localhost", "Test", "rods", "rods", "guest", "guest", "guest@ku.edu", discipline);
+            setupDatabase(driverInfo, "localhost", "Test", "rods", "rods", "guest", "guest", "guest@ku.edu", disciplineType);
             doInit = false;
         }
     }
@@ -414,9 +414,9 @@ public class TestAutoNumbering extends TestCase
         Agent      agent      = (Agent)session.createCriteria(Agent.class).list().get(0);
         Collection collection = (Collection)session.createCriteria(Collection.class).list().get(0);
         
-        CollectionType colType = (CollectionType)session.createCriteria(CollectionType.class).list().get(0);
+        Discipline disciplinee = (Discipline)session.createCriteria(Discipline.class).list().get(0);
         
-        Collection collection2 = createCollection("Fish", "Fish Tissue", collection.getCatalogNumberingScheme(), colType);
+        Collection collection2 = createCollection("Fish", "Fish Tissue", collection.getCatalogNumberingScheme(), disciplinee);
 
         Collection.setCurrentCollection(collection);
 
@@ -460,10 +460,10 @@ public class TestAutoNumbering extends TestCase
     {
         log.info("testNumericDBNum");
         
-        CollectionType colType = (CollectionType)session.createCriteria(CollectionType.class).list().get(0);
+        Discipline disciplinee = (Discipline)session.createCriteria(Discipline.class).list().get(0);
         
         CatalogNumberingScheme catNumSchemeAlphaNumeric = createCatalogNumberingScheme("CatalogNumberAN", "", false);
-        Collection collection = createCollection("Fish", "Fish Tissue", catNumSchemeAlphaNumeric, colType);
+        Collection collection = createCollection("Fish", "Fish Tissue", catNumSchemeAlphaNumeric, disciplinee);
 
         HibernateUtil.beginTransaction();
         persist(collection);
@@ -501,10 +501,10 @@ public class TestAutoNumbering extends TestCase
         log.info("testAlphaNumCatNum");
         
         Agent          agent   = (Agent)session.createCriteria(Agent.class).list().get(0);
-        CollectionType colType = (CollectionType)session.createCriteria(CollectionType.class).list().get(0);
+        Discipline disciplinee = (Discipline)session.createCriteria(Discipline.class).list().get(0);
         
         CatalogNumberingScheme catNumSchemeAlphaNumeric = createCatalogNumberingScheme("CatalogNumberAN", "", false);
-        Collection collection = createCollection("Fish", "Fish Tissue", catNumSchemeAlphaNumeric, colType);
+        Collection collection = createCollection("Fish", "Fish Tissue", catNumSchemeAlphaNumeric, disciplinee);
 
         int    currentYear       = Calendar.getInstance().get(Calendar.YEAR);
         String currentYearCatNum = currentYear + "-000001";
@@ -552,14 +552,14 @@ public class TestAutoNumbering extends TestCase
         log.info("testAlphaNumCatNumTwoColl");
         
         Agent          agent      = (Agent)session.createCriteria(Agent.class).list().get(0);
-        CollectionType colType    = (CollectionType)session.createCriteria(CollectionType.class).list().get(0);
+        Discipline disciplinee    = (Discipline)session.createCriteria(Discipline.class).list().get(0);
         
         CatalogNumberingScheme catNumSchemeAlphaNumeric = createCatalogNumberingScheme("CatalogNumberAN", "", false);
-        Collection collection1 = createCollection("Fish", "Fish Two",       catNumSchemeAlphaNumeric, colType);
-        Collection collection2 = createCollection("Fish", "Fish Tissue Two",catNumSchemeAlphaNumeric, colType);
+        Collection collection1 = createCollection("Fish", "Fish Two",       catNumSchemeAlphaNumeric, disciplinee);
+        Collection collection2 = createCollection("Fish", "Fish Tissue Two",catNumSchemeAlphaNumeric, disciplinee);
         
         CatalogNumberingScheme catNumSchemeAlphaNumeric3 = createCatalogNumberingScheme("CatalogNumber3", "", false);
-        Collection collection3 = createCollection("Fish", "Fish Three", catNumSchemeAlphaNumeric3, colType);
+        Collection collection3 = createCollection("Fish", "Fish Three", catNumSchemeAlphaNumeric3, disciplinee);
         
         int    currentYear        = Calendar.getInstance().get(Calendar.YEAR);
         String currentYearCatNum  = currentYear + "-000001";
@@ -626,14 +626,14 @@ public class TestAutoNumbering extends TestCase
         log.info("testAlphaNumCatNumTwoCollByYearSameYear");
         
         Agent          agent      = (Agent)session.createCriteria(Agent.class).list().get(0);
-        CollectionType colType    = (CollectionType)session.createCriteria(CollectionType.class).list().get(0);
+        Discipline disciplinee    = (Discipline)session.createCriteria(Discipline.class).list().get(0);
         
         CatalogNumberingScheme catNumSchemeAlphaNumeric = createCatalogNumberingScheme("CatalogNumberAlphaNumByYear", "", false);
-        Collection collection1 = createCollection("Fish", "Fish Two",       catNumSchemeAlphaNumeric, colType);
-        Collection collection2 = createCollection("Fish", "Fish Tissue Two",catNumSchemeAlphaNumeric, colType);
+        Collection collection1 = createCollection("Fish", "Fish Two",       catNumSchemeAlphaNumeric, disciplinee);
+        Collection collection2 = createCollection("Fish", "Fish Tissue Two",catNumSchemeAlphaNumeric, disciplinee);
         
         CatalogNumberingScheme catNumSchemeAlphaNumeric3 = createCatalogNumberingScheme("CatalogNumber3", "", false);
-        Collection collection3 = createCollection("Fish", "Fish Three", catNumSchemeAlphaNumeric3, colType);
+        Collection collection3 = createCollection("Fish", "Fish Three", catNumSchemeAlphaNumeric3, disciplinee);
         
         int    currentYear        = Calendar.getInstance().get(Calendar.YEAR);
         String currentYearCatNum  = currentYear + "-000001";
@@ -700,14 +700,14 @@ public class TestAutoNumbering extends TestCase
         log.info("testAlphaNumCatNumTwoCollByYearDiffYear");
         
         Agent          agent      = (Agent)session.createCriteria(Agent.class).list().get(0);
-        CollectionType colType    = (CollectionType)session.createCriteria(CollectionType.class).list().get(0);
+        Discipline disciplinee    = (Discipline)session.createCriteria(Discipline.class).list().get(0);
         
         CatalogNumberingScheme catNumSchemeAlphaNumeric = createCatalogNumberingScheme("CatalogNumberAlphaNumByYear", "", false);
-        Collection collection1 = createCollection("Fish", "Fish Two",       catNumSchemeAlphaNumeric, colType);
-        Collection collection2 = createCollection("Fish", "Fish Tissue Two",catNumSchemeAlphaNumeric, colType);
+        Collection collection1 = createCollection("Fish", "Fish Two",       catNumSchemeAlphaNumeric, disciplinee);
+        Collection collection2 = createCollection("Fish", "Fish Tissue Two",catNumSchemeAlphaNumeric, disciplinee);
         
         CatalogNumberingScheme catNumSchemeAlphaNumeric3 = createCatalogNumberingScheme("CatalogNumber3", "", false);
-        Collection collection3 = createCollection("Fish", "Fish Three", catNumSchemeAlphaNumeric3, colType);
+        Collection collection3 = createCollection("Fish", "Fish Three", catNumSchemeAlphaNumeric3, disciplinee);
         
         int    currentYear        = Calendar.getInstance().get(Calendar.YEAR);
         String currentYearCatNum  = "2005-000001";

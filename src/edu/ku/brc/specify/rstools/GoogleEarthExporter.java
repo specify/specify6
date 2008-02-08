@@ -35,7 +35,7 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.CollectionType;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.dbsupport.RecordSetLoader;
 import edu.ku.brc.specify.tasks.services.CollectingEventKMLGenerator;
@@ -97,7 +97,7 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
 	{
         // get an icon URL that is specific to the current context
         
-        String discipline = CollectionType.getCurrentCollectionType().getDiscipline();
+        String discipline = Discipline.getCurrentDiscipline().getDiscipline();
         for ( Pair<String, ImageIcon> pair : IconManager.getListByType("disciplines", IconManager.IconSize.Std32))
         {
             if (pair.first.equals(discipline))
@@ -235,7 +235,7 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
                 
                 ImageIcon defaultIcon = IconManager.getImage("DefaultPlacemark");
 
-                // If an icon isn't passed in then get the default icon for the discipline
+                // If an icon isn't passed in then get the default icon for the disciplineType
                 ImageIcon imageIcon = defaultIcon;
                 if (imgIconArg == null)
                 {
@@ -377,7 +377,7 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
         kmlGenerator.setBalloonStyleTextColor("FF" + fgColor);
         kmlGenerator.setBalloonStyleText(getBalloonText(fgColor));
 
-        // If an icon isn't passed in then get the default icon for the discipline
+        // If an icon isn't passed in then get the default icon for the disciplineType
         ImageIcon imageIcon = defaultIcon;
         if (imgIconArg == null)
         {

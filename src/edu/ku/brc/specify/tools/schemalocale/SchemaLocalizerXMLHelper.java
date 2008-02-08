@@ -33,7 +33,7 @@ import edu.ku.brc.dbsupport.DBRelationshipInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.config.Discipline;
+import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.SpLocaleBase;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
@@ -126,19 +126,19 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
         if (loadedOk)
         {
             
-            for (Discipline discipline : Discipline.getDisciplineList())
+            for (DisciplineType disciplineType : DisciplineType.getDisciplineList())
             {
-                Vector<DisciplineBasedContainer> dispContainers = load(discipline.getName());
-                addDisplineBasedContainers(discipline.getName(), dispContainers);
+                Vector<DisciplineBasedContainer> dispContainers = load(disciplineType.getName());
+                addDisplineBasedContainers(disciplineType.getName(), dispContainers);
             }
         }
         return loadedOk;
     }
     
     /**
-     * Merges a discipline set of containers into the baseline.
-     * @param discipline the discipline to be added
-     * @param dispContainers  the containers for that discipline
+     * Merges a disciplineType set of containers into the baseline.
+     * @param disciplineType the disciplineType to be added
+     * @param dispContainers  the containers for that disciplineType
      */
     protected void addDisplineBasedContainers(final String discipline, 
                                               final Vector<DisciplineBasedContainer> dispContainers)
@@ -621,19 +621,19 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
         boolean savedOk = save(basePath, null, tables);
         if (savedOk)
         {
-            for (Discipline discipline : Discipline.getDisciplineList())
+            for (DisciplineType disciplineType : DisciplineType.getDisciplineList())
             {
-                save(basePath, discipline.getName(), null);
+                save(basePath, disciplineType.getName(), null);
             }
         }
         return savedOk;
     }
     
     /**
-     * Saves the base set of containers OR 'filters out all the discipline-based
+     * Saves the base set of containers OR 'filters out all the disciplineType-based
      * containers and saves them.
      * @param baseDir the base directory for the base set of containers (the baseline)
-     * @param discipline the discipline to be saved, null if it is suppose to save the baseline. 
+     * @param disciplineType the disciplineType to be saved, null if it is suppose to save the baseline. 
      * @param containers the list of containers
      * @return true on success
      */
@@ -646,7 +646,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
         String fullPath = baseDir + (discipline != null ? (discipline + File.separator) : "") + fileName[schemaType];
         File file = new File(fullPath);
         
-        // Filter oput just the containers for this discipline
+        // Filter oput just the containers for this disciplineType
         if (discipline != null)
         {
             localeContainers = filterForDisplineContainers(discipline);

@@ -58,7 +58,7 @@ import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.specify.datamodel.CollectionType;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.ui.HelpMgr;
@@ -115,8 +115,8 @@ public class DbAdminPane extends BaseSubPane
         listOfAvailableUserGroups = session.getDataList(UserGroup.class);
         listOfSelectedUserGroups = session.getDataList(UserGroup.class);
         listOfSelectedUserGroups.clear();
-        listOfAvailableCoDs = session.getDataList(CollectionType.class);
-        listOfSelectedCoDs = session.getDataList(CollectionType.class);
+        listOfAvailableCoDs = session.getDataList(Discipline.class);
+        listOfSelectedCoDs = session.getDataList(Discipline.class);
         listOfSelectedCoDs.clear();
         // arrayOfObjects = (Object[])listOfSpecifyUsers.toArray(new
         // Object[listOfSpecifyUsers.size()]);
@@ -535,7 +535,7 @@ class CodCellRenderer extends DefaultListCellRenderer
             setForeground(list.getForeground());
         }
         System.out.println("getlistcellrenderer");
-        CollectionType group = (CollectionType) value;
+        Discipline group = (Discipline) value;
         setText(group.getName());
         return this;
     }

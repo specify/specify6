@@ -10,7 +10,7 @@
 package edu.ku.brc.specify.config.init;
 
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
-import edu.ku.brc.specify.config.Discipline;
+import edu.ku.brc.specify.config.DisciplineType;
 
 /**
  * @author rod
@@ -30,7 +30,7 @@ public class DBConfigInfo
     protected String firstName; 
     protected String lastName; 
     protected String email;
-    protected Discipline discipline;
+    protected DisciplineType disciplineType;
     protected String userType = "CollectionManager";
     
     protected String instName;
@@ -51,7 +51,7 @@ public class DBConfigInfo
                         String firstName, 
                         String lastName, 
                         String email,
-                        Discipline discipline, 
+                        DisciplineType disciplineType, 
                         String instName, 
                         String divName)
     {
@@ -64,7 +64,7 @@ public class DBConfigInfo
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.discipline = discipline;
+        this.disciplineType = disciplineType;
         this.instName = instName;
         this.divName = divName;
     }
@@ -134,11 +134,11 @@ public class DBConfigInfo
     }
 
     /**
-     * @return the discipline
+     * @return the disciplineType
      */
-    public Discipline getDiscipline()
+    public DisciplineType getDiscipline()
     {
-        return discipline;
+        return disciplineType;
     }
 
     /**

@@ -25,7 +25,7 @@ public class ImportColumnInfo  implements Comparable<ImportColumnInfo>
     public enum ColumnType {Integer, Float, Double, Short, Boolean, Date, String}
     
     protected final Short      colInx;
-    protected final ColumnType colType;
+    protected final ColumnType disciplinee;
     protected final String     colName; // the name of the column (this may include the table name in parens)
     protected final String     colTitle; // name without parens
     protected String     data;
@@ -34,7 +34,7 @@ public class ImportColumnInfo  implements Comparable<ImportColumnInfo>
     protected final boolean    isSystemCol;
     
     public ImportColumnInfo(final short      colInx, 
-                            final ColumnType colType, 
+                            final ColumnType disciplinee, 
                             final String     colName,
                             final String     colTitle,
                             final String     mapToTbl,
@@ -44,7 +44,7 @@ public class ImportColumnInfo  implements Comparable<ImportColumnInfo>
         super();
         
         this.colInx  = colInx;
-        this.colType = colType;
+        this.disciplinee = disciplinee;
         this.colName = colName;
         this.isSystemCol = this.colName.equals(DataImport.GEO_DATA_HEADING) || this.colName.equals(DataImport.IMAGE_PATH_HEADING);
         this.colTitle = colTitle;
@@ -65,7 +65,7 @@ public class ImportColumnInfo  implements Comparable<ImportColumnInfo>
 
     public ColumnType getColType()
     {
-        return colType;
+        return disciplinee;
     }
 
     public String getData()

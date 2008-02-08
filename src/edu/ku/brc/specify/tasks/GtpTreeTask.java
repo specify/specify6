@@ -10,7 +10,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import javax.persistence.Transient;
 
-import edu.ku.brc.specify.datamodel.CollectionType;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem;
@@ -48,7 +48,7 @@ public class GtpTreeTask extends BaseTreeTask<GeologicTimePeriod,GeologicTimePer
     @Override
     protected GeologicTimePeriodTreeDef getCurrentTreeDef()
     {
-        return CollectionType.getCurrentCollectionType().getGeologicTimePeriodTreeDef();
+        return Discipline.getCurrentDiscipline().getGeologicTimePeriodTreeDef();
     }
 
 //    protected void adjustTreeDefForm(FormViewObj form)

@@ -245,11 +245,11 @@ public class StatsPane extends BaseSubPane
                         {
                             Element colElement = (Element)colObj;
                             
-                            BoxColumnInfo.Type colType = BoxColumnInfo.Type.valueOf(getAttr(colElement, "type", (String)null));
+                            BoxColumnInfo.Type disciplinee = BoxColumnInfo.Type.valueOf(getAttr(colElement, "type", (String)null));
                             
                             colInfo.add(new BoxColumnInfo(getAttr(colElement, "col", -1),
                                                           getAttr(colElement, "title", ""),
-                                                          colType));
+                                                          disciplinee));
                             
                         }*/
                         

@@ -198,7 +198,7 @@ public class ERDVisualizer extends JFrame
             
             if (doCollectionSchema)
             {
-                root = tblTracker.getTable("CollectionType");
+                root = tblTracker.getTable("Discipline");
                 
                 //                                                skip,  processKids, alwaysAKid, processAnyRel, okWhenParent
                 tblTracker.addNodeInfo("Agent",                   false, true,        true,       false,         null);
@@ -323,7 +323,7 @@ public class ERDVisualizer extends JFrame
                 // No Kids
                 tblTracker.addNodeInfo("SpAppResourceData", false, false,        true,       false,         null);
                 tblTracker.addNodeInfo("Collection",        false, false,        true,       false,         null);
-                tblTracker.addNodeInfo("CollectionType",    false, false,        true,       false,         null);
+                tblTracker.addNodeInfo("Discipline",    false, false,        true,       false,         null);
                 tblTracker.addNodeInfo("SpecifyUser",       false, false,        true,       false,         null);
                 tblTracker.addNodeInfo("SpAppResource",     false, false,        true,       false,         null);
                 tblTracker.addNodeInfo("SpViewSetObj",      false, false,        true,       false,         null);
@@ -339,7 +339,7 @@ public class ERDVisualizer extends JFrame
                 ni.addKid(tblTracker.getTable("SpAppResource"));
                 ni.addKid(tblTracker.getTable("SpViewSetObj"));
                 //ni.addKid(tblTracker.getTable("Collection"));
-                //ni.addKid(tblTracker.getTable("CollectionType"));
+                //ni.addKid(tblTracker.getTable("Discipline"));
                 //ni.addKid(tblTracker.getTable("SpecifyUser"));
                 
                 ni = tblTracker.getNodeInfo("SpAppResource");
@@ -955,7 +955,7 @@ public class ERDVisualizer extends JFrame
         System.setProperty(SchemaI18NService.factoryName, "edu.ku.brc.specify.config.SpecifySchemaI18NServiceXML");    // Needed for Localization and Schema
         
         //SchemaI18NService.setCurrentLocale(new Locale("de", "", ""));
-        // Note: CollectionTypeId is not used so a '1' doesn't matter.
+        // Note: DisciplineId is not used so a '1' doesn't matter.
         SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.CORE_SCHEMA, 1, DBTableIdMgr.getInstance(), SchemaI18NService.getCurrentLocale());
 
         SwingUtilities.invokeLater(new Runnable()

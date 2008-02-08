@@ -102,7 +102,7 @@ import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.CollectingEventAttachment;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttachment;
-import edu.ku.brc.specify.datamodel.CollectionType;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.ConservDescriptionAttachment;
 import edu.ku.brc.specify.datamodel.ConservEventAttachment;
 import edu.ku.brc.specify.datamodel.DNASequenceAttachment;
@@ -1350,17 +1350,17 @@ public class Specify extends JPanel implements DatabaseLoginListener
             
             // XXX Get the current locale from prefs PREF
             
-            if (CollectionType.getCurrentCollectionType() == null)
+            if (Discipline.getCurrentDiscipline() == null)
             {
                 return;
             }
             
-            int colTypeId = CollectionType.getCurrentCollectionType().getCollectionTypeId();
-            SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.CORE_SCHEMA, colTypeId, DBTableIdMgr.getInstance(), Locale.getDefault());
+            int disciplineeId = Discipline.getCurrentDiscipline().getDisciplineId();
+            SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.CORE_SCHEMA, disciplineeId, DBTableIdMgr.getInstance(), Locale.getDefault());
             //SchemaI18NService.getInstance().loadWithLocale(new Locale("de", "", ""));
             
             //Collection.setCurrentCollection(null);
-            //CollectionType.setCurrentCollectionType(null);
+            //Discipline.setCurrentDiscipline(null);
             
             // "false" means that it should use any cached values it can find to automatically initialize itself
 

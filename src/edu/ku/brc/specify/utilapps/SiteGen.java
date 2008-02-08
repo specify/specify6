@@ -37,7 +37,7 @@ import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.config.Discipline;
+import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Collection;
@@ -158,7 +158,7 @@ public class SiteGen
                                  final String firstName, 
                                  final String lastName, 
                                  final String email,
-                                 final Discipline  discipline)
+                                 final DisciplineType  disciplineType)
     {
         
         log.info("Logging into "+dbName+"....");
@@ -220,10 +220,10 @@ public class SiteGen
         
         setUpSystemProperties();
         
-        Discipline         discipline = Discipline.getDiscipline("fish");
+        DisciplineType         disciplineType = DisciplineType.getDiscipline("fish");
         DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver("MySQL");
         
-        setupDatabase(driverInfo, "localhost", "testfish", "rods", "rods", "rods", "rods", "guest@ku.edu", discipline);
+        setupDatabase(driverInfo, "localhost", "testfish", "rods", "rods", "rods", "rods", "guest@ku.edu", disciplineType);
     }
     
     /**

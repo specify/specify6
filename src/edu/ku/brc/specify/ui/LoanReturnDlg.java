@@ -68,7 +68,7 @@ import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.CollectionType;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
@@ -717,7 +717,7 @@ public class LoanReturnDlg extends JDialog
                 loans.add(loanPO.getLoan());
             }
             
-            ViewIFace view  = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getView("Loan", CollectionType.getCurrentCollectionType());
+            ViewIFace view  = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getView("Loan", Discipline.getCurrentDiscipline());
             final ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog(parent,
                     view.getViewSetName(),
                     "Loan",

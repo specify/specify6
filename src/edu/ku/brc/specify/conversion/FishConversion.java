@@ -29,7 +29,7 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.dbsupport.AttributeIFace;
-import edu.ku.brc.specify.datamodel.CollectionType;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.PrepType;
 
 /**
@@ -50,14 +50,14 @@ public class FishConversion
     protected static StringBuilder               strBuf            = new StringBuilder("");
     protected static Calendar                   calendar          = Calendar.getInstance();
     
-    protected CollectionType                  collectionType;
+    protected Discipline                  discipline;
     
     /**
      * 
      */
-    public FishConversion(final CollectionType collectionType)
+    public FishConversion(final Discipline discipline)
     {
-        this.collectionType = collectionType;
+        this.discipline = discipline;
     }
     
     /*
@@ -120,12 +120,12 @@ public class FishConversion
                 AttributeIFace.FieldType.StringType.getType(),
         };
         
-        AttrUtils.loadAttrDefs(collectionType, GenericDBConversion.TableType.Preparation, null, fishEtOHAttrs, fishEtOHTypes);
-        AttrUtils.loadAttrDefs(collectionType, GenericDBConversion.TableType.Preparation, null, fishSkelAttrs, fishSkelTypes);
-        AttrUtils.loadAttrDefs(collectionType, GenericDBConversion.TableType.Preparation, null, fishClearStainAttrs, fishClearStainTypes);
-        AttrUtils.loadAttrDefs(collectionType, GenericDBConversion.TableType.Preparation, null, fishTissueAttrs, fishTissueTypes);
-        AttrUtils.loadAttrDefs(collectionType, GenericDBConversion.TableType.Preparation, null, fishXRayAttrs, fishXRayTypes);
-        AttrUtils.loadAttrDefs(collectionType, GenericDBConversion.TableType.Preparation, null, fishMiscAttrs, fishMiscTypes);
+        AttrUtils.loadAttrDefs(discipline, GenericDBConversion.TableType.Preparation, null, fishEtOHAttrs, fishEtOHTypes);
+        AttrUtils.loadAttrDefs(discipline, GenericDBConversion.TableType.Preparation, null, fishSkelAttrs, fishSkelTypes);
+        AttrUtils.loadAttrDefs(discipline, GenericDBConversion.TableType.Preparation, null, fishClearStainAttrs, fishClearStainTypes);
+        AttrUtils.loadAttrDefs(discipline, GenericDBConversion.TableType.Preparation, null, fishTissueAttrs, fishTissueTypes);
+        AttrUtils.loadAttrDefs(discipline, GenericDBConversion.TableType.Preparation, null, fishXRayAttrs, fishXRayTypes);
+        AttrUtils.loadAttrDefs(discipline, GenericDBConversion.TableType.Preparation, null, fishMiscAttrs, fishMiscTypes);
         
         /*
         String[] birdPrepAttrs = {
@@ -270,7 +270,7 @@ public class FishConversion
                 AttributeIFace.FieldType.FloatType.getType()//,
                 //AttributeIFace.FieldType.MemoType.getType(),
         };
-        AttrUtils.loadAttrDefs(collectionType, GenericDBConversion.TableType.CollectionObject, null, fishBioAttrs, fishBioTypes);
+        AttrUtils.loadAttrDefs(discipline, GenericDBConversion.TableType.CollectionObject, null, fishBioAttrs, fishBioTypes);
 
         //------------------------------
         // Load Habtitat Attrs
@@ -347,7 +347,7 @@ public class FishConversion
                 AttributeIFace.FieldType.FloatType.getType(),
                 AttributeIFace.FieldType.FloatType.getType()};
         
-        AttrUtils.loadAttrDefs(collectionType, GenericDBConversion.TableType.CollectingEvent, null, fishHabitatAttrs, fishHabitatTypes);
+        AttrUtils.loadAttrDefs(discipline, GenericDBConversion.TableType.CollectingEvent, null, fishHabitatAttrs, fishHabitatTypes);
     }
     
     /**

@@ -27,12 +27,12 @@ import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.specify.config.Discipline;
+import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.CollectionType;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.DeaccessionPreparation;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.PrepType;
@@ -75,7 +75,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
     }
     
     /**
-     * @param discipline
+     * @param disciplineType
      * @return
      */
     protected PrepType getDefaultPrepType()
@@ -144,12 +144,12 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         super.addChildrenToNewDataObjects(newDataObj);
         
         CollectionObject co              = (CollectionObject)newDataObj;
-        CollectionType   ct              = CollectionType.getCurrentCollectionType();
-        Discipline       discipline      = Discipline.getDiscipline(ct.getDiscipline());
-        //Discipline       plantDiscipline = Discipline.getDiscipline("plant");
-        if (discipline != null)
+        Discipline   ct              = Discipline.getCurrentDiscipline();
+        DisciplineType       disciplineType      = DisciplineType.getDiscipline(ct.getDiscipline());
+        //DisciplineType       plantDiscipline = DisciplineType.getDiscipline("plant");
+        if (disciplineType != null)
         {
-            //if (discipline == plantDiscipline || ct.getName().equals("Plant")) // RELEASE (remove Plant)
+            //if (disciplineType == plantDiscipline || ct.getName().equals("Plant")) // RELEASE (remove Plant)
             {
                 CollectingEvent ce = new CollectingEvent();
                 ce.initialize();
@@ -166,7 +166,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
             
         } else
         {
-            log.error("Unknown discipline ["+ct.getDiscipline()+"]");
+            log.error("Unknown disciplineType ["+ct.getDiscipline()+"]");
         }
     }
 

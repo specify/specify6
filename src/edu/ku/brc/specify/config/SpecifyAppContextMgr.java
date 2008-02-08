@@ -44,7 +44,7 @@ import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.specify.datamodel.CollectionType;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
@@ -82,16 +82,16 @@ import edu.ku.brc.ui.forms.persist.ViewSetIFace;
  * <li>The Database Name (database connection)
  * <li>The Specify User Object
  * <li>The Collection
- * <li>The CollectionType
- * <li>The Discipline Name
+ * <li>The Discipline
+ * <li>The DisciplineType Name
  * </ol>
  * <p>The SpecifyAppResourceDefaultMgr will place data in a <i>username</i>/<i>databaseName</i> directory in the "application data" directory of the user.
  * On Windows this is <code>\Documents and Settings\&lt;User Name&gt;\Application Data\Specify</code>.
  * On Unix platforms it is <code>/<i>user home</i>/.Specify</code> (Note: the app data dir is created by UIRegistry)</p>
  * <p>
  * The ViewSetMgrManager needs to load the "backstop" ViewSetMgr and the "user" ViewSetMgr in order for the application to work correctly.
- * So this class uses the "discipline name" to initialize the APPDATA dir with the appropriate data, which includes a "standard" set of
- * Views for that discipline. The APPDATA dir is really the "working space" of the application for a particular username/database.
+ * So this class uses the "disciplineType name" to initialize the APPDATA dir with the appropriate data, which includes a "standard" set of
+ * Views for that disciplineType. The APPDATA dir is really the "working space" of the application for a particular username/database.
  * </p>
  *
  * @code_status Complete
@@ -174,7 +174,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     public int getNumOfCollectionsForUser()
     {
-        String sqlStr = "select count(cs) From CollectionType as ct Inner Join ct.agents cta Inner Join cta.specifyUser as user Inner Join ct.collections as cs where user.specifyUserId = "+user.getSpecifyUserId();
+        String sqlStr = "select count(cs) From Discipline as ct Inner Join ct.agents cta Inner Join cta.specifyUser as user Inner Join ct.collections as cs where user.specifyUserId = "+user.getSpecifyUserId();
         
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         Object                   result     = session.getData(sqlStr);
@@ -197,7 +197,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             sessionArg.attach(spUser);
             for (Agent agent : spUser.getAgents())
             {
-                CollectionType type = agent.getCollectionType();
+                Discipline type = agent.getDiscipline();
                 for (Collection collection : type.getCollections())
                 {
                     list.add(collection.getCollectionId().intValue());
@@ -227,7 +227,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         
         // First get the Collections the User has access to.
         Hashtable<String, Collection> collectionHash = new Hashtable<String, Collection>();
-        String sqlStr = "SELECT cs From CollectionType as ct Inner Join ct.agents cta Inner Join cta.specifyUser as user Inner Join ct.collections as cs where user.specifyUserId = "+user.getSpecifyUserId();
+        String sqlStr = "SELECT cs From Discipline as ct Inner Join ct.agents cta Inner Join cta.specifyUser as user Inner Join ct.collections as cs where user.specifyUserId = "+user.getSpecifyUserId();
         for (Object obj : sessionArg.getDataList(sqlStr))
         {
             Collection cs = (Collection)obj; 
@@ -324,10 +324,10 @@ public class SpecifyAppContextMgr extends AppContextMgr
         Collection.setCurrentCollection(collection);
         Collection.setCurrentCollectionIds(getCollectionIdList(sessionArg));
         
-        CollectionType colType = collection.getCollectionType();
-        if (colType != null)
+        Discipline disciplinee = collection.getDiscipline();
+        if (disciplinee != null)
         {
-            for (Agent uAgent : colType.getAgents())
+            for (Agent uAgent : disciplinee.getAgents())
             {
                 SpecifyUser spu = uAgent.getSpecifyUser();
                 if (spu != null && spu.getSpecifyUserId().equals(user.getSpecifyUserId()))
@@ -336,11 +336,11 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     break;
                 }
             }
-            TaxonTreeDef.setCurrentTaxonTreeDef(colType.getTaxonTreeDef());
-            GeologicTimePeriodTreeDef.setCurrentGeologicTimePeriodTreeDef(colType.getGeologicTimePeriodTreeDef());
-            StorageTreeDef.setCurrentStorageTreeDef(colType.getStorageTreeDef());
-            LithoStratTreeDef.setCurrentLithoStratTreeDef(colType.getLithoStratTreeDef());
-            GeographyTreeDef.setCurrentGeographyTreeDef(colType.getGeographyTreeDef());
+            TaxonTreeDef.setCurrentTaxonTreeDef(disciplinee.getTaxonTreeDef());
+            GeologicTimePeriodTreeDef.setCurrentGeologicTimePeriodTreeDef(disciplinee.getGeologicTimePeriodTreeDef());
+            StorageTreeDef.setCurrentStorageTreeDef(disciplinee.getStorageTreeDef());
+            LithoStratTreeDef.setCurrentLithoStratTreeDef(disciplinee.getLithoStratTreeDef());
+            GeographyTreeDef.setCurrentGeographyTreeDef(disciplinee.getGeographyTreeDef());
             
         }
         
@@ -362,13 +362,13 @@ public class SpecifyAppContextMgr extends AppContextMgr
      * @param appResDefList the list to search
      * @param userArg the Specify user
      * @param catSeries the Collection
-     * @param collType the CollectionType
+     * @param discipline the Discipline
      * @return the AppResourceDefault object or null
      */
     protected SpAppResourceDir find(final List<?>        appResDefList,
                                     final SpecifyUser    userArg,
                                     final Collection     catSeries,
-                                    final CollectionType collType)
+                                    final Discipline discipline)
     {
         if (debug) log.debug("finding AppResourceDefault");
         
@@ -378,11 +378,11 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
             SpecifyUser      spUser = ard.getSpecifyUser();
             Collection    cs        = ard.getCollection();
-            CollectionType ct    = ard.getCollectionType();
+            Discipline ct    = ard.getDiscipline();
 
             if (spUser != null && spUser.getSpecifyUserId() == userArg.getSpecifyUserId() &&
                 cs != null && cs.getCollectionId() == catSeries.getCollectionId() &&
-                ct != null && ct.getCollectionTypeId() == collType.getCollectionTypeId())
+                ct != null && ct.getDisciplineId() == discipline.getDisciplineId())
             {
                 return ard;
             }
@@ -449,7 +449,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     {
         SpecifyUser      spUser = appResDef.getSpecifyUser();
         Collection    cs   = appResDef.getCollection();
-        CollectionType ct  = appResDef.getCollectionType();
+        Discipline ct  = appResDef.getDiscipline();
 
         StringBuilder strBuf = new StringBuilder();
         strBuf.append("CS["+(cs != null ? cs.getCollectionName() : "null") + "]");
@@ -478,7 +478,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         // This is where we will read it in from the Database
         // but for now we don't need to do that.
         //
-        // We need to search for User, Collection, CollectionType and UserType
+        // We need to search for User, Collection, Discipline and UserType
         // Then
 
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
@@ -528,9 +528,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
         List<?> appResDefList = session.getDataList( "From SpAppResourceDir where specifyUserId = "+user.getSpecifyUserId());
 
-        CollectionType ct = collection.getCollectionType();
+        Discipline ct = collection.getDiscipline();
         ct.getDeterminationStatuss().size(); // make sure they are loaded
-        CollectionType.setCurrentCollectionType(ct);
+        Discipline.setCurrentDiscipline(ct);
     
             
         if (debug) log.debug("Adding AppResourceDefs from Collection and ColObjDefs ColObjDef["+ct.getName()+"]");
@@ -566,7 +566,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             ViewLoader.setDoFieldVerification(cacheDoVerify);
         }
         
-        // Add Backstop for Discipline and User Type
+        // Add Backstop for DisciplineType and User Type
         for (String discipline : dispHash.keySet())
         {
             if (debug) log.debug("****** Trying add Backstop for ["+discipline+"]["+userType+"]");
@@ -579,7 +579,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 appResDef.setUserType(userType);
                 appResDef.setSpecifyUser(user);//added to fix not-null constraints
                 appResDef.setCollection(Collection.getCurrentCollection());
-                appResDef.setCollectionType(CollectionType.getCurrentCollectionType());
+                appResDef.setDiscipline(Discipline.getCurrentDiscipline());
                 
                 if (debug) log.debug("Adding2 "+getSpAppResDefAsString(appResDef));
                 spAppResourceList.add(appResDef);
@@ -590,7 +590,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             }
         }
 
-        // Add Backstop for just the Discipline
+        // Add Backstop for just the DisciplineType
         for (String discipline : dispHash.keySet())
         {
             if (debug) log.debug("***** Trying add Backstop for ["+discipline.toLowerCase()+"]");
@@ -602,7 +602,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 appResDef.setSpecifyUser(user);
                 
                 appResDef.setCollection(collection);
-                appResDef.setCollectionType(ct);
+                appResDef.setDiscipline(ct);
 
                 if (debug) log.debug("Adding3 "+getSpAppResDefAsString(appResDef));
                 spAppResourceList.add(appResDef);
@@ -703,21 +703,21 @@ public class SpecifyAppContextMgr extends AppContextMgr
     }
 
     /**
-     * Finds a View by name using a CollectionType.
+     * Finds a View by name using a Discipline.
      * @param viewName the name of the view
-     * @param collType the CollectionType
+     * @param discipline the Discipline
      * @return the view or null
      */
-    public ViewIFace getView(final String viewName, final CollectionType collType)
+    public ViewIFace getView(final String viewName, final Discipline discipline)
     {
-        if (debug) log.debug("Looking Up View ["+viewName+"] collType["+(collType != null ? collType.getName() : "null")+"]");
+        if (debug) log.debug("Looking Up View ["+viewName+"] discipline["+(discipline != null ? discipline.getName() : "null")+"]");
         
         boolean fndColObjDef = false;
         for (SpAppResourceDir appResDir : spAppResourceList)
         {
-            if (debug) log.debug("Looking["+(appResDir.getCollectionType() != null ? appResDir.getCollectionType().getName() : "null")+"]["+(collType != null ? collType.getName() : "null")+"]");
+            if (debug) log.debug("Looking["+(appResDir.getDiscipline() != null ? appResDir.getDiscipline().getName() : "null")+"]["+(discipline != null ? discipline.getName() : "null")+"]");
             
-            if (appResDir.getCollectionType() != null && appResDir.getCollectionType() == collType)
+            if (appResDir.getDiscipline() != null && appResDir.getDiscipline() == discipline)
             {
                 fndColObjDef = true;
                 for (ViewSetIFace vs : getViewSetList(appResDir))
@@ -731,15 +731,15 @@ public class SpecifyAppContextMgr extends AppContextMgr
             }
         }
 
-        // This is searching the BackStops by Discipline and User Type
+        // This is searching the BackStops by DisciplineType and User Type
         // which were created dynamically
         if (!fndColObjDef)
         {
-            String disciplineName = collType != null ? collType.getDiscipline() : null;
+            String disciplineName = discipline != null ? discipline.getDiscipline() : null;
             String userType       = SpecifyUser.getCurrentUser().getUserType();
             userType = StringUtils.replace(userType, " ", "").toLowerCase();
 
-            // Search Using the colObjectDef's discipline
+            // Search Using the colObjectDef's disciplineType
             for (SpAppResourceDir appResDef : spAppResourceList)
             {
                 String dType = appResDef.getDisciplineType();
@@ -771,7 +771,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 return view;
             }
         }
-        throw new RuntimeException("Can't find View ["+viewName+"] collType["+(collType != null ? collType.getName() : "null")+"] ["+fndColObjDef+"]");
+        throw new RuntimeException("Can't find View ["+viewName+"] discipline["+(discipline != null ? discipline.getName() : "null")+"] ["+fndColObjDef+"]");
     }
 
     /* (non-Javadoc)
@@ -795,7 +795,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         
         //if (StringUtils.isEmpty(viewSetName))
         //{
-        //    throw new RuntimeException("Sorry not empty or null ViewSetNames use the call with CollectionType instead.");
+        //    throw new RuntimeException("Sorry not empty or null ViewSetNames use the call with Discipline instead.");
         //}
 
         for (SpAppResourceDir appResDef : spAppResourceList)
@@ -975,14 +975,14 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 if (session != null)
                 {
                     List<?> appResDefList = session.getDataList( "From SpAppResourceDir where specifyUserId = "+user.getSpecifyUserId());
-                    appResourceDef = find(appResDefList, user, Collection.getCurrentCollection(), CollectionType.getCurrentCollectionType());
+                    appResourceDef = find(appResDefList, user, Collection.getCurrentCollection(), Discipline.getCurrentDiscipline());
                     if (appResourceDef == null)
                     {
                         appResourceDef = new SpAppResourceDir();
                         appResourceDef.initialize();
                         appResourceDef.setCollection(Collection.getCurrentCollection());
-                        appResourceDef.setCollectionType(CollectionType.getCurrentCollectionType());
-                        appResourceDef.setDisciplineType(CollectionType.getCurrentCollectionType().getDiscipline());
+                        appResourceDef.setDiscipline(Discipline.getCurrentDiscipline());
+                        appResourceDef.setDisciplineType(Discipline.getCurrentDiscipline().getDiscipline());
                         appResourceDef.setSpecifyUser(SpecifyUser.getCurrentUser());
                         appResourceDef.setUserType(SpecifyUser.getCurrentUser().getUserType());
                         appResourceDef.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
@@ -1116,7 +1116,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         }
 
         /**
-         * Reads in the App Resource for a discipline
+         * Reads in the App Resource for a disciplineType
          */
         protected void init(final File file)
         {

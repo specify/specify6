@@ -157,7 +157,7 @@ public class ToolsTask extends BaseTask
             String primaryURLTitle  = remotePrefs.get(GE_BALLOON_PRIMARY_URL_TITLE, null);
             if (StringUtils.isEmpty(primaryURL))
             {
-                //if (CollectionType.isCurrentDiscipline(Discipline.STD_DISCIPLINES.fish))
+                //if (Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.fish))
                 {
                     remotePrefs.put(GE_BALLOON_PRIMARY_URL, GE_BALLOON_PRIMARY_URL_STR);
                     if (StringUtils.isEmpty(primaryURLTitle))
@@ -172,7 +172,7 @@ public class ToolsTask extends BaseTask
             String secondaryURLTitle  = remotePrefs.get(GE_BALLOON_SECONDARY_URL_TITLE, null);
             if (StringUtils.isEmpty(secondaryURL))
             {
-                //if (CollectionType.isCurrentDiscipline(Discipline.STD_DISCIPLINES.fish))
+                //if (Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.fish))
                 {
                     remotePrefs.put(GE_BALLOON_SECONDARY_URL, GE_BALLOON_SECONDARY_URL_STR);
                     

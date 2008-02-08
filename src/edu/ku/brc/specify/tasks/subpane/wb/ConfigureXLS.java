@@ -318,7 +318,7 @@ public class ConfigureXLS extends ConfigureExternalDataBase
                     {
                         if (emptyCols.indexOf(new Integer(colNum)) == -1)
                         {
-                            ImportColumnInfo.ColumnType colType = ImportColumnInfo.ColumnType.Integer;
+                            ImportColumnInfo.ColumnType disciplinee = ImportColumnInfo.ColumnType.Integer;
                             String value = null;
                             boolean skip = false;
                             HSSFCell cell = row.getCell(colNum);
@@ -327,28 +327,28 @@ public class ConfigureXLS extends ConfigureExternalDataBase
                                 //assuming numRows == 1 or not firstRowHasHeaders.
                                 //the call to checkHeadsAndCols would have already blank headers.
                                 value = "";
-                                colType = ImportColumnInfo.ColumnType.String;
+                                disciplinee = ImportColumnInfo.ColumnType.String;
                             }
                             else switch (cell.getCellType())
                             {
                                 case HSSFCell.CELL_TYPE_NUMERIC:
                                     double numeric = cell.getNumericCellValue();
                                     value = Double.toString(numeric);
-                                    colType = ImportColumnInfo.ColumnType.Double;
+                                    disciplinee = ImportColumnInfo.ColumnType.Double;
                                     break;
                                 case HSSFCell.CELL_TYPE_STRING:
                                     HSSFRichTextString richVal = cell.getRichStringCellValue();
                                     value = richVal.getString().trim();
-                                    colType = ImportColumnInfo.ColumnType.String;
+                                    disciplinee = ImportColumnInfo.ColumnType.String;
                                     break;
                                 case HSSFCell.CELL_TYPE_BLANK:
                                     value = "";
-                                    colType = ImportColumnInfo.ColumnType.String;
+                                    disciplinee = ImportColumnInfo.ColumnType.String;
                                     break;
                                 case HSSFCell.CELL_TYPE_BOOLEAN:
                                     boolean bool = cell.getBooleanCellValue();
                                     value = Boolean.toString(bool);
-                                    colType = ImportColumnInfo.ColumnType.Boolean;
+                                    disciplinee = ImportColumnInfo.ColumnType.Boolean;
                                     break;
                                 default:
                                     skip = true;
@@ -364,7 +364,7 @@ public class ConfigureXLS extends ConfigureExternalDataBase
                             {
                                 if (firstRowHasHeaders)
                                 {
-                                    colInfo.add(new ImportColumnInfo(colNum, colType, value, value, null, null,
+                                    colInfo.add(new ImportColumnInfo(colNum, disciplinee, value, value, null, null,
                                             null));
                                     colTracker.put(col, true);
                                 }
@@ -372,7 +372,7 @@ public class ConfigureXLS extends ConfigureExternalDataBase
                                 {
                                     String colName = getResourceString("DEFAULT_COLUMN_NAME") + " "
                                             + (colNum + 1);
-                                    colInfo.add(new ImportColumnInfo(colNum, colType, colName,
+                                    colInfo.add(new ImportColumnInfo(colNum, disciplinee, colName,
                                             colName, null, null, null));
                                     colTracker.put(colNum, true);
                                 }

@@ -125,7 +125,7 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
         }
         
         //-----------------------------------
-        // Do Discipline Icons
+        // Do DisciplineType Icons
         //-----------------------------------
 
         String iconName = AppPreferences.getRemote().get("ui.formatting.disciplineicon", "CollectionObject");

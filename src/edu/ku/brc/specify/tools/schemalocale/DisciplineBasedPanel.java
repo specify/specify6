@@ -35,7 +35,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.specify.config.Discipline;
+import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.datamodel.SpLocaleContainerItem;
 import edu.ku.brc.specify.datamodel.SpLocaleItemStr;
 import edu.ku.brc.ui.UIHelper;
@@ -64,7 +64,7 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace, 
     protected LocalizableJListItem          jlistContainer           = null;
     protected SpLocaleContainerItem         currentBaselineItem      = null;
     protected SpLocaleContainerItem         currentItem              = null;
-    protected Discipline                    discipline               = null;
+    protected DisciplineType                    disciplineType               = null;
     
     /**
      * 
@@ -73,7 +73,7 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace, 
     {
         this.schemaPanel = schemaPanel;
         
-        for (Discipline disp : Discipline.getDisciplineList())
+        for (DisciplineType disp : DisciplineType.getDisciplineList())
         {
             if (disp.getType() == 0)
             {
@@ -86,7 +86,7 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace, 
             {
                 getDataFromUI();
                 
-                discipline = (Discipline)disciplineCBX.getSelectedItem();
+                disciplineType = (DisciplineType)disciplineCBX.getSelectedItem();
                 
                 fillWithDisciplineItems();
                 
@@ -111,7 +111,7 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace, 
     {
         if (currentBaselineContainer != null)
         {
-            Set<SpLocaleContainerItem> cItems = currentBaselineContainer.getDisciplineItems(discipline.getName());
+            Set<SpLocaleContainerItem> cItems = currentBaselineContainer.getDisciplineItems(disciplineType.getName());
             cItems.clear();
             cItems.addAll(items);
         }
@@ -192,9 +192,9 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace, 
         items.clear();
         listItems.clear();
         
-        if (currentBaselineContainer != null && currentBaselineContainer.hasDiscipline(discipline.getName()))
+        if (currentBaselineContainer != null && currentBaselineContainer.hasDiscipline(disciplineType.getName()))
         {
-            items.addAll(currentBaselineContainer.getDisciplineItems(discipline.getName()));
+            items.addAll(currentBaselineContainer.getDisciplineItems(disciplineType.getName()));
             
             Collections.sort(items);
             

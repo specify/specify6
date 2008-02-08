@@ -71,7 +71,7 @@ import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.datamodel.CollectionType;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
@@ -179,8 +179,8 @@ public class TemplateEditor extends CustomDialog
         
         databaseSchema = WorkbenchTask.getDatabaseSchema();
         
-        int colTypeId = CollectionType.getCurrentCollectionType().getCollectionTypeId();
-        SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.WORKBENCH_SCHEMA, colTypeId, databaseSchema, SchemaI18NService.getCurrentLocale());
+        int disciplineeId = Discipline.getCurrentDiscipline().getDisciplineId();
+        SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.WORKBENCH_SCHEMA, disciplineeId, databaseSchema, SchemaI18NService.getCurrentLocale());
 
         
         // Create the Table List

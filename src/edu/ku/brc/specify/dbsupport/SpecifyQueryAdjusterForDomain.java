@@ -15,7 +15,7 @@ import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.specify.datamodel.CollectionType;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
@@ -42,7 +42,7 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
     
     private static final String SPECIFYUSERID  = "SPECIFYUSERID";
     private static final String DIVISIONID     = "DIVISIONID";
-    private static final String COLTYPID       = "COLTYPID";
+    private static final String DSPLNID       = "DSPLNID";
     private static final String COLMEMID       = "COLMEMID";
     private static final String COLLID         = "COLLID";
     //private static final String COLMEMIDGRP    = "COLMEMIDGRP";
@@ -76,7 +76,7 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
             } else if (tableInfo.getTableId() == Agent.getClassTableId() ||
                        tableInfo.getTableId() == DeterminationStatus.getClassTableId())
             {
-                sql += (isHQL ? "collectionType" : "CollectionTypeID") + " = " + COLTYPID;
+                sql += (isHQL ? "discipline" : "DisciplineID") + " = " + DSPLNID;
                 return adjustSQL(sql);
                 
             } else if (tableInfo.getTableId() == Geography.getClassTableId())
@@ -162,12 +162,12 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                     }
                 }
                 
-                if (StringUtils.contains(adjSQL, COLTYPID))
+                if (StringUtils.contains(adjSQL, DSPLNID))
                 {
-                    CollectionType collectionType = CollectionType.getCurrentCollectionType();
-                    if (collectionType != null)
+                    Discipline discipline = Discipline.getCurrentDiscipline();
+                    if (discipline != null)
                     {
-                        adjSQL = StringUtils.replace(adjSQL, COLTYPID, Integer.toString(collectionType.getCollectionTypeId()));
+                        adjSQL = StringUtils.replace(adjSQL, DSPLNID, Integer.toString(discipline.getDisciplineId()));
                     }
                 }
                 

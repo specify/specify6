@@ -57,7 +57,7 @@ public class GeographyTreeDef extends BaseTreeDef<Geography, GeographyTreeDef, G
 	protected String				    name;
 	protected String				    remarks;
     protected Integer                   fullNameDirection;
-	protected Set<CollectionType>		collectionTypes;
+	protected Set<Discipline>		disciplines;
 	protected Set<Geography>			treeEntries;
 	protected Set<GeographyTreeDefItem>	treeDefItems;
 
@@ -81,7 +81,7 @@ public class GeographyTreeDef extends BaseTreeDef<Geography, GeographyTreeDef, G
 		name = null;
 		remarks = null;
         fullNameDirection = null;
-		collectionTypes = new HashSet<CollectionType>();
+		disciplines = new HashSet<Discipline>();
 		treeEntries = new HashSet<Geography>();
 		treeDefItems = new HashSet<GeographyTreeDefItem>();
 	}
@@ -155,25 +155,25 @@ public class GeographyTreeDef extends BaseTreeDef<Geography, GeographyTreeDef, G
     }
 
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "geographyTreeDef")
-    public Set<CollectionType> getCollectionTypes()
+    public Set<Discipline> getDisciplines()
 	{
-		return this.collectionTypes;
+		return this.disciplines;
 	}
 
-	public void setCollectionTypes(Set<CollectionType> collTypes)
+	public void setDisciplines(Set<Discipline> disciplines)
 	{
-		this.collectionTypes = collTypes;
+		this.disciplines = disciplines;
 	}
     
-    public void addCollectionType( CollectionType ct )
+    public void addDiscipline( Discipline ct )
     {
-        this.collectionTypes.add(ct);
+        this.disciplines.add(ct);
         ct.setGeographyTreeDef(this);
     }
     
-    public void removeCollectionType( CollectionType ct )
+    public void removeDiscipline( Discipline ct )
     {
-        this.collectionTypes.remove(ct);
+        this.disciplines.remove(ct);
         ct.setGeographyTreeDef(null);
     }
 

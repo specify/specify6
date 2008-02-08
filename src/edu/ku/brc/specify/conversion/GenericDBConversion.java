@@ -61,7 +61,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.config.Discipline;
+import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AttributeDef;
@@ -69,7 +69,7 @@ import edu.ku.brc.specify.datamodel.CatalogNumberingScheme;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttr;
-import edu.ku.brc.specify.datamodel.CollectionType;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.Geography;
@@ -198,7 +198,7 @@ public class GenericDBConversion
     protected Agent                                         modifierAgent;
     protected Hashtable<String, BasicSQLUtilsMapValueIFace> columnValueMapper      = new Hashtable<String, BasicSQLUtilsMapValueIFace>();
     protected Division                                      division = null;
-    protected int                                           collectionTypeId           = 0;
+    protected int                                           disciplineId           = 0;
 
     public GenericDBConversion()
     {
@@ -749,9 +749,9 @@ public class GenericDBConversion
                 //
                 // The Combination of the CatalogSeriesDefinition and CollectionObjectType become
                 // the
-                // new CollectionType
+                // new Discipline
                 // As you might expect the CatalogSeriesDefinitionID is mapped to the new
-                // CollectionType
+                // Discipline
                 // ************************************************************************************
                 "CollectionObjectType",
                 "CollectionObjectTypeID",
@@ -1520,9 +1520,9 @@ public class GenericDBConversion
         return 1;
     }
 
-    protected int getCollectionTypeId()
+    protected int getDisciplineId()
     {
-        return collectionTypeId;
+        return disciplineId;
     }
 
     /**
@@ -1570,12 +1570,12 @@ public class GenericDBConversion
      */
     public String getStandardDisciplineName(final String name)
     {
-        Discipline discipline = Discipline.getDiscipline(name.toLowerCase());
-        if (discipline != null) { return discipline.getName(); }
+        DisciplineType disciplineType = DisciplineType.getDiscipline(name.toLowerCase());
+        if (disciplineType != null) { return disciplineType.getName(); }
 
         if (checkName(new String[] { "Plant", "Herb" }, name)) { return "plant"; }
         // TO DO: Rod needs to look at this at make sure that things are geting mapped properly
-        // for discipline types, collection types, and datatypes. Meg ran into problems when
+        // for disciplineType types, disciplines, and datatypes. Meg ran into problems when
         // converting the
         // uvgherps database, we decided to make note of the issue and address later. For the time
         // being
@@ -1587,7 +1587,7 @@ public class GenericDBConversion
         if (checkName(new String[] { "Anthro" }, name)) { return "anthropology"; }
 
         if (checkName(new String[] { "Fungi" }, name)) { return "fungi"; }
-        log.error("****** Unable to Map Name[" + name + "] to a Discipline type.");
+        log.error("****** Unable to Map Name[" + name + "] to a DisciplineType type.");
 
         return null;
     }
@@ -1612,7 +1612,7 @@ public class GenericDBConversion
             // Meg had to drop explicit insert of CURRENT_DATE, not suported by SQL Server
             // insert.append("(DeterminationStatusID,Name,Remarks,TimestampCreated,TimestampModified,
             // IsCurrent) ");
-            insert.append("(DeterminationStatusID, Name, Remarks, TimestampCreated, TimestampModified, Type, CreatedByAgentID, ModifiedByAgentID, CollectionTypeID) ");
+            insert.append("(DeterminationStatusID, Name, Remarks, TimestampCreated, TimestampModified, Type, CreatedByAgentID, ModifiedByAgentID, DisciplineID) ");
             insert.append("VALUES ");
             // followed by the 'current status' record
             insert.append("(");
@@ -1624,14 +1624,14 @@ public class GenericDBConversion
             insert.append(",'Current','mirror of the old schema isCurrent field', '" + nowStr
                     + "','" + nowStr + "', "+D_STATUS_CURRENT+"," + getCreatorAgentId(null) + ","
                     + getModifiedByAgentId(null) + ","
-                    + getCollectionTypeId() + ")");
+                    + getDisciplineId() + ")");
 
             // Meg had to split single insert statement into two.
             insert2.append("INSERT INTO determinationstatus ");
             // Meg had to drop explicit insert of CURRENT_DATE, not suported by SQL Server
             // insert.append("(DeterminationStatusID,Name,Remarks,TimestampCreated,TimestampModified,
             // IsCurrent) ");
-            insert2.append("(DeterminationStatusID, Name, Remarks, TimestampCreated, TimestampModified, Type, CreatedByAgentID, ModifiedByAgentID, CollectionTypeID) ");
+            insert2.append("(DeterminationStatusID, Name, Remarks, TimestampCreated, TimestampModified, Type, CreatedByAgentID, ModifiedByAgentID, DisciplineID) ");
             insert2.append("values ");
             // the 'unknown status' record
             insert2.append("(");
@@ -1641,7 +1641,7 @@ public class GenericDBConversion
             // Meg had to drop explicit insert of false, not suported by SQL Server
             insert2.append(",'Unknown','', '" + nowStr + "','" + nowStr + "',"+D_STATUS_UNKNOWN+","
                     + getCreatorAgentId(null) + "," + getModifiedByAgentId(null) + ","
-                    + getCollectionTypeId() + ")");
+                    + getDisciplineId() + ")");
 
             Statement st = newDBConn.createStatement();
             log.debug(insert.toString());
@@ -1734,28 +1734,28 @@ public class GenericDBConversion
     {
 
         Session localSession = HibernateUtil.getNewSession();
-        CollectionType collType = null;
+        Discipline discipline = null;
         Transaction trans = localSession.beginTransaction();
 
         try
         {
-            Criteria criteria = localSession.createCriteria(CollectionType.class);
-            List<?> colTypeList = criteria.list();
-            collType = (CollectionType)colTypeList.iterator().next();
+            Criteria criteria = localSession.createCriteria(Discipline.class);
+            List<?> disciplineeList = criteria.list();
+            discipline = (Discipline)disciplineeList.iterator().next();
 
-            BuildSampleDatabase.loadSchemaLocalization(collType, SpLocaleContainer.CORE_SCHEMA,
+            BuildSampleDatabase.loadSchemaLocalization(discipline, SpLocaleContainer.CORE_SCHEMA,
                     DBTableIdMgr.getInstance());
-            localSession.save(collType);
+            localSession.save(discipline);
             trans.commit();
 
             DBTableIdMgr schema = new DBTableIdMgr(false);
             schema.initialize(new File(XMLHelper
                     .getConfigDirPath("specify_workbench_datamodel.xml")));
-            BuildSampleDatabase.loadSchemaLocalization(collType,
+            BuildSampleDatabase.loadSchemaLocalization(discipline,
                     SpLocaleContainer.WORKBENCH_SCHEMA, schema);
 
             trans = localSession.beginTransaction();
-            localSession.save(collType);
+            localSession.save(discipline);
             trans.commit();
 
         } catch (Exception ex)
@@ -1776,7 +1776,7 @@ public class GenericDBConversion
      */
     public void convertDivision()
     {
-        Discipline discipline = Discipline.getDiscipline("fish");
+        DisciplineType disciplineType = DisciplineType.getDiscipline("fish");
 
         Session cacheSession = DataBuilder.getSession();
         DataBuilder.setSession(null);
@@ -1784,10 +1784,10 @@ public class GenericDBConversion
         Session     localSession = HibernateUtil.getNewSession();
         Transaction trans        = localSession.beginTransaction();
         Institution institution  = createInstitution("Natural History Museum");
-        division = createDivision(institution, discipline.getName(), "Icthyology", "IT", "Icthyology");
+        division = createDivision(institution, disciplineType.getName(), "Icthyology", "IT", "Icthyology");
         localSession.persist(institution);
         localSession.persist(division);
-        // persist(collectionType);
+        // persist(discipline);
         trans.commit();
         localSession.close();
 
@@ -1827,19 +1827,19 @@ public class GenericDBConversion
     {
         try
         {
-            // The Old Table catalogseriesdefinition is being converted to collectiontype
+            // The Old Table catalogseriesdefinition is being converted to Discipline
             IdMapperIFace taxonomyTypeMapper = idMapperMgr.get("TaxonomyType", "TaxonomyTypeID");
 
             // Create a Hashtable to track which IDs have been handled during the conversion process
             BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "datatype",       BasicSQLUtils.myDestinationServerType);
-            BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "collectiontype", BasicSQLUtils.myDestinationServerType);
+            BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "discipline",     BasicSQLUtils.myDestinationServerType);
             BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "collection",     BasicSQLUtils.myDestinationServerType);
             // BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "collection_colobjdef");
 
             Hashtable<Integer, Integer> newColObjIDTotaxonomyTypeID = new Hashtable<Integer, Integer>();
             Hashtable<Integer, String> taxonomyTypeIDToTaxonomyName = new Hashtable<Integer, String>();
 
-            // First, create a CollectionType for TaxonomyType record
+            // First, create a Discipline for TaxonomyType record
             Statement stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             log.info(taxonomyTypeMapper.getSql());
             ResultSet rs = stmt.executeQuery(taxonomyTypeMapper.getSql());
@@ -1853,18 +1853,18 @@ public class GenericDBConversion
                 String disciplineName = getStandardDisciplineName(taxonomyTypeName);
                 if (disciplineName == null)
                 {
-                    log.error("**** Had to Skip record because taxonomyTypeName couldn't be found in our Discipline lookup in SpecifyAppContextMgr["+ taxonomyTypeName + "]");
+                    log.error("**** Had to Skip record because taxonomyTypeName couldn't be found in our DisciplineType lookup in SpecifyAppContextMgr["+ taxonomyTypeName + "]");
                     continue;
                 }
 
-                Discipline discipline = Discipline.getDiscipline(disciplineName);
-                if (discipline == null)
+                DisciplineType disciplineType = DisciplineType.getDiscipline(disciplineName);
+                if (disciplineType == null)
                 {
-                    log.error("**** discipline couldn't be found in our Discipline lookup in SpecifyAppContextMgr["+ disciplineName + "]");
+                    log.error("**** disciplineType couldn't be found in our DisciplineType lookup in SpecifyAppContextMgr["+ disciplineName + "]");
                     continue;
                 }
-                log.info("Creating a new CollectionType for taxonomyTypeName[" + taxonomyTypeName
-                        + "] discipline[" + disciplineName + "]");
+                log.info("Creating a new Discipline for taxonomyTypeName[" + taxonomyTypeName
+                        + "] disciplineType[" + disciplineName + "]");
 
                 taxonomyTypeName = disciplineName;
 
@@ -1882,14 +1882,14 @@ public class GenericDBConversion
                 taxonomyTypeIDToTaxonomyName.put(taxonomyTypeID, taxonomyTypeName);
 
                 /*
-                 * CollectionType
+                 * Discipline
                  * +-----------------------------+-------------+------+-----+---------+----------------+ |
                  * Field | Type | Null | Key | Default | Extra |
                  * +-----------------------------+-------------+------+-----+---------+----------------+ |
-                 * CollectionTypeID | bigint(20) | NO | PRI | NULL | auto_increment | |
+                 * DisciplineID | bigint(20) | NO | PRI | NULL | auto_increment | |
                  * TimestampCreated | datetime | NO | | | | | TimestampModified | datetime | NO | | | | |
                  * LastEditedBy | varchar(50) | YES | | NULL | | | Name | varchar(64) | YES | | NULL | | |
-                 * Discipline | varchar(64) | YES | | NULL | | | GeologicTimePeriodTreeDefID |
+                 * DisciplineType | varchar(64) | YES | | NULL | | | GeologicTimePeriodTreeDefID |
                  * bigint(20) | NO | UNI | | | | TaxonTreeDefID | bigint(20) | NO | MUL | | | |
                  * SpecifyUserID | bigint(20) | NO | MUL | | | | StorageTreeDefID | bigint(20) | NO |
                  * MUL | | | | GeographyTreeDefID | bigint(20) | NO | MUL | | | | DataTypeID |
@@ -1897,18 +1897,18 @@ public class GenericDBConversion
                  * +-----------------------------+-------------+------+-----+---------+----------------+
                  */
 
-                // use the old CollectionObjectTypeName as the new CollectionType name
-                BasicSQLUtils.setIdentityInsertONCommandForSQLServer(newDBConn, "collectiontype", BasicSQLUtils.myDestinationServerType);
+                // use the old CollectionObjectTypeName as the new Discipline name
+                BasicSQLUtils.setIdentityInsertONCommandForSQLServer(newDBConn, "discipline", BasicSQLUtils.myDestinationServerType);
                 Statement     updateStatement = newDBConn.createStatement();
                 StringBuilder strBuf2         = new StringBuilder();
                 // adding DivisioniID
-                strBuf2.append("INSERT INTO collectiontype (CollectionTypeID, TimestampModified, Discipline, Name, TimestampCreated, ");
+                strBuf2.append("INSERT INTO discipline (DisciplineID, TimestampModified, DisciplineType, Name, TimestampCreated, ");
                 strBuf2.append("DataTypeID, GeographyTreeDefID, GeologicTimePeriodTreeDefID, StorageTreeDefID, TaxonTreeDefID, DivisionID, ");
                 strBuf2.append("CreatedByAgentID, ModifiedByAgentID, Version) VALUES (");
                 strBuf2.append(taxonomyTypeMapper.get(taxonomyTypeID) + ",");
                 strBuf2.append("'" + dateFormatter.format(now) + "',"); // TimestampModified
-                strBuf2.append("'" + discipline.getName() + "',");
-                strBuf2.append("'" + discipline.getTitle() + "',");
+                strBuf2.append("'" + disciplineType.getName() + "',");
+                strBuf2.append("'" + disciplineType.getTitle() + "',");
                 strBuf2.append("'" + dateFormatter.format(now) + "',"); // TimestampCreated
                 strBuf2.append(dataTypeId + ",");
                 strBuf2.append("1,"); // GeographyTreeDefID
@@ -1926,17 +1926,17 @@ public class GenericDBConversion
                 updateStatement.close();
                 updateStatement = null;
                 recordCnt++;
-                BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "collectiontype", BasicSQLUtils.myDestinationServerType);
-                Integer collTypeID = BasicSQLUtils.getHighestId(newDBConn, "CollectionTypeID", "collectiontype");
+                BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "discipline", BasicSQLUtils.myDestinationServerType);
+                Integer disciplineID = BasicSQLUtils.getHighestId(newDBConn, "DisciplineID", "discipline");
 
-                newColObjIDTotaxonomyTypeID.put(collTypeID, taxonomyTypeID);
+                newColObjIDTotaxonomyTypeID.put(disciplineID, taxonomyTypeID);
 
-                log.info("Created new collectiontype[" + taxonomyTypeName + "] is dataType ["  + dataTypeId + "]");
+                log.info("Created new discipline[" + taxonomyTypeName + "] is dataType ["  + dataTypeId + "]");
             }
 
             rs.close();
             stmt.close();
-            log.info("CollectionType Records: " + recordCnt);
+            log.info("Discipline Records: " + recordCnt);
 
             if (taxonomyTypeMapper.size() > 0)
             {
@@ -1996,7 +1996,7 @@ public class GenericDBConversion
 
                     Statement updateStatement = newDBConn.createStatement();
                     strBuf.setLength(0);
-                    strBuf.append("INSERT INTO collection (CollectionTypeID, CollectionName, CollectionPrefix, Remarks, CatalogNumberingSchemeID, ");
+                    strBuf.append("INSERT INTO collection (DisciplineID, CollectionName, CollectionPrefix, Remarks, CatalogNumberingSchemeID, ");
                     strBuf.append("TimestampCreated, TimestampModified, CreatedByAgentID, ModifiedByAgentID, Version) VALUES (");
                     strBuf.append(newColObjdefID + ",");
                     strBuf.append(getStrValue(newSeriesName) + ",");
@@ -2764,13 +2764,13 @@ public class GenericDBConversion
      * lower/upper case to be space separated where each part of the name starts with a capital
      * letter.
      * 
-     * @param collType the Collection Type
+     * @param discipline the Discipline
      * @param colToNameMap a mape for old names to new names
      * @param typeMap a map for changing the type of the data (meaning an old value may be a boolean
      *            stored in a float)
      * @return true for success
      */
-    public boolean convertBiologicalAttrs(CollectionType collType, @SuppressWarnings("unused")
+    public boolean convertBiologicalAttrs(Discipline discipline, @SuppressWarnings("unused")
     final Map<String, String> colToNameMap, final Map<String, Short> typeMap)
     {
         AttributeIFace.FieldType[] attrTypes = { AttributeIFace.FieldType.IntegerType,
@@ -2850,7 +2850,7 @@ public class GenericDBConversion
                         }
 
                         attrDef.setDataType(dataType);
-                        attrDef.setCollectionType(collType);
+                        attrDef.setDiscipline(discipline);
                         attrDef.setTableType(GenericDBConversion.TableType.CollectionObject
                                 .getType());
                         attrDef.setTimestampCreated(now);
@@ -4526,7 +4526,7 @@ public class GenericDBConversion
             {
                 DataType dataType = new DataType();
                 dataType.setName(name);
-                dataType.setCollectionType(null);
+                dataType.setDiscipline(null);
                 localSession.save(dataType);
 
                 if (returnName != null && name.equals(returnName))
@@ -4554,7 +4554,7 @@ public class GenericDBConversion
      * @param collection collection
      * @return set of objects
      */
-    public CollectionType createCollectionType(final String       name,
+    public Discipline createDiscipline(final String       name,
                                                final DataType     dataType,
                                                final Agent        userAgent,
                                                final TaxonTreeDef taxaTreeDef,
@@ -4571,22 +4571,22 @@ public class GenericDBConversion
             Session localSession = HibernateUtil.getCurrentSession();
             HibernateUtil.beginTransaction();
 
-            CollectionType collType = new CollectionType();
-            collType.initialize();
-            collType.setName(name);
-            collType.setDataType(dataType);
+            Discipline discipline = new Discipline();
+            discipline.initialize();
+            discipline.setName(name);
+            discipline.setDataType(dataType);
 
-            collType.setTaxonTreeDef(taxaTreeDef);
+            discipline.setTaxonTreeDef(taxaTreeDef);
 
-            collType.setCollections(collectionSet);
+            discipline.setCollections(collectionSet);
 
-            localSession.save(collType);
+            localSession.save(discipline);
 
-            collType.addReference(userAgent, "agents");
+            discipline.addReference(userAgent, "agents");
 
             HibernateUtil.commitTransaction();
 
-            return collType;
+            return discipline;
 
         } catch (Exception e)
         {
@@ -6686,9 +6686,9 @@ public class GenericDBConversion
                     if (fCnt > 0)
                         sqlStr.append(", ");
 
-                    if (StringUtils.contains(fieldName.toLowerCase(), "collectiontypeid"))
+                    if (StringUtils.contains(fieldName.toLowerCase(), "disciplineid"))
                     {
-                        sqlStr.append(getCollectionTypeId());
+                        sqlStr.append(getDisciplineId());
 
                     } else
                     {
@@ -6836,7 +6836,7 @@ public class GenericDBConversion
                 "agent.MiddleInitial", "agent.Title", "agent.Interests", "agent.Abbreviation",
                 "agent.Name", "agentaddress.Email", "agentaddress.URL", "agent.Remarks",
                 "agent.TimestampCreated", "agent.Visibility", "agent.VisibilitySetBy",// User/Security changes
-                "agent.ParentOrganizationID", "agent.CollectionTypeID" };
+                "agent.ParentOrganizationID", "agent.DisciplineID" };
 
         // See comments for agent Columns
         String[] addressColumns = { "address.AddressID", "address.TimestampModified",
@@ -7084,7 +7084,7 @@ public class GenericDBConversion
                     sqlStr.append("INSERT INTO agent ");
                     sqlStr.append("(AgentID, TimestampModified, AgentType, JobTitle, FirstName, LastName, MiddleInitial, ");
                     sqlStr.append("Title, Interests, Abbreviation, Name, Email, URL, Remarks, TimestampCreated, ");
-                    sqlStr.append("Visibility, VisibilitySetBy, ParentOrganizationID, CollectionTypeID, CreatedByAgentID, ModifiedByAgentID, Version)");
+                    sqlStr.append("Visibility, VisibilitySetBy, ParentOrganizationID, DisciplineID, CreatedByAgentID, ModifiedByAgentID, Version)");
                     sqlStr.append(" VALUES (");
 
                     for (int i = 0; i < agentColumns.length; i++)
@@ -7114,9 +7114,9 @@ public class GenericDBConversion
                                 sqlStr.append("NULL");
                             }
 
-                        } else if (agentColumns[i].equalsIgnoreCase("agent.CollectionTypeID"))
+                        } else if (agentColumns[i].equalsIgnoreCase("agent.DisciplineID"))
                         {
-                            sqlStr.append(getCollectionTypeId());
+                            sqlStr.append(getDisciplineId());
 
                         } else if (agentColumns[i].equals("agent.Name"))
                         {
@@ -7379,7 +7379,7 @@ public class GenericDBConversion
                     StringBuilder sqlStr = new StringBuilder("INSERT INTO agent ");
                     sqlStr.append("(AgentID, TimestampModified, AgentType, JobTitle, FirstName, LastName, MiddleInitial, Title, Interests, ");
                     sqlStr.append("Abbreviation, Name, Email, URL, Remarks, TimestampCreated, Visibility, VisibilitySetBy, ParentOrganizationID, ");
-                    sqlStr.append("CollectionTypeID, CreatedByAgentID, ModifiedByAgentID, Version)");
+                    sqlStr.append("DisciplineID, CreatedByAgentID, ModifiedByAgentID, Version)");
                     sqlStr.append(" VALUES (");
                     for (int i = 0; i < agentColumns.length; i++)
                     {
@@ -7402,9 +7402,9 @@ public class GenericDBConversion
                         {
                             sqlStr.append("null");
 
-                        } else if (agentColumns[i].equalsIgnoreCase("agent.CollectionTypeID"))
+                        } else if (agentColumns[i].equalsIgnoreCase("agent.DisciplineID"))
                         {
-                            sqlStr.append(getCollectionTypeId());
+                            sqlStr.append(getDisciplineId());
 
                         } else
                         {

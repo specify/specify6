@@ -66,7 +66,7 @@ public class TaxonTreeDef extends BaseTreeDef<Taxon, TaxonTreeDef, TaxonTreeDefI
     protected String                name;
     protected String                remarks;
     protected Integer               fullNameDirection;
-    protected CollectionType        collectionType;
+    protected Discipline        discipline;
     protected Set<Taxon>            treeEntries;
     protected Set<TaxonTreeDefItem> treeDefItems;
     
@@ -90,7 +90,7 @@ public class TaxonTreeDef extends BaseTreeDef<Taxon, TaxonTreeDef, TaxonTreeDefI
 		name = null;
 		remarks = null;
         fullNameDirection = null;
-        collectionType = null;
+        discipline = null;
 		treeEntries = new HashSet<Taxon>();
 		treeDefItems = new HashSet<TaxonTreeDefItem>();
 	}
@@ -164,14 +164,14 @@ public class TaxonTreeDef extends BaseTreeDef<Taxon, TaxonTreeDef, TaxonTreeDefI
 
     @OneToOne(mappedBy="taxonTreeDef", fetch=FetchType.EAGER)
     @Cascade( {CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK} )
-    public CollectionType getCollectionType()
+    public Discipline getDiscipline()
 	{
-		return this.collectionType;
+		return this.discipline;
 	}
 
-	public void setCollectionType(CollectionType collectionType)
+	public void setDiscipline(Discipline discipline)
 	{
-		this.collectionType = collectionType;
+		this.discipline = discipline;
 	}
 
     @OneToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="definition")
