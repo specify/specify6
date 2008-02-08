@@ -80,6 +80,27 @@ public class NavBoxLayoutManager implements LayoutManager2
 
     }
 
+    /**
+     * @param arg0
+     * @param arg1
+     * 
+     * Moves arg0 to arg1's position and shifts other components appropriately.
+     * 
+     * Need to ensure that layoutContainer gets executed in order for move to be visible.
+     */
+    public void moveLayoutComponent(final Component arg0, final Component arg1)
+    {
+        int fromIdx = comps.indexOf(arg0);
+        int toIdx = comps.indexOf(arg1);
+        if (fromIdx == toIdx)
+        {
+            return;
+        }
+        //else
+        comps.remove(fromIdx);
+        comps.insertElementAt(arg0, toIdx);
+    }
+    
     /* (non-Javadoc)
      * @see java.awt.LayoutManager#preferredLayoutSize(java.awt.Container)
      */

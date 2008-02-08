@@ -1099,7 +1099,7 @@ public class QueryBldrPane extends BaseSubPane
             queryFieldItems.add(qfp);
             fieldQRI.setIsInUse(true);
             queryFieldsPanel.validate();
-
+            
             SwingUtilities.invokeLater(new Runnable()
             {
                 public void run()
@@ -1348,4 +1348,35 @@ public class QueryBldrPane extends BaseSubPane
         return saveBtn.isEnabled(); //el cheapo
     }
     
+    /**
+     * @param toMove
+     * @param moveTo
+     * 
+     * Moves toMove to moveTo's position and shifts other panels to fill toMove's former position.
+     */
+    protected void moveField(final QueryFieldPanel toMove, final QueryFieldPanel moveTo)
+    {
+        int fromIdx = queryFieldItems.indexOf(toMove);
+        int toIdx = queryFieldItems.indexOf(moveTo);
+        if (fromIdx == toIdx)
+        {
+            return;
+        }
+        
+        queryFieldItems.remove(fromIdx);
+        queryFieldItems.insertElementAt(toMove, toIdx);
+         
+        ((NavBoxLayoutManager)queryFieldsPanel.getLayout()).moveLayoutComponent(toMove, moveTo);
+        
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            public void run()
+            {
+                queryFieldsPanel.doLayout();
+                queryFieldsPanel.validate();
+                queryFieldsPanel.repaint();
+                saveBtn.setEnabled(true);
+            }
+        });
+    }
 }

@@ -12,9 +12,14 @@ package edu.ku.brc.specify.tasks.subpane.qb;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
@@ -26,6 +31,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
+import javax.swing.border.Border;
+import javax.swing.border.LineBorder;
+import javax.swing.event.MouseInputAdapter;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -34,11 +42,17 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.tasks.subpane.DroppableTaskPane;
 import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.SpQueryField;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.MultiStateIconButon;
+import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.dnd.GhostActionable;
+import edu.ku.brc.ui.dnd.GhostGlassPane;
+import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
+import edu.ku.brc.ui.dnd.ShadowFactory;
 import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.ui.forms.validation.DataChangeNotifier;
@@ -56,7 +70,7 @@ import edu.ku.brc.ui.forms.validation.ValTextField;
  * Oct 18, 2007
  *
  */
-public class QueryFieldPanel extends JPanel
+public class QueryFieldPanel extends JPanel implements GhostActionable
 {
     protected static final Logger log = Logger.getLogger(QueryFieldPanel.class);
     
@@ -88,6 +102,16 @@ public class QueryFieldPanel extends JPanel
     
     protected String[] labelStrs   = {" ", "Field", "Not", "Operator", "Criteria", "Sort", "Display", " ", " "};
     protected String[] comparators;
+    
+    public static final DataFlavor    QUERY_FLD_PANE_FLAVOR = new DataFlavor(DroppableTaskPane.class, "QueryFldPane");
+    protected List<DataFlavor>        flavors         = new ArrayList<DataFlavor>(); 
+    GhostMouseInputAdapter            mouseDropAdapter; 
+    protected BufferedImage           shadowBuffer        = null;
+    protected BufferedImage           buffer              = null;
+    protected boolean                 generateImgBuf      = true;    
+    protected static final int SHADOW_SIZE = 10;
+    protected boolean isOver = false;
+    protected Border inactiveBorder = null;
     
     /**
      * Constructor.
@@ -122,17 +146,69 @@ public class QueryFieldPanel extends JPanel
         }
         
         setQueryField(queryField);
-    }
+        flavors.add(QueryFieldPanel.QUERY_FLD_PANE_FLAVOR);
+        MouseInputAdapter mouseInputAdapter = new MouseInputAdapter() {
+            
+            @Override
+            public void mouseEntered(MouseEvent e)
+            {
+                if (isEnabled())
+                {
+                    isOver = true;
+                    repaint();
+                    //UIRegistry.displayStatusBarText(itself.getToolTipText());
+                }
+            }
+            @Override
+            public void mouseExited(MouseEvent e)
+            {
+                isOver = false;
+                repaint();
+                //UIRegistry.displayStatusBarText("");
+            }
+            @Override
+            public void mousePressed(MouseEvent e)
+            {
+//                downME = e.getPoint();
+                repaint();
+//                wasPopUp = e.isPopupTrigger();
+//                if (popupMenu != null && wasPopUp && itself.isEnabled())
+//                {
+//                    popupMenu.show(e.getComponent(), e.getX(), e.getY());
+//                }
+            }
+            
+            @Override
+            public void mouseReleased(MouseEvent e)
+            {
+                repaint();
+                doAction(QueryFieldPanel.this);
+//                Point pnt = e.getPoint();
+//                boolean clicked = Math.abs(pnt.x - downME.x) < 4 && Math.abs(pnt.y - downME.y) < 4;
+//                Rectangle r = RolloverCommand.this.getBounds();
+//                r.x = 0;
+//                r.y = 0;
+//                if (!wasPopUp && clicked && RolloverCommand.this.isEnabled() && r.contains(e.getPoint()))
+//                {
+//                    if (!e.isPopupTrigger())
+//                    {
+//                        doAction(RolloverCommand.this);
+//                    }
+//                }
+            }
+
+          };
+//        addMouseListener(mouseInputAdapter);
+//        addMouseMotionListener(mouseInputAdapter);
+//        ((GhostGlassPane)UIRegistry.get(UIRegistry.GLASSPANE)).add((GhostActionable)this);
+//        createMouseInputAdapter();
+//        inactiveBorder = getBorder();
+}
     
     public void updateQueryField()
     {
         if (queryField != null)
         {
-//            queryField.setEndOper(oper);
-//            queryField.setEndValue(endValue);
-//            queryField.setFieldName(fieldName);
-//          queryField.setOperEnd(operEnd);
-            
             queryField.setIsDisplay(isDisplayedCkbx.isSelected());
             queryField.setIsNot(isNotCheckbox.isSelected());
             if (validator.hasChanged() && queryField.getSpQueryFieldId() != null)
@@ -159,13 +235,6 @@ public class QueryFieldPanel extends JPanel
                 if (tablesIds.length() > 0) tablesIds.append(',');
                 tablesIds.append(idList.get(i));
             }
-            /*do
-            {
-                if (tablesIds.length() > 0) tablesIds.append(',');
-                tablesIds.append(idStack.pop());
-                
-            } while (idStack.size() > 0);*/
-            
             log.debug(tablesIds.toString());
             queryField.setTableList(tablesIds.toString());
             
@@ -578,4 +647,158 @@ public class QueryFieldPanel extends JPanel
     {
         return isDisplayedCkbx.isSelected();
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.dnd.GhostActionable#createMouseInputAdapter()
+     */
+    public void createMouseInputAdapter()
+    {
+        mouseDropAdapter = new GhostMouseInputAdapter(UIRegistry.getGlassPane(), "action", this);
+        mouseDropAdapter.setPaintPositionMode(GhostGlassPane.ImagePaintMode.ABSOLUTE);
+        mouseDropAdapter.setDoAnimationOnDrop(false);
+        addMouseListener(mouseDropAdapter);
+        addMouseMotionListener(mouseDropAdapter);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.dnd.GhostActionable#doAction(edu.ku.brc.ui.dnd.GhostActionable)
+     */
+    public void doAction(GhostActionable source)
+    {
+       System.out.println(fieldLabel.getText() + " dropped");
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.dnd.GhostActionable#getBufferedImage()
+     */
+    public BufferedImage getBufferedImage()
+    {
+        if (buffer == null || generateImgBuf)
+        {
+            renderOffscreen();
+        }
+        return buffer;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.dnd.GhostActionable#getData()
+     */
+    public Object getData()
+    {
+        // TODO Auto-generated method stub
+        return this;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.dnd.GhostActionable#getDataForClass(java.lang.Class)
+     */
+    public Object getDataForClass(Class<?> classObj)
+    {
+        // TODO Auto-generated method stub
+        return this;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.dnd.GhostActionable#getDragDataFlavors()
+     */
+    public List<DataFlavor> getDragDataFlavors()
+    {
+        return flavors;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.dnd.GhostActionable#getDropDataFlavors()
+     */
+    public List<DataFlavor> getDropDataFlavors()
+    {
+        return flavors;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.dnd.GhostActionable#getMouseInputAdapter()
+     */
+    public GhostMouseInputAdapter getMouseInputAdapter()
+    {
+        return mouseDropAdapter;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.dnd.GhostActionable#setActive(boolean)
+     */
+    public void setActive(boolean isActive)
+    {
+        if (isActive)
+        {
+            setBorder(new LineBorder(Color.BLACK));
+        }
+        else
+        {
+            setBorder(inactiveBorder);
+        }
+        repaint();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.dnd.GhostActionable#setData(java.lang.Object)
+     */
+    public void setData(Object data)
+    {
+        // TODO Auto-generated method stub
+        
+    }
+    
+    /**
+     * Render the control to a buffer
+     */
+    private void renderOffscreen()
+    {
+        BufferedImage bgBufImg = getBackgroundImageBuffer();
+
+        
+        buffer = new BufferedImage(bgBufImg.getWidth(), bgBufImg.getHeight(), BufferedImage.TYPE_INT_ARGB);
+
+        int shadowWidth  = bgBufImg.getWidth() - getHeight();
+        int shadowHeight = bgBufImg.getHeight() - getHeight();
+
+        int left   = (int)((shadowWidth) * 0.5);
+        int top    = (int)((shadowHeight)* 0.4);
+        int width  = getWidth() - 2;
+        int height = getHeight() - 2;
+
+        Graphics2D g2 = buffer.createGraphics();
+
+        
+        g2.drawImage(bgBufImg, 0, 0, bgBufImg.getWidth(), bgBufImg.getHeight(), null);
+
+        g2.fillRect(left, top, width, height);
+
+        g2.setClip(left, top, width, height);
+        
+        g2.translate(left, top);
+    }
+
+    /**
+     * Returns the BufferedImage of a background shadow. I creates a large rectangle than the orignal image.
+     * @return Returns the BufferedImage of a background shadow. I creates a large rectangle than the orignal image.
+     */
+    private BufferedImage getBackgroundImageBuffer()
+    {
+        if (shadowBuffer == null || generateImgBuf)
+        {
+            ShadowFactory factory = new ShadowFactory(SHADOW_SIZE, 0.17f, Color.BLACK);
+
+            BufferedImage image = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
+
+            Graphics2D g2 = image.createGraphics();
+            g2.setColor(Color.WHITE);
+            g2.fillRect(0, 0, image.getWidth(), image.getHeight());
+            g2.dispose();
+
+            shadowBuffer = factory.createShadow(image);
+        }
+        return shadowBuffer;
+    }
+
+
+    
 }
