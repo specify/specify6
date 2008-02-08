@@ -194,6 +194,9 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
                     if (!e.isPopupTrigger())
                     {
                         doAction(RolloverCommand.this);
+                    } else
+                    {
+                        popupMenu.show(e.getComponent(), e.getX(), e.getY());
                     }
                 }
             }
