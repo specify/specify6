@@ -307,7 +307,7 @@ public class AutoNumberGeneric implements AutoNumberIFace
                     }
                     
                     UIFieldFormatterField  yearField = formatter.getYear();
-                    if (yearField != null && yearField.isByYear())
+                    if (yearField != null)
                     {
                         Pair<Integer, Integer> yrPos = formatter.getYearPosition();
                         if (yrPos != null)
@@ -315,10 +315,11 @@ public class AutoNumberGeneric implements AutoNumberIFace
                             sb.replace(yrPos.first, yrPos.second, Integer.toString(yearAndIncVal.first));
                         }
                         
-                        return sb.toString();
+                        //return sb.toString();
                         
                     } // else
-                    throw new RuntimeException("There was an error trying to obtain the highest number, there may be a bad value in the database.");
+                    return sb.toString();
+                    //throw new RuntimeException("There was an error trying to obtain the highest number, there may be a bad value in the database.");
                     
                 } // else
                 throw new RuntimeException("There was an error trying to obtain the highest number, there may be a bad value in the database.");

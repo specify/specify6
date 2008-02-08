@@ -74,6 +74,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
     
     protected Vector<Component>                     enableItemsValid   = new Vector<Component>();
     protected Vector<Component>                     enableItemsChanged = new Vector<Component>();
+    protected JComponent                            saveComp    = null;
 
     protected boolean                               enabled     = false;
     protected boolean                               hasChanged  = false;
@@ -110,6 +111,11 @@ public class FormValidator implements ValidationListener, DataChangeListener
     public FormValidator getParent()
     {
         return parent;
+    }
+
+    public void setSaveComp(final JComponent saveComp)
+    {
+        this.saveComp = saveComp;
     }
 
     /**
@@ -1183,11 +1189,6 @@ public class FormValidator implements ValidationListener, DataChangeListener
             validationInfoBtn.setEnabled(enable);
             validationInfoBtn.setIcon(icon);
         }
-        
-        //if (parent != null)
-        //{
-        //    parent.updateValidationBtnUIState();
-        //}
     }
 
     //-----------------------------------------------------
@@ -1210,6 +1211,17 @@ public class FormValidator implements ValidationListener, DataChangeListener
             comp.setEnabled(itsOKToEnable);
         }
         updateValidationBtnUIState();
+        
+        if (type == EnableType.ValidAndChangedItems && saveComp != null)
+        {
+            if (itsOKToEnable)
+            {
+                saveComp.setEnabled(isFormValid(true));
+            } else
+            {
+                saveComp.setEnabled(false);
+            }
+        }
     }
 
    /* (non-Javadoc)

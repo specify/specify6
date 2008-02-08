@@ -83,6 +83,7 @@ import edu.ku.brc.dbsupport.SQLExecutionListener;
 import edu.ku.brc.dbsupport.SQLExecutionProcessor;
 import edu.ku.brc.dbsupport.StaleObjectException;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.ui.ColorChooser;
 import edu.ku.brc.ui.ColorWrapper;
 import edu.ku.brc.ui.CommandAction;
@@ -579,7 +580,7 @@ public class FormViewObj implements Viewable,
         
         if (formValidator != null)
         {
-            formValidator.addEnableItem(saveComp, FormValidator.EnableType.ValidAndChangedItems);
+            formValidator.setSaveComp(saveComp);
         }
     }
 
@@ -1720,7 +1721,7 @@ public class FormViewObj implements Viewable,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace#doDeleteDataObj(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace, boolean)
      */
-    public void doDeleteDataObj(final Object dataObj, final DataProviderSessionIFace session, final boolean doDelete)
+    public void doDeleteDataObj(final Object dataObjArg, final DataProviderSessionIFace sessionArg, final boolean doDelete)
     {
         if (doDelete)
         {
@@ -1728,9 +1729,9 @@ public class FormViewObj implements Viewable,
             
         } else
         {
-            DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(dataObj.getClass().getName());
+            DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(dataObjArg.getClass().getName());
             StringBuilder sb = new StringBuilder();
-            sb.append(String.format(getResourceString("COULDNT_DELETE_OBJ"), ti.getTitle(), ((FormDataObjIFace)dataObj).getIdentityTitle()));
+            sb.append(String.format(getResourceString("COULDNT_DELETE_OBJ"), ti.getTitle(), ((FormDataObjIFace)dataObjArg).getIdentityTitle()));
             sb.append("\n");
             sb.append(getResourceString("BR_FOUNDINTABLE_LABEL"));
             sb.append("\n");
@@ -2381,7 +2382,14 @@ public class FormViewObj implements Viewable,
             {
                 recordSetItemList.clear();
             }
+            
+            if (recordSet == null)
+            {
+                // XXX This is VERY BAD, it needs it's own factory, I thought I had one already.
+                recordSet = new RecordSet("Temp", tableInfo.getTableId());
+            }
             recordSetItemList.addAll(availableIdList);
+            recordSet.addAll(availableIdList);
         }
     }
     
@@ -2407,12 +2415,19 @@ public class FormViewObj implements Viewable,
                     UIRegistry.displayLocalizedStatusBarText("NOT_ALL_RECS_FOUND");
                 }
                 
+                if (recordSet == null)
+                {
+                    // XXX This is VERY BAD, it needs it's own factory, I thought I had one already.
+                    recordSet = new RecordSet();
+                }
+                
                 recordSetItemList = new Vector<RecordSetItemIFace>(availableIdList.size());
                 for (RecordSetItemIFace rsi : rs.getItems())
                 {
                     if (availableIdList.get(rsi.getRecordId().intValue()) != null)
                     {
                         recordSetItemList.add(rsi);
+                        recordSet.addItem(rsi);
                     }
                 }
                 Object         firstDataObj = getDataObjectViaRecordSet(0);
