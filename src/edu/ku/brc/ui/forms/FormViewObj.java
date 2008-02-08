@@ -1724,7 +1724,7 @@ public class FormViewObj implements Viewable,
     {
         if (doDelete)
         {
-            //removeObject();
+            removeObject();
             
         } else
         {
