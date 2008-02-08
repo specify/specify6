@@ -283,10 +283,6 @@ public class UploadTable implements Comparable<UploadTable>
                                 + m.getName());
                         Method setter = getSetterForGetter(m);
                         String fldName = col.name();
-                        if (fldName.equalsIgnoreCase("DiscplineID"))
-                        {
-                            fldName = "discplineId";
-                        }
                         if (fldName.equalsIgnoreCase("CollectionMemberID"))
                         {
                             fldName = "collectionMemberId";
