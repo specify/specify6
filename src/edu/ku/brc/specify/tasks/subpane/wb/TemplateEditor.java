@@ -1001,7 +1001,15 @@ public class TemplateEditor extends CustomDialog
                             || tblColumnName.equals(fieldNameLowerNoWS)
                             || tblFieldName.equals(fieldNameLowerNoWS)
                             || tblFieldName.startsWith(fieldNameLower)
-                            || tblColumnName.startsWith(fieldNameLower)) { return fi; }
+                            || tblColumnName.startsWith(fieldNameLower)) 
+                    { 
+                        fieldInfo = fi;
+                        break;
+                    }
+                }
+                if (fieldInfo != null)
+                {
+                    break;
                 }
             }
         }
