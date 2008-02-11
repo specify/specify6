@@ -1268,8 +1268,35 @@ public class Uploader implements ActionListener, KeyListener
     protected boolean isTreeable(final Table tbl)
     {
         return Treeable.class.isAssignableFrom(tbl.getTableInfo().getClassObj());
+        //return false;
     }
         
+    protected Vertex<Table> getMatchingVertexInUpload(final Table toMatch)
+    {
+        if (isTreeable(toMatch))
+        {
+            UploadTableTree treeTbl = null;
+            for (UploadTable ut : uploadTables)
+            {
+                if (ut instanceof UploadTableTree)
+                {
+                    UploadTableTree utt = (UploadTableTree)ut;
+                    if (utt.getBaseTable().equals(toMatch))
+                    {
+                        if (treeTbl == null || treeTbl.getRank() < utt.getRank())
+                        treeTbl = utt;
+                    }
+                }
+            }
+            if (treeTbl == null)
+            {
+                return null;
+            }
+            return uploadGraph.getVertexByData(treeTbl.getTable());
+        }
+        //else
+        return uploadGraph.getVertexByData(toMatch);
+    }
     /**
      * @param depth
      * @return groups of tables that can be added to the upload graph to make it a connected graph.
@@ -1299,7 +1326,8 @@ public class Uploader implements ActionListener, KeyListener
                     }
                     for (Vertex<Table> adj : dbGraph.into(newTbl.getData()))
                     {
-                        Vertex<Table> endPt = uploadGraph.getVertexByData(adj.getData());
+                        //Vertex<Table> endPt = uploadGraph.getVertexByData(adj.getData());
+                        Vertex<Table> endPt = getMatchingVertexInUpload(adj.getData());
                         if (endPt != null)
                         {
                             uploadGraph.addEdge(endPt.getLabel(), newTbl.getLabel());

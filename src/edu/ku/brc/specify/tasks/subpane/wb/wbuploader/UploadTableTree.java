@@ -656,5 +656,13 @@ public class UploadTableTree extends UploadTable
         return super.findValueForReqRelClass(rce);
     }
 
+    /**
+     * @return the rank
+     */
+    public Integer getRank()
+    {
+        return rank;
+    }
+
     
 }
