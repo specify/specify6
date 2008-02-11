@@ -2711,6 +2711,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         if (datasetUploader != null)
         {
             //the button shouldn't be enabled in this case, but just to be sure:
+            log.error("The upload button was enabled but the datasetUploader was not null.");
             return;
         }
         
