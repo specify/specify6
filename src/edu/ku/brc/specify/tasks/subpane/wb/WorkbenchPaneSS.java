@@ -2781,14 +2781,17 @@ public class WorkbenchPaneSS extends BaseSubPane
     public void uploadDone()
     {
         datasetUploader = null;
-        mainPanel.remove(uploadPane);
-        mainPanel.add(spreadSheet.getScrollPane(), PanelType.Spreadsheet.toString());
-        showPanel(PanelType.Spreadsheet);
-        mainPanel.validate();
-        mainPanel.doLayout();
-        ssFormSwitcher.setEnabled(true);
-        spreadSheet.setEnabled(true);
-        setAllUploadDatasetBtnEnabled(true);
+        if (uploadPane != null)
+        {
+            mainPanel.remove(uploadPane);
+            mainPanel.add(spreadSheet.getScrollPane(), PanelType.Spreadsheet.toString());
+            showPanel(PanelType.Spreadsheet);
+            mainPanel.validate();
+            mainPanel.doLayout();
+            ssFormSwitcher.setEnabled(true);
+            spreadSheet.setEnabled(true);
+            setAllUploadDatasetBtnEnabled(true);
+        }
     }
     
     protected void setAllUploadDatasetBtnEnabled(boolean enabled)
