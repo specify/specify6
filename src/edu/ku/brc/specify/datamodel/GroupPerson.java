@@ -40,6 +40,8 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
+import org.hibernate.annotations.Index;
+
 import edu.ku.brc.util.Orderable;
 
 /**
@@ -48,7 +50,12 @@ import edu.ku.brc.util.Orderable;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
-@Table(name = "groupperson", uniqueConstraints = { @UniqueConstraint(columnNames = { "OrderNumber", "GroupID" }) })
+@Table(name = "groupperson", uniqueConstraints = { 
+        @UniqueConstraint(columnNames = { "OrderNumber", "GroupID" }) 
+       })
+@org.hibernate.annotations.Table(appliesTo="groupperson", indexes =
+    {   @Index (name="GPColMemIDX", columnNames={"CollectionMemberID"})
+    })
 public class GroupPerson extends CollectionMember implements java.io.Serializable,
                                                              Orderable,
                                                              Comparable<GroupPerson>
@@ -58,10 +65,10 @@ public class GroupPerson extends CollectionMember implements java.io.Serializabl
     // Fields    
 
      protected Integer groupPersonId;
-     protected Short orderNumber;
-     protected String remarks;
-     protected Agent group;
-     protected Agent member;
+     protected Short   orderNumber;
+     protected String  remarks;
+     protected Agent   group;
+     protected Agent   member;
 
 
     // Constructors
@@ -85,10 +92,10 @@ public class GroupPerson extends CollectionMember implements java.io.Serializabl
     {
         super.init();
         groupPersonId = null;
-        orderNumber = null;
-        remarks = null;
-        group = null;
-        member = null;
+        orderNumber   = null;
+        remarks       = null;
+        group         = null;
+        member        = null;
     }
     // End Initializer
 
@@ -100,7 +107,8 @@ public class GroupPerson extends CollectionMember implements java.io.Serializabl
     @Id
     @GeneratedValue
     @Column(name = "GroupPersonID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Integer getGroupPersonId() {
+    public Integer getGroupPersonId() 
+    {
         return this.groupPersonId;
     }
 
@@ -125,7 +133,8 @@ public class GroupPerson extends CollectionMember implements java.io.Serializabl
         return GroupPerson.class;
     }
     
-    public void setGroupPersonId(Integer groupPersonId) {
+    public void setGroupPersonId(Integer groupPersonId) 
+    {
         this.groupPersonId = groupPersonId;
     }
 
@@ -133,11 +142,13 @@ public class GroupPerson extends CollectionMember implements java.io.Serializabl
      * 
      */
     @Column(name = "OrderNumber", unique = false, nullable = false, insertable = true, updatable = true)
-    public Short getOrderNumber() {
+    public Short getOrderNumber() 
+    {
         return this.orderNumber;
     }
     
-    public void setOrderNumber(Short orderNumber) {
+    public void setOrderNumber(Short orderNumber) 
+    {
         this.orderNumber = orderNumber;
     }
 
@@ -146,11 +157,13 @@ public class GroupPerson extends CollectionMember implements java.io.Serializabl
      */
     @Lob
     @Column(name = "Remarks", length = 4096)
-    public String getRemarks() {
+    public String getRemarks() 
+    {
         return this.remarks;
     }
     
-    public void setRemarks(String remarks) {
+    public void setRemarks(String remarks) 
+    {
         this.remarks = remarks;
     }
 
@@ -159,11 +172,13 @@ public class GroupPerson extends CollectionMember implements java.io.Serializabl
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "GroupID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Agent getGroup() {
+    public Agent getGroup() 
+    {
         return this.group;
     }
     
-    public void setGroup(Agent agentByGroup) {
+    public void setGroup(Agent agentByGroup) 
+    {
         this.group = agentByGroup;
     }
 
@@ -172,11 +187,13 @@ public class GroupPerson extends CollectionMember implements java.io.Serializabl
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "MemberID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Agent getMember() {
+    public Agent getMember() 
+    {
         return this.member;
     }
     
-    public void setMember(Agent agentByMember) {
+    public void setMember(Agent agentByMember) 
+    {
         this.member = agentByMember;
     }
 

@@ -414,6 +414,14 @@ public abstract class BaseBusRules implements BusinessRulesIFace
         // if we get this far, this class of object isn't handled by these business rules
         return STATUS.OK;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#processBusinessRules(java.lang.Object, java.lang.Object)
+     */
+    public STATUS processBusinessRules(Object parentDataObj, Object dataObj)
+    {
+        return processBusinessRules(dataObj);
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#doesSearchObjectRequireNewParent()

@@ -2200,7 +2200,7 @@ public class FormViewObj implements Viewable,
         throw new RuntimeException("Couldn't find FieldInfo for ID["+id+"]");
     }
 
-     /* (non-Javadoc)
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#getLabelById(java.lang.String)
      */
     public JLabel getLabelFor(final String id)
@@ -2212,6 +2212,23 @@ public class FormViewObj implements Viewable,
         }
         // else
         throw new RuntimeException("Couldn't find FieldInfo for ID["+id+"]");
+    }
+
+    /**
+     * Get the label for a field comonent.
+     * @param comp the field component
+     * @return the label component for a field component
+     */
+    public JLabel getLabelFor(final Component comp)
+    {
+        for (FieldInfo fi : controlsById.values())
+        {
+            if (fi.getComp() == comp)
+            {
+                return getLabelFor(fi.getId());
+            }
+        }
+        return null;
     }
 
     /* (non-Javadoc)
@@ -2813,7 +2830,7 @@ public class FormViewObj implements Viewable,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#setDataIntoUI()
      */
-    public void setDataIntoUI()
+    public synchronized void setDataIntoUI()
     {
         if (businessRules != null)
         {
@@ -3955,11 +3972,18 @@ public class FormViewObj implements Viewable,
     {
         return rsController;
     }
+
+    /**
+     * @return the businessRules
+     */
+    public BusinessRulesIFace getBusinessRules()
+    {
+        return businessRules;
+    }
     
     //-----------------------------------------------------
     // ValidationListener
     //-----------------------------------------------------
-
 
     /* (non-Javadoc)
      * @see ValidationListener#wasValidated(UIValidator)

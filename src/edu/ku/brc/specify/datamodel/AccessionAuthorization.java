@@ -45,7 +45,10 @@ import javax.persistence.UniqueConstraint;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
-@Table(name = "accessionauthorization", uniqueConstraints = { @UniqueConstraint(columnNames = { "PermitID", "AccessionID" }), @UniqueConstraint(columnNames = { "RepositoryAgreementID" }) })
+@Table(name = "accessionauthorization", uniqueConstraints = { 
+        @UniqueConstraint(columnNames = { "PermitID", "AccessionID" }), 
+        @UniqueConstraint(columnNames = { "RepositoryAgreementID" })
+})
 public class AccessionAuthorization extends DataModelObjBase implements java.io.Serializable,
         Comparable<AccessionAuthorization>
 {
@@ -144,7 +147,7 @@ public class AccessionAuthorization extends DataModelObjBase implements java.io.
     /**
      * * Permit authorizing accession
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "PermitID", unique = false, nullable = false, insertable = true, updatable = true)
     public Permit getPermit()
     {

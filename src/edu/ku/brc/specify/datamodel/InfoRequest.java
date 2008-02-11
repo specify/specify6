@@ -46,6 +46,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Index;
+
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 
@@ -56,6 +58,9 @@ import edu.ku.brc.dbsupport.RecordSetIFace;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "inforequest")
+@org.hibernate.annotations.Table(appliesTo="inforequest", indexes =
+    {   @Index (name="IRColMemIDX", columnNames={"CollectionMemberID"})
+    })
 public class InfoRequest extends CollectionMember implements java.io.Serializable {
 
     // Fields    

@@ -306,11 +306,12 @@ public class DataBuilder
         collection.setRemarks("These are the remarks");
         collection.setCollectionName(name);
         collection.setCatalogNumberingScheme(catalogNumberingScheme);
+        
         catalogNumberingScheme.getCollections().add(collection);
         
-        for (Discipline cod: disciplines)
+        for (Discipline disp : disciplines)
         {
-            collection.setDiscipline(cod);
+            collection.setDiscipline(disp);
         }
 
         persist(collection);
@@ -1206,7 +1207,7 @@ public class DataBuilder
     {
         Accession accession = new Accession();
         accession.initialize();
-        accession.setDivision(division);
+        division.addReference(accession, "accessions");
         accession.setAccessionNumber(number);
         accession.setVerbatimDate(verbatimDate);
         accession.setDateAccessioned(dateAccessioned);

@@ -25,6 +25,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Index;
 
 /**
  * @author rod
@@ -38,6 +39,9 @@ import org.hibernate.annotations.CascadeType;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "preparationattributes")
+@org.hibernate.annotations.Table(appliesTo="preparationattributes", indexes =
+    {   @Index (name="PrepAttrsColMemIDX", columnNames={"CollectionMemberID"})
+    })
 public class PreparationAttributes extends CollectionMember
 {
     protected Integer preparationAttributesId;

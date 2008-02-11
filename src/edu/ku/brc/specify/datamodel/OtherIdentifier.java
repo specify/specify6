@@ -39,6 +39,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Index;
+
 /**
 
  */
@@ -46,21 +48,25 @@ import javax.persistence.Transient;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "otheridentifier")
+@org.hibernate.annotations.Table(appliesTo="otheridentifier", indexes =
+    {   @Index (name="OthIdColMemIDX", columnNames={"CollectionMemberID"})
+    })
 public class OtherIdentifier extends CollectionMember implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer otherIdentifierId;
-     protected String identifier;
-     protected String institution;
-     protected String remarks;
+     protected Integer          otherIdentifierId;
+     protected String           identifier;
+     protected String           institution;
+     protected String           remarks;
      protected CollectionObject collectionObject;
 
 
     // Constructors
 
     /** default constructor */
-    public OtherIdentifier() {
+    public OtherIdentifier() 
+    {
         //
     }
     

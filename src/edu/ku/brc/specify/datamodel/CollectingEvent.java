@@ -62,9 +62,10 @@ import edu.ku.brc.dbsupport.AttributeProviderIFace;
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "collectingevent")
 @org.hibernate.annotations.Table(appliesTo="collectingevent", indexes =
-    {   @Index (name="StationFieldNumberIDX", columnNames={"StationFieldNumber"}),
-        @Index (name="StartDateIDX", columnNames={"StartDate"}),
-        @Index (name="EndDateIDX", columnNames={"EndDate"})
+    {   @Index (name="CEStationFieldNumberIDX", columnNames={"StationFieldNumber"}),
+        @Index (name="CEStartDateIDX", columnNames={"StartDate"}),
+        @Index (name="CEEndDateIDX", columnNames={"EndDate"}),
+        @Index (name="CEColMemIDX", columnNames={"CollectionMemberID"})
     })
 public class CollectingEvent extends CollectionMember implements AttachmentOwnerIFace<CollectingEventAttachment>, AttributeProviderIFace, java.io.Serializable, Comparable<CollectingEvent> {
 

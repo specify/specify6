@@ -22,6 +22,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Index;
 
 import edu.ku.brc.util.Orderable;
 
@@ -33,6 +34,9 @@ import edu.ku.brc.util.Orderable;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "preparationattachment")
+@org.hibernate.annotations.Table(appliesTo="preparationattachment", indexes =
+    {   @Index (name="PrepAttColMemIDX", columnNames={"CollectionMemberID"})
+    })
 public class PreparationAttachment extends CollectionMember implements ObjectAttachmentIFace<Preparation>, 
                                                                        Orderable,
                                                                        Serializable,

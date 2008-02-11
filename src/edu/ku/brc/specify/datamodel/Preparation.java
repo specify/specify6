@@ -62,7 +62,8 @@ import edu.ku.brc.dbsupport.AttributeProviderIFace;
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "preparation")
 @org.hibernate.annotations.Table(appliesTo="preparation", indexes =
-    {   @Index (name="PreparedDateIDX", columnNames={"preparedDate"})
+    {   @Index (name="PreparedDateIDX", columnNames={"preparedDate"}),
+        @Index (name="PrepColMemIDX", columnNames={"CollectionMemberID"})
     })
 public class Preparation extends CollectionMember implements AttachmentOwnerIFace<PreparationAttachment>, AttributeProviderIFace, java.io.Serializable, Comparable<Preparation>
 {

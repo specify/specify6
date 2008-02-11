@@ -95,6 +95,14 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#isOpen()
+     */
+    public boolean isOpen()
+    {
+        return session.isOpen();
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.DataProviderSessionIFace#refresh(java.lang.Object)
      */
     public boolean refresh(final Object dataObj)
@@ -265,6 +273,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
         return null;
     }
     
+    @SuppressWarnings("deprecation")
     protected void checkAndReconnect()
     {
         boolean reconnect = false;
@@ -272,7 +281,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
         ResultSet  rs   = null;
        try
         {
-            Connection conn = session.connection();
+            Connection conn = session.connection(); // not sure ehat method to use
             stmt = conn.createStatement();
             if (stmt != null)
             {

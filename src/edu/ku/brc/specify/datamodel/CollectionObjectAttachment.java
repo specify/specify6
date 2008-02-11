@@ -22,6 +22,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Index;
 
 import edu.ku.brc.util.Orderable;
 
@@ -33,6 +34,10 @@ import edu.ku.brc.util.Orderable;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "collectionobjectattachment")
+@org.hibernate.annotations.Table(appliesTo="collectionobjectattachment", indexes =
+    {   
+        @Index (name="COLOBJATTColMemIDX", columnNames={"CollectionMemberID"})
+    })
 public class CollectionObjectAttachment extends CollectionMember implements ObjectAttachmentIFace<CollectionObject>, 
                                                                             Orderable, 
                                                                             Serializable,

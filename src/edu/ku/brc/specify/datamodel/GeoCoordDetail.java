@@ -22,6 +22,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Index;
+
 /**
  * @author rod
  *
@@ -34,6 +36,9 @@ import javax.persistence.Transient;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "geocoorddetail")
+@org.hibernate.annotations.Table(appliesTo="geocoorddetail", indexes =
+    {   @Index (name="GCDColMemIDX", columnNames={"CollectionMemberID"})
+    })
 public class GeoCoordDetail extends CollectionMember
 {
     // Manis Fields

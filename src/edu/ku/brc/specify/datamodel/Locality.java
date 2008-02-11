@@ -60,7 +60,8 @@ import edu.ku.brc.services.mapping.LocalityMapper.MapLocationIFace;
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "locality")
 @org.hibernate.annotations.Table(appliesTo="locality", indexes =
-    {   @Index (name="localityNameIDX", columnNames={"LocalityName"})
+    {   @Index (name="localityNameIDX", columnNames={"LocalityName"}),
+        @Index (name="LocalityColMemIDX", columnNames={"CollectionMemberID"})
     })
 public class Locality extends CollectionMember implements AttachmentOwnerIFace<LocalityAttachment>, java.io.Serializable, MapLocationIFace 
 {

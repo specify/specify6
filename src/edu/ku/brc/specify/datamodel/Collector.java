@@ -30,6 +30,7 @@ package edu.ku.brc.specify.datamodel;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -42,6 +43,7 @@ import javax.persistence.UniqueConstraint;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Index;
 
 import edu.ku.brc.util.Orderable;
 
@@ -52,6 +54,10 @@ import edu.ku.brc.util.Orderable;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "collector", uniqueConstraints = { @UniqueConstraint(columnNames = {"AgentID", "CollectingEventID"}) })
+@org.hibernate.annotations.Table(appliesTo="collector", indexes =
+    {   
+        @Index (name="COLTRColMemIDX", columnNames={"CollectionMemberID"})
+    })
 public class Collector extends CollectionMember implements java.io.Serializable, Orderable, Comparable<Collector> 
 {
 
@@ -159,22 +165,25 @@ public class Collector extends CollectionMember implements java.io.Serializable,
      */
     @ManyToOne
     @JoinColumn(name = "CollectingEventID", nullable = false)
-    @Cascade( {CascadeType.SAVE_UPDATE} )
-    public CollectingEvent getCollectingEvent() {
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    public CollectingEvent getCollectingEvent()
+    {
         return this.collectingEvent;
     }
     
-    public void setCollectingEvent(CollectingEvent collectingEvent) {
+    public void setCollectingEvent(CollectingEvent collectingEvent) 
+    {
         this.collectingEvent = collectingEvent;
     }
 
     /**
      *      * Link to Collector's record in Agent table
      */
-    @ManyToOne
+    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
     @JoinColumn(name = "AgentID", nullable = false)
-    @Cascade( {CascadeType.SAVE_UPDATE} )
-    public Agent getAgent() {
+    @Cascade( { CascadeType.SAVE_UPDATE })
+    public Agent getAgent()
+    {
         return this.agent;
     }
     
@@ -242,6 +251,4 @@ public class Collector extends CollectionMember implements java.io.Serializable,
     {
         return orderNumber.compareTo(obj.orderNumber);
     }
-
-
 }

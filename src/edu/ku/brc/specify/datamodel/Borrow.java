@@ -58,8 +58,9 @@ import org.hibernate.annotations.Index;
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "borrow")
 @org.hibernate.annotations.Table(appliesTo="borrow", indexes =
-    {   @Index (name="InvoiceNumberIDX", columnNames={"InvoiceNumber"}),
-        @Index (name="ReceivedDateIDX", columnNames={"ReceivedDate"})
+    {   @Index (name="BorInvoiceNumberIDX", columnNames={"InvoiceNumber"}),
+        @Index (name="BorReceivedDateIDX", columnNames={"ReceivedDate"}),
+        @Index (name="BorColMemIDX", columnNames={"CollectionMemberID"})
     })
 public class Borrow extends CollectionMember implements java.io.Serializable {
 

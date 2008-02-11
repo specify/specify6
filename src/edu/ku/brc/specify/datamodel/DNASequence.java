@@ -43,7 +43,8 @@ import org.hibernate.annotations.Index;
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "dnasequence")
 @org.hibernate.annotations.Table(appliesTo="dnasequence", indexes =
-    {   @Index (name="DNASeqDateIDX", columnNames={"SeqDate"})
+    {   @Index (name="DNASeqDateIDX", columnNames={"SeqDate"}),
+        @Index (name="DNAColMemIDX", columnNames={"CollectionMemberID"})
     })
 public class DNASequence extends CollectionMember
 {

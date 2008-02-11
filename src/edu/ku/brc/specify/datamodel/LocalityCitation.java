@@ -40,13 +40,20 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
+import org.hibernate.annotations.Index;
+
 /**
 
  */
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
-@Table(name = "localitycitation", uniqueConstraints = { @UniqueConstraint(columnNames = { "ReferenceWorkID", "LocalityID" }) })
+@Table(name = "localitycitation", uniqueConstraints = { 
+        @UniqueConstraint(columnNames = { "ReferenceWorkID", "LocalityID" }) 
+        })
+@org.hibernate.annotations.Table(appliesTo="localitycitation", indexes =
+    {   @Index (name="LocCitColMemIDX", columnNames={"CollectionMemberID"})
+    })
 public class LocalityCitation extends CollectionMember implements java.io.Serializable 
 {
 

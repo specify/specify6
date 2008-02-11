@@ -21,14 +21,16 @@ public interface DataProviderSessionIFace
     
     public enum CompareType {Equals, Restriction}
     
+    public abstract boolean isOpen();
+    
     //---------------------------
     // Query Methods
     //---------------------------
-    public List<?> getDataList(String sqlStr);
+    public abstract List<?> getDataList(String sqlStr);
     
-    public <T> List<T> getDataList(Class<T> clsObject);
+    public abstract <T> List<T> getDataList(Class<T> clsObject);
     
-    public <T> List<T> getDataList(Class<T> clsObject, String fieldName, boolean isDistinct);
+    public abstract <T> List<T> getDataList(Class<T> clsObject, String fieldName, boolean isDistinct);
     
     /**
      * Returns all the vallues for a Table where the fieldName equals the value
@@ -38,73 +40,73 @@ public interface DataProviderSessionIFace
      * @param value the value the field needs to be equal to
      * @return the List of objects
      */
-    public <T> List<T> getDataList(Class<T> clsObject, String fieldName, Object value);
+    public abstract <T> List<T> getDataList(Class<T> clsObject, String fieldName, Object value);
     
-    public <T> List<T> getDataList(Class<T> clsObject, String fieldName, Object value, DataProviderSessionIFace.CompareType compareType);
+    public abstract <T> List<T> getDataList(Class<T> clsObject, String fieldName, Object value, DataProviderSessionIFace.CompareType compareType);
     
-    //public List getDataList(RecordSetIFace recordSet);
+    //public abstract List getDataList(RecordSetIFace recordSet);
     
-    public <T> T load(Class<T> clsObj, Integer id);
+    public abstract <T> T load(Class<T> clsObj, Integer id);
     
-    public <T> T get(Class<T> clsObj, Integer id);
+    public abstract <T> T get(Class<T> clsObj, Integer id);
 
-    public <T> T getData(Class<T> clsObject, String fieldName, Object value, DataProviderSessionIFace.CompareType compareType);
+    public abstract <T> T getData(Class<T> clsObject, String fieldName, Object value, DataProviderSessionIFace.CompareType compareType);
     
-    public Object getData(String sqlStr);
+    public abstract Object getData(String sqlStr);
     
-    public boolean contains(final Object obj);
+    public abstract boolean contains(final Object obj);
     
-    public <T> Integer getDataCount(Class<T> clsObject, String fieldName, Object value, DataProviderSessionIFace.CompareType compareType);
+    public abstract <T> Integer getDataCount(Class<T> clsObject, String fieldName, Object value, DataProviderSessionIFace.CompareType compareType);
 
     
     //---------------------------
     // Update Methods
     //---------------------------
     
-    public void evict(Class<?> clsObject);
+    public abstract void evict(Class<?> clsObject);
     
-    public void evict(Object dataObj);
+    public abstract void evict(Object dataObj);
     
-    public void attach(Object dataObj);
+    public abstract void attach(Object dataObj);
     
-    public <T> T merge(T dataObj) throws StaleObjectException;
+    public abstract <T> T merge(T dataObj) throws StaleObjectException;
     
-    public boolean save(Object dataObj) throws Exception;
+    public abstract boolean save(Object dataObj) throws Exception;
     
-    public boolean refresh(Object dataObj);
+    public abstract boolean refresh(Object dataObj);
     
-    public boolean update(Object dataObj) throws Exception;
+    public abstract boolean update(Object dataObj) throws Exception;
     
-    public boolean saveOrUpdate(Object dataObj) throws Exception;
+    public abstract boolean saveOrUpdate(Object dataObj) throws Exception;
     
-    public boolean delete(Object dataObj) throws Exception; 
+    public abstract boolean delete(Object dataObj) throws Exception; 
     
-    public void deleteOnSaveOrUpdate(Object dataObj);
+    public abstract void deleteOnSaveOrUpdate(Object dataObj);
 
     //---------------------------
     // Query Methods
     //---------------------------
-    public QueryIFace createQuery(String hql);
+    public abstract QueryIFace createQuery(String hql);
     /**
      * !NOTE!: Hibernate specific. Added, primarily, to deal with null value difficulties.
      */
-    public CriteriaIFace createCriteria(Class<?> cls);
+    public abstract CriteriaIFace createCriteria(Class<?> cls);
     
     //---------------------------
     // Transaction Methods
     //---------------------------
-    public void beginTransaction() throws Exception;
+    public abstract void beginTransaction() throws Exception;
     
-    public void commit() throws Exception;
+    public abstract void commit() throws Exception;
     
-    public void rollback();
+    public abstract void rollback();
     
     //---------------------------
     // Cleanup Methods
     //---------------------------
-    public void flush();
+    public abstract void flush();
     
-    public void close();
+    public abstract void close();
     
     public static interface QueryIFace
     {

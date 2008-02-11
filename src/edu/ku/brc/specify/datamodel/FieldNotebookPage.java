@@ -43,7 +43,8 @@ import org.hibernate.annotations.Index;
 @Table(name = "fieldnotebookpage")
 @org.hibernate.annotations.Table(appliesTo="fieldnotebookpage", indexes =
     {   @Index (name="FNBPPageNumberIDX", columnNames={"PageNumber"}),
-        @Index (name="FNBPScanDateIDX", columnNames={"ScanDate"})
+        @Index (name="FNBPScanDateIDX", columnNames={"ScanDate"}),
+        @Index (name="FNBPColMemIDX", columnNames={"CollectionMemberID"})
     })
 public class FieldNotebookPage extends CollectionMember
 {

@@ -44,7 +44,9 @@ import org.hibernate.annotations.Index;
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "agentvariant")
 @org.hibernate.annotations.Table(appliesTo="agentvariant", indexes =
-    {   @Index (name="AgentVariantNameIDX", columnNames={"Name"})
+    {   
+        @Index (name="AgentVariantNameIDX", columnNames={"Name"}),
+        @Index (name="AgVarColMemIDX", columnNames={"CollectionMemberID"})
     })
 public class AgentVariant extends CollectionMember implements Serializable
 {

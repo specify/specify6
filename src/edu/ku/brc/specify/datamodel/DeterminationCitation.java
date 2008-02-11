@@ -40,19 +40,27 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
+import org.hibernate.annotations.Index;
+
 /**
 
  */
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
-@Table(name = "determinationcitation", uniqueConstraints = { @UniqueConstraint(columnNames = { "ReferenceWorkID", "DeterminationID" }) })
+@Table(name = "determinationcitation", uniqueConstraints = { 
+        @UniqueConstraint(columnNames = { "ReferenceWorkID", "DeterminationID" }) 
+})
+@org.hibernate.annotations.Table(appliesTo="determinationcitation", indexes =
+    {   
+        @Index (name="DetCitColMemIDX", columnNames={"CollectionMemberID"})
+    })
 public class DeterminationCitation extends CollectionMember implements java.io.Serializable {
 
     // Fields    
 
-     protected Integer determinationCitationId;
-     protected String remarks;
+     protected Integer       determinationCitationId;
+     protected String        remarks;
      protected ReferenceWork referenceWork;
      protected Determination determination;
 
@@ -60,7 +68,8 @@ public class DeterminationCitation extends CollectionMember implements java.io.S
     // Constructors
 
     /** default constructor */
-    public DeterminationCitation() {
+    public DeterminationCitation() 
+    {
         //
     }
     

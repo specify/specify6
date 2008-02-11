@@ -53,7 +53,8 @@ import org.hibernate.annotations.Index;
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "loanreturnpreparation")
 @org.hibernate.annotations.Table(appliesTo="loanreturnpreparation", indexes =
-    {   @Index (name="LoanReturnedDateIDX", columnNames={"ReturnedDate"})
+    {   @Index (name="LoanReturnedDateIDX", columnNames={"ReturnedDate"}),
+        @Index (name="LoanRetPrepColMemIDX", columnNames={"CollectionMemberID"})
     })
 public class LoanReturnPreparation extends CollectionMember implements java.io.Serializable {
 

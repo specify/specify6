@@ -54,7 +54,8 @@ import org.hibernate.annotations.Index;
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "container")
 @org.hibernate.annotations.Table(appliesTo="container", indexes =
-    {   @Index (name="ContainerNameIDX", columnNames={"Name"})
+    {   @Index (name="ContainerNameIDX", columnNames={"Name"}),
+        @Index (name="ContainerMemIDX", columnNames={"CollectionMemberID"})
     })
 public class Container extends CollectionMember implements java.io.Serializable {
 

@@ -15,8 +15,9 @@
 		<field>Version</field>
 		<field>TimestampCreated</field>
 		<field>TimestampModified</field>
-		<field>CollectionMemberId</field>
+		<field>CollectionMemberID</field>
 		<field>Visibility</field>
+		<field>VisibilitySetBy</field>
 		<field>VisibilitySetBy</field>
 	</table>
 </tables>

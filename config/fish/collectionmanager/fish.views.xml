@@ -80,8 +80,8 @@
         	resourcelabels="false">
             <desc><![CDATA[The Collectors Subform.]]></desc>
             <altviews>
-                <altview name="Collectors Icon View"  viewdef="CollectorsIconView" label="Icon" mode="view"/>
-                <altview name="Collectors Icon Edit"  viewdef="CollectorsIconView" label="Icon" mode="edit"/>
+                <!-- <altview name="Collectors Icon View"  viewdef="CollectorsIconView" label="Icon" mode="view"/>
+                <altview name="Collectors Icon Edit"  viewdef="CollectorsIconView" label="Icon" mode="edit"/>  -->
     	        <altview name="Collectors Table View" viewdef="Collectors Table"   label="Grid" mode="view"/>
     	        <altview name="Collectors Table Edit" viewdef="Collectors Table"   label="Grid" mode="edit" default="true"/>
             </altviews>

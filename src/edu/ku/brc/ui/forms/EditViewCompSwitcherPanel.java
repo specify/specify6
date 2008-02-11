@@ -185,6 +185,7 @@ public class EditViewCompSwitcherPanel extends JPanel implements GetSetValueIFac
         {
             getComponent(i).setEnabled(enabled);
         }
+        validator.setEnabled(enabled);
     }
 
     /* (non-Javadoc)

@@ -137,6 +137,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     protected FormDataObjIFace   dataObj     = null;
     protected FormDataObjIFace   newDataObj  = null;
     protected MODE               currentMode = MODE.Unknown;
+    protected boolean            hasFocus    = false;
 
 
     protected ViewBasedDisplayIFace frame      = null;
@@ -196,6 +197,39 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         textWithQuery = new TextFieldWithQuery(tableInfo, keyFieldName, displayColumn, format);
         textWithQuery.addListSelectionListener(this);
         textWithQuery.setAddAddItem(true);
+        
+        textWithQuery.getTextField().addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e)
+            {
+                log.debug("focusGained");
+                hasFocus = true;
+                super.focusGained(e);
+                validateState();
+                repaint();
+                
+                for (FocusListener l : focusListeners)
+                {
+                    l.focusGained(e);
+                }
+            }
+
+            @Override
+            public void focusLost(FocusEvent e)
+            {
+                log.debug("focusLost");
+                hasFocus = false;
+                super.focusLost(e);
+                
+                validateState();
+                repaint();
+                
+                for (FocusListener l : focusListeners)
+                {
+                    l.focusLost(e);
+                }
+            }
+        });
         
         init(tableInfo.getTitle(), btns);
         
@@ -503,7 +537,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
 
         } else
         {
-            frame.setData(dataObj);
+            frame.setData(getValue());
         }
         
         //if (multiView != null)
@@ -606,13 +640,17 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         }
     }
     
+    /**
+     * Adds a listener.
+     * @param listSelectionListenerArg the listener
+     */
     public void addListSelectionListener(ListSelectionListener listSelectionListenerArg)
     {
         this.listSelectionListener = listSelectionListenerArg;
-        textWithQuery.addListSelectionListener(listSelectionListener);
     }
 
     /**
+     * Rmeoves the listener.
      * @param listChangeListener the listChangeListener to set
      */
     public void removeListSelectionListener(ListSelectionListener listSelectionListenerArg)
@@ -621,7 +659,6 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         {
             this.listSelectionListener = null;
         }
-        textWithQuery.removeListSelectionListener(listSelectionListenerArg);
     }
 
     // Overriding the add/remove of FocusListeners is so we can make sure they get
@@ -895,7 +932,12 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         }
         
         isChanged = true;
+        valueHasChanged();
         validateState();
+        if (listSelectionListener != null)
+        {
+            listSelectionListener.valueChanged(e);
+        }
         repaint();
     }
 

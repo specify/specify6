@@ -33,6 +33,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Index;
 
 /**
  * @author rods
@@ -46,6 +47,9 @@ import org.hibernate.annotations.CascadeType;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name="paleocontext")
+@org.hibernate.annotations.Table(appliesTo="paleocontext", indexes =
+    {   @Index (name="PaleoCxtColMemIDX", columnNames={"CollectionMemberID"})
+    })
 public class PaleoContext extends CollectionMember
 {
     protected Integer paleoContextId;

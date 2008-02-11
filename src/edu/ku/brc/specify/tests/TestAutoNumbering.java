@@ -11,28 +11,15 @@ package edu.ku.brc.specify.tests;
 
 
 import static edu.ku.brc.specify.utilapps.DataBuilder.createAccession;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createAgent;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createCatalogNumberingScheme;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createCollection;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createCollectionObject;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createDataType;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createDiscipline;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createDivision;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createGeographyTreeDef;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createGeologicTimePeriodTreeDef;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createInstitution;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createLithoStratTreeDef;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createSpecifyUser;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createStorageTreeDef;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createTaxonTreeDef;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createUserGroup;
 
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Vector;
 
 import junit.framework.TestCase;
 
@@ -49,22 +36,14 @@ import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.DisciplineType;
+import edu.ku.brc.specify.config.init.DBConfigInfo;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CatalogNumberingScheme;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
-import edu.ku.brc.specify.datamodel.GeographyTreeDef;
-import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
-import edu.ku.brc.specify.datamodel.Institution;
-import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
-import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.specify.datamodel.StorageTreeDef;
-import edu.ku.brc.specify.datamodel.TaxonTreeDef;
-import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.dbsupport.CollectionAutoNumber;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
 import edu.ku.brc.specify.ui.CatalogNumberUIFieldFormatter;
@@ -130,74 +109,6 @@ public class TestAutoNumbering extends TestCase
         }
     }
     
-    /**
-     * Creates a single disciplineType collection.
-     * @param disciplineName the name of the Discipline to use
-     * @param disciplineTypeName the disciplineType name
-     * @return the entire list of DB object to be persisted
-     */
-    public List<Object> createEmptyDiscipline(final String disciplineName, 
-                                              final String disciplineTypeName,
-                                              final String username, 
-                                              final String userType, 
-                                              final String firstName, 
-                                              final String lastName, 
-                                              final String email)
-    {
-        Vector<Object> dataObjects = new Vector<Object>();
-
-        Agent             userAgent         = createAgent("", firstName, "", lastName, "", email);
-        UserGroup         userGroup         = createUserGroup(disciplineTypeName);
-        SpecifyUser       user              = createSpecifyUser(username, email, (short) 0, userGroup, userType);
-        DataType          dataType          = createDataType(disciplineTypeName);
-
-        // create tree defs (later we will make the def items and nodes)
-        TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Sample Taxon Tree");
-        GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Sample Geography Tree");
-        GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Sample Geologic Time Period Tree");
-        LithoStratTreeDef         lithoStratTreeDef = createLithoStratTreeDef("Sample LithoStrat Tree");
-        StorageTreeDef           locTreeDef        = createStorageTreeDef("Sample Storage Tree");
-        
-        Institution    institution    = createInstitution("Natural History Museum");
-        Division       division       = createDivision(institution, "fish", "Icthyology", "IT", "Icthyology");
-        Discipline discipline = createDiscipline(division, disciplineName, disciplineTypeName, dataType, taxonTreeDef, null, null, null, lithoStratTreeDef);
-
-        SpecifyUser.setCurrentUser(user);
-        user.addReference(userAgent, "agents");
-
-        dataObjects.add(discipline);
-        dataObjects.add(userGroup);
-        dataObjects.add(user);
-        dataObjects.add(dataType);
-        dataObjects.add(taxonTreeDef);
-        dataObjects.add(userAgent);
-        
-        ////////////////////////////////
-        // build the tree def items and nodes
-        ////////////////////////////////
-        List<Object> taxa        = BuildSampleDatabase.createSimpleFishTaxonTree(taxonTreeDef, false);
-        List<Object> geos        = BuildSampleDatabase.createSimpleGeography(geoTreeDef);
-        List<Object> locs        = BuildSampleDatabase.createSimpleStorage(locTreeDef);
-        List<Object> gtps        = BuildSampleDatabase.createSimpleGeologicTimePeriod(gtpTreeDef);
-        List<Object> lithoStrats = BuildSampleDatabase.createSimpleLithoStrat(lithoStratTreeDef);
-        
-        //startTx();
-        persist(taxa);
-        persist(geos);
-        persist(locs);
-        persist(gtps);
-        persist(lithoStrats);
-        
-        CatalogNumberingScheme cns = createCatalogNumberingScheme("CatalogNumber", "", true);
-        dataObjects.add(cns);
-
-        Collection collection = createCollection("Fish", "Fish", cns, discipline);
-        dataObjects.add(collection);
-
-        return dataObjects;
-    }
-
-    
     /** 
      * Drops, Creates and Builds the Database.
      * 
@@ -224,6 +135,7 @@ public class TestAutoNumbering extends TestCase
             try
             {
                 SpecifySchemaGenerator.generateSchema(driverInfo, hostName, dbName, username, password);
+                
             } catch (SQLException ex)
             {
                 ex.printStackTrace();
@@ -266,6 +178,7 @@ public class TestAutoNumbering extends TestCase
             AttachmentManagerIface attachMgr = new FileStoreAttachmentManager(UIRegistry.getAppDataSubDir("AttachmentStorage", true));
             AttachmentUtils.setAttachmentManager(attachMgr);
             AttachmentUtils.setThumbnailer(thumb);
+            
         } catch (Exception ex)
         {
             ex.printStackTrace();
@@ -276,20 +189,30 @@ public class TestAutoNumbering extends TestCase
         {
             log.info("Creating Empty Database");
             
-            List<Object> dataObjects = createEmptyDiscipline(disciplineType.getTitle(), 
-                                                             disciplineType.getName(),
-                                                             username,
-                                                             "CollectionManager",
-                                                             firstName,
-                                                             lastName,
-                                                             email);
+            BuildSampleDatabase bsd = new BuildSampleDatabase();
+            
+            bsd.setSession(session);
+            
+            DBConfigInfo config = new DBConfigInfo(driverInfo, 
+                    hostName, 
+                    dbName,
+                    username, 
+                    password, 
+                    firstName, 
+                    lastName, 
+                    email,
+                    disciplineType, 
+                    "Test", 
+                    "Test");
+            
+            bsd.createEmptyDiscipline(config);
             
     
             log.info("Saving data into "+dbName+"....");
             log.info("Persisting Data...");
-            HibernateUtil.beginTransaction();
-            persist(dataObjects);
-            HibernateUtil.commitTransaction();
+            //HibernateUtil.beginTransaction();
+            //persist(dataObjects);
+            //HibernateUtil.commitTransaction();
         }
         
         
@@ -381,6 +304,7 @@ public class TestAutoNumbering extends TestCase
         
         Agent      agent      = (Agent)session.createCriteria(Agent.class).list().get(0);
         Collection collection = (Collection)session.createCriteria(Collection.class).list().get(0);
+        Collection.setCurrentCollection(collection);
         
         CollectionObject colObj = createCollectionObject("000000100", "RSC100", agent, collection,  3, null, Calendar.getInstance(), "BuildSampleDatabase");
         HibernateUtil.beginTransaction();
@@ -414,18 +338,23 @@ public class TestAutoNumbering extends TestCase
         Agent      agent      = (Agent)session.createCriteria(Agent.class).list().get(0);
         Collection collection = (Collection)session.createCriteria(Collection.class).list().get(0);
         
-        Discipline disciplinee = (Discipline)session.createCriteria(Discipline.class).list().get(0);
+        Discipline discipline = (Discipline)session.createCriteria(Discipline.class).list().get(0);
+        Discipline.setCurrentDiscipline(discipline);
         
-        Collection collection2 = createCollection("Fish", "Fish Tissue", collection.getCatalogNumberingScheme(), disciplinee);
+        Collection collection2 = createCollection("Fish", "Fish Tissue", collection.getCatalogNumberingScheme(), discipline);
+        HibernateUtil.beginTransaction();
+        persist(collection2);
+        HibernateUtil.commitTransaction();
 
         Collection.setCurrentCollection(collection);
 
         CollectionObject colObj1 = createCollectionObject("000000100", "RSC100", agent, collection,  3, null, Calendar.getInstance(), "BuildSampleDatabase");
+        
+        Collection.setCurrentCollection(collection2);
         CollectionObject colObj2 = createCollectionObject("000000200", "RSC200", agent, collection2,  3, null, Calendar.getInstance(), "BuildSampleDatabase");
         
         HibernateUtil.beginTransaction();
         persist(colObj1);
-        persist(collection2);
         persist(colObj2);
         HibernateUtil.commitTransaction();
         
@@ -460,10 +389,15 @@ public class TestAutoNumbering extends TestCase
     {
         log.info("testNumericDBNum");
         
-        Discipline disciplinee = (Discipline)session.createCriteria(Discipline.class).list().get(0);
+        Discipline discipline = (Discipline)session.createCriteria(Discipline.class).list().get(0);
+        Discipline.setCurrentDiscipline(discipline);
         
         CatalogNumberingScheme catNumSchemeAlphaNumeric = createCatalogNumberingScheme("CatalogNumberAN", "", false);
-        Collection collection = createCollection("Fish", "Fish Tissue", catNumSchemeAlphaNumeric, disciplinee);
+        HibernateUtil.beginTransaction();
+        persist(catNumSchemeAlphaNumeric);
+        HibernateUtil.commitTransaction();
+        
+        Collection collection = createCollection("Fish", "Fish Tissue", catNumSchemeAlphaNumeric, discipline);
 
         HibernateUtil.beginTransaction();
         persist(collection);
@@ -490,6 +424,10 @@ public class TestAutoNumbering extends TestCase
         session.delete(collection);
         HibernateUtil.commitTransaction();
         
+        HibernateUtil.beginTransaction();
+        session.delete(catNumSchemeAlphaNumeric);
+        HibernateUtil.commitTransaction();
+        
         assertEquals(valText.getValue(), currentYearCatNum);
     }
     
@@ -500,24 +438,29 @@ public class TestAutoNumbering extends TestCase
     {
         log.info("testAlphaNumCatNum");
         
-        Agent          agent   = (Agent)session.createCriteria(Agent.class).list().get(0);
-        Discipline disciplinee = (Discipline)session.createCriteria(Discipline.class).list().get(0);
+        Agent          agent      = (Agent)session.createCriteria(Agent.class).list().get(0);
+        Discipline     discipline = (Discipline)session.createCriteria(Discipline.class).list().get(0);
+        Discipline.setCurrentDiscipline(discipline);
         
         CatalogNumberingScheme catNumSchemeAlphaNumeric = createCatalogNumberingScheme("CatalogNumberAN", "", false);
-        Collection collection = createCollection("Fish", "Fish Tissue", catNumSchemeAlphaNumeric, disciplinee);
+        HibernateUtil.beginTransaction();
+        persist(catNumSchemeAlphaNumeric);
+        HibernateUtil.commitTransaction();
 
+        Collection collection = createCollection("Fish", "Fish Tissue", catNumSchemeAlphaNumeric, discipline);
+        HibernateUtil.beginTransaction();
+        persist(collection);
+        HibernateUtil.commitTransaction();
+        Collection.setCurrentCollection(collection);
+        
         int    currentYear       = Calendar.getInstance().get(Calendar.YEAR);
         String currentYearCatNum = currentYear + "-000001";
         String currentYearNext   = currentYear + "-000002";
 
         CollectionObject colObj = createCollectionObject(currentYearCatNum, "RSC100", agent, collection,  3, null, Calendar.getInstance(), "me");
         HibernateUtil.beginTransaction();
-        persist(catNumSchemeAlphaNumeric);
-        persist(collection);
         persist(colObj);
         HibernateUtil.commitTransaction();
-        
-        Collection.setCurrentCollection(collection);
         
         UIFieldFormatterIFace fmt = fmtMgr.getFmt("CatalogNumber");
         ValFormattedTextField valText = new ValFormattedTextField(fmt, false);
@@ -535,12 +478,13 @@ public class TestAutoNumbering extends TestCase
         HibernateUtil.beginTransaction();
         session.delete(colObj);
         session.delete(collection);
+        HibernateUtil.commitTransaction();
+        
+        HibernateUtil.beginTransaction();
         session.delete(catNumSchemeAlphaNumeric);
         HibernateUtil.commitTransaction();
         
         assertEquals(valText.getValue(), currentYearNext);
-
-        
     }
     
     /**
@@ -552,30 +496,45 @@ public class TestAutoNumbering extends TestCase
         log.info("testAlphaNumCatNumTwoColl");
         
         Agent          agent      = (Agent)session.createCriteria(Agent.class).list().get(0);
-        Discipline disciplinee    = (Discipline)session.createCriteria(Discipline.class).list().get(0);
+        Discipline     discipline    = (Discipline)session.createCriteria(Discipline.class).list().get(0);
+        Discipline.setCurrentDiscipline(discipline);
         
         CatalogNumberingScheme catNumSchemeAlphaNumeric = createCatalogNumberingScheme("CatalogNumberAN", "", false);
-        Collection collection1 = createCollection("Fish", "Fish Two",       catNumSchemeAlphaNumeric, disciplinee);
-        Collection collection2 = createCollection("Fish", "Fish Tissue Two",catNumSchemeAlphaNumeric, disciplinee);
+        HibernateUtil.beginTransaction();
+        persist(catNumSchemeAlphaNumeric);
+        HibernateUtil.commitTransaction();
+
+        Collection collection1 = createCollection("Fish", "Fish Two",       catNumSchemeAlphaNumeric, discipline);
+        Collection collection2 = createCollection("Fish", "Fish Tissue Two",catNumSchemeAlphaNumeric, discipline);
+        HibernateUtil.beginTransaction();
+        persist(collection1);
+        persist(collection2);
+        HibernateUtil.commitTransaction();
         
         CatalogNumberingScheme catNumSchemeAlphaNumeric3 = createCatalogNumberingScheme("CatalogNumber3", "", false);
-        Collection collection3 = createCollection("Fish", "Fish Three", catNumSchemeAlphaNumeric3, disciplinee);
-        
+        HibernateUtil.beginTransaction();
+        persist(catNumSchemeAlphaNumeric3);
+        HibernateUtil.commitTransaction();
+
+        Collection collection3 = createCollection("Fish", "Fish Three", catNumSchemeAlphaNumeric3, discipline);
+        HibernateUtil.beginTransaction();
+        persist(collection3);
+        HibernateUtil.commitTransaction();
+
         int    currentYear        = Calendar.getInstance().get(Calendar.YEAR);
         String currentYearCatNum  = currentYear + "-000001";
         String currentYearCatNum2 = currentYear + "-000002";
         String currentYearCatNum3 = currentYear + "-000300";
         String currentYearNext    = currentYear + "-000003";
 
+        Collection.setCurrentCollection(collection1);
         CollectionObject colObj  = createCollectionObject(currentYearCatNum,  "RSC100", agent, collection1, 3, null, Calendar.getInstance(), "me");
+        Collection.setCurrentCollection(collection2);
         CollectionObject colObj2 = createCollectionObject(currentYearCatNum2, "RSC200", agent, collection2, 3, null, Calendar.getInstance(), "me");
+        Collection.setCurrentCollection(collection3);
         CollectionObject colObj3 = createCollectionObject(currentYearCatNum3, "RSC300", agent, collection3, 3, null, Calendar.getInstance(), "me");
         
         HibernateUtil.beginTransaction();
-        persist(catNumSchemeAlphaNumeric);
-        persist(collection1);
-        persist(collection2);
-        persist(collection3);
         persist(colObj);
         persist(colObj2);
         persist(colObj3);
@@ -592,6 +551,18 @@ public class TestAutoNumbering extends TestCase
         
         log.info("["+currentYearNext+"]["+valText.getValue()+"]");
         
+
+        
+        collection1.removeReference(colObj, "collectionObjects");
+        collection2.removeReference(colObj2, "collectionObjects");
+        collection3.removeReference(colObj3, "collectionObjects");
+        
+        HibernateUtil.beginTransaction();
+        session.delete(colObj);
+        session.delete(colObj2);
+        session.delete(colObj3);
+        HibernateUtil.commitTransaction();
+        
         Collection.setCurrentCollection(null);
         
         collection2.setCatalogNumberingScheme(null);
@@ -604,12 +575,12 @@ public class TestAutoNumbering extends TestCase
         catNumSchemeAlphaNumeric3.getCollections().remove(collection3);
         
         HibernateUtil.beginTransaction();
-        session.delete(colObj);
-        session.delete(colObj2);
-        session.delete(colObj3);
         session.delete(collection3);
         session.delete(collection2);
         session.delete(collection1);
+        HibernateUtil.commitTransaction();
+        
+        HibernateUtil.beginTransaction();
         session.delete(catNumSchemeAlphaNumeric);
         session.delete(catNumSchemeAlphaNumeric3);
         HibernateUtil.commitTransaction();
@@ -626,30 +597,45 @@ public class TestAutoNumbering extends TestCase
         log.info("testAlphaNumCatNumTwoCollByYearSameYear");
         
         Agent          agent      = (Agent)session.createCriteria(Agent.class).list().get(0);
-        Discipline disciplinee    = (Discipline)session.createCriteria(Discipline.class).list().get(0);
+        Discipline     discipline    = (Discipline)session.createCriteria(Discipline.class).list().get(0);
+        Discipline.setCurrentDiscipline(discipline);
         
         CatalogNumberingScheme catNumSchemeAlphaNumeric = createCatalogNumberingScheme("CatalogNumberAlphaNumByYear", "", false);
-        Collection collection1 = createCollection("Fish", "Fish Two",       catNumSchemeAlphaNumeric, disciplinee);
-        Collection collection2 = createCollection("Fish", "Fish Tissue Two",catNumSchemeAlphaNumeric, disciplinee);
-        
+        HibernateUtil.beginTransaction();
+        persist(catNumSchemeAlphaNumeric);
+        HibernateUtil.commitTransaction();
+
+        Collection collection1 = createCollection("Fish", "Fish Two",       catNumSchemeAlphaNumeric, discipline);
+        Collection collection2 = createCollection("Fish", "Fish Tissue Two",catNumSchemeAlphaNumeric, discipline);
+        HibernateUtil.beginTransaction();
+        persist(collection1);
+        persist(collection2);
+        HibernateUtil.commitTransaction();
+
         CatalogNumberingScheme catNumSchemeAlphaNumeric3 = createCatalogNumberingScheme("CatalogNumber3", "", false);
-        Collection collection3 = createCollection("Fish", "Fish Three", catNumSchemeAlphaNumeric3, disciplinee);
-        
+        HibernateUtil.beginTransaction();
+        persist(catNumSchemeAlphaNumeric3);
+        HibernateUtil.commitTransaction();
+
+        Collection collection3 = createCollection("Fish", "Fish Three", catNumSchemeAlphaNumeric3, discipline);
+        HibernateUtil.beginTransaction();
+        persist(collection3);
+        HibernateUtil.commitTransaction();
+
         int    currentYear        = Calendar.getInstance().get(Calendar.YEAR);
         String currentYearCatNum  = currentYear + "-000001";
         String currentYearCatNum2 = currentYear + "-000002";
         String currentYearCatNum3 = currentYear + "-000300";
         String currentYearNext    = currentYear + "-000003";
 
+        Collection.setCurrentCollection(collection1);
         CollectionObject colObj  = createCollectionObject(currentYearCatNum,  "RSC100", agent, collection1, 3, null, Calendar.getInstance(), "me");
+        Collection.setCurrentCollection(collection2);
         CollectionObject colObj2 = createCollectionObject(currentYearCatNum2, "RSC200", agent, collection2, 3, null, Calendar.getInstance(), "me");
+        Collection.setCurrentCollection(collection3);
         CollectionObject colObj3 = createCollectionObject(currentYearCatNum3, "RSC300", agent, collection3, 3, null, Calendar.getInstance(), "me");
         
         HibernateUtil.beginTransaction();
-        persist(catNumSchemeAlphaNumeric);
-        persist(collection1);
-        persist(collection2);
-        persist(collection3);
         persist(colObj);
         persist(colObj2);
         persist(colObj3);
@@ -666,6 +652,16 @@ public class TestAutoNumbering extends TestCase
         
         log.info("["+currentYearNext+"]["+valText.getValue()+"]");
         
+        collection1.removeReference(colObj, "collectionObjects");
+        collection2.removeReference(colObj2, "collectionObjects");
+        collection3.removeReference(colObj3, "collectionObjects");
+        
+        HibernateUtil.beginTransaction();
+        session.delete(colObj);
+        session.delete(colObj2);
+        session.delete(colObj3);
+        HibernateUtil.commitTransaction();
+        
         Collection.setCurrentCollection(null);
         
         collection2.setCatalogNumberingScheme(null);
@@ -678,12 +674,12 @@ public class TestAutoNumbering extends TestCase
         catNumSchemeAlphaNumeric3.getCollections().remove(collection3);
         
         HibernateUtil.beginTransaction();
-        session.delete(colObj);
-        session.delete(colObj2);
-        session.delete(colObj3);
         session.delete(collection3);
         session.delete(collection2);
         session.delete(collection1);
+        HibernateUtil.commitTransaction();
+        
+        HibernateUtil.beginTransaction();
         session.delete(catNumSchemeAlphaNumeric);
         session.delete(catNumSchemeAlphaNumeric3);
         HibernateUtil.commitTransaction();
@@ -700,30 +696,45 @@ public class TestAutoNumbering extends TestCase
         log.info("testAlphaNumCatNumTwoCollByYearDiffYear");
         
         Agent          agent      = (Agent)session.createCriteria(Agent.class).list().get(0);
-        Discipline disciplinee    = (Discipline)session.createCriteria(Discipline.class).list().get(0);
+        Discipline     discipline    = (Discipline)session.createCriteria(Discipline.class).list().get(0);
+        Discipline.setCurrentDiscipline(discipline);
         
         CatalogNumberingScheme catNumSchemeAlphaNumeric = createCatalogNumberingScheme("CatalogNumberAlphaNumByYear", "", false);
-        Collection collection1 = createCollection("Fish", "Fish Two",       catNumSchemeAlphaNumeric, disciplinee);
-        Collection collection2 = createCollection("Fish", "Fish Tissue Two",catNumSchemeAlphaNumeric, disciplinee);
-        
+        HibernateUtil.beginTransaction();
+        persist(catNumSchemeAlphaNumeric);
+        HibernateUtil.commitTransaction();
+
+        Collection collection1 = createCollection("Fish", "Fish Two",       catNumSchemeAlphaNumeric, discipline);
+        Collection collection2 = createCollection("Fish", "Fish Tissue Two",catNumSchemeAlphaNumeric, discipline);
+        HibernateUtil.beginTransaction();
+        persist(collection1);
+        persist(collection2);
+        HibernateUtil.commitTransaction();
+
         CatalogNumberingScheme catNumSchemeAlphaNumeric3 = createCatalogNumberingScheme("CatalogNumber3", "", false);
-        Collection collection3 = createCollection("Fish", "Fish Three", catNumSchemeAlphaNumeric3, disciplinee);
-        
+        HibernateUtil.beginTransaction();
+        persist(catNumSchemeAlphaNumeric3);
+        HibernateUtil.commitTransaction();
+
+        Collection collection3 = createCollection("Fish", "Fish Three", catNumSchemeAlphaNumeric3, discipline);
+        HibernateUtil.beginTransaction();
+        persist(collection3);
+        HibernateUtil.commitTransaction();
+
         int    currentYear        = Calendar.getInstance().get(Calendar.YEAR);
         String currentYearCatNum  = "2005-000001";
         String currentYearCatNum2 = "2005-000002";
         String currentYearCatNum3 = currentYear + "-000300";
         String currentYearNext    = currentYear + "-000001";
 
+        Collection.setCurrentCollection(collection1);
         CollectionObject colObj  = createCollectionObject(currentYearCatNum,  "RSC100", agent, collection1, 3, null, Calendar.getInstance(), "me");
+        Collection.setCurrentCollection(collection2);
         CollectionObject colObj2 = createCollectionObject(currentYearCatNum2, "RSC200", agent, collection2, 3, null, Calendar.getInstance(), "me");
+        Collection.setCurrentCollection(collection3);
         CollectionObject colObj3 = createCollectionObject(currentYearCatNum3, "RSC300", agent, collection3, 3, null, Calendar.getInstance(), "me");
         
         HibernateUtil.beginTransaction();
-        persist(catNumSchemeAlphaNumeric);
-        persist(collection1);
-        persist(collection2);
-        persist(collection3);
         persist(colObj);
         persist(colObj2);
         persist(colObj3);
@@ -740,6 +751,16 @@ public class TestAutoNumbering extends TestCase
         
         log.info("["+currentYearNext+"]["+valText.getValue()+"]");
         
+        collection1.removeReference(colObj, "collectionObjects");
+        collection2.removeReference(colObj2, "collectionObjects");
+        collection3.removeReference(colObj3, "collectionObjects");
+        
+        HibernateUtil.beginTransaction();
+        session.delete(colObj);
+        session.delete(colObj2);
+        session.delete(colObj3);
+        HibernateUtil.commitTransaction();
+        
         Collection.setCurrentCollection(null);
         
         collection2.setCatalogNumberingScheme(null);
@@ -752,12 +773,12 @@ public class TestAutoNumbering extends TestCase
         catNumSchemeAlphaNumeric3.getCollections().remove(collection3);
         
         HibernateUtil.beginTransaction();
-        session.delete(colObj);
-        session.delete(colObj2);
-        session.delete(colObj3);
         session.delete(collection3);
         session.delete(collection2);
         session.delete(collection1);
+        HibernateUtil.commitTransaction();
+        
+        HibernateUtil.beginTransaction();
         session.delete(catNumSchemeAlphaNumeric);
         session.delete(catNumSchemeAlphaNumeric3);
         HibernateUtil.commitTransaction();
@@ -773,7 +794,8 @@ public class TestAutoNumbering extends TestCase
     {
         log.info("testAccessionAlphaNumericDBNumOldYear");
         
-        Accession accession = createAccession(null, "XXX", "XXXX", "2005-IC-001", "XXXX", Calendar.getInstance(), Calendar.getInstance());
+        Division          div      = (Division)session.createCriteria(Division.class).list().get(0);
+        Accession accession = createAccession(div, "XXX", "XXXX", "2005-IC-001", "XXXX", Calendar.getInstance(), Calendar.getInstance());
         HibernateUtil.beginTransaction();
         persist(accession);
         HibernateUtil.commitTransaction();
@@ -795,6 +817,7 @@ public class TestAutoNumbering extends TestCase
         {
             ex.printStackTrace();
         }
+        div.removeReference(accession, "accessions");
         HibernateUtil.beginTransaction();
         session.delete(accession);
         HibernateUtil.commitTransaction();
@@ -808,7 +831,8 @@ public class TestAutoNumbering extends TestCase
     {
         log.info("testAlphaNumericDBNumOldYear");
         
-        Accession accession = createAccession(null, "XXX", "XXXX", "2005-IC-001", "XXXX", Calendar.getInstance(), Calendar.getInstance());
+        Division          div      = (Division)session.createCriteria(Division.class).list().get(0);
+        Accession accession = createAccession(div, "XXX", "XXXX", "2005-IC-001", "XXXX", Calendar.getInstance(), Calendar.getInstance());
         HibernateUtil.beginTransaction();
         persist(accession);
         HibernateUtil.commitTransaction();
@@ -822,6 +846,7 @@ public class TestAutoNumbering extends TestCase
         
         log.info(valText.getValue());
         
+        div.removeReference(accession, "accessions");
         // NOTE: Must delete before the assert
         HibernateUtil.beginTransaction();
         session.delete(accession);
@@ -838,7 +863,8 @@ public class TestAutoNumbering extends TestCase
     {
         log.info("testAlphaNumericDBNumOldYear");
         
-        Accession accession = createAccession(null, "XXX", "XXXX", "2005-IC-001", "XXXX", Calendar.getInstance(), Calendar.getInstance());
+        Division          div      = (Division)session.createCriteria(Division.class).list().get(0);
+        Accession accession = createAccession(div, "XXX", "XXXX", "2005-IC-001", "XXXX", Calendar.getInstance(), Calendar.getInstance());
         HibernateUtil.beginTransaction();
         persist(accession);
         HibernateUtil.commitTransaction();
@@ -852,6 +878,7 @@ public class TestAutoNumbering extends TestCase
         
         log.info(valText.getValue());
         
+        div.removeReference(accession, "accessions");
         // NOTE: Must delete before the assert
         HibernateUtil.beginTransaction();
         session.delete(accession);

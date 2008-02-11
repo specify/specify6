@@ -60,6 +60,13 @@ public interface ViewBasedDisplayIFace
     public abstract void setData(final Object dataObj);
     
     /**
+     * Sets parent data obect for the data object into the dialog, this is not required
+     * and is used sometimes by dialog that want to pass the parent data object into the business rules.
+     * @param parentDataObj the data object
+     */
+    public abstract void setParentData(final Object parentDataObj);
+    
+    /**
      * Returns whether the form is in edit mode or not
      * @return true in edit mode, false it is not
      */

@@ -387,8 +387,10 @@ public class FormValidator implements ValidationListener, DataChangeListener
      * and set the hasChanged to false when disabling.
      * @param enabled true to enable it false to disable it.
      */
-    public void setEnabled(boolean enabled)
+    public void setEnabled(final boolean enabled)
     {
+        log.debug("SetEnabled: "+name+" "+enabled);
+        
         if (this.enabled != enabled)
         {
             if (!enabled)
@@ -1252,6 +1254,9 @@ public class FormValidator implements ValidationListener, DataChangeListener
         }
     }
     
+    /**
+     * Walk up to the Root validator and validate it.
+     */
     public void validateRoot()
     {
         FormValidator fvParent = this;
@@ -1281,7 +1286,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
         // The validation system is built on the premise that when a control changes
         // it is validated before it calls all of it's listeners to tell them it has been changed.
         //
-        // This means that this form has already recieved a callback "wasValidated" and validated
+        // This means that this form has already received a callback "wasValidated" and validated
         // the entire form. we don't have to do anything here but flip the boolean that data has changed
         // and then see if the button can enabled
         // But if the DataChangeNotifier didn't have a UIValidator then we need to re-validate the
@@ -1290,18 +1295,13 @@ public class FormValidator implements ValidationListener, DataChangeListener
         UIValidator uiv = dcn != null ? dcn.getUIV() : null;
         if (uiv == null)
         {
-            //validateForm();
+            
             validateRoot();
 
         } else
         {
-            // OK, now turn on the button if the form is (or has been valid)
-            // and we were just waiting for (I guess in "wasValidated" we could assume that the form
-            // data had changed, but I don't want to do that)
-            //if (isFormValid && !hasChanged)
-            //{
-            //    turnOnOKButton(true);
-            //}
+            //log.debug("About validateForm: ["+name+"] "+enabled);
+            //validateForm();
         }
 
         // Notify anyone else who is listening to the form for changes

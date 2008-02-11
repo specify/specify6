@@ -26,6 +26,8 @@ import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.CustomFrame;
+import edu.ku.brc.ui.forms.BusinessRulesIFace;
+import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 
 /**
@@ -40,9 +42,10 @@ import edu.ku.brc.ui.forms.MultiView;
 @SuppressWarnings("serial")
 public class ViewBasedDisplayFrame extends CustomFrame implements ViewBasedDisplayIFace, ActionListener
 {
-    protected ViewBasedDisplayPanel         viewBasedPanel  = null;
-    protected ViewBasedDisplayActionAdapter vbdaa           = null;
-    
+    protected ViewBasedDisplayPanel         viewBasedPanel = null;
+    protected ViewBasedDisplayActionAdapter vbdaa          = null;
+    protected Object                        parentDataObj  = null;
+
     /**
      * Constructs a search dialog from form infor and from search info
      * @param viewSetName the viewset name
@@ -125,6 +128,14 @@ public class ViewBasedDisplayFrame extends CustomFrame implements ViewBasedDispl
         pack();
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.ViewBasedDisplayIFace#setParentData(java.lang.Object)
+     */
+    public void setParentData(Object parentDataObj)
+    {
+        this.parentDataObj = parentDataObj;
+    }
+
     /**
      * Helper for adding action listeners
      * @param btn the btn
@@ -179,6 +190,27 @@ public class ViewBasedDisplayFrame extends CustomFrame implements ViewBasedDispl
                 vbdaa.helpPressed(this);
             }
         }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CustomDialog#okButtonPressed()
+     */
+    @Override
+    protected void okButtonPressed()
+    {
+        FormViewObj fvo = viewBasedPanel.getMultiView().getCurrentViewAsFormViewObj();
+        if (fvo != null)
+        {
+            BusinessRulesIFace br = fvo.getBusinessRules();
+            if (br != null)
+            {
+                if (BusinessRulesIFace.STATUS.OK != br.processBusinessRules(parentDataObj, fvo.getDataObj()))
+                {
+                    return;
+                }
+            }
+        }
+        super.okButtonPressed();
     }
     
     //------------------------------------------------------------

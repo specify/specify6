@@ -40,13 +40,20 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
+import org.hibernate.annotations.Index;
+
 /**
 
  */
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
-@Table(name = "loanagent", uniqueConstraints = { @UniqueConstraint(columnNames = { "Role", "LoanID", "AgentID" }) })
+@Table(name = "loanagent", uniqueConstraints = { 
+        @UniqueConstraint(columnNames = { "Role", "LoanID", "AgentID" }) 
+        })
+@org.hibernate.annotations.Table(appliesTo="loanagent", indexes =
+    {   @Index (name="LoanAgColMemIDX", columnNames={"CollectionMemberID"})
+    })
 public class LoanAgent extends CollectionMember implements java.io.Serializable {
 
     // Fields    

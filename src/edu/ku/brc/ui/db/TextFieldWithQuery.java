@@ -1,12 +1,10 @@
 /*
-     * Copyright (C) 2007  The University of Kansas
-     *
-     * [INSERT KU-APPROVED LICENSE TEXT HERE]
-     *
-     */
-/**
- * 
+ * Copyright (C) 2007  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ *
  */
+
 package edu.ku.brc.ui.db;
 
 import java.awt.BorderLayout;
@@ -94,6 +92,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     protected boolean              isPopupShowing = false;
     
     protected boolean              popupFromBtn   = false;
+    protected boolean              ignoreFocusLost = false;
     
     protected boolean              addAddItem     = false;
     
@@ -180,9 +179,16 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             @Override
             public void focusLost(FocusEvent arg0)
             {
-                if (selectedId == null)
+                if (selectedId == null && !ignoreFocusLost)
                 {
                     textField.setText("");
+                    selectedId = null;
+                    
+                    ListSelectionEvent lse = new ListSelectionEvent(TextFieldWithQuery.this, 0, 0, false);
+                    for (ListSelectionListener l : listSelectionListeners)
+                    {
+                        l.valueChanged(lse);
+                    }
                 }
                 super.focusLost(arg0);
             }
@@ -277,13 +283,15 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                     idList.clear();
                     list.clear();
                     selectedId = null;
-                    if (listSelectionListeners != null)
+                    
+                    // 02/09/08 - This should be done here - rods
+                    /*if (listSelectionListeners != null)
                     {
                         for (ListSelectionListener l : listSelectionListeners)
                         {
                             l.valueChanged(null);
                         }
-                    }
+                    }*/
                     log.debug("setting hasNewText to true");
                     hasNewText  = true;
                 }
@@ -364,11 +372,13 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 public void popupMenuCanceled(PopupMenuEvent e)
                 {
                     isPopupShowing = false;
+                    ignoreFocusLost = false;
                 }
 
                 public void popupMenuWillBecomeInvisible(PopupMenuEvent e)
                 {
                     isPopupShowing = false;
+                    ignoreFocusLost = false;
                 }
 
                 public void popupMenuWillBecomeVisible(PopupMenuEvent e)
@@ -405,6 +415,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             {
                 public void run()
                 {
+                    ignoreFocusLost = true;
                     popupMenu.show(TextFieldWithQuery.this, location.x, location.y+size.height);
                     popupMenu.requestFocus();
                 }
@@ -733,7 +744,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     /**
      * @param selectedId the selectedId to set
      */
-    public void setSelectedId(Integer selectedId)
+    public void setSelectedId(final Integer selectedId)
     {
         this.selectedId = selectedId;
     }

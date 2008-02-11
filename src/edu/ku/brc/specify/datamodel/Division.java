@@ -64,7 +64,7 @@ public class Division extends DataModelObjBase implements java.io.Serializable
      
      protected Address                  address;
      protected Institution              institution;
-     protected Set<Discipline>      disciplines;
+     protected Set<Discipline>          disciplines;
      
      protected Set<Agent>               members;
      protected Set<ConservDescription>  conservDescriptions;

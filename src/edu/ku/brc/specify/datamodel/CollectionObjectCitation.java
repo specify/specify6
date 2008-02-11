@@ -39,6 +39,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.hibernate.annotations.Index;
+
 /**
 
  */
@@ -46,7 +48,12 @@ import javax.persistence.Transient;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "collectionobjectcitation")
-public class CollectionObjectCitation extends CollectionMember implements java.io.Serializable {
+@org.hibernate.annotations.Table(appliesTo="collectionobjectcitation", indexes =
+    {   
+        @Index (name="COCITColMemIDX", columnNames={"CollectionMemberID"})
+    })
+public class CollectionObjectCitation extends CollectionMember implements java.io.Serializable 
+{
 
     // Fields    
 

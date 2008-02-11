@@ -9,7 +9,6 @@ package edu.ku.brc.specify.tasks;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -21,8 +20,12 @@ import java.util.Vector;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -56,10 +59,8 @@ import edu.ku.brc.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.ui.db.ViewBasedSearchQueryBuilderIFace;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.persist.AltViewIFace.CreationMode;
-import edu.ku.brc.ui.forms.validation.UIValidator;
 import edu.ku.brc.ui.forms.validation.ValComboBox;
 import edu.ku.brc.ui.forms.validation.ValComboBoxFromQuery;
-import edu.ku.brc.ui.forms.validation.ValidationListener;
 
 /**
  * A base task that provides functionality in common to all tasks
@@ -432,6 +433,67 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     }
     
     @SuppressWarnings("unchecked")
+    protected void parentChanged(final FormViewObj form, 
+                                 final ValComboBoxFromQuery parentComboBox, 
+                                 final ValComboBox rankComboBox)
+    {
+        if (form.getAltView().getMode() != CreationMode.EDIT)
+        {
+            return;
+        }
+        
+        //log.debug("form was validated: calling adjustRankComboBoxModel()");
+        
+        Object objInForm = form.getDataObj();
+        //log.debug("form data object = " + objInForm);
+        if (objInForm == null)
+        {
+            return;
+        }
+        
+        T formNode = (T)objInForm;
+        
+        // set the contents of this combobox based on the value chosen as the parent
+        adjustRankComboBoxModel(parentComboBox, rankComboBox, formNode);
+        
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run()
+            {
+                boolean rnkEnabled = rankComboBox.getComboBox().getModel().getSize() > 0;
+                rankComboBox.setEnabled(rnkEnabled);
+                JLabel label = form.getLabelFor(rankComboBox);
+                if (label != null)
+                {
+                    label.setEnabled(rnkEnabled);
+                }
+                if (rankComboBox.hasFocus() && !rnkEnabled)
+                {
+                    parentComboBox.requestFocus();
+                }
+            }
+        });
+
+        T parent = null;
+        if (parentComboBox.getValue() instanceof String)
+        {
+            // the data is still in the VIEW mode for some reason
+            log.debug("Form is in mode (" + form.getAltView().getMode() + ") but the parent data is a String");
+            parentComboBox.getValue();
+            parent = formNode.getParent();
+        }
+        else
+        {
+            parent = (T)parentComboBox.getValue();
+        }
+        
+        // set the tree def for the object being edited by using the parent node's tree def
+        if (parent != null)
+        {
+            formNode.setDefinition(parent.getDefinition());
+        }
+    }
+    
+    @SuppressWarnings("unchecked")
     protected void adjustNodeForm(final FormViewObj form)
     {
         //log.debug("adjustNodeForm(" + form.getName() + ") in mode " + form.getAltView().getMode());
@@ -445,74 +507,19 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
 
         final T nodeInForm = (T)form.getDataObj();
 
-        final Component parentComboBox = form.getControlByName("parent");
-        final ValComboBox rankComboBox = (ValComboBox)form.getControlByName("definitionItem");
-        //log.debug("parentComboBox = " + parentComboBox);
-        //log.debug("rankComboBox   = " + rankComboBox);
-        
-        if (parentComboBox instanceof ValComboBoxFromQuery)
-        {
-            ValComboBoxFromQuery parentCBQ = (ValComboBoxFromQuery)parentComboBox;
-            parentCBQ.registerQueryBuilder(new SearchQueryBuilder(nodeInForm));
-        }
-        
+        final ValComboBoxFromQuery parentCBX    = (ValComboBoxFromQuery)form.getControlByName("parent");
+        final ValComboBox          rankComboBox = (ValComboBox)form.getControlByName("definitionItem");
 
-        if (parentComboBox != null && rankComboBox != null)
+        if (parentCBX != null && rankComboBox != null)
         {
-            //log.debug("adding validation listener to form");
-            form.getValidator().addValidationListener(new ValidationListener()
-            {
-                public void wasValidated(UIValidator validator)
+            parentCBX.registerQueryBuilder(new SearchQueryBuilder(nodeInForm));
+            
+            parentCBX.addListSelectionListener(new ListSelectionListener() {
+                public void valueChanged(ListSelectionEvent e)
                 {
-                    if (form.getAltView().getMode() != CreationMode.EDIT)
+                    if (!e.getValueIsAdjusting())
                     {
-                        return;
-                    }
-                    
-                    if (validator.getComp() == rankComboBox)
-                    {
-                        // if this validation event came from the rank combobox, ignore it
-                        return;
-                    }
-                    
-                    if (rankComboBox.getModel().getSize() > 0 && validator.getComp() != parentComboBox)
-                    {
-                        // if the rank cb already has model values, and the parent didn't fire a validation event, don't mess with the rank cb model
-                        return;
-                    }
-                    
-                    //log.debug("form was validated: calling adjustRankComboBoxModel()");
-                    
-                    Object objInForm = form.getDataObj();
-                    //log.debug("form data object = " + objInForm);
-                    if (objInForm == null)
-                    {
-                        return;
-                    }
-                    
-                    T formNode = (T)objInForm;
-                    
-                    // set the contents of this combobox based on the value chosen as the parent
-                    GetSetValueIFace parentField = (GetSetValueIFace)parentComboBox;
-                    adjustRankComboBoxModel(parentField, rankComboBox, formNode);
-
-                    T parent = null;
-                    if (parentField.getValue() instanceof String)
-                    {
-                        // the data is still in the VIEW mode for some reason
-                        log.debug("Form is in mode (" + form.getAltView().getMode() + ") but the parent data is a String");
-                        parentField.getValue();
-                        parent = formNode.getParent();
-                    }
-                    else
-                    {
-                        parent = (T)parentField.getValue();
-                    }
-                    
-                    // set the tree def for the object being edited by using the parent node's tree def
-                    if (parent != null)
-                    {
-                        formNode.setDefinition(parent.getDefinition());
+                        parentChanged(form, parentCBX, rankComboBox);
                     }
                 }
             });
@@ -521,7 +528,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         if (nodeInForm != null && nodeInForm.getDefinitionItem() != null)
         {
             //log.debug("node in form already has a set rank: forcing a call to adjustRankComboBoxModel()");
-            adjustRankComboBoxModel((GetSetValueIFace)parentComboBox, rankComboBox, nodeInForm);
+            adjustRankComboBoxModel(parentCBX, rankComboBox, nodeInForm);
         }
         
         // TODO: the form system MUST require the accepted parent widget to be present if the isAccepted checkbox is present
@@ -546,7 +553,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     protected void adjustRankComboBoxModel(GetSetValueIFace parentField, ValComboBox rankComboBox, T nodeInForm)
     {
         log.debug("Adjusting the model for the 'rank' combo box in a tree node form");
-        log.debug("nodeInForm = " + nodeInForm);
+        log.debug("nodeInForm = " + nodeInForm.getName());
         if (nodeInForm == null)
         {
             return;
@@ -674,7 +681,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                 String defTableName = defTableInfo.getName();
                 String defIdColName = defTableInfo.getIdColumnName();
                 
-                String queryFormatStr = "SELECT n.FullName, n.%s from %s n INNER JOIN %s d ON n.%s = d.%s INNER JOIN discipline ct ON d.%s = ct.%s WHERE lower(n.FullName) LIKE \'%s\' AND ct.DisciplineID = %d ORDER BY n.FullName asc";
+                String queryFormatStr = "SELECT n.FullName, n.%s from %s n INNER JOIN %s d ON n.%s = d.%s INNER JOIN discipline dsp ON d.%s = dsp.%s WHERE lower(n.FullName) LIKE \'%s\' AND dsp.DisciplineID = %d ORDER BY n.FullName asc";
                 queryStr = String.format(queryFormatStr, idColName, tableName, defTableName, defIdColName, defIdColName, defIdColName, defIdColName, searchText.toLowerCase() + "%", disciplineID);
                 log.debug(queryStr);
             }
@@ -736,7 +743,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                 }
             }
             
-            String queryFormatStr = "SELECT n.%s, %s from %s n INNER JOIN %s d ON n.%s = d.%s INNER JOIN discipline ct ON d.%s = ct.%s WHERE (%s) AND ct.DisciplineID = %d ORDER BY %s";
+            String queryFormatStr = "SELECT n.%s, %s from %s n INNER JOIN %s d ON n.%s = d.%s INNER JOIN discipline dsp ON d.%s = dsp.%s WHERE (%s) AND dsp.DisciplineID = %d ORDER BY %s";
             String queryStr = String.format(queryFormatStr, idColName, colNames.toString(), tableName, defTableName, defIdColName, defIdColName, 
                                             defIdColName, defIdColName, criteria.toString(), disciplineId, orderBy.toString());
             return queryStr;

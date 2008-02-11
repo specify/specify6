@@ -289,7 +289,9 @@ public class AutoNumberGeneric implements AutoNumberIFace
                                  final String                 value, 
                                  final Pair<Integer, Integer> yearAndIncVal)
     {
-        if (StringUtils.isNotEmpty(value) && value.length() == formatter.getLength())
+        String trimmedValue = StringUtils.deleteWhitespace(value);
+        
+        if (trimmedValue.length() == 0 || (StringUtils.isNotEmpty(value) && value.length() == formatter.getLength()))
         {
             Pair<Integer, Integer> pos = formatter.getIncPosition();
             if (pos != null)
@@ -318,9 +320,8 @@ public class AutoNumberGeneric implements AutoNumberIFace
                         //return sb.toString();
                         
                     } // else
-                    return sb.toString();
                     //throw new RuntimeException("There was an error trying to obtain the highest number, there may be a bad value in the database.");
-                    
+                    return sb.toString();
                 } // else
                 throw new RuntimeException("There was an error trying to obtain the highest number, there may be a bad value in the database.");
             }

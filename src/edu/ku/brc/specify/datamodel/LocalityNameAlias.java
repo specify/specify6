@@ -35,7 +35,8 @@ import org.hibernate.annotations.Index;
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "localitynamealias")
 @org.hibernate.annotations.Table(appliesTo="localitynamealias", indexes =
-    {   @Index (name="LocalityNameAliasIDX", columnNames={"Name"})
+    {   @Index (name="LocalityNameAliasIDX", columnNames={"Name"}),
+        @Index (name="LocNmAlColMemIDX", columnNames={"CollectionMemberID"})
     })
 public class LocalityNameAlias extends CollectionMember
 {

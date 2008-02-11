@@ -14,6 +14,7 @@
  */
 package edu.ku.brc.ui.forms;
 
+import static edu.ku.brc.ui.UIHelper.createIconBtn;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.apache.commons.lang.StringUtils.split;
@@ -167,7 +168,7 @@ public class TableViewObj implements Viewable,
     protected FormDataObjIFace              parentDataObj   = null;
     protected Object                        dataObj         = null;
     protected Set<Object>                   origDataSet     = null;
-    protected List<Object>                  dataObjList     = null;
+    protected Vector<Object>                dataObjList     = null;
     protected Object[]                      singleItemArray = new Object[1];
     protected DateWrapper                   scrDateFormat;
     protected boolean                       isLoaded        = false;
@@ -178,7 +179,7 @@ public class TableViewObj implements Viewable,
     protected JPanel                        mainComp        = null;
     protected ControlBarPanel               controlPanel    = null;
     protected ResultSetController           rsController    = null;
-    protected List<Object>                  list            = null;
+    protected Vector<Object>                list            = null;
     protected boolean                       ignoreSelection = false;
     protected JButton                       saveBtn         = null;
     protected JButton                       validationInfoBtn = null;
@@ -204,6 +205,13 @@ public class TableViewObj implements Viewable,
     protected ColTableModel                 model;
     protected JTable                        table;
     protected JScrollPane                   tableScroller;
+    protected JPanel                        orderablePanel;
+    
+    // Reordering
+    protected JButton                       orderUpBtn  = null;
+    protected JButton                       orderDwnBtn = null;
+    protected boolean                       doOrdering  = false;
+    
 
     /**
      * Constructor with FormView definition.<NOTE: We cannot build the table here because we need all the column
@@ -460,8 +468,8 @@ public class TableViewObj implements Viewable,
     protected void buildTable()
     {
         // Now Build the JTable
-        model    = new ColTableModel();
-        table    = new JTable(model);
+        model = new ColTableModel();
+        table = new JTable(model);
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.setRowSelectionAllowed(true);
         table.setColumnSelectionAllowed(false);
@@ -475,9 +483,11 @@ public class TableViewObj implements Viewable,
         table.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             public void valueChanged(ListSelectionEvent e)
             {
-                ListSelectionModel lsm = (ListSelectionModel)e.getSource();
-                updateUI(!lsm.isSelectionEmpty());
-                
+                if (!e.getValueIsAdjusting())
+                {
+                    ListSelectionModel lsm = (ListSelectionModel)e.getSource();
+                    updateUI(!lsm.isSelectionEmpty());
+                }
             }
         });
             
@@ -528,17 +538,70 @@ public class TableViewObj implements Viewable,
             }
         }
         */
-
+        
         tableScroller = new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        //mainBuilder.add(tableScroller, cc.xy(1, mainCompRowInx));
-        mainComp.add(tableScroller, BorderLayout.CENTER);
+        orderablePanel = new JPanel(new BorderLayout());
+        orderablePanel.add(tableScroller, BorderLayout.CENTER);
+        
+        mainComp.add(orderablePanel, BorderLayout.CENTER);
         
         initColumnSizes(table);
-
     }
     
     /**
-     * Sest the btn enabled/disabled state.
+     * Reorders items from a starting index.
+     * @param startInx the starting index.
+     */
+    protected void reorderItems(final int startInx)
+    {
+        for (int i=startInx;i<dataObjList.size();i++)
+        {
+            Object obj = dataObjList.get(i);
+            if (obj instanceof Orderable)
+            {
+                Orderable orderable = (Orderable)obj;
+                orderable.setOrderIndex(i);
+            }
+        }
+        model.fireDataChanged();
+        tellMultiViewOfChange();
+    }
+    
+    /**
+     * Reorders a list item up.
+     */
+    protected void orderUp()
+    {
+        int inx = table.getSelectedRow();
+        if (inx > -1)
+        {
+            Object item = dataObjList.get(inx);
+            dataObjList.remove(inx);
+            dataObjList.insertElementAt(item, inx-1);
+            reorderItems(inx);
+        }
+        table.getSelectionModel().setSelectionInterval(inx-1, inx-1);
+        tellMultiViewOfChange();
+    }
+    
+    /**
+     * Reorders a list item up.
+     */
+    protected void orderDown()
+    {
+        int inx = table.getSelectedRow();
+        if (inx > -1)
+        {
+            Object item = dataObjList.get(inx);
+            dataObjList.remove(inx);
+            dataObjList.insertElementAt(item, inx+1);
+            reorderItems(inx);
+        }
+        table.getSelectionModel().setSelectionInterval(inx+1, inx+1);
+    }
+    
+    /**
+     * Sets the button enabled/disabled state.
      * @param hasSelection whether something is selected.
      */
     protected void updateUI(final boolean hasSelection)
@@ -555,6 +618,13 @@ public class TableViewObj implements Viewable,
         {
             deleteButton.setEnabled(hasSelection);
         }
+        
+        if (doOrdering && table != null)
+        {
+            int inx = table.getSelectedRow();
+            orderUpBtn.setEnabled(inx > 0);
+            orderDwnBtn.setEnabled(inx > -1 && inx < table.getRowCount()-1);
+        }
     }
     
     /**
@@ -565,6 +635,8 @@ public class TableViewObj implements Viewable,
         if (formValidator != null)
         {
             formValidator.setHasChanged(true);
+            //formValidator.validateForm();
+            formValidator.wasValidated(null);
         }
     }
     
@@ -610,6 +682,7 @@ public class TableViewObj implements Viewable,
             
             multiView.addCurrentValidator();
             
+            dialog.setParentData(parentDataObj);
             dialog.setData(dObj);
             dialog.showDisplay(true);
             
@@ -677,6 +750,38 @@ public class TableViewObj implements Viewable,
             }
             dialog.dispose();
         }
+    }
+    
+    /**
+     * Creates and adds a re-order panel to the table view.
+     */
+    protected void addOrderablePanel()
+    {
+        doOrdering = true;
+        
+        orderUpBtn = createIconBtn("ReorderUp", "ES_RES_MOVE_UP", new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                orderUp();
+            }
+        });
+        orderDwnBtn = createIconBtn("ReorderDown", "ES_RES_MOVE_DOWN", new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                orderDown();
+            }
+        });
+        
+        PanelBuilder upDownPanel = new PanelBuilder(new FormLayout("p", "f:p:g, p, 2px, p, f:p:g"));        
+        upDownPanel.add(orderUpBtn,       cc.xy(1, 2));
+        upDownPanel.add(orderDwnBtn,      cc.xy(1, 4));
+
+        orderablePanel.add(upDownPanel.getPanel(), BorderLayout.EAST);
+        orderablePanel.validate();
+        orderablePanel.invalidate(); 
+        orderablePanel.doLayout();
     }
     
     /**
@@ -875,7 +980,7 @@ public class TableViewObj implements Viewable,
      */
     public FormValidator getValidator()
     {
-        return null;
+        return formValidator;
     }
 
     /* (non-Javadoc)
@@ -889,7 +994,13 @@ public class TableViewObj implements Viewable,
         if (dataObj instanceof List)
         {
             origDataSet = null;
-            dataObjList = (List<Object>)dataObj; 
+            if (dataObj instanceof Vector)
+            {
+                dataObjList = (Vector<Object>)(List<Object>)dataObj;
+            } else
+            {
+                dataObjList = new Vector<Object>((List<Object>)dataObj);
+            }
             
         } else
         {
@@ -907,9 +1018,15 @@ public class TableViewObj implements Viewable,
                 List newList = Collections.list(Collections.enumeration(origDataSet));
                 if (newList.size() > 0)
                 {
-                    if (newList.get(0) instanceof Comparable<?>)
+                    Object firstObj = newList.get(0);
+                    if (firstObj instanceof Comparable<?>)
                     {
                         Collections.sort(newList);
+                    }
+                    
+                    if (firstObj instanceof Orderable && isEditting && orderUpBtn == null)
+                    {
+                        addOrderablePanel();
                     }
                 }
                 dataObjList.addAll(newList);
@@ -987,6 +1104,7 @@ public class TableViewObj implements Viewable,
      */
     public void setDataIntoUI()
     {
+        log.debug(dataObjList.size());
         //if (parentDataObj.getId() != null && dataObjList != null && model != null)
         if (dataObjList != null && model != null)
         {
@@ -1860,6 +1978,8 @@ public class TableViewObj implements Viewable,
          */
         public Object getValueAt(int row, int column)
         {
+            //log.debug(row+","+column+"  isLoaded:"+isLoaded);
+            
             if (columnList != null && dataObjList != null && dataObjList.size() > 0)
             {
                 if (!isLoaded)
@@ -1871,7 +1991,7 @@ public class TableViewObj implements Viewable,
                 Object     rowObj  = dataObjList.get(row);
                 //log.info("["+colInfo.getFullCompName()+"]");
                 
-                if (session != null && rowObj instanceof FormDataObjIFace)
+                if (session != null && session.isOpen() && rowObj instanceof FormDataObjIFace)
                 {
                     session.attach(rowObj);
                 }
@@ -1890,6 +2010,8 @@ public class TableViewObj implements Viewable,
                        x++;
                     }
                 }*/
+                
+                //log.debug(colInfo.getFullCompName());
                 
                 Object[] dataValues = UIHelper.getFieldValues(new String[] {colInfo.getFullCompName()}, rowObj, dataGetter);
                 if (dataValues == null || dataValues[0] == null)
@@ -1953,6 +2075,11 @@ public class TableViewObj implements Viewable,
             return null;
         }
         
+        /**
+         * @param adapter
+         * @param value
+         * @return
+         */
         protected Object getPickListValue(final PickListDBAdapterIFace adapter, final Object value)
         {
             if (value != null)
@@ -2096,5 +2223,35 @@ public class TableViewObj implements Viewable,
             compGetSet.setValue(value, null);
             return comp;
         }
-     }
+    }
+    
+    // This class is being used to try to find an exception during the
+    // the display of the table (CollectingEvent Collectors)
+    /*
+    class TestTable extends JTable
+    {
+
+        public TestTable(TableModel dm)
+        {
+            super(dm);
+        }
+
+        @Override
+        public Object getValueAt(int row, int column)
+        {
+            //log.debug("row,col "+row+", "+column);
+            try
+            {
+                return super.getValueAt(row, column);
+                
+            } catch (Exception ex)
+            {
+                log.debug("row,col "+row+", "+column);
+                ex.printStackTrace();
+            }
+            return null;
+        }
+
+    }*/
+
 }

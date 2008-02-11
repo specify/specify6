@@ -45,6 +45,7 @@ import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Index;
 
 /**
 
@@ -53,6 +54,9 @@ import org.hibernate.annotations.CascadeType;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "loanpreparation")
+@org.hibernate.annotations.Table(appliesTo="loanpreparation", indexes =
+    {   @Index (name="LoanPrepColMemIDX", columnNames={"CollectionMemberID"})
+    })
 public class LoanPreparation extends CollectionMember implements java.io.Serializable, Comparable<LoanPreparation>
 {
 

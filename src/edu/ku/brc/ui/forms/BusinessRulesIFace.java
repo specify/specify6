@@ -68,6 +68,15 @@ public interface BusinessRulesIFace
     public STATUS processBusinessRules(Object dataObj);
     
     /**
+     * Processes the business rules for the data object.
+     * 
+     * @param parentDataObj the parent data object for rthe rules to be processed on.
+     * @param dataObj the data object for rthe rules to be processed on.
+     * @return the result status after processing the busniess rules.
+     */
+    public STATUS processBusinessRules(Object parentDataObj, Object dataObj);
+    
+    /**
      * Returns a list of warnings and errors after processing the business rules.
      * 
      * @return a list of warnings and errors after processing the business rules.

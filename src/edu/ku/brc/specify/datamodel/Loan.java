@@ -65,7 +65,8 @@ import edu.ku.brc.dbsupport.DBConnection;
 @org.hibernate.annotations.Table(appliesTo="loan", indexes =
     {   @Index (name="LoanNumberIDX", columnNames={"LoanNumber"}),
         @Index (name="LoanDateIDX", columnNames={"LoanDate"}),
-        @Index (name="CurrentDueDateIDX", columnNames={"CurrentDueDate"})
+        @Index (name="CurrentDueDateIDX", columnNames={"CurrentDueDate"}),
+        @Index (name="LoanColMemIDX", columnNames={"CollectionMemberID"})
     })
 public class Loan extends CollectionMember implements AttachmentOwnerIFace<LoanAttachment>, java.io.Serializable {
 

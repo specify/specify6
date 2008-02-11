@@ -39,7 +39,8 @@ import org.hibernate.annotations.Index;
 @Table(name = "determination")
 @org.hibernate.annotations.Proxy(lazy = false)
 @org.hibernate.annotations.Table(appliesTo="determination", indexes =
-    {   @Index (name="DeterminedDateIDX", columnNames={"DeterminedDate"})
+    {   @Index (name="DeterminedDateIDX", columnNames={"DeterminedDate"}),
+        @Index (name="DetMemIDX", columnNames={"CollectionMemberID"})
     })
 public class Determination extends CollectionMember implements java.io.Serializable, Comparable<Determination>
 {
