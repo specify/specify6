@@ -1271,6 +1271,11 @@ public class Uploader implements ActionListener, KeyListener
         //return false;
     }
         
+    /**
+     * @param toMatch
+     * @return matching vertex in uploadGraph.
+     * Performs extra processing when Table represents a Treeable class.
+     */
     protected Vertex<Table> getMatchingVertexInUpload(final Table toMatch)
     {
         if (isTreeable(toMatch))
@@ -1318,7 +1323,8 @@ public class Uploader implements ActionListener, KeyListener
                     uploadGraph.addVertex(newTbl);
                     for (Vertex<Table> adj : dbGraph.getAdjacentVertices(newTbl))
                     {
-                        Vertex<Table> endPt = uploadGraph.getVertexByData(adj.getData());
+                        //Vertex<Table> endPt = uploadGraph.getVertexByData(adj.getData());
+                        Vertex<Table> endPt = getMatchingVertexInUpload(adj.getData());
                         if (endPt != null)
                         {
                             uploadGraph.addEdge(newTbl.getLabel(), endPt.getLabel());
@@ -1326,7 +1332,6 @@ public class Uploader implements ActionListener, KeyListener
                     }
                     for (Vertex<Table> adj : dbGraph.into(newTbl.getData()))
                     {
-                        //Vertex<Table> endPt = uploadGraph.getVertexByData(adj.getData());
                         Vertex<Table> endPt = getMatchingVertexInUpload(adj.getData());
                         if (endPt != null)
                         {
