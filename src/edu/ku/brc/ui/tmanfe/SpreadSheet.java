@@ -994,7 +994,11 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         if (model != null)
         {
             model.cleanUp();
+            /* Nulling out model (somehow) causes Null Pointer Exceptions 
+             * after a WorkBench has been closed.
+             * (see bugzilla number 5204
             model      = null;
+            */
         }
         scrollPane = null;
         popupMenu  = null;
