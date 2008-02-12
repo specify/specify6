@@ -58,11 +58,11 @@ public class Author extends DataModelObjBase implements java.io.Serializable,
 
     // Fields    
 
-     protected Integer authorId;
-     protected Short orderNumber;
-     protected String remarks;
+     protected Integer       authorId;
+     protected Short         orderNumber;
+     protected String        remarks;
      protected ReferenceWork referenceWork;
-     protected Agent agent;
+     protected Agent         agent;
 
 
     // Constructors

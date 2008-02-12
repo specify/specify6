@@ -222,7 +222,7 @@ public class ResultSetController implements ValidationListener
                 {
                     public void setEnabled(boolean enable)
                     {
-                        //System.err.println(formValidator.getName() + " " + hashCode() + " "+enable);
+                        System.err.println(formValidator.getName() + " " + hashCode() + " "+enable);
                         if (!enable)
                         {
                             int x = 0;

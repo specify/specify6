@@ -206,7 +206,10 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                     
                 } else
                 {
-                    popupMenu.setVisible(false);
+                    if (popupMenu != null)
+                    {
+                        popupMenu.setVisible(false);
+                    }
                     popupFromBtn = false;
                 }
             }
@@ -297,6 +300,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 }
             } else
             {
+                popupFromBtn = false;
                 showPopup(); // add only
                 return;
             }
@@ -371,14 +375,16 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             popupMenu.addPopupMenuListener(new PopupMenuListener() {
                 public void popupMenuCanceled(PopupMenuEvent e)
                 {
-                    isPopupShowing = false;
+                    isPopupShowing  = false;
                     ignoreFocusLost = false;
+                    //popupFromBtn    = false;
                 }
 
                 public void popupMenuWillBecomeInvisible(PopupMenuEvent e)
                 {
-                    isPopupShowing = false;
+                    isPopupShowing  = false;
                     ignoreFocusLost = false;
+                    //popupFromBtn    = false;
                 }
 
                 public void popupMenuWillBecomeVisible(PopupMenuEvent e)

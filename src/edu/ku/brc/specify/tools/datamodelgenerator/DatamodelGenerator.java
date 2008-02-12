@@ -85,7 +85,7 @@ public class DatamodelGenerator
     
     protected Hashtable<String, String> abbrvHash = new Hashtable<String, String>();
     
-    protected boolean      includeDesc       = true;
+    protected boolean      includeDesc       = false;
     protected boolean      doRelsToZeroToOne = includeDesc;
     protected boolean      doGerman          = false;
     protected boolean      showDescErrors    = false;

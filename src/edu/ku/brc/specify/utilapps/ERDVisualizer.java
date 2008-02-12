@@ -220,6 +220,8 @@ public class ERDVisualizer extends JFrame
                 tblTracker.addNodeInfo("ConservEventAttachment",  true, true,         true,       false,         null);
                 
                 // No Kids
+                tblTracker.addNodeInfo("Discipline",             false, false, true,  false, null);
+                tblTracker.addNodeInfo("Collection",             false, false, true,  false, null);
                 tblTracker.addNodeInfo("Taxon",                  false, false, true,  false, null);
                 tblTracker.addNodeInfo("TaxonCitation",          false, false, true,  false, null);
                 tblTracker.addNodeInfo("DeterminationStatus",    false, false, true,  false, null);
@@ -255,6 +257,13 @@ public class ERDVisualizer extends JFrame
                 
                 NodeInfo ni = tblTracker.getNodeInfo("Taxon");
                 ni.addKid(tblTracker.getTable("TaxonCitation"));
+                
+                ni = tblTracker.getNodeInfo("Discipline");
+                ni.addKid(tblTracker.getTable("Collection"));
+                
+                ni = tblTracker.getNodeInfo("Collection");
+                ni.addKid(tblTracker.getTable("FieldNotebook"));
+                ni.addKid(tblTracker.getTable("CollectionObject"));
                 
                 ni = tblTracker.getNodeInfo("CollectionObjectCitation");
                 ni.addKid(tblTracker.getTable("ReferenceWork"));
@@ -323,7 +332,7 @@ public class ERDVisualizer extends JFrame
                 // No Kids
                 tblTracker.addNodeInfo("SpAppResourceData", false, false,        true,       false,         null);
                 tblTracker.addNodeInfo("Collection",        false, false,        true,       false,         null);
-                tblTracker.addNodeInfo("Discipline",    false, false,        true,       false,         null);
+                tblTracker.addNodeInfo("Discipline",        false, false,        true,       false,         null);
                 tblTracker.addNodeInfo("SpecifyUser",       false, false,        true,       false,         null);
                 tblTracker.addNodeInfo("SpAppResource",     false, false,        true,       false,         null);
                 tblTracker.addNodeInfo("SpViewSetObj",      false, false,        true,       false,         null);

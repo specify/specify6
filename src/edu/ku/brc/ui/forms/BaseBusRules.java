@@ -247,13 +247,15 @@ public abstract class BaseBusRules implements BusinessRulesIFace
     /**
      * @param skipTableNames
      * @param idColName
+     * @param dataClassObj
      * @return
      */
     protected String[] gatherTableFieldsForDelete(final String[] skipTableNames, 
-                                                  final DBTableInfo tableInfo)
+                                                  final String idColName,
+                                                  final Class<?> dataClassObj)
+    
     {
-        boolean debug = true;
-        String idColName = tableInfo.getIdColumnName();
+        boolean debug = false;
         
         int fieldCnt = 0;
         Hashtable<String, Vector<String>> fieldHash = new Hashtable<String, Vector<String>>();
@@ -261,27 +263,33 @@ public abstract class BaseBusRules implements BusinessRulesIFace
         for (DBTableInfo ti : DBTableIdMgr.getInstance().getTables())
         {
             Hashtable<String, Boolean> skipHash = new Hashtable<String, Boolean>();
-            for (String name : skipTableNames)
+            if (skipTableNames != null)
             {
-                skipHash.put(name, true);
+                for (String name : skipTableNames)
+                {
+                    skipHash.put(name, true);
+                }
             }
             
-            for (DBRelationshipInfo ri : ti.getRelationships())
+            if (dataClassObj != null)
             {
-                
-                if (ri.getDataClass() == tableInfo.getClassObj())
+                for (DBRelationshipInfo ri : ti.getRelationships())
                 {
-                    String colName = ri.getColName();
-                    if (StringUtils.isNotEmpty(colName) && !(skipHash.get(ti.getName()) != null && colName.equals(idColName)))
+                    
+                    if (ri.getDataClass() == dataClassObj)
                     {
-                        Vector<String> fieldList = fieldHash.get(ti.getName());
-                        if (fieldList == null)
+                        String colName = ri.getColName();
+                        if (StringUtils.isNotEmpty(colName) && !(skipHash.get(ti.getName()) != null && colName.equals(idColName)))
                         {
-                            fieldList = new Vector<String>();
-                            fieldHash.put(ti.getName(), fieldList);
+                            Vector<String> fieldList = fieldHash.get(ti.getName());
+                            if (fieldList == null)
+                            {
+                                fieldList = new Vector<String>();
+                                fieldHash.put(ti.getName(), fieldList);
+                            }
+                            fieldList.add(ri.getColName());
+                            fieldCnt++;
                         }
-                        fieldList.add(ri.getColName());
-                        fieldCnt++;
                     }
                 }
             }
@@ -312,6 +320,17 @@ public abstract class BaseBusRules implements BusinessRulesIFace
             }
         }
         return tableFieldNamePairs;
+    }
+    
+    /**
+     * @param skipTableNames
+     * @param tableInfo
+     * @return
+     */
+    protected String[] gatherTableFieldsForDelete(final String[]    skipTableNames, 
+                                                  final DBTableInfo tableInfo)
+    {
+        return gatherTableFieldsForDelete(skipTableNames, tableInfo.getIdColumnName(), tableInfo.getClassObj());
     }
 
     /* (non-Javadoc)

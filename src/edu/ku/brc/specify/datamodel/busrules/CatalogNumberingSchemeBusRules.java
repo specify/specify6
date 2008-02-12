@@ -23,6 +23,9 @@ import edu.ku.brc.ui.forms.FormDataObjIFace;
 public class CatalogNumberingSchemeBusRules extends BaseBusRules
 {
 
+    /**
+     * Constructor.
+     */
     public CatalogNumberingSchemeBusRules()
     {
         

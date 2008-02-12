@@ -112,7 +112,7 @@ public class CollectingEventAttachment extends CollectionMember implements Objec
         this.attachment = attachment;
     }
 
-    @Column(name = "Ordinal")
+    @Column(name = "Ordinal", nullable = false)
     public Integer getOrdinal()
     {
         return ordinal;

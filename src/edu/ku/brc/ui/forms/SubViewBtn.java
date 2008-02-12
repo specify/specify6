@@ -101,6 +101,10 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
         this.options       = options;
         this.classToCreate = classToCreate;
         
+        // 02/12/08 - rods - Removing the "IS_NEW_OBJECT" of the parent object because it doesn't
+        // matter to the popup form it creates. he form takes care o everything.
+        this.options &= ~MultiView.IS_NEW_OBJECT;
+        
         //log.debug("Editing "+MultiView.isOptionOn(options, MultiView.IS_EDITTING));
         //log.debug("IsNew "+MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT));
 
@@ -203,7 +207,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
         
         String closeBtnTitle = isEditing ? getResourceString("Done") : getResourceString("Close");
         
-        ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Frame)null,
+        ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog((Frame)UIRegistry.getTopWindow(),
                 subviewDef.getViewSetName(),
                 subviewDef.getViewName(),
                 null,                      // What is this argument???

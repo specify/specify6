@@ -99,7 +99,7 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
     {
          Loan loan = (Loan)dataObj;
         
-        System.out.println("beforeSaveCommit loanNum: "+loan.getLoanNumber());
+        //System.out.println("beforeSaveCommit loanNum: "+loan.getLoanNumber());
         
         for (Shipment shipment : loan.getShipments())
         {

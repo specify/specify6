@@ -55,8 +55,8 @@ public class GeologicTimePeriodBusRules extends BaseTreeBusRules<GeologicTimePer
     {
         String[] relationships = 
         {
-                "paleocontext", "BioStratID",
-                "paleocontext", "ChronosStratID",
+                "paleocontext",       "BioStratID",
+                "paleocontext",       "ChronosStratID",
                 "geologictimeperiod", "AcceptedID"
         };
 

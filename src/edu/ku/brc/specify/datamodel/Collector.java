@@ -63,11 +63,11 @@ public class Collector extends CollectionMember implements java.io.Serializable,
 
     // Fields    
 
-     protected Integer collectorId;
-     protected Integer orderNumber;
-     protected String remarks;
+     protected Integer         collectorId;
+     protected Integer         orderNumber;
+     protected String          remarks;
      protected CollectingEvent collectingEvent;
-     protected Agent agent;
+     protected Agent           agent;
 
 
     // Constructors

@@ -121,6 +121,7 @@ import edu.ku.brc.ui.forms.validation.UIValidatable;
 import edu.ku.brc.ui.forms.validation.UIValidator;
 import edu.ku.brc.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.ui.forms.validation.ValidationListener;
+import edu.ku.brc.util.Orderable;
 
 /**
  * This implements a Form and is "owed" by a MultiView.<br>
@@ -1196,6 +1197,22 @@ public class FormViewObj implements Viewable,
         if (formValidator != null && formValidator.hasChanged())
         {
             formValidator.setHasChanged(false);
+        }
+        
+        if (obj instanceof Orderable)
+        {
+            // They really should all be Orderable, 
+            // but just in case we check each one.
+            int maxOrder = -1;
+            for (Object listObj : list)
+            {
+                if (listObj instanceof Orderable)
+                {
+                    maxOrder = Math.max(((Orderable)listObj).getOrderIndex(), maxOrder);
+                }
+            }
+            
+            ((Orderable)obj).setOrderIndex(maxOrder+1);
         }
 
         dataObj = obj;

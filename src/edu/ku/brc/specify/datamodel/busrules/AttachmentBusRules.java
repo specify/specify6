@@ -86,7 +86,7 @@ public class AttachmentBusRules extends BaseBusRules
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#beforeSaveCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
      */
     @Override
-    public boolean beforeSaveCommit(Object dataObj, DataProviderSessionIFace session) throws Exception
+    public boolean beforeSaveCommit(final Object dataObj, final DataProviderSessionIFace session) throws Exception
     {
         boolean retVal = super.beforeSaveCommit(dataObj, session);
         if (retVal == false)

@@ -40,43 +40,6 @@ public class DisciplineBusRules extends BaseBusRules
     @Override
     public boolean okToEnableDelete(Object dataObj)
     {
-        /*
-        Discipline ct = (Discipline)dataObj;
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        try
-        {
-            // load workbenches so they aren't lazy
-            // this is needed later on when the new WB is added to the template 
-            session.attach(ct);
-
-            if (ct.getLocalities().size() > 0)
-            {
-                return false;
-            }
-            if (ct.getAttributeDefs().size() > 0)
-            {
-                return false;
-            }
-            if (ct.getCollection().size() > 0)
-            {
-                return false;
-            }
-            if (ct.getSpAppResourceDirs().size() > 0)
-            {
-                return false;
-            }
-            return true;
-            
-        } catch (Exception ex)
-        {
-            log.error(ex);
-            
-        } finally 
-        {
-            session.close();
-        }
-*/
-        
         if (!okToDelete("colobjdef_locality", "DisciplineID", ((FormDataObjIFace)dataObj).getId()))
         {
             return false;

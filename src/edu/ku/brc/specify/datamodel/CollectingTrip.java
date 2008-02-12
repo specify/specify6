@@ -256,11 +256,13 @@ public class CollectingTrip extends CollectionMember implements java.io.Serializ
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collectingTrip")
     @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    public Set<CollectingEvent> getCollectingEvents() {
+    public Set<CollectingEvent> getCollectingEvents() 
+    {
         return this.collectingEvents;
     }
     
-    public void setCollectingEvents(Set<CollectingEvent> collectingEvents) {
+    public void setCollectingEvents(Set<CollectingEvent> collectingEvents) 
+    {
         this.collectingEvents = collectingEvents;
     }
     

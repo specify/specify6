@@ -3497,7 +3497,9 @@ public class BuildSampleDatabase
             thumb.setMaxHeight(128);
             thumb.setMaxWidth(128);
 
-            AttachmentManagerIface attachMgr = new FileStoreAttachmentManager(UIRegistry.getAppDataSubDir("AttachmentStorage", true));
+            File attLoc = UIRegistry.getAppDataSubDir("AttachmentStorage", true);
+            FileUtils.cleanDirectory(attLoc);
+            AttachmentManagerIface attachMgr = new FileStoreAttachmentManager(attLoc);
             AttachmentUtils.setAttachmentManager(attachMgr);
             AttachmentUtils.setThumbnailer(thumb);
             
@@ -3580,7 +3582,7 @@ public class BuildSampleDatabase
         frame.setSize(new Dimension(500,125));
         UIHelper.centerAndShow(frame);
         frame.setProcessPercent(true);
-        frame.setOverall(0, 8+(doingDerby ? 1 : 0));
+        frame.setOverall(0, 9+(doingDerby ? 1 : 0));
         frame.getCloseBtn().setVisible(false);
 
         System.setProperty(AppPreferences.factoryName,          "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");    // Needed by AppReferences
@@ -3697,7 +3699,12 @@ public class BuildSampleDatabase
                     thumb.setMaxHeight(128);
                     thumb.setMaxWidth(128);
 
-                    AttachmentManagerIface attachMgr = new FileStoreAttachmentManager(UIRegistry.getAppDataSubDir("AttachmentStorage", true));
+                    frame.setDesc("Cleaning Attachment Cache...");
+                    frame.setOverall(steps++);
+                    
+                    File attLoc = UIRegistry.getAppDataSubDir("AttachmentStorage", true);
+                    FileUtils.cleanDirectory(attLoc);
+                    AttachmentManagerIface attachMgr = new FileStoreAttachmentManager(attLoc);
                     
                     AttachmentUtils.setAttachmentManager(attachMgr);
                     AttachmentUtils.setThumbnailer(thumb);

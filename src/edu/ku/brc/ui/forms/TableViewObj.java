@@ -717,6 +717,12 @@ public class TableViewObj implements Viewable,
                                 }
                                 
                                 ((Orderable)daObj).setOrderIndex(maxOrder+1);
+                                
+                                if (orderUpBtn == null)
+                                {
+                                    addOrderablePanel();
+                                }
+
                             }
                             dataObjList.add(daObj);
                             

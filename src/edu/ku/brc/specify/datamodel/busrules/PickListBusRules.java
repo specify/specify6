@@ -1,11 +1,8 @@
 /*
-     * Copyright (C) 2008  The University of Kansas
-     *
-     * [INSERT KU-APPROVED LICENSE TEXT HERE]
-     *
-     */
-/**
- * 
+ * Copyright (C) 2008  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ *
  */
 package edu.ku.brc.specify.datamodel.busrules;
 
@@ -457,7 +454,7 @@ public class PickListBusRules extends BaseBusRules
             reasonList.clear();
             
             PickList dbPL = session.getData(PickList.class, "name", pickList.getName(), DataProviderSessionIFace.CompareType.Equals);
-            log.debug("["+dbPL.getId().intValue()+"]["+pickList.getId().intValue()+"]");
+            //log.debug("["+dbPL.getId().intValue()+"]["+pickList.getId().intValue()+"]");
             if (dbPL != null && dbPL.getId().intValue() != pickList.getId().intValue())
             {
                 reasonList.add(UIRegistry.getLocalizedMessage("PL_DUPLICATE_NAME", pickList.getName()));

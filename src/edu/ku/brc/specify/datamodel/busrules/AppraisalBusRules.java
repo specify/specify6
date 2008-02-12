@@ -9,7 +9,8 @@ package edu.ku.brc.specify.datamodel.busrules;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.specify.datamodel.Preparation;
+import edu.ku.brc.specify.datamodel.Appraisal;
+import edu.ku.brc.ui.forms.BaseBusRules;
 import edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 
@@ -21,20 +22,21 @@ import edu.ku.brc.ui.forms.FormDataObjIFace;
  * Feb 11, 2008
  *
  */
-public class PreparationBusRules extends AttachmentOwnerBaseBusRules
+public class AppraisalBusRules extends BaseBusRules
 {
-    public PreparationBusRules()
-    {
-        super(Preparation.class);
-    }
 
+    public AppraisalBusRules()
+    {
+        super(Appraisal.class);
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BaseBusRules#okToEnableDelete(java.lang.Object)
      */
     @Override
     public boolean okToEnableDelete(Object dataObj)
     {
-        return true;
+        return false;
     }
     
     /* (non-Javadoc)
@@ -59,8 +61,8 @@ public class PreparationBusRules extends AttachmentOwnerBaseBusRules
                 
             } else
             {
-                DBTableInfo tableInfo      = DBTableIdMgr.getInstance().getInfoById(Preparation.getClassTableId());
-                String[]    tableFieldList = gatherTableFieldsForDelete(new String[] {"preapration"}, tableInfo);
+                DBTableInfo tableInfo      = DBTableIdMgr.getInstance().getInfoById(Appraisal.getClassTableId());
+                String[]    tableFieldList = gatherTableFieldsForDelete(new String[] {"appraisal"}, tableInfo);
                 isOK = okToDelete(tableFieldList, dbObj.getId());
             }
             deletable.doDeleteDataObj(dataObj, session, isOK);
@@ -70,4 +72,6 @@ public class PreparationBusRules extends AttachmentOwnerBaseBusRules
             super.okToDelete(dataObj, session, deletable);
         }
     }
+
+
 }

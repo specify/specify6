@@ -50,7 +50,9 @@
         <table name="edu.ku.brc.specify.datamodel.AttachmentTag" abbrev="attag" id="130" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.AttributeDef" abbrev="atd" id="16"/>
         <table name="edu.ku.brc.specify.datamodel.Author" abbrev="au" id="17" searchable="true"/>
-        <table name="edu.ku.brc.specify.datamodel.Borrow" abbrev="bo" id="18" searchable="true"/>
+        <table name="edu.ku.brc.specify.datamodel.Borrow" abbrev="bo" id="18" searchable="true">
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.Borrow	</businessrule>
+        </table>
         <table name="edu.ku.brc.specify.datamodel.BorrowAgent" abbrev="boa" id="19" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.BorrowMaterial" abbrev="bom" id="20" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.BorrowReturnMaterial" abbrev="brm" id="21" searchable="true"/>

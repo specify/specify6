@@ -192,7 +192,7 @@
 				</xsl:template>
 
 				<br />
-				<span class="footer">Created: 2007-09-14</span>
+				<span class="footer">Created: 2008-02-11</span>
 
 			</body>
 		</html>

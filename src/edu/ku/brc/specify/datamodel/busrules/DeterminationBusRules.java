@@ -112,6 +112,9 @@ public class DeterminationBusRules extends BaseBusRules
         }
     }
     
+    /**
+     * @param e
+     */
     protected void determinationStatusSelected(ActionEvent e)
     {
         if (ignoreSelection)
