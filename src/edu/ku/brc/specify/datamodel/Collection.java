@@ -56,7 +56,17 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
     protected String                     description;
     protected String                     remarks;
     
-    protected Discipline             discipline;
+    // TDWG Fields
+    protected String                     kingdomCoverage;
+    protected String                     primaryFocus;
+    protected String                     collectionType;
+    protected String                     primaryPurpose;
+    protected String                     preservationMethodType;
+    protected String                     developmentStatus;
+    protected String                     institutionType;
+    
+    // Relationships
+    protected Discipline                 discipline;
     protected Set<SpAppResourceDir>      spAppResourceDirs;
     protected Set<FieldNotebook>         fieldNoteBooks;
     protected Set<CollectionObject>      collectionObjects;
@@ -117,7 +127,14 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
         collectionPrefix       = null;
         description            = null;
         remarks                = null;
-        discipline         = null;
+        discipline             = null;
+        kingdomCoverage        = null;
+        primaryFocus           = null;
+        collectionType         = null;
+        primaryPurpose         = null;
+        preservationMethodType = null;
+        developmentStatus      = null;
+        institutionType        = null;
         spAppResourceDirs      = new HashSet<SpAppResourceDir>();
         collectionObjects      = new HashSet<CollectionObject>();
         fieldNoteBooks         = new HashSet<FieldNotebook>();
@@ -247,6 +264,125 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
     }
 
     /**
+     * @return the kingdomCoverage
+     */
+    @Column(name = "KingdomCoverage", length = 32)
+    public String getKingdomCoverage()
+    {
+        return kingdomCoverage;
+    }
+
+    /**
+     * @param kingdomCoverage the kingdomCoverage to set
+     */
+    public void setKingdomCoverage(String kingdomCoverage)
+    {
+        this.kingdomCoverage = kingdomCoverage;
+    }
+
+    /**
+     * @return the primaryFocus
+     */
+    @Column(name = "PrimaryFocus", length = 32)
+    public String getPrimaryFocus()
+    {
+        return primaryFocus;
+    }
+
+    /**
+     * @param primaryFocus the primaryFocus to set
+     */
+    public void setPrimaryFocus(String primaryFocus)
+    {
+        this.primaryFocus = primaryFocus;
+    }
+
+    /**
+     * @return the collectionType
+     */
+    @Column(name = "CollectionType", length = 32)
+    public String getCollectionType()
+    {
+        return collectionType;
+    }
+
+    /**
+     * @param collectionType the collectionType to set
+     */
+    public void setCollectionType(String collectionType)
+    {
+        this.collectionType = collectionType;
+    }
+
+    /**
+     * @return the primaryPurpose
+     */
+    @Column(name = "PrimaryPurpose", length = 32)
+    public String getPrimaryPurpose()
+    {
+        return primaryPurpose;
+    }
+
+    /**
+     * @param primaryPurpose the primaryPurpose to set
+     */
+    public void setPrimaryPurpose(String primaryPurpose)
+    {
+        this.primaryPurpose = primaryPurpose;
+    }
+
+    /**
+     * @return the preservationMethodType
+     */
+    @Column(name = "PreservationMethodType", length = 32)
+    public String getPreservationMethodType()
+    {
+        return preservationMethodType;
+    }
+
+    /**
+     * @param preservationMethodType the preservationMethodType to set
+     */
+    public void setPreservationMethodType(String preservationMethodType)
+    {
+        this.preservationMethodType = preservationMethodType;
+    }
+
+    /**
+     * @return the developmentStatus
+     */
+    @Column(name = "DevelopmentStatus", length = 32)
+    public String getDevelopmentStatus()
+    {
+        return developmentStatus;
+    }
+
+    /**
+     * @param developmentStatus the developmentStatus to set
+     */
+    public void setDevelopmentStatus(String developmentStatus)
+    {
+        this.developmentStatus = developmentStatus;
+    }
+
+    /**
+     * @return the institutionType
+     */
+    @Column(name = "InstitutionType", length = 32)
+    public String getInstitutionType()
+    {
+        return institutionType;
+    }
+
+    /**
+     * @param institutionType the institutionType to set
+     */
+    public void setInstitutionType(String institutionType)
+    {
+        this.institutionType = institutionType;
+    }
+
+    /**
      *
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
@@ -369,9 +505,7 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
         this.prepTypes = prepTypes;
     }
 
-    // Add Methods
 
-    // Delete Add Methods
     
     
     /* (non-Javadoc)
