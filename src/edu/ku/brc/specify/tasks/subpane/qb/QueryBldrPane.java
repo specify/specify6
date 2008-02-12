@@ -1305,6 +1305,11 @@ public class QueryBldrPane extends BaseSubPane
     {
         super.shutdown();
 
+        if (saveBtn != null && saveBtn.isEnabled())
+        {
+            saveBtn.setEnabled(false);
+        }
+        query = null;
         if (queryNavBtn != null)
         {
             queryNavBtn.setEnabled(true);
