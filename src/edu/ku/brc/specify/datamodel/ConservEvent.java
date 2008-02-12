@@ -69,9 +69,6 @@ public class ConservEvent extends DataModelObjBase implements AttachmentOwnerIFa
     protected Agent                      treatedByAgent;
     protected ConservDescription         conservDescription;
     
-    protected Set<ConservRecommendation>  lightRecommendations;
-    protected Set<ConservRecommendation>  displayRecommendations;
-    protected Set<ConservRecommendation>  otherRecommendations;
     protected Set<ConservEventAttachment> conservEventAttachments;
 
     // Constructors
@@ -102,9 +99,6 @@ public class ConservEvent extends DataModelObjBase implements AttachmentOwnerIFa
         photoDocs               = null;
         examinedByAgent         = null;
         treatedByAgent          = null;
-        lightRecommendations    = new HashSet<ConservRecommendation>();
-        displayRecommendations  = new HashSet<ConservRecommendation>();
-        otherRecommendations    = new HashSet<ConservRecommendation>();
         conservDescription      = null;
         conservEventAttachments = new HashSet<ConservEventAttachment>();
     }
@@ -262,51 +256,6 @@ public class ConservEvent extends DataModelObjBase implements AttachmentOwnerIFa
     public void setTreatedByAgent(final Agent treatedByAgent)
     {
         this.treatedByAgent = treatedByAgent;
-    }
-
-    /**
-     *
-     */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "lightRecommendationConservEvent")
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    public Set<ConservRecommendation> getLightRecommendations()
-    {
-        return this.lightRecommendations;
-    }
-
-    public void setLightRecommendations(final Set<ConservRecommendation> lightRecommendations)
-    {
-        this.lightRecommendations = lightRecommendations;
-    }
-
-    /**
-     *
-     */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "displayRecommendationConservEvent")
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    public Set<ConservRecommendation> getDisplayRecommendations()
-    {
-        return this.displayRecommendations;
-    }
-
-    public void setDisplayRecommendations(final Set<ConservRecommendation> displayRecommendations)
-    {
-        this.displayRecommendations = displayRecommendations;
-    }
-
-    /**
-     *
-     */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "otherRecommendationConservEvent")
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    public Set<ConservRecommendation> getOtherRecommendations()
-    {
-        return this.otherRecommendations;
-    }
-
-    public void setOtherRecommendations(final Set<ConservRecommendation> otherRecommendations)
-    {
-        this.otherRecommendations = otherRecommendations;
     }
 
     /**

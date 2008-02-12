@@ -14,7 +14,6 @@
  */
 package edu.ku.brc.specify.datamodel;
 
-import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,8 +27,6 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.Cascade;
@@ -67,15 +64,17 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
     protected String           composition;
     protected String           remarks;
     protected String           source;
-    protected Calendar         curatorApprovalDate;
     
     protected CollectionObject   collectionObject;
     protected Accession          accession;
     protected Division           division;
-    protected Agent              curator;
-
+    
     protected Set<ConservEvent>  events;
     protected Set<ConservDescriptionAttachment> conservDescriptionAttachments;
+    
+    protected Set<ConservRecommendation>  lightRecommendations;
+    protected Set<ConservRecommendation>  displayRecommendations;
+    protected Set<ConservRecommendation>  otherRecommendations;
 
     // Constructors
 
@@ -107,13 +106,15 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
         composition          = null;
         remarks              = null;
         source               = null;
-        curatorApprovalDate  = null;
         collectionObject     = null;
         accession            = null;
         division             = null;
-        curator              = null;
         events               = new HashSet<ConservEvent>();
         conservDescriptionAttachments = new HashSet<ConservDescriptionAttachment>();
+        lightRecommendations    = new HashSet<ConservRecommendation>();
+        displayRecommendations  = new HashSet<ConservRecommendation>();
+        otherRecommendations    = new HashSet<ConservRecommendation>();
+
     }
 
     // End Initializer
@@ -284,21 +285,6 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
     /**
      *
      */
-    @Temporal(TemporalType.DATE)
-    @Column(name = "CuratorApprovalDate", unique = false, nullable = true, insertable = true, updatable = true, length = 8192)
-    public Calendar getCuratorApprovalDate()
-    {
-        return this.curatorApprovalDate;
-    }
-
-    public void setCuratorApprovalDate(final Calendar curatorApprovalDate)
-    {
-        this.curatorApprovalDate = curatorApprovalDate;
-    }
-
-    /**
-     *
-     */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "CollectionObjectID", unique = false, nullable = true, insertable = true, updatable = true)
     public CollectionObject getCollectionObject()
@@ -344,21 +330,6 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
     /**
      *
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "CuratorID", unique = false, nullable = true, insertable = true, updatable = true)
-    public Agent getCurator()
-    {
-        return this.curator;
-    }
-
-    public void setCurator(final Agent curator)
-    {
-        this.curator = curator;
-    }
-
-    /**
-     *
-     */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "conservDescription")
     @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     public Set<ConservEvent> getEvents()
@@ -382,7 +353,52 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
        this.conservDescriptionAttachments = conservDescriptionAttachments;
    }
 
-   
+   /**
+    * 
+    */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "lightRecommendationConservEvent")
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    public Set<ConservRecommendation> getLightRecommendations()
+    {
+        return this.lightRecommendations;
+    }
+
+    public void setLightRecommendations(final Set<ConservRecommendation> lightRecommendations)
+    {
+        this.lightRecommendations = lightRecommendations;
+    }
+
+    /**
+     * 
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "displayRecommendationConservEvent")
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    public Set<ConservRecommendation> getDisplayRecommendations()
+    {
+        return this.displayRecommendations;
+    }
+
+    public void setDisplayRecommendations(final Set<ConservRecommendation> displayRecommendations)
+    {
+        this.displayRecommendations = displayRecommendations;
+    }
+
+    /**
+     * 
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "otherRecommendationConservEvent")
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    public Set<ConservRecommendation> getOtherRecommendations()
+    {
+        return this.otherRecommendations;
+    }
+
+    public void setOtherRecommendations(final Set<ConservRecommendation> otherRecommendations)
+    {
+        this.otherRecommendations = otherRecommendations;
+    }
+
+
     /**
      * Generic Getter for the ID Property.
      * @returns ID Property.

@@ -36,10 +36,15 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAgent;
+import edu.ku.brc.specify.datamodel.AccessionAuthorization;
 import edu.ku.brc.specify.datamodel.Agent;
+import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
+import edu.ku.brc.ui.forms.FormViewObj;
+import edu.ku.brc.ui.forms.Viewable;
 
 /**
  *Business rules for validating a Accession.
@@ -62,6 +67,50 @@ public class AccessionBusRules extends AttachmentOwnerBaseBusRules
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BaseBusRules#addChildrenToNewDataObjects(java.lang.Object)
+     */
+    @Override
+    public void addChildrenToNewDataObjects(final Object newDataObj)
+    {
+        super.addChildrenToNewDataObjects(newDataObj);
+        
+        Accession accession = (Accession) newDataObj;
+        
+        AccessionAuthorization auth = new AccessionAuthorization();
+        auth.initialize();
+        accession.addReference(auth, "accessionAuthorizations");
+        
+        AccessionAgent accAgent = new AccessionAgent();
+        accAgent.initialize();
+        accession.addReference(accAgent, "accessionAgents");
+        
+        Collection collection = Collection.getCurrentCollection();
+        Division division = collection.getDiscipline().getDivision();
+        
+        accession.setDivision(division);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BaseBusRules#afterFillForm(java.lang.Object, edu.ku.brc.ui.forms.Viewable)
+     */
+    @Override
+    public void afterFillForm(final Object dataObj, final Viewable viewable)
+    {
+        super.afterFillForm(dataObj, viewable);
+        
+        if (!(viewable instanceof FormViewObj))
+        {
+            return;
+        }
+        
+        FormViewObj fvo = (FormViewObj)viewable;
+        if (fvo.isFieldAutoNumberedByName("accessionNumber"))
+        {
+            
+        }
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#processBusiessRules(java.lang.Object)
      */
     public STATUS processBusinessRules(final Object dataObj)
@@ -74,6 +123,7 @@ public class AccessionBusRules extends AttachmentOwnerBaseBusRules
         }
         
         Accession accession = (Accession)dataObj;
+        
         // Check for AcccessionAgent and their Roles (for duplicates)
         Hashtable<String, Boolean> agentRoleHash = new Hashtable<String, Boolean>();
         for (AccessionAgent aa : accession.getAccessionAgents())

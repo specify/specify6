@@ -101,7 +101,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     protected String              name;
     protected String              title;
 
-    protected List<NavBoxIFace> navBoxes      = new Vector<NavBoxIFace>();
+    protected List<NavBoxIFace>   navBoxes      = new Vector<NavBoxIFace>();
     protected ImageIcon           icon          = null;
     protected boolean             isInitialized = false;
 
@@ -768,7 +768,9 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     {
         ContextMgr.requestContext(this);
 
-        SubPaneMgr.getInstance().addPane(getStarterPane());
+        SubPaneIFace newPane = getStarterPane();
+        
+        SubPaneMgr.getInstance().addPane(newPane);
     }
 
     /* (non-Javadoc)

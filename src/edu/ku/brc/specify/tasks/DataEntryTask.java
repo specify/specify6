@@ -252,12 +252,19 @@ public class DataEntryTask extends BaseTask
             {
                 if (starterPane == null)
                 {
+                    SubPaneIFace curPane = SubPaneMgr.getInstance().getCurrentSubPane();
+                    if (curPane instanceof DroppableFormRecordSetAccepter)
+                    {
+                        SubPaneMgr.getInstance().replacePane(curPane, formPane);
+                    }
                     addSubPaneToMgr(formPane);
 
                 } else
                 {
-                    SubPaneMgr.getInstance().removePane(starterPane);
-                    SubPaneMgr.getInstance().addPane(formPane);
+
+                    //SubPaneMgr.getInstance().removePane(starterPane);
+                   //SubPaneMgr.getInstance().addPane(formPane);
+                    SubPaneMgr.getInstance().replacePane(starterPane, formPane);
                     starterPane = null;
                 }
 
@@ -617,7 +624,24 @@ public class DataEntryTask extends BaseTask
     @Override
     public SubPaneIFace getStarterPane()
     {
-        return starterPane = new DroppableFormRecordSetAccepter(title, this, "Drop a Bundle here."); // I18N
+        
+        for (SubPaneIFace sb : SubPaneMgr.getInstance().getSubPanes())
+        {
+            if (sb.getTask() == this)
+            {
+                if (sb instanceof DroppableFormRecordSetAccepter)
+                {
+                    return sb;
+                }
+            }
+        }
+        
+        if (starterPane == null)
+        {
+            starterPane = new DroppableFormRecordSetAccepter(title, this, "Drop a Bundle here."); // I18N
+        }
+        
+        return starterPane;
     }
 
     /*

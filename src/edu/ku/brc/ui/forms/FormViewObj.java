@@ -102,6 +102,8 @@ import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
 import edu.ku.brc.ui.forms.MultiView.ViewState;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.ui.forms.persist.AltViewIFace;
 import edu.ku.brc.ui.forms.persist.FormCell;
 import edu.ku.brc.ui.forms.persist.FormCellField;
@@ -1119,6 +1121,48 @@ public class FormViewObj implements Viewable,
                 ((AutoNumberableIFace)comp).updateAutoNumbers();
             }
         }
+    }
+    
+    /**
+     * Returns whether a field with a given name or ID is auto-incremented.
+     * @param fieldInfo the field info
+     * @return true it is, false it isn't
+     */
+    public boolean isFieldAutoNumbered(final FieldInfo fieldInfo)
+    {
+        if (fieldInfo != null)
+        {
+            if (fieldInfo.getFormCell() instanceof FormCellFieldIFace)
+            {
+                FormCellFieldIFace fcf = (FormCellFieldIFace)fieldInfo.getFormCell();
+                UIFieldFormatterIFace uiff = UIFieldFormatterMgr.getFormatter(fcf.getUIFieldFormatterName());
+                if (uiff != null)
+                {
+                    return uiff.getAutoNumber() != null;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Returns whether a field with a given name is auto-incremented.
+     * @param name the name of the field
+     * @return true it is, false it isn't
+     */
+    public boolean isFieldAutoNumberedByName(final String name)
+    {
+        return isFieldAutoNumbered(controlsByName.get(name));
+    }
+
+    /**
+     * Returns whether a field with a given ID is auto-incremented.
+     * @param name the ID of the field
+     * @return true it is, false it isn't
+     */
+    public boolean isFieldAutoNumberedById(final String id)
+    {
+        return isFieldAutoNumbered(controlsById.get(id));
     }
 
     /**

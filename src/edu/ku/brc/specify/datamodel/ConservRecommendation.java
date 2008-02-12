@@ -56,6 +56,9 @@ public class ConservRecommendation extends DataModelObjBase implements java.io.S
     protected String            completedComments;
     
     protected String            remarks;
+    protected Agent             curator;
+    protected Calendar          curatorApprovalDate;
+
     
     protected ConservRecmdType  conservRecmdType;
     
@@ -89,7 +92,9 @@ public class ConservRecommendation extends DataModelObjBase implements java.io.S
         completedComments = null;
         remarks           = null;
         conservRecmdType  = null;
+        curatorApprovalDate  = null;
         
+        curator              = null;
         lightRecommendationConservEvent    = null;
         displayRecommendationConservEvent  = null;
         otherRecommendationConservEvent    = null;
@@ -166,6 +171,35 @@ public class ConservRecommendation extends DataModelObjBase implements java.io.S
         this.conservRecmdType = conservRecmdType;
     }
 
+    /**
+    *
+    */
+   @Temporal(TemporalType.DATE)
+   @Column(name = "CuratorApprovalDate", unique = false, nullable = true, insertable = true, updatable = true, length = 8192)
+   public Calendar getCuratorApprovalDate()
+   {
+       return this.curatorApprovalDate;
+   }
+
+   public void setCuratorApprovalDate(final Calendar curatorApprovalDate)
+   {
+       this.curatorApprovalDate = curatorApprovalDate;
+   }
+
+   /**
+    *
+    */
+   @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+   @JoinColumn(name = "CuratorID", unique = false, nullable = true, insertable = true, updatable = true)
+   public Agent getCurator()
+   {
+       return this.curator;
+   }
+
+   public void setCurator(final Agent curator)
+   {
+       this.curator = curator;
+   }
 
     /**
      *

@@ -14,6 +14,8 @@
  */
 package edu.ku.brc.af.core;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.awt.Component;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
@@ -25,12 +27,14 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.Action;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.ui.ExtendedTabbedPane;
@@ -113,6 +117,29 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             throw new NullPointerException("Null name or pane when adding to SubPaneMgr");
         }
         
+        int maxNumPanes = AppPreferences.getRemote().getInt("SubPaneMgr.MaxPanes", 12);
+        if (getComponentCount() >= maxNumPanes)
+        {
+            Object[] options = { getResourceString("SUBPANE_OPTIONS_CLOSE_ALLBUT"), 
+                                 getResourceString("Cancel") 
+                               };
+            int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+                                                          getResourceString("SUBPANE_OPTIONS"), 
+                                                          getResourceString("SUBPANE_OPTIONS_TITLE"), 
+                                                          JOptionPane.YES_NO_CANCEL_OPTION,
+                                                          JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+            if (userChoice == JOptionPane.YES_OPTION)
+            {
+                closeAll(false); // false means don't close current tab
+                
+            } else
+            {
+                pane.aboutToShutdown();
+                pane.shutdown();
+                return null;
+            }
+        }
+        
         Component firstFocusable = pane.getFirstFocusable();
         if (firstFocusable != null)
         {
@@ -125,6 +152,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         if (instance.panes.contains(pane))
         {
             showPane(pane);
+            adjustCloseAllMenu();
             return pane;
         }
 
@@ -152,10 +180,22 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
      */
     protected void adjustCloseAllMenu()
     {
+        Action closeCurrent = UIRegistry.getAction("CloseCurrent");
+        if (closeCurrent != null)
+        {
+            closeCurrent.setEnabled(panes.size() > 0);//  || TaskMgr.getToolbarTaskCount() > 1);
+        }        
+        
         Action closeAll = UIRegistry.getAction("CloseAll");
         if (closeAll != null)
         {
-            closeAll.setEnabled(panes.size() > 1);//  || TaskMgr.getToolbarTaskCount() > 1);
+            closeAll.setEnabled(panes.size() > 0);//  || TaskMgr.getToolbarTaskCount() > 1);
+        }        
+        
+        Action closeAllBut = UIRegistry.getAction("CloseAllBut");
+        if (closeAllBut != null)
+        {
+            closeAllBut.setEnabled(panes.size() > 1);//  || TaskMgr.getToolbarTaskCount() > 1);
         }
     }
     
@@ -548,8 +588,30 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
      * Asks each pane if it can close (aboutToShutdown) and then closes the pane.
      * If any one pane return false from aboutToShutdown then the process stops.
      * Also, if there is only one visible and then it will always leave at least one pane.
+     * @return true is all were closed
      */
     public boolean closeAll()
+    {
+        return closeAll(true);
+    }
+    
+    /**
+     * Asks each pane if it can close (aboutToShutdown) and then closes the pane.
+     * If any one pane return false from aboutToShutdown then the process stops.
+     * Also, if there is only one visible and then it will always leave at least one pane.
+     * @return true is all were closed
+     */
+    public boolean closeAllExceptCurrent()
+    {
+        return closeAll(false);
+    }
+
+    /**
+     * Asks each pane if it can close (aboutToShutdown) and then closes the pane.
+     * If any one pane return false from aboutToShutdown then the process stops.
+     * Also, if there is only one visible and then it will always leave at least one pane.
+     */
+    protected boolean closeAll(final boolean includeCurrent)
     {
         if (panes.values().size() > 0)
         {
@@ -559,21 +621,22 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
                 Vector<SubPaneIFace> paneList = new Vector<SubPaneIFace>(panes.values()); // Not sure we need to create a new list
                 for (SubPaneIFace pane : paneList)
                 {
-                    //if (panes.size() == 1  && TaskMgr.getToolbarTaskCount() == 1)
-                    //{
-                    //    return false;
-                    //}
-    
-                    if (!removePane(pane))
+                    if ((includeCurrent || (!includeCurrent && pane != subPane)) && !removePane(pane))
                     {
                         return false;
                     }
                     
                 }
-                panes.clear(); // insurance
+                if (includeCurrent)
+                {
+                    panes.clear(); // insurance
+                }
             }
             
-            this.removeAll(); // insurance
+            if (includeCurrent)
+            {
+                this.removeAll(); // insurance
+            }
             
             if (TaskMgr.getToolbarTaskCount() == 1)
             {

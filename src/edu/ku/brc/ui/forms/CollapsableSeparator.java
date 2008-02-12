@@ -62,6 +62,7 @@ public class CollapsableSeparator extends JPanel
         downImgIcon    = IconManager.getIcon("Down");
         moreBtn        = new JCheckBox("", forwardImgIcon); // I18N
         moreBtn.setOpaque(false);
+        moreBtn.setFocusable(false);
         
         panelBldr.add(moreBtn, cc.xy(1,1));
         panelBldr.add(separator, cc.xy(3,1));

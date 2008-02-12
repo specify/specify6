@@ -9,6 +9,15 @@
         <field size="3" type="numeric" value="NNN" inc="true"/>
     </format>
     
+    <format system="true" name="AccessionNumberByYear" class="edu.ku.brc.specify.datamodel.Accession"  fieldname="accessionNumber" default="true">
+        <autonumber>edu.ku.brc.dbsupport.AutoNumberGeneric</autonumber>
+        <field size="4" type="year" value="YEAR" byyear="true"/>
+        <field size="1" type="separator" value="-"/>
+        <field size="2" type="alphanumeric" value="AA"/>
+        <field size="1" type="separator" value="-"/>
+        <field size="3" type="alphanumeric" value="AAA" inc="false"/>
+    </format>
+    
     <format system="true" name="LoanNumber" class="edu.ku.brc.specify.datamodel.Loan" fieldname="loanNumber" default="true">
         <autonumber>edu.ku.brc.dbsupport.AutoNumberGeneric</autonumber>
         <field size="4" type="year" value="YEAR" byyear="true"/>

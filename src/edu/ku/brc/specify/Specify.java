@@ -192,7 +192,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private String               appName             = "Specify";
     private String               appVersion          = "6.0";
 
-    private String               appBuildVersion     = "200802110930 (SVN: 3410)";
+    private String               appBuildVersion     = "200802120830 (SVN: 3418)";
     
     protected static CacheManager cacheManager        = new CacheManager();
 
@@ -246,40 +246,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     protected void preInitializePrefs()
     {
         AppPreferences remotePrefs = AppPreferences.getRemote();
-        
-        if (false)
-        {
-            String propName = "Treeeditor.TreeColColor1";
-            if (remotePrefs.get(propName, null) == null)
-            {
-                remotePrefs.putColor("Treeeditor.TreeColColor1", new Color(202, 238, 255));
-            }
-            
-            propName = "Treeeditor.TreeColColor2";
-            if (remotePrefs.get("Treeeditor.TreeColColor2", null) == null)
-            {
-                remotePrefs.putColor(propName, new Color(151, 221, 255));
-            }
-            
-            propName = "TreeEditor.Rank.Threshold.Taxon";
-            if (remotePrefs.get(propName, null) == null)
-            {
-                remotePrefs.putInt(propName, 140);
-            }
-    
-            propName = "TreeEditor.Rank.Threshold.Geography";
-            if (remotePrefs.get(propName, null) == null)
-            {
-                remotePrefs.putInt(propName, 200);
-            }
-            
-            propName = "TreeEditor.Rank.Threshold.Geography";
-            if (remotePrefs.get(propName, null) == null)
-            {
-                remotePrefs.putInt(propName, 200);
-            }
-        }
-        
+       
         // Set the default values
         int i = 0;
         String[] classNames = {"Taxon", "Geography", "LithoStrat", "GeologicTimePeriod", "Storage"};
@@ -294,6 +261,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         
         remotePrefs.getBoolean("TreeEditor.RestoreTreeExpansionState", true, true);
         remotePrefs.getBoolean("google.earth.useorigheaders", true, true);
+        remotePrefs.getInt("SubPaneMgr.MaxPanes", 2, true);
 
     }
     
@@ -842,23 +810,37 @@ public class Specify extends JPanel implements DatabaseLoginListener
 
 
         menu = UIHelper.createMenu(mb, "TabsMenu", "TabsMneu");
-        mi = UIHelper.createMenuItem(menu, "Close Current", "C", "Close C", false, null); // XXX I18N
-        mi.addActionListener(new ActionListener()
-                {
-                    public void actionPerformed(ActionEvent ae)
-                    {
-                        SubPaneMgr.getInstance().closeCurrent();
-                    }
-                });
+        
+        Action closeCurrent = new AbstractAction()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                SubPaneMgr.getInstance().closeCurrent();
+            }
+        };
+        String ttl = getResourceString("SBP_CLOSE_CUR_MENU");
+        mi = UIHelper.createMenuItemWithAction(menu, ttl, getResourceString("SBP_CLOSE_CUR_MNEU"), ttl, true, closeCurrent);
+        UIRegistry.registerAction("CloseCurrent", closeCurrent);
 
+        ttl = getResourceString("SBP_CLOSE_ALL_MENU");
         Action closeAll = new AbstractAction() {
             public void actionPerformed(ActionEvent ae)
             {
                 SubPaneMgr.getInstance().closeAll();
             }
         };
-        mi = UIHelper.createMenuItemWithAction(menu, "Close All", "A", "Close All", false, closeAll);
+        mi = UIHelper.createMenuItemWithAction(menu, ttl, getResourceString("SBP_CLOSE_ALL_MNEU"), ttl, true, closeAll);
         UIRegistry.registerAction("CloseAll", closeAll);
+        
+        Action closeAllBut = new AbstractAction() {
+            public void actionPerformed(ActionEvent ae)
+            {
+                SubPaneMgr.getInstance().closeAllExceptCurrent();
+            }
+        };
+        ttl = getResourceString("SBP_CLOSE_ALLBUT_MENU");
+        mi = UIHelper.createMenuItemWithAction(menu, ttl, getResourceString("SBP_CLOSE_ALLBUT_MNEU"), ttl, true, closeAllBut);
+        UIRegistry.registerAction("CloseAllBut", closeAllBut);
 
         if (!isRelease)
         {
