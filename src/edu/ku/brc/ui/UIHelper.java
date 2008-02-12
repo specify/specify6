@@ -867,7 +867,8 @@ public final class UIHelper
                                                      final boolean enabled,
                                                      final Action  action)
     {
-        JMenuItem mi = new JMenuItem(label);
+        JMenuItem mi = new JMenuItem(action);
+        mi.setText(label);
         if (menu != null)
         {
             menu.add(mi);
@@ -880,9 +881,9 @@ public final class UIHelper
         {
             mi.getAccessibleContext().setAccessibleDescription(accessibleDescription);
         }
+        
         if (action != null)
         {
-            mi.addActionListener(action);
             action.addPropertyChangeListener(new MenuItemPropertyChangeListener(mi));
             action.setEnabled(enabled);
         }
