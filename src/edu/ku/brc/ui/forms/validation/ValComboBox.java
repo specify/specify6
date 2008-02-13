@@ -212,6 +212,15 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
             comboBox.addFocusListener(focusAdapter);
         }
     }
+    
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#requestFocus()
+     */
+    @Override
+    public void requestFocus()
+    {
+        comboBox.requestFocus();
+    }
 
     /* (non-Javadoc)
      * @see java.awt.Component#setEnabled(boolean)

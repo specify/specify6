@@ -36,7 +36,6 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAgent;
-import edu.ku.brc.specify.datamodel.AccessionAuthorization;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Division;
@@ -47,7 +46,7 @@ import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.Viewable;
 
 /**
- *Business rules for validating a Accession.
+ * Business Rules for validating a Accession.
  *
  * @code_status Complete
  *
@@ -74,20 +73,27 @@ public class AccessionBusRules extends AttachmentOwnerBaseBusRules
     {
         super.addChildrenToNewDataObjects(newDataObj);
         
-        Accession accession = (Accession) newDataObj;
-        
-        AccessionAuthorization auth = new AccessionAuthorization();
-        auth.initialize();
-        accession.addReference(auth, "accessionAuthorizations");
-        
-        AccessionAgent accAgent = new AccessionAgent();
-        accAgent.initialize();
-        accession.addReference(accAgent, "accessionAgents");
-        
         Collection collection = Collection.getCurrentCollection();
-        Division division = collection.getDiscipline().getDivision();
-        
-        accession.setDivision(division);
+        if (collection != null)
+        {
+            Division division = collection.getDiscipline().getDivision();
+            if (division != null)
+            {
+                Accession accession = (Accession) newDataObj;
+                accession.setDivision(division);
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BaseBusRules#shouldCreateSubViewData(java.lang.String)
+     */
+    @Override
+    public boolean shouldCreateSubViewData(String fieldName)
+    {
+        //return fieldName.equals("accessionAgents") ||
+        //       fieldName.equals("accessionAuthorizations");
+        return false;
     }
 
     /* (non-Javadoc)
@@ -175,7 +181,7 @@ public class AccessionBusRules extends AttachmentOwnerBaseBusRules
                 List <?> accessionNumbers        = session.getDataList(Accession.class, "accessionNumber", accessionNumber);
                 if (accessionNumbers.size() > 0)
                 {
-                    reasonList.add("ACCESSION_IN_USE");
+                    reasonList.add(UIRegistry.getResourceString("ACCESSION_IN_USE"));
                 } else
                 {
                     return STATUS.OK;
@@ -189,7 +195,7 @@ public class AccessionBusRules extends AttachmentOwnerBaseBusRules
             
         } else
         {
-            reasonList.add("ACCESSION_NUM_MISSING");
+            reasonList.add(UIRegistry.getResourceString("ACCESSION_NUM_MISSING"));
         }
 
         return STATUS.Error;

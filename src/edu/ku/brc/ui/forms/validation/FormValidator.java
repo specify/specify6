@@ -74,7 +74,8 @@ public class FormValidator implements ValidationListener, DataChangeListener
     
     protected Vector<Component>                     enableItemsValid   = new Vector<Component>();
     protected Vector<Component>                     enableItemsChanged = new Vector<Component>();
-    protected JComponent                            saveComp    = null;
+    protected JComponent                            saveComp           = null;
+    protected EnableType                            saveEnableType     = EnableType.ValidAndChangedItems;
 
     protected boolean                               enabled     = false;
     protected boolean                               hasChanged  = false;
@@ -113,9 +114,11 @@ public class FormValidator implements ValidationListener, DataChangeListener
         return parent;
     }
 
-    public void setSaveComp(final JComponent saveComp)
+    public void setSaveComp(final JComponent saveComp, 
+                            final EnableType saveEnableType)
     {
-        this.saveComp = saveComp;
+        this.saveComp       = saveComp;
+        this.saveEnableType = saveEnableType;
     }
 
     /**
@@ -182,7 +185,8 @@ public class FormValidator implements ValidationListener, DataChangeListener
     /**
      * @param comp
      */
-    public void addEnableItem(final Component comp, final EnableType type)
+    public void addEnableItem(final Component comp, 
+                              final EnableType type)
     {
         if (type == EnableType.ValidItems)
         {
@@ -245,9 +249,12 @@ public class FormValidator implements ValidationListener, DataChangeListener
         {
             if (this.formValidationState != formValidationState)
             {
+                //this.formValidationState = formValidationState;
                 updateValidationBtnUIState();
-            }
-            this.formValidationState = formValidationState;
+            }// else
+            //{
+                this.formValidationState = formValidationState;
+            //}
         }
     }
 
@@ -900,6 +907,8 @@ public class FormValidator implements ValidationListener, DataChangeListener
                 formValidationState = UIValidatable.ErrorType.Error;
             }
             
+            log.debug(name + " - kidsValState "+kidsValState+"  formValidationState "+formValidationState);
+            
             if (kidsValState.ordinal() > formValidationState.ordinal())
             {
                 formValidationState = kidsValState;
@@ -1214,7 +1223,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
         }
         updateValidationBtnUIState();
         
-        if (type == EnableType.ValidAndChangedItems && saveComp != null)
+        if (type == saveEnableType && saveComp != null)
         {
             if (itsOKToEnable)
             {

@@ -41,7 +41,7 @@ public interface BusinessRulesIFace
      * 
      * @param viewable the viewable that recieved the dataObject (using getDataOject would return the same object)
      */
-    public void beforeFormFill(Viewable viewable);
+    public abstract void beforeFormFill(Viewable viewable);
     
     /**
      * Notification a form was just filled with data.
@@ -49,7 +49,7 @@ public interface BusinessRulesIFace
      * @param dataObj the data object that went into the form
      * @param viewable the viewable that recieved the dataObject (using getDataOject would return the same object)
      */
-    public void afterFillForm(Object dataObj, Viewable viewable);
+    public abstract void afterFillForm(Object dataObj, Viewable viewable);
     
     /**
      * This enables a new data object to be populated with any children objects before being
@@ -57,7 +57,14 @@ public interface BusinessRulesIFace
      * 
      * @param dataObj the new dataObject
      */
-    public void addChildrenToNewDataObjects(Object newDataObj);
+    public abstract void addChildrenToNewDataObjects(Object newDataObj);
+    
+    /**
+     * Indicates whether a SubView should have data created for it.
+     * @param fieldName the field name
+     * @return true - create data
+     */
+    public abstract boolean shouldCreateSubViewData(String fieldName);
     
     /**
      * Processes the business rules for the data object.
@@ -65,7 +72,7 @@ public interface BusinessRulesIFace
      * @param dataObj the data object for rthe rules to be processed on.
      * @return the result status after processing the busniess rules.
      */
-    public STATUS processBusinessRules(Object dataObj);
+    public abstract STATUS processBusinessRules(Object dataObj);
     
     /**
      * Processes the business rules for the data object.
@@ -74,14 +81,14 @@ public interface BusinessRulesIFace
      * @param dataObj the data object for rthe rules to be processed on.
      * @return the result status after processing the busniess rules.
      */
-    public STATUS processBusinessRules(Object parentDataObj, Object dataObj);
+    public abstract STATUS processBusinessRules(Object parentDataObj, Object dataObj);
     
     /**
      * Returns a list of warnings and errors after processing the business rules.
      * 
      * @return a list of warnings and errors after processing the business rules.
      */
-    public List<String> getWarningsAndErrors();
+    public abstract List<String> getWarningsAndErrors();
     
     /**
      * Asks if the object can be deleted.
@@ -89,7 +96,7 @@ public interface BusinessRulesIFace
      * @param dataObj the data object in question
      * @return true if it can be deleted, false if not
      */
-    public boolean okToEnableDelete(Object dataObj);
+    public abstract boolean okToEnableDelete(Object dataObj);
     
     /**
      * For some objects the check for deletion may need to hit the database.
@@ -100,7 +107,7 @@ public interface BusinessRulesIFace
      * @param deletable usually a FormViewObj, but it is really something that can perform the delete.
      * @return true if it can be deleted, false if not
      */
-    public void okToDelete(Object dataObj, DataProviderSessionIFace session, BusinessRulesOkDeleteIFace deletable);
+    public abstract void okToDelete(Object dataObj, DataProviderSessionIFace session, BusinessRulesOkDeleteIFace deletable);
     
     /**
      * Returns a message for the user describing what was deleted (intended to be a single line of text).
@@ -108,7 +115,7 @@ public interface BusinessRulesIFace
      * @param dataObj the data object that will be or has been deleted but still continas its values
      * @return the single line text string
      */
-    public String getDeleteMsg(Object dataObj);
+    public abstract String getDeleteMsg(Object dataObj);
     
     /**
      * Called BEFORE the merge with the database because the merge actually saves the obj.
@@ -117,7 +124,7 @@ public interface BusinessRulesIFace
      * @param dataObj the object to be saved
      * @param session the data provider session
      */
-    public void beforeMerge(Object dataObj, DataProviderSessionIFace session);
+    public abstract void beforeMerge(Object dataObj, DataProviderSessionIFace session);
     
     /**
      * Called BEFORE saving an object to the DB.  This can be called on newly
@@ -126,7 +133,7 @@ public interface BusinessRulesIFace
      * @param dataObj the object to be saved
      * @param session the data provider session
      */
-    public void beforeSave(Object dataObj, DataProviderSessionIFace session);
+    public abstract void beforeSave(Object dataObj, DataProviderSessionIFace session);
     
     /**
      * Called BEFORE committing a transaction in which the passed in data object will
@@ -139,7 +146,7 @@ public interface BusinessRulesIFace
      * @throws Exception when any unhandled exception occurs, in which case, the transaction should be aborted
      * @return true if the transaction should continue, false otherwise
      */
-    public boolean beforeSaveCommit(Object dataObj, DataProviderSessionIFace session) throws Exception;
+    public abstract boolean beforeSaveCommit(Object dataObj, DataProviderSessionIFace session) throws Exception;
     
     /**
      * Called AFTER committing a transaction in which the passed in data object was
@@ -148,7 +155,7 @@ public interface BusinessRulesIFace
      * 
      * @param dataObj the object that was saved
      */
-    public boolean afterSaveCommit(Object dataObj);
+    public abstract boolean afterSaveCommit(Object dataObj);
     
     /**
      * Called BEFORE deleting an object from the DB.  This is called before the object is even
@@ -157,7 +164,7 @@ public interface BusinessRulesIFace
      * @param dataObj the object to be deleted
      * @param session the data provider session
      */
-    public void beforeDelete(Object dataObj, DataProviderSessionIFace session);
+    public abstract void beforeDelete(Object dataObj, DataProviderSessionIFace session);
     
     /**
      * Called BEFORE committing a transaction in which the passed in data object will
@@ -168,7 +175,7 @@ public interface BusinessRulesIFace
      * @throws Exception when any unhandled exception occurs, in which case, the transaction should be aborted
      * @return true if the transaction should continue, false otherwise
      */
-    public boolean beforeDeleteCommit(Object dataObj, DataProviderSessionIFace session) throws Exception;
+    public abstract boolean beforeDeleteCommit(Object dataObj, DataProviderSessionIFace session) throws Exception;
     
     /**
      * Called AFTER committing a transaction in which the passed in data object was
@@ -176,20 +183,20 @@ public interface BusinessRulesIFace
      * 
      * @param dataObj the object that was deleted
      */
-    public void afterDeleteCommit(Object dataObj);
+    public abstract void afterDeleteCommit(Object dataObj);
     
     /**
      * @param dataObj
      * @param draggableIcon
      */
-    public void setObjectIdentity(Object dataObj, DraggableRecordIdentifier draggableIcon);
+    public abstract void setObjectIdentity(Object dataObj, DraggableRecordIdentifier draggableIcon);
     
     /**
      * Returns whether a the form should create a new object and pass it in. This new object
      * is usually a requried parent for the the search object.
      * @return whether to create a new object
      */
-    public boolean doesSearchObjectRequireNewParent();
+    public abstract boolean doesSearchObjectRequireNewParent();
     
     /**
      * Asks the business rules to associate the optional new parent data object and the search object.
@@ -197,11 +204,11 @@ public interface BusinessRulesIFace
      * @param dataObjectFromSearch the new object found from the search.
      * @return the dataObjectFromSearch
      */
-    public Object processSearchObject(Object newParentDataObj, Object dataObjectFromSearch);
+    public abstract Object processSearchObject(Object newParentDataObj, Object dataObjectFromSearch);
     
     /**
      * The form is being tossed.
      */
-    public void formShutdown();
+    public abstract void formShutdown();
     
 }

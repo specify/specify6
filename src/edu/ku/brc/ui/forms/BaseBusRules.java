@@ -68,6 +68,14 @@ public abstract class BaseBusRules implements BusinessRulesIFace
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#shouldCreateDataForField(java.lang.String)
+     */
+    public boolean shouldCreateSubViewData(String fieldName)
+    {
+        return false;
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#getDeleteMsg(java.lang.Object)
      */
     public String getDeleteMsg(final Object dataObj)

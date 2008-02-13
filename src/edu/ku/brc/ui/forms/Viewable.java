@@ -248,7 +248,7 @@ public interface Viewable
     /**
      * @return
      */
-    public boolean checkForChanges();
+    public boolean isDataCompleteAndValid();
     
     /**
      * Focus the appropriate UI element.

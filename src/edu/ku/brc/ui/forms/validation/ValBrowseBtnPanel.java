@@ -46,6 +46,15 @@ public class ValBrowseBtnPanel extends BrowseBtnPanel implements UIValidatable
         browseBtn.setEnabled(enabled);
         textField.setEnabled(enabled);
     }
+    
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#requestFocus()
+     */
+    @Override
+    public void requestFocus()
+    {
+        browseBtn.requestFocus();
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.validation.UIValidatable#cleanUp()

@@ -53,9 +53,8 @@ import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
-import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -738,9 +737,11 @@ public class TableViewObj implements Viewable,
                             {
                                 origDataSet.add(daObj);
                             }
+                            model.setValueAt(daObj, 0, dataObjList.size()-1);
                         }
                         model.fireDataChanged();
                         table.invalidate();
+                        table.repaint();
                         
                         JComponent comp = mvParent.getTopLevel();
                         comp.validate();
@@ -1629,9 +1630,9 @@ public class TableViewObj implements Viewable,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#checkForChanges()
      */
-    public boolean checkForChanges()
+    public boolean isDataCompleteAndValid()
     {
-        return false;
+        return true;
     }
     
     //-----------------------------------------------------
@@ -1945,13 +1946,8 @@ public class TableViewObj implements Viewable,
     //------------------------------------------------------------------
     //-- Table Model
     //------------------------------------------------------------------
-    public class ColTableModel extends AbstractTableModel
+    public class ColTableModel extends DefaultTableModel
     {
-        protected Vector<TableModelListener> listeners = new Vector<TableModelListener>();
-
-        /**
-         * @param rowData
-         */
         public ColTableModel()
         {
         }
@@ -2157,26 +2153,13 @@ public class TableViewObj implements Viewable,
         }
 
         @Override
-        public void setValueAt(Object aValue, int rowIndex, int columnIndex)
+        public void setValueAt(Object value, int rowIndex, int columnIndex)
         {
-            return;
-        }
-
-        @Override
-        public void addTableModelListener(TableModelListener l)
-        {
-            listeners.add(l);
-        }
-
-        @Override
-        public void removeTableModelListener(TableModelListener l)
-        {
-            listeners.remove(l);
         }
         
         public void fireDataChanged()
         {
-            this.fireTableDataChanged();
+            fireTableDataChanged();
         }
     }
     

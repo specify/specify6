@@ -437,6 +437,26 @@ public class MultiView extends JPanel
             }
         }
     }
+    
+    /**
+     * Asks the first component to be focused. 
+     */
+    public void focus()
+    {
+        currentViewable.focus(); 
+    }
+    
+    /**
+     * Asks the immediate SubViews to create data (via the Business Rules).
+     */
+    public void initSubViews()
+    {
+        FormViewObj fvo = getCurrentViewAsFormViewObj();
+        if (fvo != null)
+        {
+            fvo.initSubViews();
+        }
+    }
 
     /**
      * Returns the View (the definition).
@@ -643,7 +663,7 @@ public class MultiView extends JPanel
     {
         if (hasChanged())
         {
-            if (!currentViewable.checkForChanges())
+            if (currentViewable.isDataCompleteAndValid())
             {
                 showView(altView.getName());         
             }

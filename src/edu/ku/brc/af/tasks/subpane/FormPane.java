@@ -320,12 +320,6 @@ public class FormPane extends DroppableTaskPane
                         {
                             busRule.addChildrenToNewDataObjects(newDataObj);
                         }
-                        
-                        /*FormViewObj fvo = multiView.getCurrentViewAsFormViewObj();
-                        if (fvo != null)
-                        {
-                            fvo.getB
-                        }*/
                     }
                     multiView.setData(data);
                 }
@@ -351,6 +345,28 @@ public class FormPane extends DroppableTaskPane
         } else
         {
             throw new RuntimeException("The View was null!");
+        }
+    }
+    
+    /**
+     * Asks the first component to be focused. 
+     */
+    public void focusFirstFormControl()
+    {
+        if (multiView != null) // insurance
+        {
+            multiView.focus();
+        }  
+    }
+    
+    /**
+     * Initializes the SubViews for New Objects.
+     */
+    public void initSubViews()
+    {
+        if (multiView != null) // insurance
+        {
+            multiView.initSubViews();
         }
     }
 
@@ -456,7 +472,7 @@ public class FormPane extends DroppableTaskPane
             FormViewObj formViewObj = multiView.getCurrentViewAsFormViewObj();
             if (formViewObj != null)
             {
-                return formViewObj.checkForChanges();
+                return formViewObj.isDataCompleteAndValid();
             }
         }
         return true;

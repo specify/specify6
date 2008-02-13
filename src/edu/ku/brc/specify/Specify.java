@@ -261,7 +261,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         
         remotePrefs.getBoolean("TreeEditor.RestoreTreeExpansionState", true, true);
         remotePrefs.getBoolean("google.earth.useorigheaders", true, true);
-        remotePrefs.getInt("SubPaneMgr.MaxPanes", 2, true);
+        remotePrefs.getInt("SubPaneMgr.MaxPanes", 12, true);
 
     }
     

@@ -209,7 +209,8 @@ public class ViewBasedDisplayPanel extends JPanel implements ActionListener
             FormValidator fv = viewable.getValidator();
             if (fv != null)
             {
-                fv.addEnableItem(okBtn, FormValidator.EnableType.ValidAndChangedItems);
+                //fv.addEnableItem(okBtn, FormValidator.EnableType.ValidAndChangedItems);
+                fv.setSaveComp(okBtn, FormValidator.EnableType.ValidItems);
             }
         }
         

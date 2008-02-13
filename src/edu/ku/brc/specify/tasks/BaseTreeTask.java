@@ -59,6 +59,7 @@ import edu.ku.brc.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.ui.db.ViewBasedSearchQueryBuilderIFace;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.persist.AltViewIFace.CreationMode;
+import edu.ku.brc.ui.forms.validation.UIValidator;
 import edu.ku.brc.ui.forms.validation.ValComboBox;
 import edu.ku.brc.ui.forms.validation.ValComboBoxFromQuery;
 
@@ -493,6 +494,10 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         }
     }
     
+    /**
+     * Adjust the Rank UI for a Parent node.
+     * @param form the form in question.
+     */
     @SuppressWarnings("unchecked")
     protected void adjustNodeForm(final FormViewObj form)
     {
@@ -507,32 +512,38 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
 
         final T nodeInForm = (T)form.getDataObj();
 
-        final ValComboBoxFromQuery parentCBX    = (ValComboBoxFromQuery)form.getControlByName("parent");
-        final ValComboBox          rankComboBox = (ValComboBox)form.getControlByName("definitionItem");
+        GetSetValueIFace  parentField  = (GetSetValueIFace)form.getControlByName("parent");;
+        final ValComboBox rankComboBox = (ValComboBox)form.getControlByName("definitionItem");
 
-        if (parentCBX != null && rankComboBox != null)
+        if (parentField instanceof ValComboBoxFromQuery)
         {
-            parentCBX.registerQueryBuilder(new SearchQueryBuilder(nodeInForm));
-            
-            parentCBX.addListSelectionListener(new ListSelectionListener() {
-                public void valueChanged(ListSelectionEvent e)
-                {
-                    if (!e.getValueIsAdjusting())
+            final ValComboBoxFromQuery parentCBX = (ValComboBoxFromQuery)parentField;
+            if (parentCBX != null && rankComboBox != null)
+            {
+                parentCBX.registerQueryBuilder(new SearchQueryBuilder(nodeInForm));
+                
+                parentCBX.addListSelectionListener(new ListSelectionListener() {
+                    public void valueChanged(ListSelectionEvent e)
                     {
-                        parentChanged(form, parentCBX, rankComboBox);
+                        if (!e.getValueIsAdjusting())
+                        {
+                            parentChanged(form, parentCBX, rankComboBox);
+                        }
                     }
-                }
-            });
+                });
+            }
         }
         
         if (nodeInForm != null && nodeInForm.getDefinitionItem() != null)
         {
             //log.debug("node in form already has a set rank: forcing a call to adjustRankComboBoxModel()");
-            adjustRankComboBoxModel(parentCBX, rankComboBox, nodeInForm);
+            UIValidator.setIgnoreAllValidation(this, true);
+            adjustRankComboBoxModel(parentField, rankComboBox, nodeInForm);
+            UIValidator.setIgnoreAllValidation(this, false);
         }
         
         // TODO: the form system MUST require the accepted parent widget to be present if the isAccepted checkbox is present
-        final JCheckBox acceptedCheckBox = (JCheckBox)form.getControlByName("isAccepted");
+        final JCheckBox        acceptedCheckBox     = (JCheckBox)form.getControlByName("isAccepted");
         final GetSetValueIFace acceptedParentWidget = (GetSetValueIFace)form.getControlByName("acceptedParent");
         if (acceptedCheckBox != null && acceptedParentWidget != null)
         {
@@ -549,8 +560,15 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         }
     }
     
+    /**
+     * @param parentField
+     * @param rankComboBox
+     * @param nodeInForm
+     */
     @SuppressWarnings("unchecked")
-    protected void adjustRankComboBoxModel(GetSetValueIFace parentField, ValComboBox rankComboBox, T nodeInForm)
+    protected void adjustRankComboBoxModel(final GetSetValueIFace parentField, 
+                                           final ValComboBox rankComboBox, 
+                                           final T nodeInForm)
     {
         log.debug("Adjusting the model for the 'rank' combo box in a tree node form");
         log.debug("nodeInForm = " + nodeInForm.getName());
@@ -651,6 +669,9 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     }
     
     
+    //----------------------------------------------------------------------------------
+    //-- Inner Class that implements a special query builder.
+    //----------------------------------------------------------------------------------
     class SearchQueryBuilder implements ViewBasedSearchQueryBuilderIFace
     {
         protected T                     nodeInForm;

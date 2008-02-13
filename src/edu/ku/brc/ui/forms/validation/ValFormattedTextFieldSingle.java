@@ -185,6 +185,15 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
         }
     }
     
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#requestFocus()
+     */
+    @Override
+    public void requestFocus()
+    {
+        comps[0].requestFocus();
+    }
+    
     /**
      * Sets the formatter.
      * @param formatterName the formatter to use

@@ -294,9 +294,9 @@ public class IconViewObj implements Viewable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#checkForChanges()
      */
-    public boolean checkForChanges()
+    public boolean isDataCompleteAndValid()
     {
-        return false;
+        return true;
     }
     
     /**

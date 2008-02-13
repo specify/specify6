@@ -76,6 +76,7 @@ import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.Trash;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.FormHelper;
+import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.persist.ViewIFace;
 import edu.ku.brc.ui.forms.persist.ViewLoader;
@@ -245,6 +246,11 @@ public class DataEntryTask extends BaseTask
         
         formPane.setIcon(getIconForView(view));
         
+        if (isNewForm)
+        {
+            formPane.initSubViews();
+        }
+        
         SwingUtilities.invokeLater(new Runnable()
         {
             @SuppressWarnings("synthetic-access")
@@ -269,6 +275,8 @@ public class DataEntryTask extends BaseTask
                 }
 
                 CommandDispatcher.dispatch(new CommandAction(DATA_ENTRY, VIEW_WAS_OPENED, formPane));
+                
+                formPane.focusFirstFormControl();
             }
         });
 
@@ -858,6 +866,23 @@ public class DataEntryTask extends BaseTask
                 String    mode  = (String)dataList[1];
                 String    idStr = (String)dataList[2];
                 openView(this, view, mode, idStr);
+            }
+            
+        } else if (cmdAction.isAction("ViewWasShown"))
+        {
+            if (cmdAction.getData() instanceof FormViewObj)
+            {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run()
+                    {
+                        MultiView mv = ((FormViewObj)cmdAction.getData()).getMVParent();
+                        if (mv != null && mv.isTopLevel())
+                        {
+                            mv.focus();
+                        }
+                    }
+                });
+
             }
         }
     }

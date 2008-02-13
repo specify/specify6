@@ -171,6 +171,16 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
         init(UIFieldFormatterMgr.getFormatter(formatterName), isAllEditable);
     }
     
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#requestFocus()
+     */
+    @Override
+    public void requestFocus()
+    {
+        comps[0].requestFocus();
+        comps[0].requestFocusInWindow();
+    }
+
     /**
      * 
      */

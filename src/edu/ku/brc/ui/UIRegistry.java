@@ -69,6 +69,7 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.exceptions.UIException;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
+import edu.ku.brc.ui.forms.validation.ValFormattedTextField;
 import edu.ku.brc.util.FileCache;
 
 /**
@@ -172,10 +173,15 @@ public class UIRegistry
                     {
                         permanentFocusOwner = focusManager.getFocusOwner();
                     }
-                    //System.out.println(propName+"  "+
-                    //        ( focusManager.getFocusOwner() != null ? focusManager.getFocusOwner().hashCode():"")+
-                    //        "  FO: "+focusManager.getFocusOwner()+
-                    //        " "+focusManager.getFocusedWindow()+" perm: "+permanentFocusOwner);
+                    /*
+                    System.out.println(propName+"  "+
+                            ( focusManager.getFocusOwner() != null ? focusManager.getFocusOwner().hashCode():"")+
+                            "  FO: "+focusManager.getFocusOwner()+
+                            " "+focusManager.getFocusedWindow()+" perm: "+permanentFocusOwner);
+                    if (focusManager.getFocusOwner() instanceof GetSetValueIFace)
+                    {
+                        System.out.println(((GetSetValueIFace)focusManager.getFocusOwner()).getValue());
+                    }*/
                     if (("focusOwner".equals(propName)) && undoAction != null && redoAction != null) 
                     { 
                         if (focusManager.getFocusOwner() instanceof UndoableTextIFace)

@@ -583,7 +583,7 @@ public class FormViewObj implements Viewable,
         
         if (formValidator != null)
         {
-            formValidator.setSaveComp(saveComp);
+            formValidator.setSaveComp(saveComp, FormValidator.EnableType.ValidItems);
         }
     }
 
@@ -997,13 +997,12 @@ public class FormViewObj implements Viewable,
      * Checks to see if the current item has changed and asks if it should be saved
      * @return true to continue false to stop
      */
-    public boolean checkForChanges()
+    public boolean isDataCompleteAndValid()
     {
-        
         //log.debug((formValidator != null) +" "+ formValidator.hasChanged() +"  "+mvParent.isTopLevel() +" "+ mvParent.hasChanged());
         
         // Figure out if it is New and whether it has changed or is incomplete
-        boolean isNewandIncomplete = false;
+        boolean isNewAndComplete = true;
         if (mvParent != null)
         {
             Object topParentData = mvParent.getTopLevel().getData();
@@ -1011,9 +1010,9 @@ public class FormViewObj implements Viewable,
             {
                 if (((FormDataObjIFace)topParentData).getId() == null)
                 {
-                    if (formValidator != null)
+                    if (formValidator != null && dataObj != null)
                     {
-                        isNewandIncomplete = !formValidator.isFormValid();
+                        isNewAndComplete = formValidator.isFormValid();
                     }
                 }
             }
@@ -1056,7 +1055,7 @@ public class FormViewObj implements Viewable,
             
             String[] optionLabels;
             int      dlgOptions;
-            if (isNewandIncomplete || (formValidator != null && !formValidator.isFormValid()))
+            if (!isNewAndComplete || (formValidator != null && !formValidator.isFormValid()))
             {
                 dlgOptions = JOptionPane.YES_NO_OPTION;
                 optionLabels = new String[] {getResourceString("DiscardChangesBtn"), 
@@ -1070,8 +1069,8 @@ public class FormViewObj implements Viewable,
             }
             
             int rv = JOptionPane.showOptionDialog(null,
-                        isNewandIncomplete ? UIRegistry.getLocalizedMessage("DiscardChanges", title) : UIRegistry.getLocalizedMessage("SaveChanges", title),
-                        isNewandIncomplete ? getResourceString("DiscardChangesTitle") : getResourceString("SaveChangesTitle"),
+                        isNewAndComplete ? UIRegistry.getLocalizedMessage("DiscardChanges", title) : UIRegistry.getLocalizedMessage("SaveChanges", title),
+                        isNewAndComplete ? getResourceString("DiscardChangesTitle") : getResourceString("SaveChangesTitle"),
                         dlgOptions,
                         JOptionPane.QUESTION_MESSAGE,
                         null,
@@ -1081,31 +1080,35 @@ public class FormViewObj implements Viewable,
 
             if (rv == JOptionPane.YES_OPTION)
             {
-                if (!isNewandIncomplete) // YES means Save
+                if (isNewAndComplete) // YES means Save
                 {
-                    saveObject();
+                    return saveObject();
                     
-                } else // YES means discard
-                {
-                    discardCurrentObject();
-                }
-
+                } // YES means discard
+                
+                discardCurrentObject();
+                return true;
+                
             } else if (rv == JOptionPane.CANCEL_OPTION)
             {
                 return false; 
                 
             } else if (rv == JOptionPane.NO_OPTION)
             {
-                if (isNewandIncomplete) // NO means 'Cancel' 
+                if (!isNewAndComplete) // NO means 'Cancel' 
                 {
                     return false;
                 }
                 
                 // NO means Discard
                 discardCurrentObject();
+                return true;
             }
+        } else
+        {
+            return true;
         }
-        return true;
+        return isNewAndComplete;
     }
     
     /**
@@ -1144,6 +1147,34 @@ public class FormViewObj implements Viewable,
         }
         return false;
     }
+    
+    /**
+     * Asks the Business Rules if a SubViewIFace should have a new record created. 
+     */
+    public void initSubViews()
+    {
+        if (businessRules != null)
+        {
+            for (FieldInfo fieldInfo : controlsById.values())
+            {
+                if (fieldInfo.getFormCell() instanceof FormCellSubViewIFace &&
+                    fieldInfo.getComp() instanceof MultiView &&
+                    businessRules.shouldCreateSubViewData(fieldInfo.getName()))
+                {
+                    MultiView   mv = ((MultiView)fieldInfo.getComp());
+                    FormViewObj fvo =  mv.getCurrentViewAsFormViewObj();
+                    if (fvo != null)
+                    {
+                        if (fvo.getRsController() != null && 
+                            fvo.getRsController().getNewRecBtn() != null)
+                        {
+                            fvo.getRsController().getNewRecBtn().doClick();
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     /**
      * Returns whether a field with a given name is auto-incremented.
@@ -1172,7 +1203,7 @@ public class FormViewObj implements Viewable,
     {
         //log.debug("createNewDataObject " + this.getView().getName());
 
-        if (!checkForChanges())
+        if (!isDataCompleteAndValid())
         {
             return;
         }
@@ -1258,8 +1289,8 @@ public class FormViewObj implements Viewable,
             
             ((Orderable)obj).setOrderIndex(maxOrder+1);
         }
-
-        dataObj = obj;
+        
+       dataObj = obj;
 
         if (list != null)
         {
@@ -1293,6 +1324,18 @@ public class FormViewObj implements Viewable,
             }
         }
         
+        if (mvParent.isTopLevel())
+        {
+            mvParent.initSubViews();
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run()
+                {
+                    mvParent.focus();
+                }
+            });
+            
+        }
+
         if (selectorCBX != null)
         {
             selectorCBX.setEnabled(true);
@@ -2069,7 +2112,7 @@ public class FormViewObj implements Viewable,
                     UIValidator.setIgnoreAllValidation(this, true);
                     createNewDataObject(false);
                     UIValidator.setIgnoreAllValidation(this, false);
-                    focusFirstFormControl();
+                    //focusFirstFormControl();
                 }
             });
         }
@@ -2976,11 +3019,6 @@ public class FormViewObj implements Viewable,
             for (FieldInfo fieldInfo : controlsById.values())
             {
                 fieldInfo.getComp().setEnabled(false);
-                if (fieldInfo.getComp() instanceof EditViewCompSwitcherPanel)
-                {
-                    int x = 0;
-                    x++;
-                }
                 if (fieldInfo.isOfType(FormCellIFace.CellType.field))
                 {
                     setDataIntoUIComp(fieldInfo.getComp(), null, null);
@@ -3038,12 +3076,12 @@ public class FormViewObj implements Viewable,
             {
                 Component comp = fieldInfo.getComp();
                 
-                String nm = fieldInfo.getFormCell().getName();
+                /*String nm = fieldInfo.getFormCell().getName();
                 if (nm.equals("division"))
                 {
                     int x = 0;
                     x++;
-                }
+                }*/
 
                 Object data = null;
 
@@ -3284,6 +3322,13 @@ public class FormViewObj implements Viewable,
                 
                 for (FieldInfo fieldInfo : controlsById.values())
                 {
+                    String nm = fieldInfo.getFormCell().getName();
+                    if (nm.equals("agentAuthorizations"))
+                    {
+                        int x = 0;
+                        x++;
+                    }
+                    
                     FormCellIFace fc = fieldInfo.getFormCell();
                     boolean isInoreGetSet = fc.isIgnoreSetGet();
                     boolean isReadOnly;
@@ -4124,9 +4169,9 @@ public class FormViewObj implements Viewable,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.ResultSetControllerListener#indexAboutToChange(int, int)
      */
-    public boolean indexAboutToChange(int oldIndex, int newIndex)
+    public boolean indexAboutToChange(final int oldIndex, final int newIndex)
     {
-        return checkForChanges();
+        return isDataCompleteAndValid();
         
         /*if (formValidator != null && formValidator.hasChanged())
         {

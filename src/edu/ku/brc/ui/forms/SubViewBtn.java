@@ -277,9 +277,8 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
                             fvo.getDataFromUI();
                             break;
                     }
-                    
-                    updateBtnText();
                 } 
+                updateBtnText();
             }
         } else
         {
