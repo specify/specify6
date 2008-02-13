@@ -84,6 +84,7 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
     protected boolean          hasFocus      = false;
     protected Color            bgColor       = null;
     protected JLabel           fieldLabel;
+    protected boolean          labelQualified = false; 
     protected JLabel           closeBtn;
     protected JLabel           iconLabel;
     protected ImageIcon        icon;
@@ -798,7 +799,53 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
         }
         return shadowBuffer;
     }
-
-
     
+    public String getLabel()
+    {
+        return this.fieldLabel.getText();
+    }
+
+    /**
+     * @return the labelQualified
+     */
+    public boolean isLabelQualified()
+    {
+        return labelQualified;
+    }
+
+    public void qualifyLabel()
+    {
+        boolean needToQualify = false;
+        List<String> labels = new ArrayList<String>(queryBldrPane.getFields()-1);
+        for (int i = 0; i < this.queryBldrPane.getFields(); i++)
+        {
+            QueryFieldPanel p = queryBldrPane.getField(i);
+            if (this != p)
+            {
+                labels.add(p.getLabel());
+                if (p.getFieldInfo().getTitle().equals(getFieldInfo().getTitle()))
+                {
+                    needToQualify = true;
+                }
+            }
+        }
+        if (needToQualify)
+        {
+            String newLabel = getFieldInfo().getTitle();
+            TableTree parent = fieldQRI.getTable().getTableTree().getParent();
+            do
+            {
+               newLabel = parent.getTableQRI().getTitle() + "/" + newLabel;
+               parent = parent.getParent();
+            } 
+            while (parent != null && labels.indexOf(newLabel) != -1);
+            labelQualified = true;
+            fieldLabel.setText(newLabel);
+        }
+        else
+        {
+            labelQualified = false;
+            fieldLabel.setText(getFieldInfo().getTitle());
+        }
+    }
 }

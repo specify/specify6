@@ -16,6 +16,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
@@ -933,7 +935,27 @@ public class QueryBldrPane extends BaseSubPane
     protected boolean isCyclicable(final TableTree alias, final DBTableInfo tblInfo)
     {
         return Treeable.class.isAssignableFrom(tblInfo.getClassObj());
+            //special conditions... (may be needed. For example for Determination and Taxon, but on the other hand
+            //Determination <-> Taxon behavior seems ok for now.
+            
+            ////assuming isCyclic
+            //&& !Taxon.class.isAssignableFrom(tblInfo.getClassObj()) || !isAncestorClass(alias, Determination.class);
     }
+    
+//    protected boolean isAncestorClass(final TableTree tbl, final Class<?> cls)
+//    {
+//        TableTree parent = tbl.getParent();
+//        while (parent != null)
+//        {
+//            if (parent.getTableInfo() != null && parent.getTableInfo().getClassObj().equals(cls))
+//            {
+//                return true;
+//            }
+//            parent = parent.getParent();
+//        }
+//        return false;
+//    }
+    
     
     /**
      * @param parentList
@@ -968,6 +990,71 @@ public class QueryBldrPane extends BaseSubPane
             if (curInx == listBoxList.size() - 1)
             {
                 newList = new JList(model = new DefaultListModel());
+                newList.addMouseListener(new MouseListener()
+                {
+
+                    /* (non-Javadoc)
+                     * @see java.awt.event.MouseListener#mouseClicked(java.awt.event.MouseEvent)
+                     */
+                    //@Override
+                    public void mouseClicked(MouseEvent e)
+                    {
+                        if (e.getClickCount() == 2)
+                        {
+                            if (currentInx != -1)
+                            {
+                                QryListRendererIFace qri = (QryListRendererIFace) listBoxList.get(
+                                        currentInx).getSelectedValue();
+                                if (qri instanceof FieldQRI)
+                                {
+                                    FieldQRI fieldQRI = (FieldQRI) qri;
+                                    if (fieldQRI.isInUse())
+                                    {
+                                        //remove the field
+                                        for (QueryFieldPanel qfp : QueryBldrPane.this.queryFieldItems)
+                                        {
+                                            if (qfp.getFieldQRI() == fieldQRI)
+                                            {
+                                                QueryBldrPane.this.removeQueryFieldItem(qfp);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        // add the field
+                                        SpQueryField qf = new SpQueryField();
+                                        qf.initialize();
+                                        qf.setFieldName(fieldQRI.getFieldName());
+                                        query.addReference(qf, "fields");
+                                        addQueryFieldItem(fieldQRI, qf);
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    /* (non-Javadoc)
+                     * @see java.awt.event.MouseListener#mouseEntered(java.awt.event.MouseEvent)
+                     */
+                    //@Override
+                    public void mouseEntered(MouseEvent e){/**/}
+                    /* (non-Javadoc)
+                     * @see java.awt.event.MouseListener#mouseExited(java.awt.event.MouseEvent)
+                     */
+                    //@Override
+                    public void mouseExited(MouseEvent e){/**/}
+                    /* (non-Javadoc)
+                     * @see java.awt.event.MouseListener#mousePressed(java.awt.event.MouseEvent)
+                     */
+                    //@Override
+                    public void mousePressed(MouseEvent e) {/**/}
+                    /* (non-Javadoc)
+                     * @see java.awt.event.MouseListener#mouseReleased(java.awt.event.MouseEvent)
+                     */
+                    //@Override
+                    public void mouseReleased(MouseEvent e){/**/}
+                });
                 newList.setCellRenderer(qryRenderer);
                 listBoxList.add(newList);
                 sp = new JScrollPane(newList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
@@ -1066,6 +1153,7 @@ public class QueryBldrPane extends BaseSubPane
         queryFieldsPanel.getLayout().removeLayoutComponent(qfp);
         queryFieldsPanel.remove(qfp);
         qfp.getFieldQRI().setIsInUse(false);
+        qualifyFieldLabels();
         if (qfp.getQueryField() != null)
         {
             query.removeReference(qfp.getQueryField(), "fields");
@@ -1088,7 +1176,7 @@ public class QueryBldrPane extends BaseSubPane
                     log.error(ex);
                 }
                 queryFieldsPanel.repaint();
-                saveBtn.setEnabled(true);
+                saveBtn.setEnabled(QueryBldrPane.this.queryFieldItems.size() > 0);
             }
         });
     }
@@ -1179,6 +1267,8 @@ public class QueryBldrPane extends BaseSubPane
                     IconManager.IconSize.Std24, columnDefStr, saveBtn, queryField);
             queryFieldsPanel.add(qfp);
             queryFieldItems.add(qfp);
+            //qfp.qualifyLabel();
+            qualifyFieldLabels();
             fieldQRI.setIsInUse(true);
             queryFieldsPanel.validate();
             
@@ -1201,6 +1291,21 @@ public class QueryBldrPane extends BaseSubPane
         }
     }
 
+    /**
+     * Adds qualifiers (TableOrRelationship/Field Title) to query fields where necessary.
+     * 
+     * Not efficient. Could actually be a performance issue for giant queries (of a size certain specifiers have been known to use)
+     */
+    protected void qualifyFieldLabels()
+    {
+        for (QueryFieldPanel qfp : queryFieldItems)
+        {
+            //if (qfp.isLabelQualified())
+            {
+                qfp.qualifyLabel();
+            }
+        }
+    }
 
     /**
      * @param parent
@@ -1465,5 +1570,15 @@ public class QueryBldrPane extends BaseSubPane
                 saveBtn.setEnabled(true);
             }
         });
+    }
+    
+    public int getFields()
+    {
+        return queryFieldItems.size();
+    }
+    
+    public QueryFieldPanel getField(int index)
+    {
+        return queryFieldItems.get(index);
     }
 }
