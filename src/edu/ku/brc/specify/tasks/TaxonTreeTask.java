@@ -55,7 +55,7 @@ public class TaxonTreeTask extends BaseTreeTask<Taxon,TaxonTreeDef,TaxonTreeDefI
 	{
         super(TAXON, getResourceString(TAXON));
         treeDefClass = TaxonTreeDef.class;
-        icon = IconManager.getIcon(TAXON, IconManager.IconSize.Std24);
+        icon = IconManager.getIcon(TAXON, IconManager.IconSize.Std16);
         
         menuItemText      = getResourceString("TaxonMenu");
         menuItemMnemonic  = getResourceString("TaxonMnemonic");

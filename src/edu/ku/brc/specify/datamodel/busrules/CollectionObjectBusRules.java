@@ -18,7 +18,6 @@ import java.util.Calendar;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
@@ -48,7 +47,7 @@ import edu.ku.brc.ui.forms.Viewable;
  */
 public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
 {
-    private static final Logger  log = Logger.getLogger(CollectionObjectBusRules.class);
+    //private static final Logger  log = Logger.getLogger(CollectionObjectBusRules.class);
     
     /**
      * Constructor.
@@ -97,10 +96,8 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
                         // XXX for now we just get the First one
                         return (PrepType)dataList.iterator().next();
                         
-                    } else
-                    {
-                        // No Data Error
                     }
+                    // No Data Error
         
                 } catch (Exception ex)
                 {

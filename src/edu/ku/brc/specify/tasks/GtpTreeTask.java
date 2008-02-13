@@ -34,7 +34,7 @@ public class GtpTreeTask extends BaseTreeTask<GeologicTimePeriod,GeologicTimePer
 	{
         super(GTP, getResourceString(GTP));
         treeDefClass = GeologicTimePeriodTreeDef.class;
-        icon = IconManager.getIcon(GTP,IconManager.IconSize.Std24);
+        icon = IconManager.getIcon(GTP,IconManager.IconSize.Std16);
         
         menuItemText     = getResourceString("GeoTimePeriodMenu");
         menuItemMnemonic = getResourceString("GeoTimePeriodMnemonic");

@@ -591,7 +591,7 @@ public class BuildSampleDatabase
      * @param disciplineName the disciplineType name
      * @return the entire list of DB object to be persisted
      */
-    public List<Object> createSingleBotanyCollection(final DisciplineType     disciplineType,
+    public List<Object> createSingleBotanyCollection(final DisciplineType disciplineType,
                                                      final Institution    institution,
                                                      final SpecifyUser    user)
     {
@@ -1552,6 +1552,7 @@ public class BuildSampleDatabase
         log.info("Creating agents and addresses");
         List<Agent>    agents      = new Vector<Agent>();
         Agent johnByrn = null;
+        Agent ku = new Agent();
         
         if (createAgents)
         {
@@ -1566,61 +1567,48 @@ public class BuildSampleDatabase
             agents.add(createAgent("Mr.", "Joe", "A", "Tester", "jb", ""));
             agents.add(createAgent("Mr.", "Mitch", "A", "Smyth", "mas", "mas@ku.edu"));
             agents.add(userAgent);
+            
+            ku.initialize();
+            ku.setAbbreviation("KU");
+            ku.setAgentType(Agent.ORG);
+            ku.setName("University of Kansas");
+            ku.setEmail("webadmin@ku.edu");
+            ku.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+            ku.setDiscipline(Discipline.getCurrentDiscipline());
+            
+            agents.add(ku);
+            agents.get(0).setOrganization(ku);
+            agents.get(1).setOrganization(ku);
+            agents.get(2).setOrganization(ku);
+            agents.get(3).setOrganization(ku);
+            agents.get(8).setOrganization(ku);
+            
             globalAgents.addAll(agents);
+            
+            List<AgentVariant> agentVariants = new Vector<AgentVariant>();
+            agentVariants.add(createAgentVariant(AgentVariant.VARIANT, "John Variant #1", johnByrn));
+            agentVariants.add(createAgentVariant(AgentVariant.VERNACULAR, "John VERNACULAR #1", johnByrn));
+         
+            List<Address> addrs = new Vector<Address>();
+            addrs.add(createAddress(agents.get(1), "1600 Pennsylvania Avenue NW", null, "Washington", "DC", "USA", "20500"));
+            addrs.add(createAddress(agents.get(1), "??? Mississippi", null, "Lawrence", "KS", "USA", "66045"));
+            addrs.add(createAddress(agents.get(2), "1 Main St", "", "Lenexa", "KS", "USA", "66071"));
+            addrs.add(createAddress(agents.get(3), "13355 Inverness", "Bldg #3", "Lawrence", "KS", "USA", "66047"));
+            addrs.add(createAddress(agents.get(4), "Natural History Museum", "Cromwell Rd", "London", null, "UK", "SW7 5BD"));
+            addrs.add(createAddress(agents.get(6), "1212 Apple Street", null, "Chicago", "IL", "USA", "01010"));
+            addrs.add(createAddress(agents.get(8), "11911 Oak Ln", null, "Orion", "KS", "USA", "66061"));
+            addrs.add(createAddress(ku, null, null, "Lawrence", "KS", "USA", "66045"));
+            addrs.add(createAddress(userAgent, "1214 East Street", null, "Grinnell", "IA", "USA", "56060"));
+            
+            persist(agents);
+            persist(agentVariants);
             
         } else
         {
             agents.addAll(globalAgents);
             johnByrn = agents.get(4);
+            ku       = agents.get(10);
         }
-        
-        Agent ku = new Agent();
-        ku.initialize();
-        ku.setAbbreviation("KU");
-        ku.setAgentType(Agent.ORG);
-        ku.setName("University of Kansas");
-        ku.setEmail("webadmin@ku.edu");
-        ku.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        ku.setDiscipline(Discipline.getCurrentDiscipline());
-        
-        agents.add(ku);
-        agents.get(0).setOrganization(ku);
-        agents.get(1).setOrganization(ku);
-        agents.get(2).setOrganization(ku);
-        agents.get(3).setOrganization(ku);
-        agents.get(8).setOrganization(ku);
-        
-        List<AgentVariant> agentVariants = new Vector<AgentVariant>();
-        agentVariants.add(createAgentVariant(AgentVariant.VARIANT, "John Variant #1", johnByrn));
-        agentVariants.add(createAgentVariant(AgentVariant.VERNACULAR, "John VERNACULAR #1", johnByrn));
-     
-        List<Address> addrs = new Vector<Address>();
-        // David Smith
-        addrs.add(createAddress(agents.get(1), "1600 Pennsylvania Avenue NW", null, "Washington", "DC", "USA", "20500"));
-        // Jim
-        addrs.add(createAddress(agents.get(1), "??? Mississippi", null, "Lawrence", "KS", "USA", "66045"));
-        // Meg
-        addrs.add(createAddress(agents.get(2), "1 Main St", "", "Lenexa", "KS", "USA", "66071"));
-        // Rod
-        addrs.add(createAddress(agents.get(3), "13355 Inverness", "Bldg #3", "Lawrence", "KS", "USA", "66047"));
-        // Wayne Oppenheimer
-        addrs.add(createAddress(agents.get(4), "Natural History Museum", "Cromwell Rd", "London", null, "UK", "SW7 5BD"));
-        // no address for agent 5 (Dudley Simmons)
-        // Rod Carew
-        addrs.add(createAddress(agents.get(6), "1212 Apple Street", null, "Chicago", "IL", "USA", "01010"));
-        // no address for agent 7 (Joe Tester)
-        // Smyth
-        addrs.add(createAddress(agents.get(8), "11911 Oak Ln", null, "Orion", "KS", "USA", "66061"));
-        // KU
-        addrs.add(createAddress(ku, null, null, "Lawrence", "KS", "USA", "66045"));
-        
-        // User Agent Address
-        addrs.add(createAddress(userAgent, "1214 East Street", null, "Grinnell", "IA", "USA", "56060"));
-                
-        //startTx();
-        persist(agents);
-        persist(agentVariants);
-        //commitTx();
         
         frame.setProcess(++createStep);
         

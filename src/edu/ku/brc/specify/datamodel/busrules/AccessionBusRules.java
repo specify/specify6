@@ -28,7 +28,6 @@ import java.util.Hashtable;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -55,7 +54,7 @@ import edu.ku.brc.ui.forms.Viewable;
  */
 public class AccessionBusRules extends AttachmentOwnerBaseBusRules
 {
-    private static final Logger  log      = Logger.getLogger(AccessionBusRules.class);
+    //private static final Logger  log      = Logger.getLogger(AccessionBusRules.class);
    
     /**
      * Constructor.
@@ -91,9 +90,8 @@ public class AccessionBusRules extends AttachmentOwnerBaseBusRules
     @Override
     public boolean shouldCreateSubViewData(String fieldName)
     {
-        //return fieldName.equals("accessionAgents") ||
-        //       fieldName.equals("accessionAuthorizations");
-        return false;
+        return fieldName.equals("accessionAgents") ||
+               fieldName.equals("accessionAuthorizations");
     }
 
     /* (non-Javadoc)

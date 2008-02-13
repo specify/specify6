@@ -34,7 +34,7 @@ public class GeographyTreeTask extends BaseTreeTask<Geography,GeographyTreeDef,G
 	{
         super(GEOGRAPHY, getResourceString(GEOGRAPHY));
         treeDefClass = GeographyTreeDef.class;
-        icon = IconManager.getIcon(GEOGRAPHY,IconManager.IconSize.Std24);
+        icon = IconManager.getIcon(GEOGRAPHY,IconManager.IconSize.Std16);
         
         menuItemText     = getResourceString("GeographyMenu");
         menuItemMnemonic = getResourceString("GeographyMnemonic");

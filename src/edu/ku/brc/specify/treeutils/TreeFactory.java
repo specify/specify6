@@ -182,7 +182,7 @@ public class TreeFactory
      * @param parent
      * @return
      */
-    public static <T extends Treeable<T,?,?>> String getChildQueryString(T parent)
+    public static <T extends Treeable<T,?,?>> String getChildQueryString(final T parent)
     {
         if (parent instanceof Taxon)
         {

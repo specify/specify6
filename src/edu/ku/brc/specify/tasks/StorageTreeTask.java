@@ -34,7 +34,7 @@ public class StorageTreeTask extends BaseTreeTask<Storage,StorageTreeDef,Storage
 	{
         super(LOCATION, getResourceString(LOCATION));
         treeDefClass = StorageTreeDef.class;
-        icon = IconManager.getIcon(LOCATION,IconManager.IconSize.Std24);
+        icon = IconManager.getIcon(LOCATION,IconManager.IconSize.Std16);
         
         menuItemText      = getResourceString("StorageMenu");
         menuItemMnemonic  = getResourceString("StorageMnemonic");

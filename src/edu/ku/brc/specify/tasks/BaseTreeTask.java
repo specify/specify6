@@ -512,7 +512,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
 
         final T nodeInForm = (T)form.getDataObj();
 
-        GetSetValueIFace  parentField  = (GetSetValueIFace)form.getControlByName("parent");;
+        GetSetValueIFace  parentField  = (GetSetValueIFace)form.getControlByName("parent");
         final ValComboBox rankComboBox = (ValComboBox)form.getControlByName("definitionItem");
 
         if (parentField instanceof ValComboBoxFromQuery)
