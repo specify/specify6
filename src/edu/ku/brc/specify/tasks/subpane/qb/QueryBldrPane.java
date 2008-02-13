@@ -49,10 +49,10 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.NavBoxLayoutManager;
+import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.expresssearch.ERTICaptionInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
-import edu.ku.brc.af.core.expresssearch.TableFieldPair;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
@@ -84,7 +84,7 @@ public class QueryBldrPane extends BaseSubPane
                                                                                       .getLogger(QueryBldrPane.class);
 
     protected JList                                          tableList;
-    protected Hashtable<DBTableInfo, Vector<TableFieldPair>> tableFieldList   = new Hashtable<DBTableInfo, Vector<TableFieldPair>>();
+    //protected Hashtable<DBTableInfo, Vector<TableFieldPair>> tableFieldList   = new Hashtable<DBTableInfo, Vector<TableFieldPair>>();
 
     protected Vector<QueryFieldPanel>                        queryFieldItems  = new Vector<QueryFieldPanel>();
     protected int                                            currentInx       = -1;
@@ -106,6 +106,7 @@ public class QueryBldrPane extends BaseSubPane
     protected Vector<TableTree>                              nodeList         = new Vector<TableTree>();
     protected JScrollPane                                    scrollPane;
     protected Vector<JScrollPane>                            spList           = new Vector<JScrollPane>();
+    protected JPanel                                         contextPanel;
     protected JButton                                        saveBtn;
 
     protected Hashtable<String, Boolean>                     fieldsToSkipHash = new Hashtable<String, Boolean>();
@@ -159,8 +160,10 @@ public class QueryBldrPane extends BaseSubPane
         {
             public void actionPerformed(ActionEvent e)
             {
-                saveQuery();
-                saveBtn.setEnabled(false);
+                if (saveQuery())
+                {
+                    saveBtn.setEnabled(false);
+                }
             }
         });
 
@@ -237,7 +240,7 @@ public class QueryBldrPane extends BaseSubPane
             }
         });
 
-        JPanel contextPanel = new JPanel(new BorderLayout());
+        contextPanel = new JPanel(new BorderLayout());
         contextPanel.add(new JLabel("Search Context", SwingConstants.CENTER), BorderLayout.NORTH);
         contextPanel.add(spt, BorderLayout.CENTER);
         contextPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
@@ -318,7 +321,7 @@ public class QueryBldrPane extends BaseSubPane
         }
 
         tableList.clearSelection();
-
+        contextPanel.setVisible(query == null);
         if (query != null)
         {
             Short tblId = query.getContextTableId();
@@ -680,8 +683,16 @@ public class QueryBldrPane extends BaseSubPane
     /**
      * 
      */
-    protected void saveQuery()
+    protected boolean saveQuery()
     {
+        if (!query.isNamed())
+        {
+            if (!getQueryNameFromUser())
+            {
+                return false;
+            }
+        }
+        
         TableQRI tableQRI = (TableQRI) tableList.getSelectedValue();
         if (tableQRI != null)
         {
@@ -702,6 +713,8 @@ public class QueryBldrPane extends BaseSubPane
                                                                                 // disable the
                                                                                 // navbtn
 
+                query.setNamed(true);
+                SubPaneMgr.getInstance().renamePane(this, query.getName());
             }
             else
             {
@@ -709,11 +722,16 @@ public class QueryBldrPane extends BaseSubPane
                 {
                     DataProviderSessionIFace session = DataProviderFactory.getInstance()
                             .createSession();
-                    session.beginTransaction();
-                    session.saveOrUpdate(query);
-                    session.commit();
-                    session.close();
-
+                    try
+                    {
+                        session.beginTransaction();
+                        session.saveOrUpdate(query);
+                        session.commit();
+                    }
+                    finally
+                    {
+                        session.close();
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -721,12 +739,76 @@ public class QueryBldrPane extends BaseSubPane
                     ex.printStackTrace();
                 }
             }
-            
+            return true;
         }
-        else
+        //else
         {
             log.error("No Context selected!");
+            return false;
         }
+    }
+
+    /**
+     * @return true if a valid query name was obtained from user
+     */
+    protected boolean getQueryNameFromUser()
+    {
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+            String newQueryName = query.getName();
+            String oldQueryName = query.getName();
+            SpQuery fndQuery = null;
+            boolean good = false;
+            do
+            {
+                if (QueryTask.askUserForInfo("Query", getResourceString("QB_DATASET_INFO"), query))
+                {
+                    newQueryName = query.getName();
+                    if (StringUtils.isNotEmpty(newQueryName) && newQueryName.length() > 64)
+                    {
+                        UIRegistry.getStatusBar().setErrorMessage(
+                                getResourceString("QB_NAME_TOO_LONG"));
+                    }
+                    else if (StringUtils.isEmpty(newQueryName))
+                    {
+                        UIRegistry.getStatusBar().setErrorMessage(
+                                getResourceString("QB_ENTER_A_NAME"));
+                    }
+                    else
+                    {
+                        fndQuery = session.getData(SpQuery.class, "name", newQueryName,
+                                DataProviderSessionIFace.CompareType.Equals);
+                        if (fndQuery != null)
+                        {
+                            UIRegistry.getStatusBar().setErrorMessage(
+                                    String.format(getResourceString("QB_QUERY_EXISTS"),
+                                            newQueryName));
+                        }
+                        else
+                        {
+                            good = true;
+                        }
+                    }
+                }
+                else
+                {
+                    query.setName(oldQueryName);
+                    return false;
+                }
+            } while (!good);
+        }
+        catch (Exception ex)
+        {
+            log.error(ex);
+
+        }
+        finally
+        {
+            session.close();
+        }
+        UIRegistry.getStatusBar().setText("");
+        return true;
     }
 
     /**

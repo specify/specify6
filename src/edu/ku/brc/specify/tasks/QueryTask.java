@@ -32,6 +32,7 @@ import javax.swing.JLabel;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.dom4j.Element;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
@@ -52,6 +53,7 @@ import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
@@ -94,6 +96,8 @@ public class QueryTask extends BaseTask
     protected Vector<NavBoxIFace>        extendedNavBoxes = new Vector<NavBoxIFace>();
     protected DroppableNavBox            navBox           = null;
     protected NavBox                     actionNavBox     = null;
+    
+    //protected List<DBTableInfo>               tableInfos       = new ArrayList<DBTableInfo>();
     
     /**
      * Default Constructor
@@ -146,80 +150,84 @@ public class QueryTask extends BaseTask
     }
     
     
-    /**
-     * (Could be refactored with WorkBench Task)
-     * @param workbench
-     * @param title
-     * @return
-     */
-    protected boolean fillInQueryNameAndAttrs(final SpQuery query, 
-                                              final String  queryName, 
-                                              final boolean skipFirstCheck)
-    {
-        boolean skip = skipFirstCheck;
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        
-        try
-        {
-            String newQueryName = queryName;
-            
-            boolean   alwaysAsk   = true;
-            SpQuery   fndQuery    = null;
-            boolean   shouldCheck = false;
-            do
-            {
-                if (StringUtils.isEmpty(newQueryName))
-                {
-                    alwaysAsk = true;
-                    
-                } else
-                {
-                    fndQuery = session.getData(SpQuery.class, "name", newQueryName, DataProviderSessionIFace.CompareType.Equals);
-                    if (fndQuery != null && !skip)
-                    {
-                        UIRegistry.getStatusBar().setErrorMessage(String.format(getResourceString("WB_DATASET_EXISTS"), new Object[] { newQueryName}));
-                        query.setName("");
-                    }
-                    skip = false;
-                }
-                
-                String oldName = query.getName();
-                if ((fndQuery != null || (StringUtils.isNotEmpty(newQueryName) && newQueryName.length() > 64)) || alwaysAsk)
-                {
-                    alwaysAsk = false;
-                    
-                    // We found the same name and it must be unique
-                    if (QueryTask.askUserForInfo("Query", getResourceString("QB_DATASET_INFO"), query))
-                    {
-                        newQueryName = query.getName();
-                        // This Part here needs to be moved into an <enablerule/>
-                        if (StringUtils.isNotEmpty(newQueryName) && newQueryName.length() > 64)
-                        {
-                            UIRegistry.getStatusBar().setErrorMessage(getResourceString("WB_NAME_TOO_LONG"));
-                        }
-                        fndQuery = query;
-                    } else
-                    {
-                        UIRegistry.getStatusBar().setText("");
-                        return false;
-                    }
-                }
-                
-                shouldCheck = oldName == null || !oldName.equals(newQueryName);
-                
-            } while (shouldCheck);
-            
-        } catch (Exception ex)
-        {
-            log.error(ex);
-            
-        } finally
-        {
-            session.close();    
-        }
-        UIRegistry.getStatusBar().setText("");
-        return true;
-    }
+//    /**
+//     * (Could be refactored with WorkBench Task)
+//     * @param workbench
+//     * @param title
+//     * @return
+//     */
+//    protected boolean fillInQueryNameAndAttrs(final SpQuery query, 
+//                                              final String  queryName, 
+//                                              final boolean skipFirstCheck,
+//                                              final DBTableInfo tableInfo)
+//    {
+//        boolean skip = skipFirstCheck;
+//        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+//        
+//        try
+//        {
+//            String newQueryName = queryName;
+//            
+//            boolean   alwaysAsk   = false;
+//            SpQuery   fndQuery    = null;
+//            boolean   shouldCheck = false;
+//            do
+//            {
+//                if (StringUtils.isEmpty(newQueryName))
+//                {
+//                    alwaysAsk = true;
+//                    
+//                } else
+//                {
+//                    fndQuery = session.getData(SpQuery.class, "name", newQueryName, DataProviderSessionIFace.CompareType.Equals);
+//                    if (fndQuery != null && !skip)
+//                    {
+//                        UIRegistry.getStatusBar().setErrorMessage(String.format(getResourceString("QB_QUERY_EXISTS"), newQueryName));
+//                        query.setName("");
+//                    }
+//                    skip = false;
+//                }
+//                
+//                String oldName = query.getName();
+//                if ((fndQuery != null || (StringUtils.isNotEmpty(newQueryName) && newQueryName.length() > 64) && query.isNamed()) || alwaysAsk)
+//                {
+//                    alwaysAsk = false;
+//                    
+//                    // We found the same name and it must be unique
+//                    if (QueryTask.askUserForInfo("Query", getResourceString("QB_DATASET_INFO"), query))
+//                    {
+//                        newQueryName = query.getName();
+//                        // This Part here needs to be moved into an <enablerule/>
+//                        if (StringUtils.isNotEmpty(newQueryName) && newQueryName.length() > 64)
+//                        {
+//                            UIRegistry.getStatusBar().setErrorMessage(getResourceString("WB_NAME_TOO_LONG"));
+//                        }
+//                        fndQuery = query;
+//                    } else
+//                    {
+//                        UIRegistry.getStatusBar().setText("");
+//                        return false;
+//                    }
+//                }
+//                
+//                shouldCheck = oldName == null || !oldName.equals(newQueryName);
+//                
+//            } while (shouldCheck);
+//            
+//        } catch (Exception ex)
+//        {
+//            log.error(ex);
+//            
+//        } finally
+//        {
+//            session.close();    
+//        }
+//        UIRegistry.getStatusBar().setText("");
+//        
+//        query.setContextTableId((short)tableInfo.getTableId());
+//        
+//        return true;
+//    }
 
     
     /**
@@ -227,23 +235,15 @@ public class QueryTask extends BaseTask
      * @param wbName
      * @return
      */
-    protected SpQuery createNewQueryDataObj(final String wbName)
+    protected SpQuery createNewQueryDataObj(final DBTableInfo tableInfo)
     {
         SpQuery query = new SpQuery();
         query.initialize();
         query.setSpecifyUser(SpecifyUser.getCurrentUser());
-        
-        if (StringUtils.isNotEmpty(wbName))
-        {
-            query.setName(wbName);
-        }
-        
-        if (fillInQueryNameAndAttrs(query, wbName, false))
-        {
-            return query;
-        }
-
-        return null;
+        query.setName(String.format(getResourceString("QB_NEW_QUERY_NAME"), tableInfo.getTitle()));
+        query.setNamed(false);
+        query.setContextTableId((short)tableInfo.getTableId());
+        return query;
     }
 
 
@@ -291,16 +291,38 @@ public class QueryTask extends BaseTask
     public void preInitialize()
     {
         // Create and add the Actions NavBox first so it is at the top at the top
-        actionNavBox = new NavBox(getResourceString("Actions"));
-        actionNavBox.add(NavBox.createBtnWithTT(getResourceString("QB_CREATE_NEWQUERY"), name, getResourceString("QB_CREATE_NEWQUERY_TT"), IconManager.IconSize.Std16, new ActionListener() {
-            public void actionPerformed(ActionEvent arg0)
-            {
-                createNewQuery();
-            }
-        }
-        ));
+        actionNavBox = new NavBox(getResourceString("QB_NEW_QUERY"));
+        addNewQCreators();
     }
     
+    
+    protected void addNewQCreators()
+    {
+        try
+        {
+            Element root = XMLHelper.readDOMFromConfigDir("querybuilder.xml");
+            List<?> tableNodes = root.selectNodes("/database/table");
+            for (Object obj : tableNodes)
+            {
+                Element tableElement = (Element) obj;
+                final DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByShortClassName(XMLHelper.getAttr(tableElement, "name", null));
+                //tableInfos.add(tableInfo);
+                actionNavBox.add(NavBox.createBtnWithTT(String.format(getResourceString("QB_CREATE_NEWQUERY"), tableInfo.getTitle()), name, getResourceString("QB_CREATE_NEWQUERY_TT"), IconManager.IconSize.Std16, new ActionListener() {
+                    public void actionPerformed(ActionEvent arg0)
+                    {
+                        createNewQuery(tableInfo);
+                    }
+                }
+                ));
+
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.Taskable#initialize()
      */
@@ -416,11 +438,11 @@ public class QueryTask extends BaseTask
     /**
      * 
      */
-    protected void createNewQuery()
+    protected void createNewQuery(final DBTableInfo tableInfo)
     {
         if (queryBldrPane == null || queryBldrPane.aboutToShutdown())
         {
-            SpQuery query = createNewQueryDataObj(null);
+            SpQuery query = createNewQueryDataObj(tableInfo);
             if (query != null)
             {
                 editQuery(query);

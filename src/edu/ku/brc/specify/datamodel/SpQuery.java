@@ -44,6 +44,7 @@ public class SpQuery extends DataModelObjBase
     protected String            contextName;
     protected Short             contextTableId;
     protected String            sqlStr;
+    protected boolean           named = true;
     
     protected Set<SpQueryField> fields;
     protected SpecifyUser       specifyUser;
@@ -70,6 +71,7 @@ public class SpQuery extends DataModelObjBase
         contextName      = null;
         contextTableId   = null;
         sqlStr           = null;
+        named            = true;
         fields           = new HashSet<SpQueryField>();
         specifyUser      = null;
     }
@@ -236,5 +238,22 @@ public class SpQuery extends DataModelObjBase
     public static int getClassTableId()
     {
         return 517;
+    }
+
+    /**
+     * @return the named
+     */
+    @Transient
+    public boolean isNamed()
+    {
+        return named;
+    }
+
+    /**
+     * @param named the named to set
+     */
+    public void setNamed(boolean named)
+    {
+        this.named = named;
     }
 }
