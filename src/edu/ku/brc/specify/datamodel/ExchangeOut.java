@@ -65,22 +65,22 @@ public class ExchangeOut extends CollectionMember implements java.io.Serializabl
 
     // Fields    
 
-     protected Integer  exchangeOutId;
-     protected Calendar exchangeDate;
-     protected Short    quantityExchanged;
-     protected String   descriptionOfMaterial;
-     protected String   remarks;
-     protected String   text1;
-     protected String   text2;
-     protected Float    number1;
-     protected Float    number2;
-     protected Boolean  yesNo1;
-     protected Boolean  yesNo2;
-     
-     protected AddressOfRecord addressOfRecord;
-     protected Agent           agentSentTo;
-     protected Agent           agentCatalogedBy;
-     protected Set<Shipment>  shipments;
+    protected Integer         exchangeOutId;
+    protected Calendar        exchangeDate;
+    protected Short           quantityExchanged;
+    protected String          descriptionOfMaterial;
+    protected String          remarks;
+    protected String          text1;
+    protected String          text2;
+    protected Float           number1;
+    protected Float           number2;
+    protected Boolean         yesNo1;
+    protected Boolean         yesNo2;
+
+    protected AddressOfRecord addressOfRecord;
+    protected Agent           agentSentTo;
+    protected Agent           agentCatalogedBy;
+    protected Set<Shipment>   shipments;
 
 
     // Constructors

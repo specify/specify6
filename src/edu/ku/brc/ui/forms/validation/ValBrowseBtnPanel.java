@@ -53,7 +53,7 @@ public class ValBrowseBtnPanel extends BrowseBtnPanel implements UIValidatable
     @Override
     public void requestFocus()
     {
-        browseBtn.requestFocus();
+        //browseBtn.requestFocus();
     }
 
     /* (non-Javadoc)

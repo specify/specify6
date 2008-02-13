@@ -3,7 +3,7 @@
     <typesearch tableid="7"   name="Accession"              searchfield="accessionNumber" displaycols="accessionNumber" format="%s"     dataobjformatter=""/>
     <typesearch tableid="5"   name="Agent"                  searchfield="lastName"        displaycols="lastName,firstName" format="%s, %s" dataobjformatter="Agent"/>
     <typesearch tableid="97"  name="CatalogNumberingScheme" searchfield="schemeName"      displaycols="schemeName"         format="%s"     dataobjformatter=""/>
-    <typesearch tableid="26"  name="Discipline"         searchfield="name"            displaycols="name"               format="%s"     dataobjformatter=""/>
+    <typesearch tableid="26"  name="Discipline"             searchfield="name"            displaycols="name"               format="%s"     dataobjformatter=""/>
     <typesearch tableid="3"   name="Geography"              searchfield="name"            displaycols="fullName"           format="%s"     dataobjformatter="Geography"/>
     <typesearch tableid="46"  name="GeologicTimePeriod"     searchfield="name"            displaycols="fullName"           format="%s"     dataobjformatter=""/>
     <typesearch tableid="100" name="LithoStrat"             searchfield="name"            displaycols="fullName"           format="%s"     dataobjformatter=""/>

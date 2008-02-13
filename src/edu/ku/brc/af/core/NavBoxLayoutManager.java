@@ -70,13 +70,16 @@ public class NavBoxLayoutManager implements LayoutManager2
     /* (non-Javadoc)
      * @see java.awt.LayoutManager#removeLayoutComponent(java.awt.Component)
      */
-    public void removeLayoutComponent(final Component arg0)
+    public void removeLayoutComponent(final Component target)
     {
-        if (arg0 == null)
+        synchronized (target.getTreeLock()) 
         {
-            throw new NullPointerException("Null component in removeLayoutComponent");
+            if (target == null)
+            {
+                throw new NullPointerException("Null component in removeLayoutComponent");
+            }
+            comps.removeElement(target);
         }
-      comps.removeElement(arg0);
 
     }
 
@@ -104,13 +107,13 @@ public class NavBoxLayoutManager implements LayoutManager2
     /* (non-Javadoc)
      * @see java.awt.LayoutManager#preferredLayoutSize(java.awt.Container)
      */
-    public Dimension preferredLayoutSize(final Container target)
+    public synchronized Dimension preferredLayoutSize(final Container target)
     {
         synchronized (target.getTreeLock()) 
         {
             calcPreferredSize();
+            return new Dimension(preferredSize);
         }
-        return new Dimension(preferredSize);
     }
 
     /* (non-Javadoc)

@@ -792,7 +792,7 @@ public class TableViewObj implements Viewable,
     }
     
     /**
-     * Delets a Row in the table and there an data object
+     * Deletes a Row in the table and there an data object
      * @param rowIndex the item to be deleted
      */
     protected void deleteRow(final int rowIndex)
@@ -819,6 +819,8 @@ public class TableViewObj implements Viewable,
                 JComponent comp = mvParent.getTopLevel();
                 comp.validate();
                 comp.repaint();
+                
+                reorderItems(rowIndex);
                 
                 tellMultiViewOfChange();
                 

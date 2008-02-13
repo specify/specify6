@@ -78,6 +78,7 @@ public class Shipment extends CollectionMember implements java.io.Serializable
     protected Agent            shippedBy;
     protected Borrow           borrow;
     protected Loan             loan;
+    protected Gift             gift;
     protected ExchangeOut      exchangeOut;
 
 
@@ -123,6 +124,7 @@ public class Shipment extends CollectionMember implements java.io.Serializable
         //borrowShipments = new HashSet<BorrowShipment>();
         borrow      = null;
         loan        = null;
+        gift        = null;
         exchangeOut = null;
     }
     // End Initializer
@@ -373,6 +375,7 @@ public class Shipment extends CollectionMember implements java.io.Serializable
     public void setBorrow(Borrow borrow) {
         this.borrow = borrow;
     }
+    
     /**
      * 
      */
@@ -385,6 +388,20 @@ public class Shipment extends CollectionMember implements java.io.Serializable
     public void setLoan(Loan loan) 
     {
         this.loan = loan;
+    }
+    
+    /**
+     * 
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "GiftID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Gift getGift() {
+        return this.gift;
+    }
+    
+    public void setGift(Gift gift) 
+    {
+        this.gift = gift;
     }
 
     /**

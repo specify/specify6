@@ -222,9 +222,9 @@ public class CollectingEventKMLGenerator
 		List<String> agentNames = new Vector<String>();
 		for( Collector c: ce.getCollectors() )
 		{
-            if (StringUtils.isNotEmpty(c.getAgent().getName()))
+            if (StringUtils.isEmpty(c.getAgent().getFirstName()))
             {
-                agentNames.add(c.getAgent().getName());
+                agentNames.add(c.getAgent().getLastName());
             } else
             {
                 agentNames.add(c.getAgent().getFirstName()+ " "+ c.getAgent().getLastName());

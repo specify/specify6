@@ -21,7 +21,6 @@
  taxon.CommonName,
  agent.LastName,
  agent.FirstName,
- agent.Name,
  agent.AgentType,
  %s
  FROM
@@ -39,7 +38,6 @@
                     <caption tableid="4" key="Determiner" dataobjformatter="Agent">
                         <col name="agent.LastName"  field="lastName"/>
                         <col name="agent.FirstName" field="firstName"/>
-                        <col name="agent.Name"      field="name"/>                        
                         <col name="agent.AgentType" field="agentType"/>                        
                     </caption>
                     
@@ -164,7 +162,6 @@
  taxon.FullName,
  agent.LastName,
  agent.FirstName,
- agent.Name,
  agent.AgentType,
  collector.OrderNumber,
  %s
@@ -187,7 +184,6 @@
                         <subobject class="edu.ku.brc.specify.datamodel.Agent" fieldname="agent"/>
                         <col name="agent.LastName"  field="lastName"/>
                         <col name="agent.FirstName" field="firstName"/>
-                        <col name="agent.Name"      field="name"/>                        
                         <col name="agent.AgentType" field="agentType"/>                        
                     </caption>
                </captions>
@@ -331,7 +327,6 @@
  agentvariant.Name, 
  agent.LastName,
  agent.FirstName,
- agent.Name,
  agent.AgentType,
  %s
  FROM agentvariant INNER JOIN agent ON agentvariant.AgentID = agent.AgentID
@@ -343,7 +338,6 @@
                     <caption tableid="107" key="Agent" dataobjformatter="Agent">
                         <col name="agent.LastName"  field="lastName"/>
                         <col name="agent.FirstName" field="firstName"/>
-                        <col name="agent.Name"      field="name"/>                        
                         <col name="agent.AgentType" field="agentType"/>                        
                     </caption>
                 </captions>
@@ -382,14 +376,13 @@
             <detailView icon="">
                 <sql>
                     <![CDATA[SELECT * FROM (SELECT agent.AgentID,
-agent.FirstName,  agent.LastName, agent.Name, agent.Email, address.Address, address.City,
+agent.FirstName,  agent.LastName, agent.Email, address.Address, address.City,
 address.State, address.PostalCode, address.Country FROM agent Left Join address ON agent.AgentID = address.AgentID WHERE agent.DisciplineID = DSPLNID) AS newTable WHERE (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="5" col="AgentID" visible="false"/>
                     <caption tableid="5" col="FirstName"/>
                     <caption tableid="5" col="LastName"/>
-                    <caption tableid="5" col="Name"/>
                     <caption tableid="5" col="EMail"/>
                     <caption tableid="8" col="Address"/>
                     <caption tableid="8" col="City"/>
@@ -574,7 +567,7 @@ permit.EndDate,permit.RenewalDate,permit.Type FROM permit left Join agent ON per
  INNER JOIN collectiontype ON collection.DisciplineID = collectiontype.DisciplineID
  INNER JOIN specifyuser ON collectiontype.SpecifyUserID = specifyuser.SpecifyUserID 
  WHERE specifyuser.SpecifyUserID = SPECIFYUSERID AND loan.CollectionMemberID = COLMEMID AND 
- (not (currentduedate is null)) AND loan.IsGift = false AND (IsClosed = false or IsClosed is null) AND 
+ (not (currentduedate is null)) AND (IsClosed = false or IsClosed is null) AND 
                     datediff(CURDATE(), currentduedate) > 0]]>
                 </sql>
                 <captions>

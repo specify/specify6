@@ -27,11 +27,9 @@
             class="edu.ku.brc.specify.datamodel.Agent"
             resourcelabels="false">
             <desc><![CDATA[Agent subform within the AccessionAgent form.]]></desc>
-            <altviews defaultmode="view" selector="agentType">
-                <altview name="Organization View" title="Organization" viewdef="Organization" label="View" mode="view" validated="false" selector_value="0"/>
-                <altview name="Agent View"        title="Agent"        viewdef="Agent"        label="View" mode="view" validated="false" selector_value="1"/>
-                <altview name="Organization Edit" title="Organization" viewdef="Organization" label="Edit" mode="edit" validated="true" selector_value="0"/>
-                <altview name="Agent Edit"        title="Agent"        viewdef="Agent"        label="Edit" mode="edit" validated="true" selector_value="1" default="true"/>
+            <altviews defaultmode="view">
+                <altview name="Agent View"        title="Agent"        viewdef="Agent"        label="View" mode="view" validated="false"/>
+                <altview name="Agent Edit"        title="Agent"        viewdef="Agent"        label="Edit" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
         
@@ -632,6 +630,10 @@
             <rows>
                 <row>
                     <cell type="separator" label="Agent Info" colspan="6"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="0" label="Type"/>
+                    <cell type="field" id="0" name="type" uitype="combobox" ignore="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="1" label="Title"/>

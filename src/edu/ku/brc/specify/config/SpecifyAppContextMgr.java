@@ -223,128 +223,153 @@ public class SpecifyAppContextMgr extends AppContextMgr
                                                 final SpecifyUser user,
                                                 final boolean startingOver)
     {
-        final String prefName = mkUserDBPrefName("recent_collection_id");
-        
-        // First get the Collections the User has access to.
-        Hashtable<String, Collection> collectionHash = new Hashtable<String, Collection>();
-        String sqlStr = "SELECT cs From Discipline as ct Inner Join ct.agents cta Inner Join cta.specifyUser as user Inner Join ct.collections as cs where user.specifyUserId = "+user.getSpecifyUserId();
-        for (Object obj : sessionArg.getDataList(sqlStr))
+        if (sessionArg == null)
         {
-            Collection cs = (Collection)obj; 
-            collectionHash.put(cs.getCollectionName(), cs);
+            UIRegistry.showLocalizedError("SESSION_WAS_NULL");
+            System.exit(0);
         }
-
-        Collection collection = null;
         
-        AppPreferences appPrefs  = AppPreferences.getRemote();
-        String         recentIds = appPrefs.get(prefName, null);
-        if (StringUtils.isNotEmpty(recentIds))
+        try
         {
-            List<?> list = sessionArg.getDataList("FROM Collection WHERE collectionId = " + recentIds);
-            if (list.size() == 1)
+            final String prefName = mkUserDBPrefName("recent_collection_id");
+            
+            // First get the Collections the User has access to.
+            Hashtable<String, Collection> collectionHash = new Hashtable<String, Collection>();
+            String sqlStr = "SELECT cs From Discipline as ct Inner Join ct.agents cta Inner Join cta.specifyUser as user Inner Join ct.collections as cs where user.specifyUserId = "+user.getSpecifyUserId();
+            for (Object obj : sessionArg.getDataList(sqlStr))
             {
-                collection = (Collection)list.get(0);
+                Collection cs = (Collection)obj; 
+                collectionHash.put(cs.getCollectionName(), cs);
             }
-        }
-        
-        if (collection != null && collectionHash.get(collection.getCollectionName()) == null)
-        {
-            collection = null;
-        }
-        
-        if (collection == null || startingOver)
-        {
-            if (collectionHash.size() == 1)
+    
+            Collection collection = null;
+            
+            AppPreferences appPrefs  = AppPreferences.getRemote();
+            String         recentIds = appPrefs.get(prefName, null);
+            if (StringUtils.isNotEmpty(recentIds))
             {
-                collection = collectionHash.elements().nextElement();
-
-            } else if (collectionHash.size() > 0)
-            {
-                //Collections.sort(list); // Why doesn't this work?
-                
-                List<Collection> list = new Vector<Collection>();
-                list.addAll(collectionHash.values());
-                int selectColInx = -1;
-                if (collection != null)
+                List<?> list = sessionArg.getDataList("FROM Collection WHERE collectionId = " + recentIds);
+                if (list.size() == 1)
                 {
-                    int i = 0;
-                    for (Collection c : list)
+                    collection = (Collection)list.get(0);
+                }
+            }
+            
+            if (collection != null && collectionHash.get(collection.getCollectionName()) == null)
+            {
+                collection = null;
+            }
+            
+            if (collection == null || startingOver)
+            {
+                if (collectionHash.size() == 1)
+                {
+                    collection = collectionHash.elements().nextElement();
+    
+                } else if (collectionHash.size() > 0)
+                {
+                    //Collections.sort(list); // Why doesn't this work?
+                    
+                    List<Collection> list = new Vector<Collection>();
+                    list.addAll(collectionHash.values());
+                    int selectColInx = -1;
+                    if (collection != null)
                     {
-                        if (c.getId().intValue() == collection.getId().intValue())
+                        int i = 0;
+                        for (Collection c : list)
                         {
-                            selectColInx = i;
-                            break;
+                            if (c.getId().intValue() == collection.getId().intValue())
+                            {
+                                selectColInx = i;
+                                break;
+                            }
+                            i++;
                         }
-                        i++;
+                    } else
+                    {
+                        log.error("Collection was null!");
                     }
+    
+                    ToggleButtonChooserDlg<Collection> dlg = new ToggleButtonChooserDlg<Collection>((Frame)UIRegistry.get(UIRegistry.FRAME),
+                                                                                                  UIRegistry.getResourceString("CHOOSE_COLLECTION_TITLE"), 
+                                                                                                  null,
+                                                                                                  list,
+                                                                                                  IconManager.getIcon("Collection"),
+                                                                                                  CustomDialog.OK_BTN, Type.RadioButton);
+                    dlg.setSelectedIndex(selectColInx);
+                    dlg.setModal(true);
+                    dlg.setUseScrollPane(true);
+                    dlg.createUI();
+                    dlg.pack();
+                    Dimension size = dlg.getSize();
+                    size.width  = Math.max(size.width, 300);
+                    if (size.height < 150)
+                    {
+                        size.height += 100;
+                    }
+                    dlg.setSize(size);
+                    
+                    UIHelper.centerWindow(dlg);
+                    dlg.setVisible(true);
+    
+                    if (!dlg.isCancelled())
+                    {
+                        collection = dlg.getSelectedObject();
+                    }
+                    
                 } else
                 {
-                    log.error("Collection was null!");
+                    // Accession / Registrar / Director may not be assigned to any Collection
+                    // Or for a stand alone Accessions Database there may not be any 
                 }
-
-                ToggleButtonChooserDlg<Collection> dlg = new ToggleButtonChooserDlg<Collection>((Frame)UIRegistry.get(UIRegistry.FRAME),
-                                                                                              UIRegistry.getResourceString("CHOOSE_COLLECTION_TITLE"), 
-                                                                                              null,
-                                                                                              list,
-                                                                                              IconManager.getIcon("Collection"),
-                                                                                              CustomDialog.OK_BTN, Type.RadioButton);
-                dlg.setSelectedIndex(selectColInx);
-                dlg.setModal(true);
-                dlg.setUseScrollPane(true);
-                dlg.createUI();
-                dlg.pack();
-                Dimension size = dlg.getSize();
-                size.width  = Math.max(size.width, 300);
-                if (size.height < 150)
+    
+                if (collection != null)
                 {
-                    size.height += 100;
+                    appPrefs.put(prefName, (Long.toString(collection.getCollectionId())));
                 }
-                dlg.setSize(size);
-                
-                UIHelper.centerWindow(dlg);
-                dlg.setVisible(true);
-
-                if (!dlg.isCancelled())
-                {
-                    collection = dlg.getSelectedObject();
-                }
-                
-            } else
-            {
-                // Accession / Registrar / Director may not be assigned to any Collection
-                // Or for a stand alone Accessions Database there may not be any 
             }
-
+            
+            Collection.setCurrentCollection(collection);
+            Collection.setCurrentCollectionIds(getCollectionIdList(sessionArg));
+            
             if (collection != null)
             {
-                appPrefs.put(prefName, (Long.toString(collection.getCollectionId())));
-            }
-        }
-        
-        Collection.setCurrentCollection(collection);
-        Collection.setCurrentCollectionIds(getCollectionIdList(sessionArg));
-        
-        Discipline disciplinee = collection.getDiscipline();
-        if (disciplinee != null)
-        {
-            for (Agent uAgent : disciplinee.getAgents())
-            {
-                SpecifyUser spu = uAgent.getSpecifyUser();
-                if (spu != null && spu.getSpecifyUserId().equals(user.getSpecifyUserId()))
+                
+                Discipline discipline = collection.getDiscipline();
+                if (discipline != null)
                 {
-                    Agent.setUserAgent(uAgent);
-                    break;
+                    for (Agent uAgent : discipline.getAgents())
+                    {
+                        SpecifyUser spu = uAgent.getSpecifyUser();
+                        if (spu != null && spu.getSpecifyUserId().equals(user.getSpecifyUserId()))
+                        {
+                            Agent.setUserAgent(uAgent);
+                            break;
+                        }
+                    }
+                    TaxonTreeDef.setCurrentTaxonTreeDef(discipline.getTaxonTreeDef());
+                    GeologicTimePeriodTreeDef.setCurrentGeologicTimePeriodTreeDef(discipline.getGeologicTimePeriodTreeDef());
+                    StorageTreeDef.setCurrentStorageTreeDef(discipline.getStorageTreeDef());
+                    LithoStratTreeDef.setCurrentLithoStratTreeDef(discipline.getLithoStratTreeDef());
+                    GeographyTreeDef.setCurrentGeographyTreeDef(discipline.getGeographyTreeDef());
+                    
                 }
+            } else
+            {
+                UIRegistry.showLocalizedError("COLLECTION_WAS_NULL");
             }
-            TaxonTreeDef.setCurrentTaxonTreeDef(disciplinee.getTaxonTreeDef());
-            GeologicTimePeriodTreeDef.setCurrentGeologicTimePeriodTreeDef(disciplinee.getGeologicTimePeriodTreeDef());
-            StorageTreeDef.setCurrentStorageTreeDef(disciplinee.getStorageTreeDef());
-            LithoStratTreeDef.setCurrentLithoStratTreeDef(disciplinee.getLithoStratTreeDef());
-            GeographyTreeDef.setCurrentGeographyTreeDef(disciplinee.getGeographyTreeDef());
             
+            return collection;
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            UIRegistry.showLocalizedError(ex.toString()); // Yes, I know it isn't localized.
         }
         
-        return collection;
+        System.exit(0);
+        return null;
+        
     }
 
     /**

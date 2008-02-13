@@ -10,12 +10,6 @@
           <isAscending>true</isAscending>
           <order>3</order>
         </searchfield>
-        <searchfield>
-          <fieldName>name</fieldName>
-          <isSortable>true</isSortable>
-          <isAscending>true</isAscending>
-          <order>4</order>
-        </searchfield>
       </searchFields>
       <displayFields>
         <displayfield>
@@ -27,11 +21,6 @@
           <fieldName>lastName</fieldName>
           <formatter></formatter>
           <order>0</order>
-        </displayfield>
-        <displayfield>
-          <fieldName>name</fieldName>
-          <formatter></formatter>
-          <order>2</order>
         </displayfield>
       </displayFields>
       <wsFields/>

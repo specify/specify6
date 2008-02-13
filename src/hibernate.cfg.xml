@@ -104,6 +104,9 @@
 		<mapping class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef"/>
 		<mapping class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem"/>
 		<mapping class="edu.ku.brc.specify.datamodel.GroupPerson"/>
+		<mapping class="edu.ku.brc.specify.datamodel.Gift"/>
+		<mapping class="edu.ku.brc.specify.datamodel.GiftAgent"/>
+		<mapping class="edu.ku.brc.specify.datamodel.GiftPreparation"/>
 		<mapping class="edu.ku.brc.specify.datamodel.InfoRequest"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Institution"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Journal"/>

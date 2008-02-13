@@ -2,7 +2,7 @@
 
 <!-- 
 
-    Last used ID is 130 or 518
+    Last used ID is 133 or 518
     
     86 is available
     
@@ -180,6 +180,9 @@
         <table name="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem" abbrev="gtpdi" id="48">
             <businessrule>edu.ku.brc.specify.datamodel.busrules.GeologicTimePeriodBusRules</businessrule>          
         </table>
+        <table name="edu.ku.brc.specify.datamodel.Gift" abbrev="gf" id="131" searchable="true"/>
+        <table name="edu.ku.brc.specify.datamodel.GiftAgent" abbrev="gfp" id="133" searchable="true"/>
+        <table name="edu.ku.brc.specify.datamodel.GiftPreparation" abbrev="gfa" id="132" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.GroupPerson" abbrev="gp" id="49" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.InfoRequest" abbrev="ir" id="50" searchable="true">
             <display view="InfoRequest"/>

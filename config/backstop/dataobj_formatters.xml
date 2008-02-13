@@ -8,14 +8,17 @@
         >
         <switch single="false" field="agentType">
             <fields value="0">
-                <field>name</field>
+                <field>lastName</field>
             </fields>
             <fields value="1">
                 <field>lastName</field>
                 <field sep=", " >firstName</field>
             </fields>
             <fields value="2">
-                <field>name</field>
+                <field>lastName</field>
+            </fields>
+            <fields value="3">
+                <field>lastName</field>
             </fields>
         </switch>
     </format>

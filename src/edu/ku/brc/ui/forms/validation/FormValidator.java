@@ -805,7 +805,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
             parentFV.validateForm();
             while (parentFV.parent != null)
             {
-                parentFV = parent;
+                parentFV = parentFV.parent;
                 parentFV.validateForm();
             }
         }

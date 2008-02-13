@@ -60,21 +60,21 @@ public class ExchangeIn extends CollectionMember implements java.io.Serializable
 
     // Fields    
 
-     protected Integer exchangeInId;
-     protected Calendar exchangeDate;
-     protected Short quantityExchanged;
-     protected String descriptionOfMaterial;
-     protected String remarks;
-     protected String text1;
-     protected String text2;
-     protected Float number1;
-     protected Float number2;
-     protected Boolean yesNo1;
-     protected Boolean yesNo2;
-     
-     protected AddressOfRecord addressOfRecord;
-     protected Agent           agentReceivedFrom;
-     protected Agent           agentCatalogedBy;
+    protected Integer         exchangeInId;
+    protected Calendar        exchangeDate;
+    protected Short           quantityExchanged;
+    protected String          descriptionOfMaterial;
+    protected String          remarks;
+    protected String          text1;
+    protected String          text2;
+    protected Float           number1;
+    protected Float           number2;
+    protected Boolean         yesNo1;
+    protected Boolean         yesNo2;
+
+    protected AddressOfRecord addressOfRecord;
+    protected Agent           agentReceivedFrom;
+    protected Agent           agentCatalogedBy;
 
 
     // Constructors

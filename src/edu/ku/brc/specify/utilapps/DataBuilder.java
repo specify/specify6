@@ -1256,7 +1256,6 @@ public class DataBuilder
                                     final String title,
                                     final String interests,
                                     final String abbreviation,
-                                    final String name,
                                     final Agent organization)
     {
         Agent agent = new Agent();
@@ -1269,7 +1268,6 @@ public class DataBuilder
         agent.setMiddleInitial(middleInitial);
         agent.setInterests(interests);
         agent.setAbbreviation(abbreviation);
-        agent.setName(name);
         agent.setTitle(title);
         persist(agent);
         return agent;
@@ -1767,7 +1765,6 @@ public class DataBuilder
                                   final Calendar currentDueDate,
                                   final Calendar originalDueDate,
                                   final Calendar dateClosed,
-                                  final Boolean isGift,
                                   final Boolean isClosed,
                                   final Shipment shipment)
     {
@@ -1781,7 +1778,6 @@ public class DataBuilder
         loan.setCurrentDueDate(currentDueDate);
         loan.setLoanNumber(loanNumber);
         loan.setLoanDate(loanDate);
-        loan.setIsGift(isGift);
         loan.setIsClosed(isClosed);
         persist(loan);
         return loan;

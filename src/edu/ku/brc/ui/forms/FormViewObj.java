@@ -1078,32 +1078,37 @@ public class FormViewObj implements Viewable,
                         optionLabels[0]);
         
 
-            if (rv == JOptionPane.YES_OPTION)
+            if ( dlgOptions == JOptionPane.YES_NO_OPTION)
             {
-                if (isNewAndComplete) // YES means Save
+                if (rv == JOptionPane.YES_OPTION)
+                {
+                    discardCurrentObject();
+                    return true;
+                    
+                } else if (rv == JOptionPane.NO_OPTION)
+                {
+                  return false;
+                }
+                
+            } else
+            {
+                if (rv == JOptionPane.YES_OPTION)
                 {
                     return saveObject();
                     
-                } // YES means discard
-                
-                discardCurrentObject();
-                return true;
-                
-            } else if (rv == JOptionPane.CANCEL_OPTION)
-            {
-                return false; 
-                
-            } else if (rv == JOptionPane.NO_OPTION)
-            {
-                if (!isNewAndComplete) // NO means 'Cancel' 
+                } else if (rv == JOptionPane.CANCEL_OPTION)
                 {
-                    return false;
+                    return false; 
+                    
+                } else if (rv == JOptionPane.NO_OPTION)
+                {
+                    // NO means Discard
+                    discardCurrentObject();
+                    return true;
                 }
-                
-                // NO means Discard
-                discardCurrentObject();
-                return true;
             }
+            
+            
         } else
         {
             return true;
@@ -3093,6 +3098,12 @@ public class FormViewObj implements Viewable,
                     String        dataObjFormatName = cellField.getFormatName();
                     String        defaultValue      = cellField.getDefaultValue();
                     
+                    // 02/13/08 - ignore means ignore
+                    if (cellField.isIgnoreSetGet())
+                    {
+                        continue;
+                    }
+                    
                     boolean isTextFieldPerMode = cellField.isTextFieldForMode(altView.getMode());
 
                     boolean useDataObjFormatName = isTextFieldPerMode && isNotEmpty(dataObjFormatName);
@@ -3106,14 +3117,15 @@ public class FormViewObj implements Viewable,
                         }
                         
                         Object[] values;
-                        if (fieldInfo.getFormCell().isIgnoreSetGet())
-                        {
-                            defaultDataArray[0] = defaultValue;
-                            values              = defaultDataArray;
-                        } else
-                        {
+                        // 02/13/08 - ignore means ignore
+                        //if (fieldInfo.getFormCell().isIgnoreSetGet())
+                        //{
+                        //    defaultDataArray[0] = defaultValue;
+                        //    values              = defaultDataArray;
+                        //} else
+                        //{
                             values = UIHelper.getFieldValues(cellField.getFieldNames(), dataObj, dg);
-                        }
+                        //}
                         
                         setDataIntoUIComp(comp, DataObjFieldFormatMgr.format(values[0], dataObjFormatName), defaultValue);
 

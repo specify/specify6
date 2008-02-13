@@ -803,7 +803,7 @@ public class BuildSampleDatabase
         ku.initialize();
         ku.setAbbreviation("KU");
         ku.setAgentType(Agent.ORG);
-        ku.setName("University of Kansas");
+        ku.setLastName("University of Kansas");
         ku.setEmail("webadmin@ku.edu");
         ku.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
         ku.setDiscipline(Discipline.getCurrentDiscipline());
@@ -1122,11 +1122,11 @@ public class BuildSampleDatabase
         Vector<LoanReturnPreparation> returns      = new Vector<LoanReturnPreparation>();
         
         Loan closedLoan = createLoan("2007-001", loanDate1, currentDueDate1, originalDueDate1, 
-                                     dateClosed1, Loan.LOAN, Loan.CLOSED, null);
+                                     dateClosed1, Loan.CLOSED, null);
         for (int i = 0; i < 7; ++i)
         {
             Preparation p = getObjectByClass(preps, Preparation.class, rand.nextInt(preps.size()));
-            int available = p.getAvailable();
+            int available = p.getLoanAvailable();
             if (available<1)
             {
                 // retry
@@ -1158,11 +1158,11 @@ public class BuildSampleDatabase
         
         Calendar originalDueDate2 = currentDueDate2;
         Loan overdueLoan = createLoan("2006-002", loanDate2, currentDueDate2, originalDueDate2,  
-                                      null, Loan.LOAN, Loan.OPEN, null);
+                                      null, Loan.OPEN, null);
         for (int i = 0; i < 5; ++i)
         {
             Preparation p = getObjectByClass(preps, Preparation.class, rand.nextInt(preps.size()));
-            int available = p.getAvailable();
+            int available = p.getLoanAvailable();
             if (available < 1 )
             {
                 // retry
@@ -1185,14 +1185,14 @@ public class BuildSampleDatabase
         originalDueDate3.set(2006, 9, 21);
         
         Loan loan3 = createLoan("2006-003", loanDate3, currentDueDate3, originalDueDate3,  
-                                      null, Loan.LOAN, Loan.OPEN, null);
+                                      null, Loan.OPEN, null);
         Vector<LoanPreparation> newLoanLPOs = new Vector<LoanPreparation>();
         int lpoCountInNewLoan = 0;
         // put some LPOs in this loan that are from CollObjs that have other preps loaned out already
         // this algorithm (because of the randomness) can result in this loan having 0 LPOs.
         for( LoanPreparation lpo: loanPhysObjs)
         {
-            int available = lpo.getPreparation().getAvailable();
+            int available = lpo.getPreparation().getLoanAvailable();
             if (available > 0)
             {
                 int quantity = Math.max(1, rand.nextInt(available));
@@ -1571,7 +1571,7 @@ public class BuildSampleDatabase
             ku.initialize();
             ku.setAbbreviation("KU");
             ku.setAgentType(Agent.ORG);
-            ku.setName("University of Kansas");
+            ku.setLastName("University of Kansas");
             ku.setEmail("webadmin@ku.edu");
             ku.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
             ku.setDiscipline(Discipline.getCurrentDiscipline());
@@ -1925,11 +1925,11 @@ public class BuildSampleDatabase
         
         //yr = 2000 + (int)(rand.nextDouble() * 7);
         Loan closedLoan = createLoan(yr + "-001", loanDate1, currentDueDate1, originalDueDate1, 
-                                     dateClosed1, Loan.LOAN, Loan.CLOSED, null);
+                                     dateClosed1, Loan.CLOSED, null);
         for (int i = 0; i < 7; ++i)
         {
             Preparation p = getObjectByClass(preps, Preparation.class, rand.nextInt(preps.size()));
-            int available = p.getAvailable();
+            int available = p.getLoanAvailable();
             if (available<1)
             {
                 // retry
@@ -1961,11 +1961,11 @@ public class BuildSampleDatabase
         
         Calendar originalDueDate2 = currentDueDate2;
         Loan overdueLoan = createLoan(yr + "-001", loanDate2, currentDueDate2, originalDueDate2,  
-                                      null, Loan.LOAN, Loan.OPEN, null);
+                                      null, Loan.OPEN, null);
         for (int i = 0; i < 5; ++i)
         {
             Preparation p = getObjectByClass(preps, Preparation.class, rand.nextInt(preps.size()));
-            int available = p.getAvailable();
+            int available = p.getLoanAvailable();
             if (available < 1 )
             {
                 // retry
@@ -1988,14 +1988,14 @@ public class BuildSampleDatabase
         originalDueDate3.set(2006, 9, 21);
         
         Loan loan3 = createLoan(yr + "-003", loanDate3, currentDueDate3, originalDueDate3,  
-                                      null, Loan.LOAN, Loan.OPEN, null);
+                                      null, Loan.OPEN, null);
         Vector<LoanPreparation> newLoanLPOs = new Vector<LoanPreparation>();
         int lpoCountInNewLoan = 0;
         // put some LPOs in this loan that are from CollObjs that have other preps loaned out already
         // this algorithm (because of the randomness) can result in this loan having 0 LPOs.
         for( LoanPreparation lpo: loanPhysObjs)
         {
-            int available = lpo.getPreparation().getAvailable();
+            int available = lpo.getPreparation().getLoanAvailable();
             if (available > 0)
             {
                 int quantity = Math.max(1, rand.nextInt(available));

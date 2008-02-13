@@ -30,6 +30,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.renderers.TrayListCellRenderer;
 import edu.ku.brc.util.FormDataObjComparator;
+import edu.ku.brc.util.Orderable;
 
 /**
  * A GUI component for use in displaying a collection of associated objects.  The related
@@ -125,8 +126,24 @@ public class IconTray extends JPanel
      * @see JComponent#addPropertyChangeListener
      */
     public synchronized void setFixedCellHeight(int height)
+    
     {
         iconListWidget.setFixedCellHeight(height);
+    }
+    
+    /**
+     * Reorders all the items.
+     */
+    protected void reorder()
+    {
+        for (int i=0;i<listModel.getSize();i++)
+        {
+            Object obj = listModel.getElementAt(i);
+            if (obj instanceof Orderable)
+            {
+                ((Orderable)obj).setOrderIndex(i);
+            }
+        }
     }
     
     /**
@@ -138,6 +155,7 @@ public class IconTray extends JPanel
     public synchronized void addItem(FormDataObjIFace item)
     {
         listModel.add(item);
+        reorder();
     }
     
     /**
@@ -153,6 +171,7 @@ public class IconTray extends JPanel
     {
         boolean retVal = listModel.remove(item);
         iconListWidget.clearSelection();
+        reorder();
         return retVal;
     }
     

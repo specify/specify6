@@ -268,14 +268,13 @@ where accession.AccessionID in (%s) Order By accession.Number Asc]]>
             <detailView icon="">
                 <sql>
                     <![CDATA[select * from (select agent.AgentID,
-agent.FirstName,  agent.LastName, agent.Name, agent.Email, address.Address, address.City,
+agent.FirstName,  agent.LastName, agent.Email, address.Address, address.City,
 address.State, address.PostalCode, address.Country From agent  Left Join address ON agent.AgentID = address.AgentID) as newTable where (%s)]]>
                 </sql>
                 <captions>
                     <caption col="AgentID" text="AgentID"  visible="false"/>
                     <caption col="FirstName" text="First Name"/>
                     <caption col="LastName" text="Last Name"/>
-                    <caption col="Name" text="Organization"/>
                     <caption col="EMail" text="EMail"/>
                     <caption col="Address" text="Address"/>
                     <caption col="City" text="City"/>

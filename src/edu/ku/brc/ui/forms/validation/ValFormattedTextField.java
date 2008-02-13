@@ -177,8 +177,11 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
     @Override
     public void requestFocus()
     {
-        comps[0].requestFocus();
-        comps[0].requestFocusInWindow();
+        if (comps != null && comps[0] != null)
+        {
+            comps[0].requestFocus();
+            //comps[0].requestFocusInWindow();
+        }
     }
 
     /**

@@ -466,7 +466,7 @@ public class LoanSelectPrepsDlg extends JDialog
             if (prep.getCount() !=  null)
             {
                 int count       = prep.getCount() == null ? 0 : prep.getCount();
-                int quantityOut = prep.getQuantityOut();  
+                int quantityOut = prep.getLoanQuantityOut();  
                 
                 int quantityAvailable = count - quantityOut;
                 if (quantityAvailable > 0)

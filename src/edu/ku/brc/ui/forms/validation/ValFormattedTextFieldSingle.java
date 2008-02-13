@@ -26,6 +26,8 @@ import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.util.Calendar;
@@ -152,12 +154,27 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
         
         setFormatterInternal(formatter);
         
+        addMouseListener(new MouseAdapter() {
+
+            /* (non-Javadoc)
+             * @see java.awt.event.MouseAdapter#mousePressed(java.awt.event.MouseEvent)
+             */
+            @Override
+            public void mousePressed(MouseEvent e)
+            {
+                System.err.println(e);
+                super.mousePressed(e);
+            }
+            
+        });
+        
         addFocusListener(new FocusAdapter()
         {
             @Override
             public void focusGained(FocusEvent e)
             {
                 ((JTextField)e.getSource()).selectAll();
+                System.err.println(e);
                 repaint();
             }
 
@@ -183,15 +200,6 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
                 super.setEnabled(true);
             }
         }
-    }
-    
-    /* (non-Javadoc)
-     * @see javax.swing.JComponent#requestFocus()
-     */
-    @Override
-    public void requestFocus()
-    {
-        comps[0].requestFocus();
     }
     
     /**

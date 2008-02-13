@@ -189,7 +189,7 @@ public class CustomStatQueries implements CustomQueryIFace
     
     protected boolean overdueLoans()
     {
-        //String sql = "select loanId from Loan where (not (currentDueDate is null)) and loan.IsGift = false and (IsClosed = false or IsClosed is null) and datediff(CURDATE(), currentduedate) > 0;
+        //String sql = "select loanId from Loan where (not (currentDueDate is null)) and (IsClosed = false or IsClosed is null) and datediff(CURDATE(), currentduedate) > 0;
         //select count(loanid) as OpenLoanCount from loan where loanid in (select loanid from loan where (not (currentduedate is null)) and loan.IsGift = false and (IsClosed = false or IsClosed is null) and datediff(CURDATE(), currentduedate) > 0)
             
         Session  session  = HibernateUtil.getNewSession();

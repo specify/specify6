@@ -13,15 +13,15 @@
    <row>
       <box title="Loans">
         <item title="Items On Loan">
-            <sql><statement><![CDATA[SELECT count(loanpreparationid) AS ItemsOnLoanCount FROM loanpreparation AS lpo INNER JOIN loan ON loan.loanid = lpo.loanid where loan.IsGift = false and quantityresolved < quantity and loan.CollectioMemeberId = COLMEMID AND (IsClosed = false or IsClosed is null)]]></statement></sql>
+            <sql><statement><![CDATA[SELECT count(loanpreparationid) AS ItemsOnLoanCount FROM loanpreparation AS lpo INNER JOIN loan ON loan.loanid = lpo.loanid where quantityresolved < quantity and loan.CollectioMemeberId = COLMEMID AND (IsClosed = false or IsClosed is null)]]></statement></sql>
             <link>ListOnLoan</link>
         </item>
         <item title="Overdue Loans">
-            <sql><statement><![CDATA[select count(loanid) as OpenLoanCount from loan where loanid in (select loanid from loan where (not (currentduedate is null)) and loan.IsGift = false and (IsClosed = false or IsClosed is null) and datediff(CURDATE(), currentduedate) > 0)]]></statement></sql>
+            <sql><statement><![CDATA[select count(loanid) as OpenLoanCount from loan where loanid in (select loanid from loan where (not (currentduedate is null)) and (IsClosed = false or IsClosed is null) and datediff(CURDATE(), currentduedate) > 0)]]></statement></sql>
             <link>OverdueLoansList</link>
         </item>
         <item title="Open Loans">
-            <sql><statement><![CDATA[select count(loanid) as OpenLoanCount from loan where loan.IsGift = false and (IsClosed = false or IsClosed is null)]]></statement></sql>
+            <sql><statement><![CDATA[select count(loanid) as OpenLoanCount from loan where (IsClosed = false or IsClosed is null)]]></statement></sql>
             <link>ListOnLoan</link>
         </item>
       </box>
@@ -31,7 +31,7 @@
           address.State, address.Country From loan Inner Join loanpreparation ON loan.LoanID =  loanpreparation.LoanID 
           Inner Join loanagent ON loan.LoanID = loanagent.LoanID Inner Join agent ON loanagent.AgentID = agent.AgentID 
           Inner Join address ON agent.AgentID = address.AgentID where loan.loanid in (select loanid FROM loan WHERE (not (currentduedate is null)) AND 
-          loan.IsGift = false AND (IsClosed = false or IsClosed is null) AND datediff(CURDATE(), currentduedate) > 0)  GROUP BY LoanNumber]]></sql>
+          (IsClosed = false or IsClosed is null) AND datediff(CURDATE(), currentduedate) > 0)  GROUP BY LoanNumber]]></sql>
 		  <link colid="6">OverdueLookup</link>
       </box>
    </row>

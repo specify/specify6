@@ -86,6 +86,7 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     protected Boolean                     yesNo2;
     protected Boolean                     yesNo3;
     
+    protected Set<GiftPreparation>        giftPreparations;
     protected Set<LoanPreparation>        loanPreparations;
     protected PrepType                    prepType;
     protected CollectionObject            collectionObject;
@@ -135,6 +136,7 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
         yesNo2       = null;
         yesNo3       = null;
         
+        giftPreparations = new HashSet<GiftPreparation>();
         loanPreparations = new HashSet<LoanPreparation>();
         prepType = null;
         collectionObject = null;
@@ -223,14 +225,14 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     }
     
     @Transient
-    public int getAvailable()
+    public int getLoanAvailable()
     {
         int cnt = this.count != null ? this.count : 0;
-        return cnt - getQuantityOut();
+        return cnt - getLoanQuantityOut();
     }
 
     @Transient
-    public int getQuantityOut()
+    public int getLoanQuantityOut()
     {
         int stillOut = 0;
         for (LoanPreparation lpo : getLoanPreparations())
@@ -411,6 +413,19 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     
     public void setLoanPreparations(Set<LoanPreparation> loanPreparations) {
         this.loanPreparations = loanPreparations;
+    }
+
+    /**
+     * 
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "preparation")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<GiftPreparation> getGiftPreparations() {
+        return this.giftPreparations;
+    }
+    
+    public void setGiftPreparations(Set<GiftPreparation> giftPreparations) {
+        this.giftPreparations = giftPreparations;
     }
 
    /**

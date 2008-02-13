@@ -59,7 +59,6 @@ import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 @org.hibernate.annotations.Table(appliesTo="agent", indexes =
     {   @Index (name="AgentLastNameIDX", columnNames={"LastName"}),
         @Index (name="AgentFirstNameIDX", columnNames={"FirstName"}),
-        @Index (name="AgentNameIDX", columnNames={"Name"}),
         @Index (name="AuthorNameIDX", columnNames={"AuthorName"}), 
         @Index (name="CollectorNameIDX", columnNames={"CollectorName"}),
         @Index (name="AgentGuidIDX", columnNames={"GUID"})  
@@ -84,7 +83,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     protected String                        title;               // Mr., Mrs., Dr.
     protected String                        interests;
     protected String                        abbreviation;
-    protected String                        name;
     protected String                        initials;
     protected String                        remarks;
     protected Integer                       visibility;
@@ -128,7 +126,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     protected Set<Address>                  addresses;
     protected Set<AgentVariant>             variants;
     
-    protected Discipline                discipline;
+    protected Discipline                    discipline;
     protected SpecifyUser                   specifyUser;
 
     
@@ -190,7 +188,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
         title                     = null;
         interests                 = null;
         abbreviation              = null;
-        name                      = null;
         initials                  = null;
         remarks                   = null;
         visibility                = null;
@@ -412,18 +409,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     public void setInitials(String initials)
     {
         this.initials = initials;
-    }
-
-    /**
-     *      * of organization/group/Folks (and maybe persons)
-     */
-    @Column(name = "Name", length = 120)
-    public String getName() {
-        return this.name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     /**
@@ -1285,11 +1270,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
                 return lastName + ", " + firstName;
             }
             return lastName;
-        }
-        
-        if (name!=null)
-        {
-            return name;
         }
         
         return super.getIdentityTitle();

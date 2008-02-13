@@ -19,6 +19,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.Frame;
 import java.awt.Graphics2D;
 import java.awt.KeyboardFocusManager;
 import java.awt.Point;
@@ -69,7 +70,6 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.exceptions.UIException;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
-import edu.ku.brc.ui.forms.validation.ValFormattedTextField;
 import edu.ku.brc.util.FileCache;
 
 /**
@@ -778,6 +778,13 @@ public class UIRegistry
         }
 
         return instance.viewbasedFactory;
+    }
+    
+    public static void showLocalizedError(final String key)
+    {
+        JOptionPane.showMessageDialog((Frame)UIRegistry.getTopWindow(), 
+                getResourceString(key), 
+                getResourceString("UNRECOVERABLE_ERROR_TITLE"), JOptionPane.ERROR_MESSAGE);
     }
 
     /**
