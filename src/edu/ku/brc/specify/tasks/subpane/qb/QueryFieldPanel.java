@@ -91,6 +91,7 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
     protected JCheckBox        isNotCheckbox;
     protected JComboBox        operatorCBX;
     protected JTextField       criteria;
+    protected JComboBox        criteriaList; 
     protected MultiStateIconButon sortCheckbox;
     protected JCheckBox        isDisplayedCkbx;
     
@@ -813,32 +814,44 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
         return labelQualified;
     }
 
-    public void qualifyLabel()
+    public String qualifyLabel(final List<String> otherLabels, final boolean unQualify)
     {
-        boolean needToQualify = false;
-        List<String> labels = new ArrayList<String>(queryBldrPane.getFields()-1);
-        for (int i = 0; i < this.queryBldrPane.getFields(); i++)
+        boolean needToQualify;
+        List<String> labels;
+        //the following block is not currently used, but keeping it here in case the current strategy
+        //doesn't work out.
+        if (otherLabels == null)
         {
-            QueryFieldPanel p = queryBldrPane.getField(i);
-            if (this != p)
+            needToQualify = false;
+            labels = new ArrayList<String>(queryBldrPane.getFields()-1);
+            for (int i = 0; i < this.queryBldrPane.getFields(); i++)
             {
-                labels.add(p.getLabel());
-                if (p.getFieldInfo().getTitle().equals(getFieldInfo().getTitle()))
+                QueryFieldPanel p = queryBldrPane.getField(i);
+                if (this != p)
                 {
-                    needToQualify = true;
+                    labels.add(p.getLabel());
+                    if (p.getFieldInfo().getTitle().equals(getFieldInfo().getTitle()))
+                    {
+                        needToQualify = true;
+                    }
                 }
             }
         }
+        else
+        {
+            needToQualify = !unQualify;
+            labels = otherLabels;
+        }
+        
         if (needToQualify)
         {
             String newLabel = getFieldInfo().getTitle();
             TableTree parent = fieldQRI.getTable().getTableTree().getParent();
             do
             {
-               newLabel = parent.getTableQRI().getTitle() + "/" + newLabel;
-               parent = parent.getParent();
-            } 
-            while (parent != null && labels.indexOf(newLabel) != -1);
+                newLabel = parent.getTableQRI().getTitle() + "/" + newLabel;
+                parent = parent.getParent();
+            } while (parent != null && labels.indexOf(newLabel) != -1);
             labelQualified = true;
             fieldLabel.setText(newLabel);
         }
@@ -847,5 +860,6 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
             labelQualified = false;
             fieldLabel.setText(getFieldInfo().getTitle());
         }
+        return fieldLabel.getText();
     }
 }

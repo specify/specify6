@@ -18,9 +18,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -1298,13 +1302,40 @@ public class QueryBldrPane extends BaseSubPane
      */
     protected void qualifyFieldLabels()
     {
+        List<String> labels = new ArrayList<String>(queryFieldItems.size()-1);
+        Map<String, List<QueryFieldPanel>> map = new HashMap<String, List<QueryFieldPanel>>();
         for (QueryFieldPanel qfp : queryFieldItems)
         {
-            //if (qfp.isLabelQualified())
+            if (qfp.getFieldInfo() != null) //this means tree levels won't get qualified.
             {
-                qfp.qualifyLabel();
+                if (!map.containsKey(qfp.getFieldInfo().getTitle()))
+                {
+                    map.put(qfp.getFieldInfo().getTitle(), new LinkedList<QueryFieldPanel>());
+                }
+                map.get(qfp.getFieldInfo().getTitle()).add(qfp);
+                labels.add(qfp.getFieldInfo().getTitle());
             }
         }
+        
+        for (Map.Entry<String, List<QueryFieldPanel>> entry : map.entrySet())
+        {
+            if (entry.getValue().size() > 1 || entry.getValue().get(0).isLabelQualified())
+            {
+                for (QueryFieldPanel q : entry.getValue())
+                {
+                    labels.remove(entry.getKey());
+                    labels.add(q.qualifyLabel(labels, entry.getValue().size() == 1));
+                }
+            }
+        }
+        
+//        for (QueryFieldPanel qfp : queryFieldItems)
+//        {
+//            //if (qfp.isLabelQualified())
+//            {
+//                qfp.qualifyLabel();
+//            }
+//        }
     }
 
     /**
