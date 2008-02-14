@@ -1001,8 +1001,12 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
             */
         }
         scrollPane = null;
-        popupMenu  = null;
-        
+        if (popupMenu != null)
+        {
+            popupMenu.setVisible(false);
+            popupMenu = null;
+        }
+            
         if (rhCellMouseAdapter != null)
         {
             rhCellMouseAdapter.cleanUp();
