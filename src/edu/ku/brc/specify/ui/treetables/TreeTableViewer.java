@@ -1552,11 +1552,17 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                             // This node used to be synonymized to another node, but now it isn't.
                             // Update the UI of both nodes.
                             TreeNode acceptedParentBefore = listModel.getNodeById(acceptedNodeIdBefore);
-                            acceptedParentBefore.removeSynonym(editedNode.getId());
-                            editedNode.setAcceptedParentFullName(null);
-                            editedNode.setAcceptedParentId(null);
-                            listModel.nodeValuesChanged(acceptedParentBefore);
-                            listModel.nodeValuesChanged(editedNode);
+                            if (acceptedParentBefore != null)
+                            {
+                                acceptedParentBefore.removeSynonym(editedNode.getId());
+                                editedNode.setAcceptedParentFullName(null);
+                                editedNode.setAcceptedParentId(null);
+                                listModel.nodeValuesChanged(acceptedParentBefore);
+                                listModel.nodeValuesChanged(editedNode);
+                            } else
+                            {
+                                log.error("** - JDS - ** acceptedParentBefore was null and shouldn't have been.");
+                            }
                         }
                         
                         if (!afterSaveSuccess)
@@ -1762,11 +1768,11 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                         
                     } else
                     {
-                        log.error("synNode was null and shouldn't have been for ID["+synNodeID+"]");
+                        log.error("** - JDS - ** synNode was null and shouldn't have been for ID["+synNodeID+"]");
                     }
                 } else
                 {
-                    log.error("idAndName.first was null and shouldn't have been.");
+                    log.error("** - JDS - ** idAndName.first was null and shouldn't have been.");
                 }
             }
             

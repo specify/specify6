@@ -33,7 +33,6 @@ import java.util.Vector;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
-import org.xml.sax.SAXException;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
@@ -51,13 +50,13 @@ import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
-import edu.ku.brc.specify.datamodel.StorageTreeDef;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.PickListItem;
 import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.datamodel.SpAppResourceDir;
 import edu.ku.brc.specify.datamodel.SpViewSetObj;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.datamodel.StorageTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CustomDialog;
@@ -293,31 +292,31 @@ public class SpecifyAppContextMgr extends AppContextMgr
                         log.error("Collection was null!");
                     }
     
-                    ToggleButtonChooserDlg<Collection> dlg = new ToggleButtonChooserDlg<Collection>((Frame)UIRegistry.get(UIRegistry.FRAME),
+                    ToggleButtonChooserDlg<Collection> colDlg = new ToggleButtonChooserDlg<Collection>((Frame)UIRegistry.get(UIRegistry.FRAME),
                                                                                                   UIRegistry.getResourceString("CHOOSE_COLLECTION_TITLE"), 
                                                                                                   null,
                                                                                                   list,
                                                                                                   IconManager.getIcon("Collection"),
                                                                                                   CustomDialog.OK_BTN, Type.RadioButton);
-                    dlg.setSelectedIndex(selectColInx);
-                    dlg.setModal(true);
-                    dlg.setUseScrollPane(true);
-                    dlg.createUI();
-                    dlg.pack();
-                    Dimension size = dlg.getSize();
+                    colDlg.setSelectedIndex(selectColInx);
+                    colDlg.setModal(true);
+                    colDlg.setUseScrollPane(true);
+                    colDlg.createUI();
+                    colDlg.pack();
+                    Dimension size = colDlg.getSize();
                     size.width  = Math.max(size.width, 300);
                     if (size.height < 150)
                     {
                         size.height += 100;
                     }
-                    dlg.setSize(size);
+                    colDlg.setSize(size);
                     
-                    UIHelper.centerWindow(dlg);
-                    dlg.setVisible(true);
+                    UIHelper.centerWindow(colDlg);
+                    colDlg.setVisible(true);
     
-                    if (!dlg.isCancelled())
+                    if (!colDlg.isCancelled())
                     {
-                        collection = dlg.getSelectedObject();
+                        collection = colDlg.getSelectedObject();
                     }
                     
                 } else
@@ -509,141 +508,168 @@ public class SpecifyAppContextMgr extends AppContextMgr
         // We need to search for User, Collection, Discipline and UserType
         // Then
 
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-
-        List<?> list = session.getDataList(SpecifyUser.class, "name", userName);
-        if (list.size() == 1)
+        DataProviderSessionIFace session = null;
+        try
         {
-            user = (SpecifyUser)list.get(0);
-            user.getAgents(); // makes sure the Agent is not lazy loaded
-            session.evict( user.getAgents());
-            SpecifyUser.setCurrentUser(user);
-
-        } else
-        {
-            //JOptionPane.showMessageDialog(null, 
-            //        getResourceString("USER_NOT_FOUND"), 
-            //        getResourceString("USER_NOT_FOUND_TITLE"), JOptionPane.WARNING_MESSAGE);
+            session = DataProviderFactory.getInstance().createSession();
             
-            return CONTEXT_STATUS.Error;
-            //throw new RuntimeException("The user ["+userName+"] could  not be located as a Specify user.");
-        }
-
-        // First we start by getting all the Collection that the User want to
-        // work with for this "Context" then we need to go get all the Default View and
-        // additional XML Resources.
-        
-        // Ask the User to choose which Collection they will be working with
-        Collection collection = setupCurrentCollection(session, user, startingOver);
-        if (collection == null)
+        } catch (org.hibernate.exception.SQLGrammarException ex)
         {
-            // Return false but don't mess with anything that has been set up so far
-            currentStatus  = currentStatus == CONTEXT_STATUS.Initial ? CONTEXT_STATUS.Error : CONTEXT_STATUS.Ignore;
-            return currentStatus;
+            UIRegistry.showLocalizedError("SCHEMA_OUTOF_SYNC");
+            System.exit(0);
         }
-        Hashtable<String, String> dispHash = new Hashtable<String, String>();
-        
-        String userType = user.getUserType();
-        
-        if (debug) log.debug("User["+user.getName()+"] Type["+userType+"]");
 
-        userType = StringUtils.replace(userType, " ", "").toLowerCase();
-        
-        if (debug) log.debug("Def Type["+userType+"]");
-        
-        spAppResourceList.clear();
-        viewSetHash.clear();
-
-        List<?> appResDefList = session.getDataList( "From SpAppResourceDir where specifyUserId = "+user.getSpecifyUserId());
-
-        Discipline ct = collection.getDiscipline();
-        ct.getDeterminationStatuss().size(); // make sure they are loaded
-        Discipline.setCurrentDiscipline(ct);
+        try
+        {
+            List<?> list = session.getDataList(SpecifyUser.class, "name", userName);
+            if (list.size() == 1)
+            {
+                user = (SpecifyUser)list.get(0);
+                user.getAgents(); // makes sure the Agent is not lazy loaded
+                session.evict( user.getAgents());
+                SpecifyUser.setCurrentUser(user);
     
-            
-        if (debug) log.debug("Adding AppResourceDefs from Collection and ColObjDefs ColObjDef["+ct.getName()+"]");
-        
-        dispHash.put(ct.getDiscipline(), ct.getDiscipline());
-        
-        SpAppResourceDir appResourceDir = find(appResDefList, user, collection, ct);
-        if (appResourceDir != null)
-        {
-            if (debug) log.debug("Adding1 "+getSpAppResDefAsString(appResourceDir));
-            spAppResourceList.add(appResourceDir);
-        }
-        
-        backStopViewSetMgr = new ViewSetMgr("BackStop", XMLHelper.getConfigDir("backstop"));
-        backStopAppResMgr  = new AppResourceMgr(XMLHelper.getConfigDir("backstop"));
-        
-        // We close the session here so all SpAppResourceDir get unattached to hibernate
-        // because UIFieldFormatterMgr and loading views all need a session
-        // and we don't want to reuse in and get a double session
-        session.close();
-        
-        // Here is where you turn on View/Viewdef re-use.
-        if (true)
-        {
-            boolean cacheDoVerify = ViewLoader.isDoFieldVerification();
-            ViewLoader.setDoFieldVerification(false);
-            
-            UIFieldFormatterMgr.getInstance();
-            
-            backStopViewSetMgr.getView("Global", "Accession"); // force the loading of all the views
-            ViewLoader.setBackStopViewSetMgr(backStopViewSetMgr);
-            
-            ViewLoader.setDoFieldVerification(cacheDoVerify);
-        }
-        
-        // Add Backstop for DisciplineType and User Type
-        for (String discipline : dispHash.keySet())
-        {
-            if (debug) log.debug("****** Trying add Backstop for ["+discipline+"]["+userType+"]");
-
-            File dir = XMLHelper.getConfigDir(discipline.toLowerCase() + File.separator + userType);
-            if (dir.exists())
-            {
-                SpAppResourceDir appResDef = createAppResourceDefFromDir(discipline+" "+userType, dir);
-                appResDef.setDisciplineType(discipline);
-                appResDef.setUserType(userType);
-                appResDef.setSpecifyUser(user);//added to fix not-null constraints
-                appResDef.setCollection(Collection.getCurrentCollection());
-                appResDef.setDiscipline(Discipline.getCurrentDiscipline());
-                
-                if (debug) log.debug("Adding2 "+getSpAppResDefAsString(appResDef));
-                spAppResourceList.add(appResDef);
-                
             } else
             {
-                if (debug) log.debug("***** Couldn't add Backstop for ["+discipline+"]["+userType+"] ["+dir.getAbsolutePath()+"]");
-            }
-        }
-
-        // Add Backstop for just the DisciplineType
-        for (String discipline : dispHash.keySet())
-        {
-            if (debug) log.debug("***** Trying add Backstop for ["+discipline.toLowerCase()+"]");
-            File dir = XMLHelper.getConfigDir(discipline.toLowerCase());
-            if (dir.exists())
-            {
-                SpAppResourceDir appResDef = createAppResourceDefFromDir(discipline, dir);
-                appResDef.setDisciplineType(discipline);
-                appResDef.setSpecifyUser(user);
+                //JOptionPane.showMessageDialog(null, 
+                //        getResourceString("USER_NOT_FOUND"), 
+                //        getResourceString("USER_NOT_FOUND_TITLE"), JOptionPane.WARNING_MESSAGE);
                 
-                appResDef.setCollection(collection);
-                appResDef.setDiscipline(ct);
-
-                if (debug) log.debug("Adding3 "+getSpAppResDefAsString(appResDef));
-                spAppResourceList.add(appResDef);
-                
-            } else
-            {
-                if (debug) log.debug("***** Couldn't add Backstop for ["+discipline+"] ["+dir.getAbsolutePath()+"]");
+                return CONTEXT_STATUS.Error;
+                //throw new RuntimeException("The user ["+userName+"] could  not be located as a Specify user.");
             }
-        }
-
-        currentStatus = CONTEXT_STATUS.OK;
+    
+            // First we start by getting all the Collection that the User want to
+            // work with for this "Context" then we need to go get all the Default View and
+            // additional XML Resources.
+            
+            // Ask the User to choose which Collection they will be working with
+            Collection collection = setupCurrentCollection(session, user, startingOver);
+            if (collection == null)
+            {
+                // Return false but don't mess with anything that has been set up so far
+                currentStatus  = currentStatus == CONTEXT_STATUS.Initial ? CONTEXT_STATUS.Error : CONTEXT_STATUS.Ignore;
+                return currentStatus;
+            }
+            Hashtable<String, String> dispHash = new Hashtable<String, String>();
+            
+            String userType = user.getUserType();
+            
+            if (debug) log.debug("User["+user.getName()+"] Type["+userType+"]");
+    
+            userType = StringUtils.replace(userType, " ", "").toLowerCase();
+            
+            if (debug) log.debug("Def Type["+userType+"]");
+            
+            spAppResourceList.clear();
+            viewSetHash.clear();
+    
+            List<?> appResDefList = session.getDataList( "From SpAppResourceDir where specifyUserId = "+user.getSpecifyUserId());
+    
+            Discipline ct = collection.getDiscipline();
+            ct.getDeterminationStatuss().size(); // make sure they are loaded
+            Discipline.setCurrentDiscipline(ct);
         
-        return currentStatus;
+                
+            if (debug) log.debug("Adding AppResourceDefs from Collection and ColObjDefs ColObjDef["+ct.getName()+"]");
+            
+            dispHash.put(ct.getDiscipline(), ct.getDiscipline());
+            
+            SpAppResourceDir appResourceDir = find(appResDefList, user, collection, ct);
+            if (appResourceDir != null)
+            {
+                if (debug) log.debug("Adding1 "+getSpAppResDefAsString(appResourceDir));
+                spAppResourceList.add(appResourceDir);
+            }
+            
+            backStopViewSetMgr = new ViewSetMgr("BackStop", XMLHelper.getConfigDir("backstop"));
+            backStopAppResMgr  = new AppResourceMgr(XMLHelper.getConfigDir("backstop"));
+            
+            // We close the session here so all SpAppResourceDir get unattached to hibernate
+            // because UIFieldFormatterMgr and loading views all need a session
+            // and we don't want to reuse in and get a double session
+            session.close();
+            
+            // Here is where you turn on View/Viewdef re-use.
+            if (true)
+            {
+                boolean cacheDoVerify = ViewLoader.isDoFieldVerification();
+                ViewLoader.setDoFieldVerification(false);
+                
+                UIFieldFormatterMgr.getInstance();
+                
+                backStopViewSetMgr.getView("Global", "Accession"); // force the loading of all the views
+                ViewLoader.setBackStopViewSetMgr(backStopViewSetMgr);
+                
+                ViewLoader.setDoFieldVerification(cacheDoVerify);
+            }
+            
+            // Add Backstop for DisciplineType and User Type
+            for (String discipline : dispHash.keySet())
+            {
+                if (debug) log.debug("****** Trying add Backstop for ["+discipline+"]["+userType+"]");
+    
+                File dir = XMLHelper.getConfigDir(discipline.toLowerCase() + File.separator + userType);
+                if (dir.exists())
+                {
+                    SpAppResourceDir appResDef = createAppResourceDefFromDir(discipline+" "+userType, dir);
+                    appResDef.setDisciplineType(discipline);
+                    appResDef.setUserType(userType);
+                    appResDef.setSpecifyUser(user);//added to fix not-null constraints
+                    appResDef.setCollection(Collection.getCurrentCollection());
+                    appResDef.setDiscipline(Discipline.getCurrentDiscipline());
+                    
+                    if (debug) log.debug("Adding2 "+getSpAppResDefAsString(appResDef));
+                    spAppResourceList.add(appResDef);
+                    
+                } else
+                {
+                    if (debug) log.debug("***** Couldn't add Backstop for ["+discipline+"]["+userType+"] ["+dir.getAbsolutePath()+"]");
+                }
+            }
+    
+            // Add Backstop for just the DisciplineType
+            for (String discipline : dispHash.keySet())
+            {
+                if (debug) log.debug("***** Trying add Backstop for ["+discipline.toLowerCase()+"]");
+                File dir = XMLHelper.getConfigDir(discipline.toLowerCase());
+                if (dir.exists())
+                {
+                    SpAppResourceDir appResDef = createAppResourceDefFromDir(discipline, dir);
+                    appResDef.setDisciplineType(discipline);
+                    appResDef.setSpecifyUser(user);
+                    
+                    appResDef.setCollection(collection);
+                    appResDef.setDiscipline(ct);
+    
+                    if (debug) log.debug("Adding3 "+getSpAppResDefAsString(appResDef));
+                    spAppResourceList.add(appResDef);
+                    
+                } else
+                {
+                    if (debug) log.debug("***** Couldn't add Backstop for ["+discipline+"] ["+dir.getAbsolutePath()+"]");
+                }
+            }
+    
+            currentStatus = CONTEXT_STATUS.OK;
+        
+            return currentStatus;
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            
+        } finally 
+        {
+            if (session != null)
+            {
+                session.close();
+            }
+        }
+        
+        UIRegistry.showLocalizedError("CRITICAL_LOGIN_ERROR");
+        System.exit(0);
+        return null;
     }
 
     /**
@@ -1286,14 +1312,14 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     itm.getTitle();
                 }
                 list.addAll(pickList.getItems());
-                ChooseFromListDlg<PickListItemIFace> dlg = new ChooseFromListDlg<PickListItemIFace>(null, 
+                ChooseFromListDlg<PickListItemIFace> plDlg = new ChooseFromListDlg<PickListItemIFace>(null, 
                         UIRegistry.getLocalizedMessage("CHOOSE_DEFAULT_OBJECT", title), list);
-                dlg.setModal(true);
-                dlg.setVisible(true);
-                if (!dlg.isCancelled())
+                plDlg.setModal(true);
+                plDlg.setVisible(true);
+                if (!plDlg.isCancelled())
                 {
-                    appPrefs.put(prefName, dlg.getSelectedObject().getId().toString());
-                    return dlg.getSelectedObject();
+                    appPrefs.put(prefName, plDlg.getSelectedObject().getId().toString());
+                    return plDlg.getSelectedObject();
                 }
                 return null;
             }
@@ -1362,12 +1388,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 if (items != null)
                 {
                     
-                    ChooseFromListDlg<Item> dlg = new ChooseFromListDlg<Item>(null, title, items);
-                    dlg.setModal(true);
-                    dlg.setVisible(true);
-                    if (!dlg.isCancelled())
+                    ChooseFromListDlg<Item> colDlg = new ChooseFromListDlg<Item>(null, title, items);
+                    colDlg.setModal(true);
+                    colDlg.setVisible(true);
+                    if (!colDlg.isCancelled())
                     {
-                        dObj = (FormDataObjIFace)dlg.getSelectedObject().data;
+                        dObj = (FormDataObjIFace)colDlg.getSelectedObject().data;
                         appPrefs.put(prefName, dObj.getId().toString());
                         return dObj;
                     }
@@ -1380,14 +1406,14 @@ public class SpecifyAppContextMgr extends AppContextMgr
             {
                 try
                 {
-                    ViewBasedSearchDialogIFace dlg = UIRegistry.getViewbasedFactory().createSearchDialog(null, classObj.getSimpleName()+"Search");
-                    if (dlg != null)
+                    ViewBasedSearchDialogIFace srchDlg = UIRegistry.getViewbasedFactory().createSearchDialog(null, classObj.getSimpleName()+"Search");
+                    if (srchDlg != null)
                     {
-                        dlg.setTitle(title);
-                        dlg.getDialog().setVisible(true);
-                        if (!dlg.isCancelled())
+                        srchDlg.setTitle(title);
+                        srchDlg.getDialog().setVisible(true);
+                        if (!srchDlg.isCancelled())
                         {
-                            dObj = (FormDataObjIFace)dlg.getSelectedObject();
+                            dObj = (FormDataObjIFace)srchDlg.getSelectedObject();
                             appPrefs.put(prefName, dObj.getId().toString());
                             return dObj;
                         }
