@@ -24,7 +24,7 @@ public interface FormRowIFace
      * @param cell the cell to be added
      * @return the same FormCell
      */
-    public abstract FormCellIFace addCell(FormCell cell);
+    public abstract FormCellIFace addCell(FormCellIFace cell);
 
     /**
      * Clean up internal data

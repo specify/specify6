@@ -106,6 +106,13 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
     protected Vector<FormColumnIFace>   columns  = null;
     protected Hashtable<String, String> enableRules;
     
+    protected Vector<FormRowIFace> rows = null;
+    
+    protected Boolean isRowDefAuto = null;
+    protected String  rowDefSep;
+    protected String  rowDefCell;
+    
+    
     /**
      * 
      */
@@ -157,6 +164,11 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
         spCols      = new HashSet<SpUIColumn>();
         spAltViews    = new HashSet<SpUIAltView>();
         spViewSet     = null;
+        
+        // For Row Def Auto 
+        isRowDefAuto = null;
+        rowDefCell    = null;
+        rowDefSep    = null;
     }
 
     /**
@@ -694,6 +706,20 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
     {
         return columns;
     }
+    
+    /**
+     * Helper.
+     * @param row the row
+     * @return the row
+     */
+    public FormRowIFace addSpRow(SpUIRow row)
+    {
+        spRows.add(row);
+        row.setSpViewDef(this);
+        
+        return row;
+    }
+
 
     //-----------------------------------------------------
     //-- FormViewDefIFace
@@ -706,9 +732,13 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
     {
         if (row instanceof SpUIRow)
         {
-            spRows.add((SpUIRow)row);
-            ((SpUIRow)row).setSpViewDef(this);
+            addSpRow((SpUIRow)row);
         }
+        if (rows == null)
+        {
+            rows = new Vector<FormRowIFace>();
+        }
+        rows.add(row);
         return row;
     }
 
@@ -942,20 +972,20 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
     }
     
     /**
-     * @param enableRules
+     * @param enableRulesArg
      * @return
      */
-    protected String createEnableRulesXML(final Hashtable<String, String> enableRules)
+    protected String createEnableRulesXML(final Hashtable<String, String> enableRulesArg)
     {
-        if (enableRules.keySet().size() > 0)
+        if (enableRulesArg.keySet().size() > 0)
         {
             StringBuilder sb = new StringBuilder("<enableRules>");
-            for (String key : enableRules.keySet())
+            for (String key : enableRulesArg.keySet())
             {
                 sb.append("<rule id=\"");
                 sb.append(key);
                 sb.append("\"><![CDATA[");
-                sb.append(enableRules.get(key));
+                sb.append(enableRulesArg.get(key));
                 sb.append("]]></rule>");
             }
             sb.append("</enableRules>");
@@ -1010,6 +1040,46 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
         settable = vd.getDataSettable();
     }
     
+    @Transient
+    public Boolean getIsRowDefAuto()
+    {
+        return isRowDefAuto;
+    }
+
+    public void setIsRowDefAuto(Boolean isRowDefAuto)
+    {
+        this.isRowDefAuto = isRowDefAuto;
+    }
+
+    @Transient
+    public String getRowDefSep()
+    {
+        return rowDefSep;
+    }
+
+    public void setRowDefSep(String rowDefSep)
+    {
+        this.rowDefSep = rowDefSep;
+    }
+
+    @Transient
+    public String getRowDefCell()
+    {
+        return rowDefCell;
+    }
+
+    public void setRowDefCell(String rowDefCol)
+    {
+        this.rowDefCell = rowDefCol;
+    }
+    
+    public void createAutoRowDef(final String cell, final String sep)
+    {
+        isRowDefAuto = true;
+        rowDefCell    = cell;
+        rowDefSep    = sep;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.ViewDefIFace#toXML(java.lang.StringBuffer)
      */
@@ -1026,7 +1096,7 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
         </viewdef>
          */
 
-        sb.append("  <viewdef ");
+        sb.append("        <viewdef");
         xmlAttr(sb, "type", typeName.toString());
         xmlAttr(sb, "name", name);
         xmlAttr(sb, "class", dataClassName);
@@ -1035,8 +1105,28 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
         xmlAttr(sb, "width", widthDB);
         xmlAttr(sb, "height", heightDB);
         sb.append(">\n");
+        sb.append("          ");
         xmlNode(sb, "desc", description, true);
-        sb.append("</viewdef>");        
+        sb.append("          ");
+        xmlNode(sb, "coldef", colDef, false);
+        if (isRowDefAuto == null || !isRowDefAuto)
+        {
+            xmlNode(sb, "rowdef", rowDef, false);
+            
+        } else
+        {
+            sb.append("            <rowdef");
+            xmlAttr(sb, "auto", true);
+            xmlAttr(sb, "sep", rowDefSep);
+            xmlAttr(sb, "cell", rowDefCell);
+            sb.append("/>\n");
+        }
+        
+        for (FormRowIFace row : rows)
+        {
+            row.toXML(sb);
+        }
+        sb.append("        </viewdef>\n");        
         
     }
 }

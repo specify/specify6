@@ -18,9 +18,11 @@
 package edu.ku.brc.specify.datamodel;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
+import java.util.Vector;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -452,19 +454,29 @@ public class SpUIViewSet extends DataModelObjBase implements ViewSetIFace
     {
         sb.append("<viewset name=\""+name+"\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n");
         
-        sb.append("<views>\n");
-        for (SpUIView view : spViews)
+        sb.append("    <views>\n");
+        
+        Vector<SpUIView> sortedViews = new Vector<SpUIView>();
+        sortedViews.addAll(spViews);
+        Collections.sort(sortedViews);
+        
+        for (SpUIView view : sortedViews)
         {
             view.toXML(sb);
         }
-        sb.append("</views>\n");
+        sb.append("    </views>\n");
         
-        sb.append("<viewdefs>\n");
-        for (SpUIViewDef viewDef : spViewDefs)
+        sb.append("    <viewdefs>\n");
+        
+        Vector<SpUIViewDef> sortedViewDefs = new Vector<SpUIViewDef>();
+        sortedViewDefs.addAll(spViewDefs);
+        Collections.sort(sortedViewDefs);
+
+        for (SpUIViewDef viewDef : sortedViewDefs)
         {
             viewDef.toXML(sb);
         }
-        sb.append("</viewdefs>\n");
+        sb.append("    </viewdefs>\n");
         sb.append("</viewset>\n");
     }
     

@@ -716,23 +716,26 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
     
     public void toXML(final StringBuilder sb)
     {
-        sb.append("<view ");
+        sb.append("        <view");
         xmlAttr(sb, "name", name);
         xmlAttr(sb, "class", javaClassName);
         xmlAttr(sb, "busrule", businessRulesClassName);
         xmlAttr(sb, "resourcelabels", useResourceLabels);
         sb.append(">\n");
         xmlNode(sb, "desc", description, true);
-        sb.append("  <altviews");
-        xmlAttr(sb, "defaultmode", defaultMode.toString().toLowerCase());
+        sb.append("            <altviews");
+        if (defaultMode != null)
+        {
+            xmlAttr(sb, "defaultmode", defaultMode.toString().toLowerCase());
+        }
         xmlAttr(sb, "selector", selectorName);
         sb.append(">\n");
         for (AltViewIFace av : spAltViews)
         {
             av.toXML(sb);
         }
-        sb.append("  </altviews>\n");
-        sb.append("</view>\n");
+        sb.append("            </altviews>\n");
+        sb.append("        </view>\n");
     }
     
 }

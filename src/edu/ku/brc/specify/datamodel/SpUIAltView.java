@@ -515,7 +515,7 @@ public class SpUIAltView extends DataModelObjBase implements AltViewIFace
     public void toXML(StringBuilder sb)
     {
         //<altview name="AgentNameSearch" viewdef="AgentNameSearch" label="Edit" mode="edit" validated="true" default="true"/>
-        sb.append("    <altview ");
+        sb.append("                <altview");
         xmlAttr(sb, "name", name);
         xmlAttr(sb, "viewdef", spViewDef.getName());
         xmlAttr(sb, "label", label);

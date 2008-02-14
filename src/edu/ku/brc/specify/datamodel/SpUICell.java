@@ -40,6 +40,7 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Index;
 
 import edu.ku.brc.af.prefs.AppPrefsCache;
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
@@ -2007,7 +2008,9 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
      */
     public void toXML(StringBuilder sb)
     {
-        sb.append("    <cell");
+        XMLHelper.indent(sb, 16);
+        
+        sb.append("<cell");
         xmlAttr(sb, "type", typeName.toString().toLowerCase());
         xmlAttr(sb, "id", uiId);
         xmlAttr(sb, "name", name);
@@ -2053,13 +2056,13 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
                 xmlAttr(sb, "picklist", pickListName);
             }
             
-            xmlAttr(sb, "format", format);
-            xmlAttr(sb, "formatname", formatName);
-            xmlAttr(sb, "uifieldformatter", uiFieldFormatterName);
-            xmlAttr(sb, "isrequired", isRequiredDB);
-            xmlAttr(sb, "valtype", validationType);
-            xmlAttr(sb, "readonly", isReadOnlyDB);
-            xmlAttr(sb, "changesonly", changeListenerOnlyDB);
+            if (StringUtils.isNotEmpty(format)) xmlAttr(sb, "format", format);
+            if (StringUtils.isNotEmpty(formatName)) xmlAttr(sb, "formatname", formatName);
+            if (StringUtils.isNotEmpty(uiFieldFormatterName)) xmlAttr(sb, "uifieldformatter", uiFieldFormatterName);
+            if (isReadOnlyDB != null && isReadOnlyDB) xmlAttr(sb, "isrequired", isRequiredDB);
+            if (StringUtils.isNotEmpty(validationType) && !validationType.equals("change")) xmlAttr(sb, "valtype", validationType);
+            if (isReadOnlyDB != null && isReadOnlyDB) xmlAttr(sb, "readonly", isReadOnlyDB);
+            if (changeListenerOnlyDB != null && changeListenerOnlyDB) xmlAttr(sb, "changesonly", changeListenerOnlyDB);
             xmlAttr(sb, "validation", validationRule);
             
         } else if (typeName.equals("command"))
@@ -2071,11 +2074,11 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
         {
             //<cell type="subview" viewname="AccessionAgent" id="8" name="accessionAgents" desc="Agents" colspan="12"/>
             xmlAttr(sb, "viewname", viewName);
-            xmlAttr(sb, "desc", description);
+            if (StringUtils.isNotEmpty(description)) xmlAttr(sb, "desc", description);
             xmlAttr(sb, "funcmode", getFuncModes());
-            xmlAttr(sb, "defaulttype", defaultAltViewType);
-            xmlAttr(sb, "rows", tableRowsDB);
-            xmlAttr(sb, "single", singleValueFromSetDB);
+            if (StringUtils.isNotEmpty(defaultAltViewType)) xmlAttr(sb, "defaulttype", defaultAltViewType);
+            if (tableRowsDB != null && tableRowsDB > 1) xmlAttr(sb, "rows", tableRowsDB);
+            if (singleValueFromSetDB != null && singleValueFromSetDB) xmlAttr(sb, "single", singleValueFromSetDB);
             
             
         } else if (typeName.equals("panel"))
@@ -2087,15 +2090,29 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
             throw new RuntimeException("Panel not supported!");
         }
 
-        xmlAttr(sb, "colspan", colSpanDB);
-        xmlAttr(sb, "rowspan", rowSpanDB);
+        if (colSpanDB > 1) xmlAttr(sb, "colspan", colSpanDB);
+        if (rowSpanDB > 1) xmlAttr(sb, "rowspan", rowSpanDB);
+        
         xmlAttr(sb, "x",       xCoordDB);
         xmlAttr(sb, "y",       yCoordDB);
         xmlAttr(sb, "width",   widthDB);
         xmlAttr(sb, "height",  heightDB);
+        
+        if (initStr == null && properties != null && properties.size() > 0)
+        {
+            StringBuilder propsStr = new StringBuilder();
+            for (Object key : properties.keySet())
+            {
+                if (propsStr.length() > 0) propsStr.append(";");
+                propsStr.append(key.toString());
+                propsStr.append("=");
+                propsStr.append(properties.getProperty(key.toString()));
+            }
+            initStr = propsStr.toString();
+        }
         xmlAttr(sb, "initialize",  initStr);
         
-        sb.append("/>");
+        sb.append("/>\n");
         
     }
     

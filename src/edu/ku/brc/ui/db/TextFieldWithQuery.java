@@ -114,6 +114,8 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     protected boolean              isDoingCount        = false;
     protected Integer              returnCount         = null;
     
+    protected QueryWhereClauseProvider queryWhereClauseProvider = null;
+    
     /**
      * Constructor.
      */
@@ -216,6 +218,14 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         });
     }
     
+    /**
+     * @param queryWhereClauseProvider
+     */
+    public void setQueryWhereClauseProvider(QueryWhereClauseProvider queryWhereClauseProvider)
+    {
+        this.queryWhereClauseProvider = queryWhereClauseProvider;
+    }
+
     /* (non-Javadoc)
      * @see javax.swing.JComponent#setEnabled(boolean)
      */
@@ -590,7 +600,6 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             protected JList pListBox;
             
             public PopUpDialog(final Frame     frame, 
-                               final String    title, 
                                final boolean   isModal,
                                final Component contentPanel,
                                JList pListBoxArg) throws HeadlessException
@@ -635,10 +644,9 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 }
                 super.setVisible(visible);
             }
-            
         }
         
-        CustomDialog dlg = new PopUpDialog((Frame)UIRegistry.getTopWindow(), "Choose", true, panel, listBox);
+        CustomDialog dlg = new PopUpDialog((Frame)UIRegistry.getTopWindow(), true, panel, listBox);
         dlg.setVisible(true);
         
         if (!dlg.isCancelled())
@@ -779,6 +787,11 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     public JTextField getTextField()
     {
         return textField;
+    }
+    
+    public interface QueryWhereClauseProvider
+    {
+        public String getExtraWehereCaluse();
     }
     
     //--------------------------------------------------------------------------

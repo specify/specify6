@@ -36,6 +36,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.forms.persist.FormCell;
 import edu.ku.brc.ui.forms.persist.FormCellIFace;
 import edu.ku.brc.ui.forms.persist.FormRowIFace;
@@ -189,6 +190,20 @@ public class SpUIRow implements java.io.Serializable, FormRowIFace, Comparable<S
     {
         return 510;
     }
+    
+    /**
+     * Helper.
+     * @param cell the cell to be added to the set and the vector
+     * @return the same cell
+     */
+    public FormCellIFace addSpCell(final SpUICell cell)
+    {
+        cell.setSpRow(this);
+        spCells.add(cell);
+        
+        return cell;
+    }
+
 
     //-----------------------------------------------------------
     //-- FormRowIFace
@@ -197,13 +212,18 @@ public class SpUIRow implements java.io.Serializable, FormRowIFace, Comparable<S
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.FormRowIFace#addCell(edu.ku.brc.ui.forms.persist.FormCell)
      */
-    public FormCellIFace addCell(FormCell cell)
+    public FormCellIFace addCell(FormCellIFace cell)
     {
         if (cells == null)
         {
             cells = new Vector<FormCellIFace>();
         }
         cells.add(cell);
+        
+        if (cell instanceof SpUICell)
+        {
+            addSpCell((SpUICell)cell);
+        }
         return cell;
     }
 
@@ -261,11 +281,17 @@ public class SpUIRow implements java.io.Serializable, FormRowIFace, Comparable<S
      */
     public void toXML(StringBuilder sb)
     {
-        sb.append("   <rows>\n");
-        for (SpUICell cell : spCells)
+        if (cells != null && cells.size() > 0)
         {
-            cell.toXML(sb);
+            int ident = 12;
+            XMLHelper.indent(sb, ident);
+            sb.append("<rows>\n");
+            for (FormCellIFace cell : cells)
+            {
+                cell.toXML(sb);
+            }
+            XMLHelper.indent(sb, ident);
+            sb.append("</rows>\n");
         }
-        sb.append("   </rows>\n");
     }
 }

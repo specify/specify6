@@ -39,7 +39,7 @@ public class FormRow implements Cloneable, FormRowIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.FormRowIFace#addCell(edu.ku.brc.ui.forms.persist.FormCell)
      */
-    public FormCellIFace addCell(FormCell cell)
+    public FormCellIFace addCell(FormCellIFace cell)
     {
         cells.add(cell);
         return cell;
