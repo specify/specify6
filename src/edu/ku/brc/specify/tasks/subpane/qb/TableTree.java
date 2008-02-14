@@ -250,4 +250,17 @@ public class TableTree implements Cloneable, Comparable<TableTree>
         this.tableQRI = (TableQRI)tableQRI.clone();
         this.tableQRI.setTableTree(this);
     }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj)
+    {
+        //strictly for the purposes of QueryBldrPane.doSearch()
+        return this.getClass().equals(obj.getClass()) && 
+            tableInfo.getTableId() == ((TableTree)obj).getTableInfo().getTableId();
+    }
+    
+    
 }

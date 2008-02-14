@@ -98,4 +98,14 @@ public class BaseQRI implements QryListRendererIFace, Comparable<QryListRenderer
         this.tableTree = tableTree;
     }
 
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj)
+    {
+        //strictly for the purposes of QueryBldrPane.doSearch()
+        return this.getClass().equals(obj.getClass()) && this.tableTree.equals(((BaseQRI)obj).tableTree);
+    }
+    
 }

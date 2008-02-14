@@ -11,6 +11,7 @@ package edu.ku.brc.specify.tasks.subpane.qb;
 
 import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.specify.datamodel.SystemPicklistTableIFace;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 
 /**
@@ -25,6 +26,7 @@ public class FieldQRI extends BaseQRI
 {
     protected TableQRI table = null;
     protected DBFieldInfo fi;
+    protected String[] values = null;
     
     public FieldQRI(final TableQRI table, final DBFieldInfo fi)
     {
@@ -34,9 +36,21 @@ public class FieldQRI extends BaseQRI
         if (fi != null)
         {
             title    = fi.getTitle();
+            //buildValues();
         }
         iconName = "BlankIcon";
     }
+    
+//    protected void buildValues()
+//    {
+//        if (getTableInfo() != null)
+//        {
+//            if (SystemPicklistTableIFace.class.isAssignableFrom(getTableInfo().getClassObj()))
+//            {
+//                SystemPicklistTableIFace pt = 
+//            }
+//        }
+//    }
     
     public DBFieldInfo getFieldInfo()
     {

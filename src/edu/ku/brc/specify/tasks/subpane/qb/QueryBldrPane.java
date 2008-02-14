@@ -462,7 +462,7 @@ public class QueryBldrPane extends BaseSubPane
                     {
                         System.out.println("ProcessNode[" + qri.getTitle() + "]");
                     }
-                    if (!parentNode.contains(qri))
+                    if (!parentNode.contains(qri) && qri instanceof TableQRI)
                     {
                         ProcessNode newNode = new ProcessNode(qri);
                         parentNode.getKids().add(newNode);
@@ -480,9 +480,10 @@ public class QueryBldrPane extends BaseSubPane
                     {
                         for (ProcessNode kidNode : parentNode.getKids())
                         {
-                            if (!kidNode.contains(qri))
+                            if (kidNode.getQri().equals(qri))
                             {
                                 parentNode = kidNode;
+                                break;
                             }
                         }
                     }
@@ -860,7 +861,7 @@ public class QueryBldrPane extends BaseSubPane
         {
             for (ProcessNode pn : kids)
             {
-                if (pn.getQri() == qriArg) { return true; }
+                if (pn.getQri().equals(qriArg)) { return true; }
             }
             return false;
         }
@@ -1298,7 +1299,6 @@ public class QueryBldrPane extends BaseSubPane
     /**
      * Adds qualifiers (TableOrRelationship/Field Title) to query fields where necessary.
      * 
-     * Not efficient. Could actually be a performance issue for giant queries (of a size certain specifiers have been known to use)
      */
     protected void qualifyFieldLabels()
     {
