@@ -194,7 +194,8 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
                     if (!e.isPopupTrigger())
                     {
                         doAction(RolloverCommand.this);
-                    } else
+                        
+                    } else if (popupMenu != null)
                     {
                         popupMenu.show(e.getComponent(), e.getX(), e.getY());
                     }
@@ -361,11 +362,11 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
 
     /**
      * Start the editing of the name. It swaps out the label with a text field to enable the user to type in a new name.
-     * @param pcl the property change listener that is notified of the change.
+     * @param pclArg the property change listener that is notified of the change.
      */
-    public void startEditting(final PropertyChangeListener pcl)
+    public void startEditting(final PropertyChangeListener pclArg)
     {
-        this.pcl = pcl;
+        this.pcl = pclArg;
         
         txtFld = new JTextField(label);
         add(iconLabel, BorderLayout.WEST);

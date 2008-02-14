@@ -7,7 +7,6 @@
 package edu.ku.brc.specify.ui;
 
 import java.io.File;
-import java.net.URL;
 import java.util.Hashtable;
 
 import javax.swing.ImageIcon;
@@ -20,6 +19,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.IconManager.IconSize;
 
@@ -134,9 +134,8 @@ public class RepresentativeIconFactory implements ObjectIconMapper
      */
     protected void readMappingFile() throws Exception
     {
-    	// TODO: should we make the filename configurable?
-        URL mappingFileURL = ClassLoader.getSystemResource("icon_factory_mapping.xml");
-        File mappingFile = new File(mappingFileURL.toURI());
+        // TODO: should we make the filename configurable?
+        File mappingFile = XMLHelper.getConfigDir("icon_factory_mapping.xml");
         
         // build a DOM from the file
         Document mappingDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(mappingFile);

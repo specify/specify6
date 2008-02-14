@@ -207,9 +207,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         // TODO: implement some UI to let the user set this pref
         restoreTreeState = AppPreferences.getRemote().getBoolean("TreeEditor.RestoreTreeExpansionState", false);
         
-        // then take out this line
-        restoreTreeState = true;
-        
         selNodePrefName = "selected_node:" + treeDef.getClass().getSimpleName() + ":" + treeDef.getTreeDefId();
         
         countGrabberExecutor = Executors.newFixedThreadPool(10);
@@ -1732,10 +1729,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			return false;
 		}
 
-        TreeNode draggedNode = (TreeNode)dragged;
+        TreeNode draggedNode   = (TreeNode)dragged;
         TreeNode droppedOnNode = (TreeNode)droppedOn;
-        T draggedRecord = getRecordForNode(draggedNode);
-        T droppedRecord = getRecordForNode(droppedOnNode);
+        T        draggedRecord = getRecordForNode(draggedNode);
+        T        droppedRecord = getRecordForNode(droppedOnNode);
 
 		if ( dropAction == DnDConstants.ACTION_COPY || dropAction == DnDConstants.ACTION_NONE )
 		{
@@ -1753,11 +1750,24 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             // fix all synonyms of the new synonym to point at the "final" accepted name in the chain
             for (Pair<Integer, String> idAndName: draggedNode.getSynonymIdsAndNames())
             {
-                int synNodeID = idAndName.first;
-                TreeNode synNode = listModel.getNodeById(synNodeID);
-                synNode.setAcceptedParentId(droppedOnNode.getId());
-                synNode.setAcceptedParentFullName(droppedOnNode.getFullName());
-                droppedOnNode.getSynonymIdsAndNames().add(new Pair<Integer,String>(synNode.getId(),synNode.getFullName()));
+                if (idAndName.first != null)
+                {
+                    int synNodeID = idAndName.first;
+                    TreeNode synNode = listModel.getNodeById(synNodeID);
+                    if (synNode != null)
+                    {
+                        synNode.setAcceptedParentId(droppedOnNode.getId());
+                        synNode.setAcceptedParentFullName(droppedOnNode.getFullName());
+                        droppedOnNode.getSynonymIdsAndNames().add(new Pair<Integer,String>(synNode.getId(),synNode.getFullName()));
+                        
+                    } else
+                    {
+                        log.error("synNode was null and shouldn't have been for ID["+synNodeID+"]");
+                    }
+                } else
+                {
+                    log.error("idAndName.first was null and shouldn't have been.");
+                }
             }
             
             draggedNode.getSynonymIdsAndNames().clear();
