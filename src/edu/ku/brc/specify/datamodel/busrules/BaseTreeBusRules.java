@@ -96,15 +96,30 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
 
         // get a list of all descendent IDs
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        String queryStr = "SELECT n.id FROM " + node.getClass().getName() + " n WHERE n.nodeNumber <= :highChild AND n.nodeNumber > :nodeNum ORDER BY n.rankId DESC";
-        QueryIFace query = session.createQuery(queryStr);
-        query.setParameter("highChild", node.getHighestChildNodeNumber());
-        query.setParameter("nodeNum", node.getNodeNumber());
-        List<Integer> childIDs = (List<Integer>)query.list();
-        session.close();
+        List<Integer> childIDs = null;
+        try
+        {
+            String queryStr = "SELECT n.id FROM " + node.getClass().getName() + " n WHERE n.nodeNumber <= :highChild AND n.nodeNumber > :nodeNum ORDER BY n.rankId DESC";
+            QueryIFace query = session.createQuery(queryStr);
+            query.setParameter("highChild", node.getHighestChildNodeNumber());
+            query.setParameter("nodeNum", node.getNodeNumber());
+            childIDs = (List<Integer>)query.list();
+            
+        } catch (Exception ex)
+        {
+            // Error Dialog
+            ex.printStackTrace();
+            
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
+        }
 
         // if there are no descendent nodes, return true
-        if (childIDs.size() == 0)
+        if (childIDs != null && childIDs.size() == 0)
         {
             return true;
         }

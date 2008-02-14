@@ -471,6 +471,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                 {
                     parentComboBox.requestFocus();
                 }
+                form.getValidator().validateForm();
             }
         });
 
