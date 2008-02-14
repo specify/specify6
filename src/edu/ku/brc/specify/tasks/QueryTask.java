@@ -463,10 +463,17 @@ public class QueryTask extends BaseTask
             {
                 editQuery((SpQuery)dataObj);
             }
+        } catch (Exception ex)
+        {
+            // Error dialog01
+            
         }
         finally
         {
-            session.close();
+            if (session != null)
+            {
+                session.close();
+            }
         }
     }
     

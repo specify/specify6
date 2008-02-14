@@ -38,6 +38,7 @@
     <icon name="fieldnotebookpage"    file="field_notebook_page.png" sizes="all"/>
     <icon name="fieldnotebookpageset" file="field_notebook_page_set.png" sizes="all"/>
     <icon name="geography"            file="geography.png" sizes="all"/>
+    <icon name="gift"                 file="gift.png" sizes="all"/>
     <icon name="geologictimeperiod"   file="geologic_time_period.png" sizes="all"/>
     <icon name="inforequest"          file="information_request.png" sizes="all"/>
     <icon name="institution"          file="institution.png" sizes="all"/>
@@ -47,6 +48,7 @@
     <icon name="loanreturnpreparation" file="loan_return_prep.png" sizes="all"/>
     <icon name="locality"             file="locality.png" sizes="all"/>
     <icon name="localitynamealias"    file="locality_name_alias.png" sizes="all"/>
+    <icon name="paleocontext"         file="paleocontext.png" sizes="all"/>
     <icon name="permit"               file="permit.png" sizes="all"/>
     <icon name="preparation"          file="preparation.png" sizes="all"/>
     <icon name="preptype"             file="prep_type.png" sizes="all"/>
@@ -63,6 +65,17 @@
     
 
     <!-- Aliases -->
+	<icon name="borrowagent"                    alias="agent"/>
+	<icon name="giftagent"                      alias="agent"/>
+	<icon name="loanagent"                      alias="agent"/>
+	
+	<icon name="BorrowAgent"                    alias="agent"/>
+	<icon name="GiftAgent"                      alias="agent"/>
+	<icon name="LoanAgent"                      alias="agent"/>
+	
+	<icon name="accessionauthorization"         alias="permit"/>
+	<icon name="AccessionAuthorization"         alias="permit"/>
+	
 	<icon name="accessionattachment"            alias="attachment"/>
 	<icon name="agentattachment"                alias="attachment"/>
 	<icon name="attachment"                     alias="attachment"/>
@@ -84,16 +97,28 @@
 	<icon name="taxonattachment"                alias="attachment"/>
     
     
+	<icon name="citation"               file="citation.png" sizes="all"/>
     <icon name="determinationcitation"  alias="citation"/>
     <icon name="localitycitation"       alias="citation"/>
     <icon name="taxoncitation"          alias="citation"/>
     <icon name="determinationcitaton"   alias="citation"/>
-    <icon name="localityxitation"       alias="citation"/>
+    <icon name="localitycitation"       alias="citation"/>
     <icon name="taxoncitation"          alias="citation"/>
     
-    <icon name="habitatattributes"      alias="attribute"/>
-    <icon name="preparationattributes"  alias="attribute"/>
-  	<icon name="collectionobjectattributes"     alias="attribute"/>
+    <icon name="DeterminationCitation"  alias="citation"/>
+    <icon name="LocalityCitation"       alias="citation"/>
+    <icon name="TaxonCitation"          alias="citation"/>
+    <icon name="DeterminationCitaton"   alias="citation"/>
+    <icon name="LocalityCitation"       alias="citation"/>
+    <icon name="TaxonCitation"          alias="citation"/>
+    
+    <icon name="collectingeventattributes"  alias="attribute"/>
+    <icon name="preparationattributes"      alias="attribute"/>
+  	<icon name="collectionobjectattributes" alias="attribute"/>
+    
+    <icon name="CollectingEventAttributes"  alias="attribute"/>
+    <icon name="PreparationAttributes"      alias="attribute"/>
+  	<icon name="CollectionobjectAttributes" alias="attribute"/>
     
     
     <icon name="Accession Agent"        alias="accessionagent"/>
@@ -102,7 +127,7 @@
     <icon name="Collection Object"      alias="collectionobject"/>
     <icon name="Collection Object Attributes" alias="attribute"/>
     <icon name="Container"              alias="container"/>
-    <icon name="Habitat Attributes"     alias="attribute"/>
+    <icon name="Collecting Event Attributes" alias="attribute"/>
     <icon name="Preparation Attributes" alias="attribute"/>
     <icon name="Preparation Type"       alias="preptype"/>
     <icon name="Repository Agreement"   alias="repositoryagreement"/>
@@ -153,6 +178,7 @@
     <icon name="Locality"               alias="locality"/>
     <icon name="LocalityNameAlias"      alias="localitynamealias"/>
     <icon name="Permit"                 alias="permit"/>
+    <icon name="PaleoContext"           alias="permit"/>
     <icon name="Preparation"            alias="preparation"/>
     <icon name="PrepType"               alias="preptype"/>
     <icon name="Project"                alias="project"/>

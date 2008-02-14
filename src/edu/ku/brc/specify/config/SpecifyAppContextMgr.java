@@ -33,6 +33,7 @@ import java.util.Vector;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
+import org.xml.sax.SAXException;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
@@ -64,6 +65,7 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.UnhandledExceptionDialog;
 import edu.ku.brc.ui.ToggleButtonChooserPanel.Type;
 import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
@@ -115,6 +117,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     protected Agent          currentUserAgent      = null;
 
     protected boolean        debug                 = false;
+    protected UnhandledExceptionDialog dlg         = null;
     
     /**
      * Singleton Constructor.
@@ -681,6 +684,18 @@ public class SpecifyAppContextMgr extends AppContextMgr
                             viewSetList.add(new ViewSet(root, true));
                         }
     
+                    } catch (org.dom4j.DocumentException ex)
+                    {
+                        /*if (dlg == null)
+                        {
+                            dlg = new UnhandledExceptionDialog("SAX Parser", ex);
+                            dlg.setModal(true);
+                            dlg.setVisible(true);
+                            dlg = null;
+                            return viewSetList;
+                        }*/
+                        log.error(ex);
+                        
                     } catch (final Exception ex)
                     {
                         log.error(vso.getName());

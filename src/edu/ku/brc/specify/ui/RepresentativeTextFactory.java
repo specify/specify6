@@ -19,6 +19,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 /**
@@ -134,8 +135,7 @@ public class RepresentativeTextFactory implements ObjectTextMapper
     protected void readMappingFile() throws Exception
     {
     	// TODO: should we make the filename configurable?
-        URL mappingFileURL = ClassLoader.getSystemResource("text_factory_mapping.xml");
-        File mappingFile = new File(mappingFileURL.toURI());
+        File mappingFile = XMLHelper.getConfigDir("text_factory_mapping.xml");
         
         // build a DOM from the file
         Document mappingDoc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(mappingFile);

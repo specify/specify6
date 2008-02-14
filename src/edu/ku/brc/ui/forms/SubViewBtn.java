@@ -22,6 +22,7 @@ import java.awt.event.ActionListener;
 import java.util.Properties;
 import java.util.Set;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -74,6 +75,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
     
     protected JButton               subViewBtn;
     protected JLabel                label;
+    protected ImageIcon             icon;
     
     protected Object                dataObj;
     protected Object                newDataObj;
@@ -111,7 +113,9 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
         cellName     = subviewDef.getName();
         frameTitle   = props.getProperty("title");
         String align =  props.getProperty("align", "left");
+        String iconName =  props.getProperty("icon", null);
         
+        icon = null;
         baseLabel = props.getProperty("label");
         if (baseLabel == null)
         {
@@ -119,6 +123,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
             if (tableInfo != null)
             {
                 baseLabel = tableInfo.getTitle();
+                icon = IconManager.getIcon(StringUtils.isNotEmpty(iconName) ? iconName : tableInfo.getName(), IconManager.IconSize.Std24);
             }
         }
         
@@ -160,7 +165,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
         }
         subViewBtn.setEnabled(true);
         
-        label      = new JLabel(baseLabel);
+        label              = icon != null ? new JLabel(icon) : new JLabel(baseLabel);
         PanelBuilder    pb = new PanelBuilder(new FormLayout(colDef, "p"), this);
         CellConstraints cc = new CellConstraints();
         pb.add(subViewBtn, cc.xy(x,1));
@@ -296,12 +301,19 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
         if (dataObj instanceof Set<?>)
         {
             int    size   = ((Set<?>)dataObj).size();
-            String format = UIRegistry.getResourceString("SUBVIEW_BTN_TITLE_FORMAT");
-            if (StringUtils.isEmpty(format))
+            if (icon != null)
             {
-                format = "%s (%s) ...";
+                label.setText(String.format("(%s) ...", size));
+            } else
+            {
+                String format = UIRegistry.getResourceString("SUBVIEW_BTN_TITLE_FORMAT");
+                if (StringUtils.isEmpty(format))
+                {
+                    format = "%s (%s) ...";
+                }
+                label.setText(String.format(format, baseLabel, size));
             }
-            label.setText(String.format(format, baseLabel, size));
+            
         }
     }
     
