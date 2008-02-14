@@ -644,7 +644,7 @@ public class QueryBldrPane extends BaseSubPane
             }
             if (qfp.isForDisplay() && qfp.isDisplayable())
             {
-                ERTICaptionInfo erti = new ERTICaptionInfo(colName, qfp.getFieldQRI().getTitle(), true, qfp.getFieldQRI().getFormatter(), 0);
+                ERTICaptionInfo erti = new ERTICaptionInfo(colName, qfp.getLabel(), true, qfp.getFieldQRI().getFormatter(), 0);
                 erti.setColClass(qfp.getFieldQRI().getDataClass());
                 captions.add(erti);
             }
