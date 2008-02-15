@@ -70,6 +70,7 @@ import edu.ku.brc.ui.db.TextFieldWithQuery;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
 import edu.ku.brc.ui.db.ViewBasedSearchQueryBuilderIFace;
+import edu.ku.brc.ui.db.TextFieldWithQuery.QueryWhereClauseProvider;
 import edu.ku.brc.ui.forms.DataGetterForObj;
 import edu.ku.brc.ui.forms.DataObjectSettable;
 import edu.ku.brc.ui.forms.DataObjectSettableFactory;
@@ -151,6 +152,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     protected ActionListener defaultNewAction;
     
     protected ViewBasedSearchQueryBuilderIFace builder = null;
+    protected QueryWhereClauseProvider queryWhereClauseProvider = null;
 
     /**
      *  Constructor.
@@ -236,6 +238,14 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         setOpaque(false);
     }
 
+    
+    /**
+     * @param queryWhereClauseProvider
+     */
+    public void setQueryWhereClauseProvider(QueryWhereClauseProvider queryWhereClauseProvider)
+    {
+        this.queryWhereClauseProvider = queryWhereClauseProvider;
+    }
     
     /**
      * Sets the "cell" name of this control, this is the name of this control in the form.
@@ -1022,7 +1032,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     //-------------------------------------------------
     class ValTextWithQuery extends JComboBoxFromQuery implements DocumentListener
     {
-        protected boolean hasFocus = false;
+        protected boolean localHasFocus = false;
         
         public ValTextWithQuery(final String tableName,
                                 final String idColumn,
@@ -1038,7 +1048,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                 public void focusGained(FocusEvent arg0)
                 {
                     log.debug("focusGained");
-                    hasFocus = true;
+                    localHasFocus = true;
                     super.focusGained(arg0);
                 }
 
@@ -1046,7 +1056,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                 public void focusLost(FocusEvent arg0)
                 {
                     log.debug("focusLost");
-                    hasFocus = false;
+                    localHasFocus = false;
                     super.focusLost(arg0);
                 }
             });
@@ -1107,7 +1117,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
          */
         protected void documentChanged()
         {
-            if (hasFocus && textWithQuery.hasItem())
+            if (localHasFocus && textWithQuery.hasItem())
             {
                 textWithQuery.clearSelection();    
             }
