@@ -14,6 +14,8 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.datatransfer.DataFlavor;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -113,6 +115,7 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
     protected boolean                 generateImgBuf      = true;    
     protected static final int SHADOW_SIZE = 10;
     protected boolean isOver = false;
+    protected boolean selected = false;
     protected Border inactiveBorder = null;
     
     /**
@@ -156,8 +159,10 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
             {
                 if (isEnabled())
                 {
+                    //isOver = true;
                     isOver = true;
-                    repaint();
+                    
+                    //repaint();
                     //UIRegistry.displayStatusBarText(itself.getToolTipText());
                 }
             }
@@ -165,13 +170,21 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
             public void mouseExited(MouseEvent e)
             {
                 isOver = false;
-                repaint();
+                //repaint();
                 //UIRegistry.displayStatusBarText("");
             }
             @Override
             public void mousePressed(MouseEvent e)
             {
 //                downME = e.getPoint();
+                if (isOver)
+                {
+                    setBorder(new LineBorder(Color.BLACK));
+                }
+                else
+                {
+                    setBorder(null);
+                }
                 repaint();
 //                wasPopUp = e.isPopupTrigger();
 //                if (popupMenu != null && wasPopUp && itself.isEnabled())
@@ -183,8 +196,8 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
             @Override
             public void mouseReleased(MouseEvent e)
             {
-                repaint();
-                doAction(QueryFieldPanel.this);
+                //repaint();
+                //doAction(QueryFieldPanel.this);
 //                Point pnt = e.getPoint();
 //                boolean clicked = Math.abs(pnt.x - downME.x) < 4 && Math.abs(pnt.y - downME.y) < 4;
 //                Rectangle r = RolloverCommand.this.getBounds();
@@ -200,7 +213,7 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
             }
 
           };
-//        addMouseListener(mouseInputAdapter);
+//          addMouseListener(mouseInputAdapter);
 //        addMouseMotionListener(mouseInputAdapter);
 //        ((GhostGlassPane)UIRegistry.get(UIRegistry.GLASSPANE)).add((GhostActionable)this);
 //        createMouseInputAdapter();
@@ -461,52 +474,93 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
      * @param returnWidths
      * @return
      */
-    protected int[] buildControlLayout(final IconManager.IconSize iconSize, final boolean returnWidths)
+    protected int[] buildControlLayout(final IconManager.IconSize iconSize,
+                                       final boolean returnWidths)
     {
-//        comparators = new String[SpQueryField.OperatorType.values().length];
-//        int inx = 0;
-//        for (SpQueryField.OperatorType op : SpQueryField.OperatorType.values())
-//        {
-//            comparators[inx++] = SpQueryField.OperatorType.getString(op.getOrdinal());
-//        }
+
+        FocusListener focusListener = new FocusListener()
+        {
+
+            /*
+             * (non-Javadoc)
+             * 
+             * @see java.awt.event.FocusListener#focusGained(java.awt.event.FocusEvent)
+             */
+            // @Override
+            public void focusGained(FocusEvent e)
+            {
+                queryBldrPane.selectQFP(QueryFieldPanel.this);
+
+            }
+
+            /*
+             * (non-Javadoc)
+             * 
+             * @see java.awt.event.FocusListener#focusLost(java.awt.event.FocusEvent)
+             */
+            // @Override
+            public void focusLost(FocusEvent e)
+            {
+                // nada
+            }
+
+        };
+        // comparators = new String[SpQueryField.OperatorType.values().length];
+        // int inx = 0;
+        // for (SpQueryField.OperatorType op : SpQueryField.OperatorType.values())
+        // {
+        // comparators[inx++] = SpQueryField.OperatorType.getString(op.getOrdinal());
+        // }
         comparators = getComparatorList(fieldQRI);
-        iconLabel     = new JLabel(icon);
-        fieldLabel    = new JLabel(fieldQRI.getTitle());
+        iconLabel = new JLabel(icon);
+        iconLabel.addFocusListener(focusListener);
+        fieldLabel = new JLabel(fieldQRI.getTitle());
+        fieldLabel.addFocusListener(focusListener);
         isNotCheckbox = createCheckBox("isNotCheckbox");
-        operatorCBX   = createComboBox(comparators);
-        criteria      = createTextField();
-        sortCheckbox  = new MultiStateIconButon(new ImageIcon[] {
-                            IconManager.getImage("GrayDot",   IconManager.IconSize.Std16),
-                            IconManager.getImage("UpArrow",   IconManager.IconSize.Std16),
-                            IconManager.getImage("DownArrow", IconManager.IconSize.Std16)});
-        DataChangeNotifier dcn = validator.hookupComponent(sortCheckbox, "scb",  UIValidator.Type.Changed, "", true);
+        isNotCheckbox.addFocusListener(focusListener);
+        operatorCBX = createComboBox(comparators);
+        operatorCBX.addFocusListener(focusListener);
+        criteria = createTextField();
+        criteria.addFocusListener(focusListener);
+        sortCheckbox = new MultiStateIconButon(new ImageIcon[] {
+                IconManager.getImage("GrayDot", IconManager.IconSize.Std16),
+                IconManager.getImage("UpArrow", IconManager.IconSize.Std16),
+                IconManager.getImage("DownArrow", IconManager.IconSize.Std16) });
+        DataChangeNotifier dcn = validator.hookupComponent(sortCheckbox, "scb",
+                UIValidator.Type.Changed, "", true);
+        sortCheckbox.addFocusListener(focusListener);
         sortCheckbox.addActionListener(dcn);
-        //sortCheckbox.setMargin(new Insets(2,2,2,2));
-        //sortCheckbox.setBorder(BorderFactory.createLineBorder(new Color(225,225,225)));
+        // sortCheckbox.setMargin(new Insets(2,2,2,2));
+        // sortCheckbox.setBorder(BorderFactory.createLineBorder(new Color(225,225,225)));
         isDisplayedCkbx = createCheckBox("isDisplayedCkbx");
-        closeBtn        = new JLabel(IconManager.getIcon("Close"));
-        
-        //                       0           1           2              3           4           5             6              7
-        JComponent[] comps = {iconLabel, fieldLabel, isNotCheckbox, operatorCBX, criteria, sortCheckbox, isDisplayedCkbx, closeBtn, null};
+        isDisplayedCkbx.addFocusListener(focusListener);
+        closeBtn = new JLabel(IconManager.getIcon("Close"));
+
+        // 0 1 2 3 4 5 6 7
+        JComponent[] comps = { iconLabel, fieldLabel, isNotCheckbox, operatorCBX, criteria,
+                sortCheckbox, isDisplayedCkbx, closeBtn, null };
 
         StringBuilder sb = new StringBuilder();
         if (columnDefStr == null)
         {
-            for (int i=0;i<comps.length;i++)
+            for (int i = 0; i < comps.length; i++)
             {
                 sb.append(i == 0 ? "" : ",");
-                if (i == 2 || i == 3 || i == 6) sb.append("c:");
+                if (i == 2 || i == 3 || i == 6)
+                    sb.append("c:");
                 sb.append("p");
-                if (i == 4) sb.append(":g");
+                if (i == 4)
+                    sb.append(":g");
                 sb.append(",4px");
             }
-        } else
+        }
+        else
         {
             sb.append(columnDefStr);
         }
-        
-        PanelBuilder    builder = new PanelBuilder(new FormLayout(sb.toString(), "p"), this);
-        CellConstraints cc      = new CellConstraints();
+
+        PanelBuilder builder = new PanelBuilder(new FormLayout(sb.toString(), "p"), this);
+        CellConstraints cc = new CellConstraints();
 
         int col = 1;
         for (JComponent comp : comps)
@@ -521,24 +575,25 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
         icon = IconManager.getIcon(fieldQRI.getTableInfo().getTitle(), iconSize);
         setIcon(icon);
         isDisplayedCkbx.setSelected(true);
-        
-        closeBtn.addMouseListener(new MouseAdapter() 
+
+        closeBtn.addMouseListener(new MouseAdapter()
         {
             @Override
-            public void mousePressed(MouseEvent e) 
+            public void mousePressed(MouseEvent e)
             {
-                queryBldrPane.removeQueryFieldItem((QueryFieldPanel)((JComponent)e.getSource()).getParent());
+                queryBldrPane.removeQueryFieldItem((QueryFieldPanel) ((JComponent) e.getSource())
+                        .getParent());
             }
         });
-        
+
         validate();
         doLayout();
-        
+
         int[] widths = null;
         if (returnWidths)
         {
             widths = new int[comps.length];
-            for (int i=0;i<comps.length;i++)
+            for (int i = 0; i < comps.length; i++)
             {
                 widths[i] = comps[i] != null ? comps[i].getSize().width : 0;
             }
@@ -861,5 +916,21 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
             fieldLabel.setText(getFieldInfo().getTitle());
         }
         return fieldLabel.getText();
+    }
+
+    /**
+     * @return the isOver
+     */
+    public boolean isOver()
+    {
+        return isOver;
+    }
+
+    /**
+     * @param isOver the isOver to set
+     */
+    public void setOver(boolean isOver)
+    {
+        this.isOver = isOver;
     }
 }

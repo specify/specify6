@@ -9,6 +9,7 @@
  */
 package edu.ku.brc.specify.tasks.subpane.qb;
 
+import static edu.ku.brc.ui.UIHelper.createIconBtn;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -43,8 +44,10 @@ import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.MouseInputAdapter;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -93,6 +96,7 @@ public class QueryBldrPane extends BaseSubPane
     //protected Hashtable<DBTableInfo, Vector<TableFieldPair>> tableFieldList   = new Hashtable<DBTableInfo, Vector<TableFieldPair>>();
 
     protected Vector<QueryFieldPanel>                        queryFieldItems  = new Vector<QueryFieldPanel>();
+    protected QueryFieldPanel                                selectedQFP = null; 
     protected int                                            currentInx       = -1;
     protected JPanel                                         queryFieldsPanel;
 
@@ -126,6 +130,11 @@ public class QueryBldrPane extends BaseSubPane
     protected boolean                                        processingLists  = false;
 
     protected RolloverCommand                                queryNavBtn      = null;
+
+    // Reordering
+    protected JButton                       orderUpBtn  = null;
+    protected JButton                       orderDwnBtn = null;
+    protected boolean                       doOrdering  = false;
 
     /**
      * Constructor.
@@ -270,10 +279,12 @@ public class QueryBldrPane extends BaseSubPane
         JButton searchBtn = new JButton("Search");
         final JCheckBox distinctChk = new JCheckBox("distinct", false);
         PanelBuilder outer = new PanelBuilder(new FormLayout("f:p:g,p", "p"));
-        PanelBuilder builder = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g,f:p:g", "p"));
+        PanelBuilder builder = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g,f:p:g,f:p:g", "p"));
         CellConstraints cc = new CellConstraints();
         builder.add(searchBtn, cc.xy(2, 1));
         builder.add(distinctChk, cc.xy(3, 1));
+        final JPanel mover = bldMoverPanel();
+        builder.add(mover, cc.xy(4, 1));
 
         outer.add(builder.getPanel(), cc.xy(1, 1));
         outer.add(saveBtn, cc.xy(2, 1));
@@ -581,6 +592,43 @@ public class QueryBldrPane extends BaseSubPane
         }
     }
 
+    protected JPanel bldMoverPanel()
+    {
+        orderUpBtn = createIconBtn("ReorderUp", "ES_RES_MOVE_UP", new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                orderUp();
+            }
+        });
+        orderDwnBtn = createIconBtn("ReorderDown", "ES_RES_MOVE_DOWN", new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                orderDown();
+            }
+        });
+        
+        PanelBuilder upDownPanel = new PanelBuilder(new FormLayout("p", "f:p:g, p, 2px, p, f:p:g"));        
+        CellConstraints cc = new CellConstraints();
+        upDownPanel.add(orderUpBtn,       cc.xy(1, 2));
+        upDownPanel.add(orderDwnBtn,      cc.xy(1, 4));
+
+        return upDownPanel.getPanel();
+    }
+
+    protected void orderUp()
+    {
+        moveField(selectedQFP, queryFieldItems.get(queryFieldItems.indexOf(selectedQFP)-1));
+        updateMoverBtns();
+    }
+    
+    protected void orderDown()
+    {
+        moveField(selectedQFP, queryFieldItems.get(queryFieldItems.indexOf(selectedQFP)+1));
+        updateMoverBtns();
+    }
+    
     /**
      * @param parent
      * @param sqlStr
@@ -1154,6 +1202,10 @@ public class QueryBldrPane extends BaseSubPane
      */
     public void removeQueryFieldItem(final QueryFieldPanel qfp)
     {
+        if (selectedQFP == qfp)
+        {
+            selectQFP(null);
+        }
         queryFieldItems.remove(qfp);
         queryFieldsPanel.getLayout().removeLayoutComponent(qfp);
         queryFieldsPanel.remove(qfp);
@@ -1270,10 +1322,18 @@ public class QueryBldrPane extends BaseSubPane
 
             final QueryFieldPanel qfp = new QueryFieldPanel(this, fieldQRI,
                     IconManager.IconSize.Std24, columnDefStr, saveBtn, queryField);
+            qfp.addMouseListener(new MouseInputAdapter()
+            {
+                @Override
+                public void mousePressed(MouseEvent e)
+                {
+                    selectQFP(qfp);
+                }
+            });
             queryFieldsPanel.add(qfp);
             queryFieldItems.add(qfp);
-            //qfp.qualifyLabel();
             qualifyFieldLabels();
+            selectQFP(qfp);
             fieldQRI.setIsInUse(true);
             queryFieldsPanel.validate();
             
@@ -1296,6 +1356,29 @@ public class QueryBldrPane extends BaseSubPane
         }
     }
 
+    protected void selectQFP(final QueryFieldPanel qfp)
+    {
+        if (selectedQFP != null)
+        {
+            selectedQFP.setBorder(null);
+            selectedQFP.repaint();
+        }
+        selectedQFP = qfp;
+        if (selectedQFP != null)
+        {
+            selectedQFP.setBorder(new LineBorder(Color.BLACK));
+            selectedQFP.repaint();
+        }
+        updateMoverBtns();
+    }
+    
+    protected void updateMoverBtns()
+    {
+        int idx = queryFieldItems.indexOf(selectedQFP);
+        orderUpBtn.setEnabled(idx > 0);
+        orderDwnBtn.setEnabled(idx > -1 && idx < queryFieldItems.size()-1);
+        
+    }
     /**
      * Adds qualifiers (TableOrRelationship/Field Title) to query fields where necessary.
      * 
