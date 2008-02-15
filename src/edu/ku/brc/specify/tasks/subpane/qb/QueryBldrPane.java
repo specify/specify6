@@ -21,6 +21,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.LinkedList;
@@ -69,10 +70,14 @@ import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpQueryField;
+import edu.ku.brc.specify.datamodel.TreeDefIface;
+import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.tasks.QueryTask;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
@@ -609,10 +614,10 @@ public class QueryBldrPane extends BaseSubPane
             }
         });
         
-        PanelBuilder upDownPanel = new PanelBuilder(new FormLayout("p", "f:p:g, p, 2px, p, f:p:g"));        
+        PanelBuilder upDownPanel = new PanelBuilder(new FormLayout("f:p:g, p, 2px, p, f:p:g","p"));        
         CellConstraints cc = new CellConstraints();
-        upDownPanel.add(orderUpBtn,       cc.xy(1, 2));
-        upDownPanel.add(orderDwnBtn,      cc.xy(1, 4));
+        upDownPanel.add(orderUpBtn,       cc.xy(2, 1));
+        upDownPanel.add(orderDwnBtn,      cc.xy(4, 1));
 
         return upDownPanel.getPanel();
     }
@@ -1447,38 +1452,60 @@ public class QueryBldrPane extends BaseSubPane
 
             String abbrev = XMLHelper.getAttr(parent, "abbrev", null);
             TableTree newTreeNode = parentTT.addKid(new TableTree(tableName, fieldName, abbrev, tableInfo));
-            
-
-            List<?> treeLevels = parent.selectNodes("treelevel");
-            if (treeLevels.size() > 0 && !Treeable.class.isAssignableFrom(tableInfo.getClassObj()))
+            if (Treeable.class.isAssignableFrom(tableInfo.getClassObj()))
             {
-                log.error("ignoring treelevel specified for non-Treeable table");
-            }
-            else
-            {
-                for (Object levelObj : treeLevels)
+                try
                 {
-                    try
+                    TreeDefIface<?, ?, ?> treeDef = Collection.getCurrentCollection()
+                            .getDiscipline().getTreeDef(
+                                    UploadTable.capitalize(tableInfo.getClassObj().getSimpleName())
+                                            + "TreeDef");
+                    SortedSet<TreeDefItemIface<?, ?, ?>> defItems = new TreeSet<TreeDefItemIface<?, ?, ?>>(
+                            new Comparator<TreeDefItemIface<?, ?, ?>>()
+                            {
+                                public int compare(TreeDefItemIface<?, ?, ?> o1,
+                                                   TreeDefItemIface<?, ?, ?> o2)
+                                {
+                                    Integer r1 = o1.getRankId();
+                                    Integer r2 = o2.getRankId();
+                                    return r1.compareTo(r2);
+                                }
+
+                            });
+                    defItems.addAll(treeDef.getTreeDefItems());
+                    for (TreeDefItemIface<?, ?, ?> defItem : defItems)
                     {
-                        newTreeNode.getTableQRI().addField(new TreeLevelQRI(newTreeNode.getTableQRI(), null, Integer.valueOf(XMLHelper
-                            .getAttr((Element) levelObj, "rank", "0"))));
-                    }
-                    catch (Exception ex)
-                    {
-                        //if there is no TreeDefItem for the rank then just skip it.
-                        if (ex instanceof TreeLevelQRI.NoTreeDefItemException)
+                        if (defItem.getRankId() > 0)//skip root, just because.
                         {
-                            log.error(ex);
-                        }
-                        //else something is really messed up
-                        else
-                        {
-                            throw new RuntimeException(ex);
+                            try
+                            {
+                                newTreeNode.getTableQRI().addField(
+                                        new TreeLevelQRI(newTreeNode.getTableQRI(), null, defItem
+                                                .getRankId()));
+                            }
+                            catch (Exception ex)
+                            {
+                                // if there is no TreeDefItem for the rank then just skip it.
+                                if (ex instanceof TreeLevelQRI.NoTreeDefItemException)
+                                {
+                                    log.error(ex);
+                                }
+                                // else something is really messed up
+                                else
+                                {
+                                    throw new RuntimeException(ex);
+                                }
+                            }
                         }
                     }
                 }
+                catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                    throw new RuntimeException(ex);
+                }
             }
-
+            
             for (Object kidObj : parent.selectNodes("table"))
             {
                 Element kidElement = (Element) kidObj;

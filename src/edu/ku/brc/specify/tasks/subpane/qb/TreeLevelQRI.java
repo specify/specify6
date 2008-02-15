@@ -93,7 +93,7 @@ public class TreeLevelQRI extends FieldQRI
     @Override
     public String getSQLFldSpec(final TableAbbreviator ta)
     {
-        return getSQLFldName(ta) + " as " + getFieldName();
+        return getSQLFldName(ta) + " as " + getFieldName().replace(' ', '_'); //can't figure out what the delimiter is for fld aliases so...
     }
     
     public class NoTreeDefItemException extends Exception

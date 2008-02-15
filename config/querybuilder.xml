@@ -88,10 +88,6 @@
     
     <table name="Locality">
     	<table name="Geography">
-        	<treelevel rank="100"/>
-            <treelevel rank="200"/> 
-            <treelevel rank="300"/>
-            <treelevel rank="400"/>
     	</table>
         <table name="LocalityNameAlias"/>
         <table name="LocalityAttachment">
@@ -125,12 +121,6 @@
     </table>
     
     <table name="Taxon">
-    	<treelevel rank="60"/>
-        <treelevel rank="100"/> 
-        <treelevel rank="140"/>
-        <treelevel rank="180"/>
-        <treelevel rank="220"/>
-        <treelevel rank="230"/>
         <table name="TaxonAttachment">
            	<alias name="Attachment"/>
         </table>
