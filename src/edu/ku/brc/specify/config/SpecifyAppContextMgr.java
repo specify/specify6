@@ -661,7 +661,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
         } finally 
         {
-            if (session != null)
+            if (session != null && session.isOpen())
             {
                 session.close();
             }
