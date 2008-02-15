@@ -244,24 +244,31 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         //boolean hasResults = true;
         if (searchTerm != null && searchTerm.length() > 0)
         {
-            instance.sqlHasResults    = false;
-            instance.sqlResultsCount  = 0;
-            
-            instance.searchText.setEnabled(false);
-            instance.searchBtn.setEnabled(false);
-            UIRegistry.getStatusBar().setIndeterminate(true);
-            
             SearchTableConfig context = SearchConfigService.getInstance().getSearchContext();
             if (context == null)
             {
                 SearchConfig config = SearchConfigService.getInstance().getSearchConfig();
-                
-                Vector<JPAQuery> queryList = new Vector<JPAQuery>();
-                
-                for (SearchTableConfig table : config.getTables())
+
+                if (config.getTables().size() > 0)
                 {
-                    //log.debug("**************> " +table.getTableName() );
-                    queryList.add(startSearchJPA(esrPane, table, searchTerm));
+                    instance.sqlHasResults    = false;
+                    instance.sqlResultsCount  = 0;
+                    
+                    instance.searchText.setEnabled(false);
+                    instance.searchBtn.setEnabled(false);
+                    UIRegistry.getStatusBar().setIndeterminate(true);
+                    
+    
+                    Vector<JPAQuery> queryList = new Vector<JPAQuery>();
+                    
+                    for (SearchTableConfig table : config.getTables())
+                    {
+                        //log.debug("**************> " +table.getTableName() );
+                        queryList.add(startSearchJPA(esrPane, table, searchTerm));
+                    }
+                } else
+                {
+                    searchText.getToolkit().beep();
                 }
                 
             } else
