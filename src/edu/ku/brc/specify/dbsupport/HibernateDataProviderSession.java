@@ -99,7 +99,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
      */
     public boolean isOpen()
     {
-        return session.isOpen();
+        return session != null && session.isOpen();
     }
 
     /* (non-Javadoc)
