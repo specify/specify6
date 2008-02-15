@@ -83,6 +83,7 @@ import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIPluginable;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.PickListDBAdapterFactory;
 import edu.ku.brc.ui.db.PickListDBAdapterIFace;
@@ -235,9 +236,14 @@ public class TableViewObj implements Viewable,
         this.viewDef     = altView.getViewDef();
         this.formValidator = formValidator;
         
-        businessRules    = view.getBusinessRule();
+        businessRules    = view.createBusinessRule();
         dataGetter       = altView.getViewDef().getDataGettable();
         this.formViewDef = (FormViewDefIFace)altView.getViewDef();
+        
+        if (businessRules != null)
+        {
+            businessRules.initialize(this);
+        }
         
         scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
 
@@ -1345,6 +1351,12 @@ public class TableViewObj implements Viewable,
         //    mvParent.shutdown();
         //    mvParent = null;
         //}
+        if (businessRules != null)
+        {
+            businessRules.formShutdown();
+            businessRules = null;
+        }
+        
         mvParent      = null;
         tableViewDef  = null;
         table         = null;
@@ -1479,6 +1491,14 @@ public class TableViewObj implements Viewable,
         //log.info("RegControl["+formCell.getName()+"]");
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.ViewBuilderIFace#registerPlugin(edu.ku.brc.ui.forms.persist.FormCellIFace, edu.ku.brc.ui.UIPluginable)
+     */
+    public void registerPlugin(FormCellIFace formCell, UIPluginable uip)
+    {
+        // for now we can't do anything with a plugin in the table
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.ViewBuilderIFace#addControlToUI(java.awt.Component, int, int, int, int)
      */

@@ -11,7 +11,6 @@ package edu.ku.brc.specify.tasks.subpane.qb;
 
 import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableInfo;
-import edu.ku.brc.specify.datamodel.SystemPicklistTableIFace;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 
 /**

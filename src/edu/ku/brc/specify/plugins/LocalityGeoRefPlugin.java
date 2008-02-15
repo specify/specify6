@@ -81,7 +81,6 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
             }
         });
         
-        
         AppPreferences remotePrefs = AppPreferences.getRemote();
         String         tool        = remotePrefs.get("georef_tool", "");
         
@@ -97,31 +96,40 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
     {
         if (locality != null)
         {
-            Geography geo      = locality.getGeography();
+            Geography geo = locality.getGeography();
             
-            String          country  = GeoRefRecordSetProcessorBase.getNameForRank(geo, 200);
-            String          state    = GeoRefRecordSetProcessorBase.getNameForRank(geo, 300);
-            String          county   = GeoRefRecordSetProcessorBase.getNameForRank(geo, 400);
-            
-            GeoCoordData geoCoordData = new GeoCoordData(locality.getLocalityId(),
-                                                   country,
-                                                   state,
-                                                   county,
-                                                   locality.getLocalityName());
-            
-            List<GeoCoordDataIFace> items = new Vector<GeoCoordDataIFace>();
-            items.add(geoCoordData);
-
-            
-            
-            CommandAction command = new CommandAction(ToolsTask.TOOLS, ToolsTask.EXPORT_LIST);
-            command.setData(items);
-            command.setProperty("tool", doGeoLocate ? GeoLocateRecordSetProcessor.class : BGMRecordSetProcessor.class);
-            command.setProperty("listener", this);
-            
-            JStatusBar statusBar = UIRegistry.getStatusBar();
-            statusBar.setText(UIRegistry.getResourceString("WB_OPENING_GOOGLE_EARTH"));
-            CommandDispatcher.dispatch(command);
+            if (geo != null)
+            {
+                String          country  = GeoRefRecordSetProcessorBase.getNameForRank(geo, 200);
+                String          state    = GeoRefRecordSetProcessorBase.getNameForRank(geo, 300);
+                String          county   = GeoRefRecordSetProcessorBase.getNameForRank(geo, 400);
+                
+                int id = locality.getLocalityId() != null ? locality.getLocalityId() : 1;
+                
+                GeoCoordData geoCoordData = new GeoCoordData(id,
+                                                             country,
+                                                             state,
+                                                             county,
+                                                             locality.getLocalityName());
+                
+                List<GeoCoordDataIFace> items = new Vector<GeoCoordDataIFace>();
+                items.add(geoCoordData);
+    
+                
+                
+                CommandAction command = new CommandAction(ToolsTask.TOOLS, ToolsTask.EXPORT_LIST);
+                command.setData(items);
+                command.setProperty("tool", doGeoLocate ? GeoLocateRecordSetProcessor.class : BGMRecordSetProcessor.class);
+                command.setProperty("listener", this);
+                
+                JStatusBar statusBar = UIRegistry.getStatusBar();
+                statusBar.setText(UIRegistry.getResourceString("WB_OPENING_GOOGLE_EARTH"));
+                CommandDispatcher.dispatch(command);
+                
+            } else
+            {
+                UIRegistry.displayErrorDlgLocalized("BGM_GEO_REQUIRED");
+            }
         }
     }
     

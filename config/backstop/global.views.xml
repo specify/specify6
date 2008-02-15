@@ -638,7 +638,6 @@
                 <row>
                     <cell type="label" labelfor="1" label="Title"/>
                     <cell type="field" id="1" name="title" uitype="combobox" initialize="data=Asst. Director, Curator, Mr., Mrs., Ms., Dr."/> <!-- Needs to be a PickList -->
-                    <!--<cell type="field" id="image" name="imageURL" uitype="image" rowspan="11" initialize="size=128,128;border=true"/>-->
                 </row>
                 <row>
                     <cell type="label" labelfor="3" label="Last Name"/>
@@ -661,7 +660,7 @@
                     <cell type="field" id="8" name="abbreviation" uitype="text" cols="20"/>
                 </row>
                 <row>
-                    <cell type="separator" label="Address Information" collapse="addresses" colspan="6"/>
+                    <cell type="separator" id="99" label="Address Information" collapse="addresses" colspan="6"/>
                 </row>
 			    <row>
                     <cell type="subview" viewname="Address" id="9" name="addresses" colspan="6"/>

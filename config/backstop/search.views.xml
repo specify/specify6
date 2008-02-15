@@ -6,6 +6,7 @@
         <view 
             name="AgentSearch"
             class="edu.ku.brc.specify.datamodel.Agent"
+            usedefbusrule="false"
             resourcelabels="false">
             <desc><![CDATA[The Agent Search Form]]></desc>
             <altviews>
@@ -16,6 +17,7 @@
         <view 
             name="AgentNameSearch"
             class="edu.ku.brc.specify.datamodel.Agent"
+            usedefbusrule="false"
             resourcelabels="false">
             <desc><![CDATA[The Agent Search Form]]></desc>
             <altviews>
@@ -26,6 +28,7 @@
         <view 
             name="AttachmentSearch"
             class="edu.ku.brc.specify.datamodel.Attachment"
+            usedefbusrule="false"
             resourcelabels="false">
             <desc><![CDATA[The Attachment Search Form]]></desc>
             <altviews>
@@ -36,6 +39,7 @@
         <view 
             name="PermitSearch"
             class="edu.ku.brc.specify.datamodel.Permit"
+            usedefbusrule="false"
             resourcelabels="false">
             <desc><![CDATA[The Permit Search Form]]></desc>
             <altviews>
@@ -46,6 +50,7 @@
         <view 
             name="AccessionSearch"
             class="edu.ku.brc.specify.datamodel.Accession"
+            usedefbusrule="false"
             resourcelabels="false">
             <desc><![CDATA[The Accession Search Form]]></desc>
             <altviews>
@@ -56,6 +61,7 @@
         <view 
             name="LocalitySearch"
             class="edu.ku.brc.specify.datamodel.Locality"
+            usedefbusrule="false"
             resourcelabels="false">
             <desc><![CDATA[The Locality Search Form]]></desc>
             <altviews>
@@ -66,6 +72,7 @@
         <view 
             name="PrepTypeSearch"
             class="edu.ku.brc.specify.datamodel.PrepType"
+            usedefbusrule="false"
             resourcelabels="false">
             <desc><![CDATA[The PrepType Search Form]]></desc>
             <altviews>
@@ -76,6 +83,7 @@
         <view 
             name="DisciplineSearch"
             class="edu.ku.brc.specify.datamodel.Discipline"
+            usedefbusrule="false"
             resourcelabels="false">
             <desc><![CDATA[The Discipline Search Form]]></desc>
             <altviews>
@@ -86,6 +94,7 @@
         <view 
             name="CatalogNumberingScheme"
             class="edu.ku.brc.specify.datamodel.CatalogNumberingScheme"
+            usedefbusrule="false"
             resourcelabels="false">
             <desc><![CDATA[The CatalogNumberingScheme Search Form]]></desc>
             <altviews>
@@ -95,6 +104,7 @@
         
         <view name="TaxonSearch"
             class="edu.ku.brc.specify.datamodel.Taxon"
+            usedefbusrule="false"
             resourcelabels="false">
             <desc><![CDATA[The Taxon Search Form]]></desc>
             <altviews>
@@ -105,6 +115,7 @@
         <view 
             name="GeographySearch"
             class="edu.ku.brc.specify.datamodel.Geography"
+            usedefbusrule="false"
             resourcelabels="false">
             <desc><![CDATA[The Geography Search Form]]></desc>
             <altviews>
@@ -115,6 +126,7 @@
         <view 
             name="GeologicTimePeriodSearch"
             class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
+            usedefbusrule="false"
             resourcelabels="false">
             <desc><![CDATA[The GeologicTimePeriod Search Form]]></desc>
             <altviews>
@@ -125,6 +137,7 @@
         <view 
             name="LithoStratSearch"
             class="edu.ku.brc.specify.datamodel.LithoStrat"
+            usedefbusrule="false"
             resourcelabels="false">
             <desc><![CDATA[The LithoStrat Search Form]]></desc>
             <altviews>
@@ -135,6 +148,7 @@
         <view 
             name="StorageSearch"
             class="edu.ku.brc.specify.datamodel.Storage"
+            usedefbusrule="false"
             resourcelabels="false">
             <desc><![CDATA[The Storage Search Form]]></desc>
             <altviews>
@@ -145,6 +159,7 @@
         <view 
             name="PaleoContextSearch"
             class="edu.ku.brc.specify.datamodel.PaleoContext"
+            usedefbusrule="false"
             resourcelabels="false">
             <desc><![CDATA[The PaleoContext Search Form]]></desc>
             <altviews>
@@ -430,11 +445,11 @@ Good: <cell type="field" name="FieldNum" ...>
             <rows>
                 <row>
                     <cell type="label" labelfor="FullName" label="Full Name"/>
-                    <cell type="field" id="FullName" name="FullName" isrequired="false" uitype="text"/>
+                    <cell type="field" id="FullName" name="taxon.FullName" isrequired="false" uitype="text"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="CommonName" label="Common Name"/>
-                    <cell type="field" id="CommonName" name="CommonName" isrequired="false" uitype="text"/>
+                    <cell type="field" id="CommonName" name="taxon.CommonName" isrequired="false" uitype="text"/>
                 </row>
             </rows>
         </viewdef>
@@ -454,7 +469,7 @@ Good: <cell type="field" name="FieldNum" ...>
             <rows>
                 <row>
                     <cell type="label" labelfor="FullName" label="Full Name"/>
-                    <cell type="field" id="FullName" name="FullName" isrequired="true" uitype="text"/>
+                    <cell type="field" id="FullName" name="geography.FullName" isrequired="true" uitype="text"/>
                 </row>
             </rows>
         </viewdef>
@@ -474,7 +489,7 @@ Good: <cell type="field" name="FieldNum" ...>
             <rows>
                 <row>
                     <cell type="label" labelfor="FullName" label="Full Name"/>
-                    <cell type="field" id="FullName" name="FullName" isrequired="true" uitype="text"/>
+                    <cell type="field" id="FullName" name="storage.FullName" isrequired="true" uitype="text"/>
                 </row>
             </rows>
         </viewdef>
@@ -494,7 +509,7 @@ Good: <cell type="field" name="FieldNum" ...>
             <rows>
                 <row>
                     <cell type="label" labelfor="Name" label="Name"/>
-                    <cell type="field" id="Name" name="Name" isrequired="true" uitype="text"/>
+                    <cell type="field" id="Name" name="geologictimeperiod.Name" isrequired="true" uitype="text"/>
                 </row>
             </rows>
         </viewdef>
@@ -514,7 +529,7 @@ Good: <cell type="field" name="FieldNum" ...>
             <rows>
                 <row>
                     <cell type="label" labelfor="Name" label="Name"/>
-                    <cell type="field" id="Name" name="Name" isrequired="true" uitype="text"/>
+                    <cell type="field" id="Name" name="lithostrat.Name" isrequired="true" uitype="text"/>
                 </row>
             </rows>
         </viewdef>

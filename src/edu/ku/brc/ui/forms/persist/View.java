@@ -43,13 +43,13 @@ public class View implements ViewIFace
     protected String               objTitle; // The title of a single object
     protected String               className;
     protected String               businessRulesClassName;
-    protected List<AltViewIFace>   altViews       = new Vector<AltViewIFace>();
+    protected List<AltViewIFace>   altViews           = new Vector<AltViewIFace>();
     
-    protected AltViewIFace.CreationMode defaultMode = AltViewIFace.CreationMode.VIEW;
-    protected String               selectorName     = null;
+    protected AltViewIFace.CreationMode defaultMode   = AltViewIFace.CreationMode.VIEW;
+    protected String               selectorName       = null;
+    protected boolean              useDefaultBusRules = false;
     
     // transient data members
-    protected BusinessRulesIFace   businessRule = null;
     protected Boolean              isSpecial    = null;
    
     /**
@@ -67,6 +67,7 @@ public class View implements ViewIFace
                 final String objTitle, 
                 final String className, 
                 final String businessRulesClassName,
+                final boolean useDefaultBusRules,
                 final String desc)
     {
         this.viewSetName    = viewSetName;
@@ -75,6 +76,7 @@ public class View implements ViewIFace
         this.className      = className;
         this.businessRulesClassName = businessRulesClassName;
         this.desc           = desc;
+        this.useDefaultBusRules = useDefaultBusRules;
 
     }
     
@@ -232,34 +234,41 @@ public class View implements ViewIFace
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.persist.ViewIFace#getBusinessRule()
+     * @see edu.ku.brc.ui.forms.persist.ViewIFace#createBusinessRule()
      */
-    public BusinessRulesIFace getBusinessRule()
+    public BusinessRulesIFace createBusinessRule()
     {
-        if (businessRule == null)
+        BusinessRulesIFace businessRule = null;
+        if (StringUtils.isNotEmpty(businessRulesClassName))
         {
-            if (StringUtils.isNotEmpty(businessRulesClassName))
+            try 
             {
-                try 
-                {
-                    businessRule =  (BusinessRulesIFace)Class.forName(businessRulesClassName).newInstance();
-                     
-                } catch (Exception e) 
-                {
-                    
-                    InternalError error = new InternalError("Can't instantiate BusinessRulesIFace [" + businessRulesClassName + "]");
-                    error.initCause(e);
-                    throw error;
-                }
-            } else
+                businessRule =  (BusinessRulesIFace)Class.forName(businessRulesClassName).newInstance();
+                 
+            } catch (Exception e) 
             {
-                businessRule = DBTableIdMgr.getInstance().getBusinessRule(className);
+                
+                InternalError error = new InternalError("Can't instantiate BusinessRulesIFace [" + businessRulesClassName + "]");
+                error.initCause(e);
+                throw error;
             }
+            
+        } else if (useDefaultBusRules)
+        {
+            businessRule = DBTableIdMgr.getInstance().getBusinessRule(className);
         }
         
         return businessRule;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewIFace#useDefaultBusinessRules()
+     */
+    public boolean useDefaultBusinessRules()
+    {
+        return useDefaultBusRules;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.ViewIFace#getBusinessRulesClassName()
      */
@@ -282,7 +291,6 @@ public class View implements ViewIFace
     public void cleanUp()
     {
         altViews.clear();
-        businessRule = null;
     }
     
     /* (non-Javadoc)
@@ -388,6 +396,7 @@ public class View implements ViewIFace
         xmlAttr(sb, "name", name);
         xmlAttr(sb, "class", className);
         xmlAttr(sb, "busrule", businessRulesClassName);
+        xmlAttr(sb, "usedefbusrule", useDefaultBusRules);
         sb.append(">\n    ");
         xmlNode(sb, "desc", desc, true);
         sb.append("      <altviews");

@@ -37,6 +37,13 @@ public interface BusinessRulesIFace
     public enum STATUS {None, OK, Warning, Error}
     
     /**
+     * Enables the Business Rules to initialize itself with a Viewable.
+     * The Viewable will be the same for the life of the BR.
+     * @param viewable the Viewable the BR is attached to.
+     */
+    public abstract void initialize(Viewable viewable);
+    
+    /**
      * Notification a form is about to be filled in with data.
      * 
      * @param viewable the viewable that recieved the dataObject (using getDataOject would return the same object)

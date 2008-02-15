@@ -12,14 +12,12 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-/**
- * 
- */
 package edu.ku.brc.specify.datamodel.busrules;
 
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Hashtable;
 
 import javax.swing.DefaultComboBoxModel;
@@ -30,19 +28,22 @@ import javax.swing.JTextField;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.FormViewObj;
-import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.validation.ValComboBox;
 
 /**
+ * This alters the UI depending on which type of agent is set.
+ * 
  * @author rods
  *
- * @code_status Alpha
+ * @code_status Complete
  *
  * Created Date: Jan 24, 2007
  *
@@ -51,11 +52,85 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
 {
     protected Hashtable<FormViewObj, Agent> formToAgentHash = new Hashtable<FormViewObj, Agent>();
     
+    protected Component    typeComp  = null;
+    
+    protected JLabel       lastLabel;
+    protected JLabel       middleLabel;
+    
+    protected JTextField   lastNameText;
+    protected JTextField   middleText;
+    
+    protected String[]     typeTitles;
+    
+    /**
+     * Constructor.
+     */
     public AgentBusRules()
     {
         super(Agent.class);
+        
+        String[] typeTitleKeys = {"AG_ORG", "AG_PERSON", "AG_OTHER", "AG_GROUP"};
+        typeTitles = new String[typeTitleKeys.length];
+        int i = 0;
+        for (String key : typeTitleKeys)
+        {
+            typeTitles[i++] = UIRegistry.getResourceString(key);
+        }
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BaseBusRules#initialize(edu.ku.brc.ui.forms.Viewable)
+     */
+    @Override
+    public void initialize(Viewable viewableArg)
+    {
+        super.initialize(viewableArg);
+        
+        if (formViewObj != null)
+        {
+            typeComp       = formViewObj.getCompById("0");
+            lastLabel      = formViewObj.getLabelFor("3");
+            middleLabel    = formViewObj.getLabelFor("4");
+            lastNameText   = (JTextField)formViewObj.getCompById("3");
+            middleText     = (JTextField)formViewObj.getCompById("4");
+            
+            if (typeComp instanceof ValComboBox)
+            {
+                ValComboBox typeCBX = ((ValComboBox)typeComp);
+                typeCBX.getComboBox().addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        fixUpTypeCBX((JComboBox)e.getSource());
+                    }
+                });
+                
+                // Fill Type CBX with localized strings
+                if (typeCBX.getComboBox().getModel().getSize() == 0)
+                {
+                    for (String t : typeTitles)
+                    {
+                        typeCBX.getComboBox().addItem(t);
+                    }
+                }
+            }
+        }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BaseBusRules#formShutdown()
+     */
+    @Override
+    public void formShutdown()
+    {
+        super.formShutdown();
+        
+        typeComp       = null;
+        lastLabel      = null;
+        middleLabel    = null;
+        lastNameText   = null;
+        middleText     = null;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToDelete(java.lang.Object)
      */
@@ -65,22 +140,28 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
         return true;
     }
     
-    protected void enableFieldAndLabel(final FormViewObj fvo, 
-                                       final String      id, 
+    /**
+     * Enables/Disables both the control and the Label
+     * @param id the id of the control
+     * @param enabled enable it
+     * @param value the value it should set
+     */
+    protected void enableFieldAndLabel(final String      id, 
                                        final boolean     enabled,
                                        final String      value)
     {
-        Component field  = fvo.getCompById(id);
+        Component field  = formViewObj.getCompById(id);
         if (field != null)
         {
             field.setEnabled(enabled);
-            if (value != null)
+            
+            if (field instanceof JComboBox || field instanceof ValComboBox)
             {
-                if (field instanceof JComboBox || field instanceof ValComboBox)
+                JComboBox cbx = field instanceof ValComboBox ? ((ValComboBox)field).getComboBox() : (JComboBox)field;
+                int inx = -1;
+                if (value != null)
                 {
-                    JComboBox cbx = field instanceof ValComboBox ? ((ValComboBox)field).getComboBox() : (JComboBox)field;
                     DefaultComboBoxModel model = (DefaultComboBoxModel)cbx.getModel();
-                    int inx = -1;
                     for (int i=0;i<model.getSize();i++)
                     {
                         if (model.getElementAt(i).equals(value))
@@ -89,18 +170,21 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
                             break;
                         }
                     }
-                    cbx.setSelectedIndex(inx);
-                    
-                } else if (field instanceof JTextField)
+                }
+                cbx.setSelectedIndex(inx);
+                
+            } else if (field instanceof JTextField)
+            {
+                if (value != null)
                 {
                     ((JTextField)field).setText(value);
-                    
-                } else
-                {
-                    log.debug("******** unhandled component type: "+field);
                 }
+                
+            } else
+            {
+                log.debug("******** unhandled component type: "+field);
             }
-            JLabel label = fvo.getLabelFor(field);
+            JLabel label = formViewObj.getLabelFor(field);
             if (label != null)
             {
                 label.setEnabled(enabled);
@@ -108,64 +192,61 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
         }
     }
     
-    protected void fixUpFormForAgentType(final FormViewObj fvo, 
-                                         final Agent       agent,
-                                         final boolean     doSetOtherValues)
+    /**
+     * Fix up labels in UI per the type of Agent
+     * @param agent the current agent
+     * @param doSetOtherValues indicates it should set values
+     */
+    protected void fixUpFormForAgentType(final Agent   agent,
+                                         final boolean doSetOtherValues)
     {
         boolean isPerson = agent.getAgentType() == null || agent.getAgentType() == Agent.PERSON;
-        enableFieldAndLabel(fvo, "1", isPerson, doSetOtherValues ? agent.getTitle() : null);           // Title
-        enableFieldAndLabel(fvo, "5", isPerson, doSetOtherValues ? agent.getFirstName() : null);       // First Name
         
-        // First Name or Name
-        JLabel label = fvo.getLabelFor("3");
-        if (label != null)
-        {
-            label.setText((isPerson ? "Last Name" : "Name") + ":"); // I18N
-            
-            Component c = fvo.getCompById("3");
-            if (c instanceof JTextField)
-            {
-                ((JTextField)fvo.getCompById("3")).setText(agent.getLastName());
-            }
-        } 
+        enableFieldAndLabel("1", isPerson, doSetOtherValues ? agent.getTitle() : null);           // Title
+        enableFieldAndLabel("5", isPerson, doSetOtherValues ? agent.getFirstName() : null);       // First Name
+        
+        // Last Name
+        String lbl = UIRegistry.getResourceString(isPerson ? "AG_LASTNAME" : "AG_NAME");
+        lastLabel.setText(lbl + ":");
         
         // Middle Name or Abbrev
-        label = fvo.getLabelFor("4");
-        if (label != null)
-        {
-            label.setText((isPerson ? "Middle Initial" : "Abbrev") + ":"); // I18N
-            
-            Component c = fvo.getCompById("4");
-            if (c instanceof JTextField)
-            {
-                ((JTextField)fvo.getCompById("4")).setText(isPerson ? agent.getMiddleInitial() : agent.getAbbreviation());
-            }
-        } 
+        lbl = UIRegistry.getResourceString(isPerson ? "AG_MID_NAME" : "AG_ABBREV");
+        middleLabel.setText(lbl + ":");
+        middleText.setText(isPerson ? agent.getMiddleInitial() : agent.getAbbreviation());
     }
     
+    /**
+     * Clears the values and hides some UI depending on what type is selected
+     * @param cbx the type cbx
+     */
     protected void fixUpTypeCBX(final JComboBox cbx)
     {
-        Component parent = cbx.getParent();
-        while (!(parent instanceof MultiView))
+        if (formViewObj != null)
         {
-            parent = parent.getParent();
-        }
-        
-        if (parent instanceof MultiView)
-        {
-            FormViewObj fvo = ((MultiView)parent).getCurrentViewAsFormViewObj();
-            if (fvo != null)
+            Agent agent = (Agent)formViewObj.getDataObj();
+            if (agent != null)
             {
-                Agent agent = (Agent)fvo.getDataObj();
+                Component addrSubView = formViewObj.getCompById("9");
+                Component addrSep     = formViewObj.getCompById("99");
+
                 byte agentType = (byte)cbx.getSelectedIndex();
                 if (agentType != Agent.PERSON)
                 {
-                    agent.setMiddleInitial("");
-                    agent.setFirstName("");
-                    agent.setTitle("");
+                    agent.setMiddleInitial(null);
+                    agent.setFirstName(null);
+                    agent.setTitle(null);
+                    
+                    boolean enable = agentType == Agent.ORG;
+                    addrSubView.setVisible(enable);
+                    addrSep.setVisible(enable);
+                    
+                } else
+                {
+                    addrSubView.setVisible(true);
+                    addrSep.setVisible(true);
                 }
                 agent.setAgentType(agentType);
-                fixUpFormForAgentType(fvo, agent, true);
+                fixUpFormForAgentType(agent, true);
             }
         }
     }
@@ -176,66 +257,28 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
     @Override
     public void afterFillForm(final Object dataObj, final Viewable viewable)
     {
-        
         if (!(viewable instanceof FormViewObj) || !(dataObj instanceof Agent))
         {
             return;
         }
         
-        Agent agent = (Agent)dataObj;
+        Agent agent     = (Agent)dataObj;
+        Byte  agentType = agent.getAgentType();
         
-        FormViewObj fvo = (FormViewObj)viewable;
+        fixUpFormForAgentType(agent, false);
         
-        fixUpFormForAgentType(fvo, agent, false);
-        
-        Byte agentType = agent.getAgentType();
-        Component typeComp = fvo.getCompById("0");
         if (typeComp instanceof ValComboBox)
         {
             ValComboBox typeCBX = (ValComboBox)typeComp;
             if (typeCBX != null)
             {
-                if (typeCBX.getComboBox().getModel().getSize() == 0)
-                {
-                    String[] types = {"Organization", "Person", "Other", "Group"};
-                    for (String t : types)
-                    {
-                        typeCBX.getComboBox().addItem(t);
-                    }
-                }
                 typeCBX.getComboBox().setSelectedIndex(agentType == null ? Agent.PERSON : agentType);
-                
-                typeCBX.getComboBox().addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        fixUpTypeCBX((JComboBox)e.getSource());
-                    }
-                });
             }
             
         } else
         {
             JTextField typeTxt = (JTextField)typeComp;
-            String txt = "";
-            switch (agentType)
-            {
-                case Agent.ORG :
-                    txt = "Organization";
-                    break;
-                    
-                case Agent.PERSON :
-                    txt = "Person";
-                    break;
-                    
-                case Agent.OTHER :
-                    txt = "Other";
-                    break;
-                    
-                case Agent.GROUP :
-                    txt = "Group";
-                    break;
-            }
-            typeTxt.setText(txt);
+            typeTxt.setText(typeTitles[agentType]);
         }
     }
 
@@ -289,6 +332,58 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
         }
     }
     
-    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BaseBusRules#beforeMerge(edu.ku.brc.ui.forms.Viewable, java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public void beforeMerge(final Object dataObj, final DataProviderSessionIFace session)
+    {
+        super.beforeMerge(dataObj, session);
+        
+        
+        Agent agent = (Agent)dataObj;
+        
+        if (agent.getAgentType() == null)
+        {
+            if (typeComp instanceof ValComboBox)
+            {
+                JComboBox cbx = ((ValComboBox)typeComp).getComboBox();
+                byte agentType = (byte)cbx.getSelectedIndex();
+                if (agentType == -1)
+                {
+                    agentType = Agent.PERSON;
+                }
+                agent.setAgentType(agentType);
+            }
+        }
+        
+        if (Discipline.getCurrentDiscipline() != null)
+        {
+            //Discipline.getCurrentDiscipline().addReference((Agent)dataObj, "agents");
+            ((Agent)dataObj).setDiscipline(Discipline.getCurrentDiscipline());
+        }
+    }
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeSaveCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public boolean beforeSaveCommit(Object dataObj, DataProviderSessionIFace session) throws Exception
+    {
+        Agent agent     = (Agent)dataObj;
+        byte  agentType = agent.getAgentType();
+        
+        if (agent.getAddresses().size() > 0 &&
+            (agentType == Agent.OTHER || agentType == Agent.GROUP))
+        {
+            for (Address addr : new ArrayList<Address>(agent.getAddresses()))
+            {
+                agent.removeReference(addr, "addresses");
+                session.delete(addr);
+            }
+        }
+        
+        return super.beforeSaveCommit(dataObj, session);
+    }     
 
 }

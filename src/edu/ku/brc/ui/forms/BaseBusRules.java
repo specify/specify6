@@ -31,9 +31,19 @@ import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 
+/**
+ * @author rod
+ *
+ * @code_status Beta
+ *
+ * Feb 14, 2008
+ *
+ */
 public abstract class BaseBusRules implements BusinessRulesIFace
 {
-    protected List<String> reasonList = new Vector<String>();
+    protected Viewable     viewable    = null;
+    protected FormViewObj  formViewObj = null;
+    protected List<String> reasonList  = new Vector<String>();
     protected Class<?>[]   dataClasses;
     
     /**
@@ -45,6 +55,18 @@ public abstract class BaseBusRules implements BusinessRulesIFace
         this.dataClasses = dataClasses;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#initialize(edu.ku.brc.ui.forms.Viewable)
+     */
+    public void initialize(final Viewable viewableArg)
+    {
+        viewable = viewableArg;
+        if (viewable instanceof FormViewObj)
+        {
+            formViewObj = (FormViewObj)viewable;
+        }
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#beforeFormFill(edu.ku.brc.ui.forms.Viewable)
      */
@@ -479,7 +501,8 @@ public abstract class BaseBusRules implements BusinessRulesIFace
      */
     public void formShutdown()
     {
-        // no op
+        viewable    = null;
+        formViewObj = null;
     }
 
 }

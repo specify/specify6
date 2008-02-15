@@ -44,6 +44,7 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.ui.forms.persist.AltViewIFace;
 import edu.ku.brc.ui.forms.persist.ViewDef;
@@ -79,12 +80,12 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
     protected String  selectorName;
     protected String  objTitle;
     protected String  defaultModeName;
+    protected Boolean useDefaultBusRule;
     
     protected SpUIViewSet       spViewSet;
     protected Set<SpUIAltView>  spAltViews;
     
     // Transient
-    protected BusinessRulesIFace busRule     = null;
     protected CreationMode       defaultMode = null;
     protected Boolean            isSpecial   = null;
     protected String             viewSetName = null;
@@ -102,6 +103,7 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
                     final String objTitle, 
                     final String className, 
                     final String businessRulesClassName,
+                    final Boolean useDefaultBusRule,
                     final String desc)
     {
         super.init();
@@ -112,6 +114,7 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
         this.javaClassName     = className;
         this.businessRulesClassName = businessRulesClassName;
         this.description       = desc;
+        this.useDefaultBusRule = useDefaultBusRule;
         
         spUIViewId        = null;
         selectorName      = null;
@@ -139,6 +142,7 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
         selectorName      = null;
         objTitle          = null;
         defaultModeName   = null;
+        useDefaultBusRule = true;
         
         spAltViews = new HashSet<SpUIAltView>();
         spViewSet  = null;
@@ -302,6 +306,23 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
     }
 
     /**
+     * @return the useDefaultBusRule
+     */
+    @Column(name = "UseDefaultBusRule", unique = false, nullable = false, insertable = true, updatable = true)
+    public Boolean getUseDefaultBusRule()
+    {
+        return useDefaultBusRule;
+    }
+
+    /**
+     * @param useDefaultBusRule the useDefaultBusRule to set
+     */
+    public void setUseDefaultBusRule(Boolean useDefaultBusRule)
+    {
+        this.useDefaultBusRule = useDefaultBusRule;
+    }
+
+    /**
      * @return the altViews
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "spView")
@@ -378,6 +399,15 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
     // ViewSetIFace
     //------------------------------------------------
 
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewIFace#useDefaultBusinessRules()
+     */
+    public boolean useDefaultBusinessRules()
+    {
+        return useDefaultBusRule != null && useDefaultBusRule; // should never be null
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.ViewIFace#addAltView(edu.ku.brc.ui.forms.persist.AltViewIFace)
      */
@@ -440,27 +470,32 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
      * @see edu.ku.brc.ui.forms.persist.ViewIFace#getBusinessRule()
      */
     @Transient
-    public BusinessRulesIFace getBusinessRule()
+    public BusinessRulesIFace createBusinessRule()
     {
-        if (busRule == null && StringUtils.isNotEmpty(businessRulesClassName))
+        BusinessRulesIFace businessRule = null;
+        if (StringUtils.isNotEmpty(businessRulesClassName))
         {
-            try
+            if (StringUtils.isNotEmpty(businessRulesClassName))
             {
-                Class<?> cls = Class.forName(businessRulesClassName);
-                return busRule = (BusinessRulesIFace)cls.newInstance();
+                try 
+                {
+                    businessRule =  (BusinessRulesIFace)Class.forName(businessRulesClassName).newInstance();
+                     
+                } catch (Exception e) 
+                {
+                    
+                    InternalError error = new InternalError("Can't instantiate BusinessRulesIFace [" + businessRulesClassName + "]");
+                    error.initCause(e);
+                    throw error;
+                }
                 
-            } catch (ClassNotFoundException ex)
+            } else if (useDefaultBusRule)
             {
-                log.error(ex);
-            } catch (InstantiationException ex)
-            {
-                log.error(ex);
-            } catch (IllegalAccessException ex)
-            {
-                log.error(ex);
+                businessRule = DBTableIdMgr.getInstance().getBusinessRule(javaClassName);
             }
+
         }
-        return null;
+        return businessRule;
     }
 
     /* (non-Javadoc)
@@ -707,19 +742,23 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
         selectorName      = view.getSelectorName();
         objTitle          = view.getObjTitle();
         defaultModeName   = view.getDefaultMode().toString().toLowerCase();
+        useDefaultBusRule = view.useDefaultBusinessRules();
         
-        busRule           = view.getBusinessRule();
         defaultMode       = view.getDefaultMode();
         isSpecial         = view.isSpecialViewAndEdit();
         viewSetName       = view.getViewSetName();
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewIFace#toXML(java.lang.StringBuilder)
+     */
     public void toXML(final StringBuilder sb)
     {
         sb.append("        <view");
         xmlAttr(sb, "name", name);
         xmlAttr(sb, "class", javaClassName);
         xmlAttr(sb, "busrule", businessRulesClassName);
+        if (!useDefaultBusRule) xmlAttr(sb, "usedefbusrule", useDefaultBusRule);
         xmlAttr(sb, "resourcelabels", useResourceLabels);
         sb.append(">\n");
         xmlNode(sb, "desc", description, true);
@@ -737,5 +776,6 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
         sb.append("            </altviews>\n");
         sb.append("        </view>\n");
     }
+
     
 }

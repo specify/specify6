@@ -49,6 +49,9 @@ public abstract class GeoRefRecordSetProcessorBase implements RecordSetToolsIFac
 {
     private static final Logger log = Logger.getLogger(GeoRefRecordSetProcessorBase.class);
     
+    /**
+     * 
+     */
     public GeoRefRecordSetProcessorBase()
     {
         

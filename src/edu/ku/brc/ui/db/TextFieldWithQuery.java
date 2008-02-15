@@ -100,7 +100,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     protected String               sql;
     protected String               displayColumns;
     protected String               format;
-    protected String               keyColumn;
+    protected String[]             keyColumns;
     protected int                  numColumns          = -1;
     protected Object[]             values;
     protected Hashtable<Integer, Object[]> duplicatehash = new Hashtable<Integer, Object[]>();
@@ -126,10 +126,16 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     {
         super();
         this.tableInfo      = tableInfo;
-        this.keyColumn      = keyColumn;
         this.displayColumns = displayColumns != null ? displayColumns : keyColumn;
         this.format         = format;
-        
+
+        if (StringUtils.contains(keyColumn, ","))
+        {
+            keyColumns = StringUtils.split(keyColumn, ",");
+        } else
+        {
+            keyColumns = new String[] {keyColumn};
+        }
         popupDlgThreshold = AppPreferences.getRemote().getInt("TFQ.POPUPDLD.THRESHOLD", 15);
         
         createUI();
@@ -478,13 +484,38 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                     sb.append(" AND ");
                 }
                 
-                sb.append(" LOWER(");
-                sb.append(keyColumn);
-                sb.append(") LIKE '");
-                sb.append(newEntryStr.toLowerCase());
-                sb.append("%' ORDER BY ");
-                sb.append(keyColumn);
-                sb.append(" ASC");
+                if (keyColumns.length > 1)
+                {
+                    sb.append("(");
+                }
+
+                int cnt = 0;
+                for (String keyCol : keyColumns)
+                {
+                    if (cnt > 0) sb.append(" OR ");
+                    sb.append(" LOWER(");
+                    sb.append(keyCol);
+                    sb.append(") LIKE '");
+                    sb.append(newEntryStr.toLowerCase());
+                    sb.append("%' ");
+                    cnt++;
+                }
+                
+                if (keyColumns.length > 1)
+                {
+                    sb.append(")");
+                }
+
+                sb.append(" ORDER BY ");
+
+                cnt = 0;
+                for (String keyCol : keyColumns)
+                {
+                    if (cnt > 0) sb.append(", ");
+                    sb.append(keyCol);
+                    sb.append(" ASC");
+                    cnt++;
+                }
             }
             return sb.toString();
         }

@@ -334,8 +334,8 @@
                 </sql>
                 <captions>
                     <caption tableid="5" col="agent.AgentID" visible="false"/>
-                    <caption tableid="5" col="agentvariant.Name"/>
-                    <caption tableid="107" key="Agent" dataobjformatter="Agent">
+                    <caption tableid="107" col="agentvariant.Name"/>
+                    <caption tableid="5" key="Agent" dataobjformatter="Agent">
                         <col name="agent.LastName"  field="lastName"/>
                         <col name="agent.FirstName" field="firstName"/>
                         <col name="agent.AgentType" field="agentType"/>                        
@@ -376,7 +376,7 @@
             <detailView icon="">
                 <sql>
                     <![CDATA[SELECT * FROM (SELECT agent.AgentID,
-agent.FirstName,  agent.LastName, agent.Email, address.Address, address.City,
+agent.FirstName, agent.LastName, agent.Email, address.Address, address.City,
 address.State, address.PostalCode, address.Country FROM agent Left Join address ON agent.AgentID = address.AgentID WHERE agent.DisciplineID = DSPLNID) AS newTable WHERE (%s)]]>
                 </sql>
                 <captions>
@@ -431,7 +431,7 @@ permit.EndDate,permit.RenewalDate,permit.Type FROM permit left Join agent ON per
         <table id="103" tableid="3" name="GeographySearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
-                    <![CDATA[SELECT geography.GeographyID, geography.Name, geography.FullName, geographytreedefitem.Name FROM geography INNER JOIN geographytreedefitem ON geography.GeographyTreeDefItemID = geographytreedefitem.GeographyTreeDefItemID WHERE geography.CollectionMemberID = COLMEMID AND (%s)]]>
+                    <![CDATA[SELECT geography.GeographyID, geography.Name, geography.FullName, geographytreedefitem.Name FROM geography INNER JOIN geographytreedefitem ON geography.GeographyTreeDefItemID = geographytreedefitem.GeographyTreeDefItemID WHERE geography.GeographyTreeDefID = GEOTREEDEFID AND (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="3" col="geography.GeographyID" visible="false"/>
@@ -484,12 +484,12 @@ permit.EndDate,permit.RenewalDate,permit.Type FROM permit left Join agent ON per
         <table id="107" tableid="4" name="TaxonSearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
-                    <![CDATA[SELECT TaxonID, FullName, CommonName FROM taxon WHERE TaxonTreeDefItemID = TAXTREEDEFID AND (%s)]]>
+                    <![CDATA[SELECT taxon.TaxonID, taxon.FullName, taxon.CommonName FROM taxon WHERE taxon.TaxonTreeDefID = TAXTREEDEFID AND (%s)]]>
                 </sql>
                 <captions>
-                    <caption tableid="4" col="TaxonID" visible="false"/>
-                    <caption tableid="4" col="FullName"/>
-                    <caption tableid="4" col="CommonName"/>
+                    <caption tableid="4" col="taxon.TaxonID" visible="false"/>
+                    <caption tableid="4" col="taxon.FullName"/>
+                    <caption tableid="4" col="taxon.CommonName"/>
                 </captions>
             </detailView>
         </table>
@@ -497,7 +497,7 @@ permit.EndDate,permit.RenewalDate,permit.Type FROM permit left Join agent ON per
         <table id="108" tableid="5" name="AgentNameSearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
-                    <![CDATA[SELECT AgentID, FirstName, LastName, Name FROM agent WHERE CollectionMemberID = COLMEMID AND (%s)]]>
+                    <![CDATA[SELECT AgentID, FirstName, LastName, MiddleInitial FROM agent WHERE CollectionMemberID = COLMEMID AND (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="5" col="AgentID" visible="false"/>

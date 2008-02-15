@@ -276,7 +276,7 @@ public class FormViewObj implements Viewable,
         this.bgColor     = bgColor;
 
         
-        businessRules    = view.getBusinessRule();
+        businessRules    = view.createBusinessRule();
         isEditting       = altView.getMode() == AltViewIFace.CreationMode.EDIT;
 
         this.formViewDef = (FormViewDef)altView.getViewDef();
@@ -808,6 +808,11 @@ public class FormViewObj implements Viewable,
             scrollPane.setBorder(null);
             this.mainComp.add(scrollPane, BorderLayout.CENTER); 
             this.formComp = scrollPane;
+        }
+        
+        if (businessRules != null)
+        {
+            businessRules.initialize(this);
         }
 
         // This is needed to make the form layout correctly
@@ -3830,10 +3835,8 @@ public class FormViewObj implements Viewable,
         }
     }
 
-    /**
-     * Adds a control by name so it can be looked up later.
-     * @param formCell the FormCell def that describe the cell
-     * @param control the control
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.ViewBuilderIFace#registerControl(edu.ku.brc.ui.forms.persist.FormCellIFace, java.awt.Component)
      */
     public void registerControl(final FormCellIFace formCell, final Component control)
     {
@@ -3873,6 +3876,32 @@ public class FormViewObj implements Viewable,
         }
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.ViewBuilderIFace#registerPlugin(edu.ku.brc.ui.forms.persist.FormCellIFace, edu.ku.brc.ui.UIPluginable)
+     */
+    public void registerPlugin(FormCellIFace formCell, UIPluginable uip)
+    {
+        boolean isThis = formCell.getName().equals("this");
+        
+        if (controlsById.get(formCell.getIdent()) != null)
+        {
+            throw new RuntimeException("Two controls have the same id ["+formCell.getIdent()+"] "+formViewDef.getName());
+        }
+
+        if (!isThis && controlsByName.get(formCell.getName()) != null)
+        {
+            throw new RuntimeException("Two controls have the same name ["+formCell.getName()+"] "+formViewDef.getName());
+        }
+        
+        FieldInfo fieldInfo = new FieldInfo(formCell, uip, controlsById.size());
+        controlsById.put(formCell.getIdent(), fieldInfo);
+        if (!isThis)
+        {
+            controlsByName.put(formCell.getName(), fieldInfo);
+        }
+        
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.ViewBuilderIFace#addControlToUI(java.awt.Component, int, int, int, int)
      */
@@ -4336,6 +4365,7 @@ public class FormViewObj implements Viewable,
         protected Component     comp;
         protected JScrollPane   fieldScrollPane;
         protected Integer       insertPos;
+        protected UIPluginable  uiPlugin;
 
         public FieldInfo(FormCellIFace formCell, Component comp, JScrollPane scrollPane, int insertPos)
         {
@@ -4344,6 +4374,7 @@ public class FormViewObj implements Viewable,
             this.subView  = null;
             this.fieldScrollPane = scrollPane;
             this.insertPos = insertPos;
+            this.uiPlugin  = null;
         }
 
         public FieldInfo(FormCellIFace formCell, MultiView subView, int insertPos)
@@ -4352,6 +4383,16 @@ public class FormViewObj implements Viewable,
             this.subView  = subView;
             this.comp     = subView;
             this.insertPos = insertPos;
+            this.uiPlugin  = null;
+        }
+        
+        public FieldInfo(FormCellIFace formCell, UIPluginable uiPlugin, int insertPos)
+        {
+            this.formCell  = formCell;
+            this.subView   = null;
+            this.comp      = uiPlugin.getUIComponent();
+            this.insertPos = insertPos;
+            this.uiPlugin  = uiPlugin;
         }
         
         public boolean isOfType(final FormCell.CellType type)
@@ -4386,6 +4427,14 @@ public class FormViewObj implements Viewable,
         public int getInsertPos()
         {
             return insertPos;
+        }
+
+        /**
+         * @return the uiPlugin
+         */
+        public UIPluginable getUiPlugin()
+        {
+            return uiPlugin;
         }
 
         public void setEnabled(boolean enabled)

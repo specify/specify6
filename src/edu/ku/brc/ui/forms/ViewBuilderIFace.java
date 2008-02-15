@@ -20,6 +20,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 
+import edu.ku.brc.ui.UIPluginable;
 import edu.ku.brc.ui.forms.persist.FormCellIFace;
 import edu.ku.brc.ui.forms.persist.FormCellLabel;
 import edu.ku.brc.ui.forms.persist.FormCellSubView;
@@ -40,7 +41,7 @@ public interface ViewBuilderIFace
      * @param formCell the FormCell def that describe the cell
      * @param label the the label to be added
      */
-    public void addLabel(FormCellLabel formCell, JLabel label);
+    public abstract void addLabel(FormCellLabel formCell, JLabel label);
     
     /**
      * Adds a control by name so it can be looked up later. This registers the component in such a way that
@@ -48,7 +49,7 @@ public interface ViewBuilderIFace
      * @param formCell the FormCell def that describe the cell
      * @param control the control to be added
      */    
-    public void registerControl(FormCellIFace formCell, Component control);
+    public abstract void registerControl(FormCellIFace formCell, Component control);
     
     /**
      * Adds a control to the UI (usually it is being added to a container).
@@ -58,14 +59,21 @@ public interface ViewBuilderIFace
      * @param colSpan the number of columns to span
      * @param rowSpan the number of rows to span
      */
-    public void addControlToUI(Component control, int colInx, int rowInx, int colSpan, int rowSpan);
+    public abstract void addControlToUI(Component control, int colInx, int rowInx, int colSpan, int rowSpan);
+    
+    /**
+     * Registers a plugin into the builder.
+     * @param formCell the formCell of the UIPlugin
+     * @param uip the plugin
+     */
+    public abstract void registerPlugin(FormCellIFace formCell, UIPluginable uip);
     
     /**
      * Creates a separator (this is usually some text with a line after it).
      * @param title the title text
      * @return the separator component (usually a container)
      */
-    public Component createSeparator(String title);
+    public abstract Component createSeparator(String title);
     
     /**
      * Creates a special RecordIndentifier UI component with a name and icon. It is intended that
@@ -74,7 +82,7 @@ public interface ViewBuilderIFace
      * @param icon the icon, which is usually on the left hand side.
      * @return the component (which is typically a JPanel)
      */
-    public JComponent createRecordIndentifier(String title, ImageIcon icon);
+    public abstract JComponent createRecordIndentifier(String title, ImageIcon icon);
     
     /**
      * Adds a control by name so it can be looked up later.
@@ -85,13 +93,13 @@ public interface ViewBuilderIFace
      * @param colSpan the number of columns to span
      * @param rowSpan the number of rows to span
      */
-    public void addSubView(FormCellSubView formCell, MultiView subView, int colInx, int rowInx, int colSpan, int rowSpan);
+    public abstract void addSubView(FormCellSubView formCell, MultiView subView, int colInx, int rowInx, int colSpan, int rowSpan);
     
     /**
      * Tells it the FormCellSubView is being closed.
      * @param formCell the formcel being closed.
      */
-    public void closeSubView(FormCellSubView formCell);
+    public abstract void closeSubView(FormCellSubView formCell);
     
     /**
      * Indicates whether the calling should assume it support nested layout for whether this
@@ -99,7 +107,7 @@ public interface ViewBuilderIFace
      * the Form layout was passed into a table to be displayed then the table would request that it be flatten.
      * @return true flatten, false hierarchical
      */
-    public boolean shouldFlatten();
+    public abstract boolean shouldFlatten();
 
     /**
      * Returns a Component by name from the Form.
@@ -113,8 +121,11 @@ public interface ViewBuilderIFace
      * @param name the id of the field according to the XML definition
      * @return the component or null
      */
-    public Component getControlById(String id);
+    public abstract Component getControlById(String id);
     
-    public void fixUpRequiredDerivedLabels();
+    /**
+     * 
+     */
+    public abstract void fixUpRequiredDerivedLabels();
     
 }

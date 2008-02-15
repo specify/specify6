@@ -148,7 +148,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         try
         {
             String childQueryString = TreeFactory.getChildQueryString(parent);
-            Query getNodeInfoList = session.createQuery(childQueryString);
+            Query  getNodeInfoList  = session.createQuery(childQueryString);
             getNodeInfoList.setParameter("PARENT", parent);
             List list = getNodeInfoList.list();
             List<Object[]> nodeInfoList = list;

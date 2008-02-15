@@ -32,29 +32,29 @@ public interface UIPluginable
      * @param properties the map of properties
      * @param isViewMode indicates whether the plugin is being created to be viewed or is in edit mode.
      */
-    public void initialize(Properties properties, boolean isViewMode);
+    public abstract void initialize(Properties properties, boolean isViewMode);
     
     /**
      * Sets the name of the cell that this represents.
      * @param cellName the name
      */
-    public void setCellName(String cellName);
+    public abstract void setCellName(String cellName);
     
      /**
      * Sets a single ChangeListener.
      * @param listener the listener
      */
-    public void setChangeListener(ChangeListener listener);
+    public abstract void setChangeListener(ChangeListener listener);
     
     /**
      * @return the UI component for the plugin
      */
-    public JComponent getUIComponent();
+    public abstract JComponent getUIComponent();
     
     
     /**
      * Tells the plugin to cleanup because the form is going away. 
      */
-    public void shutdown();
+    public abstract void shutdown();
 
 }

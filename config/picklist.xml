@@ -11,9 +11,6 @@
   <picklist name="Department" issystem="true" type="2" tablename="accession" fieldname="text1" readonly="true" sizelimit="-1">
     <items/>
   </picklist>
-  <picklist name="AgentTitle" issystem="true" type="2" tablename="agent" fieldname="title" readonly="true" sizelimit="-1">
-    <items/>
-  </picklist>
   <picklist name="PrepType" issystem="true" type="1" tablename="preptype" formatter="PrepType" readonly="true" sizelimit="-1">
     <items/>
   </picklist>
@@ -126,5 +123,15 @@
   </picklist>
   <picklist name="ExpressSearch" issystem="true" type="0" readonly="false" sizelimit="50">
     <items/>
+  </picklist>
+  <picklist name="AgentTitle" issystem="true" type="0" readonly="true" sizelimit="50">
+    <items>
+      <picklistitem title="Asst. Director" value="Asst. Director"/>
+      <picklistitem title="Curator" value="Curator"/>
+      <picklistitem title="Dr." value="Dr."/>
+      <picklistitem title="Mr." value="Mr."/>
+      <picklistitem title="Mrs." value="Mrs."/>
+      <picklistitem title="Ms." value="Ms."/>
+    </items>
   </picklist>
 </list>

@@ -40,6 +40,7 @@ import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
+import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -734,10 +735,31 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
             for (String colName : fieldNames)
             {
                 if (dspCnt > 0) colNames.append(',');
-                colNames.append("n.");
-                colNames.append(colName);
+                
+                String columnName = colName;
+                if (!colName.startsWith(tableName+"."))
+                {
+                    columnName = tableName + "." + colName;
+                }
+                colNames.append(columnName);
 
-                ERTICaptionInfo col = new ERTICaptionInfo("n."+colName, colName, true, null, dspCnt+1);
+                String baseName = StringUtils.substringAfter(colName, ".");
+                if (StringUtils.isEmpty(baseName))
+                {
+                    baseName = colName;
+                }
+                
+                String colTitle;
+                DBFieldInfo fi = tableInfo.getFieldByColumnName(baseName);
+                if (fi != null)
+                {
+                    colTitle = fi.getTitle();
+                } else
+                {
+                    colTitle = baseName;
+                }
+                
+                ERTICaptionInfo col = new ERTICaptionInfo(columnName, colTitle, true, null, dspCnt+1);
                 cols.add(col);
                 dspCnt++;
             }
@@ -750,24 +772,32 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                 String data = (String)dataMap.get(colName);
                 if (StringUtils.isNotEmpty(data))
                 {
+                    String columnName = colName;
+                    if (!colName.startsWith(tableName+"."))
+                    {
+                        columnName = tableName + "." + colName;
+                    }
+
                     if (criCnt > 0) criteria.append(" OR ");
-                    criteria.append("lower(n.");
-                    criteria.append(colName);
+                    criteria.append("lower(");
+                    criteria.append(columnName);
                     criteria.append(") LIKE ");
                     criteria.append("\'%");
                     criteria.append(data.toLowerCase());
                     criteria.append("%\'");
                     
                     if (criCnt > 0) orderBy.append(',');
-                    orderBy.append("n."+colName);
+                    
+                    orderBy.append(columnName);
                     
                     criCnt++;
                 }
             }
             
-            String queryFormatStr = "SELECT n.%s, %s from %s n INNER JOIN %s d ON n.%s = d.%s INNER JOIN discipline dsp ON d.%s = dsp.%s WHERE (%s) AND dsp.DisciplineID = %d ORDER BY %s";
-            String queryStr = String.format(queryFormatStr, idColName, colNames.toString(), tableName, defTableName, defIdColName, defIdColName, 
+            String queryFormatStr = "SELECT %s.%s, %s from %s INNER JOIN %s d ON %s.%s = d.%s INNER JOIN discipline dsp ON d.%s = dsp.%s WHERE (%s) AND dsp.DisciplineID = %d ORDER BY %s";
+            String queryStr = String.format(queryFormatStr, tableName, idColName, colNames.toString(), tableName, defTableName, tableName, defIdColName, defIdColName, 
                                             defIdColName, defIdColName, criteria.toString(), disciplineId, orderBy.toString());
+            System.out.println(queryStr);
             return queryStr;
         }
 

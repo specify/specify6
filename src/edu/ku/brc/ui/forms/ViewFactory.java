@@ -732,11 +732,11 @@ public class ViewFactory
      * @param isRequired whether the field is required or not
      * @return the control
      */
-    public static JComponent createPlugin(final MultiView     parent,
-                                          final FormValidator validator, 
-                                          final FormCellField cellField,
-                                          final boolean       isViewMode,
-                                          final boolean       isRequired)
+    protected static UIPluginable createPlugin(final MultiView     parent,
+                                               final FormValidator validator, 
+                                               final FormCellField cellField,
+                                               final boolean       isViewMode,
+                                               final boolean       isRequired)
     {
         String pluginName = cellField.getProperty("name");
         if (StringUtils.isEmpty(pluginName))
@@ -785,7 +785,7 @@ public class ViewFactory
                     uip.setChangeListener(dcn);
                 }
 
-                return pluginUI;
+                return uip;
                 
             } catch (Exception ex)
             {
@@ -1180,10 +1180,13 @@ public class ViewFactory
                     break;
                 
                 case plugin:
-                    bi.compToAdd = createPlugin(parent,
+                    UIPluginable uip = createPlugin(parent,
                                                 validator, 
                                                 cellField, 
                                                 mode == AltViewIFace.CreationMode.VIEW, bi.isRequired);
+                    bi.compToAdd = uip.getUIComponent();
+                    viewBldObj.registerPlugin(cell, uip);
+                    bi.doRegControl = false;
                     break;
 
                 case textpl:

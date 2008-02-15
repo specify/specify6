@@ -124,7 +124,12 @@ public class IconViewObj implements Viewable
         this.viewOptions   = options;
         this.viewDef       = altView.getViewDef();
         this.dataTypeError = false;
-        this.businessRules = view.getBusinessRule();
+        this.businessRules = view.createBusinessRule();
+        
+        if (businessRules != null)
+        {
+            businessRules.initialize(this);
+        }
         
         isEditing  = MultiView.isOptionOn(options, MultiView.IS_EDITTING) || MultiView.isOptionOn(options, MultiView.IS_NEW_OBJECT);
         
@@ -932,6 +937,12 @@ public class IconViewObj implements Viewable
     {
         mvParent      = null;
         mainComp      = null;
+        
+        if (businessRules != null)
+        {
+            businessRules.formShutdown();
+            businessRules = null;
+        }
     }
     
     /* (non-Javadoc)

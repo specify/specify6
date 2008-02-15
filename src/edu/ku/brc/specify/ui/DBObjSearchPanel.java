@@ -383,7 +383,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
         QueryForIdResultsIFace resultsInfo = null;
         if (queryBuilder != null)
         {
-            sqlStr      = queryBuilder.buildSQL(dataMap, fieldNames);
+            sqlStr = queryBuilder.buildSQL(dataMap, fieldNames);
             if (StringUtils.isNotEmpty(sqlStr))
             {
                 resultsInfo = queryBuilder.createQueryForIdResults();
@@ -409,26 +409,36 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
                 if (value != null)
                 {
                     String valStr = value.toString();
-                    if (valStr.length() > 0 && qafd.isUerInputNotInjectable(valStr))
+                    if (valStr.length() > 0)
                     {
-                        if (cnt > 0)
+                        if (qafd.isUerInputNotInjectable(valStr))
                         {
-                            strBuf.append(" OR ");
+                            if (cnt > 0)
+                            {
+                                strBuf.append(" OR ");
+                            }
+                            
+                            strBuf.append(" LOWER("+captionInfo.getColName()+") like '#$#"+valStr+"#$#'");
+                            cnt++;
+                        } else
+                        {
+                            UIRegistry.getStatusBar().setErrorMessage(getResourceString("ES_SUSPICIOUS_SQL"));
+                            panel.validate();
+                            panel.repaint();
+                            return;
                         }
-                        
-                        strBuf.append(" LOWER("+captionInfo.getColName()+") like '#$#"+valStr+"#$#'");
-                        cnt++;
-                    } else
-                    {
-                        UIRegistry.getStatusBar().setErrorMessage(getResourceString("ES_SUSPICIOUS_SQL"));
-                        panel.validate();
-                        panel.repaint();
-                        return;
                     }
                 } else
                 {
                     log.debug("DataMap was null for Column Name["+captionInfo.getColName()+"] make sure there is a field of this name in the form.");
                 }
+            }
+            
+            if (cnt == 0)
+            {
+                panel.validate();
+                panel.repaint();
+                return;  
             }
             
             String fullStrSql = QueryAdjusterForDomain.getInstance().adjustSQL(sqlStr);

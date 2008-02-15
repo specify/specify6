@@ -86,12 +86,19 @@ public interface ViewIFace  extends Comparable<ViewIFace>
      * Creates an instance of the BusinessRuleIFace object for processing.
      * @return an instance of the BusinessRuleIFace object for processing.
      */
-    public abstract BusinessRulesIFace getBusinessRule();
+    public abstract BusinessRulesIFace createBusinessRule();
     
     /**
      * @return the businessRulesClassName
      */
     public String getBusinessRulesClassName();
+    
+    /**
+     * @return whether the default business rules should be used. This enables
+     * a form to not have any business rules when there are default BRs. For example,
+     * search forms do not want to default to having BRs.
+     */
+    public boolean useDefaultBusinessRules();
 
     /**
      * @param businessRulesClassName the businessRulesClassName to set

@@ -139,7 +139,13 @@ public class ViewLoader
         String   desc              = getDesc(element);
         String   businessRules     = getAttr(element, "busrules", null);
         
-        View view = new View(instance.viewSetName, name, objTitle, className, businessRules != null ? businessRules.trim() : null, desc);
+        View view = new View(instance.viewSetName, 
+                             name, 
+                             objTitle, 
+                             className, 
+                             businessRules != null ? businessRules.trim() : null, 
+                             getAttr(element, "usedefbusrule", true),
+                             desc);
 
         Element altviews = (Element)element.selectSingleNode("altviews");
         if (altviews != null)
