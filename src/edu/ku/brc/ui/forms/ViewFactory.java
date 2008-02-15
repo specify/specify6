@@ -234,6 +234,7 @@ public class ViewFactory
      */
     public static JTextField createTextField(final FormValidator validator,
                                              final FormCellField cellField,
+                                             @SuppressWarnings("unused")
                                              final DBFieldInfo   fieldInfo,
                                              final boolean       isRequired,
                                              final PickListDBAdapterIFace adapter)
@@ -1214,8 +1215,8 @@ public class ViewFactory
                 
             }
             bi.doRegControl     = cell.getName().length() > 0;
-            bi.compToAdd      = (JComponent)sep;
-            bi.doRegControl     = false;
+            bi.compToAdd        = (JComponent)sep;
+            bi.doRegControl     = StringUtils.isNotEmpty(cell.getIdent());
             bi.doAddToValidator = false;
             
         } else if (cell.getType() == FormCellIFace.CellType.command)
