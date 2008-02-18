@@ -30,7 +30,6 @@ import javax.swing.JComponent;
 import javax.swing.SwingConstants;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
@@ -52,6 +51,7 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.subpane.DroppableFormObject;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.tasks.RecordSetTask;
@@ -65,8 +65,10 @@ import edu.ku.brc.ui.MemoryDropDownButton;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.db.CommandActionForDB;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.Trash;
+import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.Viewable;
@@ -83,18 +85,19 @@ import edu.ku.brc.ui.forms.Viewable;
 public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrListener
 {
     // Static Data Members
-    private static final Logger log = Logger.getLogger(BaseTask.class);
+    //private static final Logger log = Logger.getLogger(BaseTask.class);
     
-    protected static final String APP_CMD_TYPE    = "App";
-    protected static final String APP_RESTART_ACT = "Restart";
-    protected static final String DB_CMD_TYPE     = "Database";
+    protected static final String APP_CMD_TYPE      = "App";
+    protected static final String APP_RESTART_ACT   = "Restart";
+    protected static final String DB_CMD_TYPE       = "Database";
 
     
-    protected static final String SAVE_CMD_ACT   = "Save";
-    protected static final String INSERT_CMD_ACT = "Insert";
-    protected static final String DELETE_CMD_ACT = "Delete";
-    protected static final String UPDATE_CMD_ACT = "Update";
-    
+    protected static final String SAVE_CMD_ACT      = "Save";
+    protected static final String INSERT_CMD_ACT    = "Insert";
+    protected static final String DELETE_CMD_ACT    = "Delete";
+    protected static final String UPDATE_CMD_ACT    = "Update";
+    protected static final String OPEN_FORM_CMD_ACT = "OPEN_FORM";
+
     protected static Font         toolbarBtnFont = null;
 
     // Data Members
@@ -358,7 +361,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
 
         } else
         {
-            navBox.insert(nb, false, position);
+            navBox.insert(nb, false, false, position);
         }
 
         // Make the Btn Draggable
@@ -509,7 +512,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
             {
                 FormPane fp = (FormPane)sp;
 
-                if (viewSetName.equals(fp.getViewSetName()) &&
+                if ((viewSetName == null ||viewSetName.equals(fp.getViewSetName())) &&
                     viewName == fp.getViewName() &&
                     data == fp.getData())
                 {
@@ -530,6 +533,69 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
         DroppableFormObject dfo = (DroppableFormObject)nbb.getData();
         return createFormPanel(tabName, dfo.getViewSetName(), DBTableIdMgr.getInstance().getDefaultFormNameById(dfo.getFormId()), null, dfo.getData(), null);
     }
+
+    /**
+     * @param tabName
+     * @param mode
+     * @param formData
+     * @param paneIcon
+     * @return
+     */
+    protected FormPane createFormPanel(final String           tabName,
+                                       final String           mode, 
+                                       final FormDataObjIFace formData, 
+                                       final ImageIcon        paneIcon)
+    {
+        return createFormPanel(tabName, mode, formData, formData.getDataClass(), paneIcon);
+    }
+    
+    /**
+     * @param tabName
+     * @param mode
+     * @param formData
+     * @param dataClass
+     * @param paneIcon
+     * @return
+     */
+    protected FormPane createFormPanel(final String           tabName,
+                                       final String           mode, 
+                                       final FormDataObjIFace formData, 
+                                       final Class<?>         dataClass,
+                                       final ImageIcon        paneIcon)
+    {
+        if (formData != null)
+        {
+            return createFormPanel(tabName, null, dataClass.getSimpleName(), mode, formData, MultiView.VIEW_SWITCHER, paneIcon);
+        }
+        return null;
+    }
+    
+    /**
+     * @param tabName
+     * @param mode
+     * @param recordSet
+     * @param paneIcon
+     * @return
+     */
+    protected FormPane createFormPanel(final String           tabName,
+                                       final String           mode, 
+                                       final RecordSetIFace   recordSet, 
+                                       final ImageIcon        paneIcon)
+    {
+        if (recordSet != null)
+        {
+            DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
+            if (ti != null)
+            {
+                FormPane fp = createFormPanel(tabName, null, ti.getShortClassName(), mode, null, MultiView.VIEW_SWITCHER, paneIcon);
+                fp.setData(recordSet);
+                return fp;
+            }
+        }
+        return null;
+    }
+
+
 
     /**
      * Looks to see if a form already exists for this request and shows it
@@ -599,7 +665,13 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
                 recentFormPane.setPaneName(tabName);
                 recentFormPane.setIcon(iconImg);
                 
-                recentFormPane.getMultiView().setData(data);
+                if (data instanceof RecordSetIFace)
+                {
+                    recentFormPane.setRecordSet((RecordSetIFace)data);
+                } else
+                {
+                    recentFormPane.getMultiView().setData(data);
+                }
                 //addSubPaneToMgr(recentFormPane);
                 SubPaneMgr.replaceSimplePaneForTask(recentFormPane);
                 fp = recentFormPane;
@@ -865,9 +937,43 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.CommandListener#doCommand(edu.ku.brc.af.ui.CommandAction)
      */
-    public void doCommand(CommandAction cmdAction)
+    public void doCommand(final CommandAction cmdActionArg)
     {
-        log.error("Command sent to task ["+name+"] and was not processed.");
+        CommandAction cmdAction = cmdActionArg;
+        if (cmdAction.getData() instanceof CommandActionForDB)
+        {
+            cmdAction = (CommandAction)cmdAction.getData();
+        }
+        
+        if (cmdAction.isAction(OPEN_FORM_CMD_ACT))
+        {
+            FormDataObjIFace formData = null;
+            if (cmdAction instanceof CommandActionForDB)
+            {
+                formData = (FormDataObjIFace)((CommandActionForDB)cmdAction).getDataObj();
+                
+            } else if (cmdAction.getData() instanceof FormDataObjIFace)
+            {
+                formData = (FormDataObjIFace)cmdAction.getData();
+            }
+            
+            if (formData != null)
+            {
+                if (formData instanceof RecordSetIFace)
+                {
+                    RecordSetIFace rs = (RecordSetIFace)formData;
+                    createFormPanel(formData.getIdentityTitle(), "edit", formData, rs.getDataClassFormItems(), getImageIcon());
+                } else
+                {
+                    createFormPanel(formData.getIdentityTitle(), "edit", formData, getImageIcon());
+                }
+                cmdActionArg.setConsumed(true);
+                
+            } else
+            {
+                // Error Dialog - The Data Object was not found.
+            }
+        }
     }
 
     //--------------------------------------------------------------

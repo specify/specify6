@@ -50,21 +50,21 @@ public class ConservRecommendation extends DataModelObjBase implements java.io.S
 
     // Fields    
 
-    protected Integer           conservRecommendationId;
+    protected Integer            conservRecommendationId;
     
-    protected Calendar          completedDate;
-    protected String            completedComments;
+    protected Calendar           completedDate;
+    protected String             completedComments;
     
-    protected String            remarks;
-    protected Agent             curator;
-    protected Calendar          curatorApprovalDate;
+    protected String             remarks;
+    protected Agent              curator;
+    protected Calendar           curatorApprovalDate;
 
     
-    protected ConservRecmdType  conservRecmdType;
+    protected ConservRecmdType   conservRecmdType;
     
-    protected ConservEvent      lightRecommendationConservEvent;
-    protected ConservEvent      displayRecommendationConservEvent;
-    protected ConservEvent      otherRecommendationConservEvent;
+    protected ConservDescription lightRecommendation;
+    protected ConservDescription displayRecommendation;
+    protected ConservDescription otherRecommendation;
     
 
     // Constructors
@@ -95,9 +95,9 @@ public class ConservRecommendation extends DataModelObjBase implements java.io.S
         curatorApprovalDate  = null;
         
         curator              = null;
-        lightRecommendationConservEvent    = null;
-        displayRecommendationConservEvent  = null;
-        otherRecommendationConservEvent    = null;
+        lightRecommendation    = null;
+        displayRecommendation  = null;
+        otherRecommendation    = null;
 
     }
     // End Initializer
@@ -206,14 +206,14 @@ public class ConservRecommendation extends DataModelObjBase implements java.io.S
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "LightRecommendationConservRmdID", unique = false, nullable = true, insertable = true, updatable = true)
-    public ConservEvent getLightRecommendationConservEvent()
+    public ConservDescription getLightRecommendation()
     {
-        return this.lightRecommendationConservEvent;
+        return this.lightRecommendation;
     }
 
-    public void setLightRecommendationConservEvent(final ConservEvent lightRecommendationConservEvent)
+    public void setLightRecommendation(final ConservDescription lightRecommendation)
     {
-        this.lightRecommendationConservEvent = lightRecommendationConservEvent;
+        this.lightRecommendation = lightRecommendation;
     }
 
     /**
@@ -221,14 +221,14 @@ public class ConservRecommendation extends DataModelObjBase implements java.io.S
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "DisplayRecommendationConservRmdID", unique = false, nullable = true, insertable = true, updatable = true)
-    public ConservEvent getDisplayRecommendationConservEvent()
+    public ConservDescription getDisplayRecommendation()
     {
-        return this.displayRecommendationConservEvent;
+        return this.displayRecommendation;
     }
 
-    public void setDisplayRecommendationConservEvent(final ConservEvent displayRecommendationConservEvent)
+    public void setDisplayRecommendation(final ConservDescription displayRecommendation)
     {
-        this.displayRecommendationConservEvent = displayRecommendationConservEvent;
+        this.displayRecommendation = displayRecommendation;
     }
 
     /**
@@ -236,14 +236,14 @@ public class ConservRecommendation extends DataModelObjBase implements java.io.S
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "OtherRecommendationConservRmdID", unique = false, nullable = true, insertable = true, updatable = true)
-    public ConservEvent getOtherRecommendationConservEvent()
+    public ConservDescription getOtherRecommendation()
     {
-        return this.otherRecommendationConservEvent;
+        return this.otherRecommendation;
     }
 
-    public void setOtherRecommendationConservEvent(final ConservEvent otherRecommendationConservEvent)
+    public void setOtherRecommendation(final ConservDescription otherRecommendation)
     {
-        this.otherRecommendationConservEvent = otherRecommendationConservEvent;
+        this.otherRecommendation = otherRecommendation;
     }
 
     /**

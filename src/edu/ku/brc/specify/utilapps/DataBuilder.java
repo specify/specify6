@@ -170,6 +170,40 @@ public class DataBuilder
         return division;
     }
     
+    public static GroupPerson createGroupPerson(final Agent group, 
+                                                final Agent agent, 
+                                                final int order)
+    {
+        GroupPerson groupPerson = new GroupPerson();
+        groupPerson.initialize();
+        groupPerson.setOrderIndex(order);
+        
+        if (true)
+        {
+            groupPerson.setMember(agent);
+            groupPerson.setGroup(group);
+            
+            agent.getGroups().add(groupPerson);
+            group.getMembers().add(groupPerson);
+        } else
+        {
+            group.addReference(groupPerson, "groups");
+            agent.addReference(groupPerson, "members");
+        }
+        
+        System.out.println("Agent '"+agent.getLastName()+"' is in groups:");
+        for (GroupPerson gp : agent.getGroups())
+        {
+            System.out.println("  Mem '"+gp.getGroup().getLastName()+"'  "+gp.getOrderIndex());
+        }
+        System.out.println("------------------------\nGroup '"+group.getLastName()+"'  has Agents:  ");
+        for (GroupPerson gp : group.getMembers())
+        {
+            System.out.println("  Mem '"+gp.getMember().getLastName()+"'  "+gp.getOrderIndex());
+        }
+        return groupPerson;
+    }
+    
     public static Agent createAgent(final String title,
                                     final String firstName,
                                     final String middleInit,

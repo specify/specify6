@@ -92,6 +92,7 @@ import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.DebugLoggerDialog;
+import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.config.FormImportExportDlg;
 import edu.ku.brc.specify.config.LoggerDialog;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
@@ -192,7 +193,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private String               appName             = "Specify";
     private String               appVersion          = "6.0";
 
-    private String               appBuildVersion     = "200802130800 (SVN: 3424)";
+    private String               appBuildVersion     = "200802150930 (SVN: 3444)";
     
     protected static CacheManager cacheManager        = new CacheManager();
 
@@ -262,7 +263,9 @@ public class Specify extends JPanel implements DatabaseLoginListener
         remotePrefs.getBoolean("TreeEditor.RestoreTreeExpansionState", true, true);
         remotePrefs.getBoolean("google.earth.useorigheaders", true, true);
         remotePrefs.getInt("SubPaneMgr.MaxPanes", 12, true);
-
+        
+        remotePrefs.getBoolean("Interactions.Doing.Gifts", true, true);
+        remotePrefs.getBoolean("Interactions.Doing.Exchanges", Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.plant), true);
     }
     
     /**

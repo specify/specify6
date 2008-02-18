@@ -271,10 +271,10 @@ public class FormPane extends DroppableTaskPane
      * @param dataArg the data to fill the form
      * @param options the options needed for creating the form
      */
-    public void createForm(final ViewIFace    view,
-                           final AltView.CreationMode mode,
-                           final Object  dataArg,
-                           final int     options,
+    public void createForm(final ViewIFace             view,
+                           final AltView.CreationMode  mode,
+                           final Object                dataArg,
+                           final int                   options,
                            final FormPaneAdjusterIFace adjuster)
     {
         if (view != null)
@@ -321,7 +321,13 @@ public class FormPane extends DroppableTaskPane
                             busRule.addChildrenToNewDataObjects(newDataObj);
                         }
                     }
-                    multiView.setData(data);
+                    if (data instanceof RecordSetIFace)
+                    {
+                        setRecordSet((RecordSetIFace)data);
+                    } else
+                    {
+                        multiView.setData(data);
+                    }
                 }
 
                 // Tells it is is a new form and all the validator painting should be supressed

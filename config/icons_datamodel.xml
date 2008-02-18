@@ -169,6 +169,7 @@
     <icon name="FieldNotebook"          alias="fieldnotebook"/>
     <icon name="Geography"              alias="geography"/>
     <icon name="GeologicTimePeriod"     alias="geologictimeperiod"/>
+    <icon name="Gift"                   alias="gift"/>
     <icon name="InfoRequest"            alias="inforequest"/>
     <icon name="Institution"            alias="institution"/>
     <icon name="Journal"                alias="journal"/>

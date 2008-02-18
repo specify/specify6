@@ -69,6 +69,10 @@ public class ExchangeOut extends CollectionMember implements java.io.Serializabl
     protected Calendar        exchangeDate;
     protected Short           quantityExchanged;
     protected String          descriptionOfMaterial;
+    
+    protected String          srcGeography;
+    protected String          srcTaxonomy;
+
     protected String          remarks;
     protected String          text1;
     protected String          text2;
@@ -108,6 +112,8 @@ public class ExchangeOut extends CollectionMember implements java.io.Serializabl
         exchangeDate     = null;
         quantityExchanged = null;
         descriptionOfMaterial = null;
+        srcGeography     = null;
+        srcTaxonomy      = null;
         remarks          = null;
         text1            = null;
         text2            = null;
@@ -204,6 +210,40 @@ public class ExchangeOut extends CollectionMember implements java.io.Serializabl
         this.descriptionOfMaterial = descriptionOfMaterial;
     }
 
+    /**
+     * @return the srcGeography
+     */
+    @Column(name = "SrcGeography", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    public String getSrcGeography()
+    {
+        return srcGeography;
+    }
+
+    /**
+     * @param srcGeography the srcGeography to set
+     */
+    public void setSrcGeography(String srcGeography)
+    {
+        this.srcGeography = srcGeography;
+    }
+
+    /**
+     * @return the srcTaxonomy
+     */
+    @Column(name = "SrcTaxonomy", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    public String getSrcTaxonomy()
+    {
+        return srcTaxonomy;
+    }
+
+    /**
+     * @param srcTaxonomy the srcTaxonomy to set
+     */
+    public void setSrcTaxonomy(String srcTaxonomy)
+    {
+        this.srcTaxonomy = srcTaxonomy;
+    }
+    
     /**
      * 
      */

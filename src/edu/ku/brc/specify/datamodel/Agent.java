@@ -593,7 +593,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     /**
      *
      */
-    @OneToMany(mappedBy = "member")
+    @OneToMany(mappedBy = "group")
     @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<GroupPerson> getGroups() 
     {
@@ -608,7 +608,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     /**
      *
      */
-    @OneToMany(mappedBy = "group")
+    @OneToMany(mappedBy = "member")
     @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<GroupPerson> getMembers() 
     {

@@ -27,10 +27,8 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
 
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
-import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
@@ -51,8 +49,10 @@ import edu.ku.brc.af.core.TaskCommandDef;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.ToolBarItemDesc;
+import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
+import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.af.prefs.PreferencesDlg;
 import edu.ku.brc.af.tasks.BaseTask;
-import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
@@ -64,10 +64,14 @@ import edu.ku.brc.dbsupport.TableModel2Excel;
 import edu.ku.brc.helpers.EMailHelper;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.ExchangeIn;
+import edu.ku.brc.specify.datamodel.ExchangeOut;
+import edu.ku.brc.specify.datamodel.Gift;
 import edu.ku.brc.specify.datamodel.InfoRequest;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
@@ -84,9 +88,11 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DataFlavorTableExt;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
+import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.db.CommandActionForDB;
 import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
@@ -98,7 +104,6 @@ import edu.ku.brc.ui.forms.TableViewObj;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.ViewIFace;
 import edu.ku.brc.ui.forms.validation.UIValidatable;
-import edu.ku.brc.ui.forms.validation.ValFormattedTextField;
 
 
 /**
@@ -116,10 +121,19 @@ public class InteractionsTask extends BaseTask
     public static final String             INTERACTIONS        = "Interactions";
     public static final DataFlavorTableExt INTERACTIONS_FLAVOR = new DataFlavorTableExt(DataEntryTask.class, INTERACTIONS);
     public static final DataFlavorTableExt INFOREQUEST_FLAVOR  = new DataFlavorTableExt(InfoRequest.class, "InfoRequest");
+    public static final DataFlavorTableExt LOAN_FLAVOR         = new DataFlavorTableExt(Loan.class, "Loan");
+    public static final DataFlavorTableExt GIFT_FLAVOR         = new DataFlavorTableExt(Loan.class, "Gift");
+    public static final DataFlavorTableExt EXCHGIN_FLAVOR      = new DataFlavorTableExt(ExchangeIn.class, "ExchangeIn");
+    public static final DataFlavorTableExt EXCHGOUT_FLAVOR     = new DataFlavorTableExt(ExchangeOut.class, "ExchangeOut");
+    
+    public static final  String   IS_DOING_GIFT_PREFNAME = "Interactions.Doing.Gifts";
+    public static final  String   IS_DOING_EXCH_PREFNAME = "Interactions.Doing.Exchanges";
 
     protected static final String InfoRequestName      = "InfoRequest";
-    protected static final String NEW_LOAN             = "New_Loan";
-    protected static final String PRINT_LOAN           = "PrintLoan";
+    protected static final String NEW_LOAN             = "NEW_LOAN";
+    protected static final String NEW_GIFT             = "NEW_GIFT";
+    protected static final String NEW_EXCHANGE         = "NEW_EXCHANGE";
+    protected static final String PRINT_LOAN           = "PRINT_LOANORGIFT";
     protected static final String INFO_REQ_MESSAGE     = "Specify Info Request";
     protected static final String CREATE_MAILMSG       = "CreateMailMsg";
     
@@ -129,8 +143,16 @@ public class InteractionsTask extends BaseTask
 
     // Data Members
     protected NavBox                  infoRequestNavBox;
+    //protected NavBox                  loansNavBox;
+    //protected NavBox                  giftsNavBox;
     protected Vector<NavBoxIFace>     extendedNavBoxes = new Vector<NavBoxIFace>();
     protected Vector<NavBoxItemIFace> invoiceList      = new Vector<NavBoxItemIFace>();
+    protected NavBoxItemIFace         exchgNavBtn      = null; 
+    protected NavBoxItemIFace         giftsNavBtn      = null; 
+    protected NavBox                  actionsNavBox;
+    
+    protected boolean                 isDoingExchanges = false;
+    protected boolean                 isDoingGifts     = false;
     
     static 
     {
@@ -155,8 +177,7 @@ public class InteractionsTask extends BaseTask
         CommandDispatcher.register(APP_CMD_TYPE, this);
         CommandDispatcher.register(DB_CMD_TYPE, this);
         CommandDispatcher.register(DataEntryTask.DATA_ENTRY, this);
-        
-
+        CommandDispatcher.register(PreferencesDlg.PREFERENCES, this);
     }
     
     /* (non-Javadoc)
@@ -165,6 +186,9 @@ public class InteractionsTask extends BaseTask
     @Override
     public void initialize()
     {
+        isDoingGifts     = AppPreferences.getRemote().getBoolean(IS_DOING_GIFT_PREFNAME, false);
+        isDoingExchanges = AppPreferences.getRemote().getBoolean(IS_DOING_EXCH_PREFNAME, false);
+        
         if (!isInitialized)
         {
             super.initialize(); // sets isInitialized to false
@@ -172,28 +196,23 @@ public class InteractionsTask extends BaseTask
             extendedNavBoxes.clear();
             invoiceList.clear();
 
-            // Temporary
-            NavBox navBox = new NavBox(getResourceString("Actions"));
+            actionsNavBox = new NavBox(getResourceString("Actions"));
             
             // New Loan Action
             // A New loan can accept RecordSets that contain CollectionObjects or InfoRequests
             // or InfoRequests
-            CommandAction cmdAction = new CommandAction(INTERACTIONS, NEW_LOAN);
-            NavBoxButton roc = (NavBoxButton)makeDnDNavBtn(navBox, getResourceString(NEW_LOAN), name, cmdAction, null, true, false);// true means make it draggable
-            roc.addDropDataFlavor(InfoRequestTask.INFOREQUEST_FLAVOR);
+            addCommand(actionsNavBox, NEW_LOAN, NEW_LOAN, "Loan", new int[] {Loan.getClassTableId(), CollectionObject.getClassTableId(), InfoRequest.getClassTableId()});
+            if (isDoingGifts)
+            {
+                createGiftNavBtn();
+            }
+            if (isDoingExchanges)
+            {
+                createExchangeNavBtn();
+            }
+            addCommand(actionsNavBox, InfoRequestName, InfoRequestName, "InfoRequest", new int[] {ExchangeIn.getClassTableId(), ExchangeOut.getClassTableId(), CollectionObject.getClassTableId(), InfoRequest.getClassTableId()});
+            addCommand(actionsNavBox, OPEN_FORM_CMD_ACT, "INTER_OPEN", name, new int[] {ExchangeIn.getClassTableId(), ExchangeOut.getClassTableId(), CollectionObject.getClassTableId(), InfoRequest.getClassTableId()});
             
-            DataFlavorTableExt dfx = new DataFlavorTableExt(RecordSetTask.RECORDSET_FLAVOR.getDefaultRepresentationClass(), RecordSetTask.RECORDSET_FLAVOR.getHumanPresentableName(), new int[] {1, 50});
-            roc.addDropDataFlavor(dfx);
-            
-            // Misc Action (does nothing at the moment XXX IMPLEMENT ME!)
-            navBox.add(NavBox.createBtn(getResourceString("New_Gifts"),    name, IconManager.IconSize.Std16));
-            navBox.add(NavBox.createBtn(getResourceString("New_Exchange"), name, IconManager.IconSize.Std16));
-            
-            // InfoRequest Action
-            cmdAction = new CommandAction(INTERACTIONS, InfoRequestName);
-            roc = (NavBoxButton)makeDnDNavBtn(navBox, getResourceString(InfoRequestName), InfoRequestName, cmdAction, null, true, false);// true means make it draggable
-            dfx = new DataFlavorTableExt(RecordSetTask.RECORDSET_FLAVOR.getDefaultRepresentationClass(), RecordSetTask.RECORDSET_FLAVOR.getHumanPresentableName(), 1);
-            roc.addDropDataFlavor(dfx);
             
             // These need to be loaded as Resources
             //navBox = new NavBox(getResourceString(ReportsTask.REPORTS));
@@ -227,16 +246,17 @@ public class InteractionsTask extends BaseTask
                     {
                         //addToNavBoxAndRegisterAsDroppable(navBox, NavBox.createBtn(tcd.getName(), "Loan", IconManager.IconSize.Std16, new NavBoxAction(tcd, this)), tcd.getParams());
                         
-                        cmdAction = new CommandAction(INTERACTIONS, PRINT_LOAN, Loan.getClassTableId());
+                        CommandAction cmdAction = new CommandAction(INTERACTIONS, PRINT_LOAN, Loan.getClassTableId());
                         cmdAction.addStringProperties(tcd.getParams());
-                        NavBoxItemIFace nbi = makeDnDNavBtn(navBox, tcd.getName(), "Reports", cmdAction, null, true, false);
-                        roc = (NavBoxButton)nbi;
+                        NavBoxItemIFace nbi = makeDnDNavBtn(actionsNavBox, tcd.getName(), "Reports", cmdAction, null, true, false);
+                        RolloverCommand roc = (NavBoxButton)nbi;
                         invoiceList.add(nbi);// true means make it draggable
                         //setUpDraggable(nbi, new DataFlavor[]{Trash.TRASH_FLAVOR, INFOREQUEST_FLAVOR}, new NavBoxAction("", ""));
                         roc.addDragDataFlavor(INFOREQUEST_FLAVOR);
                         roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
                         
-                        dfx = new DataFlavorTableExt(RecordSetTask.RECORDSET_FLAVOR.getDefaultRepresentationClass(), RecordSetTask.RECORDSET_FLAVOR.getHumanPresentableName(), new int[] {52});
+                        DataFlavorTableExt dfx = new DataFlavorTableExt(RecordSetTask.RECORDSET_FLAVOR.getDefaultRepresentationClass(), 
+                                RecordSetTask.RECORDSET_FLAVOR.getHumanPresentableName(), new int[] {52});
                         roc.addDropDataFlavor(dfx);
                         
                     } else
@@ -245,29 +265,99 @@ public class InteractionsTask extends BaseTask
                     }
                 }
             }
-            navBoxes.add(navBox);
-            
-            // Load InfoRequests into NavBox
+            navBoxes.add(actionsNavBox);
+           
             infoRequestNavBox  = new NavBox(getResourceString("InfoRequest"));
-            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            loadNavBox(infoRequestNavBox, InfoRequest.class, INFOREQUEST_FLAVOR);
             
-            List<InfoRequest> infoRequests = session.getDataList(InfoRequest.class);
-            for (Iterator<InfoRequest> iter=infoRequests.iterator();iter.hasNext();)
+            /*
+            loansNavBox  = new NavBox(getResourceString("LOANS"));
+            loadNavBox(loansNavBox, Loan.class, LOAN_FLAVOR);
+            
+            giftsNavBox  = new NavBox(getResourceString("GIFTS"));
+            loadNavBox(giftsNavBox, Gift.class, GIFT_FLAVOR);
+            
+            exchangesNavBox  = new NavBox(getResourceString("EXCHANGES"));
+            loadNavBox(exchangesNavBox, ExchangeIn.class, EXCHANGE_FLAVOR);
+            
+            exchangesNavBox  = new NavBox(getResourceString("EXCHANGES"));
+            loadNavBox(exchangesNavBox, ExchangeOut.class, EXCHANGE_FLAVOR);
+            */
+            
+        }
+    }
+    
+    /**
+     * 
+     */
+    private void createGiftNavBtn()
+    {
+        giftsNavBtn = addCommand(actionsNavBox, NEW_GIFT, NEW_GIFT, "Gift", new int[] {Gift.getClassTableId(), CollectionObject.getClassTableId(), InfoRequest.getClassTableId()});
+    }
+    
+    /**
+     * 
+     */
+    private void createExchangeNavBtn()
+    {
+        exchgNavBtn = addCommand(actionsNavBox, NEW_EXCHANGE,NEW_EXCHANGE, name, new int[] {Gift.getClassTableId(), CollectionObject.getClassTableId(), InfoRequest.getClassTableId()});
+    }
+    
+    protected NavBoxButton addCommand(final NavBox navBox, 
+                              final String action, 
+                              final String name, 
+                              final String iconName,
+                              final int[]  tableIds)
+    {
+        CommandAction cmdAction = new CommandAction(INTERACTIONS, action);
+        NavBoxButton roc = (NavBoxButton)makeDnDNavBtn(navBox, getResourceString(name), iconName, cmdAction, null, true, false);// true means make it draggable
+        DataFlavorTableExt dfx = new DataFlavorTableExt(RecordSetTask.RECORDSET_FLAVOR.getDefaultRepresentationClass(), 
+                RecordSetTask.RECORDSET_FLAVOR.getHumanPresentableName(), tableIds);
+        roc.addDropDataFlavor(dfx);
+        return roc;
+    }
+    
+    /**
+     * Helper function to load all the items for a class of data objects (i.e. Loans, Gifts)
+     * @param navBox the parent
+     * @param dataClass the class to be loaded
+     * @param dragFlav the drag flavor of the item
+     */
+    protected void loadNavBox(final NavBox     navBox, 
+                              final Class<?>   dataClass,
+                              final DataFlavor dragFlav)
+    {
+        DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(dataClass.getName());
+        DataProviderSessionIFace session = null;
+        try
+        {
+            session = DataProviderFactory.getInstance().createSession();
+            
+            String sql = "FROM " + ti.getClassName() + " WHERE collectionMemberId = COLMEMID";
+            List<?> list = session.getDataList(QueryAdjusterForDomain.getInstance().adjustSQL(sql));
+            for (Iterator<?> iter=list.iterator();iter.hasNext();)
             {
-                InfoRequest infoRequest = iter.next();
+                FormDataObjIFace dataObj = (FormDataObjIFace)iter.next();
                 
-                //roc = (NavBoxButton) addNavBoxItem(infoRequestNavBox, infoRequest.getIdentityTitle(), "InfoRequest", new CommandAction(INTERACTIONS, DELETE_CMD_ACT, infoRequest), infoRequest);
-                NavBoxItemIFace nbi = makeDnDNavBtn(infoRequestNavBox, infoRequest.getIdentityTitle(), "InfoRequest", new CommandAction(INTERACTIONS, DELETE_CMD_ACT, infoRequest), null, true, true);
-                roc = (NavBoxButton)nbi;
-                nbi.setData(infoRequest);
+                CommandActionForDB   delCmd = new CommandActionForDB(INTERACTIONS, DELETE_CMD_ACT, ti.getTableId(), dataObj.getId());
+                NavBoxItemIFace nbi    = makeDnDNavBtn(navBox, dataObj.getIdentityTitle(), ti.getShortClassName(), 
+                                                       delCmd, null, true, true);
+                RolloverCommand roc = (NavBoxButton)nbi;
+                nbi.setData(new CommandActionForDB(INTERACTIONS, OPEN_FORM_CMD_ACT, ti.getTableId(), dataObj.getId()));
                 roc.addDragDataFlavor(INFOREQUEST_FLAVOR);
                 roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
-                
-                //setUpDraggable(nbi, new DataFlavor[]{Trash.TRASH_FLAVOR, INFOREQUEST_FLAVOR}, new NavBoxAction("", ""));
-                
             }      
-            navBoxes.add(infoRequestNavBox);
-            session.close();
+            navBoxes.add(navBox);
+            
+        } catch (Exception ex)
+        {
+            
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
         }
     }
 
@@ -371,6 +461,11 @@ public class InteractionsTask extends BaseTask
         if (data instanceof RecordSetIFace)
         {
             RecordSetIFace rs = (RecordSetIFace)data;
+            
+            if (rs.getDbTableId() != Loan.getClassTableId())
+            {
+                return;
+            }
             
             String fileName = fileNameArg;
             if (fileName == null)
@@ -641,47 +736,6 @@ public class InteractionsTask extends BaseTask
             }
         }
         return null;
-    }
-    
-    /**
-     * Fixes up the UI as to whether it is a new or existing loan and copies the 
-     * LoanNumber to the ShipmentNumber.
-     * @param formPane the form containing the loan
-     */
-    protected void adjustLoanForm(FormPane formPane)
-    {
-        FormViewObj formViewObj = formPane.getMultiView().getCurrentViewAsFormViewObj();
-        if (formViewObj != null && formViewObj.getDataObj() instanceof Loan)
-        {
-            Loan      loan     = (Loan)formViewObj.getDataObj();
-            boolean   isNewObj = MultiView.isOptionOn(formPane.getMultiView().getOptions(), MultiView.IS_NEW_OBJECT);
-            boolean   isEdit   = formPane.getMultiView().isEditable();
-
-            Component comp     = formViewObj.getControlByName("generateInvoice");
-            if (comp instanceof JCheckBox)
-            {
-                ((JCheckBox)comp).setVisible(isEdit);
-            }
-            comp = formViewObj.getControlByName("ReturnLoan");
-            if (comp instanceof JButton)
-            {
-                comp.setVisible(!isNewObj && isEdit);
-                comp.setEnabled(!loan.getIsClosed());
-            }
-            
-            if (isNewObj)
-            {
-                Component shipComp = formViewObj.getControlByName("shipmentNumber");
-                comp = formViewObj.getControlByName("loanNumber");
-                if (comp instanceof JTextField && shipComp instanceof JTextField)
-                {
-                    ValFormattedTextField loanTxt = (ValFormattedTextField)comp;
-                    ValFormattedTextField shipTxt = (ValFormattedTextField)shipComp;
-                    shipTxt.setValue(loanTxt.getText(), loanTxt.getText());
-                    shipTxt.setChanged(true);
-                }
-            }
-        }
     }
     
     /**
@@ -976,24 +1030,50 @@ public class InteractionsTask extends BaseTask
                 statusBar.setIndeterminate(true);
                 statusBar.setText(getResourceString("ReturningLoanItems"));
                 
-                for (LoanReturnInfo lri : returns)
-                {   
-                    LoanPreparation       lpo  = lri.getLoanPreparation();
-                    LoanReturnPreparation lrpo = new LoanReturnPreparation();
-                    lrpo.initialize();
-                    //lrpo.setAgent(agent);
-                    lrpo.setReceivedBy(agent);
-                    lrpo.setModifiedByAgent(Agent.getUserAgent());
-                    lrpo.setReturnedDate(Calendar.getInstance());
-                    lrpo.setQuantity(lri.getQuantity());
-                    lrpo.setRemarks(lri.getRemarks());
-                    if (lri.isResolved() != null)
-                    {
-                        lri.getLoanPreparation().setIsResolved(lri.isResolved());
-                    }
-                    lrpo.setLoanPreparation(lpo);
-                    lpo.getLoanReturnPreparations().add(lrpo);
+                DataProviderSessionIFace session = null;
+                try
+                {
+                    session = DataProviderFactory.getInstance().createSession();
                     
+                    session.beginTransaction();
+                    
+                    for (LoanReturnInfo loanRetInfo : returns)
+                    {   
+                        LoanPreparation loanPrep  = loanRetInfo.getLoanPreparation();
+                        session.attach(loanPrep);
+                        
+                        LoanReturnPreparation loanRetPrep = new LoanReturnPreparation();
+                        loanRetPrep.initialize();
+                        loanRetPrep.setReceivedBy(agent);
+                        loanRetPrep.setModifiedByAgent(Agent.getUserAgent());
+                        loanRetPrep.setReturnedDate(Calendar.getInstance());
+                        loanRetPrep.setQuantity(loanRetInfo.getQuantity());
+                        loanRetPrep.setRemarks(loanRetInfo.getRemarks());
+                        
+                        if (loanRetInfo.isResolved() != null)
+                        {
+                            loanRetInfo.getLoanPreparation().setIsResolved(loanRetInfo.isResolved());
+                            session.save(loanRetInfo.getLoanPreparation());
+                        }
+                        loanPrep.addReference(loanRetPrep, "loanReturnPreparations");
+                        
+                        session.save(loanRetPrep);
+                        session.saveOrUpdate(loanPrep);
+                    }
+                    
+                    session.commit();
+                    
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                    // Error Dialog
+                    
+                } finally
+                {
+                    if (session != null)
+                    {
+                        session.close();
+                    }
                 }
                 return null;
             }
@@ -1033,22 +1113,25 @@ public class InteractionsTask extends BaseTask
         if (mv != null && loan != null)
         {
             LoanReturnDlg dlg = new LoanReturnDlg(loan);
-            dlg.setModal(true);
-            dlg.setVisible(true);
-            dlg.dispose();
-            
-            if (!dlg.isCancelled())
+            if (dlg.createUI())
             {
-                FormViewObj fvp = mv.getCurrentViewAsFormViewObj();
-                fvp.setHasNewData(true);
-                //fvp.getValidator().validateForm();
-                fvp.getValidator().setHasChanged(true);
-                fvp.validationWasOK(fvp.getValidator().getState() == UIValidatable.ErrorType.Valid);
-               
-                List<LoanReturnInfo> returns = dlg.getLoanReturnInfo();
-                if (returns.size() > 0)
+                dlg.setModal(true);
+                UIHelper.centerAndShow(dlg);
+                dlg.dispose();
+                
+                if (!dlg.isCancelled())
                 {
-                    doReturnLoan(dlg.getAgent(), returns);
+                    FormViewObj fvp = mv.getCurrentViewAsFormViewObj();
+                    fvp.setHasNewData(true);
+                    //fvp.getValidator().validateForm();
+                    fvp.getValidator().setHasChanged(true);
+                    fvp.validationWasOK(fvp.getValidator().getState() == UIValidatable.ErrorType.Valid);
+                   
+                    List<LoanReturnInfo> returns = dlg.getLoanReturnInfo();
+                    if (returns.size() > 0)
+                    {
+                        doReturnLoan(dlg.getAgent(), returns);
+                    }
                 }
             }
             
@@ -1061,6 +1144,55 @@ public class InteractionsTask extends BaseTask
     //-------------------------------------------------------
     // CommandListener Interface
     //-------------------------------------------------------
+    /**
+     * 
+     */
+    protected void prefsChanged(final CommandAction cmdAction)
+    {
+        boolean hasGifts = false;
+        AppPreferences remotePrefs = (AppPreferences)cmdAction.getData();
+        if (remotePrefs == AppPreferences.getRemote())
+        {
+            boolean isDoingGifts = remotePrefs.getBoolean(IS_DOING_GIFT_PREFNAME, true);
+            if (this.isDoingGifts && !isDoingGifts)
+            {
+                actionsNavBox.remove(giftsNavBtn);
+
+            } else if (!this.isDoingGifts && isDoingGifts)
+            {
+                createGiftNavBtn();
+                actionsNavBox.remove(giftsNavBtn);
+                actionsNavBox.insert(giftsNavBtn, true, false, 1);
+                
+                hasGifts = true;
+                
+            } else if (this.isDoingGifts)
+            {
+                hasGifts = true;
+            }
+            
+            boolean isDoingExchs = remotePrefs.getBoolean(IS_DOING_EXCH_PREFNAME, Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.plant));
+            if (this.isDoingExchanges && !isDoingExchs)
+            {
+                actionsNavBox.remove(exchgNavBtn);
+
+            } else if (!this.isDoingExchanges && isDoingExchs)
+            {
+                createExchangeNavBtn();
+                actionsNavBox.remove(exchgNavBtn);
+                actionsNavBox.insert(exchgNavBtn, true, false, hasGifts ? 2 : 1);
+            }
+            
+            // I hate that I have to do this, why?
+            actionsNavBox.validate();
+            actionsNavBox.invalidate();
+            actionsNavBox.doLayout();
+            actionsNavBox.repaint();
+            
+            this.isDoingGifts     = isDoingGifts;
+            this.isDoingExchanges = isDoingExchs;
+        }
+    }
     
     /**
      * Processes all Commands of type RECORD_SET.
@@ -1078,10 +1210,18 @@ public class InteractionsTask extends BaseTask
              
             if (ContextMgr.getCurrentContext() == this)
             {
-                printLoan(null, srcObj);
+                if (dstObj instanceof RecordSet)
+                {
+                    RecordSet rs = (RecordSet)dstObj;
+                    
+                    DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(rs.getDbTableId());
+                    
+                    super.createFormPanel("XXX", "view", (RecordSetIFace)rs, IconManager.getIcon(ti.getShortClassName(), IconManager.IconSize.Std16));
+                }
             }
         }
     }
+    
     /**
      * Processes all Commands of type DB_CMD_TYPE.
      * @param cmdAction the command to be processed
@@ -1119,7 +1259,7 @@ public class InteractionsTask extends BaseTask
         if (cmdAction.isAction(CREATE_MAILMSG))
         {
             createAndSendEMail();
-            
+                
         } else if (cmdAction.isAction(PRINT_LOAN))
         {
             if (cmdAction.getData() instanceof RecordSetIFace)
@@ -1130,7 +1270,6 @@ public class InteractionsTask extends BaseTask
                                                   getResourceString("ERROR_RECORDSET_TABLEID"), 
                                                   getResourceString("Error"), 
                                                   JOptionPane.ERROR_MESSAGE);
-                    return;
                 }
 
                 printLoan(null, cmdAction.getData());
@@ -1147,7 +1286,6 @@ public class InteractionsTask extends BaseTask
                     }
                 }
             }
-
             
         } else if (cmdAction.isAction("CreateInfoRequest") && cmdAction.getData() instanceof RecordSet)
         {
@@ -1195,7 +1333,7 @@ public class InteractionsTask extends BaseTask
                     } else
                     {
                         log.error("Dropped wrong table type.");
-                        // Error Msg Dialog XXX
+                        // this shouldn't happen
                     }
                 } else if (cmdData instanceof InfoRequest)
                 {
@@ -1222,17 +1360,22 @@ public class InteractionsTask extends BaseTask
     {
         //log.debug("Processing Command ["+cmdAction.getType()+"]["+cmdAction.getAction()+"]");
         
+        super.doCommand(cmdAction);
+        
+        if (cmdAction.isConsumed())
+        {
+            return;
+        }
+        
+        log.debug(cmdAction);
+        
         if (cmdAction.isType(DB_CMD_TYPE))
         {
             processDatabaseCommands(cmdAction);
 
         } else if (cmdAction.isType(DataEntryTask.DATA_ENTRY))
         {
-            if (cmdAction.isAction(DataEntryTask.VIEW_WAS_OPENED))
-            {
-                adjustLoanForm((FormPane)cmdAction.getData());
-                
-            } else if (cmdAction.isAction("SaveBeforeSetData"))
+            if (cmdAction.isAction("SaveBeforeSetData"))
             {
                 checkToPrintLoan(cmdAction);
             }
@@ -1241,11 +1384,13 @@ public class InteractionsTask extends BaseTask
         {
             processInteractionsCommands(cmdAction);
             
+        } else if (cmdAction.isType(PreferencesDlg.PREFERENCES))
+        {
+            prefsChanged(cmdAction);
+            
         } else if (cmdAction.isType(RecordSetTask.RECORD_SET))
         {
             processRecordSetCommands(cmdAction);
         }
-            
-
     }
 }

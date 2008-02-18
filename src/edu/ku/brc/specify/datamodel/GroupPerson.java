@@ -82,9 +82,6 @@ public class GroupPerson extends CollectionMember implements java.io.Serializabl
     public GroupPerson(Integer groupPersonId) {
         this.groupPersonId = groupPersonId;
     }
-   
-    
-    
 
     // Initializer
     @Override
@@ -168,7 +165,7 @@ public class GroupPerson extends CollectionMember implements java.io.Serializabl
     }
 
     /**
-     *      * AgentID of group
+     * AgentID of group
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "GroupID", unique = false, nullable = false, insertable = true, updatable = true)
@@ -183,7 +180,7 @@ public class GroupPerson extends CollectionMember implements java.io.Serializabl
     }
 
     /**
-     *      * AgentID of member (member must be of type Person)
+     * AgentID of member (member must be of type Person)
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "MemberID", unique = false, nullable = false, insertable = true, updatable = true)

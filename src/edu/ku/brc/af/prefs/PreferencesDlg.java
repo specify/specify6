@@ -295,6 +295,9 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
                 {
                     Dimension winDim = getSize();
                     winDim.width += currentComp.getPreferredSize().width - oldSize.width;
+                    winDim.width = Math.max(winDim.width, 400);
+                    winDim.height = Math.max(winDim.height, 250);
+                    
                     setSize(winDim);
                     currentComp.setSize(new Dimension(currentComp.getPreferredSize().width, oldSize.height));
                     
@@ -304,6 +307,7 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
                     // Without Animation
                     comp.setVisible(true);
                     winDim.height += currentComp.getPreferredSize().height - oldSize.height;
+                    winDim.height = Math.max(winDim.height, 250);
                     setSize(winDim);
                 }
             }
@@ -356,8 +360,11 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
         {
             pack();
             doLayout();
-            setPreferredSize(getPreferredSize());
-            setSize(getPreferredSize());
+            Dimension size = getPreferredSize();
+            size.width = Math.max(size.width, 400);
+            size.height = Math.max(size.height, 250);
+            setPreferredSize(size);
+            setSize(size);
             UIHelper.centerWindow(this);
         }
         super.setVisible(visible);

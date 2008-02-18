@@ -26,17 +26,20 @@ import java.awt.Component;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JTextField;
 
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Loan;
+import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Shipment;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
-import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.Viewable;
+import edu.ku.brc.ui.forms.validation.ValFormattedTextField;
 
 /**
  * Business rules for validating a Loan.
@@ -56,40 +59,62 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
         super(Loan.class);
     }
     
-    
-
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#fillForm(java.lang.Object, edu.ku.brc.ui.forms.Viewable)
      */
     @Override
     public void afterFillForm(final Object dataObj, final Viewable viewable)
     {
-        if (viewable instanceof FormViewObj)
+        if (formViewObj != null && formViewObj.getDataObj() instanceof Loan)
         {
-            FormViewObj formViewObj = (FormViewObj)viewable;
-            if (formViewObj.getDataObj() instanceof Loan)
+            MultiView mvParent = formViewObj.getMVParent();
+            Loan      loan     = (Loan)formViewObj.getDataObj();
+            boolean   isNewObj = MultiView.isOptionOn(mvParent.getOptions(), MultiView.IS_NEW_OBJECT);
+            boolean   isEdit   = mvParent.isEditable();
+
+            Component comp     = formViewObj.getControlByName("generateInvoice");
+            if (comp instanceof JCheckBox)
             {
-                MultiView mvParent = formViewObj.getMVParent();
-                Loan      loan     = (Loan)formViewObj.getDataObj();
-                boolean   isNewObj = MultiView.isOptionOn(mvParent.getOptions(), MultiView.IS_NEW_OBJECT);
-                boolean   isEdit   = mvParent.isEditable();
-    
-                Component comp     = formViewObj.getControlByName("generateInvoice");
-                if (comp instanceof JCheckBox)
+                ((JCheckBox)comp).setVisible(isEdit);
+            }
+            
+            boolean allResolved = true;
+            for (LoanPreparation loanPrep : loan.getLoanPreparations())
+            {
+                Boolean isResolved = loanPrep.getIsResolved();
+                if (isResolved == null && !isResolved)
                 {
-                    ((JCheckBox)comp).setVisible(isEdit);
+                    allResolved = false;
+                    break;
                 }
-                comp = formViewObj.getControlByName("ReturnLoan");
-                if (comp instanceof JButton)
+            }
+            
+            comp = formViewObj.getControlByName("ReturnLoan");
+            if (comp instanceof JButton)
+            {
+                comp.setVisible(!isNewObj && isEdit);
+                comp.setEnabled(!loan.getIsClosed() && !allResolved);
+                
+                if (allResolved)
                 {
-                    comp.setVisible(!isNewObj && isEdit);
-                    comp.setEnabled(!loan.getIsClosed());
+                    ((JButton)comp).setText(UIRegistry.getResourceString("LOAN_ALL_PREPS_RETURNED"));
+                }
+            }
+            
+            if (isNewObj)
+            {
+                Component shipComp = formViewObj.getControlByName("shipmentNumber");
+                comp = formViewObj.getControlByName("loanNumber");
+                if (comp instanceof JTextField && shipComp instanceof JTextField)
+                {
+                    ValFormattedTextField loanTxt = (ValFormattedTextField)comp;
+                    ValFormattedTextField shipTxt = (ValFormattedTextField)shipComp;
+                    shipTxt.setValue(loanTxt.getText(), loanTxt.getText());
+                    shipTxt.setChanged(true);
                 }
             }
         }
     }
-
-
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeSaveCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
@@ -198,7 +223,8 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#setObjectIdentity(java.lang.Object, edu.ku.brc.ui.DraggableIcon)
      */
-    public void setObjectIdentity(final Object dataObj, final DraggableRecordIdentifier draggableIcon)
+    public void setObjectIdentity(final Object dataObj, 
+                                  final DraggableRecordIdentifier draggableIcon)
     {
         if (dataObj == null)
         {

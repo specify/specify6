@@ -310,5 +310,13 @@ public class CommandAction implements Cloneable
         
         return obj;
     }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    public String toString()
+    {
+        return "CommandAction Type["+type+"]  Action["+action+"] data["+ (data != null ? data.getClass().getSimpleName() : "null")+ "]";
+    }
 
 }

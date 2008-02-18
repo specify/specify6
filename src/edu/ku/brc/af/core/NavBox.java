@@ -213,17 +213,21 @@ public class NavBox extends JPanel implements NavBoxIFace
     public Component insertSorted(final NavBoxItemIFace item)
     {
         int insertionInx = Math.abs(Collections.binarySearch(items, item)) - 1;
-        return insert(item, true, insertionInx);
+        return insert(item, true, true, insertionInx);
     }
 
     /**
      * Adds a NavBoxItemIFace item to the box and returns the UI component for that item.
      * @param item the NavBoxItemIFace item to be added
-     * @param notify whether to have it relayout or not (true -> does layout)
+     * @param doLayout whether to have it relayout or not (true -> does layout)
+     * @param position the position in the list
      * @param position the position in the list
      * @return the UI component for this item
      */
-    public Component insert(final NavBoxItemIFace item, final boolean notify, final int position)
+    public Component insert(final NavBoxItemIFace item, 
+                            final boolean doLayout, 
+                            final boolean doSort,
+                            final int position)
     {
         if (position == -1 || position == items.size())
         {
@@ -240,7 +244,10 @@ public class NavBox extends JPanel implements NavBoxIFace
         } else
         {
             items.insertElementAt(item, position);
-            Collections.sort(items);
+            if (doSort)
+            {
+                Collections.sort(items);
+            }
             
             if (scrollable)
             {
@@ -265,12 +272,13 @@ public class NavBox extends JPanel implements NavBoxIFace
             ((GhostGlassPane)UIRegistry.get(UIRegistry.GLASSPANE)).add((GhostActionable)item);
         }
        
-        if (notify)// && mgr != null)
+        item.getUIComponent().setBackground(getBackground());
+        item.getUIComponent().setOpaque(true);
+        
+        if (doLayout)
         {
             refresh(this);
         }
-        item.getUIComponent().setBackground(getBackground());
-        item.getUIComponent().setOpaque(true);
         return item.getUIComponent();
     }
     
@@ -296,7 +304,7 @@ public class NavBox extends JPanel implements NavBoxIFace
      */
     public Component add(final NavBoxItemIFace item, boolean notify)
     {
-        return insert(item, notify, items.size());
+        return insert(item, notify, false, items.size());
     }
        
     /**

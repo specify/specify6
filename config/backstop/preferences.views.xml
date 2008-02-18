@@ -212,8 +212,19 @@
             
             <desc><![CDATA[Formatting Misc Form.]]></desc>
             
-            <columnDef>p,2dlu,p,5dlu,p,2dlu,p</columnDef>
+            <columnDef>p,2dlu,p,f:p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2dlu"/>
+            <rows>
+                <row>
+                    <cell type="separator" label="Interactions" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="field" id="1" name="Interactions.Doing.Gifts" uitype="checkbox" label="Using Gifts"/>
+                </row>
+                <row>
+                    <cell type="field" id="2" name="Interactions.Doing.Exchanges" uitype="checkbox" label="Using Exchanges"/>
+                </row>
+            </rows>
             
         </viewdef>
         

@@ -209,7 +209,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             {
                 if (!popupFromBtn)
                 {
-                    fillBox(currentText);
+                    doQuery(currentText);
                     popupFromBtn = true;
                     
                 } else
@@ -329,7 +329,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         if (ev.getKeyCode() == JAutoCompComboBox.SEARCH_KEY ||
             ev.getKeyCode() == KeyEvent.VK_DOWN)
         {
-            fillBox(textField.getText());
+            doQuery(textField.getText());
         }
     }
     
@@ -532,74 +532,82 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         if (dataObjList == null || dataObjList.size() == 0)
         {
             textField.setText("");
-            return;
-        }
-        
-        boolean isFirst = true;
-        duplicatehash.clear();
-        for (Object obj : dataObjList)
-        {
-            Object[] array = (Object[])obj;
             
-            if (isFirst)
-            {
-                numColumns = array.length - 1;
-                values     = new Object[numColumns];
-                isFirst = false;
-            }
-            
-            Integer id = (Integer)array[numColumns];
-            idList.addElement(id);
-            
-            if (duplicatehash.get(id) == null)
-            {
-                duplicatehash.put(id, array);
-                
-                if (numColumns == 1)
-                {
-                    list.addElement(array[0].toString());
-                    
-                } else
-                {
-                    try
-                    {
-                        for (int i=0;i<numColumns;i++)
-                        {
-                            Object val = array[i];
-                            values[i] = val != null ? val : "";
-                        }
-                        Formatter formatter = new Formatter();
-                        formatter.format(format, values);
-                        list.addElement(formatter.toString());
-
-                    } catch (java.util.IllegalFormatConversionException ex)
-                    {
-                        ex.printStackTrace();
-                        
-                        list.addElement(values[0] != null ? values[0].toString() : "(No Value)");
-                    }
-
-                }
-            }
-        }
-        
-        if (idList.size() > 0 && returnCount != null)
-        {
-            if (returnCount > popupDlgThreshold)
-            {
-                showDialog();
-                
-            } else
+            if (addAddItem)
             {
                 showPopup();
             }
             
         } else
         {
-            textField.setText("");
+            
+            boolean isFirst = true;
+            duplicatehash.clear();
+            for (Object obj : dataObjList)
+            {
+                Object[] array = (Object[])obj;
+                
+                if (isFirst)
+                {
+                    numColumns = array.length - 1;
+                    values     = new Object[numColumns];
+                    isFirst = false;
+                }
+                
+                Integer id = (Integer)array[numColumns];
+                idList.addElement(id);
+                
+                if (duplicatehash.get(id) == null)
+                {
+                    duplicatehash.put(id, array);
+                    
+                    if (numColumns == 1)
+                    {
+                        list.addElement(array[0].toString());
+                        
+                    } else
+                    {
+                        try
+                        {
+                            for (int i=0;i<numColumns;i++)
+                            {
+                                Object val = array[i];
+                                values[i] = val != null ? val : "";
+                            }
+                            Formatter formatter = new Formatter();
+                            formatter.format(format, values);
+                            list.addElement(formatter.toString());
+    
+                        } catch (java.util.IllegalFormatConversionException ex)
+                        {
+                            ex.printStackTrace();
+                            
+                            list.addElement(values[0] != null ? values[0].toString() : "(No Value)");
+                        }
+    
+                    }
+                }
+            }
+            
+            if (idList.size() > 0 && returnCount != null)
+            {
+                if (returnCount > popupDlgThreshold)
+                {
+                    showDialog();
+                    
+                } else
+                {
+                    showPopup();
+                }
+                
+            } else
+            {
+                textField.setText("");
+            }
+            
+            duplicatehash.clear();
         }
         
-        duplicatehash.clear();
     }
     
     /**
@@ -719,7 +727,6 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             if (dataObjList != null && dataObjList.size() > 0)
             {
                 returnCount = (Integer)dataObjList.get(0);
-                System.out.println(returnCount);
             }
             isDoingCount = false;
             
@@ -749,7 +756,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     /**
      * Fill the the drop down with the list from the query
      */
-    protected void fillBox(final String newEntryStr)
+    protected void doQuery(final String newEntryStr)
     {
         if (hasNewText)
         {

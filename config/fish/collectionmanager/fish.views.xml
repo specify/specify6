@@ -1000,7 +1000,7 @@
                     <cell type="subview" viewname="Shipment" id="11" name="shipments" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="separator" label="Preparations To be Loaned" colspan="12"/>
+                    <cell type="separator" label="Loan Preparations" colspan="12"/>
                 </row>
                 <row>
                      <cell type="subview" viewname="LoanItems" id="10" name="loanPreparations" colspan="12"/>

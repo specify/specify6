@@ -59,6 +59,10 @@ public class DragDropJList extends JList implements DragSourceListener,
 	protected int                 draggedIndex     = -1;
 	/** */
 	protected DragDropCallback    dragDropCallback;
+	
+	protected Cursor              dragCursor  = null;
+    protected Cursor              defaultCursor = new Cursor(Cursor.DEFAULT_CURSOR);
+    protected Cursor              dropCursor  = new Cursor(Cursor.HAND_CURSOR);
 
 	/**
      * Constructor.
@@ -182,6 +186,33 @@ public class DragDropJList extends JList implements DragSourceListener,
 		}
 	}
 	
+	protected void setDragCursor(final boolean okToDrop, final int action)
+	{
+	    if (action == DnDConstants.ACTION_MOVE)
+	    {
+    	    if (okToDrop)
+    	    {
+    	        if (dragCursor == null || dragCursor != dropCursor)
+                {
+    	            dragCursor = dropCursor;
+                    setCursor(dragCursor);
+                } 
+    	    } else
+    	    {
+        	    if (dragCursor == null || dragCursor != defaultCursor)
+        	    {
+        	        dragCursor = defaultCursor;
+                    setCursor(dragCursor);
+        	    }
+    	    }
+    	    
+	    } else if (dragCursor != null)
+	    {
+	        dragCursor = null;
+            setCursor(null);
+	    }
+	}
+	
 	/**
      * Determines if a drop should be accepted.
      * 
@@ -207,13 +238,17 @@ public class DragDropJList extends JList implements DragSourceListener,
 		
 		if (droppedOn == dragged)
 		{
+		    System.out.println(dtde.getSource());
+		    setDragCursor(false, dtde.getDropAction());
 		    return false;
 		}
 		
 		if( dragDropCallback.dropAcceptable(dragged,droppedOn,dtde.getDropAction()) )
 		{
+		    setDragCursor(true, dtde.getDropAction());
 			return true;
 		}
+		setDragCursor(false, dtde.getDropAction());
 		return false;
 	}
 

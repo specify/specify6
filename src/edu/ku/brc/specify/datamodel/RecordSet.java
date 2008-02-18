@@ -47,6 +47,8 @@ import javax.swing.ImageIcon;
 
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 
@@ -520,6 +522,27 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
     //-- Non-Database Methods
     //--------------------------------------------------------------
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.dbsupport.RecordSetIFace#getDataClassFormItems()
+     */
+    @Transient
+    public Class<?> getDataClassFormItems()
+    {
+        DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(dbTableId);
+        if (ti != null)
+        {
+            try
+            {
+                return Class.forName(ti.getClassName());
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+        return null;
+    }
+    
     /**
      * Returns the only item in the RecordSet and return null if there is more than one.
      * @return returns the only item
@@ -568,4 +591,5 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
     {
         return 68;
     }
+
 }

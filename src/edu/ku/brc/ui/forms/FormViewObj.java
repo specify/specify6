@@ -1620,11 +1620,6 @@ public class FormViewObj implements Viewable,
         Object beforeSaveDataObj = dataObj;
         
         SAVE_STATE saveState = saveToDB(dataObj);
-        if (saveState == SAVE_STATE.StaleRecovery)
-        {
-            int x = 0;
-            x++;
-        }
         
         if (saveState == SAVE_STATE.SaveOK)
         {
@@ -1652,6 +1647,11 @@ public class FormViewObj implements Viewable,
             if (mvParent != null)
             {
                 mvParent.clearValidators();
+                
+                if (mvParent.isTopLevel() && beforeSaveDataObj == mvParent.getData())
+                {
+                    mvParent.setJustDataObj(dataObj);
+                }
             }
             
             // Not calling setHasNewData because we need to traverse and setHasNewData doesn't

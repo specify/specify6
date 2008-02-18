@@ -21,11 +21,12 @@ import static edu.ku.brc.specify.utilapps.DataBuilder.createCollectingTrip;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createCollection;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createCollectionObject;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createCollectionObjectAttr;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createDiscipline;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createCollector;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createDataType;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createGroupPerson;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createDetermination;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createDeterminationStatus;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createDiscipline;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createDivision;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createGeography;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createGeographyChildren;
@@ -75,6 +76,7 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -136,7 +138,6 @@ import edu.ku.brc.specify.datamodel.CollectingTrip;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttr;
-import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.ConservDescription;
 import edu.ku.brc.specify.datamodel.ConservEvent;
@@ -145,6 +146,7 @@ import edu.ku.brc.specify.datamodel.ConservRecommendation;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
@@ -152,6 +154,7 @@ import edu.ku.brc.specify.datamodel.GeographyTreeDefItem;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem;
+import edu.ku.brc.specify.datamodel.GroupPerson;
 import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.Journal;
 import edu.ku.brc.specify.datamodel.LithoStrat;
@@ -324,7 +327,7 @@ public class BuildSampleDatabase
         GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Geography");
         GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Chronos Stratigraphy");
         LithoStratTreeDef         lithoStratTreeDef = createLithoStratTreeDef("LithoStrat");
-        StorageTreeDef           locTreeDef        = createStorageTreeDef("Storage");
+        StorageTreeDef            locTreeDef        = createStorageTreeDef("Storage");
         
         lithoStratTreeDef.setRemarks("A simple super, group, formation, member, bed Litho Stratigraphy tree");
         
@@ -470,46 +473,37 @@ public class BuildSampleDatabase
         ConservRecmdType type = new ConservRecmdType();
         type.initialize();
         type.setTitle("Avoid Light");
-        persist(type);
         
+        startTx();
+        persist(type);
+        commitTx();
+        
+        ConservRecommendation recommend = new ConservRecommendation();
+        recommend.initialize();
+        recommend.setCompletedDate(Calendar.getInstance());
+        recommend.addReference(userAgent, "curator");
+        recommend.addReference(type, "conservRecmdType");
+
         ConservDescription desc = new ConservDescription();
         desc.initialize();
         desc.setShortDesc("Short Description");
         //desc.addReference(divs.get(0), "division");
         
-        desc.addReference(userAgent, "curator");
+        desc.addReference(recommend, "lightRecommendations");
         desc.addReference(colObjs.get(0), "collectionObject");
         
         //desc.setCollectionObject(colObjs.get(0));
         //colObjs.get(0).getConservDescriptions().add(desc);
         
-        ConservEvent ce = new ConservEvent();
-        ce.initialize();
-        ce.setExamDate(Calendar.getInstance());
+        ConservEvent conservEvent = new ConservEvent();
+        conservEvent.initialize();
+        conservEvent.setExamDate(Calendar.getInstance());
         
-        ce.addReference(agents.get(1), "examinedByAgent");
-        ce.addReference(agents.get(2), "treatedByAgent");
+        conservEvent.addReference(agents.get(1), "examinedByAgent");
+        conservEvent.addReference(agents.get(2), "treatedByAgent");
         
-        /*int inx = 5;
-        ce.setExaminedByAgent(agents.get(inx));
-        agents.get(inx).getExaminedByAgentConservEvents().add(ce);
-        System.out.println(agents.get(inx).getLastName());
+        desc.addReference(conservEvent, "events");
         
-        //ce.setTreatedByAgent(agents.get(7));
-        //agents.get(7).getTreatedByAgentConservEvents().add(ce);
-         */
-        
-        //desc.getEvents().add(ce);
-        //ce.setConservDescription(desc);
-        desc.addReference(ce, "events");
-        
-        
-        ConservRecommendation recommend = new ConservRecommendation();
-        recommend.initialize();
-        recommend.setCompletedDate(Calendar.getInstance());
-        recommend.addReference(type, "conservRecmdType");
-        ce.addReference(recommend, "lightRecommendations");
- 
         persist(desc);
         
         //commitTx();
@@ -815,6 +809,42 @@ public class BuildSampleDatabase
         agents.get(3).setOrganization(ku);
         agents.get(8).setOrganization(ku);
         
+        Agent otherAgent = new Agent();
+        otherAgent.initialize();
+        otherAgent.setAbbreviation("O");
+        otherAgent.setAgentType(Agent.OTHER);
+        otherAgent.setLastName("The Other Guys");
+        otherAgent.setEmail("other@other.com");
+        otherAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        otherAgent.setDiscipline(Discipline.getCurrentDiscipline());
+        agents.add(otherAgent);
+
+        List<GroupPerson> gpList = new ArrayList<GroupPerson>();
+        if (true)
+        {
+            startTx();
+            Agent gm1 = createAgent("Mr.", "John", "A", "Lyon", "jal", "jal@group.edu");
+            Agent gm2 = createAgent("Mr.", "Dave", "D", "Jones", "ddj", "ddj@group.edu");
+            persist(gm1);
+            persist(gm2);
+            commitTx();
+            
+            Agent groupAgent = new Agent();
+            groupAgent.initialize();
+            groupAgent.setAbbreviation("GRP");
+            groupAgent.setAgentType(Agent.GROUP);
+            groupAgent.setLastName("The Group");
+            groupAgent.setEmail("group@group.com");
+            groupAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+            groupAgent.setDiscipline(Discipline.getCurrentDiscipline());
+            
+            agents.add(groupAgent);
+            
+            gpList.add(createGroupPerson(groupAgent, gm1, 0));
+            gpList.add(createGroupPerson(groupAgent, gm2, 1));
+        }
+
+        
         List<AgentVariant> agentVariants = new Vector<AgentVariant>();
         agentVariants.add(createAgentVariant(AgentVariant.VARIANT, "James Variant #1", steveBoyd));
         agentVariants.add(createAgentVariant(AgentVariant.VERNACULAR, "James VERNACULAR #1", steveBoyd));
@@ -836,6 +866,7 @@ public class BuildSampleDatabase
         //startTx();
         persist(agents);
         persist(agentVariants);
+        persist(gpList);
         //commitTx();
         
         frame.setProcess(++createStep);
@@ -1295,17 +1326,18 @@ public class BuildSampleDatabase
      * @param disciplineName the disciplineType name
      * @return the entire list of DB object to be persisted
      */
-    public void createFishCollection(final DisciplineType     disciplineType,
+    public void createFishCollection(final DisciplineType disciplineType,
                                      final Institution    institution,
-                                     final SpecifyUser    user)
+                                     final SpecifyUser    user,
+                                     final UserGroup      userGroup)
     {
         frame.setDesc("Creating Fish Collection Overhead...");
         
         startTx();
-        DataType         dataType         = createDataType(disciplineType.getTitle());
+        DataType dataType = createDataType(disciplineType.getTitle());
         persist(dataType);
 
-        Division       division       = createDivision(institution, disciplineType.getName(), "Icthyology", "IT", "Icthyology");
+        Division division = createDivision(institution, disciplineType.getName(), "Icthyology", "IT", "Icthyology");
         persist(division);
         
         // create tree defs (later we will make the def items and nodes)
@@ -1313,7 +1345,7 @@ public class BuildSampleDatabase
         GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Geography");
         GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Chronos Stratigraphy");
         LithoStratTreeDef         lithoStratTreeDef = createLithoStratTreeDef("LithoStrat");
-        StorageTreeDef           locTreeDef        = createStorageTreeDef("Storage");
+        StorageTreeDef            locTreeDef        = createStorageTreeDef("Storage");
         
         lithoStratTreeDef.setRemarks("A simple super, group, formation, member, bed Litho Stratigraphy tree");
         
@@ -1321,6 +1353,7 @@ public class BuildSampleDatabase
         Discipline.setCurrentDiscipline(discipline);
         
         persist(discipline);
+        commitTx();
         
         ////////////////////////////////
         // Create the really high-level stuff
@@ -1344,14 +1377,28 @@ public class BuildSampleDatabase
         Agent userAgent = createAgent(title, firstName, midInit, lastName, abbrev, email);
         userAgent.setDivision(division);
         
+        SpecifyUser user2 = createSpecifyUser("tester", "tester@brc.ku.edu", (short) 0, userGroup, user.getUserType());
+        startTx();
+        persist(user2);
+        commitTx();
+        
+        startTx();
+        Agent userAgent2 = createAgent("Tester", "Test", "", "Tester", "", "tester@brc.ku.edu");
+        userAgent2.setDivision(division);
+        
+
         discipline.addReference(userAgent, "agents");
         
         user.addReference(userAgent, "agents");
+        user2.addReference(userAgent2, "agents");
+        
         persist(discipline);
         persist(userAgent);
         persist(user);
+        persist(user2);
 
         persist(userAgent);
+        persist(userAgent2);
         
         loadSchemaLocalization(discipline, SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
         
@@ -1379,7 +1426,7 @@ public class BuildSampleDatabase
         persist(locs);
         persist(gtps);
         persist(lithoStrats);
-        commitTx();
+        commitTx(); 
         
         //frame.setProcess(++createStep);
         frame.setOverall(steps++);
@@ -1583,6 +1630,41 @@ public class BuildSampleDatabase
             agents.get(3).setOrganization(ku);
             agents.get(8).setOrganization(ku);
             
+            Agent otherAgent = new Agent();
+            otherAgent.initialize();
+            otherAgent.setAbbreviation("O");
+            otherAgent.setAgentType(Agent.OTHER);
+            otherAgent.setLastName("The Other Guys");
+            otherAgent.setEmail("other@other.com");
+            otherAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+            otherAgent.setDiscipline(Discipline.getCurrentDiscipline());
+            agents.add(otherAgent);
+
+            List<GroupPerson> gpList = new ArrayList<GroupPerson>();
+            if (true)
+            {
+                startTx();
+                Agent gm1 = createAgent("Mr.", "John", "A", "Lyon", "jal", "jal@group.edu");
+                Agent gm2 = createAgent("Mr.", "Dave", "D", "Jones", "ddj", "ddj@group.edu");
+                persist(gm1);
+                persist(gm2);
+                commitTx();
+                
+                Agent groupAgent = new Agent();
+                groupAgent.initialize();
+                groupAgent.setAbbreviation("GRP");
+                groupAgent.setAgentType(Agent.GROUP);
+                groupAgent.setLastName("The Group");
+                groupAgent.setEmail("group@group.com");
+                groupAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+                groupAgent.setDiscipline(Discipline.getCurrentDiscipline());
+                
+                agents.add(groupAgent);
+                
+                gpList.add(createGroupPerson(groupAgent, gm1, 0));
+                gpList.add(createGroupPerson(groupAgent, gm2, 1));
+            }
+            
             globalAgents.addAll(agents);
             
             List<AgentVariant> agentVariants = new Vector<AgentVariant>();
@@ -1602,6 +1684,7 @@ public class BuildSampleDatabase
             
             persist(agents);
             persist(agentVariants);
+            persist(gpList);
             
         } else
         {
@@ -2265,9 +2348,10 @@ public class BuildSampleDatabase
 //            }
 //        }
 
-        //startTx();
+        startTx();
         persist(dataObjects);
-        //commitTx();
+        commitTx();
+        
         dataObjects.clear();
         
         frame.setProcess(++createStep);
@@ -2445,7 +2529,7 @@ public class BuildSampleDatabase
         
         frame.setProcess(++createStep);
         
-        createFishCollection(DisciplineType.getByTitle("Fish"), institution, user);
+        createFishCollection(DisciplineType.getByTitle("Fish"), institution, user, userGroup);
         
         frame.setOverall(steps++);
         

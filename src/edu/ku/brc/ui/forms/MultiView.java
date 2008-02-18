@@ -983,6 +983,15 @@ public class MultiView extends JPanel
     {
         setData(data, true);
     }
+    
+    /**
+     * Called only by FormViewObj after a save.
+     * @param dObj the new data object when it isn't a collection.
+     */
+    protected void setJustDataObj(final Object dObj)
+    {
+        this.data = dObj;
+    }
 
     /**
      * Sets the Data Object into the View.

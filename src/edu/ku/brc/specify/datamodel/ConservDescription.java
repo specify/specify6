@@ -356,7 +356,7 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
    /**
     * 
     */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "lightRecommendationConservEvent")
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "lightRecommendation")
     @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     public Set<ConservRecommendation> getLightRecommendations()
     {
@@ -371,7 +371,7 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
     /**
      * 
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "displayRecommendationConservEvent")
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "displayRecommendation")
     @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     public Set<ConservRecommendation> getDisplayRecommendations()
     {
@@ -386,7 +386,7 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
     /**
      * 
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "otherRecommendationConservEvent")
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "otherRecommendation")
     @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
     public Set<ConservRecommendation> getOtherRecommendations()
     {

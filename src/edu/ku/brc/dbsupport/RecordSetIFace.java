@@ -61,5 +61,7 @@ public interface RecordSetIFace
     public abstract int getTableId();
     
     public abstract RecordSetItemIFace getOnlyItem();
+    
+    public abstract Class<?> getDataClassFormItems();
 
 }

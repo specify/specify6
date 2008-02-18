@@ -32,7 +32,6 @@ import java.awt.event.MouseEvent;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -65,11 +64,14 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPrefsCache;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Determination;
+import edu.ku.brc.specify.datamodel.DeterminationStatus;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.LoanReturnPreparation;
@@ -116,143 +118,168 @@ public class LoanReturnDlg extends JDialog
     protected boolean                isCancelled = true;
     
     /**
-     * @param colObjs
+     * @param loan the loan
      */
     public LoanReturnDlg(final Loan loan)
     {
         this.loan = loan;
         
-        setTitle("Loan Return"); // I18N
-        
-        validator.addValidationListener(new ValidationListener() {
-            public void wasValidated(UIValidator val)
-            {
-                doEnableOKBtn();
-            }
-        });
-        
-         
-        JPanel contentPanel = new JPanel(new BorderLayout());
-        
-        JPanel mainPanel = new JPanel();
-        
-        Hashtable<String, Vector<LoanPreparation>> colObjHash = new Hashtable<String, Vector<LoanPreparation>>();
-        for (LoanPreparation lpo : loan.getLoanPreparations())
+    }
+    
+    public boolean createUI()
+    {
+        DataProviderSessionIFace session = null;
+        try
         {
-            CollectionObject colObj = lpo.getPreparation().getCollectionObject();
-            Vector<LoanPreparation> list = colObjHash.get(colObj);
-            if (list == null)
-            {
-                list = new Vector<LoanPreparation>();
-                colObjHash.put(colObj.getIdentityTitle(), list);
-            }
-            list.add(lpo);
-        }
-        int colObjCnt = colObjHash.size();
-
-        String          rowDef   = UIHelper.createDuplicateJGoodiesDef("p", "1px,p,4px", (colObjCnt*2)-1);
-        PanelBuilder    pbuilder = new PanelBuilder(new FormLayout("f:p:g", rowDef), mainPanel);
-        CellConstraints cc       = new CellConstraints();
-        
-        ActionListener al = new ActionListener()
-        {
-            public void actionPerformed(ActionEvent ae)
-            {
-                doEnableOKBtn();
-            }
-        };
- 
-        ChangeListener cl = new ChangeListener()
-        {
-            public void stateChanged(ChangeEvent ae)
-            {
-                doEnableOKBtn();
-            }
-        };
- 
-        int i = 0;
-        int y = 1;
-
-        Vector<String> keysList = new Vector<String>(colObjHash.keySet());
-        Collections.sort(keysList);
-        Iterator<String> it = keysList.iterator();
-        while (it.hasNext()) 
-        {
-
-            if (i > 0)
-            {
-                pbuilder.addSeparator("", cc.xy(1,y));
-            }
-            y += 2;
+            session = DataProviderFactory.getInstance().createSession();
             
-            ColObjPanel panel = new ColObjPanel(this, colObjHash.get(it.next()));
-            colObjPanels.add(panel);
-            panel.addActionListener(al, cl);
-            pbuilder.add(panel, cc.xy(1,y));
-            y += 2;
-            i++;
-
+            session.attach(loan);
+        
+            setTitle("Loan Return"); // I18N
+            
+            validator.addValidationListener(new ValidationListener() {
+                public void wasValidated(UIValidator val)
+                {
+                    doEnableOKBtn();
+                }
+            });
+            
+             
+            JPanel contentPanel = new JPanel(new BorderLayout());
+            
+            JPanel mainPanel = new JPanel();
+            
+            Hashtable<CollectionObject, Vector<LoanPreparation>> colObjHash     = new Hashtable<CollectionObject, Vector<LoanPreparation>>();
+            for (LoanPreparation loanPrep : loan.getLoanPreparations())
+            {
+                CollectionObject        colObj = loanPrep.getPreparation().getCollectionObject();
+                Vector<LoanPreparation> list   = colObjHash.get(colObj);
+                if (list == null)
+                {
+                    list = new Vector<LoanPreparation>();
+                    colObjHash.put(colObj, list);
+                }
+                list.add(loanPrep);
+            }
+            int colObjCnt = colObjHash.size();
+    
+            String          rowDef   = UIHelper.createDuplicateJGoodiesDef("p", "1px,p,4px", (colObjCnt*2)-1);
+            PanelBuilder    pbuilder = new PanelBuilder(new FormLayout("f:p:g", rowDef), mainPanel);
+            CellConstraints cc       = new CellConstraints();
+            
+            ActionListener al = new ActionListener()
+            {
+                public void actionPerformed(ActionEvent ae)
+                {
+                    doEnableOKBtn();
+                }
+            };
+     
+            ChangeListener cl = new ChangeListener()
+            {
+                public void stateChanged(ChangeEvent ae)
+                {
+                    doEnableOKBtn();
+                }
+            };
+     
+            int i = 0;
+            int y = 1;
+    
+            Vector<CollectionObject> keysList = new Vector<CollectionObject>(colObjHash.keySet());
+            Collections.sort(keysList);
+            for (CollectionObject co : keysList)
+            {
+                if (i > 0)
+                {
+                    pbuilder.addSeparator("", cc.xy(1,y));
+                }
+                y += 2;
+                
+                ColObjPanel panel = new ColObjPanel(session, this, co, colObjHash.get(co));
+                colObjPanels.add(panel);
+                panel.addActionListener(al, cl);
+                pbuilder.add(panel, cc.xy(1,y));
+                y += 2;
+                i++;
+    
+            }
+            
+            JButton selectAllBtn = new JButton(getResourceString("SelectAll"));
+            okBtn = new JButton(getResourceString("OK"));
+            JButton cancel = new JButton(getResourceString("Cancel"));
+            
+            summaryLabel = new JLabel("");
+            JPanel p = new JPanel(new BorderLayout());
+            p.setBorder(BorderFactory.createEmptyBorder(5, 1, 5, 1));
+            p.add(summaryLabel, BorderLayout.CENTER);
+            
+            JPanel agentPanel = new JPanel(new BorderLayout());
+            agentPanel.add(new JLabel("Agent:", SwingConstants.RIGHT), BorderLayout.WEST); // I18N
+            agentPanel.add(agentCBX = createAgentCombobox(), BorderLayout.CENTER);
+            p.add(agentPanel, BorderLayout.EAST); // I18N
+            
+            contentPanel.add(p, BorderLayout.NORTH);
+            contentPanel.add(new JScrollPane(mainPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER));
+            
+            p = new JPanel(new BorderLayout());
+            p.setBorder(BorderFactory.createEmptyBorder(5, 0, 2, 0));
+            p.add(ButtonBarFactory.buildOKCancelApplyBar(okBtn, cancel, selectAllBtn), BorderLayout.CENTER);
+            contentPanel.add(p, BorderLayout.SOUTH);
+            
+            setContentPane(contentPanel);
+            
+            doEnableOKBtn();
+    
+            //setIconImage(IconManager.getIcon("Preparation", IconManager.IconSize.Std16).getImage());
+            setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+            
+            doEnableOKBtn();
+            
+            okBtn.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent ae)
+                {
+                    setVisible(false);
+                    isCancelled = false;
+                }
+            });
+            
+            cancel.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent ae)
+                {
+                    setVisible(false);
+                }
+            });
+            
+            selectAllBtn.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent ae)
+                {
+                    selectAllItems();
+                }
+            });
+            
+            pack();
+            
+            Dimension size = getPreferredSize();
+            size.width += 20;
+            size.height = size.height > 500 ? 500 : size.height;
+            setSize(size);
+            
+            return true;
+        
+        } catch (Exception ex)
+        {
+            // Error Dialog
+            ex.printStackTrace();
+            
+        } finally 
+        {
+            if (session != null)
+            {
+                session.close();
+            }
         }
-        
-        JButton selectAllBtn = new JButton(getResourceString("SelectAll"));
-        okBtn = new JButton(getResourceString("OK"));
-        JButton cancel = new JButton(getResourceString("Cancel"));
-        
-        summaryLabel = new JLabel("");
-        JPanel p = new JPanel(new BorderLayout());
-        p.setBorder(BorderFactory.createEmptyBorder(5, 1, 5, 1));
-        p.add(summaryLabel, BorderLayout.CENTER);
-        
-        JPanel agentPanel = new JPanel(new BorderLayout());
-        agentPanel.add(new JLabel("Agent:", SwingConstants.RIGHT), BorderLayout.WEST); // I18N
-        agentPanel.add(agentCBX = createAgentCombobox(), BorderLayout.CENTER);
-        p.add(agentPanel, BorderLayout.EAST); // I18N
-        
-        contentPanel.add(p, BorderLayout.NORTH);
-        contentPanel.add(new JScrollPane(mainPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER));
-        
-        p = new JPanel(new BorderLayout());
-        p.setBorder(BorderFactory.createEmptyBorder(5, 0, 2, 0));
-        p.add(ButtonBarFactory.buildOKCancelApplyBar(okBtn, cancel, selectAllBtn), BorderLayout.CENTER);
-        contentPanel.add(p, BorderLayout.SOUTH);
-        
-        setContentPane(contentPanel);
-        
-        doEnableOKBtn();
-
-        //setIconImage(IconManager.getIcon("Preparation", IconManager.IconSize.Std16).getImage());
-        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        
-        doEnableOKBtn();
-        
-        okBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae)
-            {
-                setVisible(false);
-                isCancelled = false;
-            }
-        });
-        
-        cancel.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae)
-            {
-                setVisible(false);
-            }
-        });
-        
-        selectAllBtn.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent ae)
-            {
-                selectAllItems();
-            }
-        });
-        
-        pack();
-        
-        Dimension size = getPreferredSize();
-        size.width += 20;
-        size.height = size.height > 500 ? 500 : size.height;
-        setSize(size);
+        return false;
     }
     
     protected void doEnableOKBtn()
@@ -297,8 +324,8 @@ public class LoanReturnDlg extends JDialog
     }
     
     /**
-     * Returns whether the dialog was cancelled.
-     * @return whether the dialog was cancelled.
+     * Returns whether the dialog was canceled.
+     * @return whether the dialog was canceled.
      */
     public boolean isCancelled()
     {
@@ -346,13 +373,22 @@ public class LoanReturnDlg extends JDialog
         protected JDialog           dlgParent;
         
         /**
+         * @param session
+         * @param dlgParent
          * @param colObj
+         * @param lpoList
          */
-        public ColObjPanel(final JDialog dlgParent, final List<LoanPreparation> lpoList)
+        public ColObjPanel(final DataProviderSessionIFace session,
+                           final JDialog               dlgParent, 
+                           final CollectionObject      colObj,
+                           final List<LoanPreparation> lpoList)
         {
             super();
+            
             this.dlgParent = dlgParent;
-            this.colObj    = lpoList.get(0).getPreparation().getCollectionObject();
+            this.colObj    = colObj;
+            
+            session.attach(colObj);
             
             setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
             //setBorder(BorderFactory.createCompoundBorder(new CurvedBorder(new Color(160,160,160)), getBorder()));
@@ -364,7 +400,7 @@ public class LoanReturnDlg extends JDialog
             String taxonName = "";
             for (Determination deter : colObj.getDeterminations())
             {
-                if (deter.getStatus().getDeterminationStatusId() == null ? deter.getStatus().getName().equals("Current") : deter.getStatus().getDeterminationStatusId() == 2)
+                if (deter.getStatus().getType() == DeterminationStatus.CURRENT)
                 {
                     if (deter.getTaxon().getFullName() == null)
                     {
@@ -380,7 +416,8 @@ public class LoanReturnDlg extends JDialog
                     break;
                 }
             }
-            String descr = String.format("%6.0f - %s", new Object[]{colObj.getCatalogNumber(), taxonName});
+            
+            String descr = String.format("%s - %s", colObj.getIdentityTitle(), taxonName);
             descr = StringUtils.stripToEmpty(descr);
             
             checkBox = new JCheckBox(descr);
@@ -477,7 +514,7 @@ public class LoanReturnDlg extends JDialog
         protected JCheckBox   resolved;
 
         /**
-         * Constructs a pnale representing the Preparation being returned.
+         * Constructs a panel representing the Preparation being returned.
          * @param parent the parent dialog
          * @param lpo the LoanPreparation being returned
          */
@@ -493,7 +530,6 @@ public class LoanReturnDlg extends JDialog
      
             PanelBuilder    pbuilder = new PanelBuilder(new FormLayout("max(120px;p),2px,max(50px;p),2px,p,2px,p,10px,p:g", "p,2px,p"), this);
             CellConstraints cc      = new CellConstraints();
-            
             
             pbuilder.add(label = new JLabel(prep.getPrepType().getName()), cc.xy(1,1));
             label.setOpaque(false);
