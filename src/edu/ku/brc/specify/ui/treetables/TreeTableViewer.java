@@ -1845,9 +1845,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		}
 
         //log.debug("dropAcceptable setting drop storage to " + droppedOn);
-		listModel.setDropLocationNode(droppedOn);
-		repaint();
-		
 		String dropActionText = null;
 		switch (dropAction)
 		{
@@ -1866,6 +1863,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		}
 		log.debug(dragged + " is being dragged over " + droppedOn + " with action " + dropActionText);
 		
+		repaint(); // this schedules a repaint
+		
 		if (dropAction == DnDConstants.ACTION_COPY  || dropAction == DnDConstants.ACTION_NONE)
 		{
 			//log.debug("determining if request to synonymize node " + dragged + " to node " + droppedOn + " is acceptable");
@@ -1873,6 +1872,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			if ( !(dragged instanceof TreeNode && droppedOn instanceof TreeNode))
 			{
 				//log.debug("Synonymization request IS NOT acceptable.  One or both objects are not TreeNodes.");
+			    listModel.setDropLocationNode(null);
 				return false;
 			}
 			
@@ -1888,9 +1888,11 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                     descendant = listModel.isDescendantOfNode(draggedNode, droppedOnNode);
                 }
 				//log.debug("Synonymization request IS acceptable.");
+                listModel.setDropLocationNode(descendant ? null : droppedOn);
 				return !descendant;
 			}
 			//log.debug("Synonymization request IS NOT acceptable.  Drop target is not an accepted name.");
+			listModel.setDropLocationNode(null);
 			return false;
 		}
 		else if (dropAction == DnDConstants.ACTION_MOVE)
@@ -1900,6 +1902,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			if ( !(dragged instanceof TreeNode && droppedOn instanceof TreeNode) )
 			{
             	//log.debug("Reparent request IS NOT acceptable.  One or both objects are not TreeNodes.");
+			    listModel.setDropLocationNode(null);
 				return false;
 			}
 			
@@ -1909,13 +1912,16 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			if ( !TreeHelper.canChildBeReparentedToNode(draggedNode.getRank(),droppedOnNode.getRank(),treeDef) )
 			{
             	//log.debug("Reparent request IS NOT acceptable.");
+			    listModel.setDropLocationNode(null);
 				return false;
 			}
         	//log.debug("Reparent request IS acceptable.");
+			listModel.setDropLocationNode(droppedOn);
 			return true;
 		}
 		
     	log.debug("DnD action (" + dropActionText + ") is not handled.");
+    	listModel.setDropLocationNode(null);
 		return false;
 	}
 

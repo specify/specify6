@@ -67,11 +67,11 @@ public class TreeViewerListModel extends AbstractListModel
     }
     
     public TreeNode getDropLocationNode()
-	{
-		return dropLocationNode;
-	}
+    {
+        return dropLocationNode;
+    }
 
-	public void setDropLocationNode(Object dropLocationNode)
+    public void setDropLocationNode(Object dropLocationNode)
 	{
         TreeNode prevDropLocNode = this.dropLocationNode;
         
@@ -91,8 +91,9 @@ public class TreeViewerListModel extends AbstractListModel
             int nodeIndex = indexOf(prevDropLocNode);
             fireContentsChanged(this, nodeIndex, nodeIndex);
         }
+        
 	}
-
+    
 	public synchronized TreeNode getVisibleRoot()
     {
         return visibleRoot;
