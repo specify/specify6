@@ -1561,7 +1561,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                                 listModel.nodeValuesChanged(editedNode);
                             } else
                             {
-                                log.error("** - JDS - ** acceptedParentBefore was null and shouldn't have been.");
+                                String msg = "** - JDS - ** acceptedParentBefore was null and shouldn't have been.";
+                                log.error(msg);
+                                UIRegistry.displayErrorDlg(msg);
                             }
                         }
                         
@@ -1768,11 +1770,15 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                         
                     } else
                     {
-                        log.error("** - JDS - ** synNode was null and shouldn't have been for ID["+synNodeID+"]");
+                        String msg = "** - JDS - ** synNode was null and shouldn't have been for ID["+synNodeID+"]";
+                        log.error(msg);
+                        UIRegistry.displayErrorDlg(msg);
                     }
                 } else
                 {
-                    log.error("** - JDS - ** idAndName.first was null and shouldn't have been.");
+                    String msg = "** - JDS - ** idAndName.first was null and shouldn't have been.";
+                    log.error(msg);
+                    UIRegistry.displayErrorDlg(msg);
                 }
             }
             
