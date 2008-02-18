@@ -15,10 +15,12 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -98,13 +100,12 @@ public class QueryBldrPane extends BaseSubPane
                                                                                       .getLogger(QueryBldrPane.class);
 
     protected JList                                          tableList;
-    //protected Hashtable<DBTableInfo, Vector<TableFieldPair>> tableFieldList   = new Hashtable<DBTableInfo, Vector<TableFieldPair>>();
-
     protected Vector<QueryFieldPanel>                        queryFieldItems  = new Vector<QueryFieldPanel>();
     protected QueryFieldPanel                                selectedQFP = null; 
     protected int                                            currentInx       = -1;
     protected JPanel                                         queryFieldsPanel;
-
+    protected JScrollPane                                    queryFieldsScroll;
+    
     protected SpQuery                                        query            = null;
 
     protected JButton                                        addBtn;
@@ -275,11 +276,11 @@ public class QueryBldrPane extends BaseSubPane
 
         queryFieldsPanel = new JPanel();
         queryFieldsPanel.setLayout(new NavBoxLayoutManager(0, 2));
-        JScrollPane sp = new JScrollPane(queryFieldsPanel,
+        queryFieldsScroll = new JScrollPane(queryFieldsPanel,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        sp.setBorder(null);
-        add(sp, BorderLayout.CENTER);
+        queryFieldsScroll.setBorder(null);
+        add(queryFieldsScroll);
 
         JButton searchBtn = new JButton("Search");
         final JCheckBox distinctChk = new JCheckBox("distinct", false);
@@ -307,15 +308,9 @@ public class QueryBldrPane extends BaseSubPane
 
     }
 
-    public int getCurrentContextTableId()
-    {
-        TableQRI currentTableQRI = (TableQRI) tableList.getSelectedValue();
-        return currentTableQRI.getTableInfo().getTableId();
-    }
-
     /**
      * @param fieldName
-     * @return
+     * @return fieldName with lower-cased first character.
      */
     public static String fixFieldName(final String fieldName)
     {
@@ -327,23 +322,16 @@ public class QueryBldrPane extends BaseSubPane
      */
     protected void setQueryIntoUI()
     {
+        if (!SwingUtilities.isEventDispatchThread()) { throw new RuntimeException(
+                "Method called from invalid thread."); }
         queryFieldsPanel.removeAll();
         queryFieldItems.clear();
         queryFieldsPanel.validate();
+        saveBtn.setEnabled(false);
         columnDefStr = null;
-
-        for (JList list : listBoxList)
-        {
-            DefaultListModel model = (DefaultListModel) list.getModel();
-            for (int i = 0; i < model.size(); i++)
-            {
-                BaseQRI bq = (BaseQRI) model.get(i);
-                bq.setIsInUse(false);
-            }
-        }
-
         tableList.clearSelection();
         contextPanel.setVisible(query == null);
+        tableList.setSelectedIndex(-1);
         if (query != null)
         {
             Short tblId = query.getContextTableId();
@@ -355,15 +343,31 @@ public class QueryBldrPane extends BaseSubPane
                     if (qri.getTableInfo().getTableId() == tblId.intValue())
                     {
                         tableList.setSelectedIndex(i);
-                        Vector<SpQueryField> fields = new Vector<SpQueryField>(query.getFields());
-                        Collections.sort(fields);
-                        for (SpQueryField field : fields)
-                        {
-                            addQueryFieldItem(field);
-                        }
-                        break;
                     }
                 }
+            }
+        }
+        
+        for (JList list : listBoxList)
+        {
+            DefaultListModel model = (DefaultListModel) list.getModel();
+            for (int i = 0; i < model.size(); i++)
+            {
+                BaseQRI bq = (BaseQRI) model.get(i);
+                bq.setIsInUse(false);
+            }
+        }
+
+        if (query != null)
+        {
+            TableQRI qri = (TableQRI) tableList.getSelectedValue();
+            if (qri == null) { throw new RuntimeException("Invalid context for query."); }
+            Vector<SpQueryField> fields = new Vector<SpQueryField>(query.getFields());
+            Collections.sort(fields);
+            currentInx = 0;
+            for (SpQueryField field : fields)
+            {
+                addQueryFieldItem(field);
             }
         }
 
@@ -371,30 +375,19 @@ public class QueryBldrPane extends BaseSubPane
         {
             qfp.resetValidator();
         }
-        saveBtn.setEnabled(false);
 
-        //Sorry, but a new context can't be selected if any fields are selected from the current context.
-        tableList.setEnabled(queryFieldItems.size() == 0);
-
-        this.validate();
-    }
-
-    protected boolean includeObjKey()
-    {
-        return false;
-    }
-    
-    public int getFldPosition(final QueryFieldPanel qfp)
-    {
-        for (int p=0; p<queryFieldItems.size(); p++)
+        SwingUtilities.invokeLater(new Runnable()
         {
-            if (queryFieldItems.get(p) == qfp)
+            public void run()
             {
-                return includeObjKey() ? p+1 : p;
+                //Sorry, but a new context can't be selected if any fields are selected from the current context.
+                tableList.setEnabled(queryFieldItems.size() == 0);
+                selectQFP(queryFieldItems.get(0));
+                QueryBldrPane.this.validate();
             }
-        }
-        return -1; //oops
+        });
     }
+
     /**
      * @param queryArg
      */
@@ -597,16 +590,19 @@ public class QueryBldrPane extends BaseSubPane
         }
     }
 
+    /**
+     * @return Panel with up and down arrows for moving fields up and down in queryFieldsPanel.
+     */
     protected JPanel bldMoverPanel()
     {
-        orderUpBtn = createIconBtn("ReorderUp", "ES_RES_MOVE_UP", new ActionListener()
+        orderUpBtn = createIconBtn("ReorderUp", "QB_FLD_MOVE_UP", new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
                 orderUp();
             }
         });
-        orderDwnBtn = createIconBtn("ReorderDown", "ES_RES_MOVE_DOWN", new ActionListener()
+        orderDwnBtn = createIconBtn("ReorderDown", "QB_FLD_MOVE_DOWN", new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -622,16 +618,20 @@ public class QueryBldrPane extends BaseSubPane
         return upDownPanel.getPanel();
     }
 
+    /**
+     * Moves selected QFP up in queryFieldsPanel
+     */
     protected void orderUp()
     {
         moveField(selectedQFP, queryFieldItems.get(queryFieldItems.indexOf(selectedQFP)-1));
-        updateMoverBtns();
     }
     
+    /**
+     * Moves selected QFP down in queryFieldsPanel
+     */
     protected void orderDown()
     {
         moveField(selectedQFP, queryFieldItems.get(queryFieldItems.indexOf(selectedQFP)+1));
-        updateMoverBtns();
     }
     
     /**
@@ -1048,13 +1048,13 @@ public class QueryBldrPane extends BaseSubPane
             if (curInx == listBoxList.size() - 1)
             {
                 newList = new JList(model = new DefaultListModel());
-                newList.addMouseListener(new MouseListener()
+                newList.addMouseListener(new MouseAdapter()
                 {
 
                     /* (non-Javadoc)
                      * @see java.awt.event.MouseListener#mouseClicked(java.awt.event.MouseEvent)
                      */
-                    //@Override
+                    @Override
                     public void mouseClicked(MouseEvent e)
                     {
                         if (e.getClickCount() == 2)
@@ -1091,27 +1091,6 @@ public class QueryBldrPane extends BaseSubPane
                             }
                         }
                     }
-
-                    /* (non-Javadoc)
-                     * @see java.awt.event.MouseListener#mouseEntered(java.awt.event.MouseEvent)
-                     */
-                    //@Override
-                    public void mouseEntered(MouseEvent e){/**/}
-                    /* (non-Javadoc)
-                     * @see java.awt.event.MouseListener#mouseExited(java.awt.event.MouseEvent)
-                     */
-                    //@Override
-                    public void mouseExited(MouseEvent e){/**/}
-                    /* (non-Javadoc)
-                     * @see java.awt.event.MouseListener#mousePressed(java.awt.event.MouseEvent)
-                     */
-                    //@Override
-                    public void mousePressed(MouseEvent e) {/**/}
-                    /* (non-Javadoc)
-                     * @see java.awt.event.MouseListener#mouseReleased(java.awt.event.MouseEvent)
-                     */
-                    //@Override
-                    public void mouseReleased(MouseEvent e){/**/}
                 });
                 newList.setCellRenderer(qryRenderer);
                 listBoxList.add(newList);
@@ -1207,31 +1186,32 @@ public class QueryBldrPane extends BaseSubPane
      */
     public void removeQueryFieldItem(final QueryFieldPanel qfp)
     {
-        if (selectedQFP == qfp)
-        {
-            selectQFP(null);
-        }
-        queryFieldItems.remove(qfp);
-        queryFieldsPanel.getLayout().removeLayoutComponent(qfp);
-        queryFieldsPanel.remove(qfp);
         qfp.getFieldQRI().setIsInUse(false);
         qualifyFieldLabels();
         if (qfp.getQueryField() != null)
         {
             query.removeReference(qfp.getQueryField(), "fields");
         }
-        queryFieldsPanel.validate();
-        updateAddBtnState();
-        
+        queryFieldItems.remove(qfp);
+
         SwingUtilities.invokeLater(new Runnable()
         {
             public void run()
             {
+                if (selectedQFP == qfp)
+                {
+                    selectQFP(null);
+                }
+                queryFieldsPanel.getLayout().removeLayoutComponent(qfp);
+                queryFieldsPanel.remove(qfp);
+                queryFieldsPanel.validate();
+                updateAddBtnState();
+                
+                //Sorry, but a new context can't be selected if any fields are selected from the current context.
+                tableList.setEnabled(queryFieldItems.size() == 0);
+                
                 try
                 {
-                    //Sorry, but a new context can't be selected if any fields are selected from the current context.
-                    tableList.setEnabled(queryFieldItems.size() == 0);
-                    
                     listBoxList.get(currentInx).repaint();
                 } catch (ArrayIndexOutOfBoundsException ex)
                 {
@@ -1318,13 +1298,17 @@ public class QueryBldrPane extends BaseSubPane
     {
         if (fieldQRI != null)
         {
+            final QueryFieldPanel header;
             if (queryFieldItems.size() == 0 && queryFieldsPanel.getComponentCount() == 0)
             {
-                QueryFieldPanel qfp = new QueryFieldPanel(this, fieldQRI,
+                header = new QueryFieldPanel(this, fieldQRI,
                         IconManager.IconSize.Std24, columnDefStr, saveBtn, null);
-                queryFieldsPanel.add(qfp);
             }
-
+            else
+            {
+                header = null;
+            }
+            
             final QueryFieldPanel qfp = new QueryFieldPanel(this, fieldQRI,
                     IconManager.IconSize.Std24, columnDefStr, saveBtn, queryField);
             qfp.addMouseListener(new MouseInputAdapter()
@@ -1335,12 +1319,9 @@ public class QueryBldrPane extends BaseSubPane
                     selectQFP(qfp);
                 }
             });
-            queryFieldsPanel.add(qfp);
             queryFieldItems.add(qfp);
             qualifyFieldLabels();
-            selectQFP(qfp);
             fieldQRI.setIsInUse(true);
-            queryFieldsPanel.validate();
             
             SwingUtilities.invokeLater(new Runnable()
             {
@@ -1348,10 +1329,16 @@ public class QueryBldrPane extends BaseSubPane
                 {
                     if (currentInx > -1)
                     {
+                        if (header != null)
+                        {
+                            queryFieldsPanel.add(header);
+                        }
+                        queryFieldsPanel.add(qfp);
+                        queryFieldsPanel.validate();
                         listBoxList.get(currentInx).repaint();
-                        queryFieldsPanel.repaint();
-                        qfp.repaint();
                         updateAddBtnState();
+                        selectQFP(qfp);
+                        queryFieldsPanel.repaint();
                         saveBtn.setEnabled(true);
                         //Sorry, but a new context can't be selected if any fields are selected from the current context.
                         tableList.setEnabled(queryFieldItems.size() == 0);
@@ -1361,22 +1348,57 @@ public class QueryBldrPane extends BaseSubPane
         }
     }
 
+    /**
+     * @param qfp
+     * 
+     * Displays and highlights qfp.
+     * 
+     * Use runSelectQFP if not calling from Swing thread.
+     */
     protected void selectQFP(final QueryFieldPanel qfp)
     {
-        if (selectedQFP != null)
+        if (!SwingUtilities.isEventDispatchThread())
         {
-            selectedQFP.setBorder(null);
-            selectedQFP.repaint();
+            //apparently this never happens, but...
+            runSelectQFP(qfp);
         }
-        selectedQFP = qfp;
-        if (selectedQFP != null)
+        else
         {
-            selectedQFP.setBorder(new LineBorder(Color.BLACK));
-            selectedQFP.repaint();
+            if (selectedQFP != null)
+            {
+                selectedQFP.setBorder(null);
+                selectedQFP.repaint();
+            }
+            selectedQFP = qfp;
+            if (selectedQFP != null)
+            {
+                selectedQFP.setBorder(new LineBorder(Color.BLACK));
+                selectedQFP.repaint();
+                scrollQueryFieldsToRect(selectedQFP.getBounds());
+            }
+            updateMoverBtns();
         }
-        updateMoverBtns();
     }
     
+    /**
+     * @param qfp
+     * 
+     * runs selectQFP() in Swing thread.
+     */
+    private void runSelectQFP(final QueryFieldPanel qfp)
+    {
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            public void run()
+            {
+                selectQFP(qfp);
+            }
+        });
+    }
+    
+    /**
+     * Enables field mover buttons as appropriate for position of currently select QueryFieldPanel.
+     */
     protected void updateMoverBtns()
     {
         int idx = queryFieldItems.indexOf(selectedQFP);
@@ -1384,6 +1406,7 @@ public class QueryBldrPane extends BaseSubPane
         orderDwnBtn.setEnabled(idx > -1 && idx < queryFieldItems.size()-1);
         
     }
+    
     /**
      * Adds qualifiers (TableOrRelationship/Field Title) to query fields where necessary.
      * 
@@ -1416,14 +1439,6 @@ public class QueryBldrPane extends BaseSubPane
                 }
             }
         }
-        
-//        for (QueryFieldPanel qfp : queryFieldItems)
-//        {
-//            //if (qfp.isLabelQualified())
-//            {
-//                qfp.qualifyLabel();
-//            }
-//        }
     }
 
     /**
@@ -1707,10 +1722,28 @@ public class QueryBldrPane extends BaseSubPane
             {
                 queryFieldsPanel.doLayout();
                 queryFieldsPanel.validate();
+                scrollQueryFieldsToRect(toMove.getBounds());
                 queryFieldsPanel.repaint();
+                updateMoverBtns();
                 saveBtn.setEnabled(true);
             }
         });
+    }
+    
+    /**
+     * @param rect - the rectangle to make visible.
+     * 
+     * Wrapper for JViewport.scrollReectToVisible() with a work around for a java bug.
+     */
+    protected void scrollQueryFieldsToRect(final Rectangle rect)
+    {
+        //scrollRectToVisible doesn't work when newBounds is above the viewport.
+        //This is a java bug: http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6333318
+        if (rect.y < queryFieldsScroll.getViewport().getViewPosition().y)
+        {
+            queryFieldsScroll.getViewport().setViewPosition(new Point(rect.x,rect.y));
+        }
+        queryFieldsScroll.getViewport().scrollRectToVisible(rect);
     }
     
     public int getFields()

@@ -489,7 +489,13 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
             // @Override
             public void focusGained(FocusEvent e)
             {
-                queryBldrPane.selectQFP(QueryFieldPanel.this);
+                //Checking oppositeComponent to work around
+                //weird behavior after addBtn is clicked which
+                //causes top queryFieldPanel to be selected.
+                if (e.getOppositeComponent() != queryBldrPane.addBtn)
+                {
+                    queryBldrPane.selectQFP(QueryFieldPanel.this);
+                }
 
             }
 
