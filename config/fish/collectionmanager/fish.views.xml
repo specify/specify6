@@ -130,6 +130,32 @@
               </altviews>
          
         </view>
+         <view name="Deaccession"
+              class="edu.ku.brc.specify.datamodel.Deaccession"
+              resourcelabels="false">
+            <desc><![CDATA[The Deaccession form.]]></desc>
+            <altviews>
+                <altview name="Deaccession View" viewdef="Deaccession" label="View" mode="view" default="true"/>
+                <altview name="Deaccession Edit" viewdef="Deaccession" label="Edit" mode="edit"/>
+                <!-- <altview name="Deaccession Icon" viewdef="Deaccession IconView" label="Icon" mode="view"/> -->
+            </altviews>
+        </view>
+       
+       
+        <view name="Deaccession Agent"
+              objtitle="Deaccession Agent"
+              class="edu.ku.brc.specify.datamodel.DeaccessionAgent"
+              resourcelabels="false">
+            <desc><![CDATA[Subform within the Deaccession form.]]></desc>
+            <altviews>
+                <!--
+                <altview name="DeaccessionAgent IconView" viewdef="DeaccessionAgentIconView" label="IconView " mode="view"/>
+                <altview name="DeaccessionAgent IconView (Edit Mode)" viewdef="DeaccessionAgentIconView" label="IconView Edit" mode="edit"/> 
+                -->
+                <altview name="DeaccessionAgent View" viewdef="DeaccessionAgent" label="View" mode="view"/>
+                <altview name="DeaccessionAgent Edit" viewdef="DeaccessionAgent" label="Edit" mode="edit" default="true"/>
+            </altviews>
+        </view>
         
         <view name="Determination"
               class="edu.ku.brc.specify.datamodel.Determination"
@@ -502,6 +528,54 @@
         </viewdef>
 
         <viewdef
+            type="form"
+            name="AgentForDeaccessions"
+            class="edu.ku.brc.specify.datamodel.Agent"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+
+            <desc><![CDATA[Agent subform for Deaccessions.]]></desc>
+            <columnDef>p,2px,p,2px,p,2px,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,10px,p:g</rowDef>
+
+            <rows>
+                <row>
+                    <cell type="separator" label="Agent Info" colspan="7"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1" label="Title"/>
+                    <cell type="field" id="1" name="title" uitype="combobox" initialize="data=Asst. Director, Curator, Mr., Mrs., Ms., Dr."/> <!-- Needs to be a PickList -->
+                    <cell type="label" labelfor="2" label="Title"/>
+                    <cell type="field" id="2" name="jobTitle" uitype="text" cols="20"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="Last Name"/>
+                    <cell type="field" id="3" name="lastName" uitype="text" cols="20"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="4" label="Middle Initial"/>
+                    <cell type="field" id="4" name="middleInitial" uitype="text" cols="3"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5" label="First Name"/>
+                    <cell type="field" id="5" name="firstName" uitype="text" cols="20"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="6" label="Organization"/>
+                    <cell type="field" id="6" name="name" uitype="text" cols="30" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="7" label="Abbreviation"/>
+                    <cell type="field" id="7" name="abbreviation" uitype="text" cols="10"/>
+                    <cell type="label" labelfor="8" label="Interests"/>
+                    <cell type="field" id="8" name="interests" uitype="text" cols="30"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="Address" id="9" name="addresses" colspan="7"/>
+                </row>
+            </rows>
+        </viewdef>
+        <viewdef
         	type="form"
         	name="Attachment"
         	class="edu.ku.brc.specify.datamodel.Attachment"
@@ -807,7 +881,74 @@
               </row>
            </rows>
        </viewdef>
+       
+       <viewdef
+            type="form"
+            name="Deaccession"
+            class="edu.ku.brc.specify.datamodel.Deaccession"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The Deaccession form.]]></desc>
+            <enableRules/>
+
+            <columnDef>100px,2px,p,2px,100px,2px,p,2px,p,50px,100px,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+
+            <rows>
+                <row>
+                	<cell type="label" label="KU Deaccessions" icon="Deaccession" recordobj="true" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1" label="Number"/>
+                    <cell type="field" id="1" name="deaccessionNumber" uitype="formattedtext" isrequired="true" uifieldformatter="DeaccessionNumber"/>                         		    </row>
+                <row>
+                    <cell type="label" labelfor="5" label="Deaccessioned"/>
+                    <cell type="field" id="5" name="dateDeaccessioned" uitype="formattedtext" isrequired="true" uifieldformatter="Date" default="today"/>
+                </row>
+
+                <row>
+                    <cell type="separator" label="Deaccession Agents" colspan="10" collapse="deaccessionAgents"/>
+                </row>
+                <row>
+                    <cell type="iconview" viewname="Deaccession Agent" id="8" name="deaccessionAgents" desc="Agents" colspan="11"/>
+                </row> 
+                <row>
+                    <cell type="separator" label="" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="10" label="Edited By"/>
+                    <cell type="field" id="10" name="modifiedByAgent" uitype="label" readonly="true"  uifieldformatter="Agent"/>
+                    
+                    <cell type="label" labelfor="11" label="Last Edited"/>
+                    <cell type="field" id="11" name="timestampModified" uitype="label" readonly="true" cols="20" colspan="2"/>
+                </row>
+            </rows>
+        </viewdef>
         
+        <viewdef
+            type="form"
+            name="DeaccessionAgent"
+            class="edu.ku.brc.specify.datamodel.DeaccessionAgent"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[The DeaccessionAgent subform for Deaccession form.]]></desc>
+            <enableRules/>
+
+            <columnDef>60px,2px,p,2px,35px,2px,75px</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Agent"/>
+                    <cell type="field" id="1" name="agent" uitype="querycbx" initialize="name=Agent;title=Agent" isrequired="true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3" label="Remarks"/>
+                    <cell type="field" id="3" name="remarks" uitype="textarea" colspan="5" cols="40" rows="3"/>
+                </row>
+            </rows>
+        </viewdef>
+
         <viewdef
             name="Determination Table"
             type="formtable"
