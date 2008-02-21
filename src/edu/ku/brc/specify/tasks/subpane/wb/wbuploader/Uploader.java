@@ -2152,6 +2152,7 @@ public class Uploader implements ActionListener, KeyListener
         }
         if (currentOp.equals(Uploader.SUCCESS) && getUploadedObjects() > 0)
         {
+            boolean result = false;
             String msg = String.format(getResourceString("WB_UPLOAD_CONFIRM_SAVE"), wbSS.getWorkbench().getName());
             JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
             int rv = JOptionPane.showConfirmDialog(topFrame,
@@ -2162,26 +2163,29 @@ public class Uploader implements ActionListener, KeyListener
             if (rv == JOptionPane.YES_OPTION)
             {
                 saveRecordSets();
-                return true;
+                result = true;
             }
             if (rv == JOptionPane.NO_OPTION)
             {
                 undoUpload(false, true);
-                return true;
+                result = true;
             }
             //else rv equals JOptionPane.CANCEL_OPTION or CLOSED_OPTION
-            for (UploadTable ut : uploadTables)
+            if (result)
             {
-                try
+                for (UploadTable ut : uploadTables)
                 {
-                    ut.shutdown();
-                }
-                catch (UploaderException ex)
-                {
-                    throw new RuntimeException(ex);
+                    try
+                    {
+                        ut.shutdown();
+                    }
+                    catch (UploaderException ex)
+                    {
+                        throw new RuntimeException(ex);
+                    }
                 }
             }
-            return false;
+            return result;
         }
         return true;
     }
