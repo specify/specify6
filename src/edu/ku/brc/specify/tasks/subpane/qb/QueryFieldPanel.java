@@ -581,7 +581,7 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
         icon = IconManager.getIcon(fieldQRI.getTableInfo().getTitle(), iconSize);
         setIcon(icon);
         isDisplayedCkbx.setSelected(true);
-
+        
         closeBtn.addMouseListener(new MouseAdapter()
         {
             @Override
@@ -592,6 +592,13 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
             }
         });
 
+        //for now
+        boolean isRel = fieldQRI instanceof RelQRI;
+        isNotCheckbox.setEnabled(!isRel);
+        operatorCBX.setEnabled(!isRel);
+        criteria.setEnabled(!isRel);
+        isDisplayedCkbx.setEnabled(!isRel);
+        
         validate();
         doLayout();
 

@@ -116,7 +116,7 @@ public class QryListRenderer implements ListCellRenderer
             panel.setBackground(list.getBackground());
             panel.setForeground(list.getForeground());
         }
-        label.setText(" " + (qri != null ? qri.getTitle() : "WTF"));
+        label.setText(" " + (qri != null ? qri.getTitle() : "?"));
         panel.doLayout();
         return panel;
     }

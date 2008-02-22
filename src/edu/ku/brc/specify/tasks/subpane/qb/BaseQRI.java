@@ -25,7 +25,7 @@ public class BaseQRI implements QryListRendererIFace, Comparable<QryListRenderer
     protected TableTree tableTree;
     protected String    iconName;
     protected String    title;
-    protected Boolean   isInUse = null;
+    protected Boolean   isInUse = false;
     
     public BaseQRI(final TableTree tableTree)
     {

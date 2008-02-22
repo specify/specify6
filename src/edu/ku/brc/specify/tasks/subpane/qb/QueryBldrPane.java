@@ -67,6 +67,7 @@ import edu.ku.brc.af.core.expresssearch.ERTICaptionInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.dbsupport.DBFieldInfo;
+import edu.ku.brc.dbsupport.DBRelationshipInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -79,6 +80,7 @@ import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.tasks.QueryTask;
+import edu.ku.brc.specify.tasks.ReportsBaseTask;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -343,21 +345,12 @@ public class QueryBldrPane extends BaseSubPane
                     if (qri.getTableInfo().getTableId() == tblId.intValue())
                     {
                         tableList.setSelectedIndex(i);
+                        break;
                     }
                 }
             }
         }
         
-        for (JList list : listBoxList)
-        {
-            DefaultListModel model = (DefaultListModel) list.getModel();
-            for (int i = 0; i < model.size(); i++)
-            {
-                BaseQRI bq = (BaseQRI) model.get(i);
-                bq.setIsInUse(false);
-            }
-        }
-
         if (query != null)
         {
             TableQRI qri = (TableQRI) tableList.getSelectedValue();
@@ -398,136 +391,136 @@ public class QueryBldrPane extends BaseSubPane
         setQueryIntoUI();
     }
 
-    /**
-     * Performs the Search by building the HQL String.
-     */
-    protected void doSearch(final TableQRI rootTable, boolean distinct)
+    protected String buildHQL(final TableQRI rootTable, boolean distinct)
     {
+        if (queryFieldItems.size() == 0)
+            return null;
 
-        if (queryFieldItems.size() > 0)
+        StringBuilder fieldsStr = new StringBuilder();
+        Vector<BaseQRI> list = new Vector<BaseQRI>();
+        StringBuilder criteriaStr = new StringBuilder();
+        StringBuilder orderStr = new StringBuilder();
+        boolean debug = true;
+        ProcessNode root = new ProcessNode(null);
+        int fldPosition = distinct ? 0 : 1;
+
+        for (QueryFieldPanel qfi : queryFieldItems)
         {
-            StringBuilder fieldsStr = new StringBuilder();
-            Vector<BaseQRI> list = new Vector<BaseQRI>();
-            StringBuilder criteriaStr = new StringBuilder();
-            StringBuilder orderStr = new StringBuilder();
-            boolean debug = true;
-            ProcessNode root = new ProcessNode(null);
-            int fldPosition = distinct ? 0 : 1;
-            
-            for (QueryFieldPanel qfi : queryFieldItems)
+            qfi.updateQueryField();
+
+            if (qfi.isForDisplay())
             {
-                qfi.updateQueryField();
+                fldPosition++;
+            }
 
-                if (qfi.isForDisplay())
-                {
-                    fldPosition++;
-                }
-                
-                if (debug)
-                {
-                    System.out.println("\nNode: " + qfi.getFieldName());
-                }
+            if (debug)
+            {
+                System.out.println("\nNode: " + qfi.getFieldName());
+            }
 
-                String orderSpec = qfi.getOrderSpec(fldPosition);
-                if (orderSpec != null)
+            String orderSpec = qfi.getOrderSpec(fldPosition);
+            if (orderSpec != null)
+            {
+                if (orderStr.length() > 0)
                 {
-                    if (orderStr.length() > 0)
-                    {
-                        orderStr.append(", ");
-                    }
-                    orderStr.append(orderSpec);
+                    orderStr.append(", ");
                 }
+                orderStr.append(orderSpec);
+            }
 
-                // Create a Stack (list) of parent from
-                // the current node up to the top
-                // basically we are creating a path of nodes
-                // to determine if we need to create a new node in the tree
-                list.clear();
-                FieldQRI pqri = qfi.getFieldQRI();
-                TableTree parent = pqri.getTableTree();
-                list.insertElementAt(pqri, 0);
-                while (parent != tableTree)
-                {
-                    list.insertElementAt(parent.getTableQRI(), 0);
-                    parent = parent.getParent();
-                }
+            // Create a Stack (list) of parent from
+            // the current node up to the top
+            // basically we are creating a path of nodes
+            // to determine if we need to create a new node in the tree
+            list.clear();
+            FieldQRI pqri = qfi.getFieldQRI();
+            TableTree parent = pqri.getTableTree();
+            list.insertElementAt(pqri, 0);
+            while (parent != tableTree)
+            {
+                list.insertElementAt(parent.getTableQRI(), 0);
+                parent = parent.getParent();
+            }
 
-                if (debug)
-                {
-                    System.out.println("Path From Top Down:");
-                    for (BaseQRI qri : list)
-                    {
-                        System.out.println("  " + qri.getTitle());
-                    }
-                }
-
-                // Now walk the stack top (the top most parent)
-                // down and if the path form the top down doesn't
-                // exist then add a new node
-                ProcessNode parentNode = root;
+            if (debug)
+            {
+                System.out.println("Path From Top Down:");
                 for (BaseQRI qri : list)
                 {
-                    if (debug)
-                    {
-                        System.out.println("ProcessNode[" + qri.getTitle() + "]");
-                    }
-                    if (!parentNode.contains(qri) && qri instanceof TableQRI)
-                    {
-                        ProcessNode newNode = new ProcessNode(qri);
-                        parentNode.getKids().add(newNode);
-                        if (debug)
-                        {
-                            System.out.println("Adding new node["
-                                    + newNode.getQri().getTitle()
-                                    + "] to Node["
-                                    + (parentNode.getQri() == null ? "root" : parentNode.getQri()
-                                            .getTitle()) + "]");
-                        }
-                        parentNode = newNode;
-                    }
-                    else
-                    {
-                        for (ProcessNode kidNode : parentNode.getKids())
-                        {
-                            if (kidNode.getQri().equals(qri))
-                            {
-                                parentNode = kidNode;
-                                break;
-                            }
-                        }
-                    }
+                    System.out.println("  " + qri.getTitle());
                 }
+            }
 
+            // Now walk the stack top (the top most parent)
+            // down and if the path form the top down doesn't
+            // exist then add a new node
+            ProcessNode parentNode = root;
+            for (BaseQRI qri : list)
+            {
                 if (debug)
                 {
-                    System.out.println("Current Tree:");
-                    printTree(root, 0);
+                    System.out.println("ProcessNode[" + qri.getTitle() + "]");
                 }
+                if (!parentNode.contains(qri) && qri instanceof TableQRI)
+                {
+                    ProcessNode newNode = new ProcessNode(qri);
+                    parentNode.getKids().add(newNode);
+                    if (debug)
+                    {
+                        System.out.println("Adding new node["
+                                + newNode.getQri().getTitle()
+                                + "] to Node["
+                                + (parentNode.getQri() == null ? "root" : parentNode.getQri()
+                                        .getTitle()) + "]");
+                    }
+                    parentNode = newNode;
+                }
+                else
+                {
+                    for (ProcessNode kidNode : parentNode.getKids())
+                    {
+                        if (kidNode.getQri().equals(qri))
+                        {
+                            parentNode = kidNode;
+                            break;
+                        }
+                    }
+                }
+            }
 
+            if (debug)
+            {
+                System.out.println("Current Tree:");
+                printTree(root, 0);
             }
-            printTree(root, 0);
 
-            StringBuilder fromStr = new StringBuilder();
-            tableAbbreviator.clear();
-            processTree(root, fromStr, 0);
-            
-            StringBuilder sqlStr = new StringBuilder();
-            sqlStr.append("select ");
-            if (distinct)
+        }
+        printTree(root, 0);
+
+        StringBuilder fromStr = new StringBuilder();
+        tableAbbreviator.clear();
+        processTree(root, fromStr, 0);
+
+        StringBuilder sqlStr = new StringBuilder();
+        sqlStr.append("select ");
+        if (distinct)
+        {
+            sqlStr.append(" distinct ");
+        }
+        if (!distinct)
+        {
+            fieldsStr.append(tableAbbreviator.getAbbreviation(rootTable.getTableTree()));
+            fieldsStr.append(".");
+            fieldsStr.append(rootTable.getTableInfo().getIdFieldName());
+        }
+
+        SortedSet<String> checkedForSpecialColumns = new TreeSet<String>();
+        for (QueryFieldPanel qfi : queryFieldItems)
+        {
+            if (qfi.isForDisplay())
             {
-                sqlStr.append(" distinct ");
-            }
-            if (!distinct)
-            {
-                fieldsStr.append(tableAbbreviator.getAbbreviation(rootTable.getTableTree()));
-                fieldsStr.append(".");
-                fieldsStr.append(rootTable.getTableInfo().getIdFieldName());
-            }
-            
-            SortedSet<String> checkedForSpecialColumns = new TreeSet<String>();
-            for (QueryFieldPanel qfi : queryFieldItems)
-            {
-                if (qfi.isForDisplay())
+                String fldSpec = qfi.getFieldQRI().getSQLFldSpec(tableAbbreviator);
+                if (StringUtils.isNotEmpty(fldSpec))
                 {
                     if (fieldsStr.length() > 0)
                     {
@@ -535,61 +528,73 @@ public class QueryBldrPane extends BaseSubPane
                     }
                     fieldsStr.append(qfi.getFieldQRI().getSQLFldSpec(tableAbbreviator));
                 }
-                
-                String alias = tableAbbreviator.getAbbreviation(qfi.getFieldQRI().getTableTree());
-                if (!checkedForSpecialColumns.contains(alias))
+            }
+
+            String alias = tableAbbreviator.getAbbreviation(qfi.getFieldQRI().getTableTree());
+            if (!checkedForSpecialColumns.contains(alias))
+            {
+                String specialColumnWhere = QueryAdjusterForDomain.getInstance().getSpecialColumns(
+                        qfi.getFieldQRI().getTableInfo(), true, alias);
+                checkedForSpecialColumns.add(alias);
+                if (StringUtils.isNotEmpty(specialColumnWhere))
                 {
-                    String specialColumnWhere = QueryAdjusterForDomain.getInstance().getSpecialColumns(qfi.getFieldQRI().getTableInfo(), true, 
-                            alias);
-                    checkedForSpecialColumns.add(alias);
-                    if (StringUtils.isNotEmpty(specialColumnWhere))
-                    {
-                        if (criteriaStr.length() > 0)
-                        {
-                            criteriaStr.append(" AND ");
-                        }
-                        criteriaStr.append(specialColumnWhere);
-                    }
-                }
-                String criteria = qfi.getCriteriaFormula(tableAbbreviator);
-                boolean isDisplayOnly = StringUtils.isEmpty(criteria);
-                if (!isDisplayOnly)
-                {
-                    if (!isDisplayOnly && criteriaStr.length() > 0)
+                    if (criteriaStr.length() > 0)
                     {
                         criteriaStr.append(" AND ");
                     }
-                    criteriaStr.append(criteria);
+                    criteriaStr.append(specialColumnWhere);
                 }
-           }
-            sqlStr.append(fieldsStr);
-            
-            
-            sqlStr.append(" from ");
-            sqlStr.append(fromStr);
-            
-            
-            if (criteriaStr.length() > 0)
-            {
-                sqlStr.append(" where ");
-                sqlStr.append(criteriaStr);
             }
-
-            if (orderStr.length() > 0)
+            String criteria = qfi.getCriteriaFormula(tableAbbreviator);
+            boolean isDisplayOnly = StringUtils.isEmpty(criteria);
+            if (!isDisplayOnly)
             {
-                sqlStr.append(" order by ");
-                sqlStr.append(orderStr);
+                if (!isDisplayOnly && criteriaStr.length() > 0)
+                {
+                    criteriaStr.append(" AND ");
+                }
+                criteriaStr.append(criteria);
             }
-
-            if (debug)
-            {
-                System.out.println(sqlStr.toString());
-            }
-            processSQL(queryFieldItems, sqlStr.toString(), rootTable.getTableInfo(), distinct);
-
         }
+        sqlStr.append(fieldsStr);
+
+        sqlStr.append(" from ");
+        sqlStr.append(fromStr);
+
+        if (criteriaStr.length() > 0)
+        {
+            sqlStr.append(" where ");
+            sqlStr.append(criteriaStr);
+        }
+
+        if (orderStr.length() > 0)
+        {
+            sqlStr.append(" order by ");
+            sqlStr.append(orderStr);
+        }
+
+        if (debug)
+        {
+            System.out.println(sqlStr.toString());
+        }
+        return sqlStr.toString();
+    }
+    
+    /**
+     * Performs the Search by building the HQL String.
+     */
+    protected void doSearch(final TableQRI rootTable, boolean distinct)
+    {
+        String hql = buildHQL(rootTable, distinct);    
+        processSQL(queryFieldItems, hql, rootTable.getTableInfo(), distinct);
+        //doReport(rootTable, true /*need to use true to workaround probs with added key column when not distinct*/);
     }
 
+    protected void doReport(final TableQRI rootTable, boolean distinct)
+    {
+        processReport(queryFieldItems, buildHQL(rootTable, distinct));
+    }
+    
     /**
      * @return Panel with up and down arrows for moving fields up and down in queryFieldsPanel.
      */
@@ -675,13 +680,9 @@ public class QueryBldrPane extends BaseSubPane
         }
     }
 
-    /**
-     * @param queryFieldItemsArg
-     * @param sql
-     */
-    protected void processSQL(final Vector<QueryFieldPanel> queryFieldItemsArg, final String sql, final DBTableInfo rootTable, final boolean distinct)
+    protected List<ERTICaptionInfo> getColumnInfo(final Vector<QueryFieldPanel> queryFieldItemsArg, final boolean fixLabels)
     {
-        List<ERTICaptionInfo> captions = new Vector<ERTICaptionInfo>();
+        List<ERTICaptionInfo> result = new Vector<ERTICaptionInfo>();
         for (QueryFieldPanel qfp : queryFieldItemsArg)
         {
             DBFieldInfo fi = qfp.getFieldInfo();
@@ -697,11 +698,36 @@ public class QueryBldrPane extends BaseSubPane
             }
             if (qfp.isForDisplay() && qfp.isDisplayable())
             {
-                ERTICaptionInfo erti = new ERTICaptionInfo(colName, qfp.getLabel(), true, qfp.getFieldQRI().getFormatter(), 0);
+                String lbl = qfp.getLabel();
+                if (fixLabels)
+                {
+                    lbl = lbl.replaceAll(" ", "_");
+                }
+                ERTICaptionInfo erti = new ERTICaptionInfo(colName, lbl, true, qfp.getFieldQRI().getFormatter(), 0);
                 erti.setColClass(qfp.getFieldQRI().getDataClass());
-                captions.add(erti);
+                result.add(erti);
             }
         }
+        return result;
+    }
+    
+    protected void processReport(final Vector<QueryFieldPanel> queryFieldItemsArg, final String sql)
+    {
+        QBJRDataSource src = new QBJRDataSource(sql, getColumnInfo(queryFieldItemsArg, true));
+        final CommandAction cmd = new CommandAction(ReportsBaseTask.REPORTS,
+                ReportsBaseTask.PRINT_REPORT, src);
+        cmd.setProperty("title", query.getName());
+        cmd.setProperty("file", "dumpling.jrxml");
+        CommandDispatcher.dispatch(cmd);
+    }
+    
+    /**
+     * @param queryFieldItemsArg
+     * @param sql
+     */
+    protected void processSQL(final Vector<QueryFieldPanel> queryFieldItemsArg, final String sql, final DBTableInfo rootTable, final boolean distinct)
+    {
+        List<ERTICaptionInfo> captions = getColumnInfo(queryFieldItemsArg, false);
         List<Integer> list = new Vector<Integer>();
         
         String iconName = distinct ? "BlankIcon" : rootTable.getClassObj().getSimpleName();
@@ -1061,17 +1087,17 @@ public class QueryBldrPane extends BaseSubPane
                         {
                             if (currentInx != -1)
                             {
-                                QryListRendererIFace qri = (QryListRendererIFace) listBoxList.get(
+                                QryListRendererIFace qriFace = (QryListRendererIFace) listBoxList.get(
                                         currentInx).getSelectedValue();
-                                if (qri instanceof FieldQRI)
+                                if (BaseQRI.class.isAssignableFrom(qriFace.getClass()))
                                 {
-                                    FieldQRI fieldQRI = (FieldQRI) qri;
-                                    if (fieldQRI.isInUse())
+                                    BaseQRI qri = (BaseQRI) qriFace;
+                                    if (qri.isInUse())
                                     {
                                         //remove the field
                                         for (QueryFieldPanel qfp : QueryBldrPane.this.queryFieldItems)
                                         {
-                                            if (qfp.getFieldQRI() == fieldQRI)
+                                            if (qfp.getFieldQRI() == qri)
                                             {
                                                 QueryBldrPane.this.removeQueryFieldItem(qfp);
                                                 break;
@@ -1081,6 +1107,8 @@ public class QueryBldrPane extends BaseSubPane
                                     else
                                     {
                                         // add the field
+                                        FieldQRI fieldQRI = buildFieldQRI(qri);
+                                        //FieldQRI fieldQRI = (FieldQRI)qri;
                                         SpQueryField qf = new SpQueryField();
                                         qf.initialize();
                                         qf.setFieldName(fieldQRI.getFieldName());
@@ -1160,6 +1188,42 @@ public class QueryBldrPane extends BaseSubPane
 
         processingLists = false;
         currentInx = curInx;
+    }
+
+    
+    protected FieldQRI buildFieldQRI(final BaseQRI qri)
+    {
+        if (qri instanceof FieldQRI) { return (FieldQRI) qri; }
+        if (qri instanceof TableQRI)
+        {
+            DBRelationshipInfo relInfo = null;
+            List<DBRelationshipInfo> rels = new LinkedList<DBRelationshipInfo>();
+            for (DBRelationshipInfo rel : qri.getTableTree().getParent().getTableInfo().getRelationships())
+            {
+                if (rel.getDataClass().equals(qri.getTableTree().getTableInfo().getClassObj()))
+                {
+                    rels.add(rel);
+                }
+            }
+            for (DBRelationshipInfo rel : rels)
+            {
+                System.out.println(rel.getName());
+                System.out.println("   " + rel.getDataClass().getSimpleName());
+                System.out.println("   " + rel.getColName());
+                System.out.println("   " + rel.getOtherSide());
+            }
+            if (rels.size() == 1)
+            {
+                relInfo = rels.get(0);
+            }
+            else
+            {
+                throw new RuntimeException("unable to determine relationship.");
+            }
+            
+            return new RelQRI((TableQRI) qri, relInfo);
+        }
+        throw new RuntimeException("invalid argument: " + qri);
     }
 
     /**
@@ -1756,3 +1820,5 @@ public class QueryBldrPane extends BaseSubPane
         return queryFieldItems.get(index);
     }
 }
+
+

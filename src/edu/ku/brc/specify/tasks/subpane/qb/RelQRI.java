@@ -12,6 +12,8 @@ package edu.ku.brc.specify.tasks.subpane.qb;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.dbsupport.DBRelationshipInfo;
+import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -29,48 +31,90 @@ public class RelQRI extends FieldQRI
     public RelQRI(final TableQRI parent, final DBRelationshipInfo ri)
     {
         super(parent, null);
-        
-        int x = 0;
-        x++;
+
         this.ri = ri;
-        
+
         try
         {
             iconName = Class.forName(ri.getClassName()).getSimpleName();
-            title    = ri.getTitle();
+            title = ri.getTitle();
             if (StringUtils.isEmpty(title))
             {
-                title    = UIHelper.makeNamePretty(iconName);
+                title = UIHelper.makeNamePretty(iconName);
             }
-            
-        } catch (Exception ex)
+
+        }
+        catch (Exception ex)
         {
             ex.printStackTrace();
             iconName = "BlankIcon";
-            title    = "????";
+            title = "????";
         }
     }
     
-
-    /**
-     * @param tableTree the tableTree to set
+    
+    /*
+     * (non-Javadoc)
+     * 
+     * @see edu.ku.brc.specify.tasks.subpane.qb.BaseQRI#setIsInUse(java.lang.Boolean)
      */
-//    public void setTableTree(TableTree tableTree)
-//    {
-//        this.tableTree = tableTree;
-//        
-//        title    = tableTree.getTableInfo().getTitle();
-//        if (title == null)
+    @Override
+    public void setIsInUse(Boolean isInUse)
+    {
+        // TODO Auto-generated method stub
+        super.setIsInUse(isInUse);
+        table.setIsInUse(isInUse);
+    }
+
+    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.qb.FieldQRI#getFieldName()
+     */
+    @Override
+    public String getFieldName()
+    {
+        if (fi != null)
+        {
+            return super.getFieldName();
+        }
+        if (ri != null)
+        {
+            return ri.getName();
+        }
+        return table.getTableInfo().getName();
+    }
+
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.qb.FieldQRI#getTableInfo()
+     */
+    @Override
+    public DBTableInfo getTableInfo()
+    {
+        return table.getTableInfo();    
+    }
+
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.qb.FieldQRI#getSQLFldSpec(edu.ku.brc.specify.tasks.subpane.qb.TableAbbreviator)
+     */
+    @Override
+    public String getSQLFldSpec(TableAbbreviator ta)
+    {
+        return ta.getAbbreviation(table.getTableTree().getParent()) + "." + ri.getName();
+//        if (StringUtils.isNotEmpty(ri.getColName()))
 //        {
-//            int x = 0;
-//            x++;
+//            //String fld = UploadTable.deCapitalize(ri.getColName()).replace("ID", "Id");
+//            String fld = UploadTable.deCapitalize(ri.getColName()).replace("ID", "Id").replace("Id", "");
+//            return ta.getAbbreviation(table.getTableTree().getParent()) + "." + fld;
 //        }
-//        iconName = tableTree.getTableInfo().getShortClassName();
-//    }
+//        return null;
+    }
 
     @Override
     public boolean hasChildren()
     {
-        return true;//ri.getType() == DBRelationshipInfo.RelationshipType.OneToMany || ri.getType() == DBRelationshipInfo.RelationshipType.ManyToMany;
+        return true;
     }
 }
