@@ -28,6 +28,7 @@ import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.ui.ChooseFromListDlg;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author timbo
@@ -40,7 +41,8 @@ import edu.ku.brc.ui.ChooseFromListDlg;
  */
 public class MainFrameSpecify extends MainFrame
 {
-
+    private static final String REP_CHOOSE_REPORT = "REP_CHOOSE_REPORT";
+    
     private static final Logger log = Logger.getLogger(MainFrameSpecify.class);
 
     /**
@@ -49,6 +51,7 @@ public class MainFrameSpecify extends MainFrame
      */
     public MainFrameSpecify(Map<?,?> args)
     {
+        super(args);
         setNoExit(true);
         setEmbeddedIreport(true);
     }
@@ -56,15 +59,16 @@ public class MainFrameSpecify extends MainFrame
     /**
      * @return default map for specify iReport implementation
      */
-    @SuppressWarnings("unchecked")
-    public static Map getArgs()
+    public static Map<String, String> getArgs()
     {
-        Map map = new HashMap();
-        // "noPlaf" prevents iReport from loading its own look and feel.
+        Map<String, String> map = new HashMap<String, String>();
+        // "noPlaf" prevents iReport from setting it's preferred theme (which infected all of Specify). (Or used to prevent it anyway)
+        //This may be irrelevant now since Specify's lookandfeel is being reset after the MainFreme is made visible.
         map.put("noPlaf", "true");
         return map;
     }
 
+    @Override
     public void saveAll(javax.swing.JInternalFrame[] frames)
     {
         System.out.println("saveAll() is not implemented.");
@@ -76,6 +80,7 @@ public class MainFrameSpecify extends MainFrame
      * 
      * @see it.businesslogic.ireport.gui.MainFrame#save(it.businesslogic.ireport.gui.JReportFrame)
      */
+    @Override
     public void save(JReportFrame jrf)
     {
         AppResourceIFace rep = getResForFrame(jrf);
@@ -128,6 +133,7 @@ public class MainFrameSpecify extends MainFrame
         return null;
     }
 
+    @Override
     public void saveAs(JReportFrame jrf)
     {
         System.out.println("saveAs() is not implemented.");
@@ -139,6 +145,7 @@ public class MainFrameSpecify extends MainFrame
      * 
      * @see it.businesslogic.ireport.gui.MainFrame#open()
      */
+    @Override
     public JReportFrame[] open()
     {
         JReportFrame[] result = null;
@@ -155,7 +162,7 @@ public class MainFrameSpecify extends MainFrame
             if (list.size() > 0)
             {
                 ChooseFromListDlg<AppResourceIFace> dlg = new ChooseFromListDlg<AppResourceIFace>(
-                        null, "Choose Me", list);
+                        null, UIRegistry.getResourceString(REP_CHOOSE_REPORT), list);
                 dlg.setVisible(true);
 
                 AppResourceIFace appRes = dlg.getSelectedObject();

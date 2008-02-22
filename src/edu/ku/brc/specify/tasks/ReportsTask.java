@@ -28,7 +28,7 @@ import edu.ku.brc.af.core.NavBoxAction;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
-import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
+import edu.ku.brc.specify.tasks.subpane.LabelsPane;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
@@ -81,21 +81,27 @@ public class ReportsTask extends ReportsBaseTask
         super.preInitialize();
         
         actionNavBox.add(NavBox.createBtnWithTT(getResourceString("Create_New_Report"), name, getResourceString("CREATE_REPORT_TT"), IconManager.IconSize.Std16, null));
-        actionNavBox.add(NavBox.createBtnWithTT(getResourceString("ReportEditor"),  "EditIcon", getResourceString("EDIT_REPORT_TT"), IconManager.IconSize.Std16, new NavBoxAction(name, OPEN_EDITOR))); // I18N
+        actionNavBox.add(NavBox.createBtnWithTT(getResourceString("ReportEditor"),  "EditIcon", getResourceString("EDIT_REPORT_TT"), IconManager.IconSize.Std16, new NavBoxAction(REPORTS, OPEN_EDITOR))); // I18N
    }
 
     /**
      * @return the initial pane
      */
+    @Override
     public SubPaneIFace getStarterPane()
     {
-        return starterPane = new SimpleDescPane(title, this, "This is the Reports Pane");
+        //starterPane = new SimpleDescPane(name, this, "Welcome to Specify's Label Maker");
+        LabelsPane labelsPane = new LabelsPane(name, this, null);
+        labelsPane.setLabelText("This is the Reports Pane"); // XXX I18N
+        starterPane = labelsPane;
+        return starterPane;
     }
 
     /*
      *  (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.Taskable#getToolBarItems()
      */
+    @Override
     public List<ToolBarItemDesc> getToolBarItems()
     {
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
@@ -113,6 +119,7 @@ public class ReportsTask extends ReportsBaseTask
      *  (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.Taskable#getMenuItems()
      */
+    @Override
     public List<MenuItemDesc> getMenuItems()
     {
         Vector<MenuItemDesc> list = new Vector<MenuItemDesc>();
@@ -123,6 +130,7 @@ public class ReportsTask extends ReportsBaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.Taskable#getTaskClass()
      */
+    @Override
     public Class<? extends BaseTask> getTaskClass()
     {
         return this.getClass();

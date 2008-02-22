@@ -26,7 +26,10 @@ import java.util.Vector;
 
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
+import javax.swing.LookAndFeel;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import net.sf.jasperreports.engine.JRDataSource;
 
@@ -72,7 +75,7 @@ import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
 @SuppressWarnings("serial")
 public class ReportsBaseTask extends BaseTask
 {
-    private static final Logger log = Logger.getLogger(ReportsBaseTask.class);
+    protected static final Logger log = Logger.getLogger(ReportsBaseTask.class);
             
     // Static Data Members
     public static final String     REPORTS      = "REPORTS";
@@ -97,7 +100,7 @@ public class ReportsBaseTask extends BaseTask
     protected NavBoxItemIFace         oneNbi           = null;
 
     //iReport MainFrame
-    private static MainFrameSpecify iReportMainFrame   = null;
+    protected static MainFrameSpecify iReportMainFrame   = null;
     
     /**
      * Constructor.
@@ -131,6 +134,7 @@ public class ReportsBaseTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.Taskable#initialize()
      */
+    @Override
     public void initialize()
     {
         if (!isInitialized)
@@ -254,6 +258,7 @@ public class ReportsBaseTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.BaseTask#getStarterPane()
      */
+    @Override
     public SubPaneIFace getStarterPane()
     {
         //starterPane = new SimpleDescPane(name, this, "Welcome to Specify's Label Maker");
@@ -393,6 +398,7 @@ public class ReportsBaseTask extends BaseTask
      *  (non-Javadoc)
      * @see edu.ku.brc.specify.core.Taskable#getNavBoxes()
      */
+    @Override
     public java.util.List<NavBoxIFace> getNavBoxes()
     {
         initialize();
@@ -411,6 +417,7 @@ public class ReportsBaseTask extends BaseTask
      *  (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.Taskable#getToolBarItems()
      */
+    @Override
     public List<ToolBarItemDesc> getToolBarItems()
     {
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
@@ -427,6 +434,7 @@ public class ReportsBaseTask extends BaseTask
      *  (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.Taskable#getMenuItems()
      */
+    @Override
     public List<MenuItemDesc> getMenuItems()
     {
         Vector<MenuItemDesc> list = new Vector<MenuItemDesc>();
@@ -437,6 +445,7 @@ public class ReportsBaseTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.Taskable#getTaskClass()
      */
+    @Override
     public Class<? extends BaseTask> getTaskClass()
     {
         return this.getClass();
@@ -611,18 +620,36 @@ public class ReportsBaseTask extends BaseTask
      */
     private void openIReportEditor() 
     {
+        //XXX
+        //better to use iReport config file to deal with laf issue?
+        final LookAndFeel laf = UIManager.getLookAndFeel();
         if (iReportMainFrame == null)
         {
-            MainFrame.reportClassLoader.rescanLibDirectory();
-            Thread.currentThread().setContextClassLoader( MainFrame.reportClassLoader );
-            Map<?,?> args = MainFrameSpecify.getArgs();
-            iReportMainFrame = new MainFrameSpecify(args);
+            try
+            {
+                MainFrame.reportClassLoader.rescanLibDirectory();
+                Thread.currentThread().setContextClassLoader( MainFrame.reportClassLoader );
+                Map<?,?> args = MainFrameSpecify.getArgs();
+                iReportMainFrame = new MainFrameSpecify(args);
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
         }
         SwingUtilities.invokeLater( new Runnable()
         {
              public void run()
              {
                  iReportMainFrame.setVisible(true);
+                 try
+                 {
+                     UIManager.setLookAndFeel(laf);
+                 } catch (UnsupportedLookAndFeelException e)
+                 {
+                     log.error(e);
+                 }
              }
         });
     }
@@ -653,6 +680,7 @@ public class ReportsBaseTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.BaseTask#doCommand(edu.ku.brc.ui.CommandAction)
      */
+    @Override
     public void doCommand(final CommandAction cmdAction)
     {
         /*if (true)

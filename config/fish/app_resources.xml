@@ -24,5 +24,8 @@
 
     <file level="3" mimetype="jrxml/report" name="upload_problem_report.jrxml" description="Upload Report" file="upload_problem_report.jrxml" 
         metadata="type=Report;action=PrintUploadProblemReport;reporttype=Report;icon=Labels16"/>
+
+    <file level="3" mimetype="jrxml/report" name="dumpling.jrxml" description="Upload Report" file="dumpling.jrxml" 
+        metadata="type=Report;action=PrintReport;reporttype=Report;icon=Labels16"/>
         
 </files>
