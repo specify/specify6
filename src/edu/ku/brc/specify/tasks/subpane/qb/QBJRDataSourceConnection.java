@@ -14,6 +14,7 @@ import it.businesslogic.ireport.connection.JRCSVDataSourceConnection;
 import java.util.HashMap;
 
 import net.sf.jasperreports.engine.JRDataSource;
+import edu.ku.brc.af.core.expresssearch.ERTICaptionInfo;
 
 /**
  * @author timbo
@@ -48,11 +49,10 @@ public class QBJRDataSourceConnection extends JRCSVDataSourceConnection
     @Override
     public void loadProperties(HashMap map)
     {
-        // TODO Auto-generated method stub
-        getColumnNames().add("Catalog_Number");
-        getColumnNames().add("Cataloged_Date");
-        getColumnNames().add("Count_Amount");
-        getColumnNames().add("Field_Number");
+        for (ERTICaptionInfo col : QueryBldrPane.getColumnInfo(this.getName(), true))
+        {
+            getColumnNames().add(col.getColLabel());
+        }
     }
 
     

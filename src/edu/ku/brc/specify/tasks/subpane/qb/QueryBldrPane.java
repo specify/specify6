@@ -29,6 +29,7 @@ import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -640,6 +641,16 @@ public class QueryBldrPane extends BaseSubPane
     }
     
     /**
+     * @param node
+     * @return " left join " unless it can be determined that data returned on other side of the join
+     * cannot be null in which case " inner join " is returned.
+     */
+    protected String getJoin(final ProcessNode node)
+    {
+        //XXX really should only use left join when necessary.
+        return " left join ";
+    }
+    /**
      * @param parent
      * @param sqlStr
      * @param level
@@ -662,8 +673,8 @@ public class QueryBldrPane extends BaseSubPane
                 }
                 else
                 {
-                    // really should only use left join when necessary...
-                    sqlStr.append(" left join ");
+                    
+                    sqlStr.append(getJoin(parent));
 
                     sqlStr.append(tableAbbreviator.getAbbreviation(tt.getParent()));
                     sqlStr.append('.');
@@ -710,6 +721,57 @@ public class QueryBldrPane extends BaseSubPane
         }
         return result;
     }
+    
+    public static List<ERTICaptionInfo> getColumnInfo(final String queryName, final boolean fixLabels)
+    {
+        DataProviderSessionIFace session = DataProviderFactory.getInstance()
+        .createSession();
+        try
+        {
+            SpQuery fndQuery = session.getData(SpQuery.class, "name", queryName,
+                    DataProviderSessionIFace.CompareType.Equals);
+            if (fndQuery == null)
+            {
+                throw new Exception("Unable to load query " + queryName);
+            }
+            return getColumnInfoSp(fndQuery.getFields(), fixLabels);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        finally
+        {
+            session.close();
+        }
+    }
+    
+    protected static List<ERTICaptionInfo> getColumnInfoSp(final Set<SpQueryField> queryFields, final boolean fixLabels)
+    {
+        List<ERTICaptionInfo> result = new Vector<ERTICaptionInfo>();
+        for (SpQueryField qf : queryFields)
+        {
+            DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(qf.getTableId());
+            DBFieldInfo fi = ti.getFieldByColumnName(qf.getFieldName());
+            String colName = ti.getAbbrev() + '.' + qf.getFieldName();
+            if (qf.getIsDisplay())
+            {
+                //XXX I think we need to persist the qualified 'label' in the SpQueryField
+                //String lbl = qf.getLabel();
+                String lbl = colName;
+                if (fixLabels)
+                {
+                    lbl = lbl.replaceAll(" ", "_");
+                }
+                ERTICaptionInfo erti = new ERTICaptionInfo(colName, lbl, true, fi.getFormatter(), 0);
+                erti.setColClass(fi.getDataClass());
+                result.add(erti);
+            }
+        }
+        return result;
+    }
+
     
     protected void processReport(final Vector<QueryFieldPanel> queryFieldItemsArg, final String sql)
     {
