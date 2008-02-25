@@ -29,6 +29,7 @@ import java.util.Vector;
 
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
+import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
@@ -126,6 +127,7 @@ public class InteractionsTask extends BaseTask
     public static final DataFlavorTableExt EXCHGIN_FLAVOR      = new DataFlavorTableExt(ExchangeIn.class, "ExchangeIn");
     public static final DataFlavorTableExt EXCHGOUT_FLAVOR     = new DataFlavorTableExt(ExchangeOut.class, "ExchangeOut");
     
+    public static final  String   IS_USING_INTERACTIONS_PREFNAME = "Interactions.Using.Interactions";
     public static final  String   IS_DOING_GIFT_PREFNAME = "Interactions.Doing.Gifts";
     public static final  String   IS_DOING_EXCH_PREFNAME = "Interactions.Doing.Exchanges";
 
@@ -151,8 +153,11 @@ public class InteractionsTask extends BaseTask
     protected NavBoxItemIFace         giftsNavBtn      = null; 
     protected NavBox                  actionsNavBox;
     
-    protected boolean                 isDoingExchanges = false;
+    protected boolean                 isUsingInteractions = true;
     protected boolean                 isDoingGifts     = false;
+    protected boolean                 isDoingExchanges = false;
+    protected ToolBarDropDownBtn      toolBarBtn       = null;
+    protected int                     indexOfTBB       = -1;
     
     static 
     {
@@ -186,8 +191,9 @@ public class InteractionsTask extends BaseTask
     @Override
     public void initialize()
     {
-        isDoingGifts     = AppPreferences.getRemote().getBoolean(IS_DOING_GIFT_PREFNAME, false);
-        isDoingExchanges = AppPreferences.getRemote().getBoolean(IS_DOING_EXCH_PREFNAME, false);
+        isUsingInteractions = AppPreferences.getRemote().getBoolean(IS_USING_INTERACTIONS_PREFNAME, false);
+        isDoingGifts        = AppPreferences.getRemote().getBoolean(IS_DOING_GIFT_PREFNAME, false);
+        isDoingExchanges    = AppPreferences.getRemote().getBoolean(IS_DOING_EXCH_PREFNAME, false);
         
         if (!isInitialized)
         {
@@ -424,9 +430,18 @@ public class InteractionsTask extends BaseTask
         String label = getResourceString(name);
         String iconName = name;
         String hint = getResourceString("interactions_hint");
-        ToolBarDropDownBtn btn = createToolbarButton(label, iconName, hint);
+        toolBarBtn = createToolbarButton(label, iconName, hint);
 
-        list.add(new ToolBarItemDesc(btn));
+        AppPreferences remotePrefs = AppPreferences.getRemote();
+        if (remotePrefs == AppPreferences.getRemote())
+        {
+            isUsingInteractions = remotePrefs.getBoolean(IS_USING_INTERACTIONS_PREFNAME, true);
+        }
+
+        if (isUsingInteractions)
+        {
+            list.add(new ToolBarItemDesc(toolBarBtn));
+        }
 
         return list;
     }
@@ -812,9 +827,10 @@ public class InteractionsTask extends BaseTask
             //printLoan = false;
             if (printLoan)
             {
-                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                DataProviderSessionIFace session = null;
                 try
                 {
+                    session = DataProviderFactory.getInstance().createSession();
                     //session.attach(loan);
                     loan = (Loan)session.getData("From Loan where loanId = "+loan.getLoanId());
                     
@@ -1153,6 +1169,26 @@ public class InteractionsTask extends BaseTask
         AppPreferences remotePrefs = (AppPreferences)cmdAction.getData();
         if (remotePrefs == AppPreferences.getRemote())
         {
+            isUsingInteractions = remotePrefs.getBoolean(IS_USING_INTERACTIONS_PREFNAME, true);
+            
+            if (!isUsingInteractions)
+            {
+                JToolBar toolBar = (JToolBar)UIRegistry.get(UIRegistry.TOOLBAR);
+                indexOfTBB = toolBar.getComponentIndex(toolBarBtn);
+                TaskMgr.removeToolbarBtn(toolBarBtn);
+                toolBar.validate();
+                toolBar.repaint();
+                
+            } else
+            {
+                int inx = indexOfTBB != -1 ? indexOfTBB : 4;
+                TaskMgr.addToolbarBtn(toolBarBtn, inx);
+                
+                JToolBar toolBar = (JToolBar)UIRegistry.get(UIRegistry.TOOLBAR);
+                toolBar.validate();
+                toolBar.repaint();
+            }
+            
             boolean isDoingGifts = remotePrefs.getBoolean(IS_DOING_GIFT_PREFNAME, true);
             if (this.isDoingGifts && !isDoingGifts)
             {

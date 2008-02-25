@@ -471,7 +471,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     {
         if (reusePanel == null || !reusePanel)
         {
-            ESResultsSubPane expressSearchPane = new ESResultsSubPane("Results", this, true); // XXX I18N
+            ESResultsSubPane expressSearchPane = new ESResultsSubPane(getResourceString("ES_QUERY_RESULTS"), this, true);
             addSubPaneToMgr(expressSearchPane);
             expressSearchPane.addSearchResults(results);
             
@@ -479,12 +479,21 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         {
             if (queryResultsPane == null)
             {
-                queryResultsPane = new ESResultsSubPane("Results", this, true); // XXX I18N
+                queryResultsPane = new ESResultsSubPane(getResourceString("ES_QUERY_RESULTS"), this, true);
+                queryResultsPane.setIcon(IconManager.getIcon("Query", IconManager.IconSize.Std16));
                 addSubPaneToMgr(queryResultsPane);
+                
             } else
             {
                 queryResultsPane.reset();
-                SubPaneMgr.getInstance().showPane(queryResultsPane);
+                int index = SubPaneMgr.getInstance().indexOfComponent(queryResultsPane.getUIComponent());
+                if (index == -1)
+                {
+                    addSubPaneToMgr(queryResultsPane);
+                } else
+                {
+                    SubPaneMgr.getInstance().showPane(queryResultsPane);
+                }
             }
             queryResultsPane.addSearchResults(results);
         }

@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -68,6 +70,7 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
     protected JPanel               contentPanel;
     protected NavBoxLayoutManager  layoutMgr;
     protected JScrollPane          scrollPane;
+    protected ImageIcon            icon        = null;
     
     protected List<ESResultsTablePanelIFace> expTblResults        = new Vector<ESResultsTablePanelIFace>();
     
@@ -226,6 +229,23 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
         });
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.subpane.BaseSubPane#getIcon()
+     */
+    @Override
+    public Icon getIcon()
+    {
+        return icon != null ? icon : super.getIcon();
+    }
+
+    /**
+     * @param icon the icon to set
+     */
+    public void setIcon(ImageIcon icon)
+    {
+        this.icon = icon;
+    }
+
     /**
      * 
      */

@@ -808,7 +808,9 @@ public class QueryBldrPane extends BaseSubPane
         qri.setCaptions(captions);
         qri.setExpanded(true);
 
-        CommandDispatcher.dispatch(new CommandAction("Express_Search", "HQL", qri));
+        CommandAction cmdAction = new CommandAction("Express_Search", "HQL", qri);
+        cmdAction.setProperty("reuse_panel", true); 
+        CommandDispatcher.dispatch(cmdAction);
     }
 
     /**
