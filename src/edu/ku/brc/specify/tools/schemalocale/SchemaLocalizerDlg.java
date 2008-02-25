@@ -34,6 +34,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 
+import javax.swing.SwingUtilities;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -279,7 +281,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
             
             connection = DBConnection.getInstance().createConnection();
             stmt       = connection.createStatement();
-            rs         = stmt.executeQuery("select SpLocaleContainerID, Name from splocalecontainer order by name");
+            rs         = stmt.executeQuery("select SpLocaleContainerID, Name from splocalecontainer WHERE DisciplineID = "+Discipline.getCurrentDiscipline().getDisciplineId()+" order by name");
             
             while (rs.next())
             {
@@ -401,12 +403,32 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
             @Override
             public Object construct()
             {
+                DataProviderSessionIFace session = null;
                 try
                 {
-                    DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                    List<?> list = session.getDataList(SpLocaleContainer.class);
+                    session = DataProviderFactory.getInstance().createSession();
+                    List<?> list = session.getDataList("SELECT count(disciplineId) FROM SpLocaleContainer WHERE disciplineId = "+Discipline.getCurrentDiscipline().getDisciplineId());
+                    double total = -1.0;
+                    if (list.get(0) != null && list.get(0) instanceof Integer)
+                    {
+                        total = (Integer)list.get(0);
+                        UIRegistry.getStatusBar().setIndeterminate(false);
+                        UIRegistry.getStatusBar().getProgressBar().setVisible(true);
+                    }
+                    
+                    double cnt = 0;
+                    list = session.getDataList("FROM SpLocaleContainer WHERE disciplineId = "+Discipline.getCurrentDiscipline().getDisciplineId());
                     for (Object containerObj : list)
                     {
+                        final int percent = (int)(cnt / total * 100.0);
+                        SwingUtilities.invokeLater(new Runnable() {
+                            public void run()
+                            {
+                                UIRegistry.getStatusBar().getProgressBar().setValue(percent);                                
+                            }
+                            
+                        });
+                        cnt++;
                         SpLocaleContainer container = (SpLocaleContainer)containerObj;
                         tables.add(container);
                         tableHash.put(container.getId().intValue(), container);
@@ -426,6 +448,13 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
                 } catch (Exception e)
                 {
                     e.printStackTrace();
+                    
+                } finally
+                {
+                    if (session != null)
+                    {
+                        session.close();
+                    }
                 }
                 return null;
             }

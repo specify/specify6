@@ -68,7 +68,6 @@ import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
-import edu.ku.brc.specify.tasks.BaseTreeTask;
 import edu.ku.brc.specify.tasks.DualViewSearchable;
 import edu.ku.brc.specify.treeutils.ChildNodeCounter;
 import edu.ku.brc.specify.treeutils.TreeDataService;
@@ -111,6 +110,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	private static final int SINGLE_VIEW_MODE = 0;
 	private static final int DUAL_VIEW_MODE = 1;
 	
+	private static final boolean debugFind = false;
+	
 	/** Status message display widget. */
 	protected JStatusBar statusBar;
 	
@@ -132,9 +133,10 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	
 	protected D treeDef;
 	
-    protected String findName;
-    protected int resultsIndex;
+    protected String  findName;
+    protected int     resultsIndex;
     protected List<T> findResults;
+    protected Integer lastFoundNodeId = null;
     
     protected boolean isInitialized;
     protected int mode;
@@ -151,18 +153,20 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     protected JButton toParent0;
     protected JButton syncViews0;
     protected JButton toggle0;
-    protected JButton newChild0;
-    protected JButton editNode0;
-    protected JButton deleteNode0;
+    protected JButton newChild0     = null;
+    protected JButton editNode0     = null;
+    protected JButton deleteNode0   = null;
+    
+    protected boolean isEditMode;
     
     protected JButton subtree1;
     protected JButton wholeTree1;
     protected JButton toParent1;
     protected JButton syncViews1;
     protected JButton toggle1;
-    protected JButton newChild1;
-    protected JButton editNode1;
-    protected JButton deleteNode1;
+    protected JButton newChild1     = null;
+    protected JButton editNode1     = null;
+    protected JButton deleteNode1   = null;
     
     protected TreeDataService<T,D,I> dataService;
     
@@ -190,13 +194,16 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 */
 	public TreeTableViewer( final D treeDef,
 							final String name,
-							final Taskable task )
+							final Taskable task,
+							final boolean isEditMode)
 	{
 		super(name,task);
+		
+		this.isEditMode = isEditMode;
 		this.treeDef = treeDef;
 		allButtons = new Vector<AbstractButton>();
 		statusBar = UIRegistry.getStatusBar();
-		popupMenu = new TreeNodePopupMenu(this);
+		popupMenu = new TreeNodePopupMenu(this, isEditMode);
 		
 		getLayout().removeLayoutComponent(progressBarPanel);
 		
@@ -258,16 +265,43 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	}
 
     /**
-     * @param text
+     * Sets StatusBar Message.
+     * @param text  the msg text
      */
-    protected void setStatusBarText(final String text)
+    protected void setStatusBarText(final String key)
     {
         if (statusBar != null)
         {
-            statusBar.setText(text);
+            statusBar.setText(key == null ? "" : getResourceString(key));
         }
     }
     
+    /**
+     * Sets StatusBar Message.
+     * @param text  the msg text
+     */
+    protected void setStatusBarText(final String key, final Object ... params)
+    {
+        if (statusBar != null)
+        {
+            statusBar.setText(key == null ? "" : String.format(getResourceString(key), params));
+        }
+    }
+    
+    
+    /**
+     * Sets simple text into the status bar.
+     * @param text  the msg text
+     */
+    protected void setNameIntoStatusBarText(final String name)
+    {
+        if (statusBar != null)
+        {
+            statusBar.setText(name);
+        }
+    }
+    
+
     /**
      * Calls showTree().  Simply provides an easy override point for subclasses.
      */
@@ -338,7 +372,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         
         int rowHeight = 20;
         
-		lists[0] = new TreeDataGhostDropJList(listModel,this);
+		lists[0] = new TreeDataGhostDropJList(listModel, this, isEditMode);
         
         // we need our MouseListener to be the first one called, so we detach the other MouseListeners, attach ours, then reattach the others.
         MouseListener[] mouseListeners = lists[0].getMouseListeners();
@@ -357,7 +391,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		lists[0].addListSelectionListener(listSelListener);
         lists[0].setFixedCellHeight(rowHeight);
 		
-		lists[1] = new TreeDataGhostDropJList(listModel,this);
+		lists[1] = new TreeDataGhostDropJList(listModel, this, isEditMode);
         
         // we need our MouseListener to be the first one called, so we detach the other MouseListeners, attach ours, then reattach the others.
         mouseListeners = lists[1].getMouseListeners();
@@ -468,38 +502,41 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             }
         });
 
-        newChild0 = new JButton(icon_newChild);
-        newChild0.setSize(20,20);
-        newChild0.setToolTipText("Add Child to Selection");
-        newChild0.addActionListener(new ActionListener()
+        if (isEditMode)
         {
-            public void actionPerformed(ActionEvent ae)
+            newChild0 = new JButton(icon_newChild);
+            newChild0.setSize(20,20);
+            newChild0.setToolTipText("Add Child to Selection");
+            newChild0.addActionListener(new ActionListener()
             {
-                addChildToSelectedNode(lists[0]);
-            }
-        });
-
-        editNode0 = new JButton(icon_editNode);
-        editNode0.setSize(20,20);
-        editNode0.setToolTipText("Edit Selected Node");
-        editNode0.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent ae)
+                public void actionPerformed(ActionEvent ae)
+                {
+                    addChildToSelectedNode(lists[0]);
+                }
+            });
+    
+            editNode0 = new JButton(icon_editNode);
+            editNode0.setSize(20,20);
+            editNode0.setToolTipText("Edit Selected Node");
+            editNode0.addActionListener(new ActionListener()
             {
-                editSelectedNode(lists[0]);
-            }
-        });
-
-        deleteNode0 = new JButton(icon_delNode);
-        deleteNode0.setSize(20,20);
-        deleteNode0.setToolTipText("Delete Selected Node");
-        deleteNode0.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent ae)
+                public void actionPerformed(ActionEvent ae)
+                {
+                    editSelectedNode(lists[0]);
+                }
+            });
+    
+            deleteNode0 = new JButton(icon_delNode);
+            deleteNode0.setSize(20,20);
+            deleteNode0.setToolTipText("Delete Selected Node");
+            deleteNode0.addActionListener(new ActionListener()
             {
-                deleteSelectedNode(lists[0]);
-            }
-        });
+                public void actionPerformed(ActionEvent ae)
+                {
+                    deleteSelectedNode(lists[0]);
+                }
+            });
+        }
 
         // view manipulation buttons
         JLabel viewLabel0 = new JLabel(getResourceString("View"));
@@ -518,18 +555,21 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         buttonPanel0.add(Box.createRigidArea(new Dimension(20,20)));
         
         // tree editing buttons
-        JLabel editLabel0 = new JLabel(getResourceString("Edit"));
-        editLabel0.setSize(32,editLabel0.getHeight());
-        buttonPanel0.add(editLabel0);
-        editLabel0.setAlignmentX(Component.CENTER_ALIGNMENT);
-        buttonPanel0.add(editNode0);
-        editNode0.setAlignmentX(Component.CENTER_ALIGNMENT);
-        buttonPanel0.add(newChild0);
-        newChild0.setAlignmentX(Component.CENTER_ALIGNMENT);
-        buttonPanel0.add(deleteNode0);
-        deleteNode0.setAlignmentX(Component.CENTER_ALIGNMENT);
+        if (isEditMode)
+        {
+            JLabel editLabel0 = new JLabel(getResourceString("Edit"));
+            editLabel0.setSize(32,editLabel0.getHeight());
+            buttonPanel0.add(editLabel0);
+            editLabel0.setAlignmentX(Component.CENTER_ALIGNMENT);
+            buttonPanel0.add(editNode0);
+            editNode0.setAlignmentX(Component.CENTER_ALIGNMENT);
+            buttonPanel0.add(newChild0);
+            newChild0.setAlignmentX(Component.CENTER_ALIGNMENT);
+            buttonPanel0.add(deleteNode0);
+            deleteNode0.setAlignmentX(Component.CENTER_ALIGNMENT);
+            buttonPanel0.add(Box.createVerticalGlue());
+        }
         
-        buttonPanel0.add(Box.createVerticalGlue());
         buttonPanel0.add(syncViews0);
         syncViews0.setAlignmentX(Component.CENTER_ALIGNMENT);
         
@@ -537,9 +577,13 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         allButtons.add(wholeTree0);
         allButtons.add(toParent0);
         allButtons.add(toggle0);
-        allButtons.add(newChild0);
-        allButtons.add(editNode0);
-        allButtons.add(deleteNode0);
+        
+        if (isEditMode)
+        {
+            allButtons.add(newChild0);
+            allButtons.add(editNode0);
+            allButtons.add(deleteNode0);
+        }
  
 		treeListPanels[0] = new JPanel();
 		treeListPanels[0].setLayout(new BorderLayout());
@@ -609,39 +653,42 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             }
         });
 
-        newChild1 = new JButton(icon_newChild);
-        newChild1.setSize(20,20);
-        newChild1.setToolTipText("Add Child to Selection");
-        newChild1.addActionListener(new ActionListener()
+        if (isEditMode)
         {
-            public void actionPerformed(ActionEvent ae)
+            newChild1 = new JButton(icon_newChild);
+            newChild1.setSize(20,20);
+            newChild1.setToolTipText("Add Child to Selection");
+            newChild1.addActionListener(new ActionListener()
             {
-                addChildToSelectedNode(lists[1]);
-            }
-        });
+                public void actionPerformed(ActionEvent ae)
+                {
+                    addChildToSelectedNode(lists[1]);
+                }
+            });
+            
+            editNode1 = new JButton(icon_editNode);
+            editNode1.setSize(20,20);
+            editNode1.setToolTipText("Edit Selected Node");
+            editNode1.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent ae)
+                {
+                    editSelectedNode(lists[1]);
+                }
+            });
+    
+            deleteNode1 = new JButton(icon_delNode);
+            deleteNode1.setSize(20,20);
+            deleteNode1.setToolTipText("Delete Selected Node");
+            deleteNode1.addActionListener(new ActionListener()
+            {
+                public void actionPerformed(ActionEvent ae)
+                {
+                    deleteSelectedNode(lists[1]);
+                }
+            });
+        }
         
-        editNode1 = new JButton(icon_editNode);
-        editNode1.setSize(20,20);
-        editNode1.setToolTipText("Edit Selected Node");
-        editNode1.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent ae)
-            {
-                editSelectedNode(lists[1]);
-            }
-        });
-
-        deleteNode1 = new JButton(icon_delNode);
-        deleteNode1.setSize(20,20);
-        deleteNode1.setToolTipText("Delete Selected Node");
-        deleteNode1.addActionListener(new ActionListener()
-        {
-            public void actionPerformed(ActionEvent ae)
-            {
-                deleteSelectedNode(lists[1]);
-            }
-        });
-
         // view manipulation buttons
         JLabel viewLabel1 = new JLabel("View");
         viewLabel1.setSize(32,viewLabel1.getHeight());
@@ -658,19 +705,22 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 
         buttonPanel1.add(Box.createRigidArea(new Dimension(20,20)));
         
-        // tree editing buttons
-        JLabel editLabel1 = new JLabel("Edit");
-        editLabel1.setSize(32,editLabel1.getHeight());
-        buttonPanel1.add(editLabel1);
-        editLabel1.setAlignmentX(Component.CENTER_ALIGNMENT);
-        buttonPanel1.add(editNode1);
-        editNode1.setAlignmentX(Component.CENTER_ALIGNMENT);
-        buttonPanel1.add(newChild1);
-        newChild1.setAlignmentX(Component.CENTER_ALIGNMENT);
-        buttonPanel1.add(deleteNode1);
-        deleteNode1.setAlignmentX(Component.CENTER_ALIGNMENT);
+        if (isEditMode)
+        {
+            // tree editing buttons
+            JLabel editLabel1 = new JLabel("Edit");
+            editLabel1.setSize(32,editLabel1.getHeight());
+            buttonPanel1.add(editLabel1);
+            editLabel1.setAlignmentX(Component.CENTER_ALIGNMENT);
+            buttonPanel1.add(editNode1);
+            editNode1.setAlignmentX(Component.CENTER_ALIGNMENT);
+            buttonPanel1.add(newChild1);
+            newChild1.setAlignmentX(Component.CENTER_ALIGNMENT);
+            buttonPanel1.add(deleteNode1);
+            deleteNode1.setAlignmentX(Component.CENTER_ALIGNMENT);
+            buttonPanel1.add(Box.createVerticalGlue());
+        }
         
-        buttonPanel1.add(Box.createVerticalGlue());
         buttonPanel1.add(syncViews1);
         syncViews1.setAlignmentX(Component.CENTER_ALIGNMENT);
         
@@ -678,9 +728,13 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         allButtons.add(wholeTree1);
         allButtons.add(toParent1);
         allButtons.add(toggle1);
-        allButtons.add(newChild1);
-        allButtons.add(editNode1);
-        allButtons.add(deleteNode1);
+        
+        if (isEditMode)
+        {
+            allButtons.add(newChild1);
+            allButtons.add(editNode1);
+            allButtons.add(deleteNode1);
+        }
  
 		treeListPanels[1] = new JPanel();
 		treeListPanels[1].setLayout(new BorderLayout());
@@ -902,7 +956,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		if ( parentDefItem.getChild() == null )
 		{
 			log.info("Cannot add child node below this rank");
-            statusBar.setErrorMessage("Children cannot be added below this node");
+            String msg = getResourceString("TTV_NO_KIDS_ADD_BELOW");
+            statusBar.setErrorMessage(msg);
+            UIRegistry.displayErrorDlg(msg);
 			return;
 		}
 
@@ -940,9 +996,11 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         // if this node has children, ask the user if it is okay to delete multiple nodes
         if (numNodesToDelete > 1)
         {
-            userChoice = JOptionPane.showConfirmDialog(this, "This operation will delete "
-                    + numNodesToDelete + " nodes", "Continue?", JOptionPane.OK_CANCEL_OPTION,
-                    JOptionPane.WARNING_MESSAGE); // I18N
+            String msg = String.format("TTV_CONFIRM_DELETE", numNodesToDelete);
+            userChoice = JOptionPane.showConfirmDialog(this, msg, 
+                    getResourceString("TTV_CONFIRM_DELETE_TITLE"), 
+                    JOptionPane.OK_CANCEL_OPTION,
+                    JOptionPane.WARNING_MESSAGE);
         }
         
         if (userChoice == JOptionPane.OK_OPTION)
@@ -957,11 +1015,11 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             // delete the record from the DB
             if (dataService.deleteTreeNode(nodeRecord))
             {
-                setStatusBarText(numNodesToDelete + " node(s) deleted");
+                setStatusBarText("TTV_NODES_DELETED", numNodesToDelete);
             }
             else
             {
-                statusBar.setErrorMessage("Unknown error while deleting node");
+                statusBar.setErrorMessage(getResourceString("TTV_PROBLEM_DELETING"));
             }
 
             // re-show the children of the parent node
@@ -1020,6 +1078,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         updateAllUI();
 	}
 	
+    /**
+     * @param list
+     */
     public synchronized void zoomOutOneLevel(final JList list)
     {
         TreeNode selectedNode = (TreeNode)list.getSelectedValue();
@@ -1065,21 +1126,25 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 * @param list
 	 */
 	@SuppressWarnings("unchecked")
-	public void selectParentOfSelection(final JList list)
+	public void selectParentOfSelection(final TreeDataGhostDropJList list)
 	{
 		Object selection = list.getSelectedValue();
 		if ( selection == null )
 		{
 			return;
 		}
+		
         TreeNode node = (TreeNode)selection;
         int parentId = node.getParentId();
         if (parentId != node.getId())
         {
             TreeNode parentNode = listModel.getNodeById(parentId);
+            
             // I doubled this call b/c Swing wasn't doing this unless I put it in here twice
+            list.setClickOnText(true);
             list.setSelectedValue(parentNode,true);
             list.setSelectedValue(parentNode,true);
+            list.setClickOnText(false);
             
             int listIndex = (list == lists[0]) ? 0 : 1;
             scrollToShowNode(parentNode, listIndex);
@@ -1092,45 +1157,39 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	public void find(final String nodeName, final int where, final boolean wrap)
 	{
         setStatusBarText(null);
-		findName = nodeName;
+		findName    = nodeName;
 		findResults = dataService.findByName(treeDef, nodeName);
 		if (findResults.isEmpty())
 		{
 			//TODO: notify the user that no results were found
 			log.info("Search for '"+nodeName+"' returned no results");
-			setStatusBarText("Search for '"+nodeName+"' returned no results");
+			setStatusBarText("TTV_FIND_NO_RESULTS", nodeName);
 			return;
 		}
+		
+		findPanel.getNextButton().setEnabled(findResults.size() > 1);
 		
 		T firstMatch = findResults.get(0);
 		resultsIndex = 0;
-		if (!showPathToNode(firstMatch))
-		{
-			//TODO: notify the user that no results are below current visible root
-			log.error("No results below current visible root");
-			setStatusBarText("No results below current visible root");
-			return;
-		}
+		showPathToNodeForFind(firstMatch);
 		
-        TreeNode firstMatchNode = listModel.getNodeById(firstMatch.getTreeId());
-        
+		final TreeNode firstMatchNode = listModel.getNodeById(firstMatch.getTreeId());
+		
+        lastFoundNodeId = firstMatchNode.getId();
 		if ((where & DualViewSearchable.TOPVIEW) != 0)
 		{
-            // I doubled this call b/c Swing wasn't doing this unless I put it in here twice
-			lists[0].setSelectedValue(firstMatchNode,true);
-            lists[0].setSelectedValue(firstMatchNode,true);
-            
+		    setSelectedNode(0, firstMatchNode);
             scrollToShowNode(firstMatchNode, 0);
+            
 		}
+		
 		if ((where & DualViewSearchable.BOTTOMVIEW) != 0)
 		{
             if (mode == SINGLE_VIEW_MODE)
             {
                 toggleViewMode();
             }
-            // I doubled this call b/c Swing wasn't doing this unless I put it in here twice
-            lists[1].setSelectedValue(firstMatchNode,true);
-            lists[1].setSelectedValue(firstMatchNode,true);
+            setSelectedNode(1, firstMatchNode);
             
             scrollToShowNode(firstMatchNode, 1);
         }
@@ -1166,52 +1225,43 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 
 		if (key != null && !key.equals(findName))
 		{
-			find(key,where,wrap);
+			find(key, where, wrap);
 			return;
 		}
 		
-		if (findResults != null && findResults.size()>0 && findName != null)
+		if (findResults != null && findResults.size() > 0 && findName != null)
 		{
 			log.info("Searching for next node from previous search: " + findName);
+			
 			// find the next node from the previous search
-			if (findResults.size()-1 == resultsIndex && !wrap)
+			if ((findResults.size() - 1) == resultsIndex && !wrap)
 			{
-				//TODO: notify the user that no more results
-				log.info("No more results");
-				setStatusBarText("No more results");
+				setStatusBarText("TTV_FIND_NO_RESULTS", key);
 				return;
 			}
 			
-			resultsIndex = (resultsIndex+1) % findResults.size();
+			resultsIndex = (resultsIndex + 1) % findResults.size();
 			T nextNode = findResults.get(resultsIndex);
-			if ( !showPathToNode(nextNode) )
-			{
-				//TODO: notify the user that no results are below current visible root
-				log.info("No more results below current visible root");
-				setStatusBarText("No more results below current visible root");
-				return;
-			}
-
+			
+			showPathToNodeForFind(nextNode);
+			
             TreeNode nextMatchNode = listModel.getNodeById(nextNode.getTreeId());
             
 			if ((where & DualViewSearchable.TOPVIEW) != 0)
 			{
-                // I doubled this call b/c Swing wasn't doing this unless I put it in here twice
-                lists[0].setSelectedValue(nextMatchNode,true);
-                lists[0].setSelectedValue(nextMatchNode,true);
+			    setSelectedNode(0, nextMatchNode);
                 
                 scrollToShowNode(nextMatchNode, 0);
 			}
+			
 			if ((where & DualViewSearchable.BOTTOMVIEW) != 0)
 			{
                 if (mode == SINGLE_VIEW_MODE)
                 {
                     toggleViewMode();
                 }
-                // I doubled this call b/c Swing wasn't doing this unless I put it in here twice
-                lists[1].setSelectedValue(nextMatchNode,true);
-                lists[1].setSelectedValue(nextMatchNode,true);
-
+                
+                setSelectedNode(1, nextMatchNode);
                 scrollToShowNode(nextMatchNode, 1);
             }
 		}
@@ -1229,7 +1279,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		List<T> matches = dataService.findByName(treeDef, current.getName());
 		if (matches.size()==1)
 		{
-			setStatusBarText("No more matches");
+			setStatusBarText("TTV_FIND_NO_MORE_MATCHES");
 			return;
 		}
 		
@@ -1245,27 +1295,19 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         
 		if (!wrap && curIndex == matches.size()-1)
 		{
-			setStatusBarText("No more matches");
+		    setStatusBarText("TTV_FIND_NO_MORE_MATCHES");
 			return;
 		}
         
         T nextNode = matches.get((curIndex + 1)%matches.size());
 
-        if ( !showPathToNode(nextNode) )
-        {
-            //TODO: notify the user that no results are below current visible root
-            //log.info("No more results below current visible root");
-            setStatusBarText("No more results below current visible root");
-            return;
-        }
+        showPathToNodeForFind(nextNode);
         
         TreeNode nextMatchNode = listModel.getNodeById(nextNode.getTreeId());
         
 		if ((where & DualViewSearchable.TOPVIEW) != 0)
 		{
-            // I doubled this call b/c Swing wasn't doing this unless I put it in here twice
-            lists[0].setSelectedValue(nextMatchNode,true);
-            lists[0].setSelectedValue(nextMatchNode,true);
+		    setSelectedNode(0, nextMatchNode);
             
             scrollToShowNode(nextMatchNode, 0);
 		}
@@ -1275,12 +1317,23 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             {
                 toggleViewMode();
             }
-            // I doubled this call b/c Swing wasn't doing this unless I put it in here twice
-            lists[1].setSelectedValue(nextMatchNode,true);
-            lists[1].setSelectedValue(nextMatchNode,true);
-
+            setSelectedNode(1, nextMatchNode);
             scrollToShowNode(nextMatchNode, 1);
         }
+	}
+	
+	/**
+	 * Selects the node in the given list.
+	 * @param listInx the index to the list to use
+	 * @param node the node to select.
+	 */
+	protected void setSelectedNode(final int listInx, final TreeNode node)
+	{
+	    // I doubled this call b/c Swing wasn't doing this unless I put it in here twice - JDS
+        lists[listInx].setClickOnText(true);
+        lists[listInx].setSelectedValue(node, true);
+        lists[listInx].setSelectedValue(node, true);
+        lists[listInx].setClickOnText(false);
 	}
 	
 	/**
@@ -1306,22 +1359,131 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		{
 			// throw new IllegalArgumentException?
 		}
+    }
+
+    /**
+     * This looks down the list model and the pathToNode and figures which node in the path
+     * was the last one to be visible.
+     * @param pathToNode the path to the node
+     * @param visRoot the visible root.
+     * @return the last node that was visible from the pathToNode
+     */
+    protected T findLastVisibleNode(final List<T> pathToNode, final TreeNode visRoot)
+    {
+	    T visNode = null;
+	    
+	    // Start by looking for the visual root Node in the returned list
+	    // It should always find it as the first node.
+	    int visNodeIndex = 0;
+	    for (T node : pathToNode)
+	    {
+	        if (node.getTreeId().intValue() == visRoot.getId())
+	        {
+	            visNode = node;
+	            break;
+	        }
+	        visNodeIndex++;
+	    }
+
+	    // Now that we have the Visible Root start walking the list of a Ancestors (pathToNode)
+	    // and the visual data model until we can't find a match.
+	    if (visNode != null)
+	    {
+	        int lastFndIndex = -1;
+	        int startIndex   = listModel.indexOf(visRoot); 
+	        for (int i=visNodeIndex;i<pathToNode.size();i++)
+	        {
+	            boolean fnd = false;
+	            for (int j=startIndex;j<listModel.getSize();j++)
+	            {
+	                if (debugFind) System.err.println("["+pathToNode.get(i).getFullName()+"]["+listModel.getElementAt(j).getFullName()+"]");
+	                
+	                if (pathToNode.get(i).getTreeId().intValue() == listModel.getElementAt(j).getId())
+	                {
+	                    fnd        = true;
+	                    startIndex = j+1;
+	                    break;
+	                }
+	            }
+	            
+	            // if this is true then we found a node in the pathToNode that isn't
+	            // visible, yet so return that first node that wasn't found
+	            if (!fnd)
+	            {
+	                if (debugFind) System.err.println("Last Node that was visible: "+pathToNode.get(i-1).getFullName());
+	                lastFndIndex = i;
+	                return pathToNode.get(i-1);
+	            }
+	        }
+
+	        // if this is true then we got all the way to the end and they were
+	        // visible in the tree
+	        if (lastFndIndex == -1)
+	        {
+	            if (debugFind) System.err.println("*** Last Node that was visible: "+pathToNode.get(pathToNode.size()-1).getFullName()); 
+	            return pathToNode.get(pathToNode.size()-1);
+	        }
+	    }
+	    
+	    // This means something bad happened and we couldn't find anything visible.
+	    return null;
 	}
-	
+
+	/**
+	 * @param node
+	 * @return
+	 */
+	protected boolean showPathToNodeForFind(final T node)
+	{
+	    if (debugFind) System.err.println("showPathToNodeForFind "+node.getFullName());
+	    
+	    // Get the list of parents from the found node up to the root
+	    List<T> pathToNode = node.getAllAncestors();
+	    
+	    // Get the visible root node.
+	    TreeNode visRoot = listModel.getVisibleRoot();
+
+	    // Now add the 'found' node as the last node in the list
+	    List<T> fullList = new Vector<T>(pathToNode);
+	    fullList.add(node);
+	    
+	    // Check the list of nodes from the found node to against the
+	    // visual list model to see of the entire list of node is visible
+	    T lastVisiblenode = findLastVisibleNode(fullList, visRoot);
+	    if (node == lastVisiblenode)
+	    {
+	        // This means the 'found' node was visible
+	        return false;
+	    }
+
+	    // Now expose the rest of the nodes from the last one that was visible
+	    // down to the 'found' node
+	    for( int i = pathToNode.indexOf(lastVisiblenode); i < pathToNode.size(); ++i )
+	    {
+	        T pathRecord = pathToNode.get(i);
+	        List<TreeNode> childNodes = showChildren(pathRecord);
+	        showCounts(pathRecord, childNodes);
+	    }
+	    
+	    return true;
+	}
+
 	/**
 	 * @param node
 	 * @return
 	 */
 	protected boolean showPathToNode(final T node)
 	{
+	    //System.out.println("Showing Path to "+node.getFullName());
+	    
 		List<T> pathToNode = node.getAllAncestors();
 		TreeNode visRoot = listModel.getVisibleRoot();
         
         boolean pathContainsVisRoot = false;
-        T visRootRecord = null;
+        T       visRootRecord = null;
         for (T pathItem: pathToNode)
         {
-            if ((int)(pathItem.getTreeId()) == visRoot.getId())
+            if (pathItem.getTreeId().intValue() == visRoot.getId())
             {
                 pathContainsVisRoot = true;
                 visRootRecord = pathItem;
@@ -1378,14 +1540,12 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		
 		// build the dialog UI so I can adjust some of the controls
 		dialog.preCreateUI();
-		BaseTreeTask<T,D,I> parentTask = (BaseTreeTask<T,D,I>)getTask();
 		for (Viewable viewable: dialog.getMultiView().getViewables())
 		{
 		    if (viewable instanceof FormViewObj)
 		    {
                 FormViewObj form = (FormViewObj)viewable;
                 UIValidator.setIgnoreAllValidation(this, true);
-		        parentTask.adjustForm(form);
 		        
                 if (isNewObject)
                 {
@@ -1404,7 +1564,6 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                     }
                 }
                 UIValidator.setIgnoreAllValidation(this, false);
-
 		    }
 		}
 		
@@ -1564,17 +1723,23 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                                 String msg = "** - JDS - ** acceptedParentBefore was null and shouldn't have been.";
                                 log.error(msg);
                                 UIRegistry.displayErrorDlg(msg);
+                                statusBar.setErrorMessage(msg);
+                                
                             }
                         }
                         
                         if (!afterSaveSuccess)
                         {
-                            statusBar.setErrorMessage("The tree metadata was not successfully updated.  Please rebuild the tree metadata.");
+                            String msg = getResourceString("TTV_METADATA_PROBLEM");
+                            UIRegistry.displayErrorDlg(msg);
+                            statusBar.setErrorMessage(msg);
                         }
                     }
                     else
                     {
-                        statusBar.setErrorMessage("The transaction didn't complete successfully.  Changes have been undone.");
+                        String msg = getResourceString("TTV_TRANS_PROBLEM");
+                        UIRegistry.displayErrorDlg(msg);
+                        statusBar.setErrorMessage(msg);
                     }
                     
                     UIRegistry.clearGlassPaneMsg();
@@ -1618,7 +1783,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             statusBarText = selectedNode.getFullName();
         }
         
-        setStatusBarText(statusBarText);
+        setNameIntoStatusBarText(statusBarText);
 
         boolean nonNullSelection = (selectedNode != null);
         boolean canAddChild      = (selectedNode != null) ? (selectedNode.getRank() < getHighestPossibleNodeRank()) : false;
@@ -1629,26 +1794,38 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         // disable the buttons so the user can't click them until the background task verifies if they should be enabled
         if (sourceList == lists[0])
         {
-            newChild0.setEnabled(canAddChild && nonNullSelection);
             popupMenu.setNewEnabled(canAddChild && nonNullSelection);
-            editNode0.setEnabled(nonNullSelection);
+            if (isEditMode)
+            {
+                newChild0.setEnabled(canAddChild && nonNullSelection);
+                editNode0.setEnabled(nonNullSelection);
+            }
             subtree0.setEnabled(!isVisibleRoot && nonNullSelection);
             toParent0.setEnabled(!isVisibleRoot && nonNullSelection);
 
             // turn these off until the bg thread can find out if user can delete this node
-            deleteNode0.setEnabled(false);
+            if (isEditMode)
+            {
+                deleteNode0.setEnabled(false);
+            }
             popupMenu.setDeleteEnabled(false);
         }
         else
         {
-            newChild1.setEnabled(canAddChild && nonNullSelection);
-            popupMenu.setNewEnabled(canAddChild && nonNullSelection);            
-            editNode1.setEnabled(nonNullSelection);
+            popupMenu.setNewEnabled(canAddChild && nonNullSelection); 
+            if (isEditMode)
+            {
+                newChild1.setEnabled(canAddChild && nonNullSelection);
+                editNode1.setEnabled(nonNullSelection);
+            }
             subtree1.setEnabled(!isVisibleRoot && nonNullSelection);
             toParent1.setEnabled(!isVisibleRoot && nonNullSelection);
             
             // turn these off until the bg thread can find out if user can delete this node
-            deleteNode1.setEnabled(false);
+            if (isEditMode)
+            {
+                deleteNode1.setEnabled(false);
+            }
             popupMenu.setDeleteEnabled(false);
         }
 
@@ -1695,12 +1872,18 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                 // update the state of all selection-sensative buttons
                 if (sourceList == lists[0])
                 {
-                    deleteNode0.setEnabled(canDelete && validSelection);
+                    if (isEditMode)
+                    {
+                        deleteNode0.setEnabled(canDelete && validSelection);
+                    }
                     popupMenu.setDeleteEnabled(canDelete && validSelection);
                 }
                 else
                 {
-                    deleteNode1.setEnabled(canDelete && validSelection);
+                    if (isEditMode)
+                    {
+                        deleteNode1.setEnabled(canDelete && validSelection);
+                    }
                     popupMenu.setDeleteEnabled(canDelete && validSelection);
                 }
             }            
@@ -1817,7 +2000,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             boolean changed = dataService.moveTreeNode(child, newParent);
             if (!changed)
             {
-                statusBar.setErrorMessage(getResourceString("TTV_UNKOWN_MOVE_ERROR"));
+                String msg = getResourceString("TTV_UNKOWN_MOVE_ERROR");
+                statusBar.setErrorMessage(msg);
+                UIRegistry.displayErrorDlg(msg);
             }
             
             // reshow the nodes' children, if the nodes are still in the tree (see comment above in this method)
@@ -1949,9 +2134,9 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		{
 			// select this node and display popup for it
 			final TreeDataGhostDropJList list = (TreeDataGhostDropJList)e.getSource();
-			Point p = e.getPoint();
-			int index = list.locationToIndex(p);
-			if (index==-1)
+			Point p     = e.getPoint();
+			int   index = list.locationToIndex(p);
+			if (index == -1)
 			{
 				return;
 			}
@@ -2279,6 +2464,11 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         
         for (TreeNode newNode: childNodes)
         {
+            if (!newNode.shouldCalcCount())
+            {
+                continue;
+            }
+
             final TreeNode node = newNode;
             Runnable getAssocRecCount = new Runnable()
             {
@@ -2288,6 +2478,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                     {
                         if (rankThreshold == -1 || dbRecord.getRankId() >= rankThreshold)
                         {
+                            //System.out.println("Calc: "+node.getFullName()+" "+node.hashCode());
                             new ChildNodeCounter(TreeTableViewer.this, 1, node,  TreeFactory.getRelatedRecordCountSQLSingleNode(dbRecClass), null, isHQL);
                             
                             new ChildNodeCounter(TreeTableViewer.this, 2, node, 

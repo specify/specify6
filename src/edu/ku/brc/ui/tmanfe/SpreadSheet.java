@@ -57,7 +57,6 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.SearchReplacePanel;
 import edu.ku.brc.ui.SearchableJXTable;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;

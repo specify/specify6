@@ -412,9 +412,10 @@ public class QueryTask extends BaseTask
     {
         String sqlStr = "From SpQuery as sq Inner Join sq.specifyUser as user where user.specifyUserId = "+SpecifyUser.getCurrentUser().getSpecifyUserId();
 
-        DataProviderSessionIFace session    = DataProviderFactory.getInstance().createSession();
+        DataProviderSessionIFace session = null;
         try
         {
+            session = DataProviderFactory.getInstance().createSession();
             List<?> queries = session.getDataList(sqlStr);
 
             navBox = new DroppableNavBox(getResourceString("Queries"), QUERY_FLAVOR, QUERY,
@@ -431,7 +432,10 @@ public class QueryTask extends BaseTask
         }
         finally
         {
-            session.close();
+            if (session != null)
+            {
+                session.close();
+            }
         }
     }
     

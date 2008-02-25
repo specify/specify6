@@ -14,8 +14,8 @@ import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeographyTreeDefItem;
+import edu.ku.brc.specify.datamodel.busrules.GeographyBusRules;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.forms.FormViewObj;
 
 /**
  * Task that handles the UI for viewing geography data.
@@ -41,6 +41,8 @@ public class GeographyTreeTask extends BaseTreeTask<Geography,GeographyTreeDef,G
         starterPaneText  = getResourceString("GeographyStarterPaneText");
         commandTypeString = GEOGRAPHY;
         
+        businessRules = new GeographyBusRules();
+        
         initialize();
 	}
     
@@ -49,34 +51,5 @@ public class GeographyTreeTask extends BaseTreeTask<Geography,GeographyTreeDef,G
     protected GeographyTreeDef getCurrentTreeDef()
     {
         return Discipline.getCurrentDiscipline().getGeographyTreeDef();
-    }
-
-//    protected void adjustTreeDefForm(FormViewObj form)
-//    {
-//    }
-//    
-//    protected void adjustTreeDefItemForm(FormViewObj form)
-//    {
-//    }
-    
-    @Override
-    public void adjustForm(FormViewObj form)
-    {
-        //log.debug(this.getClass().getSimpleName() + ".adjustForm(" + form.getName() + ") : form data obj = " + form.getDataObj());
-        if (form.getDataObj() instanceof Geography || form.getViewDef().getClassName().equals(Geography.class.getName()))
-        {
-            log.debug("Adjusting Geography data entry form");
-            adjustNodeForm(form);
-        }
-        
-        
-//        else if (form.getDataObj() instanceof GeographyTreeDef)
-//        {
-//            adjustTreeDefForm(form);
-//        }
-//        else if (form.getDataObj() instanceof GeographyTreeDefItem)
-//        {
-//            adjustTreeDefItemForm(form);
-//        }
     }
 }

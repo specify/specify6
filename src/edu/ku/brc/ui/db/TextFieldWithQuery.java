@@ -110,6 +110,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     protected Integer              selectedId          = null;
     protected String               currentText         = "";
     protected boolean              hasNewText          = false;
+    protected boolean              wasCleared          = false;
     
     protected boolean              isDoingCount        = false;
     protected Integer              returnCount         = null;
@@ -181,6 +182,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                     textField.selectAll();
                 }
                 
+                wasCleared = false;
                 super.focusGained(arg0);
             }
 
@@ -190,12 +192,18 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 if (selectedId == null && !ignoreFocusLost)
                 {
                     textField.setText("");
-                    selectedId = null;
                     
-                    ListSelectionEvent lse = new ListSelectionEvent(TextFieldWithQuery.this, 0, 0, false);
-                    for (ListSelectionListener l : listSelectionListeners)
+                    ///////////////////////////////////////////////////////////////////////////////////
+                    // We only want to generate a change event if it once had a value and then it is
+                    // cleared and the user tabs to a new control. - rods 02/28/08
+                    ///////////////////////////////////////////////////////////////////////////////////
+                    if (wasCleared)
                     {
-                        l.valueChanged(lse);
+                        ListSelectionEvent lse = new ListSelectionEvent(TextFieldWithQuery.this, 0, 0, false);
+                        for (ListSelectionListener l : listSelectionListeners)
+                        {
+                            l.valueChanged(lse);
+                        }
                     }
                 }
                 super.focusLost(arg0);
@@ -299,11 +307,18 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             {
                 if (ev.getKeyCode() != KeyEvent.VK_ENTER)
                 {
+                    // Add variable to track whether it once had a value and now it does not rods - 02/28/08
+                    wasCleared = selectedId != null;
+                    
                     idList.clear();
                     list.clear();
                     selectedId = null;
                     
-                    // 02/09/08 - This should be done here - rods
+                    // 02/09/08 - This should not be done here - rods
+                    // The reason is, that we may have added something only to remove
+                    // before leaving the control. So we should never send the notification
+                    // just because we delete the contents. (see wasCleared above)
+                    
                     /*if (listSelectionListeners != null)
                     {
                         for (ListSelectionListener l : listSelectionListeners)
@@ -799,6 +814,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     public void setSelectedId(final Integer selectedId)
     {
         this.selectedId = selectedId;
+        this.wasCleared = true;
     }
 
     public void requestFocus()

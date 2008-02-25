@@ -72,6 +72,7 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
     
     protected CellConstraints cc       = new CellConstraints();
     
+    protected String[] typeNamesLabels;
     protected Hashtable<LatLonUIIFace.LatLonType, String> typeMapper = new Hashtable<LatLonUIIFace.LatLonType, String>();
     
     
@@ -112,7 +113,15 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
      */
     public LatLonUI()
     {
-        
+        UIRegistry.loadAndPushResourceBundle("specify_plugins");
+
+        typeNamesLabels = new String[typeNamesKeys.length];
+        int i = 0;
+        for (String key : typeNamesKeys)
+        {
+            typeNamesLabels[i++] = UIRegistry.getResourceString(key);
+        }
+        UIRegistry.popResourceBundle();
     }
     
     /**
@@ -381,7 +390,7 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
         
         if (typeLabel != null)
         {
-            typeLabel.setText(UIRegistry.getResourceString(typeNamesKeys[currentType.ordinal()]));
+            typeLabel.setText(typeNamesLabels[currentType.ordinal()]);
         }
     }
     
@@ -391,22 +400,24 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
      */
     public Object getValue()
     {
-        locality.setLatLongType(typeMapper.get(currentType));
-        locality.setOriginalLatLongUnit(formatSelector.getSelectedIndex());
-        
-        int currentInx = formatSelector.getSelectedIndex() * 2;
-        
-        panels[currentInx].getDataFromUI();   // get data for Lat/Long One
-        panels[currentInx+1].getDataFromUI(); // get data for Lat/Long Two
-        
-        // Panel One 
-        locality.setLatitude1(panels[currentInx].getLatitude());
-        locality.setLongitude1(panels[currentInx].getLongitude());
-        
-        // Panel Two
-        locality.setLatitude2(panels[currentInx+1].getLatitude());
-        locality.setLongitude2(panels[currentInx+1].getLongitude());
-        
+        if (locality != null && currentType != null)
+        {
+            locality.setLatLongType(typeMapper.get(currentType));
+            locality.setOriginalLatLongUnit(formatSelector.getSelectedIndex());
+            
+            int currentInx = formatSelector.getSelectedIndex() * 2;
+            
+            panels[currentInx].getDataFromUI();   // get data for Lat/Long One
+            panels[currentInx+1].getDataFromUI(); // get data for Lat/Long Two
+            
+            // Panel One 
+            locality.setLatitude1(panels[currentInx].getLatitude());
+            locality.setLongitude1(panels[currentInx].getLongitude());
+            
+            // Panel Two
+            locality.setLatitude2(panels[currentInx+1].getLatitude());
+            locality.setLongitude2(panels[currentInx+1].getLongitude());
+        }
         return locality;
     }
 

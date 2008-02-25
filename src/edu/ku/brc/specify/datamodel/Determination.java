@@ -14,6 +14,7 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.Set;
@@ -42,7 +43,9 @@ import org.hibernate.annotations.Index;
     {   @Index (name="DeterminedDateIDX", columnNames={"DeterminedDate"}),
         @Index (name="DetMemIDX", columnNames={"CollectionMemberID"})
     })
-public class Determination extends CollectionMember implements java.io.Serializable, Comparable<Determination>
+public class Determination extends CollectionMember implements java.io.Serializable, 
+                                                               Comparable<Determination>,
+                                                               Cloneable
 {
      // Fields    
      protected Integer determinationId;
@@ -435,6 +438,45 @@ public class Determination extends CollectionMember implements java.io.Serializa
     {
         return 9;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        Determination obj = (Determination)super.clone();
+        obj.initialize();
+        
+        obj.timestampCreated     = new Timestamp(System.currentTimeMillis());
+        obj.timestampModified    = timestampCreated;
+        
+        obj.status = status;
+        obj.typeStatusName = typeStatusName;
+        obj.determinedDate = determinedDate;
+        obj.confidence = confidence;
+        obj.method = method;
+        obj.featureOrBasis = featureOrBasis;
+        obj.remarks = remarks;
+        obj.text1 = text1;
+        obj.text2 = text2;
+        obj.number1 = number1;
+        obj.number2 = number2;
+        obj.yesNo1 = yesNo1;
+        obj.yesNo2 = yesNo2;
+        obj.taxon = taxon;
+        obj.collectionObject = collectionObject;
+        obj.determiner = determiner;   
+       
+        for (DeterminationCitation dc : determinationCitations)
+        {
+            DeterminationCitation newDC = (DeterminationCitation)dc.clone();
+            newDC.setDetermination(obj);
+            obj.determinationCitations.add(newDC);
+        }
+         
+        return obj;
+    }
 
     //----------------------------------------------------------------------
     //-- Comparable Interface
@@ -445,12 +487,12 @@ public class Determination extends CollectionMember implements java.io.Serializa
      */
     public int compareTo(Determination obj)
     {
-        DeterminationStatus objStatus = obj.getStatus();
-        if (status != null && objStatus != null)
+        DeterminationStatus detStatus = obj.getStatus();
+        if (status != null && detStatus != null)
         {
-            if (objStatus.getType().byteValue() != status.getType().byteValue())
+            if (detStatus.getType().byteValue() != status.getType().byteValue())
             {
-                return objStatus.getType().compareTo(status.getType());
+                return status.compareTo(detStatus);
             }
         }
         

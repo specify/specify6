@@ -68,18 +68,23 @@ public class DragDropJList extends JList implements DragSourceListener,
      * Constructor.
      * 
 	 * @param model a list model managing the data to be displayed by this JList
-	 * @param dragDropCallback the object to notify during drag and drop events
+     * @param dragDropCallback the object to notify during drag and drop events
+     * @param isDraggable turns on or off Drag and Drop
 	 */
-	public DragDropJList( ListModel model, DragDropCallback dragDropCallback )
+	public DragDropJList(final ListModel model, final DragDropCallback dragDropCallback, final boolean isDraggable)
 	{
 		super(model);
 		this.dragDropCallback = dragDropCallback;
 		
 		this.setFixedCellHeight(this.getFont().getSize()*2);
-		dragSource = new DragSource();
-		int actions = DnDConstants.ACTION_MOVE | DnDConstants.ACTION_COPY | DnDConstants.ACTION_NONE;
-		dragSource.createDefaultDragGestureRecognizer(this,actions,this);
-		dropTarget = new DropTarget(this, this);
+		
+		if (isDraggable)
+		{
+    		dragSource = new DragSource();
+    		int actions = DnDConstants.ACTION_MOVE | DnDConstants.ACTION_COPY | DnDConstants.ACTION_NONE;
+    		dragSource.createDefaultDragGestureRecognizer(this,actions,this);
+    		dropTarget = new DropTarget(this, this);
+		}
 	}
 
 	/* (non-Javadoc)
@@ -91,7 +96,9 @@ public class DragDropJList extends JList implements DragSourceListener,
 		Point clickPoint = dge.getDragOrigin();
 		int index = locationToIndex(clickPoint);
 		if( index == -1 )
+		{
 			return;
+		}
 		Object target = getModel().getElementAt(index);
 		Transferable trans = new RJLTransferable(target);
 		draggedIndex = index;
@@ -186,6 +193,11 @@ public class DragDropJList extends JList implements DragSourceListener,
 		}
 	}
 	
+	/**
+	 * Sets the cursor to a "hand" when over a valid drop node
+	 * @param okToDrop whetherit is ok to drop
+	 * @param action the DnDConstant 
+	 */
 	protected void setDragCursor(final boolean okToDrop, final int action)
 	{
 	    if (action == DnDConstants.ACTION_MOVE)
@@ -238,7 +250,6 @@ public class DragDropJList extends JList implements DragSourceListener,
 		
 		if (droppedOn == dragged)
 		{
-		    System.out.println(dtde.getSource());
 		    setDragCursor(false, dtde.getDropAction());
 		    return false;
 		}
@@ -331,8 +342,10 @@ public class DragDropJList extends JList implements DragSourceListener,
 		public Object getTransferData(DataFlavor df)
 				throws UnsupportedFlavorException
 		{
-			if( isDataFlavorSupported(df) )
+			if (isDataFlavorSupported(df))
+			{
 				return object;
+			}
 			throw new UnsupportedFlavorException(df);
 		}
 

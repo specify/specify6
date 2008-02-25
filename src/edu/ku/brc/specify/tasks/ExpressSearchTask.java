@@ -45,6 +45,7 @@ import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
+import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.core.expresssearch.ERTIJoinColInfo;
 import edu.ku.brc.af.core.expresssearch.ExpressResultsTableInfo;
@@ -113,6 +114,8 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     protected Vector<SQLExecutionProcessor> sqlProcessorList = new Vector<SQLExecutionProcessor>();
     protected boolean                       sqlHasResults    = false;
     protected int                           sqlResultsCount  = 0;
+    
+    protected ESResultsSubPane              queryResultsPane = null;
 
 
     /**
@@ -184,10 +187,10 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         sqlHasResults = false;
         
         searchText.setBackground(textBGColor);
-        String searchTerm = searchText.getText().toLowerCase();
+        String searchTerm = searchText.getText();
         if (isNotEmpty(searchTerm))
         {
-            if (QueryAdjusterForDomain.getInstance().isUerInputNotInjectable(searchTerm))
+            if (QueryAdjusterForDomain.getInstance().isUerInputNotInjectable(searchTerm.toLowerCase()))
             {
                 ESResultsSubPane expressSearchPane = new ESResultsSubPane(searchTerm, this, true);
                 doQuery(searchText, null, badSearchColor, expressSearchPane);
@@ -464,11 +467,27 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
      * 
      * @param hqlStr the HQL query string
      */
-    protected void doHQLQuery(final QueryForIdResultsIFace  results)
+    protected void doHQLQuery(final QueryForIdResultsIFace  results, final Boolean reusePanel)
     {
-        ESResultsSubPane expressSearchPane = new ESResultsSubPane("Results", this, true); // XXX I18N
-        addSubPaneToMgr(expressSearchPane);
-        expressSearchPane.addSearchResults(results);
+        if (reusePanel == null || !reusePanel)
+        {
+            ESResultsSubPane expressSearchPane = new ESResultsSubPane("Results", this, true); // XXX I18N
+            addSubPaneToMgr(expressSearchPane);
+            expressSearchPane.addSearchResults(results);
+            
+        } else
+        {
+            if (queryResultsPane == null)
+            {
+                queryResultsPane = new ESResultsSubPane("Results", this, true); // XXX I18N
+                addSubPaneToMgr(queryResultsPane);
+            } else
+            {
+                queryResultsPane.reset();
+                SubPaneMgr.getInstance().showPane(queryResultsPane);
+            }
+            queryResultsPane.addSearchResults(results);
+        }
     }
 
     //-------------------------------------------------------
@@ -624,7 +643,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                 
             } else if (cmdAction.isAction("HQL"))
             {
-                doHQLQuery((QueryForIdResultsIFace)cmdAction.getData());
+                doHQLQuery((QueryForIdResultsIFace)cmdAction.getData(), (Boolean)cmdAction.getProperty("reuse_panel"));
                 
             } else if (cmdAction.isAction("ExpressSearch"))
             {

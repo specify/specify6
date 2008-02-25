@@ -637,15 +637,15 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
                 g2d.setColor(list.getSelectionForeground());
             }
             
-            if (treeNode.getAssociatedRecordCount() != 0)
+            if (treeNode.getAssociatedRecordCount() > 0)
             {
                 name.append(" (");
                 name.append(treeNode.getAssociatedRecordCount());
             }
             
-            if (treeNode.getAssociatedRecordCount2() != 0 && treeNode.isHasChildren())
+            if (treeNode.getAssociatedRecordCount2() > 0 && treeNode.isHasChildren())
             {
-                if (treeNode.getAssociatedRecordCount() != 0)
+                if (treeNode.getAssociatedRecordCount() > 0)
                 {
                     name.append(", ");
                 } else
@@ -655,7 +655,7 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
                 name.append(treeNode.getAssociatedRecordCount2());
                 name.append(")");
                 
-            } else if (treeNode.getAssociatedRecordCount() != 0)
+            } else if (treeNode.getAssociatedRecordCount() > 0)
             {
                 name.append(")");
             }

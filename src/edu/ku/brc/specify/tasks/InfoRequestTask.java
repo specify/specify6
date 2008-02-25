@@ -125,18 +125,32 @@ public class InfoRequestTask extends BaseTask
         {
             super.initialize(); // sets isInitialized to false
             
-            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            
-            navBox = new NavBox(title);
-            
-            List<?> infoRequests = session.getDataList(InfoRequest.class);
-            for (Iterator<?> iter=infoRequests.iterator();iter.hasNext();)
+            DataProviderSessionIFace session = null;
+            try
             {
-                addInfoRequest((InfoRequest)iter.next());
+                session = DataProviderFactory.getInstance().createSession();
+                navBox = new NavBox(title);
                 
-            }      
-            navBoxes.add(navBox);
-            session.close();
+                List<?> infoRequests = session.getDataList(InfoRequest.class);
+                for (Iterator<?> iter=infoRequests.iterator();iter.hasNext();)
+                {
+                    addInfoRequest((InfoRequest)iter.next());
+                    
+                }      
+                navBoxes.add(navBox);
+                
+            } catch (Exception ex)
+            {
+                log.error(ex);
+                ex.printStackTrace();
+                
+            } finally
+            {
+                if (session != null)
+                {
+                    session.close();
+                }
+            }
         }
     }
     
@@ -172,9 +186,10 @@ public class InfoRequestTask extends BaseTask
         infoRequest.setTimestampCreated(now);
         
         // save to database
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        DataProviderSessionIFace session = null;
         try
         {
+            session = DataProviderFactory.getInstance().createSession();
             session.beginTransaction();
             session.saveOrUpdate(infoRequest);
             session.commit();
@@ -183,8 +198,14 @@ public class InfoRequestTask extends BaseTask
         {
             ex.printStackTrace();
             log.error(ex);
+            
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
         }
-        session.close();
         
         NavBoxMgr.getInstance().addBox(navBox);
         
@@ -205,9 +226,10 @@ public class InfoRequestTask extends BaseTask
     protected void deleteInfoRequest(final InfoRequest infoRequest)
     {
         // delete from database
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        DataProviderSessionIFace session = null;
         try
         {
+            session = DataProviderFactory.getInstance().createSession();
             session.beginTransaction();
             session.delete(infoRequest);
             session.commit();
@@ -216,9 +238,14 @@ public class InfoRequestTask extends BaseTask
         {
             ex.printStackTrace();
             log.error(ex);
+            
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
         }
-        session.close();
-
     }
     
     /**
@@ -256,10 +283,24 @@ public class InfoRequestTask extends BaseTask
         InfoRequest infoRequest = new InfoRequest();
         infoRequest.initialize();
         
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        RecordSet rs = session.get(RecordSet.class, recordSet.getRecordSetId());
-        infoRequest.setRecordSet(rs);
-        session.close();
+        DataProviderSessionIFace session = null;
+        try
+        {
+            RecordSet rs = session.get(RecordSet.class, recordSet.getRecordSetId());
+            infoRequest.setRecordSet(rs);
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            log.error(ex);
+            
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
+        }
         
         //TaskMgr.getInstance().getTask(INFOREQUEST)
         

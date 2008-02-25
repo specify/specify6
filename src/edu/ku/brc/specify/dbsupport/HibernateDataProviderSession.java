@@ -127,7 +127,7 @@ public class HibernateDataProviderSession implements DataProviderSessionIFace
     {
         if (session != null)
         {
-            log.debug(session.hashCode());
+            //log.debug(session.hashCode());
             session.delete(dataObj);
  
             return true;

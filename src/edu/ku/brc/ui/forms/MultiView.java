@@ -53,12 +53,12 @@ import edu.ku.brc.ui.forms.validation.FormValidator;
  * A MulitView is a "view" that contains multiple Viewable object that can display the current data object in any of the given views.
  * Typically three views are registered: Form, Table, and Field <BR>
  * <BR>
- * Upon creation the agrument "createWithMode" tells the creation mechanism whether to look for and obey the "View" vs "Edit" modeness.
+ * Upon creation the agruement "createWithMode" tells the creation mechanism whether to look for and obey the "View" vs "Edit" modeness.
  * Meaning that if we have a view with subview and they (or some of them) have both a n Edit View and a non-Edit View,
- * all the subview will be cerated as either view or edit form accoring to the parent's mode.
-
+ * all the subview will be created as either view or edit form according to the parent's mode.
+ *
  * @code_status Beta
- **
+ *
  * @author rods
  *
  */
@@ -94,7 +94,6 @@ public class MultiView extends JPanel
     
     protected boolean                      editable             = false;
     protected AltViewIFace.CreationMode    createWithMode       = AltViewIFace.CreationMode.NONE;
-    //protected Vector<FormValidator>        formValidators       = new Vector<FormValidator>();
     protected boolean                      ignoreDataChanges    = false;
 
     protected int                          createOptions        = 0;
@@ -685,10 +684,18 @@ public class MultiView extends JPanel
             viewable = createViewable(name);
         }
         
+        Vector<ViewState> viewStateList = null;
+        
         if (viewable != null)
         {
             if (currentViewable != null)
             {
+                FormViewObj fvo = getCurrentViewAsFormViewObj();
+                if (fvo != null)
+                {
+                    viewStateList = fvo.collectionViewState();
+                }
+                
                 currentViewable.aboutToShow(false);
                 if (currentViewable.getAltView().getMode() == AltViewIFace.CreationMode.EDIT)
                 {
@@ -713,6 +720,15 @@ public class MultiView extends JPanel
             setData(data, false);
             
             setFormForSelector();
+            
+            if (viewStateList != null)
+            {
+                FormViewObj fvo = getCurrentViewAsFormViewObj();
+                if (fvo != null)
+                {
+                    setViewState(viewStateList, createWithMode, 0);
+                } 
+            }
             
             cardLayout.show(this, name);
             
@@ -1342,38 +1358,44 @@ public class MultiView extends JPanel
     }
     
     /**
-     * Increments to the next number in the series.
+     * Sets all the resultSetControllers to the proper index.
      */
     public void setViewState(final Vector<ViewState> viewStateList, 
                              final AltViewIFace.CreationMode mode,
                              final int vsInx)
     {
-        ViewState viewState = viewStateList.get(vsInx);
-        
-        if (vsInx > 0)
+        if (viewStateList != null && vsInx < viewStateList.size()-1)
         {
-            int inx = viewState.getInx();
-            if (inx > -1)
+            ViewState viewState = viewStateList.get(vsInx);
+            
+            if (vsInx > 0)
             {
-                FormViewObj formViewObj = getCurrentViewAsFormViewObj();
-                if (formViewObj != null)
+                int inx = viewState.getInx();
+                if (inx > -1)
                 {
-                    formViewObj.getRsController().setIndex(inx);
+                    FormViewObj formViewObj = getCurrentViewAsFormViewObj();
+                    if (formViewObj != null)
+                    {
+                        formViewObj.getRsController().setIndex(inx);
+                    }
                 }
             }
-        }
-        
-        for (MultiView mv : kids)
-        {
-            if (mv.createWithMode == mode)
+            
+            for (MultiView mv : kids)
             {
-                //mv.setViewState(viewStateList, mode, vsInx+1);
+                if (mv.createWithMode == mode)
+                {
+                    mv.setViewState(viewStateList, mode, vsInx+1);
+                }
             }
         }
     }
     
     /**
-     * Increments to the next number in the series.
+     * Collects the current state of each view. This mostly captures the index f th RSC
+     * @param viewStateList the list of view states
+     * @param mode the mode
+     * @param level the level
      */
     public void collectionViewState(final Vector<ViewState> viewStateList, 
                                     final AltViewIFace.CreationMode mode, 

@@ -50,7 +50,7 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
      * this class.
      */
     protected static final Logger log = Logger.getLogger(HibernateTreeDataServiceImpl.class);
-
+    
     /** An {@link Interceptor} that logs all objects loaded by Hibernate. */
     //public static HibernateLoadLogger loadLogger = new HibernateLoadLogger();
     
@@ -898,6 +898,25 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         return false;
     }
     
+    /**
+     * @param session
+     * @param source
+     * @param dest
+     * @return
+     */
+    protected boolean fixAdditionalRelationsips(Session session, T source, T dest)
+    {
+        if (source != null)
+        {
+            TreeAdditionalProcFactory.TreeAdditionalProcessing proc = TreeAdditionalProcFactory.getInstance().createProcessor(source.getClass());
+            if (proc != null)
+            {
+                return proc.process(session, source, dest);
+            }
+        }
+        return true;
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.treeutils.TreeDataService#createNodeLink(edu.ku.brc.specify.datamodel.Treeable, edu.ku.brc.specify.datamodel.Treeable)
      */
@@ -909,19 +928,30 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         try
         {
             T mergedDest = (T)mergeIntoSession(session, destination);
+            T mergedSrc  = (T)mergeIntoSession(session, source);
             Transaction tx = session.beginTransaction();
-            statusMsg = TreeHelper.createNodeRelationship(source,mergedDest);
             
-            if (!commitTransaction(session, tx)) // NOTE: this call will close an open session.
+            if (fixAdditionalRelationsips(session, mergedSrc, mergedDest))
             {
-                statusMsg = "Failed to create node relationship.";
+                statusMsg = TreeHelper.createNodeRelationship(mergedSrc,mergedDest);
+                
+                if (!commitTransaction(session, tx)) // NOTE: this call will close an open session.
+                {
+                    statusMsg = "Failed to create node relationship.";
+                }
+            } else
+            {
+                int x = 0;
+                x++;
+                // Error Dialog
             }
+
         } catch (Exception ex)
         {
             log.error(ex);
         } finally
         {
-            if (session.isOpen())
+            if (session != null && session.isOpen())
             {
                 session.close();
             }

@@ -236,12 +236,25 @@
             settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
             useresourcelabels="false">
             
-            <desc><![CDATA[Cache Preference Form.]]></desc>
+            <desc><![CDATA[System Preference Form.]]></desc>
             
             <columnDef>p:g,2px,max(150px;p):g,280px,f:p:g</columnDef>
             <rowDef auto="true" cell="p" sep="4dlu"/>
             
             <rows>
+                <row>
+                    <cell type="separator" label="Locale" colspan="5"/>
+                </row>
+                <row>
+                    <cell type="panel" id="16" name="treepanel" coldef="max(p;150px):g,2px,p,f:p:g" rowdef="p" colspan="5">
+	                    <rows>
+			                <row>
+                                <cell type="field" id="5" name="locale" uitype="combobox" colspan="2"/>
+                                <cell type="field" uitype="dsptextfield" id="6" name="6" ignore="true" default="Loading..." initialize="transparent=true"/>
+			                </row>
+                        </rows>
+                    </cell>
+                </row>
                 <row>
                     <cell type="separator" label="Geo-Referencing" colspan="5"/>
                 </row>

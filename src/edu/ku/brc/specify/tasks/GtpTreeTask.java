@@ -14,8 +14,8 @@ import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem;
+import edu.ku.brc.specify.datamodel.busrules.GeologicTimePeriodBusRules;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.forms.FormViewObj;
 
 /**
  * Task that handles the UI for viewing geologic time period data.
@@ -33,46 +33,27 @@ public class GtpTreeTask extends BaseTreeTask<GeologicTimePeriod,GeologicTimePer
 	public GtpTreeTask()
 	{
         super(GTP, getResourceString(GTP));
+        
         treeDefClass = GeologicTimePeriodTreeDef.class;
-        icon = IconManager.getIcon(GTP,IconManager.IconSize.Std16);
+        icon         = IconManager.getIcon(GTP,IconManager.IconSize.Std16);
         
         menuItemText     = getResourceString("GeoTimePeriodMenu");
         menuItemMnemonic = getResourceString("GeoTimePeriodMnemonic");
         starterPaneText  = getResourceString("GeoTimePeriodStarterPaneText");
         commandTypeString = GTP;
         
+        businessRules = new GeologicTimePeriodBusRules();
+        
         initialize();
 	}
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.BaseTreeTask#getCurrentTreeDef()
+     */
     @Transient
     @Override
     protected GeologicTimePeriodTreeDef getCurrentTreeDef()
     {
         return Discipline.getCurrentDiscipline().getGeologicTimePeriodTreeDef();
-    }
-
-//    protected void adjustTreeDefForm(FormViewObj form)
-//    {
-//    }
-//    
-//    protected void adjustTreeDefItemForm(FormViewObj form)
-//    {
-//    }
-    
-    @Override
-    public void adjustForm(FormViewObj form)
-    {
-        if (form.getDataObj() instanceof GeologicTimePeriod || form.getViewDef().getClassName().equals(GeologicTimePeriod.class.getName()))
-        {
-            adjustNodeForm(form);
-        }
-//        else if (form.getDataObj() instanceof GeologicTimePeriodTreeDef)
-//        {
-//            adjustTreeDefForm(form);
-//        }
-//        else if (form.getDataObj() instanceof GeologicTimePeriodTreeDefItem)
-//        {
-//            adjustTreeDefItemForm(form);
-//        }
     }
 }

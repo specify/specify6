@@ -69,8 +69,9 @@ import edu.ku.brc.specify.datamodel.CatalogNumberingScheme;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttr;
-import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.DataType;
+import edu.ku.brc.specify.datamodel.DeterminationStatus;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
@@ -139,6 +140,7 @@ public class GenericDBConversion
 
     protected static final int                              D_STATUS_CURRENT       = 1;
     protected static final int                              D_STATUS_UNKNOWN       = 2;
+    protected static final int                              D_STATUS_OLD           = 3;
 
     protected static final Logger                           log                    = Logger
                                                                                            .getLogger(GenericDBConversion.class);
@@ -1603,6 +1605,7 @@ public class GenericDBConversion
 
         StringBuilder insert = new StringBuilder();
         StringBuilder insert2 = new StringBuilder();
+        StringBuilder insert3 = new StringBuilder();
         try
         {
             BasicSQLUtils.deleteAllRecordsFromTable("determinationstatus", BasicSQLUtils.myDestinationServerType);
@@ -1622,7 +1625,7 @@ public class GenericDBConversion
             // insert.append(",'Current','mirror of the old schema isCurrent
             // field',CURRENT_DATE,CURRENT_DATE,true)");
             insert.append(",'Current','mirror of the old schema isCurrent field', '" + nowStr
-                    + "','" + nowStr + "', "+D_STATUS_CURRENT+"," + getCreatorAgentId(null) + ","
+                    + "','" + nowStr + "', "+DeterminationStatus.CURRENT+"," + getCreatorAgentId(null) + ","
                     + getModifiedByAgentId(null) + ","
                     + getDisciplineId() + ")");
 
@@ -1639,15 +1642,31 @@ public class GenericDBConversion
             // Meg had to drop explicit insert of CURRENT_DATE, not suported by SQL Server
             // insert.append(",'Unknown','',CURRENT_DATE,CURRENT_DATE, false)");
             // Meg had to drop explicit insert of false, not suported by SQL Server
-            insert2.append(",'Unknown','', '" + nowStr + "','" + nowStr + "',"+D_STATUS_UNKNOWN+","
+            insert2.append(",'Unknown','', '" + nowStr + "','" + nowStr + "',"+DeterminationStatus.NOTCURRENT+","
                     + getCreatorAgentId(null) + "," + getModifiedByAgentId(null) + ","
                     + getDisciplineId() + ")");
 
+            insert2.append("INSERT INTO determinationstatus ");
+            insert2.append("(DeterminationStatusID, Name, Remarks, TimestampCreated, TimestampModified, Type, CreatedByAgentID, ModifiedByAgentID, DisciplineID) ");
+            insert2.append("values ");
+            insert2.append("(");
+            insert2.append(D_STATUS_OLD);
+            insert2.append(",'Old Determination','', '" + nowStr + "','" + nowStr + "',"+DeterminationStatus.OLDDETERMINATION+","
+                    + getCreatorAgentId(null) + "," + getModifiedByAgentId(null) + ","
+                    + getDisciplineId() + ")");
+
+
             Statement st = newDBConn.createStatement();
+            
             log.debug(insert.toString());
             st.executeUpdate(insert.toString());
+            
             log.debug(insert2.toString());
             st.executeUpdate(insert2.toString());
+            
+            log.debug(insert3.toString());
+            st.executeUpdate(insert3.toString());
+            
             st.close();
 
         } catch (SQLException e)

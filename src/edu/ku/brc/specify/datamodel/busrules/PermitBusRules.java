@@ -25,6 +25,7 @@ import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
@@ -39,6 +40,8 @@ import edu.ku.brc.specify.datamodel.Permit;
  */
 public class PermitBusRules extends AttachmentOwnerBaseBusRules
 {  
+    private static final Logger  log = Logger.getLogger(PermitBusRules.class);
+    
     /**
      * Constructor.
      */
@@ -69,15 +72,29 @@ public class PermitBusRules extends AttachmentOwnerBaseBusRules
             Integer id = permit.getPermitId();
             if (id != null)
             {
-                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                List<?>                  permits = session.getDataList(Permit.class, "permitId", id);
-                if (permits.size() == 1)
+                DataProviderSessionIFace session = null;
+                try
                 {
-                    Permit oldPermit = (Permit)permits.get(0);
-                    String oldPermitNumber = oldPermit.getPermitNumber();
-                    if (oldPermitNumber.equals(permit.getPermitNumber()))
+                    session = DataProviderFactory.getInstance().createSession();
+                    List<?>                  permits = session.getDataList(Permit.class, "permitId", id);
+                    if (permits.size() == 1)
                     {
-                        checkPermitNumberForDuplicates = false;
+                        Permit oldPermit = (Permit)permits.get(0);
+                        String oldPermitNumber = oldPermit.getPermitNumber();
+                        if (oldPermitNumber.equals(permit.getPermitNumber()))
+                        {
+                            checkPermitNumberForDuplicates = false;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    log.error(ex);
+                } finally
+                {
+                    if (session != null)
+                    {
+                        session.close();
                     }
                 }
             }
@@ -87,16 +104,29 @@ public class PermitBusRules extends AttachmentOwnerBaseBusRules
             // If the permit has not changed then we shouldn't check for duplicates
             if (checkPermitNumberForDuplicates)
             {
-                DataProviderSessionIFace session       = DataProviderFactory.getInstance().createSession();
-                List<?>                  permitNumbers = session.getDataList(Permit.class, "permitNumber", permitNum);
-                if (permitNumbers.size() > 0)
+                DataProviderSessionIFace session = null;
+                try
                 {
-                    reasonList.add(getLocalizedMessage("PERMIT_NUM_IN_USE", permitNum));
-                } else
-                {
-                    return STATUS.OK;
+                    session = DataProviderFactory.getInstance().createSession();
+                    List<?> permitNumbers = session.getDataList(Permit.class, "permitNumber", permitNum);
+                    if (permitNumbers.size() > 0)
+                    {
+                        reasonList.add(getLocalizedMessage("PERMIT_NUM_IN_USE", permitNum));
+                    } else
+                    {
+                        return STATUS.OK;
+                    }
                 }
-                
+                catch (Exception ex)
+                {
+                    log.error(ex);
+                } finally
+                {
+                    if (session != null)
+                    {
+                        session.close();
+                    }
+                }
             } else
             {
                 return STATUS.OK;

@@ -264,8 +264,7 @@ public class FieldItemPanel extends LocalizerBasePanel
             
         }
         
-        
-        nxtBtn         = new JButton(getResourceString("NEXT"));
+        nxtBtn         = new JButton(getResourceString("SL_NEXT"));
         nxtEmptyBtn    = new JButton(getResourceString("SL_NEXT_EMPTY"));
         fldSpellChkBtn = new JButton(getResourceString("SL_SPELL_CHECK"));
         

@@ -49,6 +49,10 @@ public class FindPanel extends JPanel implements TimingTarget
     public static final int EXPANDED = 1;
     public static final int CONTRACTED = -1;
     
+    /**
+     * @param views
+     * @param startingMode
+     */
     public FindPanel(DualViewSearchable views, int startingMode)
     {
         this.setLayout(new BoxLayout(this,BoxLayout.LINE_AXIS));
@@ -152,6 +156,9 @@ public class FindPanel extends JPanel implements TimingTarget
         contractedSize = new Dimension(prefSize.width,0);
     }
 
+    /**
+     * 
+     */
     public void expand()
     {
         if (mode == EXPANDED || expanding || shrinking)
@@ -180,16 +187,25 @@ public class FindPanel extends JPanel implements TimingTarget
         expander.start();
     }
     
+    /**
+     * 
+     */
     protected void findClicked()
     {
         views.find(entryField.getText(), getWhere(), true);
     }
     
+    /**
+     * 
+     */
     protected void nextClicked()
     {
         views.findNext(entryField.getText(), getWhere(), true);
     }
     
+    /**
+     * @return
+     */
     protected int getWhere()
     {
         switch (whereToggleButton.getStateIndex())
@@ -213,6 +229,9 @@ public class FindPanel extends JPanel implements TimingTarget
         }
     }
     
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#getPreferredSize()
+     */
     @Override
     public Dimension getPreferredSize()
     {
@@ -229,17 +248,26 @@ public class FindPanel extends JPanel implements TimingTarget
         return super.getPreferredSize();
     }
     
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#getMaximumSize()
+     */
     @Override
     public Dimension getMaximumSize()
     {
         return getPreferredSize();
     }
     
+    /* (non-Javadoc)
+     * @see org.jdesktop.animation.timing.TimingTarget#begin()
+     */
     public void begin()
     {
         animationInProgress = true;
     }
 
+    /* (non-Javadoc)
+     * @see org.jdesktop.animation.timing.TimingTarget#end()
+     */
     public void end()
     {
         animationInProgress = false;
@@ -263,11 +291,17 @@ public class FindPanel extends JPanel implements TimingTarget
         c.repaint();
     }
 
+    /* (non-Javadoc)
+     * @see org.jdesktop.animation.timing.TimingTarget#repeat()
+     */
     public void repeat()
     {
         // never gets called
     }
 
+    /* (non-Javadoc)
+     * @see org.jdesktop.animation.timing.TimingTarget#timingEvent(float)
+     */
     public void timingEvent(float fraction)
     {
         float sizeFrac = fraction;
@@ -289,4 +323,14 @@ public class FindPanel extends JPanel implements TimingTarget
         this.repaint();
         this.validate();
     }
+
+    /**
+     * @return the nextButton
+     */
+    public JButton getNextButton()
+    {
+        return nextButton;
+    }
+    
+    
 }

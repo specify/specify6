@@ -70,6 +70,7 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.exceptions.UIException;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
+import edu.ku.brc.ui.tmanfe.SearchReplacePanel;
 import edu.ku.brc.util.FileCache;
 
 /**
@@ -142,6 +143,7 @@ public class UIRegistry
     protected Stack<ResBundleInfo> resBundleStack = new Stack<ResBundleInfo>();
     protected String               resourceName   = "resources";
     protected Locale               resourceLocale = Locale.getDefault();
+    protected Locale               platformLocale = Locale.getDefault();
 
 
     protected ViewBasedDialogFactoryIFace viewbasedFactory = null;
@@ -230,6 +232,14 @@ public class UIRegistry
         return instance;
     }
     
+    /**
+     * @return the platformLocale
+     */
+    public static Locale getPlatformLocale()
+    {
+        return instance.platformLocale;
+    }
+
     /**
      * Loads and returns a resource Bundle.
      * @param name the name of the Bundle

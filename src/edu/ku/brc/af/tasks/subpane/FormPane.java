@@ -18,6 +18,7 @@ import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
+import edu.ku.brc.ui.forms.ResultSetController;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.AltView;
 import edu.ku.brc.ui.forms.persist.AltViewIFace;
@@ -129,6 +130,32 @@ public class FormPane extends DroppableTaskPane
         this.data        = data;
 
         createForm(view, AltView.parseMode(mode, AltViewIFace.CreationMode.VIEW), data, options, null);
+    }
+
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#setVisible(boolean)
+     */
+    @Override
+    public void setVisible(boolean visible)
+    {
+        super.setVisible(visible);
+        
+        if (multiView != null)
+        {
+            multiView.aboutToShow(visible);
+            
+            FormViewObj fvo = multiView.getCurrentViewAsFormViewObj();
+            if (fvo !=  null)
+            {
+                if (visible)
+                {
+                    ResultSetController.setBackStopRS(fvo.getRsController());
+                } else
+                {
+                    ResultSetController.setBackStopRS(null);
+                }
+            }
+        }
     }
 
     /**

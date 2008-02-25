@@ -1223,7 +1223,8 @@ public class FormValidator implements ValidationListener, DataChangeListener
         }
         updateValidationBtnUIState();
         
-        if (type == saveEnableType && saveComp != null)
+        log.debug("UIValidator.isIgnoreAllValidation() "+UIValidator.isIgnoreAllValidation());
+        if (type == saveEnableType && saveComp != null && !UIValidator.isIgnoreAllValidation())
         {
             if (itsOKToEnable)
             {

@@ -83,11 +83,13 @@ public class AttachmentReferenceBaseBusRules extends BaseBusRules
                 try
                 {
                     AttachmentUtils.getAttachmentManager().deleteAttachmentFiles(a);
-                    
-                    DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                    Attachment aFromDisk = session.load(Attachment.class, a.getId());
+                    DataProviderSessionIFace session = null;
                     try
                     {
+                        session = DataProviderFactory.getInstance().createSession();
+                        
+                        Attachment aFromDisk = session.load(Attachment.class, a.getId());
+                        
                         session.beginTransaction();
                         session.delete(aFromDisk);
                         session.commit();
@@ -95,6 +97,13 @@ public class AttachmentReferenceBaseBusRules extends BaseBusRules
                     catch (Exception e)
                     {
                         log.error("Failed to delete Attachment record from database", e);
+                        
+                    } finally
+                    {
+                        if (session != null)
+                        {
+                            session.close();
+                        }
                     }
                 }
                 catch (IOException e)

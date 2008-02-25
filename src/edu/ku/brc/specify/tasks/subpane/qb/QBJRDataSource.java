@@ -46,7 +46,7 @@ public class QBJRDataSource implements JRDataSource, CustomQueryListener
             /* (non-Javadoc)
              * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
              */
-            @Override
+            //@Override
             public int compare(Pair<String, Integer> o1, Pair<String, Integer> o2)
             {
                 return o1.getFirst().compareTo(o2.getFirst());
@@ -59,7 +59,7 @@ public class QBJRDataSource implements JRDataSource, CustomQueryListener
     /* (non-Javadoc)
      * @see net.sf.jasperreports.engine.JRDataSource#getFieldValue(net.sf.jasperreports.engine.JRField)
      */
-    @Override
+    //@Override
     public Object getFieldValue(JRField arg0) throws JRException
     {
         //XXX Bad Code Alert!
@@ -82,7 +82,7 @@ public class QBJRDataSource implements JRDataSource, CustomQueryListener
     /* (non-Javadoc)
      * @see net.sf.jasperreports.engine.JRDataSource#next()
      */
-    @Override
+    //@Override
     public boolean next() throws JRException
     {
         //XXX Bad Code Alert!
@@ -104,7 +104,7 @@ public class QBJRDataSource implements JRDataSource, CustomQueryListener
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQueryListener#exectionDone(edu.ku.brc.dbsupport.CustomQueryIFace)
      */
-    @Override
+    //@Override
     public void exectionDone(CustomQueryIFace customQuery)
     {
         rows.set(((JPAQuery)customQuery).getDataObjects().iterator());
@@ -113,7 +113,7 @@ public class QBJRDataSource implements JRDataSource, CustomQueryListener
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQueryListener#executionError(edu.ku.brc.dbsupport.CustomQueryIFace)
      */
-    @Override
+    //@Override
     public void executionError(CustomQueryIFace customQuery)
     {
         rows.set(new ArrayList<Object>().iterator());

@@ -7,10 +7,18 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
+
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+
+import javax.swing.JCheckBox;
+
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
+import edu.ku.brc.ui.GetSetValueIFace;
+import edu.ku.brc.ui.forms.Viewable;
 
 /**
  * A business rules class that handles various safety checking and housekeeping tasks
@@ -18,6 +26,7 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
  * {@link TaxonTreeDefItem} objects.
  *
  * @author jstewart
+ * 
  * @code_status Beta
  */
 public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTreeDefItem>
@@ -41,6 +50,37 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
         };
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BaseBusRules#initialize(edu.ku.brc.ui.forms.Viewable)
+     */
+    @Override
+    public void initialize(Viewable viewableArg)
+    {
+        super.initialize(viewableArg);
+        
+        //System.out.println(formViewObj.hashCode()+"  "+viewableArg.hashCode());
+        
+        // TODO: the form system MUST require the hybridParent1 and hybridParent2 widgets to be present if the isHybrid checkbox is present
+        final JCheckBox        hybridCheckBox = (JCheckBox)formViewObj.getControlByName("isHybrid");
+        final GetSetValueIFace hybrid1Widget  = (GetSetValueIFace)formViewObj.getControlByName("hybridParent1");
+        final GetSetValueIFace hybrid2Widget  = (GetSetValueIFace)formViewObj.getControlByName("hybridParent2");
+        
+        if (hybridCheckBox != null)
+        {
+            hybridCheckBox.addItemListener(new ItemListener()
+            {
+                public void itemStateChanged(ItemEvent e)
+                {
+                    if (!hybridCheckBox.isSelected())
+                    {
+                        hybrid1Widget.setValue(null, null);
+                        hybrid2Widget.setValue(null, null);
+                    }
+                }
+            });
+        }
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#getDeleteMsg(java.lang.Object)
      */
@@ -181,4 +221,16 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
         retVal = super.beforeSaveCommit(dataObj, session);
         return retVal;
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.BaseTreeBusRules#afterFillForm(java.lang.Object, edu.ku.brc.ui.forms.Viewable)
+     */
+    @Override
+    public void afterFillForm(Object dataObj, Viewable viewable)
+    {
+        super.afterFillForm(dataObj, viewable);
+
+    }
+    
+    
 }

@@ -575,6 +575,7 @@ public class ViewFactory
         if (isTransparent)
         {
             textField.setOpaque(false);
+            textField.setBackground(null);
             
         } else if (viewFieldColor != null)
         {

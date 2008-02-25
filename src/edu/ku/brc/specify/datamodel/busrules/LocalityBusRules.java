@@ -7,7 +7,6 @@ import javax.swing.event.ListSelectionListener;
 
 import org.apache.commons.lang.StringUtils;
 
-import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.Viewable;
@@ -44,12 +43,11 @@ public class LocalityBusRules extends AttachmentOwnerBaseBusRules implements Lis
         if (formViewObj != null)
         {
             Component comp = formViewObj.getCompById("4");
-            if (comp != null)
+            if (comp != null && comp instanceof ValComboBoxFromQuery)
             {
                 geographyCBX = (ValComboBoxFromQuery)comp;
                 geographyCBX.addListSelectionListener(this);
             }
-            
         }
     }
 

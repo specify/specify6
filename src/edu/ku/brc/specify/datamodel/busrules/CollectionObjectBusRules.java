@@ -77,25 +77,22 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
      */
     protected PrepType getDefaultPrepType()
     {
-
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        
         DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(PrepType.getClassTableId());
         if (tableInfo != null)
         {
-            
             String sqlStr = QueryAdjusterForDomain.getInstance().adjustSQL("FROM PrepType WHERE collectionId = COLLID");
             log.debug(sqlStr);
             if (StringUtils.isNotEmpty(sqlStr))
             {
+                DataProviderSessionIFace session = null;
                 try
                 {
+                    session = DataProviderFactory.getInstance().createSession();
                     List<?> dataList = session.getDataList(sqlStr);
                     if (dataList != null && !dataList.isEmpty())
                     {
                         // XXX for now we just get the First one
                         return (PrepType)dataList.iterator().next();
-                        
                     }
                     // No Data Error
         
@@ -139,8 +136,8 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         super.addChildrenToNewDataObjects(newDataObj);
         
         CollectionObject co              = (CollectionObject)newDataObj;
-        Discipline   ct              = Discipline.getCurrentDiscipline();
-        DisciplineType       disciplineType      = DisciplineType.getDiscipline(ct.getDiscipline());
+        Discipline       ct              = Discipline.getCurrentDiscipline();
+        DisciplineType   disciplineType  = DisciplineType.getDiscipline(ct.getDiscipline());
         //DisciplineType       plantDiscipline = DisciplineType.getDiscipline("plant");
         if (disciplineType != null)
         {

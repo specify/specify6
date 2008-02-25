@@ -24,7 +24,6 @@ import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
@@ -92,12 +91,14 @@ public class ResultSetController implements ValidationListener
     protected int     numRecords = 0;
     
     // Global Key Actions
-    private enum CommandTypes { First, Previous, Next, Last, Save, NewItem, DelItem}
-    private Hashtable<CommandTypes, JButton> btnsHash = new Hashtable<CommandTypes, JButton>();
+    private enum CommandType { First, Previous, Next, Last, Save, NewItem, DelItem}
+    private Hashtable<CommandType, JButton> btnsHash = new Hashtable<CommandType, JButton>();
     
     // Static Members
-    private static Hashtable<CommandTypes, RSAction<CommandTypes>> commandsHash     = null;
+    private static Hashtable<CommandType, RSAction<CommandType>> commandsHash     = null;
     private static ResultSetController  currentFocusedRS = null;
+    
+    private static ResultSetController  backStopRS = null;
     
     static 
     {
@@ -181,8 +182,8 @@ public class ResultSetController implements ValidationListener
         
         firstBtn = UIHelper.createIconBtn("FirstRec", null, null);
         prevBtn  = UIHelper.createIconBtn("PrevRec", null, null);
-        btnsHash.put(CommandTypes.Previous, prevBtn);
-        btnsHash.put(CommandTypes.First, firstBtn);
+        btnsHash.put(CommandType.Previous, prevBtn);
+        btnsHash.put(CommandType.First, firstBtn);
 
         recDisp  = new JLabel("  ");
         recDisp.setHorizontalAlignment(SwingConstants.CENTER);
@@ -193,8 +194,8 @@ public class ResultSetController implements ValidationListener
         
         nextBtn  = UIHelper.createIconBtn("NextRec", null, null);
         lastBtn  = UIHelper.createIconBtn("LastRec", null, null);
-        btnsHash.put(CommandTypes.Next, nextBtn);
-        btnsHash.put(CommandTypes.Last, lastBtn);
+        btnsHash.put(CommandType.Next, nextBtn);
+        btnsHash.put(CommandType.Last, lastBtn);
         
         firstBtn.setToolTipText(createTooltip("GotoFirstRecordTT", objTitle));
         prevBtn.setToolTipText(createTooltip("GotoPreviousRecordTT", objTitle));
@@ -258,7 +259,7 @@ public class ResultSetController implements ValidationListener
             newRecBtn.setToolTipText(createTooltip("NewRecordTT", objTitle));
             newRecBtn.setEnabled(true);
             newRecBtn.setMargin(insets);
-            btnsHash.put(CommandTypes.NewItem, newRecBtn);
+            btnsHash.put(CommandType.NewItem, newRecBtn);
 
             rowBuilder.add(newRecBtn, cc.xy(row,1));
             row += 2;
@@ -269,7 +270,7 @@ public class ResultSetController implements ValidationListener
             delRecBtn = UIHelper.createIconBtn("DeleteRecord", null, null);
             delRecBtn.setToolTipText(createTooltip("RemoveRecordTT", objTitle));
             delRecBtn.setMargin(insets);
-            btnsHash.put(CommandTypes.DelItem, delRecBtn);
+            btnsHash.put(CommandType.DelItem, delRecBtn);
             
             rowBuilder.add(delRecBtn, cc.xy(row,1));
             row += 2;
@@ -369,14 +370,17 @@ public class ResultSetController implements ValidationListener
      */
     public void setIndex(final int index, final boolean doIndexNotify)
     {
-        int oldInx = currentInx;
-        currentInx = index;
-        updateUI(); 
-        if (doIndexNotify)
+        if (index < numRecords)
         {
-            notifyListenersAboutToChangeIndex(oldInx, currentInx);
+            int oldInx = currentInx;
+            currentInx = index;
+            updateUI(); 
+            if (doIndexNotify)
+            {
+                notifyListenersAboutToChangeIndex(oldInx, currentInx);
+            }
+            notifyListeners();
         }
-        notifyListeners();
     }
     
     
@@ -550,17 +554,39 @@ public class ResultSetController implements ValidationListener
     }
 
     /**
-     * 
+     * This is not static because it makes it easier to create the RSAction objects.
      */
     protected void createRSActions()
     {
         if (commandsHash == null)
         {
-            commandsHash = new Hashtable<CommandTypes, RSAction<CommandTypes>>();
-            for (CommandTypes cmdType : CommandTypes.values())
+            commandsHash = new Hashtable<CommandType, RSAction<CommandType>>();
+            for (CommandType cmdType : CommandType.values())
             {
-                RSAction<CommandTypes> action = new RSAction<CommandTypes>(cmdType);
+                RSAction<CommandType> action = new RSAction<CommandType>(cmdType);
                 commandsHash.put(cmdType, action);
+            }
+        }
+    }
+    
+    /**
+     * Sets the current (or focused ResultSetController) into the action btns.
+     * @param rsc ResultSetController
+     */
+    protected static void installRS(final ResultSetController rsc)
+    {
+        if (commandsHash == null)
+        {
+            rsc.createRSActions();
+        }
+        
+        for (RSAction<CommandType> rsca : commandsHash.values())
+        {
+            rsca.setRs(rsc);
+            
+            if (rsc != null)
+            {
+                rsca.setBtn(rsc.btnsHash.get(rsca.getType()));
             }
         }
     }
@@ -595,12 +621,6 @@ public class ResultSetController implements ValidationListener
                         if (fvo != null && fvo.getRsController() != null)
                         {
                             rsc = fvo.getRsController();
-                            //System.err.println(fvo.getRsController());
-                            if (commandsHash == null)
-                            {
-                                rsc.createRSActions();
-                            }
-                            
                             if (currentFocusedRS == null || currentFocusedRS != rsc)
                             {
                                 currentFocusedRS = rsc;
@@ -611,18 +631,10 @@ public class ResultSetController implements ValidationListener
                     
                     if (!fnd)
                     {
-                        currentFocusedRS = null;
+                        currentFocusedRS = backStopRS;
                     }
                     
-                    for (RSAction<CommandTypes> rsca : commandsHash.values())
-                    {
-                        rsca.setRs(currentFocusedRS);
-                        
-                        if (rsc != null)
-                        {
-                            rsca.setBtn(rsc.btnsHash.get(rsca.getType()));
-                        }
-                    }
+                    installRS(currentFocusedRS);
                     
                 } 
             } 
@@ -630,32 +642,74 @@ public class ResultSetController implements ValidationListener
     }
     
     /**
-     * @param mi
+     * Gets the Mneu Integer from a Key to I18N
+     * @param key the Mneu key
+     * @return the Integer
+     */
+    protected static Integer getMneuInt(final String key)
+    {
+        String str = getResourceString(key);
+        if (StringUtils.isNotEmpty(str))
+        {
+            return new Integer(str.charAt(0));
+        }
+        return null;
+    }
+    
+    /**
+     * Helper method for creating the menu items.
+     * @param menuItem the parent menu it for the menu items
+     * @param titleKey the I18N key for the button title
+     * @param menuKey the I18N key for the mneumonic 
+     * @param cmdType the command
+     */
+    protected static void createMenuItem(final JMenuItem menuItem,
+                                         final String titleKey, 
+                                         final String menuKey, 
+                                         final CommandType cmdType)
+    {
+        Integer menuInt = getMneuInt(menuKey);
+        JMenuItem mi = new JMenuItem(UIRegistry.getInstance().makeAction(commandsHash.get(cmdType), 
+                getResourceString(titleKey), null, "", 
+                menuInt,
+                KeyStroke.getKeyStroke(menuInt, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())));
+        menuItem.add(mi);
+    }
+    
+    /**
+     * Add special MenuItems to the data menu.
+     * @param mi the data menu
      */
     public static void addMenuItems(final JMenuItem mi)
     {
         ResultSetController rsc = new ResultSetController();
         rsc.createRSActions();
         
-        JMenuItem prev = new JMenuItem(UIRegistry.getInstance().makeAction(commandsHash.get(CommandTypes.Previous), "Previous", null, "", 
-                new Integer(KeyEvent.VK_P),
-                KeyStroke.getKeyStroke(KeyEvent.VK_P, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())));
-        mi.add(prev);
-        
-        JMenuItem next = new JMenuItem(UIRegistry.getInstance().makeAction(commandsHash.get(CommandTypes.Next), "Next", null, "", 
-                new Integer(KeyEvent.VK_N),
-                KeyStroke.getKeyStroke(KeyEvent.VK_N, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask())));
-        mi.add(next);
+        createMenuItem(mi, "DATA_FIRST",    "DATA_FIRST_MNEU",    CommandType.First);
+        createMenuItem(mi, "DATA_PREVIOUS", "DATA_PREVIOUS_MNEU", CommandType.Previous);
+        createMenuItem(mi, "DATA_NEXT",     "DATA_NEXT_MNEU",     CommandType.Next);
+        createMenuItem(mi, "DATA_LAST",     "DATA_LAST_MNEU",     CommandType.Last);
+    }        
+
+    /**
+     * @param backStopRS the backStopRS to set
+     */
+    public static void setBackStopRS(ResultSetController backStopRS)
+    {
+        ResultSetController.backStopRS = backStopRS;
+        installRS(backStopRS);
     }
     
-    
+    //----------------------------------------------------------------------------
+    //--
+    //----------------------------------------------------------------------------
     class RSAction<T> extends AbstractAction implements PropertyChangeListener
     {
-        protected CommandTypes        type;
+        protected CommandType        type;
         protected ResultSetController rs  = null;
         protected JButton             btn = null;
         
-        public RSAction(final CommandTypes type)
+        public RSAction(final CommandType type)
         {
             super();
             this.type = type;
@@ -720,7 +774,7 @@ public class ResultSetController implements ValidationListener
         /**
          * @return the type
          */
-        public CommandTypes getType()
+        public CommandType getType()
         {
             return type;
         }
@@ -770,4 +824,5 @@ public class ResultSetController implements ValidationListener
         }
 
     }
+
 }

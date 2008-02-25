@@ -59,6 +59,7 @@ import java.util.StringTokenizer;
 import java.util.Vector;
 
 import javax.swing.AbstractAction;
+import javax.swing.AbstractButton;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -913,10 +914,8 @@ public final class UIHelper
         {
             menu.add(mi);
         }
-        if (isNotEmpty(mnemonic))
-        {
-            mi.setMnemonic(getResourceString(mnemonic).charAt(0));
-        }
+        setMnemonic(mi, mnemonic);
+        
         if (isNotEmpty(accessibleDescription))
         {
             mi.getAccessibleContext().setAccessibleDescription(accessibleDescription);
@@ -942,21 +941,18 @@ public final class UIHelper
      * @return menu item
      */
     public static JRadioButtonMenuItem createRadioButtonMenuItem(final JMenu          menu,
-                                                              final String         label,
-                                                              final String         mnemonic,
-                                                              final String         accessibleDescription,
-                                                              final boolean        enabled,
-                                                              final AbstractAction action)
+                                                                 final String         label,
+                                                                 final String         mnemonic,
+                                                                 final String         accessibleDescription,
+                                                                 final boolean        enabled,
+                                                                 final AbstractAction action)
     {
         JRadioButtonMenuItem mi = new JRadioButtonMenuItem(getResourceString(label));
         if (menu != null)
         {
             menu.add(mi);
         }
-        if (isNotEmpty(mnemonic))
-        {
-            mi.setMnemonic(getResourceString(mnemonic).charAt(0));
-        }
+        setMnemonic(mi, mnemonic);
         if (isNotEmpty(accessibleDescription))
         {
             mi.getAccessibleContext().setAccessibleDescription(accessibleDescription);
@@ -986,7 +982,7 @@ public final class UIHelper
             menu = menuBar.add(new JMenu(getResourceString(labelKey)));
             if (oSType != OSTYPE.MacOSX)
             {
-                menu.setMnemonic(getResourceString(mneuKey).charAt(0));
+                setMnemonic(menu, mneuKey);
             }
         } catch (Exception ex)
         {
@@ -994,6 +990,23 @@ public final class UIHelper
             log.error("Couldn't create menu for " + labelKey + "  " + mneuKey);
         }
         return menu;
+    }
+    
+    /**
+     * Sets a mnemonic on a button.
+     * @param btn the button
+     * @param mnemonicKey the one char string.
+     */
+    public static void setMnemonic(final AbstractButton btn, final String mnemonicKey)
+    {
+        if (StringUtils.isNotEmpty(mnemonicKey))
+        {
+            String mnemonic = getResourceString(mnemonicKey);
+            if (btn != null && isNotEmpty(mnemonic))
+            {
+                btn.setMnemonic(getResourceString(mnemonic).charAt(0));
+            }
+        }
     }
 
     //-----------------------------------------------------------------------------------------

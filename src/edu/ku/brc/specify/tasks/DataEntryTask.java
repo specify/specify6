@@ -290,16 +290,30 @@ public class DataEntryTask extends BaseTask
     public static void openView(final Taskable task, final ViewIFace view, final String mode, final String idStr)
     {
         int tableId = DBTableIdMgr.getInstance().getIdByClassName(view.getClassName());
-
-        
         String sqlStr = DBTableIdMgr.getInstance().getQueryForTable(tableId, Integer.parseInt(idStr));
         if (StringUtils.isNotEmpty(sqlStr))
         {
             try
             {
-                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                List<?> data = session.getDataList(sqlStr);
-                session.close();
+                List<?> data = null;
+                DataProviderSessionIFace session = null;
+                try
+                {
+                    session = DataProviderFactory.getInstance().createSession();
+                    data = session.getDataList(sqlStr);
+                }
+                catch (Exception ex)
+                {
+                    log.error(ex);
+                    ex.printStackTrace();
+                    
+                } finally
+                {
+                    if (session != null)
+                    {
+                        session.close();
+                    }
+                }
                 
                 if (data != null && data.size() > 0)
                 {

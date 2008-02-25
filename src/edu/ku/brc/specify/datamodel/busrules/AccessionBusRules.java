@@ -156,18 +156,31 @@ public class AccessionBusRules extends AttachmentOwnerBaseBusRules
             Integer id = accession.getAccessionId();
             if (id != null)
             {
-                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                List<?> accessions = session.getDataList(Accession.class, "accessionId", id);
-                if (accessions.size() == 1)
+                DataProviderSessionIFace session = null;
+                try
                 {
-                    Accession oldAccession       = (Accession)accessions.get(0);
-                    String    oldAccessionNumber = oldAccession.getAccessionNumber();
-                    if (oldAccessionNumber.equals(accession.getAccessionNumber()))
+                    session = DataProviderFactory.getInstance().createSession();
+                    List<?> accessions = session.getDataList(Accession.class, "accessionId", id);
+                    if (accessions.size() == 1)
                     {
-                        checkAccessionNumberForDuplicates = false;
+                        Accession oldAccession       = (Accession)accessions.get(0);
+                        String    oldAccessionNumber = oldAccession.getAccessionNumber();
+                        if (oldAccessionNumber.equals(accession.getAccessionNumber()))
+                        {
+                            checkAccessionNumberForDuplicates = false;
+                        }
+                    }
+                } catch (Exception ex)
+                {
+                    log.error(ex);
+                    
+                } finally
+                {
+                    if (session != null)
+                    {
+                        session.close();
                     }
                 }
-                session.close();
             }
             
             // If the Id is null then it is a new permit, if not then we are editting the accession

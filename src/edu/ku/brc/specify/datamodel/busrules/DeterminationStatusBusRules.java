@@ -128,9 +128,10 @@ public class DeterminationStatusBusRules extends BaseBusRules
         
         String sqlStr = "select type From DeterminationStatus WHERE disciplineId = " + Discipline.getCurrentDiscipline().getDisciplineId();
         
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        DataProviderSessionIFace session = null;
         try
         {
+            session = DataProviderFactory.getInstance().createSession();
             Object dataObj = session.getDataList(sqlStr);
             if (dataObj instanceof List<?>)
             {
@@ -146,6 +147,7 @@ public class DeterminationStatusBusRules extends BaseBusRules
         } catch (Exception ex)
         {
             ex.printStackTrace();
+            
         } finally
         {
             if (session != null)

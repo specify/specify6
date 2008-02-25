@@ -10,6 +10,8 @@ import javax.swing.table.TableModel;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.ui.tmanfe.SearchReplacePanel;
+
 /**
  * @author megkumin
  *

@@ -51,7 +51,8 @@ import org.hibernate.annotations.Index;
 @org.hibernate.annotations.Table(appliesTo="determinationstatus", indexes =
     {   @Index (name="DeterStatusNameIDX", columnNames={"Name"})
     })
-public class DeterminationStatus extends DataModelObjBase implements Serializable
+public class DeterminationStatus extends DataModelObjBase implements Serializable,
+                                                                     Comparable<DeterminationStatus>
 {
     
     public static final byte CURRENT          = 1;
@@ -218,11 +219,22 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
         return 88;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
+     */
     @Override
     @Transient
     public String getIdentityTitle()
     {
         return StringUtils.isNotEmpty(name) ? name : super.getIdentityTitle();
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(DeterminationStatus o)
+    {
+        return type.compareTo(o.type);
     }
 
 }

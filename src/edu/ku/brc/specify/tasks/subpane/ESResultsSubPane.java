@@ -138,13 +138,22 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
      */
     public void addSearchResults(final QueryForIdResultsIFace results)
     {
-
         // This will start itself up and if there are results from the query 
         // it will add itself to the pane (So it is OK that it isn't referenced)
         @SuppressWarnings("unused")
         ESResultsTablePanel resultsTable = new ESResultsTablePanel(this, results, results.shouldInstallServices(), results.isExpanded());
     }
 
+    /**
+     * Removes all the panels.
+     */
+    public void reset()
+    {
+        for (ESResultsTablePanelIFace esrtp : new Vector<ESResultsTablePanelIFace>(expTblResults))
+        {
+            removeTable(esrtp);
+        }
+    }
     
     /**
      * Removes a table from the content pane.

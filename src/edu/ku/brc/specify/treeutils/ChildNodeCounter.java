@@ -71,11 +71,34 @@ public class ChildNodeCounter implements SQLExecutionListener, CustomQueryListen
         this.nodeNumQuery = nodeNumQuery;
         this.isHQL        = isHQL;
         
-         doQuery(getQuery(node.getId()));
+        setCalcCount(true);
+        
+        doQuery(getQuery(node.getId()));
          
-         valStep = countQuery == null ? 1 : 2;
+        valStep = countQuery == null ? 1 : 2;
     }
     
+    protected void setCalcCount(final boolean calc)
+    {
+        if (slotIndex == 1)
+        {
+            node.setCalcCount(calc);
+        } else
+        {
+            node.setCalcCount2(calc);
+        }
+    }
+    
+    protected void setHasCalcCount(final boolean hasCalc)
+    {
+        if (slotIndex == 1)
+        {
+            node.setHasCalcCount(hasCalc);
+        } else
+        {
+            node.setHasCalcCount2(hasCalc);
+        }
+    }
     /**
      * Create the query string from the data.
      * @param data the data from the previous query.
@@ -176,6 +199,9 @@ public class ChildNodeCounter implements SQLExecutionListener, CustomQueryListen
      */
     public void exectionDone(final SQLExecutionProcessor process, final ResultSet resultSet)
     {
+        setCalcCount(false);
+        setHasCalcCount(true);
+
         if (step == valStep)
         {
             try
@@ -224,6 +250,9 @@ public class ChildNodeCounter implements SQLExecutionListener, CustomQueryListen
      */
     public void executionError(final SQLExecutionProcessor process, final Exception ex)
     {
+        setCalcCount(false);
+        setHasCalcCount(true); // XXX maybe set this to false
+        
         setCount(0);
         cleanup();
     }

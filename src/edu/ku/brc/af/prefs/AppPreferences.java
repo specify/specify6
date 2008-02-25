@@ -515,6 +515,7 @@ public class AppPreferences
             listeners.remove(name);
         }
         properties.remove(name);
+        isChanged = true;
     }
 
     /**

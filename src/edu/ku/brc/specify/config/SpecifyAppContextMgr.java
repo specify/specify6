@@ -116,6 +116,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
     protected Agent          currentUserAgent      = null;
 
     protected boolean        debug                 = false;
+    protected long           lastLoadTime          = 0;
+    protected long           lastLoadTimeBS        = 0;
     protected UnhandledExceptionDialog dlg         = null;
     
     /**
@@ -684,15 +686,22 @@ public class SpecifyAppContextMgr extends AppContextMgr
         Boolean reloadViews = AppPreferences.getLocalPrefs().getBoolean("reload_views", false);
         if (reloadViews)
         {
-            viewSetHash.clear();
+            long rightNow = (Calendar.getInstance().getTimeInMillis()/1000);
+            //System.out.println((rightNow - lastLoadTime));
+            if ((rightNow - lastLoadTime) > 10)
+            {
+                viewSetHash.clear();
+                lastLoadTime = rightNow;
+            }
         }
         
         List<ViewSetIFace> viewSetList = viewSetHash.get(dir.getUniqueIdentifer());
         if (viewSetList == null)
         {
-            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            DataProviderSessionIFace session = null;
             try
             {
+                session = DataProviderFactory.getInstance().createSession();
                 if (dir.getSpAppResourceDirId() != null)
                 {
                     session.attach(dir);
@@ -845,11 +854,15 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     public ViewIFace getView(final String viewSetName, final String viewName)
     {
-
         Boolean reloadViews = AppPreferences.getLocalPrefs().getBoolean("reload_backstop_views", false);
         if (reloadViews)
         {
-            backStopViewSetMgr = new ViewSetMgr("BackStop", XMLHelper.getConfigDir("backstop"));
+            long rightNow = (Calendar.getInstance().getTimeInMillis()/1000);
+            if ((rightNow - lastLoadTimeBS) > 10)
+            {
+                backStopViewSetMgr = new ViewSetMgr("BackStop", XMLHelper.getConfigDir("backstop"));
+                lastLoadTimeBS = rightNow;
+            }
         }
         
         if (StringUtils.isEmpty(viewName))

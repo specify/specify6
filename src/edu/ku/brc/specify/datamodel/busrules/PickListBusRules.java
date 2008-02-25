@@ -448,9 +448,10 @@ public class PickListBusRules extends BaseBusRules
     public STATUS processBusinessRules(final Object dataObj)
     {
         PickList pickList = (PickList)dataObj;
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        DataProviderSessionIFace session = null;
         try
         {
+            session = DataProviderFactory.getInstance().createSession();
             reasonList.clear();
             
             PickList dbPL = session.getData(PickList.class, "name", pickList.getName(), DataProviderSessionIFace.CompareType.Equals);
@@ -460,12 +461,17 @@ public class PickListBusRules extends BaseBusRules
                 reasonList.add(UIRegistry.getLocalizedMessage("PL_DUPLICATE_NAME", pickList.getName()));
                 return STATUS.Error;
             }
+            
         } catch (Exception ex)
         {
             log.error(ex);
+            
         } finally
         {
-            session.close();
+            if (session != null)
+            {
+                session.close();
+            }
         }
         
         return super.processBusinessRules(dataObj);

@@ -38,7 +38,7 @@ import org.hibernate.annotations.Index;
     })
 public class CommonNameTx extends DataModelObjBase implements Serializable
 {
-    protected Integer            commonNameId;
+    protected Integer            commonNameTxId;
     protected String             country;    // Java Two Character Code
     protected String             language;   // Java Two Character Code
     protected String             variant;    // Java Two Character Code
@@ -53,7 +53,7 @@ public class CommonNameTx extends DataModelObjBase implements Serializable
     public CommonNameTx(Integer commonNameId)
     {
         super();
-        this.commonNameId = commonNameId;
+        this.commonNameTxId = commonNameId;
     }
 
     /* (non-Javadoc)
@@ -63,7 +63,7 @@ public class CommonNameTx extends DataModelObjBase implements Serializable
     public void initialize()
     {
         super.init();
-        commonNameId = null;
+        commonNameTxId = null;
         name         = null;
         country      = null;
         language     = null;
@@ -73,10 +73,10 @@ public class CommonNameTx extends DataModelObjBase implements Serializable
 
     @Id
     @GeneratedValue
-    @Column(name = "CommonNameID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Integer getCommonNameId()
+    @Column(name = "CommonNameTxID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Integer getCommonNameTxId()
     {
-        return commonNameId;
+        return commonNameTxId;
     }
 
     /*
@@ -88,7 +88,7 @@ public class CommonNameTx extends DataModelObjBase implements Serializable
     @Transient
     public Integer getId()
     {
-        return this.commonNameId;
+        return this.commonNameTxId;
     }
 
     /* (non-Javadoc)
@@ -101,9 +101,9 @@ public class CommonNameTx extends DataModelObjBase implements Serializable
         return CommonNameTx.class;
     }
 
-    public void setCommonNameId(Integer commonNameId)
+    public void setCommonNameTxId(Integer commonNameId)
     {
-        this.commonNameId = commonNameId;
+        this.commonNameTxId = commonNameId;
     }
 
     @Column(name = "Name", unique = false, nullable = true, insertable = true, updatable = true, length = 255)
@@ -121,7 +121,7 @@ public class CommonNameTx extends DataModelObjBase implements Serializable
     /**
      * @return the language
      */
-    @Column(name = "Language", unique = false, nullable = false, insertable = true, updatable = true, length = 2)
+    @Column(name = "Language", unique = false, nullable = true, insertable = true, updatable = true, length = 2)
     public String getLanguage()
     {
         return language;
@@ -138,7 +138,7 @@ public class CommonNameTx extends DataModelObjBase implements Serializable
     /**
      * @return the country
      */
-    @Column(name = "Country", unique = false, nullable = false, insertable = true, updatable = true, length = 2)
+    @Column(name = "Country", unique = false, nullable = true, insertable = true, updatable = true, length = 2)
     public String getCountry()
     {
         return country;

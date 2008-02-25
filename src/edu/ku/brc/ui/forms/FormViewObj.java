@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultListCellRenderer;
@@ -44,6 +45,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
@@ -90,8 +92,6 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.DateWrapper;
-import edu.ku.brc.ui.DropDownButtonStateful;
-import edu.ku.brc.ui.DropDownMenuInfo;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
@@ -201,7 +201,8 @@ public class FormViewObj implements Viewable,
     protected JButton                       delRecBtn       = null;
     protected boolean                       wasNull         = false;
     protected MenuSwitcherPanel             switcherUI;
-    protected int                           mainCompRowInx   = 1;
+    protected int                           mainCompRowInx  = 1;
+    protected boolean                       saveAndNew     = false;  
     
     
     protected String                        searchName      = null;
@@ -212,7 +213,8 @@ public class FormViewObj implements Viewable,
     protected boolean                       isSelectorForm;
     protected boolean                       isShowing       = false;
 
-    protected BusinessRulesIFace            businessRules   = null; 
+    protected BusinessRulesIFace            businessRules   = null;
+    protected boolean                       hasInitBR       = false;
 
     protected DraggableRecordIdentifier     draggableRecIdentifier   = null;
     
@@ -228,7 +230,7 @@ public class FormViewObj implements Viewable,
     
     protected Color                         bgColor           = null;
     
-    protected Vector<ViewState>             viewStateList        = null;
+    protected Vector<ViewState>             viewStateList     = null;
 
 
     /**
@@ -548,42 +550,48 @@ public class FormViewObj implements Viewable,
     }
     
     /**
+     * @return the saveAndNew
+     */
+    public boolean isSaveAndNew()
+    {
+        return saveAndNew;
+    }
+
+    /**
+     * @param saveAndNew the saveAndNew to set
+     */
+    public void setSaveAndNew(boolean saveAndNew)
+    {
+        this.saveAndNew = saveAndNew;
+        if (saveControl instanceof JButton)
+        {
+            ((JButton)saveControl).setText(getResourceString(saveAndNew ? "SAVE_AND_NEW_BTN" : "Save"));
+        }
+    }
+
+    /**
      * 
      */
     protected void addSaveBtn()
     {
-        Vector<DropDownMenuInfo>  items = new Vector<DropDownMenuInfo>();
-        items.add(new DropDownMenuInfo(UIRegistry.getResourceString("Save"), 
-                                       IconManager.getIcon("Save", IconManager.IconSize.Std16), 
-                                       ResultSetController.createTooltip("SaveRecordTT", view.getObjTitle())));
-        items.add(new DropDownMenuInfo(UIRegistry.getResourceString("SavwAndNew"), 
-        		                       IconManager.getIcon("Save", IconManager.IconSize.Std16), 
-        		                       ResultSetController.createTooltip("SaveNewRecordTT", view.getObjTitle())));
-
-        DropDownButtonStateful saveComp = new DropDownButtonStateful(items, false);
-        saveComp.setEnabled(false);
+        JButton saveBtn = new JButton(UIRegistry.getResourceString("Save"));
+        saveBtn.setEnabled(false);
         
-        class SaveSwitcherAL implements ActionListener
+        saveBtn.addActionListener(new ActionListener()
         {
-            protected DropDownButtonStateful switcherComp;
-            public SaveSwitcherAL(final DropDownButtonStateful switcherComp)
-            {
-                this.switcherComp = switcherComp;
-            }
             public void actionPerformed(ActionEvent ae)
             {
-                if (saveObject() && switcherComp.getCurrentIndex() == 1)
+                if (saveObject() && saveAndNew)
                 {
                    createNewDataObject(true);
                 }
             }
-        }
-        saveComp.addActionListener(new SaveSwitcherAL(saveComp));
-        saveControl = saveComp;
+        });
+        saveControl = saveBtn;
         
         if (formValidator != null)
         {
-            formValidator.setSaveComp(saveComp, FormValidator.EnableType.ValidItems);
+            formValidator.setSaveComp(saveBtn, FormValidator.EnableType.ValidItems);
         }
     }
 
@@ -730,6 +738,21 @@ public class FormViewObj implements Viewable,
             mv.aboutToShow(show);
         }
         
+        if (mvParent != null && mvParent.isTopLevel())
+        {
+            Action action = UIRegistry.getAction("SaveAndNew");
+            if (action != null)
+            {
+                action.setEnabled(show);
+            }
+            
+            Component sanComp = UIRegistry.get("SaveAndNew");
+            if (sanComp instanceof JCheckBoxMenuItem)
+            {
+                ((JCheckBoxMenuItem)sanComp).setSelected(saveAndNew);
+            }
+        }
+        
         // Moving this to the MultiView
         /*if (show)
         {
@@ -810,9 +833,10 @@ public class FormViewObj implements Viewable,
             this.formComp = scrollPane;
         }
         
-        if (businessRules != null)
+        if (businessRules != null && !hasInitBR)
         {
             businessRules.initialize(this);
+            hasInitBR = true;
         }
 
         // This is needed to make the form layout correctly
@@ -1591,6 +1615,25 @@ public class FormViewObj implements Viewable,
         
         return saveState;
     }
+    
+    /**
+     * 
+     */
+    public Vector<ViewState> collectionViewState()
+    {
+        if (viewStateList == null)
+        {
+            viewStateList = new Vector<ViewState>();
+        }
+        
+        viewStateList.clear();
+
+        if (mvParent != null)
+        {
+            mvParent.collectionViewState(viewStateList, altView.getMode(), 2);
+        }
+        return viewStateList;
+    }
 
     /**
      * Save any changes to the current object
@@ -1600,12 +1643,7 @@ public class FormViewObj implements Viewable,
     {
         if (mvParent != null && mvParent.isTopLevel())
         {
-            if (viewStateList == null)
-            {
-                viewStateList = new Vector<ViewState>();
-            }
-            viewStateList.clear();
-            // XXX For now mvParent.collectionViewState(viewStateList, altView.getMode(), 2); 
+            collectionViewState();
         }
         
         if (session != null && (mvParent == null || mvParent.isTopLevel()))
@@ -1681,7 +1719,10 @@ public class FormViewObj implements Viewable,
             
             if (viewStateList != null && viewStateList.size() > 0 && mvParent != null && mvParent.isTopLevel())
             {
-                // XXX For now mvParent.setViewState(viewStateList, altView.getMode(), 0);
+                if (mvParent != null)
+                {
+                    mvParent.setViewState(viewStateList, altView.getMode(), 0);
+                }
                 viewStateList.clear();
             }
             

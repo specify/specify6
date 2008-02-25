@@ -55,7 +55,8 @@ import org.hibernate.annotations.Index;
     {   
         @Index (name="DetCitColMemIDX", columnNames={"CollectionMemberID"})
     })
-public class DeterminationCitation extends CollectionMember implements java.io.Serializable {
+public class DeterminationCitation extends CollectionMember implements java.io.Serializable, Cloneable
+{
 
     // Fields    
 
@@ -186,5 +187,19 @@ public class DeterminationCitation extends CollectionMember implements java.io.S
     {
         return 38;
     }
-
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        DeterminationCitation obj = (DeterminationCitation)super.clone();
+        obj.initialize();
+        obj.remarks       = remarks;
+        obj.referenceWork = referenceWork;
+        obj.determination = determination;
+        
+        return obj;
+    }
 }

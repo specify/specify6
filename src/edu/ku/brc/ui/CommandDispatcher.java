@@ -96,7 +96,8 @@ public class CommandDispatcher
             list.removeElement(listener);
         } else
         {
-            throw new RuntimeException("Listener is not registered."+listener);
+            //throw new RuntimeException("Listener is not registered."+listener);
+            log.error("Listener is not registered."+listener);
         }
     }
     

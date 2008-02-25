@@ -23,6 +23,7 @@ import edu.ku.brc.ui.DragDropJList;
  * ListSelectionModel of user selection changes.
  * 
  * @code_status Beta
+ * 
  * @author jstewart
  */
 @SuppressWarnings("serial")
@@ -31,14 +32,13 @@ public class TreeDataGhostDropJList extends DragDropJList
 	protected boolean clickOnText;
 	
 	/**
-	 *
-	 *
 	 * @param model
 	 * @param dragDropCallback
+	 * @param isDraggable
 	 */
-	public TreeDataGhostDropJList(ListModel model, DragDropCallback dragDropCallback)
+	public TreeDataGhostDropJList(final ListModel model, final DragDropCallback dragDropCallback, final boolean isDraggable)
 	{
-		super(model,dragDropCallback);
+		super(model, dragDropCallback, isDraggable);
 		clickOnText = false;
 	}
 	

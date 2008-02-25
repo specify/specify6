@@ -392,7 +392,7 @@
                     <cell type="separator" label="Attachments" colspan="12" collapse="accessionAttachments"/>
                 </row>
                 <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="accessionAttachments" colspan="12" initialize="addsearch=true;btn=true"/>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="accessionAttachments" colspan="12" initialize="addsearch=true;btn=true;icon=Accession"/>
                 </row>
                 <row>
                     <cell type="separator" label="" colspan="12"/>
@@ -650,7 +650,7 @@
                     <cell type="separator" label="Attachments" collapse="collectingEventAttachments" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectingEventAttachments" colspan="12" initialize="btn=true"/>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectingEventAttachments" colspan="12" initialize="btn=true;icon=CollectingEvent"/>
                 </row>
                 <!--
                 <row>
@@ -723,14 +723,14 @@
             <desc><![CDATA[The Collection Object form.]]></desc>
             <enableRules/>
 
-            <columnDef>120px,2px,p,2px,100px,2px,p,2px,p,2px,p,p:g,p,p</columnDef>
+            <columnDef>90px,2px,p,2px,100px,2px,p,2px,p,2px,p,p:g,p,p</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
     		<rows>
     		    <row>
     		        <cell type="label" label="Fish" icon="CollectionObject" recordobj="true" colspan="12"/>
     		    </row>
     			<row>
-    			    <cell type="label" labelfor="1"/>
+    			    <cell type="label" labelfor="1" label="Cat Num"/>
     			    <cell type="field" id="1" name="catalogNumber" uitype="formattedtext"/>
 
                     <cell type="label" labelfor="2" label="Collection"/>
@@ -773,7 +773,7 @@
     
 	    
     		    <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectionObjectAttachments" colspan="12" initialize="btn=true"/>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectionObjectAttachments" colspan="12" initialize="btn=true;icon=CollectionObject"/>
                 </row>
     			<row>
     				<cell type="separator" label="" colspan="12"/>
@@ -970,7 +970,7 @@
             <desc><![CDATA[Determination subform for Collection Object form.]]></desc>
             <enableRules/>
 
-            <columnDef>120px,2px,p,2px,p,2px,p,2px,p,2px,p,2px,p,2px,p,p:g</columnDef>
+            <columnDef>90px,2px,p,2px,p,2px,p,2px,p,2px,p,2px,p,2px,p,p:g</columnDef>
     		<rowDef>p,2dlu,p,2dlu,p,2dlu,p:g,2dlu</rowDef>
 
     		<rows>
@@ -1150,7 +1150,7 @@
                     <cell type="separator" label="Attachments" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="loanAttachments" colspan="12" initialize="btn=true"/>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="loanAttachments" colspan="12" initialize="btn=true;icon=Loan"/>
                 </row>
                 <row>
                     <cell type="panel" id="16" name="outerPanel" coldef="p,5px,p" rowdef="p" colspan="12">
@@ -1302,7 +1302,7 @@
                     <cell type="separator" label="Attachments" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="localityAttachments" colspan="12" initialize="btn=true"/>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="localityAttachments" colspan="12" initialize="btn=true;icon=Locality"/>
                 </row>
             </rows>
         </viewdef>
@@ -1436,7 +1436,7 @@
                     <cell type="field" id="9" name="remarks" uitype="textarea" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="ObjectAttachment" id="10" name="permitAttachments" colspan="10" initialize="btn=true"/>
+                    <cell type="subview" viewname="ObjectAttachment" id="10" name="permitAttachments" colspan="10" initialize="btn=true;icon=Permit"/>
                 </row>
             </rows>
         </viewdef>
@@ -1572,7 +1572,7 @@
     		        <cell type="separator" label="Attachments" collapse="preparationAttachments" colspan="12"/>
     		    </row> -->
     		    <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="preparationAttachments" colspan="12" initialize="btn=true"/>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="preparationAttachments" colspan="12" initialize="btn=true;icon=Preparation"/>
                 </row>
 
     			<!--

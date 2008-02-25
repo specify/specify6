@@ -14,7 +14,7 @@
 /**
  * 
  */
-package edu.ku.brc.ui;
+package edu.ku.brc.ui.tmanfe;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
@@ -52,7 +52,11 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.UsageTracker;
-import edu.ku.brc.ui.tmanfe.SpreadSheet;
+import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.TableSearcher;
+import edu.ku.brc.ui.TableSearcherCell;
+import edu.ku.brc.ui.UIHelper;
+
 /**
  * @author megkumin
  * 
@@ -64,6 +68,8 @@ import edu.ku.brc.ui.tmanfe.SpreadSheet;
 @SuppressWarnings("serial")
 public class SearchReplacePanel extends JPanel
 {
+    private final String FIND = "Find";
+    
     private SpreadSheet              table;
     @SuppressWarnings("unused")
     private boolean                  isStartOfSearch         = true;
@@ -115,7 +121,7 @@ public class SearchReplacePanel extends JPanel
     
     /**
      * detects when a table changes has been made and changes the next, previous buttons, as well as
-     * clears teh status label. 
+     * clears the status label. 
      */
    public void handleTableSelections()
     {
@@ -159,12 +165,12 @@ public class SearchReplacePanel extends JPanel
     private void setupKeyStrokeMappings()
     {
         //override the "Ctrl-F" function for launching the find dialog shipped with JXTable
-        table.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "Find");        
-        table.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_MASK), "Find");
+        table.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), FIND);        
+        table.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_MASK), FIND);
         
         //create action that will display the find/replace dialog
         launchFindAction = new LaunchFindAction();
-        table.getActionMap().put("Find", launchFindAction);
+        table.getActionMap().put(FIND, launchFindAction);
         
         //Allow ESC buttun to call DisablePanelAction   
         String CANCEL_KEY = "CANCELKEY";
@@ -201,13 +207,13 @@ public class SearchReplacePanel extends JPanel
         replaceField.setColumns(textFieldLength);
         replaceField.addKeyListener(new FindReplaceTextFieldKeyAdapter());
         
-        replaceButton = new JButton(getResourceString("REPLACE"));
+        replaceButton = new JButton(getResourceString("SS_SR_REPLACE"));
         //replaceButton.setEnabled(false);
         //replaceButton.setMargin(new Insets(0, 0, 0, 0));
         replaceButton.addActionListener(replaceAction);
         
   
-        replaceAllButton = new JButton(getResourceString("REPLACEALL"));
+        replaceAllButton = new JButton(getResourceString("SS_SR_REPLACEALL"));
         //replaceAllButton.setEnabled(false);
         //replaceAllButton.setMargin(new Insets(0, 0, 0, 0));
         replaceAllButton.addActionListener(replaceAction);
@@ -265,18 +271,17 @@ public class SearchReplacePanel extends JPanel
         cancelButton.setMargin(new Insets(0, 0, 0, 0));
         cancelButton.setBorder(null);
         
-        findLabel = new JLabel(getResourceString("FIND") + ": ", SwingConstants.RIGHT);
+        findLabel = new JLabel(getResourceString("SS_SR_FIND") + ": ", SwingConstants.RIGHT);
 
-        nextButton = new JButton(getResourceString("NEXT"));//, new ImageIcon(Specify.class.getResource("images/down.png")));
+        nextButton = new JButton(getResourceString("SS_SR_NEXT"));//, new ImageIcon(Specify.class.getResource("images/down.png")));
         nextButton.setEnabled(false);
-        //nextButton.setMargin(new Insets(0, 0, 0, 0));
-        nextButton.setMnemonic(KeyEvent.VK_N);
+        UIHelper.setMnemonic(previousButton, "SS_SR_NEXT_MNEU");
         nextButton.addActionListener(searchAction);
 
-        previousButton = new JButton(getResourceString("PREVIOUS"));//, new ImageIcon(Specify.class.getResource("images/up.png")));
+        previousButton = new JButton(getResourceString("SS_SR_PREVIOUS"));//, new ImageIcon(Specify.class.getResource("images/up.png")));
         previousButton.setEnabled(false);
-        //previousButton.setMargin(new Insets(0, 0, 0, 0));
-        previousButton.setMnemonic(KeyEvent.VK_P);
+        UIHelper.setMnemonic(previousButton, "SS_SR_PREVIOUS_MNEU");
+
         previousButton.addActionListener(searchAction);
 
         //JComponent[] itemSample = { new JMenuItem("Replace"), new JMenuItem("Replace All") };
@@ -292,7 +297,7 @@ public class SearchReplacePanel extends JPanel
         //replaceField.setColumns(textFieldLength);
         //replaceField.addKeyListener(new InputFieldKeyAdapter());
 
-        matchCaseButton = new JCheckBox(getResourceString("MATCHCASE"));
+        matchCaseButton = new JCheckBox(getResourceString("SS_SR_MATCHCASE"));
         matchCaseButton.addItemListener(new ItemListener()
         {
             public void itemStateChanged(ItemEvent e)
@@ -300,7 +305,7 @@ public class SearchReplacePanel extends JPanel
             }
         });
 
-        wrapSearchButton = new JCheckBox(getResourceString("WRAP"));
+        wrapSearchButton = new JCheckBox(getResourceString("SS_SR_WRAP"));
         wrapSearchButton.addItemListener(new ItemListener()
         {
             public void itemStateChanged(ItemEvent e)
@@ -353,7 +358,7 @@ public class SearchReplacePanel extends JPanel
         log.info("NOT FOUND - Findvalue[" + findField.getText() + "] displaying statusInfo to the user");
         statusInfo.setHorizontalTextPosition(JLabel.RIGHT);
         statusInfo.setIcon(IconManager.getIcon("Error", IconManager.IconSize.Std16));
-        statusInfo.setText(getResourceString("PHRASENOTFOUND"));
+        statusInfo.setText(getResourceString("SS_SR_PHRASENOTFOUND"));
     }
 
     /**
@@ -366,7 +371,7 @@ public class SearchReplacePanel extends JPanel
         log.info("NOT FOUND - Findvalue[" + findField.getText() + "] displaying statusInfo to the user");
         statusInfo.setHorizontalTextPosition(JLabel.RIGHT);
         statusInfo.setIcon(IconManager.getIcon("ValidationValid", IconManager.IconSize.Std16));
-        statusInfo.setText(getResourceString("ENDOFTABLE"));
+        statusInfo.setText(getResourceString("SS_SR_ENDOFTABLE"));
     }
     
     /**
@@ -709,7 +714,7 @@ public class SearchReplacePanel extends JPanel
     public void cleanUp()
     {
         this.table.getSelectionModel().removeListSelectionListener(listSelectionListener);
-        this.table.getActionMap().remove("Find");
+        this.table.getActionMap().remove(FIND);
         this.table = null;
     }
 
@@ -861,7 +866,7 @@ public class SearchReplacePanel extends JPanel
          */
         public LaunchFindAction()
         {
-            super("Find");
+            super(FIND);
             setEnabled(true);
         }
 

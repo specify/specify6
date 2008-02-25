@@ -33,8 +33,12 @@ public class TreeNode
      *  Geography records, this number might represent the number of CollectingEvents that were in this
      *  geographical area.
      */
-    protected int     associatedRecordCount;
-    protected int     associatedRecordCount2;
+    protected boolean isCalcCount            = false;
+    protected boolean hasCalcCount           = false;
+    protected boolean isCalcCount2           = false;
+    protected boolean hasCalcCount2          = false;
+    protected int     associatedRecordCount  = -1;
+    protected int     associatedRecordCount2 = -1;
     protected Integer acceptedParentId;
     protected String  acceptedParentFullName;
     protected Set<Pair<Integer,String>> synonymIdsAndNames;
@@ -61,8 +65,9 @@ public class TreeNode
         this.acceptedParentId       = acceptedParentId;
         this.acceptedParentFullName = acceptedParentFullName;
         this.synonymIdsAndNames     = synonymIdsAndNames;
-        this.associatedRecordCount  = 0;
-        this.associatedRecordCount2 = 0;
+
+        //this.associatedRecordCount  = 0;
+        //this.associatedRecordCount2 = 0;
     }
 
     public Class<?> getDataObjClass()
@@ -177,6 +182,80 @@ public class TreeNode
         this.associatedRecordCount2 = associatedRecordCount2;
     }
 
+    /**
+     * @return the isCalcCount
+     */
+    public synchronized boolean isCalcCount()
+    {
+        return isCalcCount;
+    }
+
+    /**
+     * @param isCalcCount the isCalcCount to set
+     */
+    public synchronized void setCalcCount(boolean isCalcCount)
+    {
+        this.isCalcCount = isCalcCount;
+    }
+
+    /**
+     * @return the hasCalcCount
+     */
+    public synchronized boolean isHasCalcCount()
+    {
+        return hasCalcCount;
+    }
+
+    /**
+     * @param hasCalcCount the hasCalcCount to set
+     */
+    public synchronized void setHasCalcCount(boolean hasCalcCount)
+    {
+        this.hasCalcCount = hasCalcCount;
+        //System.out.println("SET Calc: "+getFullName()+" "+hashCode());
+
+    }
+
+    /**
+     * @return the isCalcCount2
+     */
+    public synchronized boolean isCalcCount2()
+    {
+        return isCalcCount2;
+    }
+
+    /**
+     * @param isCalcCount2 the isCalcCount2 to set
+     */
+    public synchronized void setCalcCount2(boolean isCalcCount2)
+    {
+        this.isCalcCount2 = isCalcCount2;
+    }
+
+    /**
+     * @return the hasCalcCount2
+     */
+    public synchronized boolean isHasCalcCount2()
+    {
+        return hasCalcCount2;
+    }
+
+    /**
+     * @param hasCalcCount2 the hasCalcCount2 to set
+     */
+    public synchronized void setHasCalcCount2(boolean hasCalcCount2)
+    {
+        this.hasCalcCount2 = hasCalcCount2;
+        //System.out.println("SET Calc2: "+getFullName()+" "+hashCode());
+
+    }
+
+    public synchronized boolean shouldCalcCount()
+    {
+        boolean isCalc = (isCalcCount || hasCalcCount) && (isCalcCount2 || hasCalcCount2);
+        return !isCalc;
+    }
+    
     public Integer getAcceptedParentId()
     {
         return acceptedParentId;

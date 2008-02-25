@@ -36,10 +36,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
+import java.util.MissingResourceException;
 import java.util.NoSuchElementException;
 import java.util.Properties;
+import java.util.ResourceBundle;
 import java.util.prefs.BackingStoreException;
 
 import javax.swing.AbstractAction;
@@ -74,6 +77,7 @@ import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.MainPanel;
 import edu.ku.brc.af.core.SchemaI18NService;
+import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.UsageTracker;
@@ -82,6 +86,7 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsEditor;
 import edu.ku.brc.af.prefs.PreferencesDlg;
 import edu.ku.brc.af.tasks.BaseTask;
+import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.dbsupport.CustomQueryFactory;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -139,7 +144,9 @@ import edu.ku.brc.ui.db.DatabaseLoginListener;
 import edu.ku.brc.ui.db.DatabaseLoginPanel;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.ui.forms.FormViewObj;
+import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.ResultSetController;
+import edu.ku.brc.ui.forms.SubViewBtn;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.ui.forms.formatters.UIFormatterDlg;
 import edu.ku.brc.ui.forms.persist.ViewLoader;
@@ -193,7 +200,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private String               appName             = "Specify";
     private String               appVersion          = "6.0";
 
-    private String               appBuildVersion     = "200802150930 (SVN: 3444)";
+    private String               appBuildVersion     = "2008021630 (SVN: 3447)";
     
     protected static CacheManager cacheManager        = new CacheManager();
 
@@ -417,6 +424,9 @@ public class Specify extends JPanel implements DatabaseLoginListener
             HibernateUtil.setListener("post-commit-delete", new edu.ku.brc.specify.dbsupport.PostDeleteEventListener());
             //HibernateUtil.setListener("delete", new edu.ku.brc.specify.dbsupport.DeleteEventListener());
         }
+        
+        adjustLocaleFromPrefs();
+        
         dbLoginPanel = UIHelper.doLogin(true, false, false, this); // true means do auto login if it can, second bool means use dialog instead of frame
         localPrefs.load();
     }
@@ -653,6 +663,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                             }
                             
                             AppPreferences.setConnectedToDB(false);
+                            adjustLocaleFromPrefs();
                             UIHelper.doLogin(false, true, true, new DBListener()); // true means do auto login if it can, second bool means use dialog instead of frame
                         }
                     }
@@ -760,6 +771,32 @@ public class Specify extends JPanel implements DatabaseLoginListener
         String title;
         JMenu dataMenu = UIHelper.createMenu(mb, "DataMenu", "DataMneu");
         ResultSetController.addMenuItems(dataMenu);
+        dataMenu.addSeparator();
+        
+        // Save And New Menu Item
+        Action saveAndNewAction = new AbstractAction(getResourceString("SAVE_AND_NEW")) {
+            public void actionPerformed(ActionEvent e)
+            {
+                SubPaneIFace sp = SubPaneMgr.getInstance().getCurrentSubPane();
+                if (sp instanceof FormPane)
+                {
+                    MultiView mv = ((FormPane)sp).getMultiView();
+                    if (mv != null)
+                    {
+                        FormViewObj fvo = mv.getCurrentViewAsFormViewObj();
+                        if (fvo != null)
+                        {
+                            fvo.setSaveAndNew(((JCheckBoxMenuItem)e.getSource()).isSelected());
+                        }
+                    }
+                }
+            }
+        };
+        saveAndNewAction.setEnabled(false);
+        JCheckBoxMenuItem saveAndNewCBMI = new JCheckBoxMenuItem(saveAndNewAction);
+        dataMenu.add(saveAndNewCBMI);
+        UIRegistry.register("SaveAndNew", saveAndNewCBMI);
+        UIRegistry.registerAction("SaveAndNew", saveAndNewAction);
         mb.add(dataMenu);
         
         if (!isWorkbenchOnly)
@@ -1579,6 +1616,35 @@ public class Specify extends JPanel implements DatabaseLoginListener
     public void cancelled()
     {
         System.exit(0);
+    }
+    
+    /**
+     * Reads Local Preferences for the Locale setting.
+     */
+    protected void adjustLocaleFromPrefs()
+    {
+        String language = AppPreferences.getLocalPrefs().get("locale.lang", null);
+        if (language != null)
+        {
+            String country  = AppPreferences.getLocalPrefs().get("locale.country", null);
+            String variant  = AppPreferences.getLocalPrefs().get("locale.var",     null);
+            
+            Locale prefLocale = new Locale(language, country, variant);
+            
+            Locale.setDefault(prefLocale);
+            UIRegistry.setResourceLocale(prefLocale);
+        }
+        
+        try
+        {
+            ResourceBundle.getBundle("resources", Locale.getDefault());
+            
+        } catch (MissingResourceException ex)
+        {
+            Locale.setDefault(Locale.ENGLISH);
+            UIRegistry.setResourceLocale(Locale.ENGLISH);
+        }
+        
     }
 
 

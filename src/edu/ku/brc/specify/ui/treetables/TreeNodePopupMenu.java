@@ -39,26 +39,39 @@ public class TreeNodePopupMenu extends JPopupMenu
     protected List<AbstractButton> selectionSensativeButtons;
 	
 	/**
-	 *
-	 *
+	 * Constructor.
+	 * @param owner the popup owner (the tree)
+	 * @param isEditMode whether it is in edit mode or not
 	 */
 	@SuppressWarnings("unchecked")
-	public TreeNodePopupMenu(TreeTableViewer owner)
+	public TreeNodePopupMenu(final TreeTableViewer owner, final boolean isEditMode)
 	{
 		this.ttv = owner;
 		
 		subtree  = new JMenuItem(getResourceString("TTV_ZOOM_IN"));
         find     = new JMenuItem(getResourceString("TTV_FIND_NEXT"));
-        edit     = new JMenuItem(getResourceString("TTV_EDITING"));
-        delete   = new JMenuItem(getResourceString("TTV_DELETE"));
-        newChild = new JMenuItem(getResourceString("TTV_NEW_CHILD"));
         
         selectionSensativeButtons = new Vector<AbstractButton>();
+        
         selectionSensativeButtons.add(subtree);
         selectionSensativeButtons.add(find);
-        selectionSensativeButtons.add(edit);
-        selectionSensativeButtons.add(newChild);
-        selectionSensativeButtons.add(delete);
+        
+        
+        if (isEditMode)
+        {
+            edit     = new JMenuItem(getResourceString("TTV_EDITING"));
+            delete   = new JMenuItem(getResourceString("TTV_DELETE"));
+            newChild = new JMenuItem(getResourceString("TTV_NEW_CHILD"));
+            
+            selectionSensativeButtons.add(edit);
+            selectionSensativeButtons.add(newChild);
+            selectionSensativeButtons.add(delete);
+        } else
+        {
+            edit     = null;
+            delete   = null;
+            newChild = null;
+        }
         
         subtree.addActionListener(new ActionListener()
 		{
@@ -82,35 +95,40 @@ public class TreeNodePopupMenu extends JPopupMenu
 			}
 		});
 
-		edit.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent ae)
-			{
-				ttv.editSelectedNode(list);
-			}
-		});
+	      
+        this.add(subtree);
+        this.add(find);
 
-		delete.addActionListener(new ActionListener()
+		if (isEditMode)
 		{
-			public void actionPerformed(ActionEvent ae)
-			{
-				ttv.deleteSelectedNode(list);
-			}
-		});
+    		edit.addActionListener(new ActionListener()
+    		{
+    			public void actionPerformed(ActionEvent ae)
+    			{
+    				ttv.editSelectedNode(list);
+    			}
+    		});
+    
+    		delete.addActionListener(new ActionListener()
+    		{
+    			public void actionPerformed(ActionEvent ae)
+    			{
+    				ttv.deleteSelectedNode(list);
+    			}
+    		});
+    
+    		newChild.addActionListener(new ActionListener()
+    		{
+    			public void actionPerformed(ActionEvent ae)
+    			{
+    				ttv.addChildToSelectedNode(list);
+    			}
+    		});
+            this.add(edit);
+            this.add(delete);
+            this.add(newChild);
+		}
 
-		newChild.addActionListener(new ActionListener()
-		{
-			public void actionPerformed(ActionEvent ae)
-			{
-				ttv.addChildToSelectedNode(list);
-			}
-		});
-		
-		this.add(subtree);
-		this.add(find);
-		this.add(edit);
-		this.add(delete);
-		this.add(newChild);
 	}
 	
 	public void setList(JList list)
@@ -125,17 +143,26 @@ public class TreeNodePopupMenu extends JPopupMenu
     
     public void setDeleteEnabled(boolean enable)
     {
-        delete.setEnabled(enable);
+        if (delete != null)
+        {
+            delete.setEnabled(enable);
+        }
     }
 
     public void setNewEnabled(boolean enable)
     {
-        newChild.setEnabled(enable);
+        if (newChild != null)
+        {
+            newChild.setEnabled(enable);
+        }
     }
     
     public void setEditEnabled(boolean enable)
     {
-        edit.setEnabled(enable);
+        if (edit != null)
+        {
+            edit.setEnabled(enable);
+        }
     }
     
     public void setFindEnabled(boolean enable)

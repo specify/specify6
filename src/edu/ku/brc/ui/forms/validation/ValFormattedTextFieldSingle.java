@@ -162,7 +162,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             @Override
             public void mousePressed(MouseEvent e)
             {
-                System.err.println(e);
+                //System.err.println(e);
                 super.mousePressed(e);
             }
             
@@ -174,7 +174,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             public void focusGained(FocusEvent e)
             {
                 ((JTextField)e.getSource()).selectAll();
-                System.err.println(e);
+                //System.err.println(e);
                 repaint();
             }
 

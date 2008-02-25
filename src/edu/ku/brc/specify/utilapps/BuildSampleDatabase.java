@@ -238,6 +238,7 @@ public class BuildSampleDatabase
     protected DeterminationStatus current      = null;
     protected DeterminationStatus notCurrent   = null;
     protected DeterminationStatus incorrect    = null;
+    protected DeterminationStatus oldDet       = null;
 
     
     /**
@@ -427,6 +428,7 @@ public class BuildSampleDatabase
         current    = createDeterminationStatus(discipline, "Current",    "", DeterminationStatus.CURRENT);
         notCurrent = createDeterminationStatus(discipline, "Not current","", DeterminationStatus.NOTCURRENT);
         incorrect  = createDeterminationStatus(discipline, "Incorrect",  "", DeterminationStatus.USERDEFINED);
+        oldDet     = createDeterminationStatus(discipline, "Old Determination","", DeterminationStatus.OLDDETERMINATION);
         
         frame.setDesc("Commiting...");
         frame.setProcess(++createStep);
@@ -434,6 +436,7 @@ public class BuildSampleDatabase
         persist(current);
         persist(notCurrent);
         persist(incorrect);
+        persist(oldDet);
         commitTx();
         
         frame.setProcess(++createStep);
@@ -966,12 +969,15 @@ public class BuildSampleDatabase
         current    = createDeterminationStatus(discipline, "Current",    "", DeterminationStatus.CURRENT);
         notCurrent = createDeterminationStatus(discipline, "Not current","", DeterminationStatus.NOTCURRENT);
         incorrect  = createDeterminationStatus(discipline, "Incorrect",  "", DeterminationStatus.USERDEFINED);
+        oldDet     = createDeterminationStatus(discipline, "Old Determination","", DeterminationStatus.OLDDETERMINATION);
 
         
         //startTx();
         persist(current);
         persist(notCurrent);
         persist(incorrect);
+        persist(oldDet);
+        
         //commitTx();
         
         ////////////////////////////////
@@ -1793,9 +1799,12 @@ public class BuildSampleDatabase
             current    = createDeterminationStatus(discipline, "Current",    "", DeterminationStatus.CURRENT);
             notCurrent = createDeterminationStatus(discipline, "Not current","", DeterminationStatus.NOTCURRENT);
             incorrect  = createDeterminationStatus(discipline, "Incorrect",  "", DeterminationStatus.USERDEFINED);
+            oldDet     = createDeterminationStatus(discipline, "Old Determination","", DeterminationStatus.OLDDETERMINATION);
+
             persist(current);
             persist(notCurrent);
             persist(incorrect);
+            persist(oldDet);
         }
 
         ////////////////////////////////

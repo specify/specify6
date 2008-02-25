@@ -24,6 +24,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -34,7 +35,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
-import javax.swing.border.LineBorder;
 import javax.swing.event.MouseInputAdapter;
 
 import org.apache.commons.lang.StringUtils;
@@ -116,8 +116,9 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
     protected static final int SHADOW_SIZE = 10;
     protected boolean isOver = false;
     protected boolean selected = false;
-    protected Border inactiveBorder = null;
     
+    protected Border inactiveBorder = BorderFactory.createEmptyBorder(1,1,1,1);
+    protected Border focusBorder    = BorderFactory.createLineBorder(Color.BLACK, 1);
     /**
      * Constructor.
      * @param fieldName the field Name
@@ -179,11 +180,11 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
 //                downME = e.getPoint();
                 if (isOver)
                 {
-                    setBorder(new LineBorder(Color.BLACK));
+                    setBorder(focusBorder);
                 }
                 else
                 {
-                    setBorder(null);
+                    setBorder(inactiveBorder);
                 }
                 repaint();
 //                wasPopUp = e.isPopupTrigger();
@@ -795,16 +796,9 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.dnd.GhostActionable#setActive(boolean)
      */
-    public void setActive(boolean isActive)
+    public void setActive(final boolean isActive)
     {
-        if (isActive)
-        {
-            setBorder(new LineBorder(Color.BLACK));
-        }
-        else
-        {
-            setBorder(inactiveBorder);
-        }
+        setBorder(isActive ? focusBorder : inactiveBorder);
         repaint();
     }
 
