@@ -40,12 +40,12 @@ import edu.ku.brc.ui.forms.validation.ValComboBox;
  * Apr 29, 2007
  *
  */
-public class CachePrefs extends GenericPrefsPanel
+public class SystemPrefs extends GenericPrefsPanel
 {
     /**
      * Constructor.
      */
-    public CachePrefs()
+    public SystemPrefs()
     {
         createForm("Preferences", "System");
         

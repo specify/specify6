@@ -64,7 +64,7 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace, 
     protected LocalizableJListItem          jlistContainer           = null;
     protected SpLocaleContainerItem         currentBaselineItem      = null;
     protected SpLocaleContainerItem         currentItem              = null;
-    protected DisciplineType                    disciplineType               = null;
+    protected DisciplineType                disciplineType           = null;
     
     /**
      * 
