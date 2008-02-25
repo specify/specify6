@@ -160,6 +160,7 @@
 		  -->
 		<mapping class="edu.ku.brc.specify.datamodel.SpQuery"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpQueryField"/>
+		<mapping class="edu.ku.brc.specify.datamodel.SpReport"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpViewSetObj"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Storage"/>
 		<mapping class="edu.ku.brc.specify.datamodel.StorageTreeDef"/>

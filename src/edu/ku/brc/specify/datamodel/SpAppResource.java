@@ -92,6 +92,7 @@ public class SpAppResource extends DataModelObjBase implements java.io.Serializa
      protected Integer                   allPermissionLevel;
      protected Set<SpAppResourceData>    spAppResourceDatas;
      protected Set<SpAppResourceDir>     spAppResourceDirs;
+     protected Set<SpReport>             spReports;
      protected SpecifyUser               specifyUser;
      protected UserGroup                 group;
      
@@ -130,6 +131,7 @@ public class SpAppResource extends DataModelObjBase implements java.io.Serializa
         allPermissionLevel   = null;
         spAppResourceDirs    = new HashSet<SpAppResourceDir>();
         spAppResourceDatas   = new HashSet<SpAppResourceData>();
+        spReports            = new HashSet<SpReport>();
         specifyUser          = null;
         group                = null;       
         fileName             = null;
@@ -349,6 +351,18 @@ public class SpAppResource extends DataModelObjBase implements java.io.Serializa
         }
     }
 
+
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "appResource")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<SpReport> getSpReports()
+    {
+        return spReports;
+    }
+
+    public void setSpReports(Set<SpReport> spReports)
+    {
+        this.spReports = spReports;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.AppResourceIFace#getSpAppResourceDirs()

@@ -47,6 +47,7 @@ public class SpQuery extends DataModelObjBase
     protected boolean           named = true;
     
     protected Set<SpQueryField> fields;
+    protected Set<SpReport>     reports;
     protected SpecifyUser       specifyUser;
 
  
@@ -73,6 +74,7 @@ public class SpQuery extends DataModelObjBase
         sqlStr           = null;
         named            = true;
         fields           = new HashSet<SpQueryField>();
+        reports          = new HashSet<SpReport>();
         specifyUser      = null;
     }
     
@@ -130,6 +132,11 @@ public class SpQuery extends DataModelObjBase
         this.specifyUser = owner;
     }
     
+    public void setReports(Set<SpReport> reports)
+    {
+        this.reports = reports;
+    }
+
     /**
      * @return the spQueryId
      */
@@ -185,6 +192,16 @@ public class SpQuery extends DataModelObjBase
     public Set<SpQueryField> getFields()
     {
         return fields;
+    }
+
+    /**
+     * @return the reports
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "query")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<SpReport> getReports()
+    {
+        return reports;
     }
 
     /**
