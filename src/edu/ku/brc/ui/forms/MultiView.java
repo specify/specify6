@@ -1410,7 +1410,7 @@ public class MultiView extends JPanel
         viewStateList.add(viewState);
         
         FormViewObj formViewObj = getCurrentViewAsFormViewObj();
-        if (formViewObj != null)
+        if (formViewObj != null && formViewObj.getRsController() != null)
         {
             int curInx = formViewObj.getRsController().getCurrentIndex();
             log.debug("  curInx: "+curInx);
