@@ -3,13 +3,13 @@
     <dialog type="search" viewset="Search" view="AccessionSearch"          name="AccessionSearch"          title="AccessionSearchTitle"      class="edu.ku.brc.specify.datamodel.Accession"      idfield="accessionId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="AgentSearch"              name="AgentSearch"              title="AgentSearch"               class="edu.ku.brc.specify.datamodel.Agent"          idfield="agentId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="AttachmentSearch"         name="AttachmentSearch"         title="AttachmentSearch"          class="edu.ku.brc.specify.datamodel.Attachment"     idfield="attachmentId" helpcontext="CBXQSearch"/>
-    <dialog type="search" viewset="Search" view="DisciplineSearch"     name="DisciplineSearch"     title="DisciplineSearchTitle" class="edu.ku.brc.specify.datamodel.Discipline" idfield="disciplineSearchId" helpcontext="CBXQSearch"/>
+    <dialog type="search" viewset="Search" view="DisciplineSearch"         name="DisciplineSearch"     title="DisciplineSearchTitle" class="edu.ku.brc.specify.datamodel.Discipline" idfield="disciplineSearchId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="DeterminationSearch"      name="DeterminationSearch"      title="DeterminationSearch"       class="edu.ku.brc.specify.datamodel.Determination"  idfield="determinationId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="GeographySearch"          name="GeographySearch"          title="GeographySearchTitle"      class="edu.ku.brc.specify.datamodel.Geography"      idfield="geographyId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="GeologicTimePeriodSearch" name="GeologicTimePeriodSearch" title="GeologicTimePeriodSearch"  class="edu.ku.brc.specify.datamodel.GeologicTimePeriod" idfield="geologicTimePeriodId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="LithoStratSearch"         name="LithoStratSearch"         title="LithoStratSearchTitle"     class="edu.ku.brc.specify.datamodel.LithoStrat"     idfield="lithoStratId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="LocalitySearch"           name="LocalitySearch"           title="LocalitySearchTitle"       class="edu.ku.brc.specify.datamodel.Locality"       idfield="localityId" helpcontext="CBXQSearch"/>
-    <dialog type="search" viewset="Search" view="StorageSearch"           name="StorageSearch"           title="StorageSearchTitle"       class="edu.ku.brc.specify.datamodel.Storage"           idfield="storageId" helpcontext="CBXQSearch"/>
+    <dialog type="search" viewset="Search" view="StorageSearch"            name="StorageSearch"           title="StorageSearchTitle"       class="edu.ku.brc.specify.datamodel.Storage"           idfield="storageId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="PaleoContextSearch"       name="PaleoContextSearch"       title="PaleoContextSearchTitle"   class="edu.ku.brc.specify.datamodel.PaleoContext"   idfield="paleoContextId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="PermitSearch"             name="PermitSearch"             title="PermitSearchTitle"         class="edu.ku.brc.specify.datamodel.Permit"         idfield="permitId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="PrepTypeSearch"           name="PrepTypeSearch"           title="PrepTypeSearch"            class="edu.ku.brc.specify.datamodel.PrepType"       idfield="prepTypeId" helpcontext="CBXQSearch"/>
@@ -22,13 +22,13 @@
     <dialog type="display" viewset="Global"      view="AttachmentsForm"    name="AttachmentsForm"          title="Attachment"                class="edu.ku.brc.specify.datamodel.Attachment"/>
     <dialog type="display" viewset="Global"      view="Collector"          name="CollectorDisplay"         title="Collector"                 class="edu.ku.brc.specify.datamodel.Collector"/>
     <dialog type="display" viewset="Global"      view="GeologicTimePeriod" name="GeologicTimePeriodDisplay" title="GeologicTimePeriodTitle"  class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"/>
-    <dialog type="display" viewset="Core"        view="Determination"      name="DeterminationDisplay"     title="Determination"             class="edu.ku.brc.specify.datamodel.Determination"/>
+    <dialog type="display" viewset="Common"      view="Determination"      name="DeterminationDisplay"     title="Determination"             class="edu.ku.brc.specify.datamodel.Determination"/>
     <dialog type="display" viewset="Global"      view="Geography"          name="GeographyDisplay"         title="GeographyTitle"            class="edu.ku.brc.specify.datamodel.Geography"/>
     <dialog type="display" viewset="Global"      view="LithoStrat"         name="LithoStratDisplay"        title="Lithostratigraphy"         class="edu.ku.brc.specify.datamodel.LithoStrat"/>
     <dialog type="display" viewset="Global"      view="Locality"           name="LocalityDisplay"          title="LocalityTitle"             class="edu.ku.brc.specify.datamodel.Locality"/>
-    <dialog type="display" viewset="Global"      view="Storage"           name="StorageDisplay"          title="StorageTitle"             class="edu.ku.brc.specify.datamodel.Storage"/>
+    <dialog type="display" viewset="Global"      view="Storage"            name="StorageDisplay"           title="StorageTitle"             class="edu.ku.brc.specify.datamodel.Storage"/>
     <dialog type="display" viewset="Global"      view="Permit"             name="PermitDisplay"            title="PermitTitle"               class="edu.ku.brc.specify.datamodel.Agent"/>
-    <dialog type="display" viewset="Core"        view="Preparation"        name="PreparationDisplay"       title="Preparation"               class="edu.ku.brc.specify.datamodel.Preparation"/>
+    <dialog type="display" viewset="Common"      view="Preparation"        name="PreparationDisplay"       title="Preparation"               class="edu.ku.brc.specify.datamodel.Preparation"/>
     <dialog type="display" viewset="Global"      view="Taxon"              name="TaxonDisplay"             title="TaxonTitle"                class="edu.ku.brc.specify.datamodel.Taxon"/>
 
 <!--

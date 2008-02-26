@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <views>
 	<std>
-	    <view sidebar="true"  name="Accession"          viewset="Core"         view="Accession"          iconname="Accession"          tooltip=""/>    
-	    <view sidebar="true"  name="Permit"             viewset="Core"         view="Permit"             iconname="Permit"             tooltip=""/>
+	    <view sidebar="true"  name="Accession"          viewset="Common"       view="Accession"          iconname="Accession"          tooltip=""/>    
+	    <view sidebar="true"  name="Permit"             viewset="Common"       view="Permit"             iconname="Permit"             tooltip=""/>
 	     
 	    <view sidebar="true"  name="Collection Object"  viewset="Fish Views"   view="CollectionObject"   iconname="CollectionObject"   tooltip=""/>    
 	    <view sidebar="true"  name="Collecting Event"   viewset="Fish Views"   view="CollectingEvent"    iconname="CollectingEvent"    tooltip=""/>    
-	    <view sidebar="false" name="Determination"      viewset="Core"         view="Determination"      iconname="Determination"      tooltip=""/>
+	    <view sidebar="false" name="Determination"      viewset="Common"       view="Determination"      iconname="Determination"      tooltip=""/>
 	    <view sidebar="true"  name="Taxon"              viewset="Global"       view="Taxon"              iconname="Taxon"              tooltip=""/> 
 	    
 	    <view sidebar="true"  name="Agent"              viewset="Global"       view="Agent"              iconname="Agent"              tooltip=""/>    
 	    <view sidebar="true"  name="Geography"          viewset="Global"       view="Geography"          iconname="Geography"          tooltip=""/> 
 	    <view sidebar="true"  name="GeologicTimePeriod" viewset="Global"       view="GeologicTimePeriod" iconname="GeologicTimePeriod" tooltip=""/> 
-	    <view sidebar="false" name="Loan"               viewset="Core"         view="Loan"               iconname="Loan"               tooltip=""/>    
-	    <view sidebar="true"  name="Locality"           viewset="Core"         view="Locality"           iconname="Locality"           tooltip=""/> 
+	    <view sidebar="false" name="Loan"               viewset="Common"       view="Loan"               iconname="Loan"               tooltip=""/>    
+	    <view sidebar="true"  name="Locality"           viewset="Common"       view="Locality"           iconname="Locality"           tooltip=""/> 
 	    <view sidebar="true"  name="Storage"            viewset="Global"       view="Storage"           iconname="Storage"           tooltip=""/>
 	</std>
 	
 	<misc>
-	    <view sidebar="true"  name="Accession"          viewset="Core"         view="Accession"          iconname="Accession"          tooltip=""/>    
-	    <view sidebar="true"  name="Permit"             viewset="Core"         view="Permit"             iconname="Permit"             tooltip=""/>
+	    <view sidebar="true"  name="Accession"          viewset="Common"       view="Accession"          iconname="Accession"          tooltip=""/>    
+	    <view sidebar="true"  name="Permit"             viewset="Common"       view="Permit"             iconname="Permit"             tooltip=""/>
 	    <view sidebar="true"  name="Collection Object"  viewset="Fish Views"   view="CollectionObject"   iconname="CollectionObject"   tooltip=""/>  
-        <view sidebar="true"  name="Deaccession"        viewset="Core"         view="Deaccession"        iconname="Deaccession"        tooltip=""/>  
+        <view sidebar="true"  name="Deaccession"        viewset="Common"       view="Deaccession"        iconname="Deaccession"        tooltip=""/>  
 	</misc>
 </views>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <VersionInfo>
-        <Module name="Core"           version="pre-release"/>
+        <Module name="Common"           version="pre-release"/>
        	<Module name="Workbench"      version="Preview Release Update 1"/>
         <Module name="Exporter"       version="pre-release"/>
         <Module name="VersionChecker" version="pre-release"/>
