@@ -142,6 +142,7 @@
 		<mapping class="edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Shipment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpecifyUser"/>
+		<mapping class="edu.ku.brc.specify.datamodel.SpFieldValueDefault"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpAppResourceDir"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpAppResource"/>
 		<mapping class="edu.ku.brc.specify.datamodel.SpAppResourceData"/>

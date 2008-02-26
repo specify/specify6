@@ -142,7 +142,7 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
     /**
      * Loads the view from the file.
      */
-    protected void loadViews()
+    public void loadViews()
     {
         if ((ALWAYS_LOAD || !hasLoadedViews) && dirPath != null && fileName != null)
         {
@@ -428,12 +428,16 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
                             av.setViewDef(referredToViewDef);
                         } else
                         {
-                            log.error("AltView referrs to a non-existent view with name["+av.getViewDefName()+"]");
+                            String msg = "ViewSet["+name+"] View["+view+"] AltView ["+av.getName()+"] refers to a non-existent view with name["+av.getViewDefName()+"]";
+                            log.error(msg);
+                            throw new RuntimeException(msg);
                         }
                         
                     } else
                     {
-                        log.error("Couldn't find the ViewDef Name for the AltView!");
+                        String msg = "ViewSet["+name+"] Couldn't find the ViewDef Name for the AltView!";
+                        log.error(msg);
+                        throw new RuntimeException(msg);
                     }
                 }
             }

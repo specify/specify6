@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * @author rod
  *
- * @code_status Alpha
+ * @code_status Beta
  *
  * Sep 28, 2007
  *
@@ -100,4 +100,15 @@ public interface LocalizableItemIFace
      * @return
      */
     public abstract Boolean getIsUIFormatter();
+    
+    /**
+     * @return the pickListName
+     */
+    public abstract String getPickListName();
+
+    /**
+     * @param pickListName the pickListName to set
+     */
+    public abstract void setPickListName(String pickListName);
+
 }

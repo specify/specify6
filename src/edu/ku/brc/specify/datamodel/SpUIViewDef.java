@@ -1096,7 +1096,9 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
         </viewdef>
          */
 
-        sb.append("        <viewdef");
+        int indent = 8;
+        XMLHelper.indent(sb, indent);
+        sb.append("<viewdef");
         xmlAttr(sb, "type", typeName.toString());
         xmlAttr(sb, "name", name);
         xmlAttr(sb, "class", dataClassName);
@@ -1105,28 +1107,41 @@ public class SpUIViewDef extends DataModelObjBase implements ViewDefIFace, Table
         xmlAttr(sb, "width", widthDB);
         xmlAttr(sb, "height", heightDB);
         sb.append(">\n");
-        sb.append("          ");
+        
+        indent += 4;
+        XMLHelper.indent(sb, indent);
         xmlNode(sb, "desc", description, true);
-        sb.append("          ");
-        xmlNode(sb, "coldef", colDef, false);
+        
+        XMLHelper.indent(sb, indent);
+        xmlNode(sb, "columnDef", colDef, false);
+        
         if (isRowDefAuto == null || !isRowDefAuto)
         {
-            xmlNode(sb, "rowdef", rowDef, false);
+            XMLHelper.indent(sb, indent);
+            xmlNode(sb, "rowDef", rowDef, false);
             
         } else
         {
-            sb.append("            <rowdef");
+            XMLHelper.indent(sb, indent);
+            sb.append("<rowDef");
             xmlAttr(sb, "auto", true);
             xmlAttr(sb, "sep", rowDefSep);
             xmlAttr(sb, "cell", rowDefCell);
             sb.append("/>\n");
         }
         
+        XMLHelper.indent(sb, indent);
+        sb.append("<rows>\n");
         for (FormRowIFace row : rows)
         {
             row.toXML(sb);
         }
-        sb.append("        </viewdef>\n");        
+        XMLHelper.indent(sb, indent);
+        sb.append("</rows>\n");
+        
+        indent -= 4;
+        XMLHelper.indent(sb, indent);
+        sb.append("</viewdef>\n\n");        
         
     }
 }

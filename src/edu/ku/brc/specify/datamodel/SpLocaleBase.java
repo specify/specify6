@@ -40,6 +40,7 @@ public abstract class SpLocaleBase extends DataModelObjBase
     
     protected String  format;
     protected Boolean isUIFormatter;
+    protected String  pickListName;
     
     /**
      * 
@@ -61,6 +62,7 @@ public abstract class SpLocaleBase extends DataModelObjBase
         isHidden = false;
         format   = null;
         isUIFormatter = null;
+        pickListName  = null;
     }
 
     /**
@@ -172,6 +174,23 @@ public abstract class SpLocaleBase extends DataModelObjBase
     public void setIsUIFormatter(Boolean isUIFormatter)
     {
         this.isUIFormatter = isUIFormatter;
+    }
+
+    /**
+     * @return the pickListName
+     */
+    @Column(name = "PickListName", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    public String getPickListName()
+    {
+        return pickListName;
+    }
+
+    /**
+     * @param pickListName the pickListName to set
+     */
+    public void setPickListName(String pickListName)
+    {
+        this.pickListName = pickListName;
     }
     
     

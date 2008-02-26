@@ -99,7 +99,7 @@ public class SpecifySchemaI18NService extends SchemaI18NService
             }
         }
         
-        sql = "SELECT splocalecontainer.Name,splocalecontaineritem.Name,splocalecontaineritem.Format, splocalecontaineritem.IsUIFormatter,splocaleitemstr.Text "+
+        sql = "SELECT splocalecontainer.Name,splocalecontaineritem.Name,splocalecontaineritem.Format, splocalecontaineritem.IsUIFormatter, splocalecontaineritem.PickListName,splocaleitemstr.Text "+
               "FROM splocalecontainer INNER JOIN splocalecontaineritem ON splocalecontainer.SpLocaleContainerID = splocalecontaineritem.SpLocaleContainerID "+
               "INNER JOIN splocaleitemstr ON splocalecontaineritem.SpLocaleContainerItemID = splocaleitemstr.SpLocaleContainerItemNameID "+
               " where splocaleitemstr.Language = '"+locale.getLanguage()+"' AND " +
@@ -122,7 +122,7 @@ public class SpecifySchemaI18NService extends SchemaI18NService
                 DBInfoBase fi = ti.getItemByName(p.get(1));
                 if (fi != null)
                 {
-                    fi.setTitle(p.get(4));
+                    fi.setTitle(p.get(5));
                     
                 } else
                 {
@@ -135,6 +135,8 @@ public class SpecifySchemaI18NService extends SchemaI18NService
                     boolean isUIFmt = p.get(3) == null ? false : !p.get(3).equals("0");
                     
                     DBFieldInfo fieldInfo = (DBFieldInfo)fi;
+                    fieldInfo.setPickListName(p.get(4));
+                    
                     if (isUIFmt)
                     {
                         UIFieldFormatterIFace formatter = UIFieldFormatterMgr.getFormatter(format);

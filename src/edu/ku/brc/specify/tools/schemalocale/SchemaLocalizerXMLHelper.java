@@ -9,12 +9,15 @@
  */
 package edu.ku.brc.specify.tools.schemalocale;
 
+import static edu.ku.brc.specify.utilapps.DataBuilder.createPickList;
+
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.Vector;
@@ -35,10 +38,14 @@ import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
+import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.SpLocaleBase;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpLocaleContainerItem;
 import edu.ku.brc.specify.datamodel.SpLocaleItemStr;
+import edu.ku.brc.specify.utilapps.BldrPickList;
+import edu.ku.brc.specify.utilapps.BldrPickListItem;
+import edu.ku.brc.specify.utilapps.DataBuilder;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -582,6 +589,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
         xstream.useAttributeFor(SpLocaleBase.class, "type");
         xstream.useAttributeFor(SpLocaleBase.class, "format");
         xstream.useAttributeFor(SpLocaleBase.class, "isUIFormatter");
+        xstream.useAttributeFor(SpLocaleBase.class, "pickListName");
         
         xstream.useAttributeFor(SpLocaleItemStr.class, "country");
         xstream.useAttributeFor(SpLocaleItemStr.class, "language");
@@ -614,7 +622,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     /**
      * Saves the base file and all the disciplines to a directory.
      * @param basePath the base path to the directory (must end with '/')
-     * @return whether ebrything was saved.
+     * @return whether evrything was saved.
      */
     public boolean save(final String basePath)
     {
@@ -1050,6 +1058,33 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
         return save(expportDirectory.getAbsolutePath() + File.separator);
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getPickLists()
+     */
+    public List<PickList> getPickLists()
+    {
+        List<PickList>     pickLists     = new Vector<PickList>();
+        List<BldrPickList> bdlrPickLists = DataBuilder.getBldrPickLists();
+        
+        for (BldrPickList pl : bdlrPickLists)
+        {
+            PickList pickList = createPickList(pl.getName(), pl.getType(), pl.getTableName(),
+                                               pl.getFieldName(), pl.getFormatter(), pl.getReadOnly(), 
+                                               pl.getSizeLimit(), pl.getIsSystem());
+            for (BldrPickListItem item : pl.getItems())
+            {
+                pickList.addItem(item.getTitle(), item.getValue());
+            }
+            pickLists.add(pickList);
+        }
+        return pickLists;
+    }
+
+    /**
+     * @param itemStrs
+     * @param locale
+     * @return
+     */
     protected SpLocaleItemStr getNameForLocale(final Set<SpLocaleItemStr> itemStrs, final Locale locale)
     {
         for (SpLocaleItemStr itemStr : itemStrs)
@@ -1062,6 +1097,9 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
         return null;
     }
     
+    /**
+     * 
+     */
     public void setTitlesIntoSchema()
     {
         Locale locale = Locale.getDefault();

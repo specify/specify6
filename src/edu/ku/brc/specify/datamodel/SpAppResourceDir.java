@@ -342,6 +342,15 @@ public class SpAppResourceDir extends DataModelObjBase implements java.io.Serial
     @Transient
     public String getVerboseUniqueIdentifer()
     {
+        if (collection == null && 
+            specifyUser == null && 
+            discipline == null && 
+            disciplineType == null && 
+            userType == null)
+        {
+            return "Core";
+        }
+        
         StringBuilder strBuf = new StringBuilder();
         strBuf.append(""+(collection != null ? collection.getCollectionName() : ""));
         strBuf.append(" "+(specifyUser != null ? specifyUser.getName() : ""));

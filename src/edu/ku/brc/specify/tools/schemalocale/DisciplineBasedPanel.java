@@ -17,12 +17,15 @@
  */
 package edu.ku.brc.specify.tools.schemalocale;
 
+import static edu.ku.brc.specify.utilapps.DataBuilder.createPickList;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.Collections;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.Vector;
@@ -36,8 +39,12 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.config.DisciplineType;
+import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.SpLocaleContainerItem;
 import edu.ku.brc.specify.datamodel.SpLocaleItemStr;
+import edu.ku.brc.specify.utilapps.BldrPickList;
+import edu.ku.brc.specify.utilapps.BldrPickListItem;
+import edu.ku.brc.specify.utilapps.DataBuilder;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -382,5 +389,27 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace, 
     public void propertyChange(PropertyChangeEvent evt)
     {
         
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getPickLists()
+     */
+    public List<PickList> getPickLists()
+    {
+        List<PickList>     pickLists     = new Vector<PickList>();
+        List<BldrPickList> bdlrPickLists = DataBuilder.getBldrPickLists();
+        
+        for (BldrPickList pl : bdlrPickLists)
+        {
+            PickList pickList = createPickList(pl.getName(), pl.getType(), pl.getTableName(),
+                                               pl.getFieldName(), pl.getFormatter(), pl.getReadOnly(), 
+                                               pl.getSizeLimit(), pl.getIsSystem());
+            for (BldrPickListItem item : pl.getItems())
+            {
+                pickList.addItem(item.getTitle(), item.getValue());
+            }
+            pickLists.add(pickList);
+        }
+        return pickLists;
     }
 }

@@ -5,7 +5,7 @@
         <view
             name="EMail"
             class="java.util.prefs.Preferences">
-                <desc><![CDATA[EMail Preference Form.]]></desc>
+            <desc><![CDATA[EMail Preference Form.]]></desc>
             <altviews>
                 <altview name="EMail" viewdef="EMail" label="EMail" mode="edit" validated="true"/>
             </altviews>
@@ -67,7 +67,7 @@
              class="java.util.prefs.Preferences"
              gettable="edu.ku.brc.af.prefs.PrefsGettableImpl"
              settable="edu.ku.brc.af.prefs.PrefsSettableImpl"
-             useresourcelabels="false">
+             useresourcelabels="true">
 
                 <desc><![CDATA[EMail Preference Form.]]></desc>
 

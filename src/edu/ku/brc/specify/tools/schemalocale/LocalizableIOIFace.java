@@ -10,8 +10,11 @@
 package edu.ku.brc.specify.tools.schemalocale;
 
 import java.io.File;
+import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
+
+import edu.ku.brc.specify.datamodel.PickList;
 
 
 /**
@@ -95,7 +98,11 @@ public interface LocalizableIOIFace
     /**
      * @return
      */
-    public boolean createResourceFiles();
+    public abstract boolean createResourceFiles();
     
-    
+   
+    /**
+     * @return
+     */
+    public abstract List<PickList> getPickLists();
 }

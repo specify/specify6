@@ -945,8 +945,12 @@ public class ViewFactory
             FormCellField.FieldType uiType = cellField.getUiType();
             
             // Check to see if there is a picklist and get it if there is
-            String                 pickListName = cellField.getPickListName();
-            PickListDBAdapterIFace adapter      = null;
+            String pickListName = cellField.getPickListName();
+            if (fieldInfo != null && StringUtils.isEmpty(pickListName))
+            {
+                pickListName = fieldInfo.getPickListName();
+            }
+            PickListDBAdapterIFace adapter = null;
             if (isNotEmpty(pickListName))
             {
                 adapter = PickListDBAdapterFactory.getInstance().create(pickListName, false);
@@ -1336,6 +1340,8 @@ public class ViewFactory
                             }
                             
                             SubViewBtn subViewBtn = new SubViewBtn(parent, cellSubView, subView, dataType, options, props, getClassToCreate(parent, cell));
+                            subViewBtn.setHelpContext(props.getProperty("hc", null));
+                            
                             bi.doAddToValidator   = false;
                             bi.compToAdd          = subViewBtn;
                             

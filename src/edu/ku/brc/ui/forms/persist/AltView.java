@@ -93,7 +93,7 @@ public class AltView implements Comparable<AltViewIFace>, Cloneable, AltViewIFac
      */
     public String getViewDefName()
     {
-        return viewDef.getName();
+        return viewDef != null ? viewDef.getName() : null;
     }
 
     /* (non-Javadoc)

@@ -115,7 +115,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     protected AppResourceMgr backStopAppResMgr     = null;
     protected Agent          currentUserAgent      = null;
 
-    protected boolean        debug                 = false;
+    protected boolean        debug                 = true;
     protected long           lastLoadTime          = 0;
     protected long           lastLoadTimeBS        = 0;
     protected UnhandledExceptionDialog dlg         = null;
@@ -601,7 +601,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 UIFieldFormatterMgr.getInstance();
                 
                 backStopViewSetMgr.getView("Global", "Accession"); // force the loading of all the views
-                ViewLoader.setBackStopViewSetMgr(backStopViewSetMgr);
                 
                 ViewLoader.setDoFieldVerification(cacheDoVerify);
             }
@@ -652,7 +651,20 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     if (debug) log.debug("***** Couldn't add Backstop for ["+discipline+"] ["+dir.getAbsolutePath()+"]");
                 }
             }
-    
+
+            // Core 
+            File dir = XMLHelper.getConfigDir("common");
+            if (dir.exists())
+            {
+                SpAppResourceDir appResDef = createAppResourceDefFromDir("Core", dir);
+                if (debug) log.debug("Adding4 "+getSpAppResDefAsString(appResDef));
+                spAppResourceList.add(appResDef);
+                
+            } else
+            {
+                if (debug) log.debug("***** Couldn't add Backstop for [core] ["+dir.getAbsolutePath()+"]");
+            }
+            
             currentStatus = CONTEXT_STATUS.OK;
         
             return currentStatus;
@@ -712,12 +724,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     try
                     {
                         Element root = XMLHelper.readStrToDOM4J(vso.getDataAsString());
-                        
-                        // XXX RELEASE this is for testing
-                        if (vso.getFileName().indexOf("viewset.xml") == -1)
-                        {
-                            viewSetList.add(new ViewSet(root, true));
-                        }
+                        viewSetList.add(new ViewSet(root, true));
     
                     } catch (org.dom4j.DocumentException ex)
                     {
@@ -791,6 +798,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
         for (SpAppResourceDir appResDir : spAppResourceList)
         {
             if (debug) log.debug("Looking["+(appResDir.getDiscipline() != null ? appResDir.getDiscipline().getName() : "null")+"]["+(discipline != null ? discipline.getName() : "null")+"]");
+            
+            int x = 0;
+            x++;
             
             if (appResDir.getDiscipline() != null && appResDir.getDiscipline() == discipline)
             {
@@ -879,7 +889,10 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
         for (SpAppResourceDir appResDef : spAppResourceList)
         {
-            if (debug) log.debug("getView "+getSpAppResDefAsString(appResDef)+"  ["+appResDef.getUniqueIdentifer()+"]");
+            if (debug) log.debug("getView "+getSpAppResDefAsString(appResDef)+"  ["+appResDef.getUniqueIdentifer()+"]\n  ["+appResDef.getIdentityTitle()+"]");
+            
+            int x = 0;
+            x++;
             
             for (ViewSetIFace vs : getViewSetList(appResDef))
             {

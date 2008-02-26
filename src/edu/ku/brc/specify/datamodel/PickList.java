@@ -449,4 +449,12 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
     {
         return name.toLowerCase().compareTo(o.name.toLowerCase());
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#toString()
+     */
+    public String toString()
+    {
+        return name;
+    }
 }

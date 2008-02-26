@@ -31,8 +31,6 @@ package edu.ku.brc.specify.datamodel;
 import java.io.File;
 import java.sql.Timestamp;
 import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 

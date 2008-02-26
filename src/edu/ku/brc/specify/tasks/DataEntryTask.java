@@ -511,6 +511,9 @@ public class DataEntryTask extends BaseTask
             {
                 DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
                 dev.setTableInfo(tableInfo);
+            } else
+            {
+                log.debug("Couldn't find["+dev.getViewSet()+"]["+dev.getView()+"]");
             }
         }
     }
@@ -587,6 +590,7 @@ public class DataEntryTask extends BaseTask
             } catch (Exception ex)
             {
                 log.error(ex);
+                ex.printStackTrace();
             }
         }
         ViewLoader.setDoFieldVerification(cacheDoVerify);

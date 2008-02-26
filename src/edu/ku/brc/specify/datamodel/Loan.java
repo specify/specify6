@@ -56,7 +56,12 @@ import org.hibernate.annotations.Index;
 import edu.ku.brc.dbsupport.DBConnection;
 
 /**
-
+ * @author rod
+ *
+ * @code_status Alpha
+ *
+ * Feb 26, 2008
+ *
  */
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)

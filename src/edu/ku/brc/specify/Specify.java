@@ -125,6 +125,7 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.TaxonAttachment;
 import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
 import edu.ku.brc.specify.tests.SpecifyAppPrefs;
+import edu.ku.brc.specify.tools.FormGenerator;
 import edu.ku.brc.specify.tools.schemalocale.SchemaToolsDlg;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CommandAction;
@@ -274,6 +275,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         remotePrefs.getBoolean("Interactions.Using.Interactions", true, true);
         remotePrefs.getBoolean("Interactions.Doing.Gifts", true, true);
         remotePrefs.getBoolean("Interactions.Doing.Exchanges", Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.plant), true);
+        remotePrefs.getBoolean("Agent.Use.Variants", Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.plant), true);
     }
     
     /**
@@ -328,7 +330,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         catch (IOException e1)
         {
             log.warn("Problems setting the FileStoreAttachmentManager at ["+location+"]");
-            // TODO RELEASE -  Instead of exiting we need to disable Attchements
+            // TODO RELEASE -  Instead of exiting we need to disable Attachements
             throw new RuntimeException("Problems setting the FileStoreAttachmentManager at ["+location+"]");
         }
         
@@ -892,6 +894,12 @@ public class Specify extends JPanel implements DatabaseLoginListener
                         @SuppressWarnings("synthetic-access")
                         public void actionPerformed(ActionEvent ae)
                         {
+                            if (true)
+                            {
+                                FormGenerator fg = new FormGenerator();
+                                fg.generateForms();
+                                return;
+                            }
                             final CustomDialog dialog = new CustomDialog(topFrame, "Local Prefs", true, CustomDialog.OK_BTN, new AppPrefsEditor(false));
                             dialog.setOkLabel(UIRegistry.getResourceString("Close"));
                             dialog.pack();

@@ -49,6 +49,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpLocaleContainerItem;
 import edu.ku.brc.specify.datamodel.SpLocaleItemStr;
@@ -435,14 +436,11 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
                         
                         for (SpLocaleContainerItem item : container.getItems())
                         {
-                            for (SpLocaleItemStr str : item.getDescs())
-                            {
-                                str.getText();
-                            }
-                            for (SpLocaleItemStr str : item.getNames())
-                            {
-                                str.getText();
-                            }
+                            // force Load of lazy collections
+                            container.getDescs().size();
+                            container.getNames().size();
+                            item.getDescs().size();
+                            item.getNames().size();
                         }
                     }
                 } catch (Exception e)
@@ -774,6 +772,15 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
         }
         session.close();
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getPickLists()
+     */
+    public List<PickList> getPickLists()
+    {
+        return null;
+    }
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#exportToDirectory(java.io.File)

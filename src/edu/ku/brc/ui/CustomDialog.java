@@ -217,7 +217,7 @@ public class CustomDialog extends JDialog
      */
     public void createUI()
     {
-        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
         mainPanel = createMainPanel();
         mainPanel.setBorder(BorderFactory.createEmptyBorder(0, 2, 5, 2));

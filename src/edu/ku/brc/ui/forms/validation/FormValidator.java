@@ -396,7 +396,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     public void setEnabled(final boolean enabled)
     {
-        log.debug("SetEnabled: "+name+" "+enabled);
+        //log.debug("SetEnabled: "+name+" "+enabled);
         
         if (this.enabled != enabled)
         {
@@ -796,7 +796,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
         enableUIItems(isValid && hasChanged, EnableType.ValidAndChangedItems);
         enableUIItems(isValid, EnableType.ValidItems);
         
-        log.debug(">>>>>> isValid: "+isValid+" hasCHanged: "+hasChanged+" Val & New: "+(isValid && !isNewObj));
+        //log.debug(">>>>>> isValid: "+isValid+" hasCHanged: "+hasChanged+" Val & New: "+(isValid && !isNewObj));
         
         //log.debug(name);
         if (parent != null)
@@ -844,7 +844,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
     {
         if (enabled)
         {
-            log.debug("validateForm ["+name+"] ");
+            //log.debug("validateForm ["+name+"] ");
     
             boolean curIgnoreVal = ignoreValidationNotifications; // cache the value in case it has already been set
             ignoreValidationNotifications = true;
@@ -907,7 +907,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
                 formValidationState = UIValidatable.ErrorType.Error;
             }
             
-            log.debug(name + " - kidsValState "+kidsValState+"  formValidationState "+formValidationState);
+            //log.debug(name + " - kidsValState "+kidsValState+"  formValidationState "+formValidationState);
             
             if (kidsValState.ordinal() > formValidationState.ordinal())
             {
@@ -1223,7 +1223,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
         }
         updateValidationBtnUIState();
         
-        log.debug("UIValidator.isIgnoreAllValidation() "+UIValidator.isIgnoreAllValidation());
+        //log.debug("UIValidator.isIgnoreAllValidation() "+UIValidator.isIgnoreAllValidation());
         if (type == saveEnableType && saveComp != null && !UIValidator.isIgnoreAllValidation())
         {
             if (itsOKToEnable)
@@ -1324,7 +1324,7 @@ public class FormValidator implements ValidationListener, DataChangeListener
         }
 
         boolean isValid = formValidationState == UIValidatable.ErrorType.Valid;
-        log.debug(hasChanged+"  "+isValid);
+        //log.debug(hasChanged+"  "+isValid);
         
         enableUIItems(hasChanged && isValid, EnableType.ValidAndChangedItems);
         //enableUIItems(isValid && !isNewObj, EnableType.ValidItems);

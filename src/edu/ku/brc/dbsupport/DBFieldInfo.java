@@ -45,6 +45,7 @@ public class DBFieldInfo extends DBInfoBase
     protected boolean     isIndexed;
     
     // Transient
+    protected String                pickListName = null;
     protected UIFieldFormatterIFace formatter  = null;
     protected String                formatStr  = null;
     protected Class<?>              dataClass  = null;
@@ -162,6 +163,22 @@ public class DBFieldInfo extends DBInfoBase
     public void setFormatStr(String formatStr)
     {
         this.formatStr = formatStr;
+    }
+
+    /**
+     * @return the pickListName
+     */
+    public String getPickListName()
+    {
+        return pickListName;
+    }
+
+    /**
+     * @param pickListName the pickListName to set
+     */
+    public void setPickListName(String pickListName)
+    {
+        this.pickListName = pickListName;
     }
 
     public Class<?> getDataClass()

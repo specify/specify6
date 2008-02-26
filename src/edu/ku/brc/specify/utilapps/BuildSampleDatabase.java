@@ -518,7 +518,6 @@ public class BuildSampleDatabase
         BldrPickList colMethods = null;
         
         List<BldrPickList> pickLists = DataBuilder.getBldrPickLists();
-        DataBuilder.buildPickListFromXML(pickLists);
         for (BldrPickList pl : pickLists)
         {
             PickList pickList = createPickList(pl.getName(), pl.getType(), pl.getTableName(),
@@ -4056,7 +4055,8 @@ public class BuildSampleDatabase
         newItem.setType(memoryItem.getType());
         newItem.setFormat(memoryItem.getFormat());
         newItem.setIsUIFormatter(memoryItem.getIsUIFormatter());
-        
+        newItem.setPickListName(memoryItem.getPickListName());
+
         for (SpLocaleItemStr nm : memoryItem.getNames())
         {
             SpLocaleItemStr str = new SpLocaleItemStr();
@@ -4095,6 +4095,7 @@ public class BuildSampleDatabase
         newContainer.setType(memoryContainer.getType());
         newContainer.setFormat(newContainer.getFormat());
         newContainer.setIsUIFormatter(newContainer.getIsUIFormatter());
+        newContainer.setPickListName(newContainer.getPickListName());
         
         debugOn = false;//memoryContainer.getName().equals("collectionobject");
        

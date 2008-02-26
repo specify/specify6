@@ -520,8 +520,9 @@ public class SpUIAltView extends DataModelObjBase implements AltViewIFace
         xmlAttr(sb, "viewdef", spViewDef.getName());
         xmlAttr(sb, "label", label);
         xmlAttr(sb, "title", title);
-        xmlAttr(sb, "validated", isValidated);
+        xmlAttr(sb, "mode", modeName);
         xmlAttr(sb, "default", isDefaultAltView);
+        xmlAttr(sb, "validated", isValidated);
         xmlAttr(sb, "selector", selectorName);
         xmlAttr(sb, "selector_value", selectorValue);
         sb.append("/>\n");

@@ -2008,7 +2008,7 @@ public class SpUICell extends DataModelObjBase implements FormCellCommandIFace,
      */
     public void toXML(StringBuilder sb)
     {
-        XMLHelper.indent(sb, 16);
+        XMLHelper.indent(sb, 20);
         
         sb.append("<cell");
         xmlAttr(sb, "type", typeName.toString().toLowerCase());

@@ -471,7 +471,7 @@ public class XMLHelper
    {
        if (val != null)
        {
-           sb.append("  <");
+           sb.append("<");
            sb.append(tag);
            sb.append(">");
            if (useCData) sb.append("<![CDATA[");

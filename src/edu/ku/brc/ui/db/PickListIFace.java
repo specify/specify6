@@ -31,6 +31,10 @@ import java.util.Set;
  */
 public interface PickListIFace
 {
+    public static final int PL_WITH_ITEMS  = 0;
+    public static final int PL_WHOLE_TABLE = 1;
+    public static final int PL_TABLE_FIELD = 2;
+    
     /**
      * @return
      */

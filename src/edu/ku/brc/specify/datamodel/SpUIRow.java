@@ -283,15 +283,15 @@ public class SpUIRow implements java.io.Serializable, FormRowIFace, Comparable<S
     {
         if (cells != null && cells.size() > 0)
         {
-            int ident = 12;
+            int ident = 16;
             XMLHelper.indent(sb, ident);
-            sb.append("<rows>\n");
+            sb.append("<row>\n");
             for (FormCellIFace cell : cells)
             {
                 cell.toXML(sb);
             }
             XMLHelper.indent(sb, ident);
-            sb.append("</rows>\n");
+            sb.append("</row>\n");
         }
     }
 }

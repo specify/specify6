@@ -51,7 +51,6 @@ import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.ui.CustomFrame;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
-import edu.ku.brc.ui.forms.ViewSetMgr;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.ui.forms.validation.TypeSearchForQueryFactory;
@@ -84,11 +83,6 @@ public class ViewLoader
     private static final String SETTABLE   = "settable";
     private static final String RESOURCELABELS = "useresourcelabels";
     
-    private static ViewSetMgr backStopViewSetMgr = null;
-    
-    private Hashtable<String, ViewIFace>    views    = null;
-    private Hashtable<String, ViewDefIFace> viewDefs = null;
-    
     // Data Members
     protected boolean doingResourceLabels = false;
     protected String  viewSetName         = null;
@@ -116,17 +110,9 @@ public class ViewLoader
     }
 
     /**
-     * @param backStopViewSetMgr the backStopViewSetMgr to set
-     */
-    public static void setBackStopViewSetMgr(ViewSetMgr backStopViewSetMgr)
-    {
-        ViewLoader.backStopViewSetMgr = backStopViewSetMgr;
-    }
-
-    /**
      * Creates the view.
      * @param element the element to build the View from
-     * @param altViewsViewDefName the hastable to track the AltView's ViewDefName
+     * @param altViewsViewDefName the hashtable to track the AltView's ViewDefName
      * @return the View
      * @throws Exception
      */
@@ -372,9 +358,6 @@ public class ViewLoader
     {
         instance.viewSetName = doc.attributeValue(NAME);
         
-        instance.views    = views;
-        instance.viewDefs = viewDefs;
-
         Element viewDefsElement = (Element)doc.selectSingleNode("viewdefs");
         if (viewDefsElement != null)
         {
@@ -401,9 +384,6 @@ public class ViewLoader
                 mapDefinitionViewDefs(viewDefs);
             }
         }
-        
-        instance.views    = null;
-        instance.viewDefs = null;
 
         return instance.viewSetName;
     }
@@ -847,10 +827,10 @@ public class ViewLoader
                             String svViewSetName = cellElement.attributeValue("viewsetname");
                             if (StringUtils.isEmpty(svViewSetName))
                             {
-                                svViewSetName = instance.viewSetName;
+                                svViewSetName = null;
                             }
                             
-                            String viewName = instance.getViewName(cellElement);
+                            String viewName = getAttr(cellElement, "viewname", null);
 
                             cell = formRow.addCell(new FormCellSubView(cellId, 
                                                    cellName,
@@ -874,7 +854,7 @@ public class ViewLoader
                                 vsName = instance.viewSetName;
                             }
                             
-                            String viewName = instance.getViewName(cellElement);
+                            String viewName = getAttr(cellElement, "viewname", null);
 
                             cell = formRow.addCell(new FormCellSubView(cellId, cellName,
                                     vsName,
@@ -906,43 +886,6 @@ public class ViewLoader
         }
     }
     
-    /**
-     * Gets the view from the element and makes sure theView exists. If the View is null then it checks the Global ViewSet in the BackStop.
-     * It will actually get a reference to the View and it's ViewDefs and put them into the current ViewSet.
-     * @param cellElement the subview element
-     * @return the view name
-     */
-    protected String getViewName(final Element cellElement)
-    {
-        String viewName = getAttr(cellElement, "viewname", null);
-        
-        if (views.get(viewName) == null)
-        {
-            if (backStopViewSetMgr != null)
-            {
-                ViewIFace view = backStopViewSetMgr.getView("Global", viewName);
-                if (view != null)
-                {
-                    views.put(viewName, view);
-                    for (AltViewIFace av : view.getAltViews())
-                    {
-                        ViewDefIFace vd = av.getViewDef();
-                        viewDefs.put(vd.getName(), vd);
-                    }
-                    
-                } else
-                {
-                   throw new RuntimeException("Can't find View in current ViewSet or the `Global` backstop ["+viewName+"]"); 
-                }
-            } else
-            {
-                throw new RuntimeException("Can't find View in current ViewSet and the backstop was not installed into the ViewLoader ["+viewName+"]"); 
-            }
-        }
-        
-        return viewName;
-    }
-
     /**
      * @param element the DOM element for building the form
      * @param type the type of form to be built

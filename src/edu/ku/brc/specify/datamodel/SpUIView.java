@@ -45,6 +45,7 @@ import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.ui.forms.persist.AltViewIFace;
 import edu.ku.brc.ui.forms.persist.ViewDef;
@@ -754,27 +755,38 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
      */
     public void toXML(final StringBuilder sb)
     {
-        sb.append("        <view");
+        int indent = 8;
+        XMLHelper.indent(sb, indent);
+        
+        sb.append("<view");
         xmlAttr(sb, "name", name);
         xmlAttr(sb, "class", javaClassName);
-        xmlAttr(sb, "busrule", businessRulesClassName);
-        if (!useDefaultBusRule) xmlAttr(sb, "usedefbusrule", useDefaultBusRule);
+        //xmlAttr(sb, "busrule", businessRulesClassName);
+        //if (!useDefaultBusRule) xmlAttr(sb, "usedefbusrule", useDefaultBusRule);
         xmlAttr(sb, "resourcelabels", useResourceLabels);
         sb.append(">\n");
         xmlNode(sb, "desc", description, true);
-        sb.append("            <altviews");
+        
+        indent += 4;
+        XMLHelper.indent(sb, indent);
+        sb.append("<altviews");
         if (defaultMode != null)
         {
             xmlAttr(sb, "defaultmode", defaultMode.toString().toLowerCase());
         }
         xmlAttr(sb, "selector", selectorName);
         sb.append(">\n");
+        
         for (AltViewIFace av : spAltViews)
         {
             av.toXML(sb);
         }
-        sb.append("            </altviews>\n");
-        sb.append("        </view>\n");
+        XMLHelper.indent(sb, indent);
+        sb.append("</altviews>\n");
+        
+        indent -= 4;
+        XMLHelper.indent(sb, indent);
+        sb.append("</view>\n\n");
     }
 
     

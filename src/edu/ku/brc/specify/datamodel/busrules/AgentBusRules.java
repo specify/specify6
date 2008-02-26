@@ -25,9 +25,11 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Discipline;
@@ -213,6 +215,21 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
         lbl = UIRegistry.getResourceString(isPerson ? "AG_MID_NAME" : "AG_ABBREV");
         middleLabel.setText(lbl + ":");
         middleText.setText(isPerson ? agent.getMiddleInitial() : agent.getAbbreviation());
+        
+        // Agent Variants
+        boolean useAgentVariant = AppPreferences.getRemote().getBoolean("Agent.Use.Variants", Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.plant));
+        Component agentVarSep = formViewObj.getCompById("100");
+        if (agentVarSep != null)
+        {
+            agentVarSep.setVisible(useAgentVariant);
+        }
+
+        Component agentVarSubView = formViewObj.getCompById("10");
+        if (agentVarSubView != null)
+        {
+            agentVarSubView.setVisible(useAgentVariant);
+        }
+
     }
     
     /**

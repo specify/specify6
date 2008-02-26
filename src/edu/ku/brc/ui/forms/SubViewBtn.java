@@ -72,6 +72,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
     protected int                   options;
     protected String                baseLabel;
     protected Class<?>              classToCreate = null;
+    protected String                helpContext   = null;
     
     protected JButton               subViewBtn;
     protected JLabel                label;
@@ -202,6 +203,14 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
     }
     
     /**
+     * @param helpContext
+     */
+    public void setHelpContext(final String helpContext)
+    {
+        this.helpContext = helpContext;
+    }
+    
+    /**
      * 
      */
     protected void showForm()
@@ -225,7 +234,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
                 cellName,
                 mvParent,
                 options | MultiView.HIDE_SAVE_BTN | MultiView.DONT_ADD_ALL_ALTVIEWS | MultiView.USE_ONLY_CREATION_MODE,
-                CustomDialog.OK_BTN);
+                CustomDialog.OK_BTN | (StringUtils.isNotEmpty(helpContext) ? CustomDialog.HELP_BTN : 0));
         
         /*if (isNewObject)
         {
