@@ -652,11 +652,11 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 }
             }
 
-            // Core 
+            // Common Views 
             File dir = XMLHelper.getConfigDir("common");
             if (dir.exists())
             {
-                SpAppResourceDir appResDef = createAppResourceDefFromDir("Core", dir);
+                SpAppResourceDir appResDef = createAppResourceDefFromDir("Common", dir);
                 if (debug) log.debug("Adding4 "+getSpAppResDefAsString(appResDef));
                 spAppResourceList.add(appResDef);
                 

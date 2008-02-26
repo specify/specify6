@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <files>
-    <file type="system" name="Common"        title="Common"         file="core.views.xml"/>
+    <file type="system" name="Common"        title="Common"         file="common.views.xml"/>
 </files>
