@@ -62,6 +62,11 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     
     public enum LoadStatus {None, Successful, Error, OutOfMemory, TooLarge}
     
+    public static final byte UPLD_NONE = 0;
+    public static final byte UPLD_SUCCESS = 1;
+    public static final byte UPLD_SKIPPED = 2;
+    public static final byte UPLD_FAILED = 3;
+    
     protected Integer                workbenchRowId;
     protected Short                  rowNumber;
     protected byte[]                 cardImageData;
@@ -70,6 +75,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     protected Set<WorkbenchDataItem> workbenchDataItems;
     protected Set<WorkbenchRowImage> workbenchRowImages;
     protected Workbench              workbench;
+    protected Byte                   uploadStatus;
     
     // XXX PREF
     protected int                      maxWidth  = 500;
@@ -116,6 +122,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         rowNumber          = null;
         workbenchDataItems = new HashSet<WorkbenchDataItem>();
         workbenchRowImages = new HashSet<WorkbenchRowImage>();
+        uploadStatus       = UPLD_NONE;
     }
     // End Initializer
     
@@ -807,6 +814,23 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
     public void setXML(String xml)
     {
         setTmpBgResults(xml);
+    }
+
+    /**
+     * @return
+     */
+    @Column(name = "UploadStatus", unique = false, nullable = true, insertable = true, updatable = true)
+    public Byte getUploadStatus()
+    {
+        return uploadStatus;
+    }
+
+    /**
+     * @param uploadStatus
+     */
+    public void setUploadStatus(Byte uploadStatus)
+    {
+        this.uploadStatus = uploadStatus;
     }
 
 }

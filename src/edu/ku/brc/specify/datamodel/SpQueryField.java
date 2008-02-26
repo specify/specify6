@@ -104,6 +104,15 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
     
     protected String       tableList;
     
+    /**
+     * The tableId of the table that contains the database field represented by this object.
+     */
+    protected Integer      contextTableIdent; 
+    /**
+     * Unique column name among query's other fields.
+     */
+    protected String       columnAlias;
+    
     protected SpQuery      query;
     
     // Transient
@@ -345,6 +354,8 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
         sortType       = null;
         query          = null;
         tableList      = null;
+        columnAlias    = null;
+        contextTableIdent = null;
     }
 
     @Transient
@@ -465,6 +476,40 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
     public int compareTo(SpQueryField o)
     {
         return position.compareTo(o.position);
+    }
+
+    /**
+     * @return the contextTableId
+     */
+    @Column(name = "ContextTableIdent", unique = false, nullable = true, insertable = true, updatable = true)
+    public Integer getContextTableIdent()
+    {
+        return contextTableIdent;
+    }
+
+    /**
+     * @param contextTableId the contextTableId to set
+     */
+    public void setContextTableIdent(Integer contextTableIdent)
+    {
+        this.contextTableIdent = contextTableIdent;
+    }
+
+    /**
+     * @return the columnAlias
+     */
+    @Column(name = "ColumnAlias", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    public String getColumnAlias()
+    {
+        return columnAlias;
+    }
+
+    /**
+     * @param columnAlias the columnAlias to set
+     */
+    public void setColumnAlias(String columnAlias)
+    {
+        this.columnAlias = columnAlias;
     }
     
     
