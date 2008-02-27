@@ -6,17 +6,21 @@
  */
 package edu.ku.brc.specify.tools.IReportSpecify;
 
+import it.businesslogic.ireport.JRField;
+import it.businesslogic.ireport.Report;
 import it.businesslogic.ireport.ReportReader;
 import it.businesslogic.ireport.ReportWriter;
 import it.businesslogic.ireport.Style;
 import it.businesslogic.ireport.gui.JReportFrame;
 import it.businesslogic.ireport.gui.MainFrame;
+import it.businesslogic.ireport.gui.ReportPropertiesFrame;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -27,6 +31,8 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.datamodel.SpQuery;
+import edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceConnection;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.UIRegistry;
 
@@ -54,8 +60,49 @@ public class MainFrameSpecify extends MainFrame
         super(args);
         setNoExit(true);
         setEmbeddedIreport(true);
+        addSpQBConns();
     }
 
+    protected void addSpQBConns()
+    {
+        for (String qName : getQueryNames())
+        {
+            addSpQBConn(qName);
+        }
+    }
+    
+    protected List<String> getQueryNames()
+    {
+        List<String> result = new LinkedList<String>();
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+            List<SpQuery> qs = session.getDataList(SpQuery.class);
+            for (SpQuery q : qs)
+            {
+                result.add(q.getName());
+            }
+            return result;
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        finally
+        {
+            session.close();
+        }
+    }
+    
+    @SuppressWarnings("unchecked")  //iReport doesn't parameterize generics.
+    protected void addSpQBConn(final String qName)
+    {
+        QBJRDataSourceConnection newq = new QBJRDataSourceConnection(qName);
+        newq.loadProperties(null);
+        this.getConnections().add(newq);
+    }
+    
     /**
      * @return default map for specify iReport implementation
      */
@@ -105,6 +152,10 @@ public class MainFrameSpecify extends MainFrame
             {
                 session.close();
             }
+        }
+        else
+        {
+            super.save(jrf);
         }
     }
 
@@ -269,9 +320,88 @@ public class MainFrameSpecify extends MainFrame
         }
     }
 
+    private ReportSpecify makeNewReport(final String connectionName)
+    {
+        ReportSpecify report = new ReportSpecify(null);
+        QBJRDataSourceConnection conn = new QBJRDataSourceConnection(connectionName);    
+        conn.loadProperties(null);
+        for (int f=0; f < conn.getFields(); f++)
+        {
+            QBJRDataSourceConnection.QBJRFieldDef fDef = conn.getField(f);
+            report.addField(new JRField(fDef.getFldName(), fDef.getFldClass().getName()));
+        }
+        return report;
+    }
+    
     private InputStream getXML(final AppResourceIFace rep)
     {
         return new ByteArrayInputStream(rep.getDataAsString().getBytes());
+    }
+
+    /* (non-Javadoc)
+     * @see it.businesslogic.ireport.gui.MainFrame#newWizard()
+     */
+    @Override
+    public Report newWizard()
+    {
+        ChooseFromListDlg<String> dlg = new ChooseFromListDlg<String>(this, UIRegistry.getResourceString("REP_CHOOSE_SP_QUERY"), getQueryNames());
+        dlg.setVisible(true);
+        if (dlg.isCancelled())
+        {
+            return null;
+        }
+        Report result = makeNewReport(dlg.getSelectedObject());
+        dlg.dispose();
+        if (result != null) {
+            if (getReportProperties(result))
+            {
+                openNewReportWindow(result);
+                return result;
+            }
+            return null;
+        }
+        return result;
+    }
+    
+    protected boolean getReportProperties(final Report report)
+    {
+        ReportPropertiesFrame rpf = new ReportPropertiesFrame(this,true);
+        rpf.setModal(true);
+        // find the first name free...
+        String name = getFirstNameFree();
+        rpf.setReportName( name);
+        rpf.setVisible(true);
+        if (rpf.getDialogResult() == javax.swing.JOptionPane.OK_OPTION) {
+            // The user has clicked on OK...
+            // Storing in a new report the report characteristics.
+            report.setUsingMultiLineExpressions(false); //this.isUsingMultiLineExpressions());
+            report.setWidth(rpf.getReportWidth());
+            report.setHeight(rpf.getReportHeight());
+            report.setOrientation(rpf.getOrientation());
+            report.setName(rpf.getReportName());
+            report.setTopMargin(rpf.getTopMargin());
+            report.setLeftMargin(rpf.getLeftMargin());
+            report.setRightMargin(rpf.getRightMargin());
+            report.setBottomMargin(rpf.getBottomMargin());
+            report.setColumnCount(rpf.getColumns());
+            report.setColumnWidth(rpf.getColumnsWidth());
+            report.setColumnSpacing(rpf.getColumnsSpacing());
+            report.setIsSummaryNewPage(rpf.isSummaryOnNewPage());
+            report.setIsTitleNewPage(rpf.isTitleOnNewPage());
+            report.setWhenNoDataType(rpf.getWhenNoDataType());
+            report.setScriptletClass(rpf.getScriptletClass());
+            report.setEncoding(rpf.getXmlEncoding());
+            report.setPrintOrder(rpf.getPrintOrder());
+            report.setReportFormat(rpf.getReportFormat());
+            report.setFloatColumnFooter(rpf.isFloatColumnFooter());
+            report.setResourceBundleBaseName( rpf.getResourceBundleBaseName() );
+            report.setWhenResourceMissingType( rpf.getWhenResourceMissingType());
+            report.setIgnorePagination(rpf.isIgnorePagination());
+            report.setFormatFactoryClass(rpf.getFormatFactoryClass());
+            report.setLanguage( rpf.getLanguage() );
+            return true;
+        }
+        return false;
     }
 
 }

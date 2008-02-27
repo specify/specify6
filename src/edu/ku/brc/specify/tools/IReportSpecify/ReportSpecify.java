@@ -25,7 +25,14 @@ public class ReportSpecify extends Report
     public ReportSpecify(final AppResourceIFace res)
     {
         super();
-        setAppResourceId(res.getName());
+        if (res != null)
+        {
+            setAppResourceId(res.getName());
+        }
+        else
+        {
+            setAppResourceId(null);
+        }
     }
 
     public void setAppResourceId(final String id)
@@ -40,6 +47,6 @@ public class ReportSpecify extends Report
 
     public boolean resourceMatch(final AppResourceIFace res)
     {
-        return res.getName() == getSpAppResourceId();
+        return res.getName().equals(getSpAppResourceId());
     }
 }
