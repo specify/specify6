@@ -219,13 +219,13 @@
                     <cell type="separator" label="Interactions" colspan="4"/>
                 </row>
                 <row>
-                    <cell type="field" id="1" name="Interactions.Using.Interactions" uitype="checkbox" label="Using Interactions"/>
+                    <cell type="field" id="1" name="Interactions.Using.Interactions" uitype="checkbox" label="Using Interactions" ignore="true"/>
                 </row>
                 <row>
-                    <cell type="field" id="2" name="Interactions.Doing.Gifts" uitype="checkbox" label="Using Gifts"/>
+                    <cell type="field" id="2" name="Interactions.Doing.Gifts" uitype="checkbox" label="Using Gifts" ignore="true"/>
                 </row>
                 <row>
-                    <cell type="field" id="3" name="Interactions.Doing.Exchanges" uitype="checkbox" label="Using Exchanges"/>
+                    <cell type="field" id="3" name="Interactions.Doing.Exchanges" uitype="checkbox" label="Using Exchanges" ignore="true"/>
                 </row>
             </rows>
             

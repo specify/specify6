@@ -36,7 +36,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
@@ -108,10 +107,10 @@ import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.CollectingEventAttachment;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttachment;
-import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.ConservDescriptionAttachment;
 import edu.ku.brc.specify.datamodel.ConservEventAttachment;
 import edu.ku.brc.specify.datamodel.DNASequenceAttachment;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.FieldNotebookAttachment;
 import edu.ku.brc.specify.datamodel.FieldNotebookPageAttachment;
 import edu.ku.brc.specify.datamodel.FieldNotebookPageSetAttachment;
@@ -147,7 +146,6 @@ import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.ResultSetController;
-import edu.ku.brc.ui.forms.SubViewBtn;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.ui.forms.formatters.UIFormatterDlg;
 import edu.ku.brc.ui.forms.persist.ViewLoader;
@@ -201,7 +199,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private String               appName             = "Specify";
     private String               appVersion          = "6.0";
 
-    private String               appBuildVersion     = "200802251530 (SVN: 3460)";
+    private String               appBuildVersion     = "200802261500 (SVN: 3462)";
     
     protected static CacheManager cacheManager        = new CacheManager();
 
@@ -272,10 +270,16 @@ public class Specify extends JPanel implements DatabaseLoginListener
         remotePrefs.getBoolean("google.earth.useorigheaders", true, true);
         remotePrefs.getInt("SubPaneMgr.MaxPanes", 12, true);
         
-        remotePrefs.getBoolean("Interactions.Using.Interactions", true, true);
-        remotePrefs.getBoolean("Interactions.Doing.Gifts", true, true);
-        remotePrefs.getBoolean("Interactions.Doing.Exchanges", Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.plant), true);
-        remotePrefs.getBoolean("Agent.Use.Variants", Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.plant), true);
+        String ds = Discipline.getCurrentDiscipline().getDiscipline();
+        remotePrefs.getBoolean("Interactions.Using.Interactions."+ds, true, true);
+        remotePrefs.getBoolean("Interactions.Doing.Gifts."+ds, true, true);
+        remotePrefs.getBoolean("Interactions.Doing.Exchanges."+ds, Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.botany), true);
+        remotePrefs.getBoolean("Agent.Use.Variants."+ds, Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.botany), true);
+        
+        try
+        {
+            remotePrefs.flush();
+        } catch (BackingStoreException ex) {}
     }
     
     /**
@@ -1408,6 +1412,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 SubPaneMgr.getInstance().closeAll();
             }
             
+            preInitializePrefs();
+            
             initStartUpPanels(databaseNameArg, userNameArg);
             
             if (changeCollectionMenuItem != null)
@@ -1605,8 +1611,6 @@ public class Specify extends JPanel implements DatabaseLoginListener
         statusField.setSectionText(0, userName);
         
         AppPreferences.setConnectedToDB(true);
-        
-        preInitializePrefs();
     }
     
     /**

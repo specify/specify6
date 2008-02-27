@@ -209,6 +209,7 @@ import edu.ku.brc.util.thumbnails.Thumbnailer;
 /**
  * 
  * @code_status Beta
+ * 
  * @author jstewart
  */
 public class BuildSampleDatabase
@@ -612,7 +613,7 @@ public class BuildSampleDatabase
         
         lithoStratTreeDef.setRemarks("A simple super, group, formation, member, bed Litho Stratigraphy tree");
         
-        Discipline discipline = createDiscipline(division, "Plant", disciplineType.getName(), 
+        Discipline discipline = createDiscipline(division, "Botany", disciplineType.getName(), 
                                                              dataType, taxonTreeDef, geoTreeDef, gtpTreeDef, 
                                                              locTreeDef, lithoStratTreeDef);
         Discipline.setCurrentDiscipline(discipline);
@@ -661,7 +662,7 @@ public class BuildSampleDatabase
         // Create Collection
         ////////////////////////////////
         log.info("Creating a Collection");
-        Collection collection = createCollection("KUBOT", "Plant", cns, discipline);
+        Collection collection = createCollection("KUBOT", "Botany", cns, discipline);
         persist(collection);
         
         Collection.setCurrentCollection(collection);
@@ -2543,7 +2544,7 @@ public class BuildSampleDatabase
         
         if (doExtraCollections)
         {
-            createSingleBotanyCollection(DisciplineType.getByTitle("Fish"), institution, user);
+            createSingleBotanyCollection(DisciplineType.getByTitle("Botany"), institution, user);
         }
         
         // done

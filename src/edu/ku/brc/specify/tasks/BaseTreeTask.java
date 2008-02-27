@@ -48,11 +48,13 @@ import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
+import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
@@ -157,6 +159,11 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     
     protected abstract D getCurrentTreeDef();
     
+    /**
+     * Creates an ActionListener for Editing the tree.
+     * @param isEditMode whether it is in edit mode
+     * @return the AL
+     */
     protected ActionListener createALForTreeEditing(final boolean isEditMode)
     {
         return new ActionListener()
@@ -203,6 +210,29 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                 }
             }
         };
+    }
+    
+    /**
+     * Returns whether the tree is on by default for a discipline.
+     * @return whether the tree is on by default for a discipline.
+     */
+    protected boolean isTreeOnByDefault()
+    {
+        return true;
+    }
+    
+    /**
+     * Enables / Disables the menus depending on the discipline.
+     */
+    protected void adjustMenus()
+    {
+        String clsName    = treeDefClass.getSimpleName();
+        String discipline = Discipline.getCurrentDiscipline().getDiscipline();
+        
+        String prefName = "Trees.Menu." + discipline + "." + clsName;
+        
+        boolean isMenuEnabled = AppPreferences.getRemote().getBoolean(prefName, isTreeOnByDefault(), true);
+        subMenu.setEnabled(isMenuEnabled);
     }
 	
 	/**
@@ -286,6 +316,8 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         }
         subMenu.add(editDefMenuItem);
 
+        adjustMenus();
+        
         return menus;
 	}
     
@@ -321,6 +353,8 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
 
     /**
      * Opens a {@link SubPaneIFace} for viewing/editing the current {@link TreeDefIface} object.
+     * @param isEditMode whether it is in edit mode or not
+     * @return the editor
      */
     @SuppressWarnings("unchecked")
     protected TreeDefinitionEditor<T,D,I> createDefEditor()
@@ -328,10 +362,15 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         DataProviderSessionIFace session = null;
         try
         {
+            // XXX SECURITY
+            boolean canEditTreeDef = true;
+
             session = DataProviderFactory.getInstance().createSession();
-            D treeDef = (D)session.load(currentDef.getClass(), currentDef.getTreeDefId());
+            
+            D      treeDef = (D)session.load(currentDef.getClass(), currentDef.getTreeDefId());
             String tabName = treeDef.getName();
-    	    TreeDefinitionEditor<T,D,I> defEditor = new TreeDefinitionEditor<T,D,I>(treeDef,tabName,this);
+    	    TreeDefinitionEditor<T,D,I> defEditor = new TreeDefinitionEditor<T,D,I>(treeDef, tabName, this, canEditTreeDef);
+    	    
             return defEditor;
             
         } catch (Exception ex)
@@ -358,10 +397,10 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
 	    if (visibleSubPane instanceof TreeTableViewer)
 	    {
             TreeDefinitionEditor<T,D,I> defEditor = createDefEditor();
+            
             SubPaneMgr.getInstance().replacePane(visibleSubPane, defEditor);
             currentDefInUse = true;
             visibleSubPane = defEditor;
-	        return;
 	    }
         else if (visibleSubPane instanceof TreeDefinitionEditor)
         {
@@ -372,9 +411,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
             SubPaneMgr.getInstance().replacePane(visibleSubPane, treeViewer);
             currentDefInUse = true;
             visibleSubPane = treeViewer;
-            return;
         }
-	    return;
 	}
 
 	/* (non-Javadoc)
@@ -444,6 +481,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         if (cmdAction.isType(APP_CMD_TYPE) && cmdAction.isAction(APP_RESTART_ACT))
         {
             currentDef = getCurrentTreeDef();
+            adjustMenus();
         }
     }
 }

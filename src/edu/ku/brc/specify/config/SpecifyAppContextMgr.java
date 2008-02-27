@@ -115,7 +115,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     protected AppResourceMgr backStopAppResMgr     = null;
     protected Agent          currentUserAgent      = null;
 
-    protected boolean        debug                 = true;
+    protected boolean        debug                 = false;
     protected long           lastLoadTime          = 0;
     protected long           lastLoadTimeBS        = 0;
     protected UnhandledExceptionDialog dlg         = null;
@@ -493,7 +493,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.AppContextMgr#wa(java.lang.String, java.lang.String, boolean)
+     * @see edu.ku.brc.af.core.AppContextMgr#setContext(java.lang.String, java.lang.String, boolean)
      */
     public CONTEXT_STATUS setContext(final String  databaseName,
                                      final String  userName,
@@ -568,16 +568,18 @@ public class SpecifyAppContextMgr extends AppContextMgr
     
             List<?> appResDefList = session.getDataList( "From SpAppResourceDir where specifyUserId = "+user.getSpecifyUserId());
     
-            Discipline ct = collection.getDiscipline();
-            ct.getDeterminationStatuss().size(); // make sure they are loaded
-            Discipline.setCurrentDiscipline(ct);
+            Discipline dsp = session.getData(Discipline.class, "disciplineId", collection.getDiscipline().getId(), DataProviderSessionIFace.CompareType.Equals) ;
+            dsp.getDeterminationStatuss().size(); // make sure they are loaded
+            Discipline.setCurrentDiscipline(dsp);
         
                 
-            if (debug) log.debug("Adding AppResourceDefs from Collection and ColObjDefs ColObjDef["+ct.getName()+"]");
+            if (debug) log.debug("Adding AppResourceDefs from Collection and ColObjDefs ColObjDef["+dsp.getName()+"]");
             
-            dispHash.put(ct.getDiscipline(), ct.getDiscipline());
+            System.out.println(dsp.getDiscipline());
             
-            SpAppResourceDir appResourceDir = find(appResDefList, user, collection, ct);
+            dispHash.put(dsp.getDiscipline(), dsp.getDiscipline());
+            
+            SpAppResourceDir appResourceDir = find(appResDefList, user, collection, dsp);
             if (appResourceDir != null)
             {
                 if (debug) log.debug("Adding1 "+getSpAppResDefAsString(appResourceDir));
@@ -641,7 +643,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     appResDef.setSpecifyUser(user);
                     
                     appResDef.setCollection(collection);
-                    appResDef.setDiscipline(ct);
+                    appResDef.setDiscipline(dsp);
     
                     if (debug) log.debug("Adding3 "+getSpAppResDefAsString(appResDef));
                     spAppResourceList.add(appResDef);

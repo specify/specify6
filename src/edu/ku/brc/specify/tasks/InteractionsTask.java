@@ -127,9 +127,9 @@ public class InteractionsTask extends BaseTask
     public static final DataFlavorTableExt EXCHGIN_FLAVOR      = new DataFlavorTableExt(ExchangeIn.class, "ExchangeIn");
     public static final DataFlavorTableExt EXCHGOUT_FLAVOR     = new DataFlavorTableExt(ExchangeOut.class, "ExchangeOut");
     
-    public static final  String   IS_USING_INTERACTIONS_PREFNAME = "Interactions.Using.Interactions";
-    public static final  String   IS_DOING_GIFT_PREFNAME = "Interactions.Doing.Gifts";
-    public static final  String   IS_DOING_EXCH_PREFNAME = "Interactions.Doing.Exchanges";
+    public static final  String   IS_USING_INTERACTIONS_PREFNAME = "Interactions.Using.Interactions.";
+    public static final  String   IS_DOING_GIFT_PREFNAME = "Interactions.Doing.Gifts.";
+    public static final  String   IS_DOING_EXCH_PREFNAME = "Interactions.Doing.Exchanges.";
 
     protected static final String InfoRequestName      = "InfoRequest";
     protected static final String NEW_LOAN             = "NEW_LOAN";
@@ -185,19 +185,30 @@ public class InteractionsTask extends BaseTask
         CommandDispatcher.register(PreferencesDlg.PREFERENCES, this);
     }
     
+    /**
+     * Retrieves the prefs that we cache.
+     */
+    protected void setUpCachedPrefs()
+    {
+        AppPreferences remotePrefs = AppPreferences.getRemote();
+        String ds = Discipline.getCurrentDiscipline().getDiscipline();
+        isUsingInteractions = remotePrefs.getBoolean(IS_USING_INTERACTIONS_PREFNAME+ds, true);
+        isDoingGifts        = remotePrefs.getBoolean(IS_DOING_GIFT_PREFNAME+ds, true);
+        isDoingExchanges    = remotePrefs.getBoolean(IS_DOING_EXCH_PREFNAME+ds, Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.botany));
+  
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.Taskable#initialize()
      */
     @Override
     public void initialize()
     {
-        isUsingInteractions = AppPreferences.getRemote().getBoolean(IS_USING_INTERACTIONS_PREFNAME, false);
-        isDoingGifts        = AppPreferences.getRemote().getBoolean(IS_DOING_GIFT_PREFNAME, false);
-        isDoingExchanges    = AppPreferences.getRemote().getBoolean(IS_DOING_EXCH_PREFNAME, false);
-        
         if (!isInitialized)
         {
             super.initialize(); // sets isInitialized to false
+            
+            setUpCachedPrefs();
             
             extendedNavBoxes.clear();
             invoiceList.clear();
@@ -435,7 +446,8 @@ public class InteractionsTask extends BaseTask
         AppPreferences remotePrefs = AppPreferences.getRemote();
         if (remotePrefs == AppPreferences.getRemote())
         {
-            isUsingInteractions = remotePrefs.getBoolean(IS_USING_INTERACTIONS_PREFNAME, true);
+            String ds = Discipline.getCurrentDiscipline().getDiscipline();
+            isUsingInteractions = remotePrefs.getBoolean(IS_USING_INTERACTIONS_PREFNAME+ds, true);
         }
 
         if (isUsingInteractions)
@@ -1169,11 +1181,15 @@ public class InteractionsTask extends BaseTask
         AppPreferences remotePrefs = (AppPreferences)cmdAction.getData();
         if (remotePrefs == AppPreferences.getRemote())
         {
-            isUsingInteractions = remotePrefs.getBoolean(IS_USING_INTERACTIONS_PREFNAME, true);
+            String ds = Discipline.getCurrentDiscipline().getDiscipline();
+            isUsingInteractions = remotePrefs.getBoolean(IS_USING_INTERACTIONS_PREFNAME+ds, true);
             
+            boolean isDoingGiftsNew        = remotePrefs.getBoolean(IS_DOING_GIFT_PREFNAME+ds, true);
+            boolean isDoingExchangesNew    = remotePrefs.getBoolean(IS_DOING_EXCH_PREFNAME+ds, Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.botany));            
+            
+            JToolBar toolBar = (JToolBar)UIRegistry.get(UIRegistry.TOOLBAR);
             if (!isUsingInteractions)
             {
-                JToolBar toolBar = (JToolBar)UIRegistry.get(UIRegistry.TOOLBAR);
                 indexOfTBB = toolBar.getComponentIndex(toolBarBtn);
                 TaskMgr.removeToolbarBtn(toolBarBtn);
                 toolBar.validate();
@@ -1181,20 +1197,21 @@ public class InteractionsTask extends BaseTask
                 
             } else
             {
-                int inx = indexOfTBB != -1 ? indexOfTBB : 4;
-                TaskMgr.addToolbarBtn(toolBarBtn, inx);
-                
-                JToolBar toolBar = (JToolBar)UIRegistry.get(UIRegistry.TOOLBAR);
-                toolBar.validate();
-                toolBar.repaint();
+                int curInx = toolBar.getComponentIndex(toolBarBtn);
+                if (curInx == -1)
+                {
+                    int inx = indexOfTBB != -1 ? indexOfTBB : 4;
+                    TaskMgr.addToolbarBtn(toolBarBtn, inx);
+                    toolBar.validate();
+                    toolBar.repaint();
+                }
             }
             
-            boolean isDoingGifts = remotePrefs.getBoolean(IS_DOING_GIFT_PREFNAME, true);
-            if (this.isDoingGifts && !isDoingGifts)
+            if (this.isDoingGifts && !isDoingGiftsNew)
             {
                 actionsNavBox.remove(giftsNavBtn);
 
-            } else if (!this.isDoingGifts && isDoingGifts)
+            } else if (!this.isDoingGifts && isDoingGiftsNew)
             {
                 createGiftNavBtn();
                 actionsNavBox.remove(giftsNavBtn);
@@ -1207,12 +1224,11 @@ public class InteractionsTask extends BaseTask
                 hasGifts = true;
             }
             
-            boolean isDoingExchs = remotePrefs.getBoolean(IS_DOING_EXCH_PREFNAME, Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.plant));
-            if (this.isDoingExchanges && !isDoingExchs)
+            if (this.isDoingExchanges && !isDoingExchangesNew)
             {
                 actionsNavBox.remove(exchgNavBtn);
 
-            } else if (!this.isDoingExchanges && isDoingExchs)
+            } else if (!this.isDoingExchanges && isDoingExchangesNew)
             {
                 createExchangeNavBtn();
                 actionsNavBox.remove(exchgNavBtn);
@@ -1225,8 +1241,8 @@ public class InteractionsTask extends BaseTask
             actionsNavBox.doLayout();
             actionsNavBox.repaint();
             
-            this.isDoingGifts     = isDoingGifts;
-            this.isDoingExchanges = isDoingExchs;
+            isDoingExchanges = isDoingExchangesNew;
+            isDoingGifts     = isDoingGiftsNew;
         }
     }
     
@@ -1427,6 +1443,12 @@ public class InteractionsTask extends BaseTask
         } else if (cmdAction.isType(RecordSetTask.RECORD_SET))
         {
             processRecordSetCommands(cmdAction);
+            
+        } else if (cmdAction.isType(APP_CMD_TYPE) && cmdAction.isAction(APP_RESTART_ACT))
+        {
+            //setUpCachedPrefs();
+            // Now simulate the prefs changing to adjust the UI
+            prefsChanged(new CommandAction(PreferencesDlg.PREFERENCES, "Change", AppPreferences.getRemote()));
         }
     }
 }

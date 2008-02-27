@@ -213,11 +213,11 @@
     <icon name="taxontreedef"              alias="taxon"/>
     <icon name="geographytreedef"          alias="geography"/>
     <icon name="geologictimePeriodtreedef" alias="geologictimeperiod"/>
-    <icon name="locationltreedef"          alias="location"/>
+    <icon name="storagetreedef"            alias="storage"/>
     
     <!-- Tree Task icons -->
     <icon name="GeographyTree"             alias="geography"/>
-    <icon name="StorageTree"               alias="location"/>
+    <icon name="StorageTree"               alias="storage"/>
     <icon name="GeoTimePeriodTree"         alias="geologictimeperiod"/>
     <icon name="LithoStratTree"            alias="lithostrat"/>
     

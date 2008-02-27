@@ -317,14 +317,14 @@ public class AppPreferences
      * @param doDefVal set the default value if it isn't there
      * @return the value as a Integer.
      */
-    public Integer getInt(final String name, final Integer defaultValue, boolean doDefVal)
+    public Integer getInt(final String name, final Integer defaultValue, final boolean doDefVal)
     {
         String val = get(name, null);
-        if (val == null && doDefVal)
+        if (val == null && doDefVal && defaultValue != null)
         {
             putInt(name, defaultValue);
         }
-        return val == null ? defaultValue : Integer.valueOf(val);
+        return val == null ? (defaultValue == null ? null : defaultValue) : Integer.valueOf(val);
     }
     
     /**
@@ -366,14 +366,14 @@ public class AppPreferences
      * @param doDefVal set the default value if it isn't there
      * @return the value as a String.
      */
-    public Boolean getBoolean(final String name, final Boolean defaultValue, boolean doDefVal)
+    public Boolean getBoolean(final String name, final Boolean defaultValue, final boolean doDefVal)
     {
-        String val = get(name, (defaultValue == null ? null : Boolean.toString(defaultValue)));
-        if (val == null && doDefVal)
+        String val = get(name, null);
+        if (val == null && doDefVal && defaultValue != null)
         {
             putBoolean(name, defaultValue);
         }
-        return val == null ? null : Boolean.valueOf(val);
+        return val == null ? (defaultValue == null ? null : defaultValue) : Boolean.valueOf(val);
     }
 
 
@@ -449,7 +449,7 @@ public class AppPreferences
      * @param doDefVal set the default value if it isn't there
      * @return the value as a String.
      */
-    public Color getColor(final String name, final Color defaultColor, boolean doDefVal)
+    public Color getColor(final String name, final Color defaultColor, final boolean doDefVal)
     {
         String colorStr = get(name, null);
         if (StringUtils.isNotEmpty(colorStr))
@@ -614,7 +614,7 @@ public class AppPreferences
     }
 
     /**
-     * Loads the preferences fromeither just the local file, or from the remote and local "locations" and then synchronizes them, 
+     * Loads the preferences from either just the local file, or from the remote and local "locations" and then synchronizes them, 
      * meaning both the local and the remote will have the same values where the newer values are copied to the older one.
      * @param dirPath the directory path to where the prefs file will be created.
      * @return return the AppPreferences that was loaded.

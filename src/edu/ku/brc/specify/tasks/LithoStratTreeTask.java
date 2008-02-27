@@ -10,6 +10,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import javax.persistence.Transient;
 
+import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.LithoStrat;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
@@ -55,5 +56,15 @@ public class LithoStratTreeTask extends BaseTreeTask<LithoStrat,LithoStratTreeDe
     protected LithoStratTreeDef getCurrentTreeDef()
     {
         return Discipline.getCurrentDiscipline().getLithoStratTreeDef();
+    }
+    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.BaseTreeTask#isTreeOnByDefault()
+     */
+    @Override
+    protected boolean isTreeOnByDefault()
+    {
+        return Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.paleo);
     }
 }

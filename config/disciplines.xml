@@ -9,11 +9,12 @@
     -->
     
     <discipline name="fish"         title="Fish"         type="0"/>
+    <discipline name="herp"         title="Herps"        type="0"/>
     <discipline name="paleo"        title="Paleo"        type="0"/>
-    <discipline name="bird"         title="Bird"         type="0"/>
+    <discipline name="birds"        title="Birda"        type="0"/>
     <discipline name="mammal"       title="Mammal"       type="0"/>
     <discipline name="insect"       title="Insect"       type="0"/>
-    <discipline name="plant"        title="Plant"        type="0"/>
+    <discipline name="botany"       title="Botany"       type="0"/>
     <discipline name="invertebrate" title="Invertebrate" type="0"/>
     <discipline name="minerals"     title="Minerals"     type="4"/>
     <discipline name="anthropology" title="Anthropology" type="3"/>

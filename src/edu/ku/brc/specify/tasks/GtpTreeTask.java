@@ -10,6 +10,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import javax.persistence.Transient;
 
+import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
@@ -55,5 +56,14 @@ public class GtpTreeTask extends BaseTreeTask<GeologicTimePeriod,GeologicTimePer
     protected GeologicTimePeriodTreeDef getCurrentTreeDef()
     {
         return Discipline.getCurrentDiscipline().getGeologicTimePeriodTreeDef();
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.BaseTreeTask#isTreeOnByDefault()
+     */
+    @Override
+    protected boolean isTreeOnByDefault()
+    {
+        return Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.paleo);
     }
 }

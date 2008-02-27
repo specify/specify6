@@ -145,7 +145,7 @@ public class SystemPrefs extends GenericPrefsPanel
     @Override
     public String getHelpContext()
     {
-        return "PrefsCache";
+        return "PrefsSystem";
     }
     
     

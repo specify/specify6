@@ -26,6 +26,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -354,6 +355,14 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
             return;
         }
 
+        // This is a little weak and chessey, but it gets the job done.
+        // Becase both the Tree and Definition want/need to share Business Rules.
+        String viewName = formViewObj.getView().getName();
+        if (StringUtils.contains(viewName, "TreeDef"))
+        {
+            return;
+        }
+        
         final T nodeInForm = (T)formViewObj.getDataObj();
 
         GetSetValueIFace  parentField  = (GetSetValueIFace)formViewObj.getControlByName("parent");
