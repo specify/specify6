@@ -95,6 +95,8 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
     protected String       fieldName;
     protected Boolean      isNot;
     protected Boolean      isDisplay;
+    protected Boolean      isPrompt;  //whether or not criteria for this field is requested when it's query is run
+                                      //outside the querybuilder context.
     
     protected Byte         operStart;
     protected Byte         operEnd;
@@ -164,6 +166,14 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
     public void setIsDisplay(Boolean isDisplay)
     {
         this.isDisplay = isDisplay;
+    }
+
+    /**
+     * @param isPrompt the isPrompt to set
+     */
+    public void setIsPrompt(Boolean isPrompt)
+    {
+        this.isPrompt = isPrompt;
     }
 
     /**
@@ -271,6 +281,15 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
     }
 
     /**
+     * @return the isPrompt
+     */
+    @Column(name = "IsPrompt", unique = false, nullable = false, insertable = true, updatable = true)
+    public Boolean getIsPrompt()
+    {
+        return isPrompt;
+    }
+
+    /**
      * @return the operStart
      */
     @Column(name = "OperStart", unique = false, nullable = false, insertable = true, updatable = true)
@@ -347,6 +366,7 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
         fieldName      = null;
         isNot          = null;
         isDisplay      = null;
+        isPrompt       = true;
         operStart      = null;
         operEnd        = null;
         startValue     = null;

@@ -44,6 +44,7 @@ public class SpQuery extends DataModelObjBase
     protected String            contextName;
     protected Short             contextTableId;
     protected String            sqlStr;
+    protected Boolean           isFavorite; //whether or not this query goes on the 'short list'
     protected boolean           named = true;
     
     protected Set<SpQueryField> fields;
@@ -76,6 +77,7 @@ public class SpQuery extends DataModelObjBase
         fields           = new HashSet<SpQueryField>();
         reports          = new HashSet<SpReport>();
         specifyUser      = null;
+        isFavorite       = null;
     }
     
     
@@ -273,4 +275,23 @@ public class SpQuery extends DataModelObjBase
     {
         this.named = named;
     }
+
+    /**
+     * @return the isFavorite
+     */
+    @Column(name = "IsFavorite", unique = false, nullable = false, insertable = true, updatable = true)
+    public Boolean getIsFavorite()
+    {
+        return isFavorite;
+    }
+
+    /**
+     * @param isFavorite the isFavorite to set
+     */
+    public void setIsFavorite(Boolean isFavorite)
+    {
+        this.isFavorite = isFavorite;
+    }
+    
+    
 }

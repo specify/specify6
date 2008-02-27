@@ -47,6 +47,15 @@ import org.hibernate.annotations.Index;
     })
 public class SpReport extends DataModelObjBase
 {
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#toString()
+     */
+    @Override
+    public String toString()
+    {
+        return getName();
+    }
+
     protected Integer           spReportId;
     protected String            name;
     protected String            remarks;
