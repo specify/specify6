@@ -279,7 +279,7 @@ public class SpQuery extends DataModelObjBase
     /**
      * @return the isFavorite
      */
-    @Column(name = "IsFavorite", unique = false, nullable = false, insertable = true, updatable = true)
+    @Column(name = "IsFavorite", unique = false, nullable = true, insertable = true, updatable = true)
     public Boolean getIsFavorite()
     {
         return isFavorite;

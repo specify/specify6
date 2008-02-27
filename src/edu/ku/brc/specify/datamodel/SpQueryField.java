@@ -283,7 +283,7 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
     /**
      * @return the isPrompt
      */
-    @Column(name = "IsPrompt", unique = false, nullable = false, insertable = true, updatable = true)
+    @Column(name = "IsPrompt", unique = false, nullable = true, insertable = true, updatable = true)
     public Boolean getIsPrompt()
     {
         return isPrompt;
