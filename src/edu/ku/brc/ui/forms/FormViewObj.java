@@ -1222,7 +1222,7 @@ public class FormViewObj implements Viewable,
 
     /**
      * Returns whether a field with a given ID is auto-incremented.
-     * @param name the ID of the field
+     * @param devName the ID of the field
      * @return true it is, false it isn't
      */
     public boolean isFieldAutoNumberedById(final String id)

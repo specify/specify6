@@ -58,7 +58,7 @@ public class AddRemoveEditPanel extends JPanel
     {
         if (editAL != null)
         {
-            editBtn = UIHelper.createIconBtn("Edit", addTTKey, editAL);
+            editBtn = UIHelper.createIconBtn("EditIcon", addTTKey, editAL);
         }
         
         if (delAL != null)
@@ -94,6 +94,27 @@ public class AddRemoveEditPanel extends JPanel
         }
     }
 
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#setEnabled(boolean)
+     */
+    public void setEnabled(final boolean enabled)
+    {
+        if (editBtn != null)
+        {
+            editBtn.setEnabled(enabled);
+        }
+        
+        if (delBtn != null)
+        {
+            delBtn.setEnabled(enabled);
+        }
+        
+        if (addBtn != null)
+        {
+            addBtn.setEnabled(enabled);
+        }
+    }
+    
     /**
      * @return the addBtn
      */

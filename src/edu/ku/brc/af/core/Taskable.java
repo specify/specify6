@@ -17,6 +17,7 @@ package edu.ku.brc.af.core;
 import java.util.List;
 
 import javax.swing.ImageIcon;
+import javax.swing.JPopupMenu;
 
 /**
  * Interface for any task in the system, most of the methods are "getters" that
@@ -122,5 +123,10 @@ public interface Taskable
      * @return returns whether it should show the default starter pane when the last SubPane is closed.
      */
     public abstract boolean isShowDefault();
+    
+    /**
+     * @return a popup menu for the left side pane or null.
+     */
+    public abstract JPopupMenu getPopupMenu();
 
 }

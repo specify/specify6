@@ -549,7 +549,7 @@ public class TaskMgr
     
     /**
      * Looks up a plugin's class by name.
-     * @param name the name of the plugin
+     * @param devName the name of the plugin
      * @return the class of the plgin.
      */
     public static Class<?> getUIPluginClassForName(final String pluginName)

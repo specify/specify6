@@ -27,6 +27,7 @@ import java.util.Vector;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
+import javax.swing.JPopupMenu;
 import javax.swing.SwingConstants;
 
 import org.apache.commons.lang.StringUtils;
@@ -1019,6 +1020,15 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     public boolean isSingletonPane()
     {
         return false;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.Taskable#getPopupMenu()
+     */
+    @Override
+    public JPopupMenu getPopupMenu()
+    {
+        return null;
     }
     
     //--------------------------------------------------------------

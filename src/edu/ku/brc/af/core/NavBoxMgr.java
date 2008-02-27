@@ -14,11 +14,15 @@
  */
 package edu.ku.brc.af.core;
 import java.awt.Color;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JSplitPane;
 
 import edu.ku.brc.exceptions.ConfigurationException;
@@ -59,6 +63,39 @@ public class NavBoxMgr extends JPanel
        setBackground(Color.WHITE); // XXX PREF ??
        
        trash = Trash.getInstance();
+       
+       MouseListener mouseListener = new MouseAdapter() 
+       {
+             private boolean showIfPopupTrigger(MouseEvent mouseEvent) 
+             {
+                 Taskable currTask = ContextMgr.getCurrentContext();
+                 if (currTask != null)
+                 {
+                     JPopupMenu popupMenu = currTask.getPopupMenu();
+                     if (popupMenu != null && 
+                         mouseEvent.isPopupTrigger() && 
+                         popupMenu.getComponentCount() > 0) 
+                     {
+                         popupMenu.show(mouseEvent.getComponent(),
+                                 mouseEvent.getX(),
+                                 mouseEvent.getY());
+                         return true;
+                     }
+                 }
+                 return false;
+             }
+             @Override
+             public void mousePressed(MouseEvent mouseEvent) 
+             {
+                 showIfPopupTrigger(mouseEvent);
+             }
+             @Override
+             public void mouseReleased(MouseEvent mouseEvent) 
+             {
+                 showIfPopupTrigger(mouseEvent);
+             }
+       };
+       addMouseListener(mouseListener);
     }
     
     /**

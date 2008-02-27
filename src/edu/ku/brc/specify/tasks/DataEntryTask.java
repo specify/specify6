@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
@@ -70,6 +72,7 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.ToggleButtonChooserPanel;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.DataActionEvent;
 import edu.ku.brc.ui.dnd.GhostActionable;
@@ -410,13 +413,13 @@ public class DataEntryTask extends BaseTask
     }
     
     /**
-     * @param std
+     * @param serviceList
      */
-    protected void buildFormNavBoxes(final Vector<DataEntryView> std)
+    protected void buildFormNavBoxes(final Vector<DataEntryView> serviceList)
     {
         SpecifyAppContextMgr appContextMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
         
-        for (DataEntryView dev : std)
+        for (DataEntryView dev : serviceList)
         {
             boolean isColObj = dev.getName().equals("Collection Object");
             
@@ -511,11 +514,57 @@ public class DataEntryTask extends BaseTask
             {
                 DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
                 dev.setTableInfo(tableInfo);
+                
+                CommandAction cmdAction = new CommandAction(DATA_ENTRY, EDIT_DATA);
+                cmdAction.setProperty("viewset", dev.getViewSet());
+                cmdAction.setProperty("view",    dev.getView());
+                
+                ContextMgr.registerService(dev.getName(), tableInfo.getTableId(), cmdAction, this, DATA_ENTRY, tableInfo.getTitle(), true);
+
             } else
             {
                 log.debug("Couldn't find["+dev.getViewSet()+"]["+dev.getView()+"]");
             }
         }
+    }
+    
+    /**
+     * @return an action listener for Misc Form button.
+     */
+    protected ActionListener createMiscActionListener()
+    {
+        return new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                if (e instanceof DataActionEvent)
+                {
+                    DataActionEvent dataActionEv = (DataActionEvent)e;
+                    
+                    if (dataActionEv.getSourceObj() != null)
+                    {
+                        Object data = dataActionEv.getSourceObj().getData();
+                        if (data instanceof RecordSet)
+                        {
+                            RecordSet rs = (RecordSet)data;
+                            for (DataEntryView deView : miscViews)
+                            {
+                                if (deView.getTableInfo().getTableId() == rs.getDbTableId())
+                                {
+                                    editData(rs, deView.getViewSet(), deView.getView());
+                                    return;
+                                }
+                            }
+                        } else
+                        {
+                            showMiscViewsDlg();
+                        }
+                    }
+                } else
+                {
+                    showMiscViewsDlg();
+                }
+            }
+        };
     }
     
     /**
@@ -546,38 +595,7 @@ public class DataEntryTask extends BaseTask
                     NavBoxItemIFace nbi = NavBox.createBtnWithTT(getResourceString("DET_MISC_FORMS"),
                                                                  name, 
                                                                  getResourceString("DET_CHOOSE_TT"), 
-                                                                 IconManager.IconSize.Std16, new ActionListener() {
-                        public void actionPerformed(ActionEvent e)
-                        {
-                            if (e instanceof DataActionEvent)
-                            {
-                                DataActionEvent dataActionEv = (DataActionEvent)e;
-                                
-                                if (dataActionEv.getSourceObj() != null)
-                                {
-                                    Object data = dataActionEv.getSourceObj().getData();
-                                    if (data instanceof RecordSet)
-                                    {
-                                        RecordSet rs = (RecordSet)data;
-                                        for (DataEntryView deView : miscViews)
-                                        {
-                                            if (deView.getTableInfo().getTableId() == rs.getDbTableId())
-                                            {
-                                                editData(rs, deView.getViewSet(), deView.getView());
-                                                return;
-                                            }
-                                        }
-                                    } else
-                                    {
-                                        showMiscViewsDlg();
-                                    }
-                                }
-                            } else
-                            {
-                                showMiscViewsDlg();
-                            }
-                        }
-                    });
+                                                                 IconManager.IconSize.Std16, createMiscActionListener());
                     
                     NavBoxButton roc = (NavBoxButton)nbi;
                     for (DataEntryView dev : miscViews)
@@ -710,6 +728,33 @@ public class DataEntryTask extends BaseTask
         return this.getClass();
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#getPopupMenu()
+     */
+    @Override
+    public JPopupMenu getPopupMenu()
+    {
+        JPopupMenu popupMenu = new JPopupMenu();
+        JMenuItem mi = new JMenuItem(UIRegistry.getResourceString("Configure"));
+        popupMenu.add(mi);
+        
+        mi.addActionListener(new ActionListener() {
+
+            /* (non-Javadoc)
+             * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+             */
+            @Override
+            public void actionPerformed(ActionEvent e)
+            {
+                DataEntryConfigureDlg dlg = new DataEntryConfigureDlg(DataEntryTask.this);
+                UIHelper.centerAndShow(dlg);
+            }
+            
+        });
+        
+        return popupMenu;
+    }
+
     /**
      * 
      */
@@ -986,7 +1031,9 @@ public class DataEntryTask extends BaseTask
 
     }
     
+    //-------------------------------------------------------------------------
     // Class for accepting RecordSet Drops
+    //-------------------------------------------------------------------------
     class DroppableFormRecordSetAccepter extends FormPane
     {
        
@@ -1025,205 +1072,8 @@ public class DataEntryTask extends BaseTask
      */
     protected static void config(final XStream xstream)
     {
-        xstream.alias("views", DataEntryXML.class);
-        xstream.alias("view",  DataEntryView.class);
-        
-        xstream.useAttributeFor(DataEntryView.class, "name");
-        xstream.useAttributeFor(DataEntryView.class, "viewSet");
-        xstream.useAttributeFor(DataEntryView.class, "view");
-        xstream.useAttributeFor(DataEntryView.class, "iconName");
-        xstream.useAttributeFor(DataEntryView.class, "toolTip");
-        xstream.useAttributeFor(DataEntryView.class, "isSideBar");
-        
-        xstream.omitField(DataEntryView.class, "tableInfo");
-        
-        xstream.aliasAttribute(DataEntryView.class, "viewSet", "viewset");
-        xstream.aliasAttribute(DataEntryView.class, "iconName", "iconname");
-        xstream.aliasAttribute(DataEntryView.class, "toolTip", "tooltip");
-        xstream.aliasAttribute(DataEntryView.class, "isSideBar", "sidebar");
+        DataEntryXML.config(xstream);
+        DataEntryView.config(xstream);
     }
-    
-    class DataEntryXML
-    {
-        protected Vector<DataEntryView> std  = new Vector<DataEntryView>();
-        protected Vector<DataEntryView> misc = new Vector<DataEntryView>();
-        /**
-         * 
-         */
-        public DataEntryXML()
-        {
-            super();
-            // TODO Auto-generated constructor stub
-        }
-        /**
-         * @return the std
-         */
-        public Vector<DataEntryView> getStd()
-        {
-            return std;
-        }
-        /**
-         * @param std the std to set
-         */
-        public void setStd(Vector<DataEntryView> std)
-        {
-            this.std = std;
-        }
-        /**
-         * @return the misc
-         */
-        public Vector<DataEntryView> getMisc()
-        {
-            return misc;
-        }
-        /**
-         * @param misc the misc to set
-         */
-        public void setMisc(Vector<DataEntryView> misc)
-        {
-            this.misc = misc;
-        }
-    }
-    
-    class DataEntryView implements Comparable<DataEntryView>
-    {
-        protected String  name;
-        protected String  viewSet;
-        protected String  view;
-        protected String  iconName;
-        protected String  toolTip;
-        protected boolean isSideBar;
-        
-        protected DBTableInfo tableInfo = null;
-        
-        /**
-         * 
-         */
-        public DataEntryView()
-        {
-            super();
-            // TODO Auto-generated constructor stub
-        }
-        
-        /**
-         * @return the name
-         */
-        public String getName()
-        {
-            return name;
-        }
-        /**
-         * @param name the name to set
-         */
-        public void setName(String name)
-        {
-            this.name = name;
-        }
 
-
-        /**
-         * @return the tableInfo
-         */
-        public DBTableInfo getTableInfo()
-        {
-            return tableInfo;
-        }
-
-        /**
-         * @param tableInfo the tableInfo to set
-         */
-        public void setTableInfo(DBTableInfo tableInfo)
-        {
-            this.tableInfo = tableInfo;
-        }
-
-        /**
-         * @return the viewSet
-         */
-        public String getViewSet()
-        {
-            return viewSet;
-        }
-        /**
-         * @param viewSet the viewSet to set
-         */
-        public void setViewSet(String viewSet)
-        {
-            this.viewSet = viewSet;
-        }
-        /**
-         * @return the view
-         */
-        public String getView()
-        {
-            return view;
-        }
-        /**
-         * @param view the view to set
-         */
-        public void setView(String view)
-        {
-            this.view = view;
-        }
-        /**
-         * @return the iconName
-         */
-        public String getIconName()
-        {
-            return iconName;
-        }
-        /**
-         * @param iconName the iconName to set
-         */
-        public void setIconName(String iconName)
-        {
-            this.iconName = iconName;
-        }
-        /**
-         * @return the toolTip
-         */
-        public String getToolTip()
-        {
-            return toolTip;
-        }
-        /**
-         * @param toolTip the toolTip to set
-         */
-        public void setToolTip(String toolTip)
-        {
-            this.toolTip = toolTip;
-        }
-        /**
-         * @return the isSideBar
-         */
-        public boolean isSideBar()
-        {
-            return isSideBar;
-        }
-        /**
-         * @param isSideBar the isSideBar to set
-         */
-        public void setSideBar(boolean isSideBar)
-        {
-            this.isSideBar = isSideBar;
-        }
-        
-        /* (non-Javadoc)
-         * @see java.lang.Object#toString()
-         */
-        @Override
-        public String toString()
-        {
-            return tableInfo != null ? tableInfo.getTitle() : name;
-        }
-        
-        /* (non-Javadoc)
-         * @see java.lang.Comparable#compareTo(java.lang.Object)
-         */
-        public int compareTo(DataEntryView o)
-        {
-            return toString().compareTo(o.toString());
-        }
-
-    }
 }

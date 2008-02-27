@@ -762,7 +762,7 @@ public class MultiView extends JPanel
 
     /**
      * Show a Viewable by name.
-     * @param name the registered name of the component (In this case it is the name of the Viewable)
+     * @param devName the registered name of the component (In this case it is the name of the Viewable)
      */
     public Viewable createViewable(final String altViewName)
     {
@@ -785,7 +785,7 @@ public class MultiView extends JPanel
 
     /**
      * Show a Viewable by name.
-     * @param name the registered name of the component (In this case it is the name of the Viewable)
+     * @param devName the registered name of the component (In this case it is the name of the Viewable)
      */
     protected Viewable createViewable(final AltViewIFace altView)
     {
