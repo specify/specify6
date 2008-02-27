@@ -1025,7 +1025,6 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#getPopupMenu()
      */
-    @Override
     public JPopupMenu getPopupMenu()
     {
         return null;
