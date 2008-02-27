@@ -15,6 +15,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -77,12 +78,14 @@ import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpQueryField;
+import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.specify.tasks.ReportsBaseTask;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable;
+import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
@@ -535,7 +538,7 @@ public class QueryBldrPane extends BaseSubPane
             if (!checkedForSpecialColumns.contains(alias))
             {
                 String specialColumnWhere = QueryAdjusterForDomain.getInstance().getSpecialColumns(
-                        qfi.getFieldQRI().getTableInfo(), true, alias);
+                        qfi.getFieldQRI().getTableInfo(), true, true/*XXX should only use left join when necessary*/, alias);
                 checkedForSpecialColumns.add(alias);
                 if (StringUtils.isNotEmpty(specialColumnWhere))
                 {
@@ -578,6 +581,10 @@ public class QueryBldrPane extends BaseSubPane
         {
             System.out.println(sqlStr.toString());
         }
+        
+        //return "select co0.collectionObjectId, co0.catalogNumber, pp0.count from CollectionObject co0  left join co0.preparations pp0  where (pp0.collectionMemberId = 1 or pp0 is null)";
+        
+        //return "select co0.collectionObjectId, co0.catalogNumber, det0.determinedDate from CollectionObject co0  left join co0.determinations det0  where (co0.collectionMemberId = 1) AND (det0.collectionMemberId = 1)";
         return sqlStr.toString();
     }
     
@@ -752,26 +759,48 @@ public class QueryBldrPane extends BaseSubPane
         List<ERTICaptionInfo> result = new Vector<ERTICaptionInfo>();
         for (SpQueryField qf : queryFields)
         {
-            DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(qf.getTableId());
+            DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(qf.getContextTableIdent());
             DBFieldInfo fi = ti.getFieldByColumnName(qf.getFieldName());
             String colName = ti.getAbbrev() + '.' + qf.getFieldName();
             if (qf.getIsDisplay())
             {
-                //XXX I think we need to persist the qualified 'label' in the SpQueryField
-                //String lbl = qf.getLabel();
-                String lbl = colName;
+                String lbl = qf.getColumnAlias();
                 if (fixLabels)
                 {
                     lbl = lbl.replaceAll(" ", "_");
+                    lbl = lbl.replaceAll("/", "_");
                 }
-                ERTICaptionInfo erti = new ERTICaptionInfo(colName, lbl, true, fi.getFormatter(), 0);
-                erti.setColClass(fi.getDataClass());
+                ERTICaptionInfo erti;
+                if (fi != null)
+                {
+                    erti = new ERTICaptionInfo(colName, lbl, true, fi.getFormatter(), 0);
+                    erti.setColClass(fi.getDataClass());
+                }
+                else
+                {
+                    erti = new ERTICaptionInfo(colName, lbl, true, null, 0);
+                    erti.setColClass(String.class);
+                }
                 result.add(erti);
             }
         }
         return result;
     }
 
+    protected List<SpReport> getReports()
+    {
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+            //currently experiencing hibernate weirdness with loading of query's reports set so...
+            //Object id = query.getId();
+            return session.getDataList(SpReport.class, "query", query);
+        }
+        finally
+        {
+            session.close();
+        }
+    }
     
     protected void processReport(final Vector<QueryFieldPanel> queryFieldItemsArg, final String sql)
     {
@@ -779,7 +808,29 @@ public class QueryBldrPane extends BaseSubPane
         final CommandAction cmd = new CommandAction(ReportsBaseTask.REPORTS,
                 ReportsBaseTask.PRINT_REPORT, src);
         cmd.setProperty("title", query.getName());
-        cmd.setProperty("file", "dumpling.jrxml");
+        String fileName = null;
+        List<SpReport> reps = getReports();
+        if (reps.size() == 0)
+        {
+            log.error("no reports for query. Should't have gotten here.");
+        }
+        else if (reps.size() == 1)
+        {
+            fileName = reps.get(0).getName() + ".jrxml";
+        }
+        else
+        {
+            ChooseFromListDlg<SpReport> dlg = new ChooseFromListDlg<SpReport>((Frame) UIRegistry
+                    .getTopWindow(), UIRegistry.getResourceString("REP_CHOOSE_SP_REPORT"),
+                    reps);
+            dlg.setVisible(true);
+            if (dlg.isCancelled()) { return; }
+            fileName = dlg.getSelectedObject().getName() + ".jrxml";
+            dlg.dispose();
+        }
+        if (fileName == null) { return; }
+
+        cmd.setProperty("file", fileName);
         CommandDispatcher.dispatch(cmd);
     }
     

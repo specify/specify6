@@ -35,7 +35,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
-import javax.swing.event.MouseInputAdapter;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -153,72 +152,6 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
         
         setQueryField(queryField);
         flavors.add(QueryFieldPanel.QUERY_FLD_PANE_FLAVOR);
-        MouseInputAdapter mouseInputAdapter = new MouseInputAdapter() {
-            
-            @Override
-            public void mouseEntered(MouseEvent e)
-            {
-                if (isEnabled())
-                {
-                    //isOver = true;
-                    isOver = true;
-                    
-                    //repaint();
-                    //UIRegistry.displayStatusBarText(itself.getToolTipText());
-                }
-            }
-            @Override
-            public void mouseExited(MouseEvent e)
-            {
-                isOver = false;
-                //repaint();
-                //UIRegistry.displayStatusBarText("");
-            }
-            @Override
-            public void mousePressed(MouseEvent e)
-            {
-//                downME = e.getPoint();
-                if (isOver)
-                {
-                    setBorder(focusBorder);
-                }
-                else
-                {
-                    setBorder(inactiveBorder);
-                }
-                repaint();
-//                wasPopUp = e.isPopupTrigger();
-//                if (popupMenu != null && wasPopUp && itself.isEnabled())
-//                {
-//                    popupMenu.show(e.getComponent(), e.getX(), e.getY());
-//                }
-            }
-            
-            @Override
-            public void mouseReleased(MouseEvent e)
-            {
-                //repaint();
-                //doAction(QueryFieldPanel.this);
-//                Point pnt = e.getPoint();
-//                boolean clicked = Math.abs(pnt.x - downME.x) < 4 && Math.abs(pnt.y - downME.y) < 4;
-//                Rectangle r = RolloverCommand.this.getBounds();
-//                r.x = 0;
-//                r.y = 0;
-//                if (!wasPopUp && clicked && RolloverCommand.this.isEnabled() && r.contains(e.getPoint()))
-//                {
-//                    if (!e.isPopupTrigger())
-//                    {
-//                        doAction(RolloverCommand.this);
-//                    }
-//                }
-            }
-
-          };
-//          addMouseListener(mouseInputAdapter);
-//        addMouseMotionListener(mouseInputAdapter);
-//        ((GhostGlassPane)UIRegistry.get(UIRegistry.GLASSPANE)).add((GhostActionable)this);
-//        createMouseInputAdapter();
-//        inactiveBorder = getBorder();
 }
     
     public void updateQueryField()
@@ -235,6 +168,9 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
             queryField.setSortType((byte)sortCheckbox.getState());
             queryField.setOperStart((byte)operatorCBX.getSelectedIndex());
             queryField.setStartValue(criteria.getText());
+            queryField.setColumnAlias(this.getLabel());
+            queryField.setContextTableIdent(fieldQRI.getTableInfo().getTableId());
+            queryField.setIsPrompt(true); //for now...
             
             Vector<Integer> idList = new Vector<Integer>();
             TableQRI parent  = fieldQRI.getTable();

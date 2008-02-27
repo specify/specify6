@@ -102,16 +102,17 @@ public class QueryAdjusterForDomain
      */
     public String getSpecialColumns(final DBTableInfo tableInfo, final boolean isHQL)
     {
-        return getSpecialColumns(tableInfo, isHQL, null);
+        return getSpecialColumns(tableInfo, isHQL, false, null);
     }
 
     /**
      * @param tableInfo
      * @param isHQL
      * @param tblAlias
+     * @param isLeftJoin
      * @return
      */
-    public String getSpecialColumns(final DBTableInfo tableInfo, final boolean isHQL, final String tblAlias)
+    public String getSpecialColumns(final DBTableInfo tableInfo, final boolean isHQL, final boolean isLeftJoin, final String tblAlias)
     {
         return null;
     }

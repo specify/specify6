@@ -583,6 +583,10 @@ public class QueryTask extends BaseTask
     {        
         query.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
         query.setSpecifyUser(SpecifyUser.getCurrentUser());
+        if (query.getIsFavorite() == null)
+        {
+            query.setIsFavorite(false);
+        }
         
         persistRecordSet(query);
         

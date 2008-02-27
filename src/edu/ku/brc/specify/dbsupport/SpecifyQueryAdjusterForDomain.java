@@ -10,22 +10,23 @@
 package edu.ku.brc.specify.dbsupport;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
-import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.LithoStrat;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
-import edu.ku.brc.specify.datamodel.Storage;
-import edu.ku.brc.specify.datamodel.StorageTreeDef;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.datamodel.Storage;
+import edu.ku.brc.specify.datamodel.StorageTreeDef;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 
@@ -39,6 +40,7 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDef;
  */
 public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
 {
+    protected static final Logger log = Logger.getLogger(SpecifyQueryAdjusterForDomain.class);
     
     private static final String SPECIFYUSERID  = "SPECIFYUSERID";
     private static final String DIVISIONID     = "DIVISIONID";
@@ -63,52 +65,70 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
      * @see edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain#getSpecialColumns(edu.ku.brc.dbsupport.DBTableInfo, boolean)
      */
     @Override
-    public String getSpecialColumns(final DBTableInfo tableInfo, final boolean isHQL, final String tblAlias)
+    public String getSpecialColumns(final DBTableInfo tableInfo, final boolean isHQL, final boolean isLeftJoin, final String tblAlias)
     {
         if (tableInfo != null)
         {
-            String sql = tblAlias == null ? "" : tblAlias + ".";
+            String prefix = tblAlias == null ? "" : tblAlias + ".";
+            String criterion = null;
+            String fld = null;
             if (tableInfo.getFieldByName("collectionMemberId") != null)
             {
-                sql += (isHQL ? "collectionMemberId" : "CollectionMemberID") + " = " + COLMEMID;
-                return adjustSQL(sql);
+                fld = "collectionMemberId";
+                criterion = COLMEMID;
                 
             } else if (tableInfo.getTableId() == Agent.getClassTableId() ||
                        tableInfo.getTableId() == DeterminationStatus.getClassTableId())
             {
-                sql += (isHQL ? "discipline" : "DisciplineID") + " = " + DSPLNID;
-                return adjustSQL(sql);
-                
+                fld = isHQL ? "discipline" : "DisciplineID";
+                criterion = DSPLNID;
             } else if (tableInfo.getTableId() == Geography.getClassTableId())
             {
-                sql += (isHQL ? "definition" : "GeographyTreeDefID") + " = " + GEOTREEDEFID;
-                return adjustSQL(sql);
-                
+                fld = isHQL ? "definition" : "GeographyTreeDefID";
+                criterion = GEOTREEDEFID;
             } else if (tableInfo.getTableId() == GeologicTimePeriodTreeDef.getClassTableId())
             {
-                sql += (isHQL ? "definition" : "GeologicTimePeriodTreeDefID") + " = " + GTPTREEDEFID;
-                return adjustSQL(sql);
-                
+                fld = isHQL ? "definition" : "GeologicTimePeriodTreeDefID"; 
+                criterion = GTPTREEDEFID;
             } else if (tableInfo.getTableId() == LithoStrat.getClassTableId())
             {
-                sql += (isHQL ? "definition" : "LithoStratTreeDefID") + " = " + LITHOTREEDEFID;
-                return adjustSQL(sql);
-                
+                fld = isHQL ? "definition" : "LithoStratTreeDefID";
+                criterion = LITHOTREEDEFID;
             } else if (tableInfo.getTableId() == Storage.getClassTableId())
             {
-                sql += (isHQL ? "definition" : "StorageTreeDefID") + " = " + STORTREEDEFID;
-                return adjustSQL(sql);
-                
+                fld = isHQL ? "definition" : "StorageTreeDefID";
+                criterion = STORTREEDEFID;
             } else if (tableInfo.getTableId() == PrepType.getClassTableId())
             {
-                sql += (isHQL ? "collection" : "CollectionID") + " = " + COLLID;
-                return adjustSQL(sql);
-          
+                fld = isHQL ? "collection" : "CollectionID";
+                criterion = COLLID;           
             } else if (tableInfo.getTableId() == Taxon.getClassTableId())
             {
-                sql += (isHQL ? "definition" : "TaxonTreeDefID") + " = " + TAXTREEDEFID;
+                fld = isHQL ? "definition" : "TaxonTreeDefID"; 
+                criterion = TAXTREEDEFID;
+            }
+            if (criterion != null && fld != null)
+            {
+                String sql = prefix + fld + " = " + criterion;
+                if (isLeftJoin)
+                {
+                    if (isHQL)
+                    {
+                        if (tblAlias != null)
+                        {
+                            sql = "(" + sql + " or " + tblAlias + " is null)";
+                        }
+                        else
+                        {
+                            log.error("can't adjust hql for left join without a tblAlias.");
+                        }
+                    }
+                    else
+                    {
+                        sql = "(" + sql + " or " + prefix + fld + " is null)"; 
+                    }
+                }
                 return adjustSQL(sql);
-                
             }
         }
         return null;

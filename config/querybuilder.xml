@@ -83,7 +83,7 @@
     		<table name="GeologicTimePeriod"/>
     		<table name="LithoStrat"/>
     	</table>
-        <alias name="Preparation" field="preparation"/>
+        <alias name="Preparation" field="preparations"/>
     </table>
     
     <table name="Locality">
