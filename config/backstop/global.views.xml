@@ -2,28 +2,6 @@
 <viewset name="Global" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
     <views>
-        <view name="Accession"
-              class="edu.ku.brc.specify.datamodel.Accession"
-              isinternal="false"
-              resourcelabels="false">
-            <desc><![CDATA[The Accession form.]]></desc>
-            <altviews>
-                <altview name="Accession View" viewdef="Accession" label="View" mode="view"  validated="false" default="true"/>
-                <altview name="Accession Edit" viewdef="Accession" label="Edit" mode="edit"  validated="true"/>
-            </altviews>
-        </view>
-
-        <view name="AccessionAgent"
-              objtitle="Accession Agent"
-              class="edu.ku.brc.specify.datamodel.AccessionAgent"
-              resourcelabels="false">
-            <desc><![CDATA[Subform within the Accession form.]]></desc>
-            <altviews>
-                <altview name="AccessionAgent View" viewdef="AccessionAgent" label="View" mode="view" validated="false"/>
-                <altview name="AccessionAgent Edit" viewdef="AccessionAgent" label="Edit" mode="edit" validated="true" default="true"/>
-            </altviews>
-        </view>
-
         <view name="Agent"
             class="edu.ku.brc.specify.datamodel.Agent"
             isinternal="false"
@@ -65,17 +43,6 @@
             <altviews  defaultmode="view">
                 <altview name="Permit View" viewdef="Permit" label="View" mode="view" validated="false"/>
                 <altview name="Permit Edit" viewdef="Permit" label="Edit" mode="edit" validated="true"/>
-            </altviews>
-        </view>
-
-        <view name="AccessionAuthorization"
-            objtitle="Accession Authorization"
-            class="edu.ku.brc.specify.datamodel.AccessionAuthorization"
-            resourcelabels="false">
-            <desc><![CDATA[Permit subform within the Accession form.]]></desc>
-            <altviews>
-                <altview name="AccessionAuthorization View" viewdef="AccessionAuthorization" label="View" mode="view" validated="false" default="true"/>
-                <altview name="AccessionAuthorization Edit" viewdef="AccessionAuthorization" label="Edit" mode="edit" validated="true"/>
             </altviews>
         </view>
 
@@ -469,105 +436,6 @@
     <viewdefs>
         <viewdef
             type="form"
-            name="Accession"
-            class="edu.ku.brc.specify.datamodel.Accession"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
-            <desc><![CDATA[The Accession form.]]></desc>
-            <enableRules/>
-
-            <columnDef>100px,3dlu,p,3dlu,100px,3dlu,p,3dlu,p,3dlu,p,p:g</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
-
-            <rows>
-                <row>
-                	<cell type="label" label="KU Accessions" icon="Accession" recordobj="true" colspan="12"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="1" label="Number"/>
-                    <cell type="field" id="1" name="accessionNumber" isrequired="true" uitype="formattedtext" uifieldformatter="AccessionNumber"/>
-
-                    <cell type="label" labelfor="2" label="Status"/>
-                    <cell type="field" id="2" name="status"  uitype="combobox" picklist="AccessionStatus" isrequired="true"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="3" label="Type"/>
-                    <cell type="field" id="3" name="type" uitype="combobox" picklist="AccessionType" isrequired="true"/>
-
-                    <cell type="label" labelfor="4" label="Division"/>
-                    <cell type="field" id="4" name="text1" uitype="combobox" initialize="data=Botany,Entomology,Herpetology,Ichthyology,Invertebrate Paleo,Invertebrate Zoology,Mammalogy,Ornithology,Paleobotany,Vertebrate Paleo" isrequired="true"/>
-
-                </row>
-                <row>
-                    <cell type="label" labelfor="5" label="Accessioned"/>
-                    <cell type="field" id="5" name="dateAccessioned" isrequired="true" uitype="formattedtext" uifieldformatter="Date" default="today"/>
-
-                    <cell type="label" labelfor="6" label="Received"/>
-                    <cell type="field" id="6" name="dateReceived" isrequired="true" uitype="formattedtext" uifieldformatter="Date" default="today"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="7" label="Description"/>
-                    <cell type="field" id="7" name="text2" uitype="textarea" cols="30" rows="6" colspan="10"/>
-                </row>
-                
-                <row>
-                    <cell type="separator" label="Accession Agents" colspan="12"/>
-                </row>
-                <row>
-                    <cell type="subview" viewname="AccessionAgent" id="8" name="accessionAgents" desc="Agents" colspan="12"/>
-                </row>
-
-                <row>
-                    <cell type="separator" label="Authorizations" colspan="12"/>
-                </row>
-                <row>
-                    <cell type="subview" viewname="AccessionAuthorization" id="9" desc="Authorizations" name="accessionAuthorizations" colspan="12"/>
-                </row>
-                <row>
-                    <cell type="separator" label="" colspan="12"/>
-                </row>
-                
-                <row>
-                    <cell type="label" labelfor="10" label="Edited By"/>
-                    <cell type="field" id="10" name="modifiedByAgent" uitype="label" readonly="true"  uifieldformatter="Agent"/>
-                    
-                    <cell type="label" labelfor="11" label="Last Edited"/>
-                    <cell type="field" id="11" name="timestampModified" uitype="label" readonly="true" cols="20" colspan="2"/>
-                </row>
-            </rows>
-        </viewdef>
-
-        <viewdef
-            type="form"
-            name="AccessionAgent"
-            class="edu.ku.brc.specify.datamodel.AccessionAgent"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
-            <desc><![CDATA[The Accession form.]]></desc>
-            <enableRules/>
-            
-            <columnDef>100px,3dlu,p,3dlu,100px,3dlu,p:g</columnDef>
-            <rowDef>p,2dlu,p:g,2dlu,p:g</rowDef>
-            
-            <rows>
-                <row>
-                    <cell type="label" labelfor="1" label="Agent"/>
-                    <cell type="field" id="1" name="agent" uitype="querycbx" initialize="name=Agent;title=Agent" isrequired="true"/>
-                    
-                    <cell type="label" labelfor="2" label="Role"/>
-                    <cell type="field" id="2" name="role" uitype="combobox" picklist="AccessionRole" isrequired="true"/>
-                </row>
-                
-                <row>
-                    <cell type="label" labelfor="3" label="Remarks"/>
-                    <cell type="field" id="3" name="remarks" uitype="textarea" colspan="5" cols="40"/>
-                </row>
-                
-            </rows>
-        </viewdef>
-        
-        <viewdef
-            type="form"
             name="AgentVariant"
             class="edu.ku.brc.specify.datamodel.AgentVariant"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
@@ -858,31 +726,6 @@
                     <cell type="subview" viewname="AttachmentsIconView" id="10" name="attachments" colspan="10"/>
                 </row>
                 -->
-            </rows>
-        </viewdef>
-        
-        <viewdef
-            type="form"
-            name="AccessionAuthorization"
-            class="edu.ku.brc.specify.datamodel.AccessionAuthorization"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
-
-            <desc><![CDATA[Permit subform for AccessionAuthorization.]]></desc>
-            <enableRules/>
-
-            <columnDef>100px,2px,p,2px,p:g</columnDef>
-            <rowDef>p,2px,p</rowDef>
-            <rows>
-                <row>
-                    <cell type="label" labelfor="1" label="Permit"/>
-                    <cell type="field" id="1" name="permit" uitype="querycbx" initialize="name=Permit;title=Permit" isrequired="true"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="2" label="Remarks"/>
-                    <cell type="field" id="2" name="remarks" uitype="textarea" colspan="3" />
-                </row>
-
             </rows>
         </viewdef>
 

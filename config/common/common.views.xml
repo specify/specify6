@@ -314,35 +314,21 @@
                     <cell type="label" labelfor="7" label="Description"/>
                     <cell type="field" id="7" name="text2" uitype="textarea" cols="30" rows="3" colspan="10"/>
                 </row>
-                
                 <row>
-                    <cell type="separator" label="Accession Agents" colspan="5" collapse="accessionAgents"/>
-                    <cell type="separator" label="Authorizations" colspan="6" collapse="accessionAuthorizations"/>
+                    <cell type="panel" id="16" name="outerPanel" coldef="p,5px,p" rowdef="p,4px,p" colspan="12">
+                        <rows>
+			                <row>
+			                    <cell type="separator" label="Accession Agents" collapse="accessionAgents"/>
+			                    <cell type="separator" label="Authorizations" collapse="accessionAuthorizations"/>
+			                </row>
+			                <row>
+			                    <cell type="iconview" viewname="AccessionAgent" id="8" name="accessionAgents" desc="Agents"/>
+			                    <cell type="subview" viewname="AccessionAuthorization" id="9" desc="Authorization" name="accessionAuthorizations"/>
+			                </row>
+                        </rows>
+                    </cell>
                 </row>
-                <!--
-                    <row>
-                    <cell type="subview" viewname="AccessionAgent" id="8" name="accessionAgents" desc="Agents" colspan="12"/>
-                    </row>
-                -->
-                <row>
-                    <cell type="iconview" viewname="AccessionAgent" id="8" name="accessionAgents" desc="Agents" colspan="5"/>
-                    <cell type="subview" viewname="AccessionAuthorization" id="9" desc="Authorization" name="accessionAuthorizations" colspan="6"/>
-                </row>
-                 <row>
-                    <cell type="separator" label="Collection Objects" collapse="collectionObjects" colspan="12"/>
-                </row>
-                <row> 
-                    <cell type="subview" viewname="CollectionObjectSub" id="25" desc="Collection Object" name="collectionObjects" colspan="12"/>
-                </row>
-                <row>
-                    <cell type="separator" label="Attachments" colspan="12" collapse="accessionAttachments"/>
-                </row>
-                <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="accessionAttachments" colspan="12" initialize="addsearch=true;btn=true;icon=Accession;hc=xxx"/>
-                </row>
-                <row>
-                    <cell type="separator" label="" colspan="12"/>
-                </row>
+                 
                 <row>
                     <cell type="label" labelfor="10" label="Edited By"/>
                     <cell type="field" id="10" name="modifiedByAgent" uitype="label" readonly="true"  uifieldformatter="Agent"/>

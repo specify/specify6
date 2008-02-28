@@ -193,7 +193,7 @@ public class PanelViewable extends JPanel implements ViewBuilderIFace
      */
     public Component getControlByName(final String name)
     {
-        return null;
+        return parentBuilder.getControlByName(name);
     }
 
     /* (non-Javadoc)
@@ -201,7 +201,7 @@ public class PanelViewable extends JPanel implements ViewBuilderIFace
      */
     public Component getControlById(String id)
     {
-        return null;
+        return parentBuilder.getControlById(id);
     }
 
     /* (non-Javadoc)
