@@ -53,7 +53,8 @@ import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
- * A dialog used fo Configuring the 'create' or new Queries.
+ * A dialog used for Configuring the 'create' or new Queries.
+ * 
  * @author rods
  *
  * @code_status Beta
@@ -85,7 +86,11 @@ public class QueriesConfigureDlg extends CustomDialog
 
     
     /**
-     * @param task
+     * Creates the Dialog for configuring the queries
+     * @param task the QueryTask
+     * @param freqQueries the frequently used queries
+     * @param extraQueries the extra queries
+     * @param stdQueries the master list
      */
     public QueriesConfigureDlg(final QueryTask task,
                                final Vector<String> freqQueries,
@@ -124,14 +129,14 @@ public class QueriesConfigureDlg extends CustomDialog
         {
             public void actionPerformed(ActionEvent ae)
             {
-                moveToMisc();
+                moveToExtra();
             }
         });
         mvToFreqBtn = createIconBtn("Unmap", "QY_MOVE_TO_FREQ", new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
-                moveToStd();
+                moveToFreq();
             }
         });
         
@@ -157,9 +162,9 @@ public class QueriesConfigureDlg extends CustomDialog
     }
     
     /**
-     * 
+     * MOves query from freq list to extra
      */
-    protected void moveToMisc()
+    protected void moveToExtra()
     {
         int inx = freqPanel.getOrderList().getSelectedIndex();
         if (inx > -1)
@@ -174,7 +179,7 @@ public class QueriesConfigureDlg extends CustomDialog
     /**
      * 
      */
-    protected void moveToStd()
+    protected void moveToFreq()
     {
         int inx = extraPanel.getOrderList().getSelectedIndex();
         if (inx > -1)
@@ -196,7 +201,8 @@ public class QueriesConfigureDlg extends CustomDialog
     }
     
     /**
-     * @param list
+     * Adds new items to list
+     * @param list the list
      */
     protected void addItem(final JList list)
     {
@@ -250,7 +256,7 @@ public class QueriesConfigureDlg extends CustomDialog
     }
 
     /**
-     * @return
+     * @return the freq quesries lis
      */
     public Vector<String> getFreqViews()
     {
@@ -258,7 +264,7 @@ public class QueriesConfigureDlg extends CustomDialog
     }
 
     /**
-     * @return
+     * @return the extra queries list
      */
     public Vector<String> getExtraViews()
     {
@@ -266,7 +272,8 @@ public class QueriesConfigureDlg extends CustomDialog
     }
 
     /**
-     * @param list
+     * Removes an item from the list
+     * @param list the list
      */
     protected void removeItem(final JList list)
     {
@@ -287,7 +294,7 @@ public class QueriesConfigureDlg extends CustomDialog
     }
 
     /**
-     * item selected in either list.
+     * Item selected in either list.
      */
     protected void itemSelected()
     {
