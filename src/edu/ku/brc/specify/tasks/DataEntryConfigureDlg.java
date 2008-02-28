@@ -344,7 +344,7 @@ public class DataEntryConfigureDlg extends CustomDialog
                 }
             });
             
-            orderUpBtn = createIconBtn("ReorderUp", "ES_RES_MOVE_UP", new ActionListener()
+            orderUpBtn = createIconBtn("ReorderUp", "DET_MOVE_UP", new ActionListener()
             {
                 public void actionPerformed(ActionEvent ae)
                 {
@@ -357,7 +357,7 @@ public class DataEntryConfigureDlg extends CustomDialog
                     updateEnabledState();
                 }
             });
-            orderDwnBtn = createIconBtn("ReorderDown", "ES_RES_MOVE_DOWN", new ActionListener()
+            orderDwnBtn = createIconBtn("ReorderDown", "DET_MOVE_DOWN", new ActionListener()
             {
                 public void actionPerformed(ActionEvent ae)
                 {

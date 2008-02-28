@@ -46,6 +46,7 @@ public class SpQuery extends DataModelObjBase
     protected String            sqlStr;
     protected Boolean           isFavorite; //whether or not this query goes on the 'short list'
     protected boolean           named = true;
+    protected Short             ordinal;
     
     protected Set<SpQueryField> fields;
     protected Set<SpReport>     reports;
@@ -78,6 +79,7 @@ public class SpQuery extends DataModelObjBase
         reports          = new HashSet<SpReport>();
         specifyUser      = null;
         isFavorite       = null;
+        ordinal            = null;
     }
     
     
@@ -140,6 +142,22 @@ public class SpQuery extends DataModelObjBase
     }
 
     /**
+     * @param isFavorite the isFavorite to set
+     */
+    public void setIsFavorite(Boolean isFavorite)
+    {
+        this.isFavorite = isFavorite;
+    }
+    
+    /**
+     * @param order the order to set
+     */
+    public void setOrdinal(Short order)
+    {
+        this.ordinal = order;
+    }
+
+    /**
      * @return the spQueryId
      */
     @Id
@@ -184,6 +202,25 @@ public class SpQuery extends DataModelObjBase
     public String getSqlStr()
     {
         return sqlStr;
+    }
+
+    /**
+     * @return the isFavorite
+     */
+    @Column(name = "IsFavorite", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getIsFavorite()
+    {
+        return isFavorite;
+    }
+
+    
+    /**
+     * @return the order
+     */
+    @Column(name = "Ordinal", unique = false, nullable = true, insertable = true, updatable = true)
+    public Short getOrdinal()
+    {
+        return ordinal != null ? ordinal : Short.MAX_VALUE;
     }
 
     /**
@@ -276,22 +313,12 @@ public class SpQuery extends DataModelObjBase
         this.named = named;
     }
 
-    /**
-     * @return the isFavorite
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#toString()
      */
-    @Column(name = "IsFavorite", unique = false, nullable = true, insertable = true, updatable = true)
-    public Boolean getIsFavorite()
+    public String toString()
     {
-        return isFavorite;
+        return name;
     }
-
-    /**
-     * @param isFavorite the isFavorite to set
-     */
-    public void setIsFavorite(Boolean isFavorite)
-    {
-        this.isFavorite = isFavorite;
-    }
-    
     
 }

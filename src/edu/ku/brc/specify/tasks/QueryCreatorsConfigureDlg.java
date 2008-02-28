@@ -62,7 +62,7 @@ import edu.ku.brc.ui.UIRegistry;
  * Created Date: Feb 28, 2008
  *
  */
-public class QueriesConfigureDlg extends CustomDialog
+public class QueryCreatorsConfigureDlg extends CustomDialog
 {
     //private static final Logger log = Logger.getLogger(DataEntryConfigureDlg.class);
     
@@ -76,8 +76,8 @@ public class QueriesConfigureDlg extends CustomDialog
     protected JButton               mvToFreqBtn;
 
     
-    protected ViewsOrderPanel       freqPanel;
-    protected ViewsOrderPanel       extraPanel;
+    protected QueryOrderPanel       freqPanel;
+    protected QueryOrderPanel       extraPanel;
     
     protected boolean               hasChanged = false;
     
@@ -92,12 +92,12 @@ public class QueriesConfigureDlg extends CustomDialog
      * @param extraQueries the extra queries
      * @param stdQueries the master list
      */
-    public QueriesConfigureDlg(final QueryTask task,
+    public QueryCreatorsConfigureDlg(final QueryTask task,
                                final Vector<String> freqQueries,
                                final Vector<String> extraQueries,
                                final Vector<String> stdQueries)
     {
-        super((Frame)getTopWindow(), getResourceString("QY_CONFIGURE_QUERIES"), true, null);
+        super((Frame)getTopWindow(), getResourceString("QY_CONFIGURE_CREATORS_QUERIES"), true, null);
         
         this.task = task;
         
@@ -122,8 +122,8 @@ public class QueriesConfigureDlg extends CustomDialog
     {
         super.createUI();
         
-        freqPanel  = new ViewsOrderPanel("QY_QUICK_LIST", freqQueries, true);
-        extraPanel = new ViewsOrderPanel("QY_EXTRA_LIST",     extraQueries, false);
+        freqPanel  = new QueryOrderPanel("QY_QUICK_LIST", freqQueries, true);
+        extraPanel = new QueryOrderPanel("QY_EXTRA_LIST",     extraQueries, false);
         
         mvToExtraBtn = createIconBtn("Map", "QY_MOVE_TO_EXTRA_TT", new ActionListener()
         {
@@ -258,7 +258,7 @@ public class QueriesConfigureDlg extends CustomDialog
     /**
      * @return the freq quesries lis
      */
-    public Vector<String> getFreqViews()
+    public Vector<String> getFreqQueries()
     {
         return freqPanel.getNames();
     }
@@ -266,7 +266,7 @@ public class QueriesConfigureDlg extends CustomDialog
     /**
      * @return the extra queries list
      */
-    public Vector<String> getExtraViews()
+    public Vector<String> getExtraQueries()
     {
         return extraPanel.getNames();
     }
@@ -303,7 +303,7 @@ public class QueriesConfigureDlg extends CustomDialog
     }
     
     //---------------------------------------------------------------------
-    public class ViewsOrderPanel extends JPanel
+    public class QueryOrderPanel extends JPanel
     {
         // Table Ordering
         protected JList                     orderList;
@@ -317,7 +317,7 @@ public class QueriesConfigureDlg extends CustomDialog
         /**
          * 
          */
-        public ViewsOrderPanel(final String titleKey, 
+        public QueryOrderPanel(final String titleKey, 
                                final Vector<String> names,
                                final boolean orderOnLeft)
         {
@@ -346,7 +346,7 @@ public class QueriesConfigureDlg extends CustomDialog
                 }
             });
             
-            orderUpBtn = createIconBtn("ReorderUp", "ES_RES_MOVE_UP", new ActionListener()
+            orderUpBtn = createIconBtn("ReorderUp", "QY_MOVE_UP", new ActionListener()
             {
                 public void actionPerformed(ActionEvent ae)
                 {
@@ -359,7 +359,7 @@ public class QueriesConfigureDlg extends CustomDialog
                     updateEnabledState();
                 }
             });
-            orderDwnBtn = createIconBtn("ReorderDown", "ES_RES_MOVE_DOWN", new ActionListener()
+            orderDwnBtn = createIconBtn("ReorderDown", "QY_MOVE_DOWN", new ActionListener()
             {
                 public void actionPerformed(ActionEvent ae)
                 {
@@ -432,7 +432,7 @@ public class QueriesConfigureDlg extends CustomDialog
             Vector<String> names = new Vector<String>();
             for (int i=0;i<orderModel.size();i++)
             {
-                names.add(reverseNameHash.get((String)orderModel.get(i)));
+                names.add(reverseNameHash.get(orderModel.get(i)));
             }
             return names;
         }

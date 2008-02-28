@@ -22,6 +22,8 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Timestamp;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -59,10 +61,11 @@ import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.tasks.subpane.SQLQueryPane;
@@ -107,6 +110,7 @@ public class QueryTask extends BaseTask
     protected DroppableNavBox            navBox           = null;
     protected NavBox                     actionNavBox     = null;
     
+    protected Vector<String>             favQueries       = new Vector<String>();
     protected Vector<String>             freqQueries;
     protected Vector<String>             extraQueries;
     protected Vector<String>             stdQueries       = new Vector<String>();
@@ -371,6 +375,151 @@ public class QueryTask extends BaseTask
         saveQueryList("QueryExtraList", extraQueries);
     }
     
+    /**
+     * Confgiure the Query Creators.
+     */
+    protected void configureCreatorQueries()
+    {
+        QueryCreatorsConfigureDlg dlg = new QueryCreatorsConfigureDlg(QueryTask.this, freqQueries, extraQueries, stdQueries);
+        UIHelper.centerAndShow(dlg);
+        if (!dlg.isCancelled())
+        {
+            actionNavBox.clear();
+            
+            Vector<String> freqs  = dlg.getFreqQueries();
+            Vector<String> extras = dlg.getExtraQueries();
+            
+            buildNavBoxes(freqs, extras);
+            
+            actionNavBox.validate();
+            actionNavBox.doLayout();
+            NavBoxMgr.getInstance().validate();
+            NavBoxMgr.getInstance().doLayout();
+            NavBoxMgr.getInstance().repaint();
+            
+            freqQueries  = freqs;
+            extraQueries = extras;
+            
+            // Persist out to database
+            saveQueryListConfiguration();
+        }
+    }
+    
+    /**
+     * Confgiure Queries that show in the sidebar.
+     */
+    protected void configureFavoriteQueries()
+    {
+        QueryConfigureDlg dlg = new QueryConfigureDlg(QueryTask.this);
+        UIHelper.centerAndShow(dlg);
+        if (!dlg.isCancelled())
+        {
+            Vector<SpQuery> favs  = dlg.getFavQueries();
+            Vector<SpQuery> extras = dlg.getOtherQueries();
+            
+            Hashtable<Integer, Integer> hash = new Hashtable<Integer, Integer>();
+            for (SpQuery q : favs)
+            {
+                int id = q.getId();
+                hash.put(id, id);
+            }
+            
+            for (NavBoxItemIFace nbi : new Vector<NavBoxItemIFace>(navBox.getItems()))
+            {
+                RecordSetIFace     rs  = (RecordSetIFace)nbi.getData();
+                RecordSetItemIFace rsi = rs.getOnlyItem();
+                
+                int id = rsi.getRecordId();
+                if (hash.get(id) == null)
+                {
+                    navBox.remove(nbi);
+                }
+            }
+            
+            hash.clear();
+            for (NavBoxItemIFace nbi : navBox.getItems())
+            {
+                RecordSetIFace     rs  = (RecordSetIFace)nbi.getData();
+                RecordSetItemIFace rsi = rs.getOnlyItem();
+                int id = rsi.getRecordId();
+                hash.put(id, id);
+            }
+            
+            for (SpQuery query : favs)
+            {
+                int id = query.getId();
+                if (hash.get(id) == null)
+                {
+                    RecordSet rs = new RecordSet(query.getName(), SpQuery.getClassTableId());
+                    rs.addItem(query.getSpQueryId());
+                    addToNavBox(rs);
+                }
+            }
+            // Persist out to database
+            DataProviderSessionIFace session = null;
+            try
+            {
+                session = DataProviderFactory.getInstance().createSession();
+                session.beginTransaction();
+                short order = 0;
+                for (SpQuery query : favs)
+                {
+                    query.setIsFavorite(true);
+                    query.setOrdinal(order++);
+                    session.saveOrUpdate(query);
+                }
+                for (SpQuery query : extras)
+                {
+                    query.setIsFavorite(false);
+                    query.setOrdinal(null);
+                    session.saveOrUpdate(query);
+                }
+                session.commit();
+                
+            } catch (Exception ex)
+            {
+                // XXX Error dialog
+                session.rollback();
+            }
+            finally
+            {
+                if (session != null)
+                {
+                    session.close();
+                }
+            }
+            
+            // Now Reorder list
+            Hashtable<Integer, NavBoxItemIFace> nbiHash = new Hashtable<Integer, NavBoxItemIFace>();
+            for (NavBoxItemIFace nbi : navBox.getItems())
+            {
+                RecordSetIFace     rs  = (RecordSetIFace)nbi.getData();
+                RecordSetItemIFace rsi = rs.getOnlyItem();
+                int id = rsi.getRecordId();
+                nbiHash.put(id, nbi);
+            }
+            
+            navBox.clear();
+            Collections.sort(favs, new Comparator<SpQuery>() {
+                public int compare(SpQuery q1, SpQuery q2)
+                {
+                    return q1.getOrdinal().compareTo(q2.getOrdinal());
+                }
+            });
+            for (SpQuery query : favs)
+            {
+                int id = query.getId();
+                navBox.add(nbiHash.get(id));
+            }
+            
+            navBox.validate();
+            navBox.doLayout();
+            NavBoxMgr.getInstance().validate();
+            NavBoxMgr.getInstance().doLayout();
+            NavBoxMgr.getInstance().repaint();
+        }
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.BaseTask#getPopupMenu()
      */
@@ -378,35 +527,23 @@ public class QueryTask extends BaseTask
     public JPopupMenu getPopupMenu()
     {
         JPopupMenu popupMenu = new JPopupMenu();
-        JMenuItem mi = new JMenuItem(UIRegistry.getResourceString("Configure"));
+        JMenuItem mi = new JMenuItem(UIRegistry.getResourceString("QY_CONFIGURE_CREATORS"));
         popupMenu.add(mi);
         
         mi.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
-                QueriesConfigureDlg dlg = new QueriesConfigureDlg(QueryTask.this, freqQueries, extraQueries, stdQueries);
-                UIHelper.centerAndShow(dlg);
-                if (!dlg.isCancelled())
-                {
-                    actionNavBox.clear();
-                    
-                    Vector<String> freqs  = dlg.getFreqViews();
-                    Vector<String> extras = dlg.getExtraViews();
-                    
-                    buildNavBoxes(freqs, extras);
-                    
-                    actionNavBox.validate();
-                    actionNavBox.doLayout();
-                    NavBoxMgr.getInstance().validate();
-                    NavBoxMgr.getInstance().doLayout();
-                    NavBoxMgr.getInstance().repaint();
-                    
-                    freqQueries  = freqs;
-                    extraQueries = extras;
-                    
-                    // Persist out to database
-                    saveQueryListConfiguration();
-                }
+                configureCreatorQueries();
+            }
+        });
+        
+        mi = new JMenuItem(UIRegistry.getResourceString("QY_CONFIGURE_QUERIES"));
+        popupMenu.add(mi);
+        
+        mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                configureFavoriteQueries();
             }
         });
         
@@ -475,8 +612,8 @@ public class QueryTask extends BaseTask
             dlg.setVisible(true);
             if (!dlg.isCancelled())
             {
-                String      title     = dlg.getSelectedObject();
-                DBTableInfo tableInfo = tiHash.get(title);
+                String      sName     = dlg.getSelectedObject();
+                DBTableInfo tableInfo = tiHash.get(sName);
                 if (tableInfo != null)
                 {
                     createNewQuery(tableInfo);
@@ -532,8 +669,8 @@ public class QueryTask extends BaseTask
             List<?> tableNodes = root.selectNodes("/database/table");
             for (Object obj : tableNodes)
             {
-                String name = XMLHelper.getAttr((Element)obj, "name", null);
-                stdQueries.add(name);
+                String sName = XMLHelper.getAttr((Element)obj, "name", null);
+                stdQueries.add(sName);
                 
             }
         }
@@ -630,7 +767,7 @@ public class QueryTask extends BaseTask
      */
     protected void loadQueries()
     {
-        String sqlStr = "From SpQuery as sq Inner Join sq.specifyUser as user where user.specifyUserId = "+SpecifyUser.getCurrentUser().getSpecifyUserId();
+        String sqlStr = "From SpQuery as sq Inner Join sq.specifyUser as user where sq.isFavorite = true AND user.specifyUserId = "+SpecifyUser.getCurrentUser().getSpecifyUserId() + " ORDER BY ordinal";
 
         DataProviderSessionIFace session = null;
         try
@@ -638,8 +775,7 @@ public class QueryTask extends BaseTask
             session = DataProviderFactory.getInstance().createSession();
             List<?> queries = session.getDataList(sqlStr);
 
-            navBox = new DroppableNavBox(getResourceString("Queries"), QUERY_FLAVOR, QUERY,
-                    SAVE_QUERY);
+            navBox = new DroppableNavBox(getResourceString("Queries"), QUERY_FLAVOR, QUERY, SAVE_QUERY);
 
             for (Iterator<?> iter = queries.iterator(); iter.hasNext();)
             {

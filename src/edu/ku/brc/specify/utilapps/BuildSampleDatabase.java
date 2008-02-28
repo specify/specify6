@@ -265,7 +265,8 @@ public class BuildSampleDatabase
         return frame;
     }
     
-    protected void standardQueries(final Vector<Object> dataObjects, final Agent userAgent)
+    protected void standardQueries(final Vector<Object> dataObjects, 
+                                   final Agent userAgent)
     {
         //Byte greaterThan = SpQueryField.OperatorType.GREATERTHAN.getOrdinal();
         //Byte lessThan    = SpQueryField.OperatorType.LESSTHAN.getOrdinal();
@@ -277,7 +278,7 @@ public class BuildSampleDatabase
         Byte asc         = SpQueryField.SortType.ASC.getOrdinal();
         //Byte desc        = SpQueryField.SortType.DESC.getOrdinal();
         
-        SpQuery query = createQuery("Collection Objects", "CollectionObject", 1, SpecifyUser.getCurrentUser(), userAgent);
+        SpQuery query = createQuery("CO "+Collection.getCurrentCollection().getCollectionName(), "CollectionObject", 1, SpecifyUser.getCurrentUser(), userAgent);
         createQueryField(query, (short)0, "catalogNumber", false, greq, lteq, "102", "103", asc, true, "1");
         query.setIsFavorite(true);
         dataObjects.add(query);
