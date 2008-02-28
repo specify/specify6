@@ -328,7 +328,21 @@
                         </rows>
                     </cell>
                 </row>
-                 
+                 <row>
+                    <cell type="separator" label="Collection Objects" collapse="collectionObjects" colspan="12"/>
+                </row>
+                <row> 
+                    <cell type="subview" viewname="CollectionObjectSub" id="25" desc="Collection Object" name="collectionObjects" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="separator" label="Attachments" colspan="12" collapse="accessionAttachments"/>
+                </row>
+                <row>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="accessionAttachments" colspan="12" initialize="addsearch=true;btn=true;icon=Accession;hc=xxx"/>
+                </row>
+                <row>
+                    <cell type="separator" label="" colspan="12"/>
+                </row>
                 <row>
                     <cell type="label" labelfor="10" label="Edited By"/>
                     <cell type="field" id="10" name="modifiedByAgent" uitype="label" readonly="true"  uifieldformatter="Agent"/>
