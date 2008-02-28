@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <viewset name="Common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
+
     <views>
     
         <view name="Accession"
@@ -70,16 +71,29 @@
         
         <view name="ConservationDescription"
               class="edu.ku.brc.specify.datamodel.ConservDescription"
+              isinternal="false"
               resourcelabels="false">
-              <desc><![CDATA[Conservation Description for Accessions.]]></desc>
+              <desc><![CDATA[Conservation Description.]]></desc>
               <altviews>
                   <altview name="Conservation Description View" viewdef="ConservationDescription" label="View" mode="view"/>
                   <altview name="Conservation Description Edit" viewdef="ConservationDescription" label="Edit" mode="edit" default="true"/>
               </altviews>
-         
         </view>
-         <view name="Deaccession"
+        
+        <view name="ConservationEvent"
+              class="edu.ku.brc.specify.datamodel.ConservEvent"
+              isinternal="false"
+              resourcelabels="false">
+              <desc><![CDATA[Conservation Event]]></desc>
+              <altviews>
+                  <altview name="Conservation Event View" viewdef="ConservationEvent" label="View" mode="view"/>
+                  <altview name="Conservation Event Edit" viewdef="ConservationEvent" label="Edit" mode="edit" default="true"/>
+              </altviews>
+        </view>
+        
+        <view name="Deaccession"
               class="edu.ku.brc.specify.datamodel.Deaccession"
+              isinternal="false"
               resourcelabels="false">
             <desc><![CDATA[The Deaccession form.]]></desc>
             <altviews>
@@ -173,6 +187,7 @@
 
         <view name="Permit"
             class="edu.ku.brc.specify.datamodel.Permit"
+            isinternal="false"
             resourcelabels="false">
             <desc><![CDATA[Permit subform within the Accession form.]]></desc>
             <altviews  defaultmode="view">
@@ -508,18 +523,17 @@
     		</rows>
     	</viewdef>
     	
-    	
         <viewdef
             type="form"
-            name="ConservationDescription"
-            class="edu.ku.brc.specify.datamodel.ConservDescription"
+            name="ConservationEvent"
+            class="edu.ku.brc.specify.datamodel.ConservEvent"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             
-            <desc><![CDATA[Conservation Description for Accessions.]]></desc>
+            <desc><![CDATA[Conservation Description]]></desc>
             <enableRules/>
             
-            <columnDef>70px,2px,p,2px,200px,2px,p,2px,p,2px,p,p:g</columnDef>
+            <columnDef>p,2px,p,10px,p,2px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
               <row> 
@@ -530,7 +544,31 @@
               </row>
               <row>
                   <cell type="label" labelfor="2" label="Description"/>
-                  <cell type="field" id="2" name="remarks" uitype="textarea" rows="3" colspan="10"/>
+                  <cell type="field" id="2" name="remarks" uitype="textarea" rows="3" colspan="8"/>
+              </row>
+           </rows>
+       </viewdef>
+       
+        <viewdef
+            type="form"
+            name="ConservationDescription"
+            class="edu.ku.brc.specify.datamodel.ConservDescription"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Conservation Description]]></desc>
+            <enableRules/>
+            
+            <columnDef>p,2px,p,10px,p,2px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+            <rows>
+              <row> 
+                  <cell type="label" labelfor="1" label="Title"/>
+                  <cell type="field" id="1" name="shortDesc" uitype="text"/>
+              </row>
+              <row>
+                  <cell type="label" labelfor="2" label="Description"/>
+                  <cell type="field" id="2" name="description" uitype="textarea" rows="3" colspan="6"/>
               </row>
            </rows>
        </viewdef>

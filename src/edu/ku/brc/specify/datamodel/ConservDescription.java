@@ -241,7 +241,7 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
      *
      */
     @Lob
-    @Column(name = "omposition", unique = false, nullable = true, insertable = true, updatable = true, length = 8192)
+    @Column(name = "Composition", unique = false, nullable = true, insertable = true, updatable = true, length = 8192)
     public String getComposition()
     {
         return this.composition;

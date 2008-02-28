@@ -131,6 +131,7 @@ public class ViewLoader
                              className, 
                              businessRules != null ? businessRules.trim() : null, 
                              getAttr(element, "usedefbusrule", true),
+                             getAttr(element, "isinternal", true),
                              desc);
 
         Element altviews = (Element)element.selectSingleNode("altviews");

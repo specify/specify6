@@ -48,6 +48,7 @@ public class View implements ViewIFace
     protected AltViewIFace.CreationMode defaultMode   = AltViewIFace.CreationMode.VIEW;
     protected String               selectorName       = null;
     protected boolean              useDefaultBusRules = false;
+    protected boolean              isInternal         = false;
     
     // transient data members
     protected Boolean              isSpecial    = null;
@@ -68,6 +69,7 @@ public class View implements ViewIFace
                 final String className, 
                 final String businessRulesClassName,
                 final boolean useDefaultBusRules,
+                final boolean isInternal,
                 final String desc)
     {
         this.viewSetName    = viewSetName;
@@ -77,7 +79,7 @@ public class View implements ViewIFace
         this.businessRulesClassName = businessRulesClassName;
         this.desc           = desc;
         this.useDefaultBusRules = useDefaultBusRules;
-
+        this.isInternal     = isInternal;
     }
     
     /* (non-Javadoc)
@@ -380,7 +382,26 @@ public class View implements ViewIFace
     {
         this.selectorName = selectorName;
     }
+    
+    /**
+     * @return the isInternal
+     */
+    public boolean isInternal()
+    {
+        return isInternal;
+    }
 
+    /**
+     * @param isInternal the isInternal to set
+     */
+    public void setInternal(boolean isInternal)
+    {
+        this.isInternal = isInternal;
+    }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
     @Override
     public String toString()
     {
@@ -397,6 +418,7 @@ public class View implements ViewIFace
         xmlAttr(sb, "class", className);
         xmlAttr(sb, "busrule", businessRulesClassName);
         xmlAttr(sb, "usedefbusrule", useDefaultBusRules);
+        if (!isInternal) xmlAttr(sb, "isinternal", isInternal);
         sb.append(">\n    ");
         xmlNode(sb, "desc", desc, true);
         sb.append("      <altviews");

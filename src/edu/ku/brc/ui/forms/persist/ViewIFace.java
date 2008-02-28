@@ -161,6 +161,11 @@ public interface ViewIFace  extends Comparable<ViewIFace>
     public abstract void setSelectorName(String selectorName);
     
     /**
+     * @return whether the view is for internal use or a subform view (only) or an external view.
+     */
+    public abstract boolean isInternal();
+    
+    /**
      * Comparator.
      * @param obj the obj to compare
      * @return 0,1,-1

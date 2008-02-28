@@ -22,6 +22,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.Timestamp;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
@@ -29,6 +30,8 @@ import java.util.Vector;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -37,7 +40,10 @@ import org.dom4j.Element;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+import com.thoughtworks.xstream.XStream;
 
+import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.DroppableNavBox;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
@@ -54,7 +60,9 @@ import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.tasks.subpane.SQLQueryPane;
@@ -64,6 +72,8 @@ import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DataFlavorTableExt;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.RolloverCommand;
+import edu.ku.brc.ui.ToggleButtonChooserDlg;
+import edu.ku.brc.ui.ToggleButtonChooserPanel;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -97,6 +107,10 @@ public class QueryTask extends BaseTask
     protected DroppableNavBox            navBox           = null;
     protected NavBox                     actionNavBox     = null;
     
+    protected Vector<String>             freqQueries;
+    protected Vector<String>             extraQueries;
+    protected Vector<String>             stdQueries       = new Vector<String>();
+    
     //protected List<DBTableInfo>               tableInfos       = new ArrayList<DBTableInfo>();
     
     /**
@@ -109,7 +123,6 @@ public class QueryTask extends BaseTask
         
         CommandDispatcher.register(QUERY, this);        
         CommandDispatcher.register(APP_CMD_TYPE, this);
-
     }
     
     
@@ -295,26 +308,233 @@ public class QueryTask extends BaseTask
         addNewQCreators();
     }
     
+    /**
+     * Reads the Query Lists from the database.
+     */
+    protected void readOrgLists()
+    {
+        freqQueries  = readResourceForList("QueryFreqList");
+        extraQueries = readResourceForList("QueryExtraList");
+    }
     
+    /**
+     * Reads a single list from the database.
+     * @param resName the name of the resource to use to save it.
+     * @return the list 
+     */
+    @SuppressWarnings("unchecked")
+    protected Vector<String> readResourceForList(final String resName)
+    {
+        Vector<String> list = null;
+        AppResourceIFace appRes = AppContextMgr.getInstance().getResource(resName);
+        if (appRes != null)
+        {
+            String xmlFreqList = AppContextMgr.getInstance().getResourceAsXML(resName);
+            if (StringUtils.isNotEmpty(xmlFreqList))
+            {
+                XStream xstream = new XStream();
+                list = (Vector<String>)xstream.fromXML(xmlFreqList);
+            }
+        } 
+
+        if (list == null)
+        {
+            list = new Vector<String>();
+        }
+        return list;
+    }
+    
+    /**
+     * Saves a single list to the database.
+     * @param resName the name of the resource to use to save it.
+     * @param list the list to be saved.
+     */
+    protected void saveQueryList(final String resName,
+                                 final Vector<String> list)
+    {
+        AppResourceIFace appRes = AppContextMgr.getInstance().getResource(resName);
+        if (appRes != null)
+        {
+            XStream xstream = new XStream();
+            appRes.setDataAsString(xstream.toXML(list));
+            System.out.println(xstream.toXML(list));
+            ((SpecifyAppContextMgr)AppContextMgr.getInstance()).saveResource(appRes);
+        }
+    }
+    
+    /**
+     * Saves the Lists to the database.
+     */
+    protected void saveQueryListConfiguration()
+    {
+        saveQueryList("QueryFreqList", freqQueries);
+        saveQueryList("QueryExtraList", extraQueries);
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#getPopupMenu()
+     */
+    @Override
+    public JPopupMenu getPopupMenu()
+    {
+        JPopupMenu popupMenu = new JPopupMenu();
+        JMenuItem mi = new JMenuItem(UIRegistry.getResourceString("Configure"));
+        popupMenu.add(mi);
+        
+        mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                QueriesConfigureDlg dlg = new QueriesConfigureDlg(QueryTask.this, freqQueries, extraQueries, stdQueries);
+                UIHelper.centerAndShow(dlg);
+                if (!dlg.isCancelled())
+                {
+                    actionNavBox.clear();
+                    
+                    Vector<String> freqs  = dlg.getFreqViews();
+                    Vector<String> extras = dlg.getExtraViews();
+                    
+                    buildNavBoxes(freqs, extras);
+                    
+                    actionNavBox.validate();
+                    actionNavBox.doLayout();
+                    NavBoxMgr.getInstance().validate();
+                    NavBoxMgr.getInstance().doLayout();
+                    NavBoxMgr.getInstance().repaint();
+                    
+                    freqQueries  = freqs;
+                    extraQueries = extras;
+                    
+                    // Persist out to database
+                    saveQueryListConfiguration();
+                }
+            }
+        });
+        
+        return popupMenu;
+    }
+    
+    /**
+     * Builds the NavBtns for the grequently used list and the extra list.
+     * @param freqList the frequently used list of names
+     * @param extraList the list of extra (hidden) names
+     */
+    protected void buildNavBoxes(final Vector<String> freqList,
+                                 final Vector<String> extraList)
+    {
+        createCreateQueryNavBtns(freqList);
+        
+        if (extraList != null && !extraList.isEmpty())
+        {
+            NavBoxItemIFace nbi = NavBox.createBtnWithTT(getResourceString("QY_EXTRA_QUERIES"),
+                                                         name, 
+                                                         getResourceString("QY_EXTRA_QUERIES_TT"), 
+                                                         IconManager.IconSize.Std16, new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    showMiscViewsDlg();
+                }
+            });
+            
+            actionNavBox.add(nbi);
+        }
+    }
+    
+    
+    /**
+     * Show a dialog letting them choose from a list of available misc views.   
+     */
+    protected void showMiscViewsDlg()
+    {
+        String shortClassName = null;
+        if (extraQueries.size() == 1)
+        {
+            shortClassName = extraQueries.get(0);
+            DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByShortClassName(shortClassName);
+            if (tableInfo != null)
+            {
+                createNewQuery(tableInfo);
+            }
+            
+        } else
+        {
+            final Hashtable<String, DBTableInfo> tiHash = new Hashtable<String, DBTableInfo>();
+            Vector<String> names = new Vector<String>();
+            
+            for (String sName : extraQueries)
+            {
+                DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByShortClassName(sName);
+                names.add(tableInfo.getTitle());
+                tiHash.put(tableInfo.getTitle(), tableInfo);
+                
+            }
+            ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>((Frame)UIRegistry.getTopWindow(), 
+                    "QY_EXTRA_QUERIES", 
+                    names, 
+                    ToggleButtonChooserPanel.Type.RadioButton);
+            dlg.setUseScrollPane(true);
+            dlg.setVisible(true);
+            if (!dlg.isCancelled())
+            {
+                String      title     = dlg.getSelectedObject();
+                DBTableInfo tableInfo = tiHash.get(title);
+                if (tableInfo != null)
+                {
+                    createNewQuery(tableInfo);
+                }
+            }
+        }
+    }
+    
+    /**
+     * Creates all the NavBtns from a list of Queries create names.
+     * @param list the list of names
+     */
+    protected void createCreateQueryNavBtns(final Vector<String> list)
+    {
+        for (String shortClassName : list)
+        {
+            createQueryCreateNB(shortClassName);
+        }
+    }
+    
+    /**
+     * Creates a single btn for a new query
+     * @param shortClassName the class name
+     */
+    protected void createQueryCreateNB(final String shortClassName)
+    {
+        final DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByShortClassName(shortClassName);
+        actionNavBox.add(NavBox.createBtnWithTT(String.format(getResourceString("QB_CREATE_NEWQUERY"), 
+                tableInfo.getTitle()), 
+                name, 
+                getResourceString("QB_CREATE_NEWQUERY_TT"), 
+                IconManager.IconSize.Std16, new ActionListener() 
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                createNewQuery(tableInfo);
+            }
+        }
+        ));
+    }
+
+    /**
+     * Adds the NavBtns for creating new queries.
+     */
     protected void addNewQCreators()
     {
+        readOrgLists();
+        buildNavBoxes(freqQueries, extraQueries);
+        
         try
         {
-            Element root = XMLHelper.readDOMFromConfigDir("querybuilder.xml");
+            Element root       = XMLHelper.readDOMFromConfigDir("querybuilder.xml");
             List<?> tableNodes = root.selectNodes("/database/table");
             for (Object obj : tableNodes)
             {
-                Element tableElement = (Element) obj;
-                final DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByShortClassName(XMLHelper.getAttr(tableElement, "name", null));
-                //tableInfos.add(tableInfo);
-                actionNavBox.add(NavBox.createBtnWithTT(String.format(getResourceString("QB_CREATE_NEWQUERY"), tableInfo.getTitle()), name, getResourceString("QB_CREATE_NEWQUERY_TT"), IconManager.IconSize.Std16, new ActionListener() {
-                    public void actionPerformed(ActionEvent arg0)
-                    {
-                        createNewQuery(tableInfo);
-                    }
-                }
-                ));
-
+                String name = XMLHelper.getAttr((Element)obj, "name", null);
+                stdQueries.add(name);
+                
             }
         }
         catch (Exception ex)

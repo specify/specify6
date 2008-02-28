@@ -279,6 +279,7 @@ public class BuildSampleDatabase
         
         SpQuery query = createQuery("Collection Objects", "CollectionObject", 1, SpecifyUser.getCurrentUser(), userAgent);
         createQueryField(query, (short)0, "catalogNumber", false, greq, lteq, "102", "103", asc, true, "1");
+        query.setIsFavorite(true);
         dataObjects.add(query);
     }
 
@@ -508,9 +509,9 @@ public class BuildSampleDatabase
         
         desc.addReference(conservEvent, "events");
         
+        startTx();
         persist(desc);
-        
-        //commitTx();
+        commitTx();
         
     }
     

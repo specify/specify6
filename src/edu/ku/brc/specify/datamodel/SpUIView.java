@@ -82,6 +82,7 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
     protected String  objTitle;
     protected String  defaultModeName;
     protected Boolean useDefaultBusRule;
+    protected Boolean isInternal;
     
     protected SpUIViewSet       spViewSet;
     protected Set<SpUIAltView>  spAltViews;
@@ -144,6 +145,7 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
         objTitle          = null;
         defaultModeName   = null;
         useDefaultBusRule = true;
+        isInternal        = true;
         
         spAltViews = new HashSet<SpUIAltView>();
         spViewSet  = null;
@@ -321,6 +323,31 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
     public void setUseDefaultBusRule(Boolean useDefaultBusRule)
     {
         this.useDefaultBusRule = useDefaultBusRule;
+    }
+
+    /**
+     * @return the isInternal
+     */
+    @Column(name = "IsInternal", unique = false, nullable = false, insertable = true, updatable = true)
+    public Boolean getIsInternal()
+    {
+        return isInternal;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.persist.ViewIFace#isInternal()
+     */
+    public boolean isInternal()
+    {
+        return isInternal != null ? isInternal : false;
+    }
+
+    /**
+     * @param isInternal the isInternal to set
+     */
+    public void setIsInternal(Boolean isInternal)
+    {
+        this.isInternal = isInternal;
     }
 
     /**
@@ -763,6 +790,7 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
         xmlAttr(sb, "class", javaClassName);
         //xmlAttr(sb, "busrule", businessRulesClassName);
         //if (!useDefaultBusRule) xmlAttr(sb, "usedefbusrule", useDefaultBusRule);
+        if (!isInternal) xmlAttr(sb, "isinternal", isInternal);
         xmlAttr(sb, "resourcelabels", useResourceLabels);
         sb.append(">\n");
         xmlNode(sb, "desc", description, true);

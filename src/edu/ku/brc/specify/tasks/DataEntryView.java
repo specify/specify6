@@ -41,6 +41,30 @@ public class DataEntryView implements Comparable<DataEntryView>
     protected DBTableInfo tableInfo = null;
     
     /**
+     * @param name
+     * @param viewSet
+     * @param view
+     * @param iconName
+     * @param toolTip
+     * @param isSideBar
+     */
+    public DataEntryView(String name, 
+                         String viewSet, 
+                         String view, 
+                         String iconName, 
+                         String toolTip,
+                         boolean isSideBar)
+    {
+        super();
+        this.name = name;
+        this.viewSet = viewSet;
+        this.view = view;
+        this.iconName = iconName;
+        this.toolTip = toolTip;
+        this.isSideBar = isSideBar;
+    }
+
+    /**
      * 
      */
     public DataEntryView()

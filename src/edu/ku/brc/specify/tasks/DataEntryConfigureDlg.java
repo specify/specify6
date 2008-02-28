@@ -12,9 +12,6 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-/**
- * 
- */
 package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UIHelper.createIconBtn;
@@ -25,7 +22,8 @@ import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Collections;
+import java.util.Hashtable;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -33,52 +31,62 @@ import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.ListModel;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
-import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
-import com.thoughtworks.xstream.XStream;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.ui.AddRemoveEditPanel;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.ToggleButtonChooserDlg;
+import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.forms.persist.ViewIFace;
 
 /**
  * @author rods
  *
- * @code_status Alpha
+ * @code_status Beta
  *
  * Created Date: Feb 27, 2008
  *
  */
 public class DataEntryConfigureDlg extends CustomDialog
 {
-    private static final Logger log = Logger.getLogger(DataEntryConfigureDlg.class);
+    //private static final Logger log = Logger.getLogger(DataEntryConfigureDlg.class);
     
     protected DataEntryTask task;
     
     protected Vector<DataEntryView> stdViews       = null;
     protected Vector<DataEntryView> miscViews      = null;
     
+    protected JButton               mvToMiscBtn;
+    protected JButton               mvToStdBtn;
+
+    
     protected ViewsOrderPanel       stdPanel;
     protected ViewsOrderPanel       miscPanel;
     
-    protected AddRemoveEditPanel    stdAREPanel;
-    protected AddRemoveEditPanel    miscAREPanel;
-    
     protected boolean               hasChanged = false;
-
     
+    /**
+     * @param task
+     */
     public DataEntryConfigureDlg(final DataEntryTask task)
     {
-        super((Frame)getTopWindow(), getResourceString("Configure"), true, null);
+        super((Frame)getTopWindow(), getResourceString("DET_CONFIGURE_VIEWS"), true, null);
         
         this.task = task;
     }
@@ -91,73 +99,212 @@ public class DataEntryConfigureDlg extends CustomDialog
     {
         super.createUI();
         
-        try
+        stdViews  = task.getStdViews();
+        miscViews = task.getMiscViews();
+        
+        stdPanel  = new ViewsOrderPanel("DET_STANDARD", stdViews, true);
+        miscPanel = new ViewsOrderPanel("DET_MISC", miscViews, false);
+        
+        mvToMiscBtn = createIconBtn("Map", "DET_MOVE_TO_MISC_TT", new ActionListener()
         {
-            XStream xstream = new XStream();
-            
-            DataEntryXML.config(xstream);
-            DataEntryView.config(xstream);
-            
-            DataEntryXML dataEntryXML = (DataEntryXML)xstream.fromXML(AppContextMgr.getInstance().getResourceAsXML("DataEntryTaskInit")); // Describes the definitions of the full text search);
-            stdViews  = dataEntryXML.getStd();
-            miscViews = dataEntryXML.getMisc();
-            
-            Collections.sort(stdViews);
-            
-            stdPanel  = new ViewsOrderPanel("Standard", stdViews);
-            miscPanel = new ViewsOrderPanel("Misc", miscViews);
-            
-            CellConstraints cc     = new CellConstraints();
+            public void actionPerformed(ActionEvent ae)
+            {
+                moveToMisc();
+            }
+        });
+        mvToStdBtn = createIconBtn("Unmap", "DET_MOVE_TO_STD_TT", new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                moveToStd();
+            }
+        });
+        
+        CellConstraints cc     = new CellConstraints();
+        
+        PanelBuilder middlePanel = new PanelBuilder(new FormLayout("c:p:g", "p, 2px, p"));
+        middlePanel.add(mvToMiscBtn, cc.xy(1, 1));
+        middlePanel.add(mvToStdBtn, cc.xy(1, 3));
 
-            PanelBuilder mainPB = new PanelBuilder(new FormLayout("p,10px,p", "p"));
-            mainPB.add(stdPanel,  cc.xy(1,1));
-            mainPB.add(miscPanel, cc.xy(3,1));
+        PanelBuilder middlePanel2 = new PanelBuilder(new FormLayout("c:p:g", "f:p:g, p, f:p:g"));
+        middlePanel2.add(middlePanel.getPanel(), cc.xy(1, 2));
 
-            mainPB.getPanel().setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-            contentPanel = mainPB.getPanel();
-            mainPanel.add(contentPanel, BorderLayout.CENTER);
-            
+        PanelBuilder mainPB = new PanelBuilder(new FormLayout("p:g,5px,p,10px,p:g", "f:p:g"));
+        mainPB.add(stdPanel,  cc.xy(1,1));
+        mainPB.add(middlePanel2.getPanel(),  cc.xy(3,1));
+        mainPB.add(miscPanel, cc.xy(5,1));
+
+        mainPB.getPanel().setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        contentPanel = mainPB.getPanel();
+        mainPanel.add(contentPanel, BorderLayout.CENTER);
+        
+        pack();
+    }
+    
+    /**
+     * 
+     */
+    protected void moveToMisc()
+    {
+        int inx = stdPanel.getOrderList().getSelectedIndex();
+        if (inx > -1)
+        {
+            Object dev = stdPanel.getOrderList().getSelectedValue();
+            ((DefaultListModel)stdPanel.getOrderList().getModel()).removeElement(dev);
+            ((DefaultListModel)miscPanel.getOrderList().getModel()).addElement(dev);
             pack();
-            
-        } catch (Exception ex)
-        {
-            log.error(ex);
-            ex.printStackTrace();
         }
     }
     
+    /**
+     * 
+     */
+    protected void moveToStd()
+    {
+        int inx = miscPanel.getOrderList().getSelectedIndex();
+        if (inx > -1)
+        {
+            Object dev = miscPanel.getOrderList().getSelectedValue();
+            ((DefaultListModel)miscPanel.getOrderList().getModel()).removeElement(dev);
+            ((DefaultListModel)stdPanel.getOrderList().getModel()).addElement(dev);
+            pack();
+        }
+    }
+    
+    /**
+     * @param hasChangedArg
+     */
     protected void setHasChanged(final boolean hasChangedArg)
     {
         hasChanged = hasChangedArg;
         getOkBtn().setEnabled(hasChanged);
     }
     
-    protected void enableBtns(final JList list)
-    {
-       // int selectedIndex = list.getSelectedIndex();
-        
-    }
-    
+    /**
+     * @param list
+     */
     protected void addItem(final JList list)
     {
-        //int index = list.getSelectedIndex();
+        Hashtable<String, Object> hash = new Hashtable<String, Object>();
+        ListModel model = stdPanel.getOrderModel();
+        for (int i=0;i<model.getSize();i++)
+        {
+            DataEntryView dev = (DataEntryView)model.getElementAt(i);
+            hash.put(dev.getView(), dev);
+        }
+        
+        model = miscPanel.getOrderModel();
+        for (int i=0;i<model.getSize();i++)
+        {
+            DataEntryView dev = (DataEntryView)model.getElementAt(i);
+            hash.put(dev.getView(), dev);
+        }
+        
+        List<String>                 uniqueList    = new Vector<String>();
+        List<ViewIFace>              views         = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getAllViews();
+        Hashtable<String, ViewIFace> newAvailViews = new Hashtable<String, ViewIFace>();
+        for (ViewIFace view : views)
+        {
+            if (hash.get(view.getName()) == null)
+            {
+                hash.put(view.getName(), view);
+                uniqueList.add(view.getObjTitle());
+                newAvailViews.put(view.getObjTitle(), view);
+            }
+        }
+        
+        if (uniqueList.size() == 0)
+        {
+            JOptionPane.showMessageDialog(this, getResourceString("DET_DEV_NONE_AVAIL"), 
+                    getResourceString("DET_DEV_NONE_AVAIL_TITLE"), JOptionPane.INFORMATION_MESSAGE); 
+            return;
+        }
+        
+        ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>((Frame)UIRegistry.getTopWindow(),
+                getResourceString("DET_AVAIL_VIEWS"), uniqueList);
+        
+        dlg.setUseScrollPane(true);
+        UIHelper.centerAndShow(dlg);
+        
+        if (!dlg.isCancelled())
+        {
+            model = list.getModel();
+            
+            for (String name : dlg.getSelectedObjects())
+            {
+                ViewIFace     view = newAvailViews.get(name);
+                DBTableInfo   ti   = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
+                DataEntryView dev  = new DataEntryView(view.getObjTitle(), view.getViewSetName(), view.getName(), 
+                                                       ti != null ? ti.getName() : null, view.getObjTitle(), true);
+                
+                ((DefaultListModel)model).addElement(dev);
+            }
+            pack();
+        }
         setHasChanged(true);
     }
+    
+    /**
+     * @param panel
+     * @return
+     */
+    protected Vector<DataEntryView> getViews(ViewsOrderPanel panel)
+    {
+        Vector<DataEntryView> list = new Vector<DataEntryView>();
+        for (int i=0;i<panel.getOrderModel().getSize();i++)
+        {
+            list.add((DataEntryView)panel.getOrderModel().getElementAt(i));
+        }
+        return list;
+    }
 
+    /**
+     * @return
+     */
+    public Vector<DataEntryView> getStdViews()
+    {
+        return getViews(stdPanel);
+    }
+
+    /**
+     * @return
+     */
+    public Vector<DataEntryView> getMiscViews()
+    {
+        return getViews(miscPanel);
+    }
+
+    /**
+     * @param list
+     */
     protected void removeItem(final JList list)
     {
         int index = list.getSelectedIndex();
-        list.remove(index);
-        setHasChanged(true);
-        list.repaint();
+        if (index > -1)
+        {
+            ((DefaultListModel)list.getModel()).remove(index);
+            setHasChanged(true);
+            list.repaint();
+        }
     }
 
+    /**
+     * @param list
+     */
     protected void editItem(final JList list)
     {
-        //int index = list.getSelectedIndex();
     }
 
+    /**
+     * item selected in either list.
+     */
+    protected void itemSelected()
+    {
+        mvToMiscBtn.setEnabled(!stdPanel.getOrderList().isSelectionEmpty());
+        mvToStdBtn.setEnabled(!miscPanel.getOrderList().isSelectionEmpty());
+    }
     
+    //---------------------------------------------------------------------
     public class ViewsOrderPanel extends JPanel
     {
         // Table Ordering
@@ -171,16 +318,21 @@ public class DataEntryConfigureDlg extends CustomDialog
         /**
          * 
          */
-        public ViewsOrderPanel(final String titleKey, final Vector<DataEntryView> views)
+        public ViewsOrderPanel(final String titleKey, 
+                               final Vector<DataEntryView> views,
+                               final boolean orderOnLeft)
         {
             
-            PanelBuilder    outer = new PanelBuilder(new FormLayout("f:p:g,2px,p", "p,2px,f:p:g,2px,p"), this);
-            CellConstraints cc      = new CellConstraints();
+            PanelBuilder    outer = new PanelBuilder(new FormLayout(orderOnLeft ? "p,2px,f:p:g" : "f:p:g,2px,p", "p,2px,f:p:g,2px,p"), this);
+            CellConstraints cc    = new CellConstraints();
             
             orderModel = new DefaultListModel();
             for (DataEntryView dev : views)
             {
-                orderModel.addElement(dev);
+                if (dev.isSideBar())
+                {
+                    orderModel.addElement(dev);
+                }
             }
             orderList = new JList(orderModel);
             orderList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -188,12 +340,9 @@ public class DataEntryConfigureDlg extends CustomDialog
                 public void valueChanged(ListSelectionEvent e)
                 {
                     updateEnabledState();
+                    itemSelected();
                 }
             });
-            
-            outer.add(new JLabel(getResourceString(titleKey)), cc.xy(1,1));
-            JScrollPane sp = new JScrollPane(orderList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-            outer.add(sp, cc.xy(1, 3));
             
             orderUpBtn = createIconBtn("ReorderUp", "ES_RES_MOVE_UP", new ActionListener()
             {
@@ -232,19 +381,20 @@ public class DataEntryConfigureDlg extends CustomDialog
                 {
                     removeItem(orderList);
                 }
-            }, new ActionListener() {
-                public void actionPerformed(ActionEvent e)
-                {
-                    editItem(orderList);
-                }
-            });
+            }, null);
             
             PanelBuilder upDownPanel = new PanelBuilder(new FormLayout("p", "f:p:g, p, 2px, p, f:p:g"));        
             upDownPanel.add(orderUpBtn,       cc.xy(1, 2));
             upDownPanel.add(orderDwnBtn,      cc.xy(1, 4));
             
-            outer.add(upDownPanel.getPanel(), cc.xy(3, 3));
-            outer.add(arePanel, cc.xy(1, 5));
+            int col = orderOnLeft ? 3 : 1;
+            outer.add(new JLabel(getResourceString(titleKey), SwingConstants.CENTER), cc.xy(col, 1));
+            JScrollPane sp = new JScrollPane(orderList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+            outer.add(sp,                     cc.xy(col, 3));
+            outer.add(arePanel,               cc.xy(col, 5));
+            
+            outer.add(upDownPanel.getPanel(), cc.xy(orderOnLeft ? 1 : 3, 3));
+            
             outer.getPanel().setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
             
             arePanel.getAddBtn().setEnabled(true);
@@ -272,7 +422,6 @@ public class DataEntryConfigureDlg extends CustomDialog
             return orderList;
         }
 
-
         /**
          * @return the orderModel
          */
@@ -280,7 +429,5 @@ public class DataEntryConfigureDlg extends CustomDialog
         {
             return orderModel;
         }
-        
-        
     }
 }

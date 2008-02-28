@@ -275,6 +275,36 @@ public class ContextMgr
     }
 
     /**
+     * Removes all the ServiceInfo object that are "owned" by a task.
+     * @param task the task that owns the services
+     */
+    public static void removeServicesByTaskAndTable(final Taskable task,
+                                                    final int      tableId)
+    {
+        Vector<ServiceInfo> list = new Vector<ServiceInfo>(instance.services.values());
+        
+        for (ServiceInfo service : list)
+        {
+            if (service.getTask() == task && service.getTableId() == tableId)
+            {
+                instance.services.remove(service.getHashKey());
+            }
+        }
+        
+        for (Collection<ServiceInfo> srvList : instance.servicesByTable.values())
+        {
+            for (ServiceInfo srv : new Vector<ServiceInfo>(srvList))
+            {
+                if (srv.getTask() == task)
+                {
+                    srvList.remove(srv);
+                }
+            }
+        }
+    }
+
+
+    /**
      * Returns the ServiceInfo object for a given service and the table it is to act upon.
      * @param serviceName name of service to be provided
      * @param tableId the table ID of the data to be serviced

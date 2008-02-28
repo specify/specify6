@@ -35,6 +35,7 @@ import org.apache.log4j.Logger;
 import com.thoughtworks.xstream.XStream;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
@@ -42,6 +43,7 @@ import edu.ku.brc.af.core.NavBoxAction;
 import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.NavBoxItemIFace;
+import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.ServiceInfo;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
@@ -444,7 +446,6 @@ public class DataEntryTask extends BaseTask
                 DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
                 dev.setTableInfo(tableInfo);
                 
-                //System.out.println(view.getClassName()+" "+ti);
                 if (tableInfo != null)
                 {
                     CommandAction cmdAction = new CommandAction(DATA_ENTRY, EDIT_DATA);
@@ -471,18 +472,12 @@ public class DataEntryTask extends BaseTask
                                colObjNavBtn = nbb; 
                             }
                             
-                            //RolloverCommand roc = (RolloverCommand)nbb;
-                            //roc.setData(cmdAction);
-                            
                             // When Being Dragged
                             nbb.addDragDataFlavor(Trash.TRASH_FLAVOR);
-                            //roc.addDragDataFlavor(DATAENTRY_FLAVOR);
                             nbb.addDragDataFlavor(new DataFlavorTableExt(DataEntryTask.class, "Data_Entry", tableInfo.getTableId()));
                     
                             // When something is dropped on it
-                            //roc.addDropDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
                             nbb.addDropDataFlavor(new DataFlavorTableExt(RecordSetTask.class, "RECORD_SET", tableInfo.getTableId()));//RecordSetTask.RECORDSET_FLAVOR);
-
                         }
     
                         viewsNavBox.add(nbi);
@@ -584,26 +579,11 @@ public class DataEntryTask extends BaseTask
                 config(xstream);
                 
                 DataEntryXML dataEntryXML = (DataEntryXML)xstream.fromXML(AppContextMgr.getInstance().getResourceAsXML("DataEntryTaskInit")); // Describes the definitions of the full text search);
-                buildFormNavBoxes(dataEntryXML.getStd());
+                
                 stdViews  = dataEntryXML.getStd();
                 miscViews = dataEntryXML.getMisc();
                 
-                if (miscViews != null && !miscViews.isEmpty())
-                {
-                    initDataEntryViews(miscViews);
-                    
-                    NavBoxItemIFace nbi = NavBox.createBtnWithTT(getResourceString("DET_MISC_FORMS"),
-                                                                 name, 
-                                                                 getResourceString("DET_CHOOSE_TT"), 
-                                                                 IconManager.IconSize.Std16, createMiscActionListener());
-                    
-                    NavBoxButton roc = (NavBoxButton)nbi;
-                    for (DataEntryView dev : miscViews)
-                    {
-                        roc.addDropDataFlavor(new DataFlavorTableExt(DataEntryTask.class, "RECORD_SET", dev.getTableInfo().getTableId()));
-                    }
-                    viewsNavBox.add(nbi);
-                }
+                buildNavBoxes(stdViews, miscViews);
                 
             } catch (Exception ex)
             {
@@ -612,6 +592,33 @@ public class DataEntryTask extends BaseTask
             }
         }
         ViewLoader.setDoFieldVerification(cacheDoVerify);
+    }
+    
+    /**
+     * @param stdList
+     * @param miscList
+     */
+    protected void buildNavBoxes(final Vector<DataEntryView> stdList,
+                                 final Vector<DataEntryView> miscList)
+    {
+        buildFormNavBoxes(stdList);
+        
+        if (miscList != null && !miscList.isEmpty())
+        {
+            initDataEntryViews(miscList);
+            
+            NavBoxItemIFace nbi = NavBox.createBtnWithTT(getResourceString("DET_MISC_FORMS"),
+                                                         name, 
+                                                         getResourceString("DET_CHOOSE_TT"), 
+                                                         IconManager.IconSize.Std16, createMiscActionListener());
+            
+            NavBoxButton roc = (NavBoxButton)nbi;
+            for (DataEntryView dev : miscList)
+            {
+                roc.addDropDataFlavor(new DataFlavorTableExt(DataEntryTask.class, "RECORD_SET", dev.getTableInfo().getTableId()));
+            }
+            viewsNavBox.add(nbi);
+        }
     }
     
     /**
@@ -627,7 +634,8 @@ public class DataEntryTask extends BaseTask
         } else
         {
             ToggleButtonChooserDlg<DataEntryView> dlg = new ToggleButtonChooserDlg<DataEntryView>((Frame)UIRegistry.getTopWindow(), 
-                    getResourceString("DET_CHOOSE_TITLE"), miscViews, ToggleButtonChooserPanel.Type.RadioButton);
+                    "DET_CHOOSE_TITLE", miscViews, ToggleButtonChooserPanel.Type.RadioButton);
+            dlg.setUseScrollPane(true);
             dlg.setVisible(true);
             if (!dlg.isCancelled())
             {
@@ -682,7 +690,7 @@ public class DataEntryTask extends BaseTask
         
         if (starterPane == null)
         {
-            starterPane = new DroppableFormRecordSetAccepter(title, this, "Drop a Bundle here."); // I18N
+            starterPane = new DroppableFormRecordSetAccepter(title, this, getResourceString("DET_DROP_BUNDLE"));
         }
         
         return starterPane;
@@ -716,9 +724,24 @@ public class DataEntryTask extends BaseTask
     {
         Vector<MenuItemDesc> list = new Vector<MenuItemDesc>();
         return list;
-
     }
     
+    /**
+     * @return the stdViews
+     */
+    public Vector<DataEntryView> getStdViews()
+    {
+        return stdViews;
+    }
+
+    /**
+     * @return the miscViews
+     */
+    public Vector<DataEntryView> getMiscViews()
+    {
+        return miscViews;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.plugins.Taskable#getTaskClass()
      */
@@ -743,6 +766,57 @@ public class DataEntryTask extends BaseTask
             {
                 DataEntryConfigureDlg dlg = new DataEntryConfigureDlg(DataEntryTask.this);
                 UIHelper.centerAndShow(dlg);
+                if (!dlg.isCancelled())
+                {
+                    viewsNavBox.clear();
+                    
+                    Vector<DataEntryView> stds  = dlg.getStdViews();
+                    Vector<DataEntryView> miscs = dlg.getMiscViews();
+                    
+                    // Add the non-visible once from the old list
+                    for (DataEntryView dev : stdViews)
+                    {
+                        if (!dev.isSideBar())
+                        {
+                            stds.add(dev);
+                        }
+                        // Unregister it as a service
+                        ContextMgr.removeServicesByTaskAndTable(DataEntryTask.this, dev.getTableInfo().getTableId());
+                    }
+                    
+                    // Add the non-visible once from the old list
+                    for (DataEntryView dev : miscViews)
+                    {
+                        if (!dev.isSideBar())
+                        {
+                            miscs.add(dev);
+                        }
+                        // Unregister it as a service
+                        ContextMgr.removeServicesByTaskAndTable(DataEntryTask.this, dev.getTableInfo().getTableId());
+                    }
+                    
+                    buildNavBoxes(stds, miscs);
+                    
+                    viewsNavBox.validate();
+                    viewsNavBox.doLayout();
+                    NavBoxMgr.getInstance().validate();
+                    NavBoxMgr.getInstance().doLayout();
+                    NavBoxMgr.getInstance().repaint();
+                    
+                    stdViews  = stds;
+                    miscViews = miscs;
+                    
+                    // Persist out to database
+                    DataEntryXML dataEntryXML = new DataEntryXML(stdViews, miscViews);
+                    
+                    XStream xstream = new XStream();
+                    config(xstream);
+                    
+                    AppResourceIFace appRes = AppContextMgr.getInstance().getResource("DataEntryTaskInit");
+                    appRes.setDataAsString(xstream.toXML(dataEntryXML));
+                    
+                    ((SpecifyAppContextMgr)AppContextMgr.getInstance()).saveResource(appRes);
+                }
             }
         });
         

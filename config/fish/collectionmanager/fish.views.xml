@@ -4,6 +4,7 @@
     <views>
         <view name="CollectingEvent"
             class="edu.ku.brc.specify.datamodel.CollectingEvent"
+            isinternal="false"
             resourcelabels="false">
             <desc><![CDATA[CollectingEvent Form]]></desc>
             <altviews>
@@ -14,6 +15,7 @@
         
         <view name="CollectionObject"
             class="edu.ku.brc.specify.datamodel.CollectionObject"
+            isinternal="false"
             resourcelabels="false"
             >
             <desc><![CDATA[The Collection Object form.]]></desc>

@@ -1,0 +1,8 @@
+<vector>
+  <string>Agent</string>
+  <string>CollectingEvent</string>
+  <string>Collection</string>
+  <string>CollectionObject</string>
+  <string>Locality</string>
+  <string>Taxon</string>
+</vector>

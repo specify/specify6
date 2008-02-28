@@ -785,6 +785,34 @@ public class SpecifyAppContextMgr extends AppContextMgr
     {
         return spAppResourceList;
     }
+    
+    /**
+     * @return all unique views
+     */
+    public List<ViewIFace> getAllViews()
+    {
+        Hashtable<String, ViewIFace> viewHash = new Hashtable<String, ViewIFace>();
+        
+        for (SpAppResourceDir appResDir : spAppResourceList)
+        {
+            //if (appResDir.getDiscipline() != null && appResDir.getDiscipline() == discipline)
+            {
+                for (ViewSetIFace vs : getViewSetList(appResDir))
+                {
+                    Hashtable<String, ViewIFace> vsHash = vs.getViews();
+                    for (ViewIFace view : vsHash.values())
+                    {
+                        if (!view.isInternal() && viewHash.get(view.getName()) == null)
+                        {
+                            viewHash.put(view.getName(), view);
+                        }
+                    }
+                }
+            }
+        }
+        
+        return new Vector<ViewIFace>(viewHash.values());
+    }
 
     /**
      * Finds a View by name using a Discipline.
@@ -800,9 +828,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
         for (SpAppResourceDir appResDir : spAppResourceList)
         {
             if (debug) log.debug("Looking["+(appResDir.getDiscipline() != null ? appResDir.getDiscipline().getName() : "null")+"]["+(discipline != null ? discipline.getName() : "null")+"]");
-            
-            int x = 0;
-            x++;
             
             if (appResDir.getDiscipline() != null && appResDir.getDiscipline() == discipline)
             {
@@ -893,9 +918,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
         {
             if (debug) log.debug("getView "+getSpAppResDefAsString(appResDef)+"  ["+appResDef.getUniqueIdentifer()+"]\n  ["+appResDef.getIdentityTitle()+"]");
             
-            int x = 0;
-            x++;
-            
             for (ViewSetIFace vs : getViewSetList(appResDef))
             {
                 if (debug) log.debug("VS  ["+vs.getName()+"]["+viewSetName+"]");
@@ -920,7 +942,37 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     public AppResourceIFace getResource(final String name)
     {
-        return  getResource(name, true);
+        return getResource(name, true);
+    }
+    
+    /**
+     * @param appRes
+     * @return
+     */
+    public boolean saveResource(final AppResourceIFace appRes)
+    {
+        DataProviderSessionIFace session = null;
+        try
+        {
+            session = DataProviderFactory.getInstance().createSession();
+            session.beginTransaction();
+            session.saveOrUpdate(appRes);
+            session.commit();
+            
+            return true;
+            
+        } catch (Exception ex)
+        {
+            log.error(ex);
+            
+        } finally 
+        {
+            if (session != null)
+            {
+                session.close();
+            }
+        }
+        return false;
     }
 
     /**

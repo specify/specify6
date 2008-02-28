@@ -41,6 +41,18 @@ public class DataEntryXML
     {
         super();
     }
+    
+    /**
+     * 
+     */
+    public DataEntryXML(final Vector<DataEntryView> stds, 
+                        final Vector<DataEntryView> miscs)
+    {
+        super();
+        std.addAll(stds);
+        misc.addAll(miscs);
+    }
+    
     /**
      * @return the std
      */

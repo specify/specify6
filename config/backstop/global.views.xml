@@ -4,6 +4,7 @@
     <views>
         <view name="Accession"
               class="edu.ku.brc.specify.datamodel.Accession"
+              isinternal="false"
               resourcelabels="false">
             <desc><![CDATA[The Accession form.]]></desc>
             <altviews>
@@ -25,6 +26,7 @@
 
         <view name="Agent"
             class="edu.ku.brc.specify.datamodel.Agent"
+            isinternal="false"
             resourcelabels="false">
             <desc><![CDATA[Agent subform within the AccessionAgent form.]]></desc>
             <altviews defaultmode="view">
@@ -57,6 +59,7 @@
         
         <view name="Permit"
             class="edu.ku.brc.specify.datamodel.Permit"
+            isinternal="false"
             resourcelabels="false">
             <desc><![CDATA[Permit subform within the Accession form.]]></desc>
             <altviews  defaultmode="view">
@@ -119,6 +122,7 @@
         
         <view name="Locality"
             class="edu.ku.brc.specify.datamodel.Locality"
+            isinternal="false"
             resourcelabels="false">
             <desc><![CDATA[Locality form.]]></desc>
             <altviews>
@@ -169,6 +173,7 @@
         
         <view name="Journal"
             class="edu.ku.brc.specify.datamodel.Journal"
+            isinternal="false"
             resourcelabels="false">
             <desc><![CDATA[The Journal Form.]]></desc>
             <altviews>
@@ -179,6 +184,7 @@
         
         <view name="ReferenceWork"
             class="edu.ku.brc.specify.datamodel.ReferenceWork"
+            isinternal="false"
             resourcelabels="false">
             <desc><![CDATA[The ReferenceWork Form.]]></desc>
             <altviews>
@@ -228,6 +234,7 @@
   
         <view name="Taxon"
             class="edu.ku.brc.specify.datamodel.Taxon"
+            isinternal="false"
             resourcelabels="false">
             <desc><![CDATA[Taxon data entry form.]]></desc>
             <altviews>
@@ -250,6 +257,7 @@
         
         <view name="Geography"
             class="edu.ku.brc.specify.datamodel.Geography"
+            isinternal="false"
             resourcelabels="false">
             <desc><![CDATA[Geography data entry form.]]></desc>
             <altviews>
@@ -272,6 +280,7 @@
         
         <view name="Storage"
             class="edu.ku.brc.specify.datamodel.Storage"
+            isinternal="false"
             resourcelabels="false">
             <desc><![CDATA[Storage data entry form.]]></desc>
             <altviews>
@@ -294,6 +303,7 @@
         
         <view name="GeologicTimePeriod"
             class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
+            isinternal="false"
             resourcelabels="false">
             <desc><![CDATA[GeologicTimePeriod data entry form.]]></desc>
             <altviews>
@@ -316,6 +326,7 @@
         
         <view name="LithoStrat"
             class="edu.ku.brc.specify.datamodel.LithoStrat"
+            isinternal="false"
             resourcelabels="false">
             <desc><![CDATA[LithoStrat data entry form.]]></desc>
             <altviews>
