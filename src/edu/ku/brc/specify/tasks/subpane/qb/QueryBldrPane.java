@@ -295,7 +295,7 @@ public class QueryBldrPane extends BaseSubPane
         CellConstraints cc = new CellConstraints();
         builder.add(searchBtn, cc.xy(2, 1));
         builder.add(distinctChk, cc.xy(3, 1));
-        final JPanel mover = bldMoverPanel();
+        final JPanel mover = buildMoverPanel();
         builder.add(mover, cc.xy(4, 1));
 
         outer.add(builder.getPanel(), cc.xy(1, 1));
@@ -586,8 +586,8 @@ public class QueryBldrPane extends BaseSubPane
         
         
         //return "select co0.collectionObjectId, co0.catalogNumber, det0.determinedDate from CollectionObject co0  left join co0.determinations det0  where (co0.collectionMemberId = 1) AND (det0.collectionMemberId = 1)";
-        return "select ce0.collectingEventId, ce0.startDate, ce0.collectingEventId from CollectingEvent ce0 where (ce0.collectionMemberId = 1 or ce0 is null)";
-        //return sqlStr.toString();
+        //return "select ce0.collectingEventId, ce0.startDate, ce0.collectingEventId from CollectingEvent ce0 where (ce0.collectionMemberId = 1 or ce0 is null)";
+        return sqlStr.toString();
     }
     
     /**
@@ -608,7 +608,7 @@ public class QueryBldrPane extends BaseSubPane
     /**
      * @return Panel with up and down arrows for moving fields up and down in queryFieldsPanel.
      */
-    protected JPanel bldMoverPanel()
+    protected JPanel buildMoverPanel()
     {
         orderUpBtn = createIconBtn("ReorderUp", "QB_FLD_MOVE_UP", new ActionListener()
         {
