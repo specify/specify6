@@ -584,8 +584,10 @@ public class QueryBldrPane extends BaseSubPane
         
         //return "select co0.collectionObjectId, co0.catalogNumber, pp0.count from CollectionObject co0  left join co0.preparations pp0  where (pp0.collectionMemberId = 1 or pp0 is null)";
         
+        
         //return "select co0.collectionObjectId, co0.catalogNumber, det0.determinedDate from CollectionObject co0  left join co0.determinations det0  where (co0.collectionMemberId = 1) AND (det0.collectionMemberId = 1)";
-        return sqlStr.toString();
+        return "select ce0.collectingEventId, ce0.startDate, ce0.collectingEventId from CollectingEvent ce0 where (ce0.collectionMemberId = 1 or ce0 is null)";
+        //return sqlStr.toString();
     }
     
     /**
@@ -721,7 +723,16 @@ public class QueryBldrPane extends BaseSubPane
                 {
                     lbl = lbl.replaceAll(" ", "_");
                 }
-                ERTICaptionInfo erti = new ERTICaptionInfo(colName, lbl, true, qfp.getFieldQRI().getFormatter(), 0);
+                ERTICaptionInfo erti;
+                //if (qfp.getFieldQRI() instanceof RelQRI)
+                //{
+                //    erti = new ERTICaptionInfoRel(colName, lbl, true, qfp.getFieldQRI().getFormatter(), 0,
+                //            ((RelQRI)qfp.getFieldQRI()).getRelationshipInfo());
+                //}
+                //else
+                {
+                    erti = new ERTICaptionInfo(colName, lbl, true, qfp.getFieldQRI().getFormatter(), 0);
+                }
                 erti.setColClass(qfp.getFieldQRI().getDataClass());
                 result.add(erti);
             }

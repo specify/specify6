@@ -20,8 +20,10 @@ import java.beans.PropertyChangeListener;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Stack;
 import java.util.Vector;
@@ -30,8 +32,6 @@ import javax.swing.table.AbstractTableModel;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-
-import java.sql.Timestamp;
 
 import edu.ku.brc.af.core.expresssearch.ERTICaptionInfo;
 import edu.ku.brc.af.prefs.AppPrefsCache;
@@ -658,7 +658,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                             
                         } else if (row != null)
                         {
-                            Object obj = resultSet.getObject(posIndex + 1);
+                            Object obj = caption.processValue(resultSet.getObject(posIndex + 1));
                             row.add(obj);
                         }
                     }
@@ -710,6 +710,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
     {
         JPAQuery jpaQuery = (JPAQuery)customQuery;
         List<?> list      = jpaQuery.getDataObjects();
+        List<ERTICaptionInfo> captions = results.getVisibleCaptionInfo();
         
         log.debug("Results size: "+list.size());
         
@@ -734,12 +735,14 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                 
             } else*/
             {
+                
                 for (Object rowObj : list)
                 {
                     Vector<Object> row = new Vector<Object>(list.size());
                     if (rowObj.getClass().isArray())
                     {
                         int col = 0;
+                        Iterator<ERTICaptionInfo> cols = captions.iterator();                        
                         for (Object colObj : (Object[])rowObj)
                         {
                             if (col == 0)
@@ -750,11 +753,11 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                                 } else
                                 {
                                     log.error("First Column must be Integer id! ["+colObj+"]");
-                                    row.add(colObj);
+                                    row.add(cols.next().processValue(colObj));
                                 }
                             } else
                             {
-                                row.add(colObj);
+                                row.add(cols.next().processValue(colObj));
                             }
                             col++;
                         }

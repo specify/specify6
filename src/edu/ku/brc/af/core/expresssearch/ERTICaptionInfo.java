@@ -506,4 +506,14 @@ public class ERTICaptionInfo
         return uiFieldFormatter;
     }
 
+    /**
+     * @param value
+     * @return value
+     * 
+     * Descendant classes may transform value or use it as a lookup to obtain a new value.
+     */
+    public Object processValue(final Object value)
+    {
+        return value;
+    }
 }

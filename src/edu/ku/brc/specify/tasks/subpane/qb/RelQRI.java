@@ -26,13 +26,13 @@ import edu.ku.brc.ui.UIHelper;
  */
 public class RelQRI extends FieldQRI
 {
-    protected DBRelationshipInfo ri;
+    protected DBRelationshipInfo relationshipInfo;
     
     public RelQRI(final TableQRI parent, final DBRelationshipInfo ri)
     {
         super(parent, null);
 
-        this.ri = ri;
+        this.relationshipInfo = ri;
 
         try
         {
@@ -78,9 +78,9 @@ public class RelQRI extends FieldQRI
         {
             return super.getFieldName();
         }
-        if (ri != null)
+        if (relationshipInfo != null)
         {
-            return ri.getName();
+            return relationshipInfo.getName();
         }
         return table.getTableInfo().getName();
     }
@@ -102,14 +102,14 @@ public class RelQRI extends FieldQRI
     @Override
     public String getSQLFldSpec(TableAbbreviator ta)
     {
-        return ta.getAbbreviation(table.getTableTree().getParent()) + "." + ri.getName();
-//        if (StringUtils.isNotEmpty(ri.getColName()))
-//        {
-//            //String fld = UploadTable.deCapitalize(ri.getColName()).replace("ID", "Id");
-//            String fld = UploadTable.deCapitalize(ri.getColName()).replace("ID", "Id").replace("Id", "");
-//            return ta.getAbbreviation(table.getTableTree().getParent()) + "." + fld;
-//        }
-//        return null;
+        //return ta.getAbbreviation(table.getTableTree().getParent()) + "." + relationshipInfo.getName();
+        if (StringUtils.isNotEmpty(relationshipInfo.getColName()))
+        {
+            //String fld = UploadTable.deCapitalize(ri.getColName()).replace("ID", "Id");
+            String fld = UploadTable.deCapitalize(relationshipInfo.getColName()).replace("ID", "Id")/*.replace("Id", "")*/;
+            return ta.getAbbreviation(table.getTableTree().getParent()) + "." + fld;
+        }
+        return ta.getAbbreviation(table.getTableTree().getParent()) + "." + relationshipInfo.getOtherSide() + "Id";
     }
 
     @Override
@@ -117,4 +117,15 @@ public class RelQRI extends FieldQRI
     {
         return true;
     }
+
+
+    /**
+     * @return the relationshipInfo
+     */
+    public DBRelationshipInfo getRelationshipInfo()
+    {
+        return relationshipInfo;
+    }
+    
+    
 }
