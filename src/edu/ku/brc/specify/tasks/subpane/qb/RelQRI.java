@@ -102,14 +102,11 @@ public class RelQRI extends FieldQRI
     @Override
     public String getSQLFldSpec(TableAbbreviator ta)
     {
-        //return ta.getAbbreviation(table.getTableTree().getParent()) + "." + relationshipInfo.getName();
-        if (StringUtils.isNotEmpty(relationshipInfo.getColName()))
+        if (relationshipInfo.getType().equals(DBRelationshipInfo.RelationshipType.OneToMany))
         {
-            //String fld = UploadTable.deCapitalize(ri.getColName()).replace("ID", "Id");
-            String fld = UploadTable.deCapitalize(relationshipInfo.getColName()).replace("ID", "Id")/*.replace("Id", "")*/;
-            return ta.getAbbreviation(table.getTableTree().getParent()) + "." + fld;
+            return ta.getAbbreviation(table.getTableTree().getParent()) + "." + relationshipInfo.getOtherSide() + "Id";
         }
-        return ta.getAbbreviation(table.getTableTree().getParent()) + "." + relationshipInfo.getOtherSide() + "Id";
+        return ta.getAbbreviation(table.getTableTree().getParent()) + "." + relationshipInfo.getName();
     }
 
     @Override

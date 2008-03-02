@@ -439,7 +439,16 @@ public class QueryBldrPane extends BaseSubPane
             list.clear();
             FieldQRI pqri = qfi.getFieldQRI();
             TableTree parent = pqri.getTableTree();
-            list.insertElementAt(pqri, 0);
+            if (pqri instanceof RelQRI)
+            {
+                //parent will initially point to the related table
+                //and don't need to add related table unless it has children displayed/queried,
+                parent = parent.getParent();
+            }
+            else
+            {
+                list.insertElementAt(pqri, 0);
+            }
             while (parent != tableTree)
             {
                 list.insertElementAt(parent.getTableQRI(), 0);
@@ -530,12 +539,12 @@ public class QueryBldrPane extends BaseSubPane
                     {
                         fieldsStr.append(", ");
                     }
-                    fieldsStr.append(qfi.getFieldQRI().getSQLFldSpec(tableAbbreviator));
+                    fieldsStr.append(fldSpec);
                 }
             }
 
             String alias = tableAbbreviator.getAbbreviation(qfi.getFieldQRI().getTableTree());
-            if (!checkedForSpecialColumns.contains(alias))
+            if (!checkedForSpecialColumns.contains(alias)  && !(qfi.getFieldQRI() instanceof RelQRI))
             {
                 String specialColumnWhere = QueryAdjusterForDomain.getInstance().getSpecialColumns(
                         qfi.getFieldQRI().getTableInfo(), true, true/*XXX should only use left join when necessary*/, alias);
@@ -586,8 +595,29 @@ public class QueryBldrPane extends BaseSubPane
         
         
         //return "select co0.collectionObjectId, co0.catalogNumber, det0.determinedDate from CollectionObject co0  left join co0.determinations det0  where (co0.collectionMemberId = 1) AND (det0.collectionMemberId = 1)";
-        //return "select ce0.collectingEventId, ce0.startDate, ce0.collectingEventId from CollectingEvent ce0 where (ce0.collectionMemberId = 1 or ce0 is null)";
-        return sqlStr.toString();
+        //return "select ce0.collectingEventId, ce0.startDate, ce0.collectingEventId, ce0.locality from CollectingEvent ce0 where (ce0.collectionMemberId = 1 or ce0 is null)";
+        
+        String result = sqlStr.toString();
+        //String result = "select ce0.collectingEventId, ce0.startDate, ce0.collectingEventId, co0.accession from CollectingEvent ce0  left join ce0.collectionObjects co0  where (ce0.collectionMemberId = 1 or ce0 is null)";
+//        DataProviderSessionIFace session = DataProviderFactory.getInstance()
+//        .createSession();
+//        try
+//        {
+//            QueryIFace q = session.createQuery(result);
+//            System.out.println("Records returned:" + q.list().size());
+//        }
+//        catch (Exception e)
+//        {
+//            e.printStackTrace();
+//            throw new RuntimeException(e);
+//        }
+//        finally
+//        {
+//            session.close();
+//        }
+        return result;
+        //return "select ce0.collectingEventId, ce0.startDate, ce0.collectingEventId, co0.accession from CollectingEvent ce0  left join ce0.collectionObjects co0  where (ce0.collectionMemberId = 1 or ce0 is null)";
+        //return sqlStr.toString();
     }
     
     /**
@@ -724,12 +754,12 @@ public class QueryBldrPane extends BaseSubPane
                     lbl = lbl.replaceAll(" ", "_");
                 }
                 ERTICaptionInfo erti;
-                //if (qfp.getFieldQRI() instanceof RelQRI)
-                //{
-                //    erti = new ERTICaptionInfoRel(colName, lbl, true, qfp.getFieldQRI().getFormatter(), 0,
-                //            ((RelQRI)qfp.getFieldQRI()).getRelationshipInfo());
-                //}
-                //else
+                if (qfp.getFieldQRI() instanceof RelQRI)
+                {
+                    erti = new ERTICaptionInfoRel(colName, lbl, true, qfp.getFieldQRI().getFormatter(), 0,
+                            ((RelQRI)qfp.getFieldQRI()).getRelationshipInfo());
+                }
+                else
                 {
                     erti = new ERTICaptionInfo(colName, lbl, true, qfp.getFieldQRI().getFormatter(), 0);
                 }

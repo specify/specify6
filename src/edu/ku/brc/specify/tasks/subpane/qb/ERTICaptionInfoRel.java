@@ -9,7 +9,7 @@
  */
 package edu.ku.brc.specify.tasks.subpane.qb;
 
-import java.util.List;
+import java.util.Collection;
 
 import edu.ku.brc.af.core.expresssearch.ERTICaptionInfo;
 import edu.ku.brc.dbsupport.DBRelationshipInfo;
@@ -26,7 +26,7 @@ import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
  *
  *This class is sort of a 'self-aggregating' or 'self-formatting' version of ERTICaptionInfo.
  *The values in the column represented are keys or foreign keys which, along with the relationship
- *property,  are used to obtain objects which aggregated and formatted.
+ *property,  are used to obtain objects which are aggregated and formatted.
  *
  */
 public class ERTICaptionInfoRel extends ERTICaptionInfo
@@ -127,18 +127,28 @@ public class ERTICaptionInfoRel extends ERTICaptionInfo
     }
     
     /**
-     * @param key
-     * @return
+     * @param value
+     * @return List of related of objects if value is a key, or
+     * value cast to a collection if it is not a key.
      */
-    protected List<?> getList(final Object key)
+    protected Collection<?> getList(final Object value)
+    {
+        if (value instanceof Integer)
+        {
+            return getListFromKey(value);
+        }
+        return (Collection<?>)value;
+    }
+    
+    /**
+     * @param key
+     * @return set of related objects for key.
+     */
+    protected Collection<?> getListFromKey(final Object key)
     {
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
-//            return session.getDataList(relationship.getDataClass(), 
-//                    relationship.getColName() != null ? relationship.getColName() 
-//                            : relationship.getOtherSide() + "Id",
-//                    key);
             return session.getDataList("from " + relationship.getDataClass().getName() + " where "
                     + (relationship.getColName() != null ? relationship.getColName() 
                             : relationship.getOtherSide() + "Id")
@@ -151,10 +161,26 @@ public class ERTICaptionInfoRel extends ERTICaptionInfo
     }
     
     /**
+     * @param value
+     * @return related object if value is a key, or value itself if it is not a key.
+     */
+    protected Object getObject(final Object value)
+    {
+        if (value instanceof Integer)
+        {
+            //assume it's a key..
+            return getObjectFromKey(value);
+        }
+        //else
+        //assume its a DataModelObjBase
+        return value;
+    }
+    
+    /**
      * @param key
      * @return
      */
-    protected Object getObject(final Object key)
+    protected Object getObjectFromKey(final Object key)
     {
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
