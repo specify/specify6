@@ -97,6 +97,8 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
     protected Boolean      isDisplay;
     protected Boolean      isPrompt;  //whether or not criteria for this field is requested when it's query is run
                                       //outside the querybuilder context.
+    protected Boolean      isRelFld;  //true if this field represents a relationship 
+                                      //(the data object or objects on the 'other' side of the relationship)
     
     protected Byte         operStart;
     protected Byte         operEnd;
@@ -174,6 +176,14 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
     public void setIsPrompt(Boolean isPrompt)
     {
         this.isPrompt = isPrompt;
+    }
+
+    /**
+     * @param isRelFld the isRelFld to set
+     */
+    public void setIsRelFld(Boolean isRelFld)
+    {
+        this.isRelFld = isRelFld;
     }
 
     /**
@@ -287,6 +297,15 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
     public Boolean getIsPrompt()
     {
         return isPrompt;
+    }
+
+    /**
+     * @return the isRelFld
+     */
+    @Column(name = "IsRelFld", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getIsRelFld()
+    {
+        return isRelFld;
     }
 
     /**

@@ -1046,7 +1046,7 @@ public class QueryTask extends BaseTask
         query.setSpecifyUser(SpecifyUser.getCurrentUser());
         if (query.getIsFavorite() == null)
         {
-            query.setIsFavorite(false);
+            query.setIsFavorite(true);
         }
         
         persistRecordSet(query);

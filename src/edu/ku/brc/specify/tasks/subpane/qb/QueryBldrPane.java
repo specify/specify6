@@ -1471,10 +1471,17 @@ public class QueryBldrPane extends BaseSubPane
                 {
                     if (level == (tableIds.length - 1))
                     {
-                        for (int f = 0; f < kid.getTableQRI().getFields(); f++)
+                        if (field.getIsRelFld() == null || !field.getIsRelFld())
                         {
-                            if (kid.getTableQRI().getField(f).getFieldName().equals(
+                            for (int f = 0; f < kid.getTableQRI().getFields(); f++)
+                            {
+                                if (kid.getTableQRI().getField(f).getFieldName().equals(
                                     field.getFieldName())) { return kid.getTableQRI().getField(f); }
+                            }
+                        }
+                        else
+                        {
+                            return buildFieldQRI(kid.getTableQRI());
                         }
                     }
                     else

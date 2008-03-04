@@ -171,10 +171,10 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
             queryField.setColumnAlias(this.getLabel());
             queryField.setContextTableIdent(fieldQRI.getTableInfo().getTableId());
             queryField.setIsPrompt(true); //for now...
+            queryField.setIsRelFld(fieldQRI instanceof RelQRI);
             
             Vector<Integer> idList = new Vector<Integer>();
-            TableQRI parent  = fieldQRI.getTable();
-            
+            TableQRI parent = fieldQRI.getTable();
             while (parent != null)
             {
                 idList.add(parent.getTableInfo().getTableId());
