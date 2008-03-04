@@ -359,7 +359,7 @@ public class DataEntryTask extends BaseTask
         {
             ViewIFace view = null;
             
-            if (StringUtils.isNotEmpty(viewSetName) && StringUtils.isNotEmpty(viewName))
+            if (StringUtils.isNotEmpty(viewName))
             {
                 view = AppContextMgr.getInstance().getView(viewSetName, viewName);
             } else

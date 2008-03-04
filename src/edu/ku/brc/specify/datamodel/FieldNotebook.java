@@ -77,6 +77,8 @@ public class FieldNotebook extends CollectionMember
     @Override
     public void initialize()
     {
+        super.init();
+        
         fieldNotebookId = null;
         name            = null;
         startDate       = null;
@@ -87,6 +89,8 @@ public class FieldNotebook extends CollectionMember
         ownerAgent      = null;
         pageSets        = new HashSet<FieldNotebookPageSet>();
         attachments     = new TreeSet<FieldNotebookAttachment>();
+        
+        collection      = Collection.getCurrentCollection();
     }
 
     /**

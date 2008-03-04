@@ -48,6 +48,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
@@ -89,6 +90,8 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     // Used for Copying Locales
     protected Vector<LocalizableStrIFace> namesList = new Vector<LocalizableStrIFace>();
     protected Vector<LocalizableStrIFace> descsList = new Vector<LocalizableStrIFace>();
+    
+    protected List<PickList> pickLists = null;
 
     /**
      * @param frame
@@ -776,9 +779,35 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getPickLists(java.lang.String)
      */
+    @SuppressWarnings("unchecked")
     public List<PickList> getPickLists(final String disciplineName)
     {
-        return null;
+        if (pickLists == null)
+        {
+            DataProviderSessionIFace session = null;
+            try
+            {
+                session = DataProviderFactory.getInstance().createSession();
+    
+                // unchecked warning: Criteria results are always the requested class
+                String sql = "FROM PickList WHERE collectionId = "+ Collection.getCurrentCollection().getCollectionId();
+                pickLists = (List<PickList>)session.getDataList(sql);
+                
+            } catch (Exception ex)
+            {
+                log.error(ex);
+                ex.printStackTrace();
+                
+            } finally 
+            {
+                if (session != null)
+                {
+                    session.close();
+                }
+            }
+        }
+        return pickLists;
+
     }
 
     /* (non-Javadoc)

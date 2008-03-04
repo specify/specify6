@@ -898,47 +898,54 @@ public class FieldItemPanel extends LocalizerBasePanel
                 pickLists = localizableIO.getPickLists(Discipline.getCurrentDiscipline().getDiscipline());
             }
             
-            int selectedIndex = -1;
-            DefaultComboBoxModel plCbxModel = (DefaultComboBoxModel)pickListCBX.getModel();
             DBRelationshipInfo.RelationshipType relType = relInfo != null ? relInfo.getType() : null;
             String                              typeStr = fieldInfo != null ? fieldInfo.getType() : null;
-            if (typeStr != null && typeStr.equals("string"))
-            {
-                plCbxModel.removeAllElements();
-                int inx = 0;
-                for (PickList pl : pickLists)
-                {
-                    if (pl.getType() == PickListIFace.PL_WITH_ITEMS ||
-                        pl.getType() == PickListIFace.PL_TABLE_FIELD)
-                    {
-                        plCbxModel.addElement(pl);
-                        if (StringUtils.isNotEmpty(fld.getPickListName()) && fld.getPickListName().equals(pl.getName()))
-                        {
-                            selectedIndex = inx;
-                        }
-                    }
-                    inx++;
-                }
-            } else if (relType != null && relType == DBRelationshipInfo.RelationshipType.ManyToOne)
-            {
-                plCbxModel.removeAllElements();
-                int inx = 0;
-                for (PickList pl : pickLists)
-                {
-                    if (pl.getType() == PickListIFace.PL_WHOLE_TABLE)
-                    {
-                        plCbxModel.addElement(pl);
-                        if (StringUtils.isNotEmpty(fld.getPickListName()) && fld.getPickListName().equals(pl.getName()))
-                        {
-                            selectedIndex = inx;
-                        }
-                    }
-                    inx++;
-                }
-            }
             
-            pickListCBX.setEnabled((typeStr != null && typeStr.equals("string")) || relType != null);
-            pickListCBX.setSelectedIndex(selectedIndex);
+            if (pickLists != null)
+            {
+                int selectedIndex = -1;
+                DefaultComboBoxModel plCbxModel = (DefaultComboBoxModel)pickListCBX.getModel();
+                
+                if (typeStr != null && typeStr.equals("string"))
+                {
+                    plCbxModel.removeAllElements();
+                    int inx = 0;
+                    for (PickList pl : pickLists)
+                    {
+                        if (pl.getType() == PickListIFace.PL_WITH_ITEMS ||
+                            pl.getType() == PickListIFace.PL_TABLE_FIELD)
+                        {
+                            plCbxModel.addElement(pl);
+                            if (StringUtils.isNotEmpty(fld.getPickListName()) && fld.getPickListName().equals(pl.getName()))
+                            {
+                                selectedIndex = inx;
+                            }
+                        }
+                        inx++;
+                    }
+                } else if (relType != null && relType == DBRelationshipInfo.RelationshipType.ManyToOne)
+                {
+                    plCbxModel.removeAllElements();
+                    int inx = 0;
+                    for (PickList pl : pickLists)
+                    {
+                        if (pl.getType() == PickListIFace.PL_WHOLE_TABLE)
+                        {
+                            plCbxModel.addElement(pl);
+                            if (StringUtils.isNotEmpty(fld.getPickListName()) && fld.getPickListName().equals(pl.getName()))
+                            {
+                                selectedIndex = inx;
+                            }
+                        }
+                        inx++;
+                    }
+                }
+                pickListCBX.setEnabled((typeStr != null && typeStr.equals("string")) || relType != null);
+                pickListCBX.setSelectedIndex(selectedIndex);
+            } else
+            {
+                pickListCBX.setEnabled(false);
+            }
             
             if (isDBSchema)
             {

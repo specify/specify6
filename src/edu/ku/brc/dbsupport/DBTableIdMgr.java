@@ -268,7 +268,11 @@ public class DBTableIdMgr
 		DBTableInfo tableInfo = hash.get(id);
 		if (tableInfo != null)
 		{
-			return tableInfo.getDefaultFormName();
+			String defaultFormName = tableInfo.getDefaultFormName();
+			if (StringUtils.isEmpty(defaultFormName))
+			{
+			    return tableInfo.getClassObj().getSimpleName();
+			}
 		}
 		return null;
 	}
