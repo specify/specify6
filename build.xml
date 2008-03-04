@@ -692,6 +692,9 @@
 	     ************************************************************* -->
 	<target name="basic-non-mac-dist">
 
+		<mkdir dir="${appdir}/classes" />
+		<copy file="${source.root}/log4j.properties" todir="${appdir}/classes/." />
+		
 		<!-- Copy config dir -->
 		<copy todir="${appdir}/config">
 			<fileset dir="config">
@@ -837,6 +840,15 @@
 		<!-- Copy info list -->
 		<copy file="${packaging}/linux/specify.sh" todir="${dist-linux}/." />
 		<chmod file="${dist-linux}/specify.sh" perm="u+rx"/>
+		
+		<copy file="${packaging}/linux/specifybuilder.sh" todir="${dist-linux}/." />
+		<chmod file="${dist-linux}/specifybuilder.sh" perm="u+rx"/>
+		
+		<copy file="${packaging}/linux/specifydbinit.sh" todir="${dist-linux}/." />
+		<chmod file="${dist-linux}/specifydbinit.sh" perm="u+rx"/>
+		
+		<copy file="${packaging}/linux/specifyschema.sh" todir="${dist-linux}/." />
+		<chmod file="${dist-linux}/specifyschema.sh" perm="u+rx"/>
 		
 		<!-- Demo Files -->
 		<copy file="demo_files/workbench/FishCollectingTrip.csv" todir="${dist-linux}/examples" />

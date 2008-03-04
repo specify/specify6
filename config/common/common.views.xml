@@ -383,7 +383,7 @@
             <desc><![CDATA[The Accession form.]]></desc>
             <enableRules/>
 
-            <columnDef>60px,2px,p,2px,35px,2px,120px</columnDef>
+            <columnDef>60px,2px,p,2px,35px,2px,p</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
 
             <rows>
@@ -397,7 +397,7 @@
 
                 <row>
                     <cell type="label" labelfor="3" label="Remarks"/>
-                    <cell type="field" id="3" name="remarks" uitype="textarea" colspan="5" cols="40" rows="3"/>
+                    <cell type="field" id="3" name="remarks" uitype="textarea" colspan="5" rows="3"/>
                 </row>
             </rows>
         </viewdef>

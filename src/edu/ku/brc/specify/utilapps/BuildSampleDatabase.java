@@ -2464,6 +2464,12 @@ public class BuildSampleDatabase
                         {
                             String photoPath = attachmentFilesLoc + photos[i];
                             
+                            File file = new File(attachmentFilesLoc + photos[i]);
+                            if (!file.exists())
+                            {
+                                continue;
+                            }
+                            
                             // create the attachment record
                             Attachment photoAttachment = createAttachment(photoPath, "image/jpeg");
                             dataObjects.add(photoAttachment);
@@ -2480,7 +2486,7 @@ public class BuildSampleDatabase
                             AttachmentMetadata copyrightData = new AttachmentMetadata();
                             copyrightData.initialize();
                             copyrightData.setName("Copyright");
-                            copyrightData.setValue("2006");
+                            copyrightData.setValue("2008");
                             photoAttachment.getMetadata().add(copyrightData);
                             copyrightData.setAttachment(photoAttachment);
                             dataObjects.add(copyrightData);
