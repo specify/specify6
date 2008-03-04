@@ -257,7 +257,8 @@ public class QueryBldrPane extends BaseSubPane
         {
             public void actionPerformed(ActionEvent ae)
             {
-                FieldQRI fieldQRI = (FieldQRI) listBoxList.get(currentInx).getSelectedValue();
+                BaseQRI qri = (BaseQRI) listBoxList.get(currentInx).getSelectedValue();
+                FieldQRI fieldQRI = buildFieldQRI(qri);
 
                 SpQueryField qf = new SpQueryField();
                 qf.initialize();
@@ -1243,8 +1244,10 @@ public class QueryBldrPane extends BaseSubPane
                         {
                             if (currentInx != -1)
                             {
-                                QryListRendererIFace qriFace = (QryListRendererIFace) listBoxList.get(
-                                        currentInx).getSelectedValue();
+//                                QryListRendererIFace qriFace = (QryListRendererIFace) listBoxList.get(
+//                                        currentInx).getSelectedValue();
+                                JList list = (JList)e.getSource();
+                                QryListRendererIFace qriFace = (QryListRendererIFace) list.getSelectedValue();
                                 if (BaseQRI.class.isAssignableFrom(qriFace.getClass()))
                                 {
                                     BaseQRI qri = (BaseQRI) qriFace;
@@ -1253,7 +1256,8 @@ public class QueryBldrPane extends BaseSubPane
                                         //remove the field
                                         for (QueryFieldPanel qfp : QueryBldrPane.this.queryFieldItems)
                                         {
-                                            if (qfp.getFieldQRI() == qri)
+                                            FieldQRI fqri = qfp.getFieldQRI();
+                                            if (fqri == qri || (fqri instanceof RelQRI && fqri.getTable() == qri))
                                             {
                                                 QueryBldrPane.this.removeQueryFieldItem(qfp);
                                                 break;
@@ -1311,8 +1315,9 @@ public class QueryBldrPane extends BaseSubPane
 //                createNewList(item, model);
 //            }
 
-            listBoxPanel.add(sp);
             listBoxPanel.remove(addBtn);
+            listBoxPanel.add(sp);
+            listBoxPanel.add(addBtn);
             currentInx = -1;
 
         }
@@ -1389,13 +1394,9 @@ public class QueryBldrPane extends BaseSubPane
     {
         if (currentInx != -1)
         {
-            QryListRendererIFace qri = (QryListRendererIFace) listBoxList.get(currentInx)
+            BaseQRI qri = (BaseQRI) listBoxList.get(currentInx)
                     .getSelectedValue();
-            if (qri instanceof FieldQRI)
-            {
-                FieldQRI fieldQRI = (FieldQRI) qri;
-                addBtn.setEnabled(!fieldQRI.isInUse());
-            }
+            addBtn.setEnabled(qri != null && !qri.isInUse());
         }
     }
 
@@ -1407,12 +1408,12 @@ public class QueryBldrPane extends BaseSubPane
     public void removeQueryFieldItem(final QueryFieldPanel qfp)
     {
         qfp.getFieldQRI().setIsInUse(false);
-        qualifyFieldLabels();
         if (qfp.getQueryField() != null)
         {
             query.removeReference(qfp.getQueryField(), "fields");
         }
         queryFieldItems.remove(qfp);
+        qualifyFieldLabels();
 
         SwingUtilities.invokeLater(new Runnable()
         {
