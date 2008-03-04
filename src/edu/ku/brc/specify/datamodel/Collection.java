@@ -74,6 +74,7 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
     protected Agent                      contactAgent;
     protected Agent                      curatorAgent;
     protected Set<PrepType>              prepTypes;
+    protected Set<PickList>              pickLists;
 
 
 
@@ -142,6 +143,7 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
         contactAgent           = null;
         curatorAgent           = null;
         prepTypes              = new HashSet<PrepType>();
+        pickLists              = new HashSet<PickList>();
 
     }
     // End Initializer
@@ -505,9 +507,24 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
         this.prepTypes = prepTypes;
     }
 
+    /**
+     * @return the pickLists
+     */
+    @OneToMany(mappedBy="collection")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
+    public Set<PickList> getPickLists()
+    {
+        return pickLists;
+    }
 
-    
-    
+    /**
+     * @param pickLists the pickLists to set
+     */
+    public void setPickLists(Set<PickList> pickLists)
+    {
+        this.pickLists = pickLists;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
      */

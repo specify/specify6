@@ -17,10 +17,9 @@ package edu.ku.brc.ui.forms;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.ku.brc.ui.forms.persist.FormCell;
+import edu.ku.brc.ui.forms.FormViewObj.FieldInfo;
 import edu.ku.brc.ui.forms.persist.FormCellField;
 import edu.ku.brc.ui.forms.persist.FormCellFieldIFace;
-import edu.ku.brc.ui.forms.persist.FormCellIFace;
 import edu.ku.brc.ui.forms.persist.FormViewDefIFace;
 
 /**
@@ -35,18 +34,20 @@ import edu.ku.brc.ui.forms.persist.FormViewDefIFace;
 public class CarryForwardInfo
 {
     
-    protected static FormCellIFace searchObject = new FormCell(); 
-    
-    protected List<FormCellField> fieldList = new ArrayList<FormCellField>();
+    protected List<FieldInfo>     fieldList = new ArrayList<FieldInfo>();
     protected DataObjectGettable  getter;
     protected DataObjectSettable  setter;
-    protected FormViewDefIFace         formViewDef;
+    protected FormViewDefIFace    formViewDef;
     protected FormViewObj         formViewObj;
     
     /**
      * @param classObj
+     * @param formViewObj
+     * @param formViewDef
      */
-    public CarryForwardInfo(final Class<?> classObj, final FormViewObj formViewObj, final FormViewDefIFace formViewDef)
+    public CarryForwardInfo(final Class<?> classObj, 
+                            final FormViewObj formViewObj, 
+                            final FormViewDefIFace formViewDef)
     {
         this.formViewObj = formViewObj;
         this.formViewDef = formViewDef;
@@ -56,27 +57,51 @@ public class CarryForwardInfo
     }
     
     /**
-     * Adds an ID
+     * Clears the internal list and adds a list of fields.
+     * @param id the ID to be added
+     */
+    public void add(final List<FieldInfo> items)
+    {
+        fieldList.clear();
+        
+        fieldList.addAll(items);
+        formViewObj.setDoCarryForward(true);
+    }
+    
+    /**
+     * Adds an ID.
      * @param id the ID to be added
      */
     public void add(final String id)
     {
-        FormCellIFace cellField = formViewDef.getFormCellById(id);
-        if (cellField != null && cellField instanceof FormCellField)
+        FieldInfo fieldInfo = formViewObj.getFieldInfoForId(id);
+        if (fieldInfo != null && fieldInfo.getFormCell() instanceof FormCellField)
         {
-            fieldList.add((FormCellField)cellField);
+            fieldList.add(fieldInfo);
             formViewObj.setDoCarryForward(true);
         }
     }
     
+    /**
+     * Remove item.
+     * @param id id of item to be removed
+     */
     public void remove(final String id)
     {
-        FormCellIFace cellField = formViewDef.getFormCellById(id);
-        if (cellField != null && cellField instanceof FormCellField)
+        FieldInfo fieldInfo = formViewObj.getFieldInfoForId(id);
+        if (fieldInfo != null && fieldInfo.getFormCell() instanceof FormCellField)
         {
-            fieldList.remove(cellField);
+            fieldList.remove(fieldInfo);
             formViewObj.setDoCarryForward(fieldList.size() > 0);
         }
+    }
+
+    /**
+     * @return the fieldList
+     */
+    public List<FieldInfo> getFieldList()
+    {
+        return fieldList;
     }
 
     /**
@@ -86,14 +111,9 @@ public class CarryForwardInfo
      */
     public boolean contains(final String id)
     {
-        //searchObject.setId(id);
-        //System.out.println(id+" - "+(Collections.binarySearch(fieldList, searchObject)));
-        //return Collections.binarySearch(fieldList, searchObject) > -1;
-        
-        
-        for (FormCellFieldIFace cellField : fieldList)
+        for (FieldInfo fieldInfo : fieldList)
         {
-            if (cellField.getIdent().equals(id))
+            if (fieldInfo.getFormCell().getIdent().equals(id))
             {
                 return true;
             }
@@ -102,7 +122,7 @@ public class CarryForwardInfo
     }
     
     /**
-     *  Clears the field list
+     *  Clears the field list.
      */
     public void clear()
     {
@@ -110,14 +130,16 @@ public class CarryForwardInfo
     }
     
     /**
-     * Copies a field's data from the old object to the new
+     * Copies a field's data from the old object to the new.
      * @param carryFwdData the old data object
      * @param newData the new data object
      */
     public void carryForward(final Object carryFwdData, final Object newData)
     {
-        for (FormCellFieldIFace cellField : fieldList)
+        for (FieldInfo fieldInfo : fieldList)
         {
+            FormCellFieldIFace cellField = (FormCellFieldIFace)fieldInfo.getFormCell();
+            
             //Object data = getter.getFieldValue(carryFwdData, cellField.getName());
             //System.out.println(data);
             setter.setFieldValue(newData, cellField.getName(), getter.getFieldValue(carryFwdData, cellField.getName()));
@@ -125,12 +147,11 @@ public class CarryForwardInfo
     }
     
     /**
-     * Cleans up data
+     * Cleans up data.
      */
     public void cleanUp()
     {
         fieldList.clear();
-        fieldList   = new ArrayList<FormCellField>();
         getter      = null;
         setter      = null;
         formViewDef = null;

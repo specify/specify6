@@ -2283,7 +2283,7 @@ public class GenericDBConversion
     /**
      * 
      */
-    public void createPickListsFromXML()
+    public void createPickListsFromXML(final String discipline)
     {
         Session cachedSession = DataBuilder.getSession();
         DataBuilder.setSession(null);
@@ -2292,7 +2292,7 @@ public class GenericDBConversion
         try
         {
 
-            List<BldrPickList> pickLists = DataBuilder.getBldrPickLists();
+            List<BldrPickList> pickLists = DataBuilder.getBldrPickLists(discipline != null ? discipline : "common");
             // DataBuilder.buildPickListFromXML(pickLists);
 
             localSession.beginTransaction();

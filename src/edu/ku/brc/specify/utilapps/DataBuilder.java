@@ -2352,12 +2352,12 @@ public class DataBuilder
      * @return
      */
     @SuppressWarnings("unchecked")
-    public static List<BldrPickList> getBldrPickLists()
+    public static List<BldrPickList> getBldrPickLists(final String disciplineDirName)
     {
         XStream xstream = new XStream();
         
-        xstream.alias("picklist",     BldrPickList.class);
-        xstream.alias("picklistitem", BldrPickListItem.class);
+        //xstream.alias("picklist",     BldrPickList.class);
+        //xstream.alias("picklistitem", BldrPickListItem.class);
         
         /*
         xstream.aliasAttribute(BldrPickList.class, "readonly", "readOnly");
@@ -2414,7 +2414,8 @@ public class DataBuilder
 
         try
         {
-            File pickListFile = new File(XMLHelper.getConfigDirPath("picklist.xml"));
+            String dirName = disciplineDirName != null ? disciplineDirName + File.separator : "";
+            File pickListFile = new File(XMLHelper.getConfigDirPath(dirName + "picklist.xml"));
             if (pickListFile.exists())
             {
                 System.out.println(FileUtils.readFileToString(pickListFile));
@@ -2464,9 +2465,9 @@ public class DataBuilder
     /**
      * 
      */
-    public static void buildPickListFromXML()
+    public static void buildPickListFromXML(final String dirName)
     {
-        buildPickListFromXML(getBldrPickLists());
+        buildPickListFromXML(getBldrPickLists(dirName));
     }
 
     /**

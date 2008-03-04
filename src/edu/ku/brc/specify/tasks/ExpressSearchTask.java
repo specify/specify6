@@ -156,26 +156,20 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
 
     
     /**
-     * Returns whether there are file sin the lucence directory.
-     * @return whether there are file sin the lucence directory.
-     */
-    public static boolean doesIndexExist()
-    {
-        return true; // XYZ
-    }
-    
-    /**
      * Check to see of the index has been run and then enables the express search controls.
      *
      */
-    public void checkForIndexer()
+    public void appContextHasChanged()
     {
-        boolean exists = doesIndexExist();
+        searchText.setPickListAdapter(PickListDBAdapterFactory.getInstance().create("ExpressSearch", true));
+        
+        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        searchText.setText(localPrefs.get(LAST_SEARCH, ""));
         
         if (searchBtn != null)
         {
-            searchBtn.setEnabled(exists);
-            searchText.setEnabled(exists);
+            searchBtn.setEnabled(true);
+            searchText.setEnabled(true);
         }
     }
 
@@ -556,8 +550,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                 
         searchText = new JAutoCompTextField(15, PickListDBAdapterFactory.getInstance().create("ExpressSearch", true));
         searchText.setAskBeforeSave(false);
-        HelpMgr.setHelpID(searchText, "Express_Search");
-        
+        HelpMgr.registerComponent(searchText, "Express_Search");
         searchBox = new SearchBox(searchText, new SearchBoxMenuCreator());
         
         AppPreferences localPrefs = AppPreferences.getLocalPrefs();
@@ -604,8 +597,6 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
 
         list.add(new ToolBarItemDesc(searchPanel, ToolBarItemDesc.Position.AdjustRightLastComp));
 
-        checkForIndexer();
-
         return list;
     }
 
@@ -641,16 +632,12 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         {
             if (cmdAction.isAction(APP_RESTART_ACT))
             {
-                checkForIndexer();
+                appContextHasChanged();
             }
             
         } else if (cmdAction.isType(EXPRESSSEARCH))
         {
-            if (cmdAction.isAction(CHECK_INDEXER_PATH))
-            {
-                checkForIndexer();
-                
-            } else if (cmdAction.isAction("HQL"))
+            if (cmdAction.isAction("HQL"))
             {
                 doHQLQuery((QueryForIdResultsIFace)cmdAction.getData(), (Boolean)cmdAction.getProperty("reuse_panel"));
                 
@@ -689,18 +676,6 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                 }
             }
         }
-    }
-    
-    //------------------------------------------------
-    //-- ExpressSearchIndexerListener
-    //------------------------------------------------
-
-   /* (non-Javadoc)
-     * @see edu.ku.brc.af.tasks.subpane.ExpressSearchIndexerPane.ExpressSearchIndexerListener#doneIndexing()
-     */
-    public void doneIndexing()
-    {
-        checkForIndexer();
     }
     
     //-------------------------------------------------------------

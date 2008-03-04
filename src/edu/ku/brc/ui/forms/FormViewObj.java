@@ -22,9 +22,12 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.beans.PropertyDescriptor;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -50,8 +53,10 @@ import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -94,6 +99,7 @@ import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.ToggleButtonChooserDlg;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIPluginable;
 import edu.ku.brc.ui.UIRegistry;
@@ -115,6 +121,7 @@ import edu.ku.brc.ui.forms.persist.FormCellSubViewIFace;
 import edu.ku.brc.ui.forms.persist.FormViewDef;
 import edu.ku.brc.ui.forms.persist.ViewDef;
 import edu.ku.brc.ui.forms.persist.ViewIFace;
+import edu.ku.brc.ui.forms.persist.FormCellFieldIFace.FieldType;
 import edu.ku.brc.ui.forms.validation.AutoNumberableIFace;
 import edu.ku.brc.ui.forms.validation.DataChangeNotifier;
 import edu.ku.brc.ui.forms.validation.FormValidator;
@@ -482,6 +489,30 @@ public class FormViewObj implements Viewable,
         {
             createAddDelSearchPanel();
         }
+        
+        if (true)
+        {
+            builder.getPanel().addMouseListener(new MouseAdapter() 
+            {
+                @Override
+                public void mousePressed(MouseEvent e)
+                {
+                    showContextMenu(e);
+                }
+
+                @Override
+                public void mouseReleased(MouseEvent e)
+                {
+                    showContextMenu(e);
+
+                }
+                @Override
+                public void mouseClicked(MouseEvent e)
+                {
+                    //FormViewObj.this.listFieldChanges();
+                }
+            });
+        }
     }
     
     /**
@@ -599,7 +630,7 @@ public class FormViewObj implements Viewable,
      * Returns the CarryForwardInfo Object for the Form
      * @return the CarryForwardInfo Object for the Form
      */
-    public CarryForwardInfo getCarryForwardInfo()
+    private CarryForwardInfo getCarryForwardInfo()
     {
         if (carryFwdInfo == null)
         {
@@ -632,6 +663,93 @@ public class FormViewObj implements Viewable,
     public void setDoCarryForward(boolean doCarryForward)
     {
         this.doCarryForward = doCarryForward;
+    }
+    
+    /**
+     * Shows a Dialog to setup Carry Forward.
+     */
+    protected void setUpCarryForward()
+    {
+        CarryForwardInfo carryForwardInfo = getCarryForwardInfo();
+        
+        Vector<FieldInfo> itemLabels    = new Vector<FieldInfo>();
+        Vector<FieldInfo> selectedItems = new Vector<FieldInfo>(carryForwardInfo.getFieldList());
+        
+        Vector<String> ids = new Vector<String>();
+        getFieldIds(ids);
+        for (String id : ids)
+        {
+            FieldInfo fieldInfo = getFieldInfoForId(id);
+            boolean isOK = true;
+            if (fieldInfo.getFormCell() instanceof FormCellFieldIFace)
+            {
+                FieldType type = ((FormCellFieldIFace)fieldInfo.getFormCell()).getUiType();
+                if (type == FieldType.dsptextfield || type == FieldType.dsptextarea || type == FieldType.label)
+                {
+                    isOK = false; 
+                }
+            }
+            
+            if (isOK)
+            {
+                FieldInfo labelInfo = getLabelInfoFor(id);
+                if (labelInfo != null)
+                {
+                    if (!(fieldInfo.getFormCell() instanceof FormCellLabel))
+                    {
+                        String lbl = ((FormCellLabel)labelInfo.getFormCell()).getLabel();
+                        fieldInfo.setLabel(lbl);
+                        itemLabels.add(fieldInfo);
+                    }
+                } else 
+                {
+                    String fieldName = fieldInfo.getFormCell().getName();
+                    DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
+                    DBFieldInfo fi = ti.getFieldByName(fieldName);
+                    fieldInfo.setLabel(fi.getTitle());
+                    itemLabels.add(fieldInfo);
+                }
+            }
+        }
+        
+        Collections.sort(itemLabels);
+        
+        ToggleButtonChooserDlg<FieldInfo> dlg = new ToggleButtonChooserDlg<FieldInfo>((Frame)UIRegistry.getTopWindow(),
+                UIRegistry.getResourceString("MV_CONFIG_CARRY_FORWARD"), 
+                itemLabels);
+        dlg.setUseScrollPane(true);
+        dlg.setAddSelectAll(true);
+        dlg.setSelectedObjects(selectedItems);
+        UIHelper.centerAndShow(dlg);
+        
+        if (!dlg.isCancelled())
+        {
+            carryForwardInfo.add(dlg.getSelectedObjects());
+        }
+            
+    }
+    
+    /**
+     * Shows Parent Form's Context Menu.
+     * @param e the mouse event
+     */
+    protected void showContextMenu(MouseEvent e)
+    {
+        if (e.isPopupTrigger())
+        {
+            JPopupMenu popup = new JPopupMenu();
+            JMenuItem menuItem = new JMenuItem(UIRegistry.getResourceString("MV_CONFIG_CARRY_FORWARD"));
+            menuItem.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent ex)
+                {
+                    setUpCarryForward();
+                }
+            });
+
+            popup.add(menuItem);
+            popup.show(e.getComponent(), e.getX(), e.getY());
+
+        }
     }
 
     /**
@@ -2367,6 +2485,23 @@ public class FormViewObj implements Viewable,
         }
         // else
         throw new RuntimeException("Couldn't find FieldInfo for ID["+id+"]");
+    }
+
+    /**
+     * @param id the id of the label to be returned.
+     * @return the FieldInfo for a label
+     */
+    public FieldInfo getLabelInfoFor(final String id)
+    {
+        for (FieldInfo fi : labels.values())
+        {
+            String labelForId = ((FormCellLabel)fi.getFormCell()).getLabelFor();
+            if (labelForId != null && labelForId.equals(id))
+            {
+                return fi;
+            }
+        }
+        return null;
     }
 
     /**
@@ -4401,6 +4536,8 @@ public class FormViewObj implements Viewable,
     //-------------------------------------------------
     class FieldInfo implements Comparable<FieldInfo>
     {
+        protected String        label = null; // used by CarryForwardSetup
+        
         protected FormCellIFace formCell;
         protected MultiView     subView;
         protected Component     comp;
@@ -4505,6 +4642,7 @@ public class FormViewObj implements Viewable,
             subView    = null;
             comp       = null;
             fieldScrollPane = null;
+            label      = null;
         }
 
         /* (non-Javadoc)
@@ -4514,7 +4652,24 @@ public class FormViewObj implements Viewable,
         {
             return insertPos.compareTo(o.insertPos);
         }
+
+        public String getLabel()
+        {
+            return label;
+        }
+
+        public void setLabel(String label)
+        {
+            this.label = label;
+        }
         
+        /* (non-Javadoc)
+         * @see java.lang.Object#toString()
+         */
+        public String toString()
+        {
+            return label;
+        }
     }
 
     /**

@@ -54,7 +54,14 @@ public abstract class AppContextMgr
     
     /**
      * Returns a View by name, meaning a ViewSet name and a View name inside the ViewSet.
-     * @param viewSetName the ViewSet Name (can be null if the default is desired)
+     * @param viewName the name of the view (cannot be null)
+     * @return the view
+     */
+    public abstract ViewIFace getView(final String viewName);
+    
+    /**
+     * Returns a View by name, meaning a ViewSet name and a View name inside the ViewSet.
+     * @param viewSetName the name of the view set
      * @param viewName the name of the view (cannot be null)
      * @return the view
      */

@@ -169,7 +169,7 @@ public class SpAppResourceData extends DataModelObjBase implements java.io.Seria
      * 
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "SpAppResourceID", unique = false, nullable = false, insertable = true, updatable = true)
+    @JoinColumn(name = "SpAppResourceID", unique = false, nullable = true, insertable = true, updatable = true)
     public SpAppResource getSpAppResource() {
         return this.spAppResource;
     }

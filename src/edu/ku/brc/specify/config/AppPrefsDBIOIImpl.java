@@ -18,19 +18,21 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Date;
-import java.util.List;
 import java.util.Properties;
 import java.util.prefs.BackingStoreException;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPreferences.AppPrefsIOIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.datamodel.SpAppResourceData;
+import edu.ku.brc.specify.datamodel.SpAppResourceDir;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * This class is responsible for performing the "database" based IO for the prefs.
@@ -45,9 +47,10 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
     protected static final Logger log       = Logger.getLogger(AppPrefsDBIOIImpl.class);
     protected static final String PREF_NAME = "preferences";
     
-    protected AppPreferences appPrefsMgr   = null;
-    protected SpAppResource  spAppResource = null;
-    protected boolean        found         = false;
+    protected AppPreferences    appPrefsMgr      = null;
+    protected SpAppResourceDir  spAppResourceDir = null;
+    protected SpAppResource     spAppResource    = null;
+    protected boolean           found            = false;
     
     /**
      * Constructor.
@@ -116,10 +119,12 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
                 session = DataProviderFactory.getInstance().createSession();
                 if (session != null)
                 {
-                    List<?> list = session.getDataList(SpAppResource.class, "name", PREF_NAME);
-                    if (list.size() == 0)
+                    SpecifyAppContextMgr specifyAppContext = (SpecifyAppContextMgr)AppContextMgr.getInstance();
+                    
+                    SpAppResourceData appData = null;
+                    spAppResourceDir = specifyAppContext.getAppResDir(session, SpecifyUser.getCurrentUser(), null, null, "Prefs", false, true);
+                    if (spAppResourceDir.getSpAppResourceDirId() == null)
                     {
-                        log.debug("creating AppResource");
                         spAppResource = new SpAppResource();
                         spAppResource.initialize();
                         
@@ -128,37 +133,44 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
                         SpecifyUser user = SpecifyUser.getCurrentUser();
                         spAppResource.setSpecifyUser(user);
 
-                        SpAppResourceData appData = new SpAppResourceData();
+                        appData = new SpAppResourceData();
                         appData.initialize();
                         appData.setSpAppResource(spAppResource);
                         spAppResource.getSpAppResourceDatas().add(appData);
                         
-                        found = false;
+                        spAppResourceDir.getSpPersistedAppResources().add(spAppResource);
+                        spAppResource.setSpAppResourceDir(spAppResourceDir);
                         
                     } else
                     {
-                        spAppResource = (SpAppResource)list.get(0);
-                        SpAppResourceData ard = null;
-                        if (spAppResource.getSpAppResourceDatas().size() == 0)
+                        for (SpAppResource appRes : spAppResourceDir.getSpPersistedAppResources())
                         {
-                            /*
-                            ard = new AppResourceData();
-                            ard.initialize();
-                            appResource.getSpAppResourceDatas().add(ard);
-                            ard.setAppResource(appResource);
-                            Transaction trans = session.beginTransaction();
-                            session.save(appResource);
-                            trans.commit();
-                            */
-                            throw new RuntimeException("AppResource pref name["+PREF_NAME+"] has not AppResourceData object.");
-                            
+                            if (appRes.getName().equals(PREF_NAME))
+                            {
+                                spAppResource = appRes;
+                                appData       = spAppResource.getSpAppResourceDatas().iterator().next();
+                                break;
+                            }
                         }
-                        // else
-                        ard = spAppResource.getSpAppResourceDatas().iterator().next();
-                         
-                        properties.load(new ByteArrayInputStream(ard.getData()));
                         
-                        found = true;
+                        if (spAppResource == null)
+                        {
+                            log.error("Couldn't find Prefs object");
+                            UIRegistry.showLocalizedError("Couldn't findRemote Prefs. Application will exit."); // I18N
+                            System.exit(0);
+                        }
+                    }
+                    
+                    if (appData == null)
+                    {
+                        throw new RuntimeException("AppResource pref name["+PREF_NAME+"] has not AppResourceData object.");
+                    }
+                    
+                    found = true;
+                    
+                    if (appData.getData() != null) // the very first time it might be null (empty)
+                    {
+                        properties.load(new ByteArrayInputStream(appData.getData()));
                     }
                 }
                 
@@ -185,9 +197,8 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
     {
         load(); // throws exception on error
         
-        if (spAppResource != null && appPrefsMgr.isChanged())
+        if (spAppResource != null && spAppResourceDir != null && appPrefsMgr.isChanged())
         {
-            
             if (spAppResource.getSpAppResourceDatas().size() == 0)
             {
                 throw new RuntimeException("AppResource has no AppResourceData object!");
@@ -202,8 +213,6 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
                 SpAppResourceData apData = spAppResource.getSpAppResourceDatas().iterator().next();
                 if (apData != null)
                 {
-                    //String dataStr = new String(byteOut.toByteArray());
-                    //log.debug(dataStr);
                     apData.setData(byteOut.toByteArray());
                     
                 } else
@@ -220,6 +229,7 @@ public class AppPrefsDBIOIImpl implements AppPrefsIOIFace
                     {
                         session.beginTransaction();
                         
+                        session.saveOrUpdate(spAppResourceDir);
                         session.saveOrUpdate(spAppResource);
                         
                         session.commit();

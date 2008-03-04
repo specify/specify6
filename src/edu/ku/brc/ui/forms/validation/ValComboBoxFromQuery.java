@@ -205,7 +205,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             @Override
             public void focusGained(FocusEvent e)
             {
-                log.debug("focusGained");
+                //log.debug("focusGained");
                 hasFocus = true;
                 super.focusGained(e);
                 validateState();
@@ -220,7 +220,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             @Override
             public void focusLost(FocusEvent e)
             {
-                log.debug("focusLost");
+                //log.debug("focusLost");
                 hasFocus = false;
                 super.focusLost(e);
                 
@@ -859,7 +859,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     public UIValidatable.ErrorType validateState()
     {
-        log.debug("validateState "+(isRequired && textWithQuery.hasItem()));
+        //log.debug("validateState "+(isRequired && textWithQuery.hasItem()));
         valState = isRequired && !textWithQuery.hasItem() ? UIValidatable.ErrorType.Incomplete : UIValidatable.ErrorType.Valid;
         //log.debug(valState);
         return valState;

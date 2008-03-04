@@ -14,16 +14,18 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
+import java.util.Hashtable;
 
 import javax.help.BadIDException;
 import javax.help.CSH;
-import javax.help.HelpBroker;
 import javax.help.DefaultHelpBroker;
+import javax.help.HelpBroker;
 import javax.help.HelpSet;
 import javax.help.InvalidHelpSetContextException;
 import javax.help.Map;
 import javax.help.WindowPresentation;
 import javax.swing.AbstractButton;
+import javax.swing.FocusManager;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -53,6 +55,8 @@ public class HelpMgr
     protected static HelpSet    hs;
     protected static HelpBroker hb;
     protected static String     helpSystemName;
+    
+    protected static Hashtable<Component, String> compHelpHash = new Hashtable<Component, String>();
 
     /**
      * Creates a Helpset and HelpBroker.
@@ -134,6 +138,16 @@ public class HelpMgr
         {
             return false;
         }
+    }
+
+    /**
+     * @param component a Button, MenuItem, etc that will access help
+     * @param idString the help context for the component. if "" then context is determined 'on the
+     *            fly' by ContextMgr
+     */
+    public static void registerComponent(final Component component, final String idString)
+    {
+        compHelpHash.put(component, idString);
     }
 
     /**
@@ -266,19 +280,24 @@ public class HelpMgr
     public static void getHelpForContext()
     {
         String       helpTarget = null;
-        SubPaneIFace subPane    = SubPaneMgr.getInstance().getCurrentSubPane();
-        if (subPane != null)
-        {
-            helpTarget = subPane.getHelpTarget();
-            
-        } else
-        {
-            helpTarget = getCurrentContext();
-        }
         
+        helpTarget = compHelpHash.get(FocusManager.getCurrentManager().getFocusOwner());
         if (helpTarget == null)
         {
-            helpTarget = getDefaultID();
+            SubPaneIFace subPane    = SubPaneMgr.getInstance().getCurrentSubPane();
+            if (subPane != null)
+            {
+                helpTarget = subPane.getHelpTarget();
+                
+            } else
+            {
+                helpTarget = getCurrentContext();
+            }            
+            
+            if (helpTarget == null)
+            {
+                helpTarget = getDefaultID();
+            }
         }
         
         if (helpTarget != null)

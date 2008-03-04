@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <views>
 	<std>
-	    <view sidebar="true"  name="Accession"          viewset="Common"       view="Accession"          iconname="Accession"          tooltip=""/>    
-	    <view sidebar="true"  name="Permit"             viewset="Common"       view="Permit"             iconname="Permit"             tooltip=""/>
+	    <view sidebar="true"  name="Accession"          view="Accession"          iconname="Accession"          tooltip=""/>    
+	    <view sidebar="true"  name="Permit"             view="Permit"             iconname="Permit"             tooltip=""/>
 	     
-	    <view sidebar="true"  name="Collection Object"  viewset="Fish Views"   view="CollectionObject"   iconname="CollectionObject"   tooltip=""/>    
-	    <view sidebar="true"  name="Collecting Event"   viewset="Fish Views"   view="CollectingEvent"    iconname="CollectingEvent"    tooltip=""/>    
-	    <view sidebar="false" name="Determination"      viewset="Common"       view="Determination"      iconname="Determination"      tooltip=""/>
-	    <view sidebar="true"  name="Taxon"              viewset="Global"       view="Taxon"              iconname="Taxon"              tooltip=""/> 
+	    <view sidebar="true"  name="Collection Object"  view="CollectionObject"   iconname="CollectionObject"   tooltip=""/>    
+	    <view sidebar="true"  name="Collecting Event"   view="CollectingEvent"    iconname="CollectingEvent"    tooltip=""/>    
+	    <view sidebar="false" name="Determination"      view="Determination"      iconname="Determination"      tooltip=""/>
+	    <view sidebar="true"  name="Taxon"              view="Taxon"              iconname="Taxon"              tooltip=""/> 
 	    
-	    <view sidebar="true"  name="Agent"              viewset="Global"       view="Agent"              iconname="Agent"              tooltip=""/>    
-	    <view sidebar="true"  name="Geography"          viewset="Global"       view="Geography"          iconname="Geography"          tooltip=""/> 
-	    <view sidebar="true"  name="GeologicTimePeriod" viewset="Global"       view="GeologicTimePeriod" iconname="GeologicTimePeriod" tooltip=""/> 
-	    <view sidebar="false" name="Loan"               viewset="Common"       view="Loan"               iconname="Loan"               tooltip=""/>    
-	    <view sidebar="true"  name="Locality"           viewset="Common"       view="Locality"           iconname="Locality"           tooltip=""/> 
-	    <view sidebar="true"  name="Storage"            viewset="Global"       view="Storage"            iconname="Storage"           tooltip=""/>
+	    <view sidebar="true"  name="Agent"              view="Agent"              iconname="Agent"              tooltip=""/>    
+	    <view sidebar="true"  name="Geography"          view="Geography"          iconname="Geography"          tooltip=""/> 
+	    <view sidebar="true"  name="GeologicTimePeriod" view="GeologicTimePeriod" iconname="GeologicTimePeriod" tooltip=""/> 
+	    <view sidebar="false" name="Loan"               view="Loan"               iconname="Loan"               tooltip=""/>    
+	    <view sidebar="true"  name="Locality"           view="Locality"           iconname="Locality"           tooltip=""/> 
+	    <view sidebar="true"  name="Storage"            view="Storage"            iconname="Storage"           tooltip=""/>
 	</std>
 	
 	<misc>

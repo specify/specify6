@@ -774,13 +774,12 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getPickLists()
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getPickLists(java.lang.String)
      */
-    public List<PickList> getPickLists()
+    public List<PickList> getPickLists(final String disciplineName)
     {
         return null;
     }
-
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#exportToDirectory(java.io.File)

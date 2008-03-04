@@ -85,7 +85,7 @@
 	            <desc>Tells the subview panel to add a search button.</desc>
 	        </param>
 	        <param name="btn" type="boolean" required="false" default="false">
-	            <desc>Inidcates the subview is "hidden" behind a launcher button.</desc>
+	            <desc>Indicates the subview is "hidden" behind a launcher button.</desc>
 	        </param>
 	        <param name="icon" type="string" required="false" default="">
 	            <desc>The name of the icon to use next to the button</desc>

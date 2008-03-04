@@ -63,7 +63,6 @@ import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.RecordSet;
@@ -163,24 +162,13 @@ public class DataEntryTask extends BaseTask
     }
     
     /**
-     * Common method for creating a consistent name for lookups in the Icon cache for forms.
-     * @param viewSetName the viewSetName
-     * @param viewName the view name
-     * @return the full appended name
-     */
-    protected static String createFullName(final String viewSetName, final String viewName)
-    {
-        return viewSetName + "_" + viewName;
-    }
-    
-    /**
      * Returns a icon defined by the view, if not found then it by the Class, if not found then it returns the one for the task
      * @param view the view 
      * @return the icon for the view
      */
     protected static ImageIcon getIconForView(final ViewIFace view)
     {
-        ImageIcon imgIcon = iconForFormClass.get(createFullName(view.getViewSetName(), view.getName()));
+        ImageIcon imgIcon = iconForFormClass.get(view.getName());
         if (imgIcon == null)
         {
             try
@@ -218,7 +206,7 @@ public class DataEntryTask extends BaseTask
                          final FormDataObjIFace data,
                          final boolean          isNewForm)
     {
-        ViewIFace view = viewSetName == null ? SpecifyAppContextMgr.getInstance().getView(viewName, Discipline.getCurrentDiscipline()) : 
+        ViewIFace view = viewSetName == null ? SpecifyAppContextMgr.getInstance().getView(viewName) : 
                                           AppContextMgr.getInstance().getView(viewSetName, viewName);
         Object           dataObj     = data;
         FormDataObjIFace formDataObj = data;
@@ -373,17 +361,14 @@ public class DataEntryTask extends BaseTask
             
             if (StringUtils.isNotEmpty(viewSetName) && StringUtils.isNotEmpty(viewName))
             {
-                view = viewSetName == null ? SpecifyAppContextMgr.getInstance().getView(viewName, Discipline.getCurrentDiscipline()) : 
-                                             AppContextMgr.getInstance().getView(viewSetName, viewName);
+                view = AppContextMgr.getInstance().getView(viewSetName, viewName);
             } else
             {
                 String defaultFormName = DBTableIdMgr.getInstance().getDefaultFormNameById(recordSet.getDbTableId());
     
                 if (StringUtils.isNotEmpty(defaultFormName))
                 {
-                    SpecifyAppContextMgr appContextMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
-                    
-                    view = appContextMgr.getView(defaultFormName, Discipline.getCurrentDiscipline());
+                    view = AppContextMgr.getInstance().getView(defaultFormName);
                      
                 } else
                 {
@@ -428,7 +413,7 @@ public class DataEntryTask extends BaseTask
             ImageIcon iconImage = IconManager.getIcon(dev.getIconName(), IconManager.IconSize.Std16);
             if (iconImage != null)
             {
-                String iconName = createFullName(dev.getViewSet(), dev.getView());
+                String iconName = dev.getView();
                 iconForFormClass.put(iconName, iconImage);
                 if (isColObj)
                 {
@@ -440,7 +425,7 @@ public class DataEntryTask extends BaseTask
                 log.error("Icon ["+dev.getIconName()+"] could not be found.");
             }
             
-            ViewIFace view = appContextMgr.getView(dev.getViewSet(), dev.getView());
+            ViewIFace view = appContextMgr.getView(null, dev.getView());
             if (view != null)
             {
                 DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
@@ -449,7 +434,7 @@ public class DataEntryTask extends BaseTask
                 if (tableInfo != null)
                 {
                     CommandAction cmdAction = new CommandAction(DATA_ENTRY, EDIT_DATA);
-                    cmdAction.setProperty("viewset", dev.getViewSet());
+                    //cmdAction.setProperty("viewset", dev.getViewSet());
                     cmdAction.setProperty("view",    dev.getView());
                     
                     ContextMgr.registerService(dev.getName(), tableInfo.getTableId(), cmdAction, this, DATA_ENTRY, tableInfo.getTitle(), true);
@@ -457,7 +442,7 @@ public class DataEntryTask extends BaseTask
                     if (dev.isSideBar())
                     {
                         cmdAction = new CommandAction(DATA_ENTRY, OPEN_NEW_VIEW);
-                        cmdAction.setProperty("viewset",   dev.getViewSet());
+                        //cmdAction.setProperty("viewset",   dev.getViewSet());
                         cmdAction.setProperty("view",      dev.getView());
                         cmdAction.setProperty("tableInfo", dev.getTableInfo());
                         
@@ -490,7 +475,7 @@ public class DataEntryTask extends BaseTask
                 
             } else
             {
-                log.error("View doesn't exist viewset["+dev.getViewSet()+"] view["+dev.getView()+"]");
+                log.error("View doesn't exist view["+dev.getView()+"]");
             }
         }
     }
@@ -504,21 +489,20 @@ public class DataEntryTask extends BaseTask
         SpecifyAppContextMgr appContextMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
         for (DataEntryView dev : list)
         {
-            ViewIFace view = appContextMgr.getView(dev.getViewSet(), dev.getView());
+            ViewIFace view = appContextMgr.getView(null, dev.getView());
             if (view != null)
             {
                 DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
                 dev.setTableInfo(tableInfo);
                 
                 CommandAction cmdAction = new CommandAction(DATA_ENTRY, EDIT_DATA);
-                cmdAction.setProperty("viewset", dev.getViewSet());
-                cmdAction.setProperty("view",    dev.getView());
+                cmdAction.setProperty("view", dev.getView());
                 
                 ContextMgr.registerService(dev.getName(), tableInfo.getTableId(), cmdAction, this, DATA_ENTRY, tableInfo.getTitle(), true);
 
             } else
             {
-                log.debug("Couldn't find["+dev.getViewSet()+"]["+dev.getView()+"]");
+                log.debug("Couldn't find view["+dev.getView()+"]");
             }
         }
     }
@@ -545,7 +529,7 @@ public class DataEntryTask extends BaseTask
                             {
                                 if (deView.getTableInfo().getTableId() == rs.getDbTableId())
                                 {
-                                    editData(rs, deView.getViewSet(), deView.getView());
+                                    editData(rs, deView.getView());
                                     return;
                                 }
                             }
@@ -645,7 +629,7 @@ public class DataEntryTask extends BaseTask
         
         if (deView != null)
         {
-            openView(this, deView.getViewSet(), deView.getView(), "edit", null, true);
+            openView(this, null, deView.getView(), "edit", null, true);
         }
     }
     
@@ -910,12 +894,11 @@ public class DataEntryTask extends BaseTask
      * @param viewName the optional view name (can be null)
      */
     protected void editData(final Object data, 
-                            final String viewSetName,
                             final String viewName)
     {
         if (data instanceof RecordSet)
         {
-            addSubPaneToMgr(createFormFor(this, name, viewSetName, viewName, (RecordSetIFace)data));
+            addSubPaneToMgr(createFormFor(this, name, null, viewName, (RecordSetIFace)data));
             
         } else if (data instanceof Object[])
         {
@@ -947,22 +930,21 @@ public class DataEntryTask extends BaseTask
     
         if (cmdAction.isAction(OPEN_NEW_VIEW))
         {
-            String viewSetName = cmdAction.getPropertyAsString("viewset");
             String viewName    = cmdAction.getPropertyAsString("view");
             Object data        = cmdAction.getData();
             
             if (data instanceof RecordSetIFace)
             {
-                editData(data, viewSetName, viewName);
+                editData(data, viewName);
                 
             } else
             {
-                openView(this, viewSetName, viewName, "edit", null, true);
+                openView(this, null, viewName, "edit", null, true);
             }
             
         } else if (cmdAction.isAction(EDIT_DATA))
         {
-            editData(cmdAction.getData(), null, null);
+            editData(cmdAction.getData(), null);
         }
 //        else if (cmdAction.isAction(EDIT_IN_DIALOG))
 //        {
@@ -1032,7 +1014,7 @@ public class DataEntryTask extends BaseTask
             {
                 if (dev.getTableInfo().getTableId() == rs.getDbTableId())
                 {
-                    editData(rs, dev.getViewSet(), dev.getView());
+                    editData(rs, dev.getView());
                     return true;
                 }
             }

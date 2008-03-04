@@ -773,9 +773,7 @@ public class InteractionsTask extends BaseTask
     {
         DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByShortClassName(InfoRequest.class.getSimpleName());
         
-        SpecifyAppContextMgr appContextMgr = (SpecifyAppContextMgr)AppContextMgr.getInstance();
-        
-        ViewIFace view = appContextMgr.getView(tableInfo.getDefaultFormName(), Discipline.getCurrentDiscipline());
+        ViewIFace view = AppContextMgr.getInstance().getView(tableInfo.getDefaultFormName());
 
         InfoRequest infoRequest = new InfoRequest();
         infoRequest.initialize();
@@ -1419,7 +1417,7 @@ public class InteractionsTask extends BaseTask
             return;
         }
         
-        log.debug(cmdAction);
+        //log.debug(cmdAction);
         
         if (cmdAction.isType(DB_CMD_TYPE))
         {

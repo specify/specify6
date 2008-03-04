@@ -19,6 +19,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIRegistry.getTopWindow;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -48,6 +49,7 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.AddRemoveEditPanel;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
@@ -86,7 +88,7 @@ public class DataEntryConfigureDlg extends CustomDialog
      */
     public DataEntryConfigureDlg(final DataEntryTask task)
     {
-        super((Frame)getTopWindow(), getResourceString("DET_CONFIGURE_VIEWS"), true, null);
+        super((Frame)getTopWindow(), getResourceString("DET_CONFIGURE_VIEWS"), true, OKCANCELHELP, null);
         
         this.task = task;
     }
@@ -98,6 +100,8 @@ public class DataEntryConfigureDlg extends CustomDialog
     public void createUI()
     {
         super.createUI();
+        
+        HelpMgr.registerComponent(helpBtn, "DataEntryConfigure"); 
         
         stdViews  = task.getStdViews();
         miscViews = task.getMiscViews();
@@ -139,6 +143,11 @@ public class DataEntryConfigureDlg extends CustomDialog
         mainPanel.add(contentPanel, BorderLayout.CENTER);
         
         pack();
+        
+        Dimension size = getSize();
+        size.width  = Math.max(size.width, 500);
+        size.height = Math.max(size.height, 350);
+        setSize(size);
     }
     
     /**
@@ -152,7 +161,7 @@ public class DataEntryConfigureDlg extends CustomDialog
             Object dev = stdPanel.getOrderList().getSelectedValue();
             ((DefaultListModel)stdPanel.getOrderList().getModel()).removeElement(dev);
             ((DefaultListModel)miscPanel.getOrderList().getModel()).addElement(dev);
-            pack();
+            //pack();
         }
     }
     
@@ -167,7 +176,7 @@ public class DataEntryConfigureDlg extends CustomDialog
             Object dev = miscPanel.getOrderList().getSelectedValue();
             ((DefaultListModel)miscPanel.getOrderList().getModel()).removeElement(dev);
             ((DefaultListModel)stdPanel.getOrderList().getModel()).addElement(dev);
-            pack();
+            //pack();
         }
     }
     
@@ -234,12 +243,12 @@ public class DataEntryConfigureDlg extends CustomDialog
             {
                 ViewIFace     view = newAvailViews.get(name);
                 DBTableInfo   ti   = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
-                DataEntryView dev  = new DataEntryView(view.getObjTitle(), view.getViewSetName(), view.getName(), 
+                DataEntryView dev  = new DataEntryView(view.getObjTitle(), view.getName(), 
                                                        ti != null ? ti.getName() : null, view.getObjTitle(), true);
                 
                 ((DefaultListModel)model).addElement(dev);
             }
-            pack();
+            //pack();
         }
         setHasChanged(true);
     }

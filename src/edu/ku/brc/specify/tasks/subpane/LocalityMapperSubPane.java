@@ -300,7 +300,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
 
         // XXX DEMO  (Hard Coded 'null' means everyone would have one which may not be true)
         // "null" ViewSet name means it should use the default
-        ViewIFace view = AppContextMgr.getInstance().getView(null, "LocalityMapper");
+        ViewIFace view = AppContextMgr.getInstance().getView("LocalityMapper");
         
         // TODO WHERE's the ERROR checking !
         multiView = new MultiView(null, null, view, AltViewIFace.CreationMode.VIEW, MultiView.NO_OPTIONS);

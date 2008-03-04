@@ -19,6 +19,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIRegistry.getTopWindow;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -46,6 +47,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.AddRemoveEditPanel;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.ToggleButtonChooserDlg;
@@ -97,7 +99,7 @@ public class QueryCreatorsConfigureDlg extends CustomDialog
                                final Vector<String> extraQueries,
                                final Vector<String> stdQueries)
     {
-        super((Frame)getTopWindow(), getResourceString("QY_CONFIGURE_CREATORS_QUERIES"), true, null);
+        super((Frame)getTopWindow(), getResourceString("QY_CONFIGURE_CREATORS_QUERIES"), true, OKCANCELHELP, null);
         
         this.task = task;
         
@@ -121,6 +123,8 @@ public class QueryCreatorsConfigureDlg extends CustomDialog
     public void createUI()
     {
         super.createUI();
+        
+        HelpMgr.registerComponent(helpBtn, "QBNewQueryConfig");
         
         freqPanel  = new QueryOrderPanel("QY_QUICK_LIST", freqQueries, true);
         extraPanel = new QueryOrderPanel("QY_EXTRA_LIST",     extraQueries, false);
@@ -159,6 +163,11 @@ public class QueryCreatorsConfigureDlg extends CustomDialog
         mainPanel.add(contentPanel, BorderLayout.CENTER);
         
         pack();
+        
+        Dimension size = getSize();
+        size.width  = Math.max(size.width, 500);
+        size.height = Math.max(size.height, 350);
+        setSize(size);
     }
     
     /**
@@ -172,7 +181,7 @@ public class QueryCreatorsConfigureDlg extends CustomDialog
             Object name = freqPanel.getOrderList().getSelectedValue();
             ((DefaultListModel)freqPanel.getOrderList().getModel()).removeElement(name);
             ((DefaultListModel)extraPanel.getOrderList().getModel()).addElement(name);
-            pack();
+            //pack();
         }
     }
     
@@ -187,7 +196,7 @@ public class QueryCreatorsConfigureDlg extends CustomDialog
             Object name = extraPanel.getOrderList().getSelectedValue();
             ((DefaultListModel)extraPanel.getOrderList().getModel()).removeElement(name);
             ((DefaultListModel)freqPanel.getOrderList().getModel()).addElement(name);
-            pack();
+            //pack();
         }
     }
     
@@ -250,7 +259,7 @@ public class QueryCreatorsConfigureDlg extends CustomDialog
             {
                 ((DefaultListModel)model).addElement(name);
             }
-            pack();
+            //pack();
         }
         setHasChanged(true);
     }

@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.PickListItem;
 import edu.ku.brc.ui.db.PickListDBAdapterIFace;
@@ -65,6 +66,7 @@ public class PickListDBAdapterFactory extends edu.ku.brc.ui.db.PickListDBAdapter
      * @param name the name of the picklist to get
      * @return the picklist
      */
+    @SuppressWarnings("unchecked")
     protected PickList getPickListInternal(final String name)
     {
         PickList                 pkList  = null;
@@ -74,7 +76,8 @@ public class PickListDBAdapterFactory extends edu.ku.brc.ui.db.PickListDBAdapter
             session = DataProviderFactory.getInstance().createSession();
 
             // unchecked warning: Criteria results are always the requested class
-            List<PickList> itemsList = session.getDataList(PickList.class, "name", name, DataProviderSessionIFace.CompareType.Restriction);
+            String sql = "FROM PickList WHERE name = '" + name + "' AND collectionId = "+ Collection.getCurrentCollection().getCollectionId();
+            List<PickList> itemsList = (List<PickList>)session.getDataList(sql);
             if (itemsList != null && itemsList.size() > 0)
             {
                 pkList = itemsList.get(0);

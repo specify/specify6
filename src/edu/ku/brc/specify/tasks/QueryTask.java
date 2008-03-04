@@ -114,6 +114,7 @@ public class QueryTask extends BaseTask
     protected Vector<String>             freqQueries;
     protected Vector<String>             extraQueries;
     protected Vector<String>             stdQueries       = new Vector<String>();
+    protected int                        nonFavCount      = 0;
     
     //protected List<DBTableInfo>               tableInfos       = new ArrayList<DBTableInfo>();
     
@@ -361,7 +362,7 @@ public class QueryTask extends BaseTask
         {
             XStream xstream = new XStream();
             appRes.setDataAsString(xstream.toXML(list));
-            System.out.println(xstream.toXML(list));
+            //System.out.println(xstream.toXML(list));
             ((SpecifyAppContextMgr)AppContextMgr.getInstance()).saveResource(appRes);
         }
     }
@@ -376,7 +377,7 @@ public class QueryTask extends BaseTask
     }
     
     /**
-     * Confgiure the Query Creators.
+     * Configure the Query Creators.
      */
     protected void configureCreatorQueries()
     {
@@ -427,12 +428,20 @@ public class QueryTask extends BaseTask
             for (NavBoxItemIFace nbi : new Vector<NavBoxItemIFace>(navBox.getItems()))
             {
                 RecordSetIFace     rs  = (RecordSetIFace)nbi.getData();
-                RecordSetItemIFace rsi = rs.getOnlyItem();
-                
-                int id = rsi.getRecordId();
-                if (hash.get(id) == null)
+                if (rs != null)
                 {
-                    navBox.remove(nbi);
+                    RecordSetItemIFace rsi = rs.getOnlyItem();
+                    
+                    Integer idInt = rsi.getRecordId();
+                    
+                    if (idInt != null)
+                    {
+                        int id = idInt;
+                        if (hash.get(id) == null)
+                        {
+                            navBox.remove(nbi);
+                        }
+                    }
                 }
             }
             
@@ -440,9 +449,12 @@ public class QueryTask extends BaseTask
             for (NavBoxItemIFace nbi : navBox.getItems())
             {
                 RecordSetIFace     rs  = (RecordSetIFace)nbi.getData();
-                RecordSetItemIFace rsi = rs.getOnlyItem();
-                int id = rsi.getRecordId();
-                hash.put(id, id);
+                if (rs != null)
+                {
+                    RecordSetItemIFace rsi = rs.getOnlyItem();
+                    int id = rsi.getRecordId();
+                    hash.put(id, id);
+                }
             }
             
             for (SpQuery query : favs)
@@ -494,9 +506,12 @@ public class QueryTask extends BaseTask
             for (NavBoxItemIFace nbi : navBox.getItems())
             {
                 RecordSetIFace     rs  = (RecordSetIFace)nbi.getData();
-                RecordSetItemIFace rsi = rs.getOnlyItem();
-                int id = rsi.getRecordId();
-                nbiHash.put(id, nbi);
+                if (rs != null)
+                {
+                    RecordSetItemIFace rsi = rs.getOnlyItem();
+                    int id = rsi.getRecordId();
+                    nbiHash.put(id, nbi);
+                }
             }
             
             navBox.clear();
@@ -512,11 +527,48 @@ public class QueryTask extends BaseTask
                 navBox.add(nbiHash.get(id));
             }
             
+            checkForOtherNavBtn();
+            
             navBox.validate();
             navBox.doLayout();
             NavBoxMgr.getInstance().validate();
             NavBoxMgr.getInstance().doLayout();
             NavBoxMgr.getInstance().repaint();
+        }
+    }
+    
+    /**
+     * Checks to see if the Other btn for "Other Queries" should be added.
+     */
+    protected void checkForOtherNavBtn()
+    {
+        DataProviderSessionIFace session = null;
+        try
+        {
+            session = DataProviderFactory.getInstance().createSession();
+            Integer count = (Integer)session.getData("SELECT count(spQueryId) From SpQuery as sq Inner Join sq.specifyUser as user where sq.isFavorite = false AND user.specifyUserId = "+SpecifyUser.getCurrentUser().getSpecifyUserId());
+            if (count != null && count > 0)
+            {
+                NavBoxItemIFace nbi = NavBox.createBtnWithTT(getResourceString("QY_OTHER_QUERIES"),
+                        name, 
+                        getResourceString("QY_OTHER_QUERIES_TT"), 
+                        IconManager.IconSize.Std16, new ActionListener() 
+                {
+                            public void actionPerformed(ActionEvent e)
+                            {
+                                showOtherViewsDlg();
+                            }
+                });
+                    
+                navBox.add(nbi);
+            }
+        }
+        finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
         }
     }
     
@@ -574,6 +626,7 @@ public class QueryTask extends BaseTask
             
             actionNavBox.add(nbi);
         }
+
     }
     
     
@@ -622,6 +675,55 @@ public class QueryTask extends BaseTask
         }
     }
     
+    /**
+     * Show a dialog letting them choose from a list of available misc views.   
+     */
+    @SuppressWarnings("unchecked")
+    protected void showOtherViewsDlg()
+    {
+        List<SpQuery> queryList = new Vector<SpQuery>();
+        List<?>       rows      = null;
+        DataProviderSessionIFace session = null;
+        try
+        {
+            session = DataProviderFactory.getInstance().createSession();
+            rows    = session.getDataList("FROM SpQuery as sq Inner Join sq.specifyUser as user where sq.isFavorite = false AND user.specifyUserId = "+SpecifyUser.getCurrentUser().getSpecifyUserId() + " ORDER BY sq.name");
+        }
+        finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
+        }
+
+        
+        if (rows.size() == 1)
+        {
+            Object[] row = (Object[])rows.iterator().next();
+            editQuery(((SpQuery)row[0]).getId().intValue());
+            
+        } else
+        {
+            for (Object obj : rows)
+            {
+                Object[] row = (Object[])obj;
+                queryList.add((SpQuery)row[0]); 
+            }
+            ToggleButtonChooserDlg<SpQuery> dlg = new ToggleButtonChooserDlg<SpQuery>((Frame)UIRegistry.getTopWindow(), 
+                    "QY_OTHER_QUERIES", 
+                    queryList, 
+                    ToggleButtonChooserPanel.Type.RadioButton);
+            dlg.setUseScrollPane(true);
+            dlg.setVisible(true);
+            if (!dlg.isCancelled())
+            {
+                editQuery(dlg.getSelectedObject().getId().intValue());
+            }
+        }
+    }
+    
+
     /**
      * Creates all the NavBtns from a list of Queries create names.
      * @param list the list of names
@@ -689,7 +791,7 @@ public class QueryTask extends BaseTask
         if (!isInitialized)
         {
             super.initialize(); // sets isInitialized to false
-            
+
             loadQueries();
             
             navBoxes.add(actionNavBox);
@@ -785,6 +887,7 @@ public class QueryTask extends BaseTask
                 rs.addItem(query.getSpQueryId());
                 addToNavBox(rs);
             }
+            
         }
         finally
         {
@@ -793,6 +896,8 @@ public class QueryTask extends BaseTask
                 session.close();
             }
         }
+        
+        checkForOtherNavBtn();
     }
     
     /**

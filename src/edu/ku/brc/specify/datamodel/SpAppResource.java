@@ -40,8 +40,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -89,7 +87,7 @@ public class SpAppResource extends DataModelObjBase implements java.io.Serializa
      protected Integer                   groupPermissionLevel;
      protected Integer                   allPermissionLevel;
      protected Set<SpAppResourceData>    spAppResourceDatas;
-     protected Set<SpAppResourceDir>     spAppResourceDirs;
+     protected SpAppResourceDir          spAppResourceDir;
      protected Set<SpReport>             spReports;
      protected SpecifyUser               specifyUser;
      protected UserGroup                 group;
@@ -127,7 +125,7 @@ public class SpAppResource extends DataModelObjBase implements java.io.Serializa
         ownerPermissionLevel = null;
         groupPermissionLevel = null;
         allPermissionLevel   = null;
-        spAppResourceDirs    = new HashSet<SpAppResourceDir>();
+        spAppResourceDir     = null;
         spAppResourceDatas   = new HashSet<SpAppResourceData>();
         spReports            = new HashSet<SpReport>();
         specifyUser          = null;
@@ -365,20 +363,19 @@ public class SpAppResource extends DataModelObjBase implements java.io.Serializa
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.AppResourceIFace#getSpAppResourceDirs()
      */
-    @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
-    @JoinTable(name = "spappresdef_appres", joinColumns = { @JoinColumn(name = "SpAppResourceID", unique = false, nullable = false, insertable = true, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "SpAppResourceDirID", unique = false, nullable = false, insertable = true, updatable = false) })
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    public Set<SpAppResourceDir> getSpAppResourceDirs() 
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "SpAppResourceDirID", unique = false, nullable = false, insertable = true, updatable = true)
+    public SpAppResourceDir getSpAppResourceDir() 
     {
-        return this.spAppResourceDirs;
+        return this.spAppResourceDir;
     }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.AppResourceIFace#setSpAppResourceDirs(java.util.Set)
      */
-    public void setSpAppResourceDirs(Set<SpAppResourceDir> spAppResourceDirs) 
+    public void setSpAppResourceDir(SpAppResourceDir spAppResourceDir) 
     {
-        this.spAppResourceDirs = spAppResourceDirs;
+        this.spAppResourceDir = spAppResourceDir;
     }
     /**
      * 
@@ -406,10 +403,14 @@ public class SpAppResource extends DataModelObjBase implements java.io.Serializa
     public void setGroup(UserGroup group) {
         this.group = group;
     }
+    
+    /**
+     * @return
+     */
     @Transient
     public String getFileName()
     {
-        return fileName;
+        return fileName == null ? name : fileName;
     }
 
     public void setFileName(String fileName)
@@ -541,7 +542,7 @@ public class SpAppResource extends DataModelObjBase implements java.io.Serializa
         obj.timestampCreated     = new Timestamp(System.currentTimeMillis());
         obj.timestampModified    = timestampCreated;
         
-        obj.spAppResourceId        = null;
+        obj.spAppResourceId      = null;
         obj.level                = level;
         obj.name                 = name;
         obj.description          = description;
@@ -553,8 +554,8 @@ public class SpAppResource extends DataModelObjBase implements java.io.Serializa
         obj.specifyUser          = specifyUser;
         obj.group                = group;       
         obj.fileName             = fileName;
-        obj.spAppResourceDirs  = new HashSet<SpAppResourceDir>();
-        obj.spAppResourceDatas     = new HashSet<SpAppResourceData>();
+        obj.spAppResourceDir     = this.spAppResourceDir;
+        obj.spAppResourceDatas   = new HashSet<SpAppResourceData>();
         
         return obj;
     }

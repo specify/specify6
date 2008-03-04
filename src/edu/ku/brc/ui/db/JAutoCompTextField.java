@@ -120,6 +120,14 @@ public class JAutoCompTextField extends JTextField
     }
     
     /**
+     * @param dbAdapter the dbAdapter to set
+     */
+    public void setPickListAdapter(PickListDBAdapterIFace dbAdapter)
+    {
+        this.dbAdapter = dbAdapter;
+    }
+
+    /**
      * @param str
      */
     protected void lookup(final String str)

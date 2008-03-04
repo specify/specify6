@@ -1100,8 +1100,8 @@
                     <cell type="label" labelfor="name" label="Name"/>
                     <cell type="field" id="name" uitype="text" cols="16" name="name" isrequired="true"/>
                     <!--<cell type="field" id="WebLink" name="this" uitype="plugin" initialize="name=WebLinkLauncherButton;url=http://www.fishbase.org/Summary/speciesSummary.php?genusname=$genusName$&amp;speciesname=$speciesName$;label=FishBase"/>-->
-                    <!--<cell type="field" id="WebLink" name="this" uitype="plugin" initialize="name=WebLinkLauncherButton;url=http://www.ncbi.nlm.nih.gov/sites/gquery?term=$genusName$%20$speciesName$;label=NCBI"/>-->
-                    <cell type="field" id="WebLink" name="this" uitype="plugin" initialize="name=WebLinkLauncherButton;url=[GBIF_Canada]?king=$kingdomName$&amp;p_action=containing&amp;taxa=$genusName$%20$speciesName$&amp;p_format=html;label=ITIS"/>
+                    <!--<cell type="field" id="WebLink" name="this" uitype="plugin" initialize="name=WebLinkLauncherButton;url=http://www.ncbi.nlm.nih.gov/sites/gquery?term=$genusName$%20$speciesName$;label=NCBI"/> -->
+                    <cell type="field" id="WebLink" name="this" uitype="plugin" initialize="name=WebLinkLauncherButton;url=[GBIF_Canada]?king=$kingdomName$AMPp_action=containingAMP;taxa=$genusName$%20$speciesName$AMPp_format=html;label=ITIS"/>
                     <!-- Put in remote prefs: URL_Prefix.GBIF_Canada = http://www.cbif.gc.ca/pls/itisca/taxastep -->
                 </row>
                 <!-- 

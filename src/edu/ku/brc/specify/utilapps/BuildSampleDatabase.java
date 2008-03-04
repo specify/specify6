@@ -80,6 +80,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
 import java.util.Random;
@@ -112,6 +113,7 @@ import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.DesertBlue;
+import com.thoughtworks.xstream.XStream;
 
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.AttributeIFace;
@@ -143,6 +145,7 @@ import edu.ku.brc.specify.datamodel.ConservDescription;
 import edu.ku.brc.specify.datamodel.ConservEvent;
 import edu.ku.brc.specify.datamodel.ConservRecmdType;
 import edu.ku.brc.specify.datamodel.ConservRecommendation;
+import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
@@ -403,7 +406,7 @@ public class BuildSampleDatabase
         
         
         ////////////////////////////////
-        // picklists
+        // Queries
         ////////////////////////////////
 
         frame.setDesc("Creating Std Queries...");
@@ -413,11 +416,16 @@ public class BuildSampleDatabase
         persist(dataObjects);
         dataObjects.clear();
         
+        ////////////////////////////////
+        // picklists
+        ////////////////////////////////
+
         log.info("Creating picklists");
         frame.setDesc("Creating PickLists...");
         frame.setProcess(++createStep);
         
-        createPickLists();
+        createPickLists(null);
+        createPickLists(discipline);
         
         //startTx();
         persist(dataObjects);
@@ -516,16 +524,25 @@ public class BuildSampleDatabase
         
     }
     
-    protected BldrPickList createPickLists()
+    /**
+     * @param discipline
+     * @return
+     */
+    protected BldrPickList createPickLists(final Discipline discipline)
     {
         BldrPickList colMethods = null;
         
-        List<BldrPickList> pickLists = DataBuilder.getBldrPickLists();
+        Collection collection = Collection.getCurrentCollection();
+        
+        List<BldrPickList> pickLists = DataBuilder.getBldrPickLists(discipline != null ? discipline.getDiscipline() : "common");
         for (BldrPickList pl : pickLists)
         {
             PickList pickList = createPickList(pl.getName(), pl.getType(), pl.getTableName(),
                                                pl.getFieldName(), pl.getFormatter(), pl.getReadOnly(), 
                                                pl.getSizeLimit(), pl.getIsSystem());
+            pickList.setCollection(collection);
+            collection.getPickLists().add(pickList);
+            
             for (BldrPickListItem item : pl.getItems())
             {
                 pickList.addItem(item.getTitle(), item.getValue());
@@ -537,6 +554,7 @@ public class BuildSampleDatabase
                 colMethods = pl;
             }
         }
+        persist(collection);
         return colMethods;
     }
     
@@ -697,22 +715,28 @@ public class BuildSampleDatabase
         List<Object> gtps        = createSimpleGeologicTimePeriod(gtpTreeDef);
         List<Object> lithoStrats = createSimpleLithoStrat(lithoStratTreeDef);
         
-        //startTx();
         persist(journal);
         persist(taxa);
         persist(geos);
         persist(locs);
         persist(gtps);
         persist(lithoStrats);
-        //commitTx();
+        commitTx();
         
+        startTx();
         frame.setProcess(++createStep);
         
         ////////////////////////////////
         // picklists
         ////////////////////////////////
-        log.info("Creating picklists");
 
+        log.info("Creating picklists");
+        frame.setDesc("Creating PickLists...");
+        //frame.setProcess(++createStep);
+        
+        createPickLists(null);
+        createPickLists(discipline);
+        
         Vector<Object> dataObjects = new Vector<Object>();
         
         standardQueries(dataObjects, userAgent);
@@ -721,10 +745,12 @@ public class BuildSampleDatabase
         
         //BldrPickList colMethods = createPickLists();
         
-        //startTx();
         persist(dataObjects);
-        //commitTx();
         dataObjects.clear();
+        
+        commitTx();
+        
+        startTx();
         
         frame.setProcess(++createStep);
         
@@ -770,11 +796,13 @@ public class BuildSampleDatabase
         farmpond.setLong2text("-55.112163 deg W");
         farmpond.setLongitude2(new BigDecimal(-55.112163));
 
-        //startTx();
         persist(forestStream);
         persist(lake);
         persist(farmpond);
-        //commitTx();
+        
+        commitTx();
+        
+        startTx();
         
         frame.setProcess(++createStep);
         
@@ -823,6 +851,8 @@ public class BuildSampleDatabase
         otherAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
         otherAgent.setDiscipline(Discipline.getCurrentDiscipline());
         agents.add(otherAgent);
+        
+        commitTx();
 
         List<GroupPerson> gpList = new ArrayList<GroupPerson>();
         if (true)
@@ -849,6 +879,7 @@ public class BuildSampleDatabase
             gpList.add(createGroupPerson(groupAgent, gm2, 1));
         }
 
+        startTx();
         
         List<AgentVariant> agentVariants = new Vector<AgentVariant>();
         agentVariants.add(createAgentVariant(AgentVariant.VARIANT, "James Variant #1", steveBoyd));
@@ -868,11 +899,12 @@ public class BuildSampleDatabase
         addrs.add(createAddress(userAgent, "1214 East Street", null, "Grinnell", "IA", "USA", "56060"));
         userAgent.setDivision(division);
                 
-        //startTx();
         persist(agents);
         persist(agentVariants);
         persist(gpList);
-        //commitTx();
+        commitTx();
+        
+        startTx();
         
         frame.setProcess(++createStep);
         
@@ -894,9 +926,10 @@ public class BuildSampleDatabase
         
         AttributeDef cevAttrDef = createAttributeDef(AttributeIFace.FieldType.StringType, "ParkName", discipline, null);//meg added cod
         
-        //startTx();
         persist(cevAttrDef);
-        //commitTx();
+        commitTx();
+        
+        startTx();
         
         CollectingEventAttr cevAttr    = createCollectingEventAttr(ce1, cevAttrDef, "Sleepy Hollow", null);
 
@@ -922,11 +955,12 @@ public class BuildSampleDatabase
         dataObjects.add(collectorMeg);
         dataObjects.add(collectorRod);
         
-        //startTx();
         persist(dataObjects);
-        //commitTx();
         dataObjects.clear();
         
+        commitTx();
+        
+        startTx();
         ////////////////////////////////
         // permit
         ////////////////////////////////
@@ -956,13 +990,12 @@ public class BuildSampleDatabase
         repoAg.setEndDate(repoEndDate);
         dataObjects.add(repoAg);
         
-        //startTx();
         persist(dataObjects);
-        //commitTx();
         dataObjects.clear();
+        commitTx();
         
+        startTx();
         frame.setProcess(++createStep);
-
         
         ////////////////////////////////
         // Determination Status (Must be done here)
@@ -974,13 +1007,10 @@ public class BuildSampleDatabase
         oldDet     = createDeterminationStatus(discipline, "Old Determination","", DeterminationStatus.OLDDETERMINATION);
 
         
-        //startTx();
         persist(current);
         persist(notCurrent);
         persist(incorrect);
         persist(oldDet);
-        
-        //commitTx();
         
         ////////////////////////////////
         // collection objects
@@ -1009,11 +1039,12 @@ public class BuildSampleDatabase
         }
         dataObjects.addAll(collObjs);
         
-        //startTx();
         persist(dataObjects);
-        //commitTx();
         dataObjects.clear();
 
+        commitTx();
+        
+        startTx();
         
         frame.setProcess(++createStep);
         
@@ -1048,19 +1079,21 @@ public class BuildSampleDatabase
         determs.add(createDetermination(collObjs.get(4), getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), incorrect, longAgo));
         determs.get(13).setRemarks("This determination is totally wrong.  What a foolish determination.");
         
-        //startTx();
         persist(determs);
-        //commitTx();
         dataObjects.clear();
+        commitTx();
         
+        startTx();
         frame.setProcess(++createStep);
                 
         ////////////////////////////////
         // preparations (prep types)
         ////////////////////////////////
         log.info("Creating preparations");
-        PrepType pressed = createPrepType(collection, "Pressed");
-
+        
+        Vector<PrepType> prepTypesForSaving = loadPrepTypes();
+        PrepType pressed = prepTypesForSaving.get(0);
+        
         List<Preparation> preps = new Vector<Preparation>();
         Calendar prepDate = Calendar.getInstance();
         preps.add(createPreparation(pressed, agents.get(0), collObjs.get(0), (Storage)locs.get(7), rand.nextInt(20)+1, prepDate));
@@ -1087,14 +1120,15 @@ public class BuildSampleDatabase
         preps.add(createPreparation(pressed, agents.get(1), collObjs.get(3), (Storage)locs.get(8), rand.nextInt(20)+1, prepDate));
         preps.add(createPreparation(pressed, agents.get(1), collObjs.get(4), (Storage)locs.get(9), rand.nextInt(20)+1, prepDate));
 
-        dataObjects.add(pressed);
+        dataObjects.addAll(prepTypesForSaving);
         dataObjects.addAll(preps);
         
-        //startTx();
         persist(dataObjects);
-        //commitTx();
         dataObjects.clear();
         
+        commitTx();
+        
+        startTx();
         frame.setProcess(++createStep);
         
         ////////////////////////////////
@@ -1135,13 +1169,12 @@ public class BuildSampleDatabase
         dataObjects.add(acc2);
         dataObjects.addAll(accAgents);
         
-        //startTx();
         persist(dataObjects);
-        //commitTx();
         dataObjects.clear();
+        commitTx();
         
+        startTx();
         frame.setProcess(++createStep);
-        
 
         ////////////////////////////////
         // loans (loan agents, shipments)
@@ -1271,8 +1304,8 @@ public class BuildSampleDatabase
             i++;
         }
         
-        LoanAgent loanAgent1 = createLoanAgent("loaner", closedLoan,    getRandomAgent(agents));
-        LoanAgent loanAgent2 = createLoanAgent("loaner", overdueLoan,   getRandomAgent(agents));
+        LoanAgent loanAgent1 = createLoanAgent("loaner",   closedLoan,    getRandomAgent(agents));
+        LoanAgent loanAgent2 = createLoanAgent("loaner",   overdueLoan,   getRandomAgent(agents));
         LoanAgent loanAgent3 = createLoanAgent("Borrower", closedLoan,  getRandomAgent(agents));
         LoanAgent loanAgent4 = createLoanAgent("Borrower", overdueLoan, getRandomAgent(agents));
         
@@ -1290,7 +1323,6 @@ public class BuildSampleDatabase
         
         frame.setProcess(++createStep);
         
-        
         Calendar ship1Date = Calendar.getInstance();
         ship1Date.set(2004, 03, 19);
         Shipment loan1Ship = createShipment(ship1Date, "2006-001", "USPS", (short) 1, "1.25 kg", null, agents.get(0), agents.get(4), agents.get(0));
@@ -1306,14 +1338,10 @@ public class BuildSampleDatabase
         dataObjects.add(loan1Ship);
         dataObjects.add(loan2Ship);   
         
-        //startTx();
         persist(dataObjects);
-        //commitTx();
         dataObjects.clear();
 
-        //startTx();
         persist(dataObjects);
-        //commitTx();
         dataObjects.clear();
         
         frame.setProcess(++createStep);
@@ -1426,8 +1454,6 @@ public class BuildSampleDatabase
         
         startTx();
         
-        BldrPickList colMethods = createPickLists();
-        
         persist(journal);
         persist(taxa);
         persist(geos);
@@ -1443,7 +1469,6 @@ public class BuildSampleDatabase
                 taxonTreeDef, geoTreeDef, gtpTreeDef,
                 lithoStratTreeDef, locTreeDef,
                 journal, taxa, geos, locs, gtps, lithoStrats,
-                colMethods,
                 "KUFSH", "Fish", true, false);
 
         frame.setOverall(steps++);
@@ -1454,10 +1479,61 @@ public class BuildSampleDatabase
                     taxonTreeDef, geoTreeDef, gtpTreeDef,
                     lithoStratTreeDef, locTreeDef,
                     journal, taxa, geos, locs, gtps, lithoStrats,
-                    colMethods,
                     "KUTIS", "Fish Tissue", false, true);
         }
 
+    }
+    
+    /**
+     * @return returns a list of preptypes read in from preptype.xml
+     */
+    @SuppressWarnings("unchecked")
+    protected Vector<PrepType> loadPrepTypes()
+    {
+        Vector<PrepType> prepTypes = new Vector<PrepType>();
+        
+        XStream xstream = new XStream();
+        xstream.alias("preptype",     PrepType.class);
+        
+        xstream.omitField(PrepType.class, "prepTypeId");
+        xstream.omitField(PrepType.class, "collection");
+        xstream.omitField(PrepType.class, "preparations");
+        xstream.omitField(PrepType.class, "attributeDefs");
+        
+        xstream.useAttributeFor(PrepType.class, "name");
+        xstream.useAttributeFor(PrepType.class, "isLoanable");
+        
+        xstream.aliasAttribute("isloanable",  "isLoanable");
+        
+        xstream.omitField(DataModelObjBase.class,  "timestampCreated");
+        xstream.omitField(DataModelObjBase.class,  "timestampModified");
+        xstream.omitField(DataModelObjBase.class,  "lastEditedBy");
+        
+        String discipline = Discipline.getCurrentDiscipline().getDiscipline();
+        File   file       = XMLHelper.getConfigDir(discipline + File.separator + "preptypes.xml");
+        if (file.exists())
+        {
+            try
+            {
+                prepTypes = (Vector<PrepType>)xstream.fromXML(FileUtils.readFileToString(file));
+                
+            } catch (Exception ex)
+            {
+                log.error(ex);
+            }
+    
+            Timestamp now = new Timestamp(System.currentTimeMillis());
+            for (PrepType pt : prepTypes)
+            {
+                pt.setCreatedByAgent(Agent.getUserAgent());
+                pt.setTimestampCreated(now);
+                pt.setCollection(Collection.getCurrentCollection());
+                pt.setPreparations(new HashSet<Preparation>());
+                pt.setAttributeDefs(new HashSet<AttributeDef>());
+            }
+            return prepTypes;
+        }
+        throw new RuntimeException("preptypes.xml is missing for discipline["+discipline+"]");
     }
     
     /**
@@ -1467,7 +1543,7 @@ public class BuildSampleDatabase
      * @return the entire list of DB object to be persisted
      */
     @SuppressWarnings("unchecked")
-    public List<Object> createFishCollection(final Discipline            discipline,
+    public List<Object> createFishCollection(final Discipline                discipline,
                                              final SpecifyUser               user,
                                              final Agent                     userAgent,
                                              final Division                  division,                  
@@ -1475,14 +1551,13 @@ public class BuildSampleDatabase
                                              final GeographyTreeDef          geoTreeDef,
                                              final GeologicTimePeriodTreeDef gtpTreeDef,
                                              final LithoStratTreeDef         lithoStratTreeDef,
-                                             final StorageTreeDef           locTreeDef,
+                                             final StorageTreeDef            locTreeDef,
                                              final Journal                   journal,
                                              final List<Object>              taxa,
                                              final List<Object>              geos,
                                              final List<Object>              locs,
                                              final List<Object>              gtps,
                                              final List<Object>              lithoStrats,
-                                             final BldrPickList              colMethods,
                                              final String                    colPrefix,
                                              final String                    colName,
                                              final boolean                   createAgents,
@@ -1506,7 +1581,15 @@ public class BuildSampleDatabase
         persist(collection);
         
         Collection.setCurrentCollection(collection);
-
+        
+        ////////////////////////////////
+        // picklists
+        ////////////////////////////////
+        log.info("Creating picklists");
+        
+        createPickLists(null);
+        BldrPickList colMethods = createPickLists(discipline);
+        
         commitTx();
         
         frame.setProcess(++createStep);
@@ -1527,11 +1610,6 @@ public class BuildSampleDatabase
         frame.setProcess(++createStep);
         
         
-        ////////////////////////////////
-        // picklists
-        ////////////////////////////////
-        log.info("Creating picklists");
-
         Vector<Object> dataObjects = new Vector<Object>();
         
         standardQueries(dataObjects, userAgent);
@@ -1895,57 +1973,53 @@ public class BuildSampleDatabase
         ////////////////////////////////
         log.info("Creating preparations");
         
-        PrepType skel = null;
-        PrepType cas  = null;
-        PrepType etoh = null;
-        PrepType xray = null;
+        Vector<PrepType> prepTypesForSaving = loadPrepTypes();
+        Vector<PrepType> pt                 = new Vector<PrepType>();
         
         if (doTissues)
         {
-            skel = createPrepType(collection, "Tissue");
-            cas  = skel;
-            etoh = skel;
-            xray = skel;
+            pt.clear();
+            PrepType tissuePT = createPrepType(collection, "Tissue");
+            for (int i=0;i<prepTypesForSaving.size();i++)
+            {
+                pt.add(tissuePT);
+            }
+            prepTypesForSaving.clear();
+            prepTypesForSaving.add(tissuePT);
             
         } else
         {
-            skel = createPrepType(collection, "skeleton");
-            cas  = createPrepType(collection, "C&S");
-            etoh = createPrepType(collection, "EtOH");
-            xray = createPrepType(collection, "x-ray");            
+            pt.addAll(prepTypesForSaving);
         }
 
         List<Preparation> preps = new Vector<Preparation>();
         Calendar prepDate = Calendar.getInstance();
-        preps.add(createPreparation(etoh, agents.get(0), collObjs.get(0), (Storage)locs.get(7), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(etoh, agents.get(0), collObjs.get(1), (Storage)locs.get(7), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(etoh, agents.get(1), collObjs.get(2), (Storage)locs.get(7), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(etoh, agents.get(1), collObjs.get(3), (Storage)locs.get(7), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(etoh, agents.get(2), collObjs.get(4), (Storage)locs.get(8), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(etoh, agents.get(2), collObjs.get(5), (Storage)locs.get(8), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(etoh, agents.get(3), collObjs.get(6), (Storage)locs.get(8), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(etoh, agents.get(3), collObjs.get(7), (Storage)locs.get(8), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(skel, agents.get(1), collObjs.get(0), (Storage)locs.get(11), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(skel, agents.get(1), collObjs.get(1), (Storage)locs.get(11), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(skel, agents.get(1), collObjs.get(2), (Storage)locs.get(10), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(skel, agents.get(2), collObjs.get(3), (Storage)locs.get(9), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(skel, agents.get(3), collObjs.get(4), (Storage)locs.get(9), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(skel, agents.get(0), collObjs.get(5), (Storage)locs.get(9), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(cas, agents.get(1), collObjs.get(6), (Storage)locs.get(9), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(cas, agents.get(1), collObjs.get(7), (Storage)locs.get(9), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(cas, agents.get(1), collObjs.get(2), (Storage)locs.get(8), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pt.get(0), agents.get(0), collObjs.get(0), (Storage)locs.get(7), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pt.get(0), agents.get(0), collObjs.get(1), (Storage)locs.get(7), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pt.get(0), agents.get(1), collObjs.get(2), (Storage)locs.get(7), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pt.get(0), agents.get(1), collObjs.get(3), (Storage)locs.get(7), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pt.get(0), agents.get(2), collObjs.get(4), (Storage)locs.get(8), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pt.get(0), agents.get(2), collObjs.get(5), (Storage)locs.get(8), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pt.get(0), agents.get(3), collObjs.get(6), (Storage)locs.get(8), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pt.get(0), agents.get(3), collObjs.get(7), (Storage)locs.get(8), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pt.get(1), agents.get(1), collObjs.get(0), (Storage)locs.get(11), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pt.get(1), agents.get(1), collObjs.get(1), (Storage)locs.get(11), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pt.get(1), agents.get(1), collObjs.get(2), (Storage)locs.get(10), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pt.get(1), agents.get(2), collObjs.get(3), (Storage)locs.get(9), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pt.get(1), agents.get(3), collObjs.get(4), (Storage)locs.get(9), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pt.get(1), agents.get(0), collObjs.get(5), (Storage)locs.get(9), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pt.get(2), agents.get(1), collObjs.get(6), (Storage)locs.get(9), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pt.get(2), agents.get(1), collObjs.get(7), (Storage)locs.get(9), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pt.get(2), agents.get(1), collObjs.get(2), (Storage)locs.get(8), rand.nextInt(20)+1, prepDate));
 
-        preps.add(createPreparation(xray, agents.get(1), collObjs.get(0), (Storage)locs.get(7), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(xray, agents.get(1), collObjs.get(1), (Storage)locs.get(7), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(xray, agents.get(1), collObjs.get(2), (Storage)locs.get(8), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(xray, agents.get(1), collObjs.get(3), (Storage)locs.get(8), rand.nextInt(20)+1, prepDate));
-        preps.add(createPreparation(xray, agents.get(1), collObjs.get(4), (Storage)locs.get(9), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pt.get(3), agents.get(1), collObjs.get(0), (Storage)locs.get(7), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pt.get(3), agents.get(1), collObjs.get(1), (Storage)locs.get(7), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pt.get(3), agents.get(1), collObjs.get(2), (Storage)locs.get(8), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pt.get(3), agents.get(1), collObjs.get(3), (Storage)locs.get(8), rand.nextInt(20)+1, prepDate));
+        preps.add(createPreparation(pt.get(3), agents.get(1), collObjs.get(4), (Storage)locs.get(9), rand.nextInt(20)+1, prepDate));
 
         dataObjects.add(collection);
-        dataObjects.add(skel);
-        dataObjects.add(cas);
-        dataObjects.add(etoh);
-        dataObjects.add(xray);
+        dataObjects.addAll(prepTypesForSaving);
         dataObjects.addAll(preps);
         
         //startTx();

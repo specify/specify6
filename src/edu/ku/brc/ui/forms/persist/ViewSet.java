@@ -103,6 +103,22 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
     }
 
     /**
+     * @param title the title to set
+     */
+    public void setTitle(String title)
+    {
+        this.title = title;
+    }
+
+    /**
+     * @param fileName the fileName to set
+     */
+    public void setFileName(String fileName)
+    {
+        this.fileName = fileName;
+    }
+
+    /**
      * Parse for the type and converts it to the Enum.
      * @param typeStr the type
      * @return the enum of the type

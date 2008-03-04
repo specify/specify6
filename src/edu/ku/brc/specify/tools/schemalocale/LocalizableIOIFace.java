@@ -102,7 +102,9 @@ public interface LocalizableIOIFace
     
    
     /**
+     * The implementor MUST return all the 'common' and all the discipline specific picklists.
+     * @param disciplineName the name of the discipline
      * @return
      */
-    public abstract List<PickList> getPickLists();
+    public abstract List<PickList> getPickLists(String disciplineName);
 }

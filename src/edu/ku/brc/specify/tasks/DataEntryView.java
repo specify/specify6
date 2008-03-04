@@ -32,7 +32,6 @@ import edu.ku.brc.dbsupport.DBTableInfo;
 public class DataEntryView implements Comparable<DataEntryView>
 {
     protected String  name;
-    protected String  viewSet;
     protected String  view;
     protected String  iconName;
     protected String  toolTip;
@@ -49,7 +48,6 @@ public class DataEntryView implements Comparable<DataEntryView>
      * @param isSideBar
      */
     public DataEntryView(String name, 
-                         String viewSet, 
                          String view, 
                          String iconName, 
                          String toolTip,
@@ -57,7 +55,6 @@ public class DataEntryView implements Comparable<DataEntryView>
     {
         super();
         this.name = name;
-        this.viewSet = viewSet;
         this.view = view;
         this.iconName = iconName;
         this.toolTip = toolTip;
@@ -104,20 +101,6 @@ public class DataEntryView implements Comparable<DataEntryView>
         this.tableInfo = tableInfo;
     }
 
-    /**
-     * @return the viewSet
-     */
-    public String getViewSet()
-    {
-        return viewSet;
-    }
-    /**
-     * @param viewSet the viewSet to set
-     */
-    public void setViewSet(String viewSet)
-    {
-        this.viewSet = viewSet;
-    }
     /**
      * @return the view
      */
@@ -201,7 +184,6 @@ public class DataEntryView implements Comparable<DataEntryView>
         xstream.alias("view",  DataEntryView.class);
         
         xstream.useAttributeFor(DataEntryView.class, "name");
-        xstream.useAttributeFor(DataEntryView.class, "viewSet");
         xstream.useAttributeFor(DataEntryView.class, "view");
         xstream.useAttributeFor(DataEntryView.class, "iconName");
         xstream.useAttributeFor(DataEntryView.class, "toolTip");
@@ -209,7 +191,6 @@ public class DataEntryView implements Comparable<DataEntryView>
         
         xstream.omitField(DataEntryView.class, "tableInfo");
         
-        xstream.aliasAttribute(DataEntryView.class, "viewSet", "viewset");
         xstream.aliasAttribute(DataEntryView.class, "iconName", "iconname");
         xstream.aliasAttribute(DataEntryView.class, "toolTip", "tooltip");
         xstream.aliasAttribute(DataEntryView.class, "isSideBar", "sidebar");

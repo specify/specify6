@@ -1061,10 +1061,10 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getPickLists()
      */
-    public List<PickList> getPickLists()
+    public List<PickList> getPickLists(final String disciplineName)
     {
         List<PickList>     pickLists     = new Vector<PickList>();
-        List<BldrPickList> bdlrPickLists = DataBuilder.getBldrPickLists();
+        List<BldrPickList> bdlrPickLists = DataBuilder.getBldrPickLists(disciplineName != null ? disciplineName : "common");
         
         for (BldrPickList pl : bdlrPickLists)
         {

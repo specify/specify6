@@ -28,6 +28,8 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -37,15 +39,15 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.apache.commons.lang.StringUtils;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
+
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 
 /**
 
@@ -64,17 +66,20 @@ public class SpAppResourceDir extends DataModelObjBase implements java.io.Serial
 
      protected Integer            spAppResourceDirId;
      protected Collection         collection;
-     protected Discipline     discipline;
+     protected Discipline         discipline;
      protected SpecifyUser        specifyUser;
      protected Set<SpAppResource> spPersistedAppResources;
      protected Set<SpViewSetObj>  spPersistedViewSets;
      protected String             userType;
      protected String             disciplineType;
+     protected Boolean            isPersonal;
      
      // Transient Data Member
      protected Set<SpAppResource> spAppResources     = null;
      protected Set<SpViewSetObj>  spViewSets         = null;
      protected boolean            shouldInitialViews = true;
+     
+     protected String             title = null;
 
     // Constructors
 
@@ -98,7 +103,7 @@ public class SpAppResourceDir extends DataModelObjBase implements java.io.Serial
         
         spAppResourceDirId      = null;
         collection              = null;
-        discipline          = null;
+        discipline              = null;
         specifyUser             = null;
         
         spPersistedAppResources = new HashSet<SpAppResource>();
@@ -109,6 +114,8 @@ public class SpAppResourceDir extends DataModelObjBase implements java.io.Serial
         
         spAppResources          = null;//new HashSet<AppResource>();
         spViewSets              = new HashSet<SpViewSetObj>();
+        
+        isPersonal              = false;
     }
     // End Initializer
 
@@ -126,27 +133,6 @@ public class SpAppResourceDir extends DataModelObjBase implements java.io.Serial
         return this.spAppResourceDirId;
     }
 
-    /**
-     * Generic Getter for the ID Property.
-     * @returns ID Property.
-     */
-    @Transient
-    @Override
-    public Integer getId()
-    {
-        return this.spAppResourceDirId;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
-     */
-    @Transient
-    @Override
-    public Class<?> getDataClass()
-    {
-        return SpAppResourceDir.class;
-    }
-    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#isChangeNotifier()
      */
@@ -163,6 +149,58 @@ public class SpAppResourceDir extends DataModelObjBase implements java.io.Serial
     public void setSpAppResourceDirId(Integer spAppResourceDirId) 
     {
         this.spAppResourceDirId = spAppResourceDirId;
+    }
+
+    /**
+     * @return
+     */
+    @Column(name = "DisciplineType", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    public String getDisciplineType()
+    {
+        return disciplineType;
+    }
+
+    /**
+     * @param disciplineType
+     */
+    public void setDisciplineType(String disciplineType)
+    {
+        this.disciplineType = disciplineType;
+    }
+
+    /**
+     * @return
+     */
+    @Column(name = "UserType", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    public String getUserType()
+    {
+        return userType;
+    }
+
+    /**
+     * @param userType
+     */
+    public void setUserType(String userType)
+    {
+        this.userType = userType;
+    }
+    
+
+    /**
+     * @return the isPersonal
+     */
+    @Column(name = "IsPersonal", unique = false, nullable = false, insertable = true, updatable = true)
+    public Boolean getIsPersonal()
+    {
+        return isPersonal;
+    }
+
+    /**
+     * @param isPersonal the isPersonal to set
+     */
+    public void setIsPersonal(Boolean isPersonal)
+    {
+        this.isPersonal = isPersonal;
     }
 
     /* (non-Javadoc)
@@ -222,8 +260,7 @@ public class SpAppResourceDir extends DataModelObjBase implements java.io.Serial
     /**
      * @return
      */
-    @ManyToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "spAppResourceDirs")
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, mappedBy = "spAppResourceDir")
     public Set<SpAppResource> getSpPersistedAppResources() 
     {
         return this.spPersistedAppResources;
@@ -242,8 +279,7 @@ public class SpAppResourceDir extends DataModelObjBase implements java.io.Serial
     /**
      * @return
      */
-    @ManyToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "spAppResourceDirs")
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    @OneToMany(cascade = {javax.persistence.CascadeType.ALL}, mappedBy = "spAppResourceDir")
     public Set<SpViewSetObj> getSpPersistedViewSets() 
     {
         return this.spPersistedViewSets;
@@ -256,41 +292,6 @@ public class SpAppResourceDir extends DataModelObjBase implements java.io.Serial
     {
         this.spPersistedViewSets = persistedViewSets;
     }
-
-    /**
-     * @return
-     */
-    @Column(name = "DisciplineType", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
-    public String getDisciplineType()
-    {
-        return disciplineType;
-    }
-
-    /**
-     * @param disciplineType
-     */
-    public void setDisciplineType(String disciplineType)
-    {
-        this.disciplineType = disciplineType;
-    }
-
-    /**
-     * @return
-     */
-    @Column(name = "UserType", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
-    public String getUserType()
-    {
-        return userType;
-    }
-
-    /**
-     * @param userType
-     */
-    public void setUserType(String userType)
-    {
-        this.userType = userType;
-    }
-    
     /**
      * @return
      */
@@ -348,7 +349,7 @@ public class SpAppResourceDir extends DataModelObjBase implements java.io.Serial
             disciplineType == null && 
             userType == null)
         {
-            return "Core";
+            return "Common";
         }
         
         StringBuilder strBuf = new StringBuilder();
@@ -357,7 +358,9 @@ public class SpAppResourceDir extends DataModelObjBase implements java.io.Serial
         strBuf.append(" "+(discipline != null ? discipline.getName() : ""));
         strBuf.append(" "+(disciplineType != null ? disciplineType : ""));
         strBuf.append(" "+(userType != null ? userType : ""));
+        strBuf.append(" "+isPersonal);
         return strBuf.toString(); 
+        
     }
 
     /**
@@ -386,7 +389,33 @@ public class SpAppResourceDir extends DataModelObjBase implements java.io.Serial
     @Transient
     public String getIdentityTitle()
     {
-        return (StringUtils.isNotEmpty(userType) ? (userType + " - ") : "") + disciplineType;
+        if (title == null)
+        {
+            DBTableInfo collectionTI = DBTableIdMgr.getInstance().getByClassName(Collection.class.getName());
+            DBTableInfo disciplineTI = DBTableIdMgr.getInstance().getByClassName(Discipline.class.getName());
+            
+            if (getIsPersonal())
+            {
+                title = getResourceString("RIE_PERSONAL");
+                
+            } else if (getUserType() != null)
+            {
+                title = getUserType();
+                
+            } else if (getCollection() != null)
+            {
+                title = getCollection().getCollectionName() + " ("+collectionTI.getTitle()+")";
+                
+            } else if (getDiscipline() != null)
+            {
+                title = getDiscipline().getName() + " ("+disciplineTI.getTitle()+")";
+                
+            } else
+            {
+                title = getIdentityTitle();
+            }
+        }
+        return title;
     }
 
     /* (non-Javadoc)
@@ -400,11 +429,31 @@ public class SpAppResourceDir extends DataModelObjBase implements java.io.Serial
     /**
      * @return the Table ID for the class.
      */
-    /**
-     * @return
-     */
     public static int getClassTableId()
     {
         return 516;
     }
+    
+    /**
+     * Generic Getter for the ID Property.
+     * @returns ID Property.
+     */
+    @Transient
+    @Override
+    public Integer getId()
+    {
+        return this.spAppResourceDirId;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.FormDataObjIFace#getDataClass()
+     */
+    @Transient
+    @Override
+    public Class<?> getDataClass()
+    {
+        return SpAppResourceDir.class;
+    }
+    
+
 }

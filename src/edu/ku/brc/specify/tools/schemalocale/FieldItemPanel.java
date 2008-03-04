@@ -59,6 +59,7 @@ import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBRelationshipInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.ui.JStatusBar;
@@ -894,7 +895,7 @@ public class FieldItemPanel extends LocalizerBasePanel
             
             if (pickLists == null)
             {
-                pickLists = localizableIO.getPickLists();
+                pickLists = localizableIO.getPickLists(Discipline.getCurrentDiscipline().getDiscipline());
             }
             
             int selectedIndex = -1;

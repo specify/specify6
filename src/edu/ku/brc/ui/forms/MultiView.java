@@ -17,10 +17,6 @@ package edu.ku.brc.ui.forms;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -28,9 +24,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
@@ -107,10 +101,6 @@ public class MultiView extends JPanel
     protected boolean                      doingSelector        = false; // This keeps us from recursing into the selector forever
     
     protected Vector<Object>               deletedItems         = null;
-
-    // Temp
-    protected MultiView                    thisObj              = null;
-    protected CarryForwardSetUp            carryForwardSetup    = null;
 
     /**
      * Constructor - Note that createWithMode can be null and is passed in from parent ALWAYS.
@@ -266,34 +256,6 @@ public class MultiView extends JPanel
         {
             ViewLoader.displayFieldVerInfo();
         }
-        
-        if (false)
-        {
-            if (mvParent == null)
-            {
-                thisObj = this;
-    
-                addMouseListener(new MouseAdapter() {
-                    @Override
-                    public void mousePressed(MouseEvent e)
-                    {
-                        showContextMenu(e);
-                    }
-    
-                    @Override
-                    public void mouseReleased(MouseEvent e)
-                    {
-                        showContextMenu(e);
-    
-                    }
-                    @Override
-                    public void mouseClicked(MouseEvent e)
-                    {
-                        ((FormViewObj)thisObj.currentViewable).listFieldChanges();
-                    }
-                });
-            }
-        }
     }
 
     /**
@@ -348,44 +310,6 @@ public class MultiView extends JPanel
         return null;
     }
     
-    /**
-     * Shows Parent Form's Context Menu.
-     * @param e the mouse event
-     */
-    protected void showContextMenu(MouseEvent e)
-    {
-        if (e.isPopupTrigger())
-        {
-            JPopupMenu popup = new JPopupMenu();
-            JMenuItem menuItem = new JMenuItem("Configure Carry Forward"); // I18N
-            menuItem.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent ex)
-                {
-                    carryForwardSetup = new CarryForwardSetUp(thisObj);
-                    thisObj.add(carryForwardSetup, "carryforward");
-                    cardLayout.show(thisObj, "carryforward");
-                }
-            });
-
-            popup.add(menuItem);
-            popup.show(e.getComponent(), e.getX(), e.getY());
-
-        }
-    }
-
-    /**
-     * Called to indicate acceptence of CarryForward setup.
-     */
-    public void acceptCarryForwardSetup()
-    {
-        if (carryForwardSetup != null)
-        {
-            cardLayout.show(thisObj, currentViewable.getName());
-            remove(carryForwardSetup);
-            carryForwardSetup = null;
-        }
-    }
-
     /**
      * @return the form's first focusable object.
      */
@@ -1467,9 +1391,6 @@ public class MultiView extends JPanel
             }
             displayFrames.clear();
         }
-
-        thisObj           = null;
-        carryForwardSetup = null;
     }
     
     /**

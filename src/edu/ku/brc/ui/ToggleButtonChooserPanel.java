@@ -84,6 +84,7 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
     protected JButton               okBtn                = null;
     protected int                   staticSize           = -1;
     protected boolean               wasCreated           = false;
+    protected boolean               hasInitialSelection  = false;
     
     /**
      * Constructor.
@@ -275,7 +276,7 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
         
         if (addSelectAll && uiType == Type.Checkbox)
         {
-            selectAllBtn    = new JButton(getResourceString("SelectAll"));
+            selectAllBtn   = new JButton(getResourceString("SelectAll"));
             deselectAllBtn = new JButton(getResourceString("DeselectAll"));
 
             selectAllBtn.addActionListener(this);
@@ -292,14 +293,14 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
             setSelectedIndex(initialSelectedIndex);
         }
         
-        setSelectedObjects(selectedItems);
-        
         if (isStaticSize)
         {
             setItems(null);
         }
         
         wasCreated = true;
+        
+        setSelectedObjects(selectedItems);
     }
     
     /**
@@ -402,6 +403,12 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
     public void actionPerformed(ActionEvent e)
     {
         boolean doSelect = e.getSource() == selectAllBtn;
+        
+        if (!doSelect && hasInitialSelection)
+        {
+            okBtn.setEnabled(true);
+        }
+        
         for (JToggleButton tb : buttons)
         {
             tb.setSelected(doSelect);
@@ -448,6 +455,7 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
             }
         } else
         {
+            hasInitialSelection = true;
             initialSelectedIndex = index;
         }
     }
@@ -458,6 +466,10 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
      */
     public void setSelectedObj(final T item)
     {
+        if (!wasCreated)
+        {
+            hasInitialSelection = true;
+        }
         setSelectedIndex(items.indexOf(item));
     }
     
@@ -488,6 +500,7 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
         if (!wasCreated)
         {
             this.selectedItems = selectedItems;
+            hasInitialSelection = true;
             
         } else if (selectedItems != null)
         {

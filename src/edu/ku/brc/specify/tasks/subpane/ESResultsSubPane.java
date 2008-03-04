@@ -128,7 +128,7 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
             btn.setFocusable(false);
             btn.setForeground(Color.GRAY);
             explainPanel.add(btn, BorderLayout.WEST);
-            HelpMgr.registerComponent(btn, "ExpressSearchTellMeMore");
+            HelpMgr.registerComponent(btn, "ESTellMeMore");
         }
         
         CommandDispatcher.register(ExpressSearchTask.EXPRESSSEARCH, this);

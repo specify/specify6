@@ -19,6 +19,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIRegistry.getTopWindow;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -45,6 +46,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CustomDialog;
 
 /**
@@ -78,7 +80,7 @@ public class QueryConfigureDlg extends CustomDialog
      */
     public QueryConfigureDlg(final QueryTask task)
     {
-        super((Frame)getTopWindow(), getResourceString("QY_CONFIGURE_QUERIES"), true, null);
+        super((Frame)getTopWindow(), getResourceString("QY_CONFIGURE_QUERIES"), true, OKCANCELHELP, null);
         
         this.task = task;
     }
@@ -90,6 +92,8 @@ public class QueryConfigureDlg extends CustomDialog
     public void createUI()
     {
         super.createUI();
+        
+        HelpMgr.registerComponent(helpBtn, "QBSavedQueriesConfig"); 
         
         String sqlStr = "FROM SpQuery as sq Inner Join sq.specifyUser as user where user.specifyUserId = "+SpecifyUser.getCurrentUser().getSpecifyUserId() + " ORDER BY ordinal";
 
@@ -149,7 +153,7 @@ public class QueryConfigureDlg extends CustomDialog
         PanelBuilder middlePanel2 = new PanelBuilder(new FormLayout("c:p:g", "f:p:g, p, f:p:g"));
         middlePanel2.add(middlePanel.getPanel(), cc.xy(1, 2));
 
-        PanelBuilder mainPB = new PanelBuilder(new FormLayout("p:g,5px,p,10px,p:g", "f:p:g"));
+        PanelBuilder mainPB = new PanelBuilder(new FormLayout("f:p:g,5px,p,10px,f:p:g", "f:p:g"));
         mainPB.add(favPanel,  cc.xy(1,1));
         mainPB.add(middlePanel2.getPanel(),  cc.xy(3,1));
         mainPB.add(otherPanel, cc.xy(5,1));
@@ -159,10 +163,15 @@ public class QueryConfigureDlg extends CustomDialog
         mainPanel.add(contentPanel, BorderLayout.CENTER);
         
         pack();
+        
+        Dimension size = getSize();
+        size.width  = Math.max(size.width, 500);
+        size.height = Math.max(size.height, 350);
+        setSize(size);
     }
     
     /**
-     * MOves query from freq list to extra
+     * Moves query from freq list to extra
      */
     protected void moveToOther()
     {
@@ -172,7 +181,7 @@ public class QueryConfigureDlg extends CustomDialog
             Object name = favPanel.getOrderList().getSelectedValue();
             ((DefaultListModel)favPanel.getOrderList().getModel()).removeElement(name);
             ((DefaultListModel)otherPanel.getOrderList().getModel()).addElement(name);
-            pack();
+            //pack();
         }
     }
     
@@ -187,7 +196,7 @@ public class QueryConfigureDlg extends CustomDialog
             Object name = otherPanel.getOrderList().getSelectedValue();
             ((DefaultListModel)otherPanel.getOrderList().getModel()).removeElement(name);
             ((DefaultListModel)favPanel.getOrderList().getModel()).addElement(name);
-            pack();
+            //pack();
         }
     }
     

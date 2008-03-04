@@ -37,6 +37,8 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -78,6 +80,7 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
     protected Integer           sizeLimit;
     protected Boolean           isSystem; 
     protected Set<PickListItem> pickListItems;
+    protected Collection        collection;
     
     // Transient
     protected Set<PickListItemIFace> items = null;
@@ -110,6 +113,8 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
         readOnly   = false;
         sizeLimit  = 50;
         isSystem   = false;
+        
+        collection = Collection.getCurrentCollection();
         
         pickListItems = new HashSet<PickListItem>();
     }
@@ -170,7 +175,7 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
    /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.PickListIFace#getName()
      */
-    @Column(name = "Name", unique = true, nullable = false, insertable = true, updatable = true, length = 64)
+    @Column(name = "Name", unique = false, nullable = false, insertable = true, updatable = true, length = 64)
     public String getName()
     {
         return this.name;
@@ -311,6 +316,24 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
     public void setIsSystem(Boolean isSystem)
     {
         this.isSystem = isSystem;
+    }
+    
+    /**
+     * @return the collection
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "CollectionID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Collection getCollection()
+    {
+        return collection;
+    }
+
+    /**
+     * @param collection the collection to set
+     */
+    public void setCollection(Collection collection)
+    {
+        this.collection = collection;
     }
 
     /**

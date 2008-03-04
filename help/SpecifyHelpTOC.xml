@@ -17,13 +17,33 @@
       <tocitem text="Search" target="Search"/>
 -->
           <tocitem text="Preferences" target="PreferencesOverview">
-          	<tocitem text="Cache" target="PrefsCache"/>
           	<tocitem text="EMail" target="PrefsEMail"/>
           	<tocitem text="Formatting" target="PrefsFormatting"/>
           	<tocitem text="GoogleEarth" target="PrefsGoogleEarth"/>
           	<tocitem text="Misc" target="PrefsMisc"/>
+          	<tocitem text="System" target="PrefsSystem"/>
           	<tocitem text="Tree" target="PrefsTree"/>
 	      </tocitem>
+	      
+	      <tocitem text="Data Entry" target="Data_Entry">
+          	<tocitem text="Data Entry Configuration" target="DataEntryConfigure"/>
+	      </tocitem>
+	      
+	      <tocitem text="Express Search" target="Express_Search">
+          	<tocitem text="Configuring Search Fields" target="ESConfigSerachFields"/>
+          	<tocitem text="Configuring Results Ordering" target="ESConfigResultsOrdering"/>
+          	<tocitem text="Configuring Related Tables" target="ESConfigRelatedTables"/>
+          	<tocitem text="Tell Me More" target="ESTellMeMore"/>
+	      </tocitem>
+	      
+	      <tocitem text="Query Builder" target="Query">
+          	<tocitem text="New Query Configuration" target="QBNewQueryConfig"/>
+          	<tocitem text="Saved Queries Configuration" target="QBSavedQueriesConfig"/>
+	      </tocitem>
+	      
+          <tocitem text="Statistics" target="Statistics"/>
+          <tocitem text="Tools" target="Tools"/>
+          
 	      
           <tocitem text="WorkBench" target="WorkbenchOverview">
           
@@ -68,9 +88,5 @@
           </tocitem>
       </tocitem>
         
-<!--
-      <tocitem text="Export" target="Export"/>
-      <tocitem text="Express Search" target="Express_Search"/>
--->
     </tocitem>
 </toc>

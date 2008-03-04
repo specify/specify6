@@ -97,7 +97,7 @@ import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.DebugLoggerDialog;
 import edu.ku.brc.specify.config.DisciplineType;
-import edu.ku.brc.specify.config.FormImportExportDlg;
+import edu.ku.brc.specify.config.ResourceImportExportDlg;
 import edu.ku.brc.specify.config.LoggerDialog;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.AccessionAttachment;
@@ -199,7 +199,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private String               appName             = "Specify";
     private String               appVersion          = "6.0";
 
-    private String               appBuildVersion     = "200802261500 (SVN: 3462)";
+    private String               appBuildVersion     = "200802281500 (SVN: 3478)";
     
     protected static CacheManager cacheManager        = new CacheManager();
 
@@ -822,13 +822,13 @@ public class Specify extends JPanel implements DatabaseLoginListener
                         }
                     });
 
-            title = getResourceString("FORM_IMEX_MENU");
-            mi = UIHelper.createMenuItem(menu, title, getResourceString("FORM_IMEX_MNU"), title, true, null);
+            title = getResourceString("RIE_MENU");
+            mi = UIHelper.createMenuItem(menu, title, getResourceString("RIE_MNU"), title, true, null);
             mi.addActionListener(new ActionListener()
                     {
                         public void actionPerformed(ActionEvent ae)
                         {
-                            doFormImportExport();
+                            doResourceImportExport();
                         }
                     });
             title = getResourceString("WBSCHEMA_CONFIG");
@@ -898,12 +898,6 @@ public class Specify extends JPanel implements DatabaseLoginListener
                         @SuppressWarnings("synthetic-access")
                         public void actionPerformed(ActionEvent ae)
                         {
-                            if (true)
-                            {
-                                FormGenerator fg = new FormGenerator();
-                                fg.generateForms();
-                                return;
-                            }
                             final CustomDialog dialog = new CustomDialog(topFrame, "Local Prefs", true, CustomDialog.OK_BTN, new AppPrefsEditor(false));
                             dialog.setOkLabel(UIRegistry.getResourceString("Close"));
                             dialog.pack();
@@ -1207,9 +1201,9 @@ public class Specify extends JPanel implements DatabaseLoginListener
     /**
      * 
      */
-    protected void doFormImportExport()
+    protected void doResourceImportExport()
     {
-        FormImportExportDlg dlg = new FormImportExportDlg();
+        ResourceImportExportDlg dlg = new ResourceImportExportDlg();
         dlg.setVisible(true);
     }
 
@@ -1587,6 +1581,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
                     
                 } catch (Exception ex)
                 {
+                    session.rollback();
+                    
                     log.error(ex);
                     
                 } finally

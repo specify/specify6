@@ -529,6 +529,12 @@ public class SpecifyDBConverter
                 conversion.convertDivision();
                 frame.incOverall();
                 
+                ///////////////////////////////
+                //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                // Really need to create or get a proper Discipline Record
+                ///////////////////////////////
+                String discipline = "fish";
+                
                 frame.setDesc("Converting CollectionObjectDefs.");
                 log.info("Converting CollectionObjectDefs.");
                 boolean convertDiscipline = false;
@@ -641,7 +647,8 @@ public class SpecifyDBConverter
                     frame.incOverall();
                     
                     frame.setDesc("Converting Division.");
-                    conversion.createPickListsFromXML();
+                    conversion.createPickListsFromXML(null);
+                    conversion.createPickListsFromXML(discipline);
                     frame.incOverall();
                     
                 } else

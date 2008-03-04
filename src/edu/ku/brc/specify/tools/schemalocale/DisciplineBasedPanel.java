@@ -391,13 +391,14 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace, 
         
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getPickLists()
+    /**
+     * Helper to get the common or discipline specific PickLists.
+     * @param pickLists the list
+     * @param disciplineName null or the discipline (directory) name
      */
-    public List<PickList> getPickLists()
+    private void getPickLists(final List<PickList> pickLists, final String disciplineName)
     {
-        List<PickList>     pickLists     = new Vector<PickList>();
-        List<BldrPickList> bdlrPickLists = DataBuilder.getBldrPickLists();
+        List<BldrPickList> bdlrPickLists = DataBuilder.getBldrPickLists(disciplineName != null ? disciplineName : "common");
         
         for (BldrPickList pl : bdlrPickLists)
         {
@@ -410,6 +411,16 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace, 
             }
             pickLists.add(pickList);
         }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableIOIFace#getPickLists(java.lang.String)
+     */
+    public List<PickList> getPickLists(final String disciplineName)
+    {
+        List<PickList> pickLists = new Vector<PickList>();
+        getPickLists(pickLists, null);
+        getPickLists(pickLists, disciplineName);
         return pickLists;
     }
 }

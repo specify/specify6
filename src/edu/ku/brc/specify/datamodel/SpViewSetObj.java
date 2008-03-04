@@ -31,8 +31,6 @@ package edu.ku.brc.specify.datamodel;
 import java.io.File;
 import java.sql.Timestamp;
 import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -42,16 +40,13 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 import edu.ku.brc.af.core.AppResourceIFace;
@@ -82,12 +77,12 @@ public class SpViewSetObj extends DataModelObjBase implements java.io.Serializab
      protected String                    description;
      protected String                    metaData;
      protected Set<SpAppResourceData>    spAppResourceDatas;
-     protected Set<SpAppResourceDir>     spAppResourceDirs;
+     protected SpAppResourceDir          spAppResourceDir;
+     protected String                    fileName     = null;
      
      //protected Set<SpUIViewSet>          spViewSets;
 
      // Non Persisted Fields
-     protected String                    fileName     = null;
      protected Properties metaDataHash = null;
 
     // Constructors
@@ -110,16 +105,14 @@ public class SpViewSetObj extends DataModelObjBase implements java.io.Serializab
     public void initialize()
     {
         super.init();
-        spViewSetObjId        = null;
+        spViewSetObjId      = null;
         level               = null;
         name                = null;
+        fileName            = null;
         description         = null;
         metaData            = null;
-        spAppResourceDirs = new HashSet<SpAppResourceDir>();
-        spAppResourceDatas    = new HashSet<SpAppResourceData>();
-        //spViewSets            = new HashSet<SpUIViewSet>();
-        
-        fileName = null;
+        spAppResourceDir    = null;
+        spAppResourceDatas  = new HashSet<SpAppResourceData>();
     }
     // End Initializer
 
@@ -240,6 +233,23 @@ public class SpViewSetObj extends DataModelObjBase implements java.io.Serializab
     {
         throw new RuntimeException("Can't set MimeType");
     }
+
+    /**
+     * @return
+     */
+    @Column(name = "FileName", unique = false, nullable = true, insertable = true, updatable = true)
+    public String getFileName()
+    {
+        return fileName;
+    }
+
+    /**
+     * @param fileName
+     */
+    public void setFileName(String fileName)
+    {
+        this.fileName = fileName;
+    }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.AppResourceIFace#getMetaData()
@@ -331,37 +341,19 @@ public class SpViewSetObj extends DataModelObjBase implements java.io.Serializab
     /**
      * @return
      */
-    @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
-    @JoinTable(name = "spappresdef_viewsetobj", joinColumns = { @JoinColumn(name = "SpViewSetObjID", unique = false, nullable = false, insertable = true, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "SpAppResourceDirID", unique = false, nullable = false, insertable = true, updatable = false) })
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    public Set<SpAppResourceDir> getSpAppResourceDirs() 
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "SpAppResourceDirID", unique = false, nullable = false, insertable = true, updatable = true)
+    public SpAppResourceDir getSpAppResourceDir() 
     {
-        return this.spAppResourceDirs;
+        return this.spAppResourceDir;
     }
     
     /**
      * @param spAppResourceDirs
      */
-    public void setSpAppResourceDirs(Set<SpAppResourceDir> spAppResourceDirs)
+    public void setSpAppResourceDir(SpAppResourceDir spAppResourceDir)
     {
-        this.spAppResourceDirs = spAppResourceDirs;
-    }
-
-    /**
-     * @return
-     */
-    @Transient
-    public String getFileName()
-    {
-        return fileName;
-    }
-
-    /**
-     * @param fileName
-     */
-    public void setFileName(String fileName)
-    {
-        this.fileName = fileName;
+        this.spAppResourceDir = spAppResourceDir;
     }
     
     /**
@@ -384,27 +376,22 @@ public class SpViewSetObj extends DataModelObjBase implements java.io.Serializab
      */
     public void setDataAsString(final String dataStr)
     {
-        if (fileName != null)
-        {
-            throw new RuntimeException("Not implemented!");
-        }
-        
         if (StringUtils.isNotEmpty(dataStr))
         {
-            SpAppResourceData ard;
+            SpAppResourceData appResData;
             if (spAppResourceDatas.size() == 0)
             {
-                ard = new SpAppResourceData();
-                ard.initialize();
-                ard.setSpViewSetObj(this);
-                spAppResourceDatas.add(ard);
+                appResData = new SpAppResourceData();
+                appResData.initialize();
+                appResData.setSpViewSetObj(this);
+                spAppResourceDatas.add(appResData);
                 
             } else
             {
-                ard = spAppResourceDatas.iterator().next();
+                appResData = spAppResourceDatas.iterator().next();
             }
 
-            ard.setData(dataStr.getBytes());
+            appResData.setData(dataStr.getBytes());
 
 
         } else if (spAppResourceDatas.size() > 0)

@@ -59,9 +59,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPrefsCache;
-import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.Loan;
@@ -609,7 +607,7 @@ public class LoanSelectPrepsDlg extends JDialog
                 loans.add(lpo.getLoan());
             }
             
-            ViewIFace view  = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getView("Loan", Discipline.getCurrentDiscipline());
+            ViewIFace view  = AppContextMgr.getInstance().getView("Loan");
             final ViewBasedDisplayDialog dlg = new ViewBasedDisplayDialog(parent,
                     view.getViewSetName(),
                     "Loan",

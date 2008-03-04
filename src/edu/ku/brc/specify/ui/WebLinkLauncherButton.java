@@ -33,11 +33,17 @@ public class WebLinkLauncherButton extends JButton implements UIPluginable, GetS
     protected Properties initProps;
     protected FormDataObjIFace dataObj;
     
+    /**
+     * 
+     */
     public WebLinkLauncherButton()
     {
         addActionListener(this);
     }
 
+    /* (non-Javadoc)
+     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+     */
     public void actionPerformed(ActionEvent ae)
     {
         // Parse urlFormat, looking for $fieldName$.
@@ -87,6 +93,10 @@ public class WebLinkLauncherButton extends JButton implements UIPluginable, GetS
         }
     }
 
+    /**
+     * @return
+     * @throws Exception
+     */
     protected String buildURL() throws Exception
     {
         StringBuilder url = new StringBuilder(urlFormat);
@@ -136,6 +146,9 @@ public class WebLinkLauncherButton extends JButton implements UIPluginable, GetS
         return url.toString();
     }
     
+    /**
+     * @return
+     */
     protected List<String> getMissingFieldNames()
     {
         List<String> missing = new Vector<String>();
@@ -181,6 +194,7 @@ public class WebLinkLauncherButton extends JButton implements UIPluginable, GetS
     {
         initProps = properties;
         urlFormat = initProps.getProperty("url");
+        urlFormat = StringUtils.replace(urlFormat, "AMP", "&amp;");
         this.setText(initProps.getProperty("label"));
     }
 

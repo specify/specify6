@@ -808,29 +808,29 @@ public class AppPreferences
          * Sets the Prefs that this will act on.
          * @param appPrefsMgr the prefs
          */
-        public void setAppPrefsMgr(AppPreferences appPrefsMgr);
+        public abstract void setAppPrefsMgr(AppPreferences appPrefsMgr);
         
         /**
          * See if the prefs have been persisted yet (or ever).
          * @return true if they have been saved, false if they have not been
          */
-        public boolean exists();
+        public abstract boolean exists();
         
         /**
          * Returns the date of the last time they were save or null if they have not.
          * @return the date of the last time they were save or null if they have not
          */
-        public Date lastSavedDate();
+        public abstract Date lastSavedDate();
         
         /**
          * Loads the Prefs.
          */
-        public void load();
+        public abstract void load();
         
         /**
          * Flushes the Prefs to disk or database.
          */
-        public void flush() throws BackingStoreException;
+        public abstract void flush() throws BackingStoreException;
         
     }
 

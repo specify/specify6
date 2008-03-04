@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
@@ -103,7 +104,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
 {
     private static final Logger  log = Logger.getLogger(SpecifyAppContextMgr.class);
 
-    protected List<SpAppResourceDir>            spAppResourceList = new ArrayList<SpAppResourceDir>();
+    protected List<SpAppResourceDir>                spAppResourceList = new ArrayList<SpAppResourceDir>();
     protected Hashtable<String, List<ViewSetIFace>> viewSetHash       = new Hashtable<String, List<ViewSetIFace>>();
     
 
@@ -111,14 +112,15 @@ public class SpecifyAppContextMgr extends AppContextMgr
     protected String         userName              = null;
     protected SpecifyUser    user                  = null;
 
-    protected ViewSetMgr     backStopViewSetMgr    = null;
-    protected AppResourceMgr backStopAppResMgr     = null;
     protected Agent          currentUserAgent      = null;
 
-    protected boolean        debug                 = false;
+    protected boolean        debug                 = true;
     protected long           lastLoadTime          = 0;
     protected long           lastLoadTimeBS        = 0;
     protected UnhandledExceptionDialog dlg         = null;
+    
+    protected DataProviderSessionIFace globalSession    = null;
+    protected int                      openSessionCount = 0;
     
     /**
      * Singleton Constructor.
@@ -146,15 +148,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
     }
 
     /**
-     * Returns the backstop ViewSetMgr.
-     * @return the backstop ViewSetMgr.
-     */
-    public ViewSetMgr getBackstopViewSetMgr()
-    {
-        return backStopViewSetMgr;
-    }
-
-    /**
      * Return the DatabaseName
      * @return the DatabaseName
      */
@@ -173,6 +166,47 @@ public class SpecifyAppContextMgr extends AppContextMgr
     }
     
     /**
+     * @return
+     */
+    protected DataProviderSessionIFace openSession()
+    {
+        if (globalSession == null)
+        {
+            try
+            {
+                globalSession = DataProviderFactory.getInstance().createSession();
+                
+            } catch (Exception ex)
+            {
+                return null;
+            }
+        }
+        openSessionCount++;
+        return globalSession;
+    }
+    
+    protected void closeSession()
+    {
+        if (globalSession != null)
+        {
+            openSessionCount--;
+            if (openSessionCount == 0)
+            {
+                globalSession.close();
+                globalSession = null;
+                
+            } else if (openSessionCount < 0)
+            {
+                log.error("Open Session Count just went negitive!");
+                
+            }
+        } else
+        {
+            log.error("There is no existing open session.");
+        }
+    }
+    
+    /**
      * Returns the number of Collection that this user is connected to.
      * @return the number of Collection that this user is connected to.
      */
@@ -180,12 +214,21 @@ public class SpecifyAppContextMgr extends AppContextMgr
     {
         String sqlStr = "select count(cs) From Discipline as ct Inner Join ct.agents cta Inner Join cta.specifyUser as user Inner Join ct.collections as cs where user.specifyUserId = "+user.getSpecifyUserId();
         
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        Object                   result     = session.getData(sqlStr);
-        int                      count      =  result != null ? (Integer)result : 0;
-        session.close();
-        return count;
-        
+        DataProviderSessionIFace session = null;
+        try
+        {
+            session = openSession();
+            Object  result     = session.getData(sqlStr);
+            return result != null ? (Integer)result : 0;
+            
+        } catch (Exception ex)
+        {
+            
+        } finally
+        {
+            closeSession();
+        }
+        return 0;
     }
     
     /**
@@ -390,14 +433,14 @@ public class SpecifyAppContextMgr extends AppContextMgr
      * Finds a AppResourceDefault from an "object" list where it matches the user, CatSeries and ColObjdef.
      * @param appResDefList the list to search
      * @param userArg the Specify user
-     * @param catSeries the Collection
+     * @param collection the Collection
      * @param discipline the Discipline
      * @return the AppResourceDefault object or null
      */
     protected SpAppResourceDir find(final List<?>        appResDefList,
                                     final SpecifyUser    userArg,
-                                    final Collection     catSeries,
-                                    final Discipline discipline)
+                                    final Collection     collection,
+                                    final Discipline     discipline)
     {
         if (debug) log.debug("finding AppResourceDefault");
         
@@ -405,12 +448,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
         {
             SpAppResourceDir ard = (SpAppResourceDir)obj;
 
-            SpecifyUser      spUser = ard.getSpecifyUser();
-            Collection    cs        = ard.getCollection();
-            Discipline ct    = ard.getDiscipline();
+            SpecifyUser spUser = ard.getSpecifyUser();
+            Collection  cs     = ard.getCollection();
+            Discipline  ct     = ard.getDiscipline();
 
             if (spUser != null && spUser.getSpecifyUserId() == userArg.getSpecifyUserId() &&
-                cs != null && cs.getCollectionId() == catSeries.getCollectionId() &&
+                cs != null && cs.getCollectionId() == collection.getCollectionId() &&
                 ct != null && ct.getDisciplineId() == discipline.getDisciplineId())
             {
                 return ard;
@@ -418,7 +461,131 @@ public class SpecifyAppContextMgr extends AppContextMgr
         }
         return null;
     }
+    
+    /**
+     * @param sessionArg
+     * @param specifyUser
+     * @param discipline
+     * @param collection
+     * @param userType
+     * @param isPersonal
+     * @param createWhenNotFound
+     * @return
+     */
+    protected SpAppResourceDir getAppResDir(final DataProviderSessionIFace sessionArg,
+                                            final SpecifyUser    specifyUser,
+                                            final Discipline     discipline,
+                                            final Collection     collection,
+                                            final String         userType,
+                                            final boolean        isPersonal,
+                                            final boolean        createWhenNotFound)
+    {
+        StringBuilder sb = new StringBuilder("FROM SpAppResourceDir WHERE specifyUserId =");
+        sb.append(specifyUser.getSpecifyUserId());
+        if (discipline != null)
+        {
+            sb.append(" AND disciplineId = ");
+            sb.append(discipline.getId());
+        }
+        if (collection != null)
+        {
+            sb.append(" AND collectionId = ");
+            sb.append(collection.getId());
+        }
+        if (userType != null)
+        {
+            sb.append(" AND userType = '");
+            sb.append(userType);
+            sb.append("'");
+        } else
+        {
+            sb.append(" AND userType is null");
+        }
+        
+        sb.append(" AND isPersonal = ");
+        sb.append(isPersonal);
+        
+        List<?> list = sessionArg.getDataList(sb.toString());
+        if (list.size() == 1)
+        {
+            SpAppResourceDir appResDir = (SpAppResourceDir)list.get(0);
+            
+            // This loads the lazy sets
+            appResDir.getSpPersistedAppResources();
+            appResDir.getSpPersistedViewSets();
+            return appResDir;
+        }
+        
+        if (createWhenNotFound)
+        {
+            SpAppResourceDir appResDir = new SpAppResourceDir();
+            appResDir.initialize();
+            appResDir.setCollection(collection);
+            appResDir.setUserType(userType);
+            appResDir.setSpecifyUser(specifyUser);
+            appResDir.setDiscipline(discipline);
+            appResDir.setIsPersonal(isPersonal);
+            return appResDir;
+        }
+        
+        return null;
+    }
 
+    /**
+     * Creates an AppResourceDefault object from a directory (note the Id will be null).
+     * @param dir the directory in question)
+     * @return a new AppResourceDefault object
+     */
+    protected SpAppResourceDir fillAppResourceDefFromDir(final SpAppResourceDir spAppResourceDir,
+                                                         final String viewSetMgrName, 
+                                                         final File dir)
+    {
+        if (debug) log.debug("Creating AppResourceDef from Dir ["+dir.getAbsolutePath()+"]");
+        
+        if (spAppResourceDir.getSpViewSets().size() == 0)
+        {
+            ViewSetMgr viewSetMgr = new ViewSetMgr(viewSetMgrName, dir);
+            for (ViewSetIFace vs : viewSetMgr.getViewSets())
+            {
+                SpViewSetObj vso = new SpViewSetObj();
+                vso.initialize();
+    
+                // Set up File Name to load the ViewSet
+                vso.setFileName(dir.getAbsoluteFile() + File.separator + vs.getFileName());
+    
+                vso.setLevel((short)0);
+                vso.setName(vs.getFileName());
+    
+                vso.setSpAppResourceDir(spAppResourceDir);
+                spAppResourceDir.getSpViewSets().add(vso);
+            }
+        }
+
+        AppResourceMgr appResMgr = new AppResourceMgr(dir);
+        
+        Hashtable<String, SpAppResource> hash = new Hashtable<String, SpAppResource>();
+        for (SpAppResource appRes : spAppResourceDir.getSpPersistedAppResources())
+        {
+            String fName = FilenameUtils.getName(appRes.getFileName());
+            hash.put(fName, appRes);
+        }
+        
+        for (SpAppResource appRes : appResMgr.getSpAppResources())
+        {
+            String fName = FilenameUtils.getName(appRes.getFileName());
+            SpAppResource permAppRes = hash.get(fName);
+            if (permAppRes == null)
+            {
+                appRes.setSpAppResourceDir(spAppResourceDir);
+                spAppResourceDir.getSpAppResources().add(appRes);
+            } else
+            {
+                spAppResourceDir.getSpAppResources().add(permAppRes);
+            }
+        }
+        
+        return spAppResourceDir;
+    }
     /**
      * Creates an AppResourceDefault object from a directory (note the Id will be null).
      * @param dir the directory in question)
@@ -428,8 +595,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
     {
         if (debug) log.debug("Creating AppResourceDef from Dir ["+dir.getAbsolutePath()+"]");
         
-        SpAppResourceDir appResDef = new SpAppResourceDir();
-        appResDef.initialize();
+        SpAppResourceDir spAppResourceDir = new SpAppResourceDir();
+        spAppResourceDir.initialize();
 
         ViewSetMgr viewSetMgr = new ViewSetMgr(viewSetMgrName, dir);
         for (ViewSetIFace vs : viewSetMgr.getViewSets())
@@ -455,18 +622,18 @@ public class SpecifyAppContextMgr extends AppContextMgr
             vso.setLevel((short)0);
             vso.setName(vs.getFileName());
 
-            vso.getSpAppResourceDirs().add(appResDef);
-            appResDef.getSpViewSets().add(vso);
+            vso.setSpAppResourceDir(spAppResourceDir);
+            spAppResourceDir.getSpViewSets().add(vso);
 
         }
 
         AppResourceMgr appResMgr = new AppResourceMgr(dir);
         for (SpAppResource appRes : appResMgr.getSpAppResources())
         {
-            appRes.getSpAppResourceDirs().add(appResDef);
-            appResDef.getSpAppResources().add(appRes);
+            appRes.setSpAppResourceDir(spAppResourceDir);
+            spAppResourceDir.getSpAppResources().add(appRes);
         }
-        return appResDef;
+        return spAppResourceDir;
     }
 
     /**
@@ -513,7 +680,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         DataProviderSessionIFace session = null;
         try
         {
-            session = DataProviderFactory.getInstance().createSession();
+            session = openSession();
             
         } catch (org.hibernate.exception.SQLGrammarException ex)
         {
@@ -553,7 +720,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 currentStatus  = currentStatus == CONTEXT_STATUS.Initial ? CONTEXT_STATUS.Error : CONTEXT_STATUS.Ignore;
                 return currentStatus;
             }
-            Hashtable<String, String> dispHash = new Hashtable<String, String>();
             
             String userType = user.getUserType();
             
@@ -566,33 +732,69 @@ public class SpecifyAppContextMgr extends AppContextMgr
             spAppResourceList.clear();
             viewSetHash.clear();
     
-            List<?> appResDefList = session.getDataList( "From SpAppResourceDir where specifyUserId = "+user.getSpecifyUserId());
-    
-            Discipline dsp = session.getData(Discipline.class, "disciplineId", collection.getDiscipline().getId(), DataProviderSessionIFace.CompareType.Equals) ;
-            dsp.getDeterminationStatuss().size(); // make sure they are loaded
-            Discipline.setCurrentDiscipline(dsp);
-        
-                
-            if (debug) log.debug("Adding AppResourceDefs from Collection and ColObjDefs ColObjDef["+dsp.getName()+"]");
+            Discipline discipline = session.getData(Discipline.class, "disciplineId", collection.getDiscipline().getId(), DataProviderSessionIFace.CompareType.Equals) ;
+            discipline.getDeterminationStatuss().size(); // make sure they are loaded
+            Discipline.setCurrentDiscipline(discipline);
             
-            System.out.println(dsp.getDiscipline());
+            String disciplineStr = discipline.getDiscipline().toLowerCase();
             
-            dispHash.put(dsp.getDiscipline(), dsp.getDiscipline());
+            // This is the Full Path User / Discipline / Collection / UserType / isPersonal
+            // For example: rods/fish/fish/collectionmanager / true (meaning the usr's personal space)
+            SpAppResourceDir appResDir = getAppResDir(session, user, discipline, collection, userType, true, true);
+            spAppResourceList.add(appResDir);
             
-            SpAppResourceDir appResourceDir = find(appResDefList, user, collection, dsp);
-            if (appResourceDir != null)
+            // This is the Full Path User / Discipline / Collection / UserType
+            // For example: rods/fish/fish/collectionmanager
+            appResDir = getAppResDir(session, user, discipline, collection, userType, false, true);
+            File dir = XMLHelper.getConfigDir(disciplineStr + File.separator + userType);
+            if (dir.exists())
             {
-                if (debug) log.debug("Adding1 "+getSpAppResDefAsString(appResourceDir));
-                spAppResourceList.add(appResourceDir);
+                fillAppResourceDefFromDir(appResDir, disciplineStr+" "+userType, dir);
+            }
+            spAppResourceList.add(appResDir);
+            
+            // This is the Full Path User / Discipline / Collection
+            // For example: rods/fish/fish
+            appResDir = getAppResDir(session, user, discipline, collection, null, false, true);
+            spAppResourceList.add(appResDir);
+
+            // This is the Full Path User / Discipline
+            // For example: rods/fish
+            appResDir = getAppResDir(session, user, discipline, null, null, false, true);
+            dir = XMLHelper.getConfigDir(disciplineStr);
+            if (dir.exists())
+            {
+                fillAppResourceDefFromDir(appResDir, disciplineStr, dir);
+            }
+            spAppResourceList.add(appResDir);
+
+            // Common Views 
+            dir = XMLHelper.getConfigDir("common");
+            if (dir.exists())
+            {
+                SpAppResourceDir appResDef = createAppResourceDefFromDir("Common", dir);
+                appResDef.setUserType("Common");
+                
+                if (debug) log.debug("Adding4 "+getSpAppResDefAsString(appResDef));
+                spAppResourceList.add(appResDef);
             }
             
-            backStopViewSetMgr = new ViewSetMgr("BackStop", XMLHelper.getConfigDir("backstop"));
-            backStopAppResMgr  = new AppResourceMgr(XMLHelper.getConfigDir("backstop"));
+            // BackStop
+            appResDir = getAppResDir(session, user, discipline, null, "BackStop", false, true);
+            dir = XMLHelper.getConfigDir("backstop");
+            if (dir.exists())
+            {
+                fillAppResourceDefFromDir(appResDir, "backstop", dir);
+            }
+            spAppResourceList.add(appResDir);
             
             // We close the session here so all SpAppResourceDir get unattached to hibernate
             // because UIFieldFormatterMgr and loading views all need a session
             // and we don't want to reuse in and get a double session
-            session.close();
+            closeSession();
+            session = null;
+            
+            
             
             // Here is where you turn on View/Viewdef re-use.
             if (true)
@@ -602,69 +804,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 
                 UIFieldFormatterMgr.getInstance();
                 
-                backStopViewSetMgr.getView("Global", "Accession"); // force the loading of all the views
+                //backStopViewSetMgr.getView("Global", "Accession"); // force the loading of all the views
                 
                 ViewLoader.setDoFieldVerification(cacheDoVerify);
-            }
-            
-            // Add Backstop for DisciplineType and User Type
-            for (String discipline : dispHash.keySet())
-            {
-                if (debug) log.debug("****** Trying add Backstop for ["+discipline+"]["+userType+"]");
-    
-                File dir = XMLHelper.getConfigDir(discipline.toLowerCase() + File.separator + userType);
-                if (dir.exists())
-                {
-                    SpAppResourceDir appResDef = createAppResourceDefFromDir(discipline+" "+userType, dir);
-                    appResDef.setDisciplineType(discipline);
-                    appResDef.setUserType(userType);
-                    appResDef.setSpecifyUser(user);//added to fix not-null constraints
-                    appResDef.setCollection(Collection.getCurrentCollection());
-                    appResDef.setDiscipline(Discipline.getCurrentDiscipline());
-                    
-                    if (debug) log.debug("Adding2 "+getSpAppResDefAsString(appResDef));
-                    spAppResourceList.add(appResDef);
-                    
-                } else
-                {
-                    if (debug) log.debug("***** Couldn't add Backstop for ["+discipline+"]["+userType+"] ["+dir.getAbsolutePath()+"]");
-                }
-            }
-    
-            // Add Backstop for just the DisciplineType
-            for (String discipline : dispHash.keySet())
-            {
-                if (debug) log.debug("***** Trying add Backstop for ["+discipline.toLowerCase()+"]");
-                File dir = XMLHelper.getConfigDir(discipline.toLowerCase());
-                if (dir.exists())
-                {
-                    SpAppResourceDir appResDef = createAppResourceDefFromDir(discipline, dir);
-                    appResDef.setDisciplineType(discipline);
-                    appResDef.setSpecifyUser(user);
-                    
-                    appResDef.setCollection(collection);
-                    appResDef.setDiscipline(dsp);
-    
-                    if (debug) log.debug("Adding3 "+getSpAppResDefAsString(appResDef));
-                    spAppResourceList.add(appResDef);
-                    
-                } else
-                {
-                    if (debug) log.debug("***** Couldn't add Backstop for ["+discipline+"] ["+dir.getAbsolutePath()+"]");
-                }
-            }
-
-            // Common Views 
-            File dir = XMLHelper.getConfigDir("common");
-            if (dir.exists())
-            {
-                SpAppResourceDir appResDef = createAppResourceDefFromDir("Common", dir);
-                if (debug) log.debug("Adding4 "+getSpAppResDefAsString(appResDef));
-                spAppResourceList.add(appResDef);
-                
-            } else
-            {
-                if (debug) log.debug("***** Couldn't add Backstop for [core] ["+dir.getAbsolutePath()+"]");
             }
             
             currentStatus = CONTEXT_STATUS.OK;
@@ -677,9 +819,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
         } finally 
         {
-            if (session != null && session.isOpen())
+            if (session != null)
             {
-                session.close();
+                closeSession();
             }
         }
         
@@ -693,7 +835,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
      * @param dir the AppResourceDefault
      * @return list of ViewSet objects
      */
-    protected List<ViewSetIFace> getViewSetList(final SpAppResourceDir dir)
+    public List<ViewSetIFace> getViewSetList(final SpAppResourceDir dir)
     {
         if (debug) log.debug("Looking up["+dir.getUniqueIdentifer()+"]["+dir.getVerboseUniqueIdentifer()+"]");
         
@@ -715,7 +857,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             DataProviderSessionIFace session = null;
             try
             {
-                session = DataProviderFactory.getInstance().createSession();
+                session = openSession();
                 if (dir.getSpAppResourceDirId() != null)
                 {
                     session.attach(dir);
@@ -725,8 +867,13 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 {
                     try
                     {
+                        log.error(vso.getFileName());
+                        //System.out.println(vso.getDataAsString());
+                        
                         Element root = XMLHelper.readStrToDOM4J(vso.getDataAsString());
-                        viewSetList.add(new ViewSet(root, true));
+                        ViewSet vs = new ViewSet(root, true);
+                        vs.setFileName(vso.getFileName());
+                        viewSetList.add(vs);
     
                     } catch (org.dom4j.DocumentException ex)
                     {
@@ -765,10 +912,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 
             } finally
             {
-                if (session != null)
-                {
-                    session.close();
-                }
+                closeSession();
             }
             
             viewSetHash.put(dir.getUniqueIdentifer(), viewSetList);
@@ -814,94 +958,20 @@ public class SpecifyAppContextMgr extends AppContextMgr
         return new Vector<ViewIFace>(viewHash.values());
     }
 
-    /**
-     * Finds a View by name using a Discipline.
-     * @param viewName the name of the view
-     * @param discipline the Discipline
-     * @return the view or null
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.AppContextMgr#getView(java.lang.String)
      */
-    public ViewIFace getView(final String viewName, final Discipline discipline)
+    public ViewIFace getView(final String viewName)
     {
-        if (debug) log.debug("Looking Up View ["+viewName+"] discipline["+(discipline != null ? discipline.getName() : "null")+"]");
-        
-        boolean fndColObjDef = false;
-        for (SpAppResourceDir appResDir : spAppResourceList)
-        {
-            if (debug) log.debug("Looking["+(appResDir.getDiscipline() != null ? appResDir.getDiscipline().getName() : "null")+"]["+(discipline != null ? discipline.getName() : "null")+"]");
-            
-            if (appResDir.getDiscipline() != null && appResDir.getDiscipline() == discipline)
-            {
-                fndColObjDef = true;
-                for (ViewSetIFace vs : getViewSetList(appResDir))
-                {
-                    ViewIFace view = vs.getView(viewName);
-                    if (view != null)
-                    {
-                        return view;
-                    }
-                }
-            }
-        }
-
-        // This is searching the BackStops by DisciplineType and User Type
-        // which were created dynamically
-        if (!fndColObjDef)
-        {
-            String disciplineName = discipline != null ? discipline.getDiscipline() : null;
-            String userType       = SpecifyUser.getCurrentUser().getUserType();
-            userType = StringUtils.replace(userType, " ", "").toLowerCase();
-
-            // Search Using the colObjectDef's disciplineType
-            for (SpAppResourceDir appResDef : spAppResourceList)
-            {
-                String dType = appResDef.getDisciplineType();
-                String uType = appResDef.getUserType();
-
-                if (debug) log.debug("appResDef's DisciplineType["+dType+"] appResDef's UserType["+uType+"] User's userType["+userType+"]");
-                
-                if ((dType != null && disciplineName != null && dType.equals(disciplineName) || 
-                    (dType == null || disciplineName == null)) && (uType == null || uType.equals(userType)) ||
-                    (userType != null && dType != null && dType.equals(userType)))
-                {
-                    for (ViewSetIFace vs : getViewSetList(appResDef))
-                    {
-                        ViewIFace view = vs.getView(viewName);
-                        if (view != null)
-                        {
-                            return view;
-                        }
-                    }
-                }
-            }
-        }
-        
-        for (ViewSetIFace vs : backStopViewSetMgr.getViewSets())
-        {
-            ViewIFace view = backStopViewSetMgr.getView(vs.getName(), viewName);
-            if (view != null)
-            {
-                return view;
-            }
-        }
-        throw new RuntimeException("Can't find View ["+viewName+"] discipline["+(discipline != null ? discipline.getName() : "null")+"] ["+fndColObjDef+"]");
+        return getView(null, viewName);
     }
 
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.AppResourceDefaultIFace#getView(java.lang.String, java.lang.String)
      */
     public ViewIFace getView(final String viewSetName, final String viewName)
     {
-        Boolean reloadViews = AppPreferences.getLocalPrefs().getBoolean("reload_backstop_views", false);
-        if (reloadViews)
-        {
-            long rightNow = (Calendar.getInstance().getTimeInMillis()/1000);
-            if ((rightNow - lastLoadTimeBS) > 10)
-            {
-                backStopViewSetMgr = new ViewSetMgr("BackStop", XMLHelper.getConfigDir("backstop"));
-                lastLoadTimeBS = rightNow;
-            }
-        }
-        
         if (StringUtils.isEmpty(viewName))
         {
             throw new RuntimeException("Sorry the View Name cannot be empty.");
@@ -909,16 +979,15 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
         // We now allow "null" viewset names so it can find the first one it runs into.
         
-        //if (StringUtils.isEmpty(viewSetName))
-        //{
-        //    throw new RuntimeException("Sorry not empty or null ViewSetNames use the call with Discipline instead.");
-        //}
-
-        for (SpAppResourceDir appResDef : spAppResourceList)
+        for (SpAppResourceDir dir : spAppResourceList)
         {
-            if (debug) log.debug("getView "+getSpAppResDefAsString(appResDef)+"  ["+appResDef.getUniqueIdentifer()+"]\n  ["+appResDef.getIdentityTitle()+"]");
+            //if (debug) log.debug("getView "+getSpAppResDefAsString(appResDef)+"  ["+appResDef.getUniqueIdentifer()+"]\n  ["+appResDef.getIdentityTitle()+"]");
+            if (debug)
+            {
+                log.debug(dir.getIdentityTitle());
+            }
             
-            for (ViewSetIFace vs : getViewSetList(appResDef))
+            for (ViewSetIFace vs : getViewSetList(dir))
             {
                 if (debug) log.debug("VS  ["+vs.getName()+"]["+viewSetName+"]");
                 
@@ -933,8 +1002,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             }
         }
 
-        return backStopViewSetMgr.getView(viewSetName, viewName);
-
+        return null;
     }
 
     /* (non-Javadoc)
@@ -951,26 +1019,43 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     public boolean saveResource(final AppResourceIFace appRes)
     {
-        DataProviderSessionIFace session = null;
-        try
+        if (appRes instanceof SpAppResource)
         {
-            session = DataProviderFactory.getInstance().createSession();
-            session.beginTransaction();
-            session.saveOrUpdate(appRes);
-            session.commit();
-            
-            return true;
-            
-        } catch (Exception ex)
-        {
-            log.error(ex);
-            
-        } finally 
-        {
-            if (session != null)
+            SpAppResource    spAppResource = (SpAppResource)appRes;
+            SpAppResourceDir appResDir     = spAppResource.getSpAppResourceDir(); 
+            if (!appResDir.getSpPersistedAppResources().contains(spAppResource))
             {
-                session.close();
+                appResDir.getSpPersistedAppResources().add(spAppResource);
             }
+            
+            log.debug(appResDir.getIdentityTitle());
+            
+            DataProviderSessionIFace session = null;
+            try
+            {
+                session = DataProviderFactory.getInstance().createSession();
+                session.beginTransaction();
+                session.saveOrUpdate(appResDir);
+                session.saveOrUpdate(spAppResource);
+                session.commit();
+                
+                return true;
+                
+            } catch (Exception ex)
+            {
+                session.rollback();
+                log.error(ex);
+                
+            } finally 
+            {
+                if (session != null)
+                {
+                    session.close();
+                }
+            }
+        } else
+        {
+            log.error("AppResource was not of class SpAppResource!");
         }
         return false;
     }
@@ -983,19 +1068,20 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     protected AppResourceIFace getResource(final String name, final boolean checkBackStop)
     {
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        DataProviderSessionIFace session = null;
         try
         {
-            for (SpAppResourceDir appResDef : spAppResourceList)
+            session = openSession();
+            for (SpAppResourceDir appResDir : spAppResourceList)
             {
-                //log.debug(appResDef.getId());
+                log.debug(appResDir.getIdentityTitle());
                 
-                if (appResDef.getSpAppResourceDirId() != null)
+                if (appResDir.getSpAppResourceDirId() != null)
                 {
-                    session.attach(appResDef);
+                    session.attach(appResDir);
                 }
                 
-                for (AppResourceIFace appRes : appResDef.getSpAppResources())
+                for (AppResourceIFace appRes : appResDir.getSpAppResources())
                 {
                     if (appRes.getName().equals(name))
                     {
@@ -1009,18 +1095,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
         } finally 
         {
-            session.close();
-            session = null;
-
-        }
-        
-        if (checkBackStop)
-        {
-            if (backStopAppResMgr == null)
-            {
-                throw new RuntimeException("The backStopAppResMgr is null which means somehow a call was made to this method before the backStopAppResMgr was initialized.");
-            }
-            return backStopAppResMgr.getSpAppResource(name);
+            closeSession();
         }
         
         return null;
@@ -1058,10 +1133,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
         
         if (appResource != null && appResource instanceof SpAppResource)
         {
-            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            DataProviderSessionIFace session = null;
             SpAppResource              appRes  = (SpAppResource)appResource;
             try
             {
+                session = openSession();
+                
                 if (appRes.getSpAppResourceId() != null)
                 {
                     session.attach(appRes);
@@ -1088,8 +1165,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 
             } finally 
             {
-                session.close();
-                session = null;
+                closeSession();
             }
         } else
         {
@@ -1104,97 +1180,62 @@ public class SpecifyAppContextMgr extends AppContextMgr
      * @see edu.ku.brc.af.core.AppContextMgr#putResourceAsXML(java.lang.String, java.lang.String)
      */
     @Override
-    public void putResourceAsXML(String name, String xmlStr)
+    public void putResourceAsXML(final String name, final String xmlStr)
     {
-        SpAppResourceDir appResourceDef = null;
-        SpAppResource    appRes         = null;
+        SpAppResourceDir appResDir = null;
+        SpAppResource    appRes    = null;
         
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        DataProviderSessionIFace session = null;
         try
         {
-            // Do Not Check Back implicitly
-            AppResourceIFace appResource = getResource(name, false);
-            if (appResource == null)
+            AppResourceIFace appResource = getResource(name, true); // false means don't check the BackStop
+            if (appResource != null)
             {
-                appResource = backStopAppResMgr.getSpAppResource(name);
-                
-                if (session != null)
+                if (appResource instanceof SpAppResource)
                 {
-                    List<?> appResDefList = session.getDataList( "From SpAppResourceDir where specifyUserId = "+user.getSpecifyUserId());
-                    appResourceDef = find(appResDefList, user, Collection.getCurrentCollection(), Discipline.getCurrentDiscipline());
-                    if (appResourceDef == null)
+                    session = openSession();
+                    
+                    appRes    = (SpAppResource)appResource;
+                    appResDir = appRes.getSpAppResourceDir();
+                    
+                    if (appRes.getSpAppResourceId() != null)
                     {
-                        appResourceDef = new SpAppResourceDir();
-                        appResourceDef.initialize();
-                        appResourceDef.setCollection(Collection.getCurrentCollection());
-                        appResourceDef.setDiscipline(Discipline.getCurrentDiscipline());
-                        appResourceDef.setDisciplineType(Discipline.getCurrentDiscipline().getDiscipline());
-                        appResourceDef.setSpecifyUser(SpecifyUser.getCurrentUser());
-                        appResourceDef.setUserType(SpecifyUser.getCurrentUser().getUserType());
-                        appResourceDef.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+                        session.attach(appRes);
                     }
                     
-                    if (appResource instanceof SpAppResource)
+                    if (appRes.getMimeType() != null && appRes.getMimeType().equals("text/xml"))
                     {
                         try
                         {
-                            appRes = (SpAppResource)((SpAppResource)appResource).clone();
-                            appRes.getSpAppResourceDirs().add(appResourceDef);
-                            appResourceDef.getSpPersistedAppResources().add(appRes);
+                            session.beginTransaction();
+                            if (appResDir != null)
+                            {
+                                appRes.setTimestampModified(new Timestamp(System.currentTimeMillis()));
+                                appRes.setModifiedByAgent(Agent.getUserAgent());
+                                session.saveOrUpdate(appResDir);
+                            }
+                            appRes.setTimestampModified(new Timestamp(System.currentTimeMillis()));
+                            appRes.setModifiedByAgent(Agent.getUserAgent());
+                            appRes.setDataAsString(xmlStr);
+                            session.saveOrUpdate(appRes);
+                            session.commit();
                             
-                        } catch (CloneNotSupportedException ex)
+                        } catch (Exception ex)
                         {
-                            ex.printStackTrace();
-                            return;
+                            session.rollback();
+                            
+                            log.error(ex);
+                            throw new RuntimeException(ex);
                         }
-                        
-                    } else
-                    {
-                        log.error("Can't cast from AppResourceIFace to AppResource for["+appResource.getName()+"]" );
-                        return;
                     }
-                    
                 } else
                 {
-                    return;
-                }
-            } else
-            {
-                appRes  = (SpAppResource)appResource;
-            }
-    
-            if (appResource instanceof SpAppResource)
-            {
-                if (appRes.getSpAppResourceId() != null)
-                {
-                    session.attach(appRes);
-                }
-                
-                if (appRes.getMimeType() != null && appRes.getMimeType().equals("text/xml"))
-                {
-                    try
-                    {
-                        session.beginTransaction();
-                        if (appResourceDef != null)
-                        {
-                            session.save(appResourceDef);
-                        }
-                        appRes.setTimestampModified(new Timestamp(System.currentTimeMillis()));
-                        appRes.setModifiedByAgent(Agent.getUserAgent());
-                        appRes.setDataAsString(xmlStr);
-                        session.save(appRes);
-                        session.commit();
-                        
-                    } catch (Exception ex)
-                    {
-                        log.error(ex);
-                        throw new RuntimeException(ex);
-                    }
+                    log.error("The resource ["+name+"] was not of Class SpAppResource");
                 }
                 
             } else
             {
-                log.debug("Couldn't find ["+name+"]");
+                log.error("The resource ["+name+"] wasn't found");
             }
         } catch (Exception ex)
         {
@@ -1202,10 +1243,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
         } finally
         {
-            if (session != null)
-            {
-                session.close();
-            }
+            closeSession();
         }
     }
 
@@ -1363,16 +1401,29 @@ public class SpecifyAppContextMgr extends AppContextMgr
     public PickListItemIFace getDefaultPickListItem(final String pickListName, final String title)
     {
         PickListItemIFace dObj        = null;
-        Collection        catSeries   = Collection.getCurrentCollection();
-        String            prefName    = (catSeries != null ? catSeries.getIdentityTitle() : "") + pickListName + "_DefaultId";
+        Collection        collection  = Collection.getCurrentCollection();
+        String            prefName    = (collection != null ? collection.getIdentityTitle() : "") + pickListName + "_DefaultId";
         AppPreferences    appPrefs    = AppPreferences.getRemote();
         String            idStr       = appPrefs.get(prefName, null);
         
         if (StringUtils.isNotEmpty(idStr))
         {
-            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            dObj = (PickListItemIFace)session.get(PickListItem.class, Integer.valueOf(idStr));
-            session.close();
+            DataProviderSessionIFace session = null;
+            try
+            {
+                session = DataProviderFactory.getInstance().createSession();
+                dObj = (PickListItemIFace)session.get(PickListItem.class, Integer.valueOf(idStr));
+                
+            } catch (Exception ex)
+            {
+                log.error(ex);
+            } finally
+            {
+                if (session != null)
+                {
+                    session.close();
+                }
+            }
             
             if (dObj != null)
             {
@@ -1447,9 +1498,10 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 }
                 
                 List<Item> items = null;
-                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+                DataProviderSessionIFace session = null;
                 try
                 {
+                    session = DataProviderFactory.getInstance().createSession();
                     items = new Vector<Item>();
                     for (Object o : session.getDataList(classObj))
                     {
@@ -1463,7 +1515,10 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     
                 } finally
                 {
-                    session.close();
+                    if (session != null)
+                    {
+                        session.close();
+                    }
                 }
                 if (items != null)
                 {
@@ -1508,9 +1563,23 @@ public class SpecifyAppContextMgr extends AppContextMgr
             }
         } else
         {
-            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            dObj = (FormDataObjIFace)session.get(classObj, Integer.valueOf(idStr));
-            session.close();
+            DataProviderSessionIFace session = null;
+            try
+            {
+                session = DataProviderFactory.getInstance().createSession();
+                dObj = (FormDataObjIFace)session.get(classObj, Integer.valueOf(idStr));
+                
+            } catch (Exception ex)
+            {
+                log.error(ex);
+            } finally
+            {
+                if (session != null)
+                {
+                    session.close();
+                }
+            }
+                
         }
         return dObj;
     }

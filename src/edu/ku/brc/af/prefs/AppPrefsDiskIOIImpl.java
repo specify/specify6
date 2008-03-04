@@ -47,7 +47,7 @@ public class AppPrefsDiskIOIImpl implements AppPrefsIOIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.af.prefs.AppPreferences.AppPrefsIOIFace#setAppPrefsMgr(edu.ku.brc.af.prefs.AppPreferences)
      */
-    public void setAppPrefsMgr(AppPreferences appPrefsMgr)
+    public void setAppPrefsMgr(final AppPreferences appPrefsMgr)
     {
         this.appPrefsMgr = appPrefsMgr;
     }
