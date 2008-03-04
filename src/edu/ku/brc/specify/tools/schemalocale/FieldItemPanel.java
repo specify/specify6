@@ -59,6 +59,7 @@ import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBRelationshipInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
@@ -132,6 +133,7 @@ public class FieldItemPanel extends LocalizerBasePanel
     protected String           noneStr = UIRegistry.getResourceString("None");
     
     protected List<PickList>   pickLists;
+    protected DisciplineType   disciplineType = null;
     
     /**
      * 
@@ -377,6 +379,14 @@ public class FieldItemPanel extends LocalizerBasePanel
         schemaPanel.setHasChanged(true);
     }
     
+    /**
+     * @param disciplineType the disciplineType to set
+     */
+    public void setDisciplineType(DisciplineType disciplineType)
+    {
+        this.disciplineType = disciplineType;
+    }
+
     /**
      * Fills the format combobox with the available formatters.
      */
@@ -893,9 +903,15 @@ public class FieldItemPanel extends LocalizerBasePanel
             fieldNameText.setText(getNameDescStrForCurrLocale(fld));
             fieldHideChk.setSelected(fld.getIsHidden());
             
+            String dsciplineName = disciplineType != null ? disciplineType.getName() : null;
+            if (Discipline.getCurrentDiscipline() != null)
+            {
+                dsciplineName = Discipline.getCurrentDiscipline().getDiscipline();
+            }
+            
             if (pickLists == null)
             {
-                pickLists = localizableIO.getPickLists(Discipline.getCurrentDiscipline().getDiscipline());
+                pickLists = localizableIO.getPickLists(dsciplineName);
             }
             
             DBRelationshipInfo.RelationshipType relType = relInfo != null ? relInfo.getType() : null;

@@ -65,7 +65,7 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
     protected String             name;
     protected String             remarks;
     
-    protected Discipline     discipline;
+    protected Discipline         discipline;
     protected Set<Determination> determinations;
 
     public DeterminationStatus()
@@ -90,7 +90,7 @@ public class DeterminationStatus extends DataModelObjBase implements Serializabl
         type                  = null;
         name                  = null;
         remarks               = null;
-        discipline        = null;
+        discipline            = Discipline.getCurrentDiscipline();
         determinations        = new HashSet<Determination>();
     }
 

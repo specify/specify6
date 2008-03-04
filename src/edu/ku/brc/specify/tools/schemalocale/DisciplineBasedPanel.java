@@ -100,6 +100,7 @@ public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace, 
                 if (fieldPanel != null)
                 {
                     fieldPanel.setContainer(currentBaselineContainer, jlistContainer);
+                    fieldPanel.setDisciplineType(disciplineType);
                 }
                 
                 updateBtnUI();

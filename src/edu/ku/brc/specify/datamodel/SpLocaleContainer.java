@@ -72,7 +72,7 @@ public class SpLocaleContainer extends SpLocaleBase implements LocalizableContai
     protected Set<SpLocaleItemStr>       names;
     protected Set<SpLocaleItemStr>       descs;
     
-    protected Discipline             discipline;
+    protected Discipline                 discipline;
     
     // Transient
     protected Vector<LocalizableItemIFace> containerItems = null;
@@ -100,7 +100,8 @@ public class SpLocaleContainer extends SpLocaleBase implements LocalizableContai
         names = new HashSet<SpLocaleItemStr>();
         descs = new HashSet<SpLocaleItemStr>();
         
-        containerItems = null;
+        discipline          = Discipline.getCurrentDiscipline();
+        containerItems      = null;
     }
     
     /**

@@ -102,7 +102,7 @@ public class SpAppResourceDir extends DataModelObjBase implements java.io.Serial
         super.init();
         
         spAppResourceDirId      = null;
-        collection              = null;
+        collection              = Collection.getCurrentCollection();
         discipline              = null;
         specifyUser             = null;
         

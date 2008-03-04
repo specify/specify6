@@ -94,7 +94,7 @@ public class PrepType extends DataModelObjBase implements java.io.Serializable
         prepTypeId     = null;
         name           = null;
         isLoanable     = true;
-        collection     = null;
+        collection     = Collection.getCurrentCollection();
         preparations   = new HashSet<Preparation>();
         attributeDefs  = new HashSet<AttributeDef>();
     }

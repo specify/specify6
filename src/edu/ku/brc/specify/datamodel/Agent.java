@@ -216,7 +216,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
         division                  = null;
         instTechContact           = null;
         instContentContact        = null;
-        discipline            = null;
+        discipline                = Discipline.getCurrentDiscipline();
         specifyUser               = null;
         
         // Agent

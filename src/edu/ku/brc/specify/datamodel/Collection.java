@@ -128,7 +128,7 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
         collectionPrefix       = null;
         description            = null;
         remarks                = null;
-        discipline             = null;
+        discipline             = Discipline.getCurrentDiscipline();
         kingdomCoverage        = null;
         primaryFocus           = null;
         collectionType         = null;

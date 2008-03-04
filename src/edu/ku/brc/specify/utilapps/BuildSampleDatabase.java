@@ -4223,11 +4223,11 @@ public class BuildSampleDatabase
     }
     
     /**
-     * @param collTyp
+     * @param discipline
      * @param schemaType
      * @param tableMgr
      */
-    public static void loadSchemaLocalization(final Discipline collTyp, final Byte schemaType, final DBTableIdMgr tableMgr)
+    public static void loadSchemaLocalization(final Discipline discipline, final Byte schemaType, final DBTableIdMgr tableMgr)
     {
         SchemaLocalizerXMLHelper schemaLocalizer = new SchemaLocalizerXMLHelper(schemaType, tableMgr);
         schemaLocalizer.load();
@@ -4242,11 +4242,14 @@ public class BuildSampleDatabase
             
             loadLocalization(table, container);
             
-            collTyp.getSpLocaleContainers().add(container);
-            container.setDiscipline(collTyp);
+            discipline.getSpLocaleContainers().add(container);
+            container.setDiscipline(discipline);
         }
     }
     
+    /**
+     * @param args
+     */
     public static void main(final String[] args)
     {
         

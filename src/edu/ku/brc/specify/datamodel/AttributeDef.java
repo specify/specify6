@@ -59,7 +59,7 @@ public class AttributeDef extends DataModelObjBase implements java.io.Serializab
      protected Short                    tableType;
      protected String                   fieldName;
      protected Short                    dataType;
-     protected Discipline           discipline;
+     protected Discipline               discipline;
      protected PrepType                 prepType;
      protected Set<CollectingEventAttr> collectingEventAttrs;
      protected Set<PreparationAttr>     preparationAttrs;
@@ -90,7 +90,7 @@ public class AttributeDef extends DataModelObjBase implements java.io.Serializab
         tableType             = null;
         fieldName             = null;
         dataType              = null;
-        discipline        = null;
+        discipline            = Discipline.getCurrentDiscipline();
         prepType              = null;
         collectingEventAttrs  = new HashSet<CollectingEventAttr>();
         preparationAttrs      = new HashSet<PreparationAttr>();
