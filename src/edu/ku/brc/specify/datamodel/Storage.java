@@ -51,28 +51,28 @@ public class Storage extends DataModelObjBase implements Serializable, Treeable<
      */
     protected static final Logger log = Logger.getLogger(Storage.class);
 
-    protected Integer            storageId;
+    protected Integer           storageId;
     protected String            name;
     protected String            fullName;
     protected String            remarks;
-    protected Integer            rankId;
-    protected Integer            nodeNumber;
-    protected Integer            highestChildNodeNumber;
+    protected Integer           rankId;
+    protected Integer           nodeNumber;
+    protected Integer           highestChildNodeNumber;
     protected String            abbrev;
     protected String            text1;
     protected String            text2;
-    protected Integer            number1;
-    protected Integer            number2;
-    protected Date                timestampVersion;
+    protected Integer           number1;
+    protected Integer           number2;
+    protected Date              timestampVersion;
     protected StorageTreeDef    definition;
-    protected StorageTreeDefItem    definitionItem;
+    protected StorageTreeDefItem definitionItem;
     protected Storage            parent;
-    protected Set<Preparation>    preparations;
-    protected Set<Container>    containers;
-    protected Set<Storage>        children;
+    protected Set<Preparation>   preparations;
+    protected Set<Container>     containers;
+    protected Set<Storage>       children;
 
     // for synonym support
-    protected Boolean             isAccepted;
+    protected Boolean            isAccepted;
     protected Storage            acceptedStorage;
     protected Set<Storage>       acceptedChildren;
 
@@ -202,7 +202,7 @@ public class Storage extends DataModelObjBase implements Serializable, Treeable<
         this.rankId = rankId;
     }
 
-    @Column(name = "NodeNumber", updatable = false)
+    @Column(name = "NodeNumber")
     public Integer getNodeNumber()
     {
         return this.nodeNumber;
@@ -213,7 +213,7 @@ public class Storage extends DataModelObjBase implements Serializable, Treeable<
         this.nodeNumber = nodeNumber;
     }
 
-    @Column(name = "HighestChildNodeNumber", updatable = false)
+    @Column(name = "HighestChildNodeNumber")
     public Integer getHighestChildNodeNumber()
     {
         return this.highestChildNodeNumber;

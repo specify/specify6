@@ -114,7 +114,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
     protected Agent          currentUserAgent      = null;
 
-    protected boolean        debug                 = true;
+    protected boolean        debug                 = false;
     protected long           lastLoadTime          = 0;
     protected long           lastLoadTimeBS        = 0;
     protected UnhandledExceptionDialog dlg         = null;
@@ -1005,14 +1005,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.AppResourceDefaultIFace#getResource(java.lang.String)
-     */
-    public AppResourceIFace getResource(final String name)
-    {
-        return getResource(name, true);
-    }
-    
     /**
      * @param appRes
      * @return
@@ -1060,13 +1052,10 @@ public class SpecifyAppContextMgr extends AppContextMgr
         return false;
     }
 
-    /**
-     * Get A Resource with the option of checking the backstop.
-     * @param name the name of the resource
-     * @param checkBackStop whether to check the backstop
-     * @return the resource
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.AppContextMgr#getResource(java.lang.String)
      */
-    protected AppResourceIFace getResource(final String name, final boolean checkBackStop)
+    public AppResourceIFace getResource(final String name)
     {
         DataProviderSessionIFace session = null;
         try
@@ -1102,6 +1091,26 @@ public class SpecifyAppContextMgr extends AppContextMgr
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.AppContextMgr#getResourceFromUserArea(java.lang.String)
+     */
+    @Override
+    public AppResourceIFace getResourceFromUserArea(final String name)
+    {
+        SpAppResourceDir appResDir = spAppResourceList.get(0);
+        if (appResDir.getIsPersonal())
+        {
+            for (SpAppResource ar : appResDir.getSpAppResources())
+            {
+                if (ar.getName().equals(name))
+                {
+                    return ar;
+                }
+            }
+        }
+        return null;
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.af.core.AppResourceDefaultMgr#getResourceAsDOM(java.lang.String)
      */
     public Element getResourceAsDOM(final String name)
@@ -1122,19 +1131,41 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
         return null;
     }
+    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.AppContextMgr#getResourceAsDOM(edu.ku.brc.af.core.AppResourceIFace)
+     */
+    @Override
+    public Element getResourceAsDOM(AppResourceIFace appRes)
+    {
+        try
+        {
+            String xmlStr = getResourceAsXML(appRes);
+            if (StringUtils.isNotEmpty(xmlStr))
+            {
+                return XMLHelper.readStrToDOM4J(xmlStr);
+            }
+
+        } catch (Exception ex)
+        {
+            log.error(ex);
+            throw new RuntimeException(ex);
+        }
+
+        return null;
+    }
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.AppContextMgr#getResourceAsXML(java.lang.String)
      */
-    @Override
-    public String getResourceAsXML(final String name)
+    public String getResourceAsXML(final AppResourceIFace appResource)
     {
-        AppResourceIFace appResource = getResource(name);
-        
         if (appResource != null && appResource instanceof SpAppResource)
         {
             DataProviderSessionIFace session = null;
-            SpAppResource              appRes  = (SpAppResource)appResource;
+            SpAppResource            appRes  = (SpAppResource)appResource;
             try
             {
                 session = openSession();
@@ -1169,74 +1200,72 @@ public class SpecifyAppContextMgr extends AppContextMgr
             }
         } else
         {
-            log.debug("Couldn't find ["+name+"]");
+            log.debug("AppResourceIFace was null");
         }
         return null;
     }
-    
-    
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.AppContextMgr#putResourceAsXML(java.lang.String, java.lang.String)
+     * @see edu.ku.brc.af.core.AppContextMgr#getResourceAsXML(java.lang.String)
      */
     @Override
-    public void putResourceAsXML(final String name, final String xmlStr)
+    public String getResourceAsXML(final String name)
     {
+        return getResourceAsXML(getResource(name));
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.AppContextMgr#putResourceAsXML(edu.ku.brc.af.core.AppResourceIFace, java.lang.String)
+     */
+    @Override
+    public void putResourceAsXML(final AppResourceIFace appResArg, final String xmlStr)
+    {
+        if (appResArg == null || appResArg instanceof SpAppResource)
+        {
+            return;
+        }
+        
         SpAppResourceDir appResDir = null;
-        SpAppResource    appRes    = null;
+        SpAppResource    appRes    = (SpAppResource)appResArg;
         
         DataProviderSessionIFace session = null;
         try
         {
-            AppResourceIFace appResource = getResource(name, true); // false means don't check the BackStop
-            if (appResource != null)
+            session = openSession();
+            
+            appResDir = appRes.getSpAppResourceDir();
+            
+            if (appRes.getSpAppResourceId() != null)
             {
-                if (appResource instanceof SpAppResource)
-                {
-                    session = openSession();
-                    
-                    appRes    = (SpAppResource)appResource;
-                    appResDir = appRes.getSpAppResourceDir();
-                    
-                    if (appRes.getSpAppResourceId() != null)
-                    {
-                        session.attach(appRes);
-                    }
-                    
-                    if (appRes.getMimeType() != null && appRes.getMimeType().equals("text/xml"))
-                    {
-                        try
-                        {
-                            session.beginTransaction();
-                            if (appResDir != null)
-                            {
-                                appRes.setTimestampModified(new Timestamp(System.currentTimeMillis()));
-                                appRes.setModifiedByAgent(Agent.getUserAgent());
-                                session.saveOrUpdate(appResDir);
-                            }
-                            appRes.setTimestampModified(new Timestamp(System.currentTimeMillis()));
-                            appRes.setModifiedByAgent(Agent.getUserAgent());
-                            appRes.setDataAsString(xmlStr);
-                            session.saveOrUpdate(appRes);
-                            session.commit();
-                            
-                        } catch (Exception ex)
-                        {
-                            session.rollback();
-                            
-                            log.error(ex);
-                            throw new RuntimeException(ex);
-                        }
-                    }
-                } else
-                {
-                    log.error("The resource ["+name+"] was not of Class SpAppResource");
-                }
-                
-            } else
-            {
-                log.error("The resource ["+name+"] wasn't found");
+                session.attach(appRes);
             }
+            
+            if (appRes.getMimeType() != null && appRes.getMimeType().equals("text/xml"))
+            {
+                try
+                {
+                    session.beginTransaction();
+                    if (appResDir != null)
+                    {
+                        appRes.setTimestampModified(new Timestamp(System.currentTimeMillis()));
+                        appRes.setModifiedByAgent(Agent.getUserAgent());
+                        session.saveOrUpdate(appResDir);
+                    }
+                    appRes.setTimestampModified(new Timestamp(System.currentTimeMillis()));
+                    appRes.setModifiedByAgent(Agent.getUserAgent());
+                    appRes.setDataAsString(xmlStr);
+                    session.saveOrUpdate(appRes);
+                    session.commit();
+                    
+                } catch (Exception ex)
+                {
+                    session.rollback();
+                    
+                    log.error(ex);
+                    throw new RuntimeException(ex);
+                }
+            }
+                
         } catch (Exception ex)
         {
             log.error(ex);
@@ -1247,6 +1276,23 @@ public class SpecifyAppContextMgr extends AppContextMgr
         }
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.AppContextMgr#putResourceAsXMLFromUserArea(java.lang.String, java.lang.String)
+     */
+    @Override
+    public void putResourceAsXML(String name, String xmlStr)
+    {
+        AppResourceIFace appRes = getResource(name);
+        if (appRes != null)
+        {
+            putResourceAsXML(appRes, xmlStr);
+            
+        } else
+        {
+            log.error("Couldn't find respource ["+appRes+"]");
+        }
+        
+    }
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.AppResourceDefaultMgr#getResourceByMimeType(java.lang.String)
      */
@@ -1265,6 +1311,83 @@ public class SpecifyAppContextMgr extends AppContextMgr
             }
         }
         return list;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.AppContextMgr#createUserAreaAppResource()
+     */
+    @Override
+    public AppResourceIFace createUserAreaAppResource()
+    {
+        SpAppResourceDir userAppResDir = spAppResourceList.get(0);
+        if (userAppResDir.getIsPersonal())
+        {
+            SpAppResource appRes = new SpAppResource();
+            appRes.initialize();
+            appRes.setSpecifyUser(SpecifyUser.getCurrentUser());
+            
+            userAppResDir.getSpAppResources().add(appRes);
+            appRes.setSpAppResourceDir(userAppResDir);
+            return appRes;
+            
+        } else
+        {
+            log.error("Couldn;t find Personal Dir");
+        }
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.AppContextMgr#removeUserAreaAppResource(edu.ku.brc.af.core.AppResourceIFace)
+     */
+    @Override
+    public boolean removeUserAreaAppResource(final AppResourceIFace appResource)
+    {
+        if (!(appResource instanceof SpAppResource))
+        {
+            return false;
+        }
+        
+        SpAppResourceDir userAppResDir = spAppResourceList.get(0);
+        if (userAppResDir.getIsPersonal())
+        {
+            SpAppResource appRes = (SpAppResource)appResource;
+            
+            if (!userAppResDir.getSpPersistedAppResources().contains(appRes))
+            {
+                return false;
+            }
+            
+            DataProviderSessionIFace session = null;
+            try
+            {
+                session = DataProviderFactory.getInstance().createSession();
+                session.beginTransaction();
+                userAppResDir.getSpPersistedAppResources().remove(appRes);
+                userAppResDir.getSpAppResources().remove(appRes);
+                session.delete(appResource);
+                session.saveOrUpdate(userAppResDir);
+                session.commit();
+                
+                return true;
+                
+            } catch (Exception ex)
+            {
+                session.rollback();
+                log.error(ex);
+                
+            } finally 
+            {
+                if (session != null)
+                {
+                    session.close();
+                }
+            }
+        } else
+        {
+            log.error("Couldn;t find Personal Dir");
+        }
+        return false;
     }
 
 

@@ -530,7 +530,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         this.usfwsCode = usfwsCode;
     }
 
-    @Column(name = "NodeNumber", updatable = false)
+    @Column(name = "NodeNumber")
 	public Integer getNodeNumber()
 	{
 		return this.nodeNumber;
@@ -541,7 +541,7 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 		this.nodeNumber = nodeNumber;
 	}
 
-    @Column(name = "HighestChildNodeNumber", updatable = false)
+    @Column(name = "HighestChildNodeNumber")
 	public Integer getHighestChildNodeNumber()
 	{
 		return this.highestChildNodeNumber;

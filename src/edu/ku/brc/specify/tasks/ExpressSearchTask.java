@@ -171,6 +171,8 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
             searchBtn.setEnabled(true);
             searchText.setEnabled(true);
         }
+        
+        SearchConfigService.getInstance().reset();
     }
 
     /**

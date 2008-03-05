@@ -229,7 +229,7 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
 	/**
 	 * 
 	 */
-    @Column(name = "NodeNumber", unique = false, nullable = true, insertable = true, updatable = false, length = 10)
+    @Column(name = "NodeNumber", unique = false, nullable = true, insertable = true, updatable = true)
 	public Integer getNodeNumber()
 	{
 		return this.nodeNumber;
@@ -243,7 +243,7 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
 	/**
 	 * 
 	 */
-    @Column(name = "HighestChildNodeNumber", unique = false, nullable = true, insertable = true, updatable = false, length = 10)
+    @Column(name = "HighestChildNodeNumber", unique = false, nullable = true, insertable = true, updatable = true)
 	public Integer getHighestChildNodeNumber()
 	{
 		return this.highestChildNodeNumber;

@@ -45,7 +45,8 @@ public class DisciplineType implements Comparable<DisciplineType>
 {
     private static final Logger  log = Logger.getLogger(DisciplineType.class);
     
-    public enum STD_DISCIPLINES {fish, herp, paleo, bird, mammal, insect, botany, invertebrate, minerals, fungi}
+    public enum STD_DISCIPLINES {fish, herp, paleobotany, invertpaleo, vertpaleo, bird, 
+                                 mammal, insect, botany, invertebrate, minerals, fungi, anthropology}
             
     // Static WeakReference Data Members
     protected static WeakReference<Vector<DisciplineType>>            disciplineList  = null;
@@ -55,12 +56,14 @@ public class DisciplineType implements Comparable<DisciplineType>
     protected String name;
     protected String title;
     protected int    type;
+    protected STD_DISCIPLINES disciplineType;
     
     public DisciplineType(final String name, final String title, final int type)
     {
         this.name  = name;
         this.title = title;
         this.type  = type;
+        this.disciplineType = STD_DISCIPLINES.valueOf(name);
     }
 
     public String getName()
@@ -78,6 +81,14 @@ public class DisciplineType implements Comparable<DisciplineType>
         return type;
     }
     
+    /**
+     * @return the disciplineType
+     */
+    public STD_DISCIPLINES getDisciplineType()
+    {
+        return disciplineType;
+    }
+
     public String toString()
     {
         //return "[" + type + "][" + name + "][" + title + "]";
@@ -113,6 +124,23 @@ public class DisciplineType implements Comparable<DisciplineType>
     }
     
 
+    /**
+     * Returns a DisciplineType by title.
+     * @param title the title of the disciplineType
+     * @return a DisciplineType by title.
+     */
+    public static DisciplineType getDiscipline(final DisciplineType.STD_DISCIPLINES dType)
+    {
+        for (DisciplineType disciplineType : getDisciplineList())
+        {
+            if (dType == disciplineType.getDisciplineType())
+            {
+                return disciplineType;
+            }
+        }
+        return null;
+    }
+    
     /**
      * Returns a DisciplineType by title.
      * @param title the title of the disciplineType

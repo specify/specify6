@@ -75,6 +75,13 @@ public abstract class AppContextMgr
     public abstract AppResourceIFace getResource(final String name);
    
     /**
+     * Returns an Application Resource object by name from the user's area
+     * @param name the name of the resource
+     * @return the application resource
+     */
+    public abstract AppResourceIFace getResourceFromUserArea(final String name);
+   
+    /**
      * Returns Application Resource objects by mime type
      * @param mimeType the mime type of the files to be returned
      * @return the list application resource
@@ -87,7 +94,15 @@ public abstract class AppContextMgr
      * @param name the name of the resource
      * @return the root element of the XML DOM
      */
-    public abstract Element getResourceAsDOM(final String name);
+    public abstract Element getResourceAsDOM(String name);
+   
+    /**
+     * Returns the DOM for an Resource that is an XML Resource. 
+     * It will throw an exception if the MimeType is not of "text"xml"
+     * @param name the name of the resource
+     * @return the root element of the XML DOM
+     */
+    public abstract Element getResourceAsDOM(AppResourceIFace appRes);
    
     /**
      * Returns the XML (String) for an Resource that is an XML Resource. 
@@ -101,9 +116,40 @@ public abstract class AppContextMgr
      * Returns the XML (String) for an Resource that is an XML Resource. 
      * It will throw an exception if the MimeType is not of "text"xml"
      * @param name the name of the resource
+     * @return the root element of the XML DOM
+     */
+    public abstract String getResourceAsXML(AppResourceIFace appRes);
+   
+    /**
+     * Returns the XML (String) for an Resource that is an XML Resource. 
+     * It will throw an exception if the MimeType is not of "text"xml"
+     * @param name the name of the resource
      * @param xmlStr the XML String
      */
     public abstract void putResourceAsXML(final String name, final String xmlStr);
+   
+    /**
+     * Returns the XML (String) for an Resource that is an XML Resource. 
+     * It will throw an exception if the MimeType is not of "text"xml"
+     * @param name the name of the resource
+     * @param xmlStr the XML String
+     */
+    public abstract void putResourceAsXML(AppResourceIFace appRes, final String xmlStr);
+    
+    /**
+     * @return an empty AppResource that will be saved in the UserArea
+     */
+    public abstract AppResourceIFace createUserAreaAppResource();
+   
+    /**
+     * @return an empty AppResource that will be saved in the UserArea
+     */
+    public abstract boolean removeUserAreaAppResource(AppResourceIFace appResource);
+    
+    /**
+     * @return true if save correctly.
+     */
+    public abstract boolean saveResource(AppResourceIFace appResource);
    
     /**
      * Sets the current context.

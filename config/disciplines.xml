@@ -9,9 +9,11 @@
     -->
     
     <discipline name="fish"         title="Fish"         type="0"/>
-    <discipline name="herp"         title="Herps"        type="0"/>
-    <discipline name="paleo"        title="Paleo"        type="0"/>
-    <discipline name="birds"        title="Birda"        type="0"/>
+    <discipline name="herp"         title="Herpetology"  type="0"/>
+    <discipline name="paleobotany"  title="Paleo Botany" type="0"/>
+    <discipline name="invertpaleo"  title="Invertebrate Paleo" type="0"/>
+    <discipline name="vertpaleo"    title="Vertebrate Paleo" type="0"/>
+    <discipline name="bird"         title="Ornthology"   type="0"/>
     <discipline name="mammal"       title="Mammal"       type="0"/>
     <discipline name="insect"       title="Insect"       type="0"/>
     <discipline name="botany"       title="Botany"       type="0"/>
@@ -20,10 +22,9 @@
     <discipline name="anthropology" title="Anthropology" type="3"/>
     <discipline name="fungi"        title="Fungi"        type="0"/>
     
-    <discipline name="tissue"       title="Tissue"       type="1"/>
-    
+    <!-- <discipline name="tissue"       title="Tissue"       type="1"/>
     <discipline name="accessions"   title="Accessions"   type="2"/>
-    <!-- <discipline name="animal"       title="Animal"     type="0"/>  -->
+    <discipline name="animal"       title="Animal"     type="0"/>  -->
     
 </disciplines>
 

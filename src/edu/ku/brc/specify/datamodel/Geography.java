@@ -273,7 +273,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
-    @Column(name = "NodeNumber", updatable = false)
+    @Column(name = "NodeNumber")
 	public Integer getNodeNumber()
 	{
 		return this.nodeNumber;
@@ -287,7 +287,7 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 	/**
 	 *
 	 */
-    @Column(name = "HighestChildNodeNumber", updatable = false)
+    @Column(name = "HighestChildNodeNumber")
 	public Integer getHighestChildNodeNumber()
 	{
 		return this.highestChildNodeNumber;

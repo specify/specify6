@@ -242,6 +242,9 @@
 		<!-- Copy Icons -->
 		<!-- <copy file="${packaging}/builder/specifybldr.icns" todir="${appdir}/Contents/Resources" /> -->
 		<rename src="${appdir}/Contents/Resources/specify.icns" dest="${appdir}/Contents/Resources/specifybldr.icns"/>
+		
+		<!-- Copy Stratigraphy.csv -->
+		<copy file="demo_files/Stratigraphy.csv" todir="${appdir}/Contents/Resources/Java/config" />
 
 	</target>
 

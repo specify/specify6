@@ -273,6 +273,7 @@ public class DBTableIdMgr
 			{
 			    return tableInfo.getClassObj().getSimpleName();
 			}
+			return defaultFormName;
 		}
 		return null;
 	}

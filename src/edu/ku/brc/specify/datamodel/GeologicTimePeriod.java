@@ -229,7 +229,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
     /**
      * 
      */
-    @Column(name = "NodeNumber", updatable = false)
+    @Column(name = "NodeNumber")
     public Integer getNodeNumber()
     {
         return this.nodeNumber;
@@ -243,7 +243,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
     /**
      * 
      */
-    @Column(name = "HighestChildNodeNumber", updatable = false)
+    @Column(name = "HighestChildNodeNumber")
     public Integer getHighestChildNodeNumber()
     {
         return this.highestChildNodeNumber;

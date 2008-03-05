@@ -62,6 +62,33 @@ public class SearchConfig
     }
     
     /**
+     * Cleans up.
+     */
+    public void shutdown()
+    {
+        if (tables != null)
+        {
+            tables.clear();
+        }
+        if (relatedQueries != null)
+        {
+            relatedQueries.clear();
+        }
+        if (relatedQueryIdHash != null)
+        {
+            relatedQueryIdHash.clear();
+        }
+        if (tableIdHash != null)
+        {
+            tableIdHash.clear();
+        }
+        if (tableNameHash != null)
+        {
+            tableNameHash.clear();
+        }
+    }
+    
+    /**
      * Configures the XStream for I/O.
      * @param xstream the stream
      */

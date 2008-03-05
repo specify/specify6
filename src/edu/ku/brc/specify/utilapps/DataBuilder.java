@@ -62,6 +62,7 @@ import edu.ku.brc.specify.datamodel.InfoRequest;
 import edu.ku.brc.specify.datamodel.Institution;
 import edu.ku.brc.specify.datamodel.Journal;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
+import edu.ku.brc.specify.datamodel.LithoStratTreeDefItem;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanAgent;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
@@ -1049,6 +1050,21 @@ public class DataBuilder
         return lstd;
     }
 
+    public static LithoStratTreeDefItem createLithoStratTreeDefItem(final LithoStratTreeDef treeDef,
+                                                                    final String name,
+                                                                    final int rankId,
+                                                                    final boolean inFullName)
+    {
+        LithoStratTreeDefItem lstdi = new LithoStratTreeDefItem();
+        lstdi.initialize();
+        lstdi.setName(name);
+        lstdi.setRankId(rankId);
+        lstdi.setIsInFullName(inFullName);
+        lstdi.setTreeDef(treeDef);
+        treeDef.getTreeDefItems().add(lstdi);
+        return lstdi;
+    }
+
 
 
     /**
@@ -1087,7 +1103,7 @@ public class DataBuilder
         taxon.setName(name);
         taxon.setCommonName(commonName);
         taxon.setParent(parent);
-        if (parent!=null)
+        if (parent != null)
         {
             parent.getChildren().add(taxon);
         }

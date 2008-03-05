@@ -47,11 +47,14 @@ import javax.persistence.Transient;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 import edu.ku.brc.af.core.AppResourceIFace;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.XMLHelper;
 
 /**
@@ -73,7 +76,7 @@ import edu.ku.brc.helpers.XMLHelper;
     })
 public class SpAppResource extends DataModelObjBase implements java.io.Serializable, AppResourceIFace, Cloneable
 {
-    //private static final Logger  log       = Logger.getLogger(AppResource.class);
+    private static final Logger  log = Logger.getLogger(SpAppResource.class);
     
     // Fields    
 
@@ -475,7 +478,35 @@ public class SpAppResource extends DataModelObjBase implements java.io.Serializa
     @Transient
     public String getDataAsString()
     {
-        getSpAppResourceDatas(); // Must call this before accessing it as a local data member
+        DataProviderSessionIFace session = null;
+        try
+        {
+            // check to see if it has been loaded yet
+            spAppResourceDatas.size();
+            
+        } catch (org.hibernate.LazyInitializationException hex)
+        {
+            // OK, it hasn't been loaded yet,
+            try
+            {
+                session = DataProviderFactory.getInstance().createSession();
+                session.attach(this);
+                
+                spAppResourceDatas.size();
+                
+            } catch (Exception ex)
+            {
+                log.error(ex);
+                return null;
+                
+            } finally
+            {
+                if (session != null)
+                {
+                    session.close();
+                }
+            }
+        }
         
         SpAppResourceData ard = null;
         if (spAppResourceDatas.size() > 0)

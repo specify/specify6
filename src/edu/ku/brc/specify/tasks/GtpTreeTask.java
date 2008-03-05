@@ -64,6 +64,8 @@ public class GtpTreeTask extends BaseTreeTask<GeologicTimePeriod,GeologicTimePer
     @Override
     protected boolean isTreeOnByDefault()
     {
-        return Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.paleo);
+        return Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.paleobotany) ||
+               Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.invertpaleo) ||
+               Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.vertpaleo);
     }
 }

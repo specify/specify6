@@ -31,6 +31,7 @@ import org.dom4j.Element;
 import com.thoughtworks.xstream.XStream;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.helpers.XMLHelper;
@@ -48,8 +49,9 @@ public class SearchConfigService
 {
     //private static final Logger log = Logger.getLogger(SearchConfigService.class);
     
-    protected static SearchConfigService instance = new SearchConfigService();
-    
+    protected static SearchConfigService   instance = new SearchConfigService();
+    protected static final String          resourceName = "ExpressSearchConfig";
+        
     protected SearchConfig                 searchConfig    = null;
     protected SearchTableConfig            searchContext   = null;
     protected List<PropertyChangeListener> changeListeners = new Vector<PropertyChangeListener>();
@@ -62,6 +64,18 @@ public class SearchConfigService
     protected SearchConfigService()
     {
         // no op
+    }
+    
+    /**
+     * Resets the Service.
+     */
+    public void reset()
+    {
+        if (searchConfig != null)
+        {
+            searchConfig.shutdown();
+        }
+        searchConfig = null;
     }
     
     /**
@@ -141,7 +155,26 @@ public class SearchConfigService
         XStream xstream = new XStream();
         SearchConfig.configXStream(xstream);
         
-        String xmlStr = AppContextMgr.getInstance().getResourceAsXML("ExpressSearchConfig");
+        String           xmlStr    = null;
+        
+        AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromUserArea(resourceName);
+        if (escAppRes != null)
+        {
+            xmlStr = escAppRes.getDataAsString();
+            
+        } else
+        {
+            AppResourceIFace appRes = AppContextMgr.getInstance().getResource(resourceName);
+            escAppRes = AppContextMgr.getInstance().createUserAreaAppResource();
+            escAppRes.setName(appRes.getName());
+            escAppRes.setDescription(appRes.getDescription());
+            escAppRes.setDataAsString(appRes.getDataAsString());
+            escAppRes.setLevel(appRes.getLevel());
+            escAppRes.setMetaData(appRes.getMetaData());
+            escAppRes.setMimeType(appRes.getMimeType());
+            AppContextMgr.getInstance().saveResource(escAppRes);
+            xmlStr = appRes.getDataAsString();
+        }
         
         //log.debug(xmlStr);
         
@@ -203,7 +236,16 @@ public class SearchConfigService
             ex.printStackTrace();
         }
         
-        AppContextMgr.getInstance().putResourceAsXML("ExpressSearchConfig", xstream.toXML(searchConfig));
+        AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromUserArea(resourceName);
+        if (escAppRes != null)
+        {
+            escAppRes.setDataAsString(xstream.toXML(searchConfig));
+            AppContextMgr.getInstance().saveResource(escAppRes);
+            
+        } else
+        {
+            AppContextMgr.getInstance().putResourceAsXML(resourceName, xstream.toXML(searchConfig));     
+        }
         
         PropertyChangeEvent pce = new PropertyChangeEvent(this, "contentsChanged", null, null);
         for (PropertyChangeListener pcl : changeListeners)
