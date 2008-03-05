@@ -147,7 +147,7 @@ public class QueryBldrPane extends BaseSubPane
     protected JButton                       orderUpBtn  = null;
     protected JButton                       orderDwnBtn = null;
     protected boolean                       doOrdering  = false;
-
+    
     /**
      * Constructor.
      * 
@@ -264,7 +264,7 @@ public class QueryBldrPane extends BaseSubPane
                 qf.initialize();
                 qf.setFieldName(fieldQRI.getFieldName());
                 query.addReference(qf, "fields");
-                addQueryFieldItem(fieldQRI, qf);
+                addQueryFieldItem(fieldQRI, qf, false);
             }
         });
 
@@ -334,7 +334,6 @@ public class QueryBldrPane extends BaseSubPane
         queryFieldsPanel.removeAll();
         queryFieldItems.clear();
         queryFieldsPanel.validate();
-        saveBtn.setEnabled(false);
         columnDefStr = null;
         tableList.clearSelection();
         contextPanel.setVisible(query == null);
@@ -365,7 +364,7 @@ public class QueryBldrPane extends BaseSubPane
             currentInx = 0;
             for (SpQueryField field : fields)
             {
-                addQueryFieldItem(field);
+                addQueryFieldItem(field, true);
             }
         }
 
@@ -380,7 +379,11 @@ public class QueryBldrPane extends BaseSubPane
             {
                 //Sorry, but a new context can't be selected if any fields are selected from the current context.
                 tableList.setEnabled(queryFieldItems.size() == 0);
-                selectQFP(queryFieldItems.get(0));
+                if (queryFieldItems.size() > 0)
+                {
+                    selectQFP(queryFieldItems.get(0));
+                }
+                saveBtn.setEnabled(false);
                 QueryBldrPane.this.validate();
             }
         });
@@ -1273,7 +1276,7 @@ public class QueryBldrPane extends BaseSubPane
                                         qf.initialize();
                                         qf.setFieldName(fieldQRI.getFieldName());
                                         query.addReference(qf, "fields");
-                                        addQueryFieldItem(fieldQRI, qf);
+                                        addQueryFieldItem(fieldQRI, qf, false);
                                     }
                                 }
                             }
@@ -1500,14 +1503,14 @@ public class QueryBldrPane extends BaseSubPane
      * 
      * @param fieldItem the TableFieldPair to be in the list
      */
-    protected void addQueryFieldItem(final SpQueryField field)
+    protected void addQueryFieldItem(final SpQueryField field, final boolean loading)
     {
         if (field != null)
         {
             FieldQRI fieldQRI = getFieldQRI(tableTree, field, field.getTableIds(), 0);
             if (fieldQRI != null)
             {
-                addQueryFieldItem(fieldQRI, field);
+                addQueryFieldItem(fieldQRI, field, loading);
             }
             else
             {
@@ -1522,7 +1525,7 @@ public class QueryBldrPane extends BaseSubPane
      * 
      * @param fieldItem the TableFieldPair to be in the list
      */
-    protected void addQueryFieldItem(final FieldQRI fieldQRI, final SpQueryField queryField)
+    protected void addQueryFieldItem(final FieldQRI fieldQRI, final SpQueryField queryField, final boolean loading)
     {
         if (fieldQRI != null)
         {
@@ -1567,7 +1570,10 @@ public class QueryBldrPane extends BaseSubPane
                         updateAddBtnState();
                         selectQFP(qfp);
                         queryFieldsPanel.repaint();
-                        saveBtn.setEnabled(true);
+                        if (!loading)
+                        {
+                            saveBtn.setEnabled(true);
+                        }
                         //Sorry, but a new context can't be selected if any fields are selected from the current context.
                         tableList.setEnabled(queryFieldItems.size() == 0);
                     }

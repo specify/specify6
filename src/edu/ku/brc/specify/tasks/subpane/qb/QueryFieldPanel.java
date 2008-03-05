@@ -346,13 +346,13 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
             }
             else if (fieldQRI.getDataClass().equals(String.class))
             {
-                criteriaStr = "'" + criteriaStr + "'";
+                criteriaStr =  "'" + criteriaStr + "'";
             }
             else if (fieldQRI.getDataClass().equals(Calendar.class))
             {
                 criteriaStr = "'" + criteriaStr + "'";
             }
-            else if (criteriaStr.length() > 0)
+            if (criteriaStr.length() > 0)
             {
                 str.append(fieldQRI.getSQLFldSpec(ta) + " ");
                 if (operStr.equals("="))
