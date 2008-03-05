@@ -66,7 +66,7 @@ public class TaxonTreeDef extends BaseTreeDef<Taxon, TaxonTreeDef, TaxonTreeDefI
     protected String                name;
     protected String                remarks;
     protected Integer               fullNameDirection;
-    protected Discipline        discipline;
+    protected Discipline            discipline;
     protected Set<Taxon>            treeEntries;
     protected Set<TaxonTreeDefItem> treeDefItems;
     

@@ -104,6 +104,8 @@ public class FieldItemPanel extends LocalizerBasePanel
     protected JLabel           fieldLengthLbl;
     protected JLabel           fieldTypeTxt;
     protected JLabel           fieldLengthTxt;
+    protected JLabel           fieldReqLbl;
+    protected JLabel           fieldReqTxt;
     
     // Formatting
     protected JLabel           formatLbl     = null;
@@ -200,7 +202,7 @@ public class FieldItemPanel extends LocalizerBasePanel
         JScrollPane fldsp = new JScrollPane(fieldsList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         
         // LocalizableNameDescIFace
-        PanelBuilder pb = new PanelBuilder(new FormLayout("max(200px;p),4px,p,2px,p,f:p:g", 
+        PanelBuilder pb = new PanelBuilder(new FormLayout("max(200px;p),4px,p,2px,p,10px,p,2px,p,f:p:g", 
                                                              (includeHiddenUI ? "p,2px," : "") + 
                                                              (isDBSchema ? "p,2px,p,2px," : "") + 
                                                              (includeFormatAndAutoNumUI ? "p,2px," : "") + 
@@ -208,7 +210,7 @@ public class FieldItemPanel extends LocalizerBasePanel
         
         pb.add(fldsp, cc.xywh(1, y, 1, 7+(isDBSchema ? 4 : 0)));
         pb.add(fieldNameLbl = new JLabel(labelStr, SwingConstants.RIGHT), cc.xy(3, y));
-        pb.add(fieldNameText, cc.xywh(5, y, 2, 1));   y += 2;
+        pb.add(fieldNameText, cc.xywh(5, y, 6, 1));   y += 2;
         
         if (includeHiddenUI)
         {
@@ -217,7 +219,7 @@ public class FieldItemPanel extends LocalizerBasePanel
        
         pb.add(fieldDescLbl = new JLabel(descStr, SwingConstants.RIGHT), cc.xy(3, y));
         JScrollPane sp = new JScrollPane(fieldDescText, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        pb.add(sp,   cc.xywh(5, y, 2, 1));   y += 2;
+        pb.add(sp,   cc.xywh(5, y, 6, 1));   y += 2;
         fieldDescText.setLineWrap(true);
         fieldDescText.setRows(4);
         fieldDescText.setWrapStyleWord(true);
@@ -228,14 +230,21 @@ public class FieldItemPanel extends LocalizerBasePanel
             fieldLengthTxt = new JLabel("");
             
             pb.add(fieldTypeLbl   = new JLabel(getResourceString("SL_TYPE") + ":", SwingConstants.RIGHT), cc.xy(3, y));
-            pb.add(fieldTypeTxt,   cc.xy(5, y));   y += 2;
+            pb.add(fieldTypeTxt,   cc.xy(5, y));  
+            
+            pb.add(fieldReqLbl   = new JLabel(getResourceString("SL_REQ") + ":", SwingConstants.RIGHT), cc.xy(7, y));
+            pb.add(fieldReqTxt   = new JLabel(""),   cc.xy(9, y)); y += 2;
+            
             pb.add(fieldLengthLbl = new JLabel(getResourceString("SL_LENGTH") + ":", SwingConstants.RIGHT), cc.xy(3, y));
             pb.add(fieldLengthTxt, cc.xy(5, y));   y += 2;
             
             fieldTypeTxt.setBackground(Color.WHITE);
             fieldLengthTxt.setBackground(Color.WHITE);
+            fieldReqTxt.setBackground(Color.WHITE);
             fieldTypeTxt.setOpaque(true);
             fieldLengthTxt.setOpaque(true);
+            fieldReqTxt.setOpaque(true);
+            
         }
         
         if (includeFormatAndAutoNumUI)
@@ -249,7 +258,7 @@ public class FieldItemPanel extends LocalizerBasePanel
             
             inner.add(formatCombo,   cc.xy(1, 1));   
             inner.add(formatTxt,     cc.xy(3, 1));
-            pb.add(inner.getPanel(), cc.xywh(5, y, 2, 1));   y += 2;
+            pb.add(inner.getPanel(), cc.xywh(5, y, 6, 1));   y += 2;
             
             //String[] items = {noneStr, getResourceString("Generic"), getResourceString("External")};
             
@@ -294,7 +303,7 @@ public class FieldItemPanel extends LocalizerBasePanel
         
         JPanel bbp = ButtonBarFactory.buildCenteredBar(new JButton[] {nxtEmptyBtn, nxtBtn, fldSpellChkBtn});
         bbp.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
-        pb.add(bbp,   cc.xywh(3, y, 4, 1));
+        pb.add(bbp,   cc.xywh(3, y, 8, 1));
         
         nxtBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
@@ -582,6 +591,9 @@ public class FieldItemPanel extends LocalizerBasePanel
         
         fieldTypeLbl.setEnabled(enable);
         fieldTypeTxt.setEnabled(enable);
+        
+        fieldReqLbl.setEnabled(enable);
+        fieldReqTxt.setEnabled(enable);
         
         fieldLengthLbl.setEnabled(enable);
         fieldLengthTxt.setEnabled(enable);
@@ -983,6 +995,8 @@ public class FieldItemPanel extends LocalizerBasePanel
                         
                         fieldLengthLbl.setEnabled(StringUtils.isNotEmpty(lenStr));
                         fieldLengthTxt.setEnabled(StringUtils.isNotEmpty(lenStr));
+                        
+                        fieldReqTxt.setText(getResourceString(fi.isRequired() ? "Yes" : "No"));
 
                     } else
                     {
@@ -995,6 +1009,7 @@ public class FieldItemPanel extends LocalizerBasePanel
                             fieldLengthTxt.setText(" ");
                             fieldLengthLbl.setEnabled(false);
                             fieldLengthTxt.setEnabled(false);
+                            fieldReqTxt.setText(getResourceString(ri.isRequired() ? "Yes" : "No"));
                         }
                     }
                 }

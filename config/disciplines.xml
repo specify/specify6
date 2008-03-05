@@ -9,7 +9,8 @@
     -->
     
     <discipline name="fish"         title="Fish"         type="0"/>
-    <discipline name="herp"         title="Herpetology"  type="0"/>
+    <discipline name="amphibian"    title="Amphibians"    type="0"/>
+    <discipline name="reptile"      title="Reptile"      type="0"/>
     <discipline name="paleobotany"  title="Paleo Botany" type="0"/>
     <discipline name="invertpaleo"  title="Invertebrate Paleo" type="0"/>
     <discipline name="vertpaleo"    title="Vertebrate Paleo" type="0"/>

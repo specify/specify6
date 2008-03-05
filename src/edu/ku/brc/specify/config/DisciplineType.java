@@ -45,8 +45,9 @@ public class DisciplineType implements Comparable<DisciplineType>
 {
     private static final Logger  log = Logger.getLogger(DisciplineType.class);
     
-    public enum STD_DISCIPLINES {fish, herp, paleobotany, invertpaleo, vertpaleo, bird, 
-                                 mammal, insect, botany, invertebrate, minerals, fungi, anthropology}
+    public enum STD_DISCIPLINES {fish, amphibian, reptile, paleobotany, invertpaleo, vertpaleo, bird, 
+                                 mammal, insect, botany, invertebrate, minerals, fungi, 
+                                 anthropology}
             
     // Static WeakReference Data Members
     protected static WeakReference<Vector<DisciplineType>>            disciplineList  = null;
