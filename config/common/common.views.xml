@@ -69,26 +69,26 @@
             
         </view>
         
-        <view name="ConservationDescription"
-              class="edu.ku.brc.specify.datamodel.ConservDescription"
-              isinternal="false"
-              resourcelabels="false">
-              <desc><![CDATA[Conservation Description.]]></desc>
-              <altviews>
-                  <altview name="Conservation Description View" viewdef="ConservationDescription" label="View" mode="view"/>
-                  <altview name="Conservation Description Edit" viewdef="ConservationDescription" label="Edit" mode="edit" default="true"/>
-              </altviews>
+        <view name="ConservDescription"
+            class="edu.ku.brc.specify.datamodel.ConservDescription"
+            isinternal="false"
+            resourcelabels="false">
+            <desc><![CDATA[Conservation Description.]]></desc>
+            <altviews>
+                <altview name="Conservation Description View" viewdef="ConservDescription" label="View" mode="view"/>
+                <altview name="Conservation Description Edit" viewdef="ConservDescription" label="Edit" mode="edit" default="true"/>
+            </altviews>
         </view>
         
-        <view name="ConservationEvent"
-              class="edu.ku.brc.specify.datamodel.ConservEvent"
-              isinternal="false"
-              resourcelabels="false">
-              <desc><![CDATA[Conservation Event]]></desc>
-              <altviews>
-                  <altview name="Conservation Event View" viewdef="ConservationEvent" label="View" mode="view"/>
-                  <altview name="Conservation Event Edit" viewdef="ConservationEvent" label="Edit" mode="edit" default="true"/>
-              </altviews>
+        <view name="ConservEvent"
+            class="edu.ku.brc.specify.datamodel.ConservEvent"
+            isinternal="false"
+            resourcelabels="false">
+            <desc><![CDATA[Conservation Event]]></desc>
+            <altviews>
+                <altview name="Conservation Event View" viewdef="ConservEvent" label="View" mode="view"/>
+                <altview name="Conservation Event Edit" viewdef="ConservEvent" label="Edit" mode="edit" default="true"/>
+            </altviews>
         </view>
         
         <view name="Deaccession"
@@ -546,33 +546,33 @@
     	
         <viewdef
             type="form"
-            name="ConservationEvent"
+            name="ConservEvent"
             class="edu.ku.brc.specify.datamodel.ConservEvent"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             
-            <desc><![CDATA[Conservation Description]]></desc>
+            <desc><![CDATA[Conservation Event]]></desc>
             <enableRules/>
             
             <columnDef>p,2px,p,10px,p,2px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
-              <row> 
-                  <cell type="label" labelfor="1" label="Exam Date"/>
-                  <cell type="field" id="1" name="examDate" uitype="formattedtext" isrequired="true" uifieldformatter="Date" default="today"/>
-                  <cell type="label" labelfor="3" label="Treatment Completion Date"/>
-                  <cell type="field" id="3" name="treatmentCompDate" uitype="formattedtext" isrequired="true" uifieldformatter="Date" default="today"/>
-              </row>
-              <row>
-                  <cell type="label" labelfor="2" label="Description"/>
-                  <cell type="field" id="2" name="remarks" uitype="textarea" rows="3" colspan="6"/>
-              </row>
-           </rows>
-       </viewdef>
+                <row> 
+                    <cell type="label" labelfor="1" label="Exam Date"/>
+                    <cell type="field" id="1" name="examDate" uitype="formattedtext" isrequired="true" uifieldformatter="Date" default="today"/>
+                    <cell type="label" labelfor="3" label="Treatment Completion Date"/>
+                    <cell type="field" id="3" name="treatmentCompDate" uitype="formattedtext" isrequired="true" uifieldformatter="Date" default="today"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Condition Report"/>
+                    <cell type="field" id="2" name="conditionReport" uitype="textarea" rows="3" colspan="6"/>
+                </row>
+            </rows>
+        </viewdef>
        
         <viewdef
             type="form"
-            name="ConservationDescription"
+            name="ConservDescription"
             class="edu.ku.brc.specify.datamodel.ConservDescription"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
@@ -580,19 +580,25 @@
             <desc><![CDATA[Conservation Description]]></desc>
             <enableRules/>
             
-            <columnDef>p,2px,p,10px,p,2px,p,p:g</columnDef>
+            <columnDef>100px,2px,p,10px,p,2px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
-              <row> 
-                  <cell type="label" labelfor="1" label="Title"/>
-                  <cell type="field" id="1" name="shortDesc" uitype="text"/>
-              </row>
-              <row>
-                  <cell type="label" labelfor="2" label="Description"/>
-                  <cell type="field" id="2" name="description" uitype="textarea" rows="3" colspan="6"/>
-              </row>
-           </rows>
-       </viewdef>
+                <row> 
+                    <cell type="label" labelfor="1" label="Title"/>
+                    <cell type="field" id="1" name="shortDesc" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="2" label="Description"/>
+                    <cell type="field" id="2" name="description" uitype="textarea" rows="3" colspan="6"/>
+                </row>
+                <row>
+                    <cell type="separator" label="Conservation Event" collapse="conservEvent" colspan="8"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="ConservEvent" id="9"  name="events" colspan="8" rows="5"/>   
+                </row>
+            </rows>
+        </viewdef>
        
        <viewdef
             type="form"
