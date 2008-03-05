@@ -226,6 +226,17 @@
                 <altview name="PermitForAccessions Edit" viewdef="PermitForAccessions" label="Edit" mode="edit"/>
             </altviews>
         </view>
+        
+        <view name="Project"
+            class="edu.ku.brc.specify.datamodel.Project"
+            resourcelabels="false">
+            <desc><![CDATA[Project form.]]></desc>
+            <altviews>
+                <altview name="Project View" viewdef="Project" label="View" mode="view" default="true"/>
+                <altview name="Project Edit" viewdef="Project" label="Edit" mode="edit"/>
+            </altviews>
+        </view>
+        
 
         <view name="InfoRequest"
             class="edu.ku.brc.specify.datamodel.InfoRequest"
@@ -1198,6 +1209,65 @@
             </rows>
         </viewdef>
 
+        <viewdef 
+            type="form" 
+            name="Project" 
+            class="edu.ku.brc.specify.datamodel.Project" 
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj" 
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Form For Project]]></desc>
+            <columnDef>100px,2px,p,2px,p,2px,100px,2px,100px,2px,100px,p:g</columnDef>
+            <rowDef auto="true" sep="2px" cell="p"/>
+            
+            <rows>
+                <row>
+                    <cell type="separator" label="Project" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5" label="Project Name"/>
+                    <cell type="field" id="5" name="projectName" uitype="text" isrequired="true"/>
+                    <cell type="label" labelfor="6" label="Project Number"/>
+                    <cell type="field" id="6" name="projectNumber" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="10" label="Project Agent"/>
+                    <cell type="field" id="10" name="agent" uitype="querycbx" initialize="name=Agent;title=Agent"/>
+                </row>   
+                
+                <row>
+                    <cell type="label" labelfor="4" label="Project Description"/>
+                    <cell type="field" id="4" name="projectDescription" uitype="textarea" colspan="10" rows="3"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="8" label="Start Date"/>
+                    <cell type="field" id="8" name="startDate" uitype="formattedtext" uifieldformatter="Date" default="today" />                   
+                    <cell type="label" labelfor="1" label="End Date"/>
+                    <cell type="field" id="1" name="endDate" uitype="formattedtext"  uifieldformatter="Date" default="today"/>
+                </row>
+                <row>                   
+                    <cell type="label" labelfor="9" label="URL"/>
+                    <cell type="field" id="9" name="url" uitype="text"/>
+                    
+                    <cell type="label" labelfor="2" label="Grant Agency"/>
+                    <cell type="field" id="2" name="grantAgency" uitype="text"/>
+                    
+                    <cell type="label" labelfor="3" label="Grant Number"/>
+                    <cell type="field" id="3" name="grantNumber" uitype="text"/>
+                </row>               
+                <row>
+                    <cell type="label" labelfor="7" label="Remarks"/>
+                    <cell type="field" id="7" name="remarks" uitype="textarea" colspan="10" rows="3"/>
+                </row>
+                <row>
+                    <cell type="separator" label="Collection Object" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="CollectionObjectSub" id="11" colspan="10" name="collectionObjects"/>
+                </row> 
+                
+            </rows>
+        </viewdef>
         
         <viewdef
             type="form"
