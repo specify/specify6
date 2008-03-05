@@ -21,6 +21,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Vector;
 
@@ -301,14 +302,20 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
     public boolean aboutToShutdown()
     {
         super.aboutToShutdown();
-        
+        List<Component> toRemove = new LinkedList<Component>();
         for (int i=0;i<contentPanel.getComponentCount();i++)
         {
             Component comp = contentPanel.getComponent(i);
             if (comp instanceof ESResultsTablePanel)
             {
                 ((ESResultsTablePanel)comp).cleanUp();
+                toRemove.add(comp);
             }
+        }
+        
+        for (Component comp : toRemove)
+        {
+            contentPanel.remove(comp);
         }
         
         expTblResults.clear();
