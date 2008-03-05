@@ -42,6 +42,9 @@ import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.SQLExecutionListener;
 import edu.ku.brc.dbsupport.SQLExecutionProcessor;
 import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.specify.tasks.ExpressSearchTask;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.ui.forms.DataObjectSettable;
@@ -776,6 +779,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
         {
             propertyListener.propertyChange(new PropertyChangeEvent(this, "rowCount", null, new Integer(cache.size())));
         }
+        CommandDispatcher.dispatch(new CommandAction(ExpressSearchTask.EXPRESSSEARCH, "SearchComplete", customQuery));
     }
 
     /* (non-Javadoc)

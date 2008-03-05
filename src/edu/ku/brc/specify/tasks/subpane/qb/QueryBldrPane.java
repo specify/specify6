@@ -898,7 +898,6 @@ public class QueryBldrPane extends BaseSubPane
                 tblId,
                 "", // search term
                 list);
-        //else do something else...
         
         qri.setSQL(sql);
         qri.setCaptions(captions);

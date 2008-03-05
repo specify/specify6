@@ -477,19 +477,19 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
             {
                 queryResultsPane = new ESResultsSubPane(getResourceString("ES_QUERY_RESULTS"), this, true);
                 queryResultsPane.setIcon(IconManager.getIcon("Query", IconManager.IconSize.Std16));
-                addSubPaneToMgr(queryResultsPane);
+                //addSubPaneToMgr(queryResultsPane);
                 
             } else
             {
                 queryResultsPane.reset();
-                int index = SubPaneMgr.getInstance().indexOfComponent(queryResultsPane.getUIComponent());
-                if (index == -1)
-                {
-                    addSubPaneToMgr(queryResultsPane);
-                } else
-                {
-                    SubPaneMgr.getInstance().showPane(queryResultsPane);
-                }
+//                int index = SubPaneMgr.getInstance().indexOfComponent(queryResultsPane.getUIComponent());
+//                if (index == -1)
+//                {
+//                    addSubPaneToMgr(queryResultsPane);
+//                } else
+//                {
+//                    SubPaneMgr.getInstance().showPane(queryResultsPane);
+//                }
             }
             queryResultsPane.addSearchResults(results);
         }
@@ -655,7 +655,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                 
             } else if (cmdAction.isAction("SearchComplete"))
             {
-                UIRegistry.getStatusBar().setIndeterminate(false);
+                doSearchComplete(cmdAction);
                 
             } else if (cmdAction.isAction("ViewRecordSet"))
             {
@@ -961,6 +961,58 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         public void reset()
         {
             this.menus = null;
+        }
+    }
+    
+    /**
+     * @param cmdAction
+     */
+    protected void doSearchComplete(CommandAction cmdAction)
+    {
+        UIRegistry.getStatusBar().setIndeterminate(false);
+        if (cmdAction.getData() instanceof JPAQuery)
+        {
+            //currently, this means an instance of ResultSetTableModel sent it's result.
+            if (queryResultsPane != null)
+            {
+                int rowCount = ((JPAQuery) cmdAction.getData()).getDataObjects().size();
+                boolean isError = ((JPAQuery) cmdAction.getData()).isInError();
+                boolean showPane = !isError && rowCount > 0;
+                //print status bar msg if error or rowCount == 0, 
+                //else show the queryResults pane if rowCount > 0
+                int index = SubPaneMgr.getInstance().indexOfComponent(
+                        queryResultsPane.getUIComponent());
+                if (index == -1)
+                {
+                    if (showPane)
+                    {
+                        addSubPaneToMgr(queryResultsPane);
+                    }
+                }
+                else
+                {
+                    if (showPane)
+                    {
+                        SubPaneMgr.getInstance().showPane(queryResultsPane);
+                    }
+                    else
+                    {
+                        SubPaneMgr.getInstance().removePane(queryResultsPane, false);
+                    }
+                }
+                if (isError)
+                {
+                    UIRegistry.getStatusBar().setErrorMessage(getResourceString("QB_RUN_ERROR"));
+                }
+                else if (rowCount == 0)
+                {
+                    UIRegistry.displayLocalizedStatusBarText("QB_NO_RESULTS");
+                }
+                else
+                {
+                    UIRegistry.getStatusBar().setText(null);
+                }
+            }
         }
     }
 }
