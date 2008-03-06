@@ -100,8 +100,17 @@ import edu.ku.brc.ui.UIRegistry;
  * Feb 23, 2007
  * 
  */
-public class QueryBldrPane extends BaseSubPane
+public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContainerIFace
 {
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.qb.QueryFieldPanelContainerIFace#getAddBtn()
+     */
+    @Override
+    public JButton getAddBtn()
+    {
+        return addBtn;
+    }
+
     protected static final Logger                            log              = Logger
                                                                                       .getLogger(QueryBldrPane.class);
 
@@ -169,6 +178,7 @@ public class QueryBldrPane extends BaseSubPane
         tableAbbreviator = new TableAbbreviator();
         
         tableTree = readTables();
+        tableTreeHash = buildTableTreeHash(tableTree);
 
         createUI();
 
@@ -324,6 +334,13 @@ public class QueryBldrPane extends BaseSubPane
         return fieldName.substring(0, 1).toLowerCase() + fieldName.substring(1);
     }
 
+    
+    protected static List<QueryFieldPanel> getQueryFields(final SpQuery q)
+    {
+        List<QueryFieldPanel> result = new LinkedList<QueryFieldPanel>();
+        
+        return result;
+    }
     /**
      * 
      */
@@ -364,7 +381,7 @@ public class QueryBldrPane extends BaseSubPane
             currentInx = 0;
             for (SpQueryField field : fields)
             {
-                addQueryFieldItem(field, true);
+                addQueryFieldItem(field, true, tableTreeHash);
             }
         }
 
@@ -1124,7 +1141,7 @@ public class QueryBldrPane extends BaseSubPane
                 boolean addIt = true;
                 if (tblQRI.getTableTree().getKid(k).isAlias())
                 {
-                    addIt = fixAliases(tblQRI.getTableTree().getKid(k));
+                    addIt = fixAliases(tblQRI.getTableTree().getKid(k), tableTreeHash);
                 }
                 if (addIt)
                 {
@@ -1140,7 +1157,7 @@ public class QueryBldrPane extends BaseSubPane
      * @return true if aliasTbl should be displayed in the fields list for the current
      *         context.
      */
-    protected boolean tblIsDisplayable(final TableTree aliasTbl, final DBTableInfo tblInfo)
+    protected static boolean tblIsDisplayable(final TableTree aliasTbl, final DBTableInfo tblInfo)
     {
         if (aliasTbl.isAlias())
         {
@@ -1156,7 +1173,7 @@ public class QueryBldrPane extends BaseSubPane
      * @return true if the specified alias represents a table that is already
      * present in the alias' tabletree.
      */
-    protected boolean isCyclic(final TableTree alias, final int tblId)
+    protected static boolean isCyclic(final TableTree alias, final int tblId)
     {
         TableTree parent = alias.getParent();
         while (parent != null)
@@ -1175,7 +1192,7 @@ public class QueryBldrPane extends BaseSubPane
      * @param tblInfo
      * @return true if it is OK for the specified alias to create a cycle.
      */
-    protected boolean isCyclicable(final TableTree alias, final DBTableInfo tblInfo)
+    protected static boolean isCyclicable(final TableTree alias, final DBTableInfo tblInfo)
     {
         return Treeable.class.isAssignableFrom(tblInfo.getClassObj());
             //special conditions... (may be needed. For example for Determination and Taxon, but on the other hand
@@ -1354,7 +1371,7 @@ public class QueryBldrPane extends BaseSubPane
     }
 
     
-    protected FieldQRI buildFieldQRI(final BaseQRI qri)
+    protected static FieldQRI buildFieldQRI(final BaseQRI qri)
     {
         if (qri instanceof FieldQRI) { return (FieldQRI) qri; }
         if (qri instanceof TableQRI)
@@ -1453,10 +1470,11 @@ public class QueryBldrPane extends BaseSubPane
      * @param level
      * @return
      */
-    protected FieldQRI getFieldQRI(final TableTree tbl,
+    protected static FieldQRI getFieldQRI(final TableTree tbl,
                                    final SpQueryField field,
                                    final int[] tableIds,
-                                   final int level)
+                                   final int level,
+                                   final Hashtable<String, TableTree> ttHash)
     {
         int id = tableIds[level];
         for (int k=0; k<tbl.getKids(); k++)
@@ -1465,7 +1483,7 @@ public class QueryBldrPane extends BaseSubPane
             boolean checkKid = true;
             if (kid.isAlias()) 
             {
-                checkKid = fixAliases(kid);
+                checkKid = fixAliases(kid, ttHash);
             }
             if (checkKid)
             {
@@ -1488,7 +1506,7 @@ public class QueryBldrPane extends BaseSubPane
                     }
                     else
                     {
-                        FieldQRI fi = getFieldQRI(kid, field, tableIds, level + 1);
+                        FieldQRI fi = getFieldQRI(kid, field, tableIds, level + 1, ttHash);
                         if (fi != null) { return fi; }
                     }
                 }
@@ -1502,11 +1520,11 @@ public class QueryBldrPane extends BaseSubPane
      * 
      * @param fieldItem the TableFieldPair to be in the list
      */
-    protected void addQueryFieldItem(final SpQueryField field, final boolean loading)
+    protected void addQueryFieldItem(final SpQueryField field, final boolean loading, final Hashtable<String, TableTree> ttHash)
     {
         if (field != null)
         {
-            FieldQRI fieldQRI = getFieldQRI(tableTree, field, field.getTableIds(), 0);
+            FieldQRI fieldQRI = getFieldQRI(tableTree, field, field.getTableIds(), 0, ttHash);
             if (fieldQRI != null)
             {
                 addQueryFieldItem(fieldQRI, field, loading);
@@ -1581,14 +1599,12 @@ public class QueryBldrPane extends BaseSubPane
         }
     }
 
-    /**
-     * @param qfp
-     * 
-     * Displays and highlights qfp.
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.qb.QueryFieldPanelContainerIFace#selectQFP(edu.ku.brc.specify.tasks.subpane.qb.QueryFieldPanel)
      * 
      * Use runSelectQFP if not calling from Swing thread.
      */
-    protected void selectQFP(final QueryFieldPanel qfp)
+    public void selectQFP(final QueryFieldPanel qfp)
     {
         if (!SwingUtilities.isEventDispatchThread())
         {
@@ -1680,7 +1696,7 @@ public class QueryBldrPane extends BaseSubPane
      * @param ttKids
      * @param parentQRI
      */
-    protected void processForTables(final Element parent,
+    protected static void processForTables(final Element parent,
                                     final TableTree parentTT)
     {
         String tableName = XMLHelper.getAttr(parent, "name", null);
@@ -1783,11 +1799,11 @@ public class QueryBldrPane extends BaseSubPane
      * @param tbl
      * @param hash
      */
-    protected boolean fixAliases(final TableTree tbl)
+    protected static boolean fixAliases(final TableTree tbl, final Hashtable<String, TableTree> hash)
     {
         if (tbl.isAlias())
         {
-            TableTree tt = tableTreeHash.get(tbl.getName());
+            TableTree tt = hash.get(tbl.getName());
             if (tt != null)
             {
                 if (tblIsDisplayable(tbl, tt.getTableInfo()))
@@ -1819,7 +1835,38 @@ public class QueryBldrPane extends BaseSubPane
     /**
      * @return
      */
-    protected TableTree readTables()
+//    protected TableTree readTables()
+//    {
+//        TableTree treeRoot = new TableTree("root", "root", "root", null);
+//        try
+//        {
+//            Element root = XMLHelper.readDOMFromConfigDir("querybuilder.xml");
+//            List<?> tableNodes = root.selectNodes("/database/table");
+//            for (Object obj : tableNodes)
+//            {
+//                Element tableElement = (Element) obj;
+//                processForTables(tableElement, treeRoot);
+//            }
+//
+//            tableTreeHash = new Hashtable<String, TableTree>();
+//            for (int t=0; t<treeRoot.getKids(); t++)
+//            {
+//                TableTree tt = treeRoot.getKid(t);
+//                tableTreeHash.put(tt.getName(), tt);
+//                log.debug("Adding[" + tt.getName() + "] to hash");
+//            }
+//        }
+//        catch (Exception ex)
+//        {
+//            ex.printStackTrace();
+//        }
+//        return treeRoot;
+//    }
+
+    /**
+     * @return
+     */
+    protected static TableTree readTables()
     {
         TableTree treeRoot = new TableTree("root", "root", "root", null);
         try
@@ -1831,14 +1878,6 @@ public class QueryBldrPane extends BaseSubPane
                 Element tableElement = (Element) obj;
                 processForTables(tableElement, treeRoot);
             }
-
-            tableTreeHash = new Hashtable<String, TableTree>();
-            for (int t=0; t<treeRoot.getKids(); t++)
-            {
-                TableTree tt = treeRoot.getKid(t);
-                tableTreeHash.put(tt.getName(), tt);
-                log.debug("Adding[" + tt.getName() + "] to hash");
-            }
         }
         catch (Exception ex)
         {
@@ -1847,6 +1886,25 @@ public class QueryBldrPane extends BaseSubPane
         return treeRoot;
     }
 
+    protected static Hashtable<String, TableTree> buildTableTreeHash(final TableTree treeRoot)
+    {
+        Hashtable<String, TableTree> result = new Hashtable<String, TableTree>();
+        try
+        {
+            for (int t = 0; t < treeRoot.getKids(); t++)
+            {
+                TableTree tt = treeRoot.getKid(t);
+                result.put(tt.getName(), tt);
+                log.debug("Adding[" + tt.getName() + "] to hash");
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return result;
+    }
+    
     /**
      * @param columnDefStr the columnDefStr to set
      */

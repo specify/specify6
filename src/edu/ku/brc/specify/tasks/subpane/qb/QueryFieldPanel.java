@@ -77,7 +77,7 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
     
     protected String           noMappingStr = getResourceString("WB_NO_MAPPING");
 
-    protected QueryBldrPane    queryBldrPane;
+    protected QueryFieldPanelContainerIFace    ownerQuery;
     protected String           columnDefStr;
     protected ImageIcon        blankIcon = IconManager.getIcon("BlankIcon", IconManager.IconSize.Std24);
 
@@ -123,14 +123,14 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
      * @param fieldName the field Name
      * @param icon the icon to use once it is mapped
      */
-    public QueryFieldPanel(final QueryBldrPane queryBldrPane,
+    public QueryFieldPanel(final QueryFieldPanelContainerIFace ownerQuery,
                            final FieldQRI      fieldQRI, 
                            final IconManager.IconSize iconSize,
                            final String        columnDefStr,
                            final JButton       saveBtn,
                            final SpQueryField  queryField)
     {
-        this.queryBldrPane = queryBldrPane;
+        this.ownerQuery = ownerQuery;
         this.fieldQRI      = fieldQRI;
         this.columnDefStr  = columnDefStr;
         
@@ -147,7 +147,7 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
         {
             removeAll();
             buildLabelLayout(widths);
-            queryBldrPane.setColumnDefStr(this.columnDefStr);
+            ownerQuery.setColumnDefStr(this.columnDefStr);
         }
         
         setQueryField(queryField);
@@ -429,9 +429,9 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
                 //Checking oppositeComponent to work around
                 //weird behavior after addBtn is clicked which
                 //causes top queryFieldPanel to be selected.
-                if (e.getOppositeComponent() != queryBldrPane.addBtn)
+                if (ownerQuery.getAddBtn() != null && e.getOppositeComponent() != ownerQuery.getAddBtn())
                 {
-                    queryBldrPane.selectQFP(QueryFieldPanel.this);
+                    ownerQuery.selectQFP(QueryFieldPanel.this);
                 }
 
             }
@@ -524,7 +524,7 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
             @Override
             public void mousePressed(MouseEvent e)
             {
-                queryBldrPane.removeQueryFieldItem((QueryFieldPanel) ((JComponent) e.getSource())
+                ownerQuery.removeQueryFieldItem((QueryFieldPanel) ((JComponent) e.getSource())
                         .getParent());
             }
         });
@@ -821,10 +821,10 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
         if (otherLabels == null)
         {
             needToQualify = false;
-            labels = new ArrayList<String>(queryBldrPane.getFields()-1);
-            for (int i = 0; i < this.queryBldrPane.getFields(); i++)
+            labels = new ArrayList<String>(ownerQuery.getFields()-1);
+            for (int i = 0; i < this.ownerQuery.getFields(); i++)
             {
-                QueryFieldPanel p = queryBldrPane.getField(i);
+                QueryFieldPanel p = ownerQuery.getField(i);
                 if (this != p)
                 {
                     labels.add(p.getLabel());
