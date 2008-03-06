@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<panel>
+
+  <row>
+      <box title="Task List" desccol="1" valcol="1">
+		<sql><![CDATA[SELECT name FROM workbench WHERE SpecifyUserID = SPECIFYUSERID]]></sql>
+      </box>
+      <box title="Pre-Catalog Works Benches" desccol="1" valcol="1">
+		<sql><![CDATA[SELECT name FROM workbench WHERE SpecifyUserID = SPECIFYUSERID]]></sql>
+      </box>
+  </row>
+
+   <row>
+      <box title="Loans">
+        <item title="Items On Loan">
+            <sql><statement><![CDATA[SELECT count(loanpreparationid) AS ItemsOnLoanCount FROM loanpreparation AS lpo INNER JOIN loan ON loan.loanid = lpo.loanid where quantityresolved < quantity and loan.CollectioMemeberId = COLMEMID AND (IsClosed = false or IsClosed is null)]]></statement></sql>
+            <link>ListOnLoan</link>
+        </item>
+        <item title="Overdue Loans">
+            <sql><statement><![CDATA[select count(loanid) as OpenLoanCount from loan where loanid in (select loanid from loan where (not (currentduedate is null)) and (IsClosed = false or IsClosed is null) and datediff(CURDATE(), currentduedate) > 0)]]></statement></sql>
+            <link>OverdueLoansList</link>
+        </item>
+        <item title="Open Loans">
+            <sql><statement><![CDATA[select count(loanid) as OpenLoanCount from loan where (IsClosed = false or IsClosed is null)]]></statement></sql>
+            <link>ListOnLoan</link>
+        </item>
+      </box>
+       <box title="Overdue Loans" desccol="1" valcol="5" desctitle="Loan Number" valtitle="Agent">
+          <sql><![CDATA[SELECT distinct loan.LoanNumber as LoanNumber, loan.LoanDate, loan.CurrentDueDate, agent.FirstName, agent.LastName, 
+          loan.loanid, loan.OriginalDueDate, loanpreparation.Quantity, loanpreparation.DescriptionOfMaterial, address.Address, address.City, 
+          address.State, address.Country From loan Inner Join loanpreparation ON loan.LoanID =  loanpreparation.LoanID 
+          Inner Join loanagent ON loan.LoanID = loanagent.LoanID Inner Join agent ON loanagent.AgentID = agent.AgentID 
+          Inner Join address ON agent.AgentID = address.AgentID where loan.loanid in (select loanid FROM loan WHERE (not (currentduedate is null)) AND 
+          (IsClosed = false or IsClosed is null) AND datediff(CURDATE(), currentduedate) > 0)  GROUP BY LoanNumber]]></sql>
+		  <link colid="6">OverdueLookup</link>
+      </box>
+   </row>
+
+    <row>
+      <box title="Data Entry">
+        <item title="Cataloged in Last 7 Days">
+            <sql><statement><![CDATA[select count(*) from collectionobject where DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= TimestampCreated]]></statement></sql>
+            <link>CatalogedLast7DaysDetail</link>
+        </item>
+        <item title="Cataloged in Last 30 Days">
+            <sql><statement><![CDATA[select count(*) from collectionobject where DATE_SUB(CURDATE(), INTERVAL 1 MONTH) <= TimestampCreated]]></statement></sql>
+            <link>CatalogedLastMonth</link>
+        </item>
+        <item title="Cataloged in Last Year">
+            <sql><statement><![CDATA[select count(*) from collectionobject WHERE DATE_SUB(CURDATE(), INTERVAL 1 YEAR) <= TimestampCreated;]]></statement></sql>
+            <link>CatalogedLastYear</link>
+        </item>
+      </box>
+  </row>
+  
+    
+    <!--
+    <row>
+        <box type="Bar Chart" name="Specimens by Country" colspan="3"/>
+    </row>
+    -->
+
+    <!-- Director's View -->
+    <!--
+        <row>
+        <box type="Bar Chart" name="Top 5 Species"/>
+        <box type="Bar Chart" name="Temporial Periods"/>
+    </row>
+
+    <row>
+        <box type="Bar Chart" name="Specimens by Country"/>
+        <box type="Bar Chart" name="Specimens by Continent"/>
+    </row>
+    -->
+</panel>
