@@ -82,7 +82,6 @@
         
         <view name="ConservEvent"
             class="edu.ku.brc.specify.datamodel.ConservEvent"
-            isinternal="false"
             resourcelabels="false">
             <desc><![CDATA[Conservation Event]]></desc>
             <altviews>
@@ -229,6 +228,7 @@
         
         <view name="Project"
             class="edu.ku.brc.specify.datamodel.Project"
+            isinternal="false"
             resourcelabels="false">
             <desc><![CDATA[Project form.]]></desc>
             <altviews>
