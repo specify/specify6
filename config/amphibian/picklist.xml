@@ -10,4 +10,31 @@
       <picklistitem title="Sheet" value="sheet"/>
     </items>
   </picklist>
+  <picklist name="Method" issystem="true" type="0" readonly="true" sizelimit="4">
+    <items>
+      <picklistitem title="No data" value="No Data"/>
+      <picklistitem title="hand" value="hand"/>
+      <picklistitem title="net" value="net"/>
+      <picklistitem title="trap" value="trap"/>
+    </items>
+  </picklist>
+  <picklist name="Sex" issystem="true" type="0" readonly="true" sizelimit="3">
+    <items>
+      <picklistitem title="unknown" value="unknown"/>
+      <picklistitem title="male" value="male"/>
+      <picklistitem title="female" value="female"/>
+    </items>
+  </picklist>
+  <picklist name="Stage" issystem="true" type="0" readonly="true" sizelimit="8">
+    <items>
+      <picklistitem title="adult" value="adult"/>
+      <picklistitem title="egg" value="egg"/>
+      <picklistitem title="embryo" value="embryo"/>
+      <picklistitem title="hatchling" value="hatchling"/>
+      <picklistitem title="juvenile" value="juvenile"/>
+      <picklistitem title="larvae" value="larvae"/>
+      <picklistitem title="meta-young" value="meta-young"/>
+      <picklistitem title="young" value="young"/>
+    </items>
+  </picklist>
 </list>
