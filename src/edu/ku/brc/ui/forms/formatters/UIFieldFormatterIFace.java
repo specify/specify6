@@ -62,6 +62,11 @@ public interface UIFieldFormatterIFace
     public abstract String getFieldName();
 
     /**
+     * @return A sample of the formatted field
+     */
+    public abstract String getSample();
+
+    /**
      * The human readable and possibly localized name of the format, used in the editor.
      * @param title the title
      */

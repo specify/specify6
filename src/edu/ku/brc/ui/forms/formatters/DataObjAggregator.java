@@ -15,8 +15,8 @@
 package edu.ku.brc.ui.forms.formatters;
 
 /**
- * This class aggregates to sevral Data Objects into a single value by taking the output from the formatters and appending them
- * together with a seaprator character (or stirng).
+ * This class aggregates to several Data Objects into a single value by taking the output from the formatters and appending them
+ * together with a separator character (or string).
  * 
  * @author rods
  *

@@ -19,7 +19,7 @@ import java.util.Properties;
 /**
  * This interface represents a formatter for a data object. There are two types of formatters: Direct and indirect.<br>
  * A "direct" formatter implicitly knows how to format the data object being passed in. This enables us to support formatting
- * that is far more complex than anything we can describe in the XML. It also enabloes the internal formatter to 'key' off 
+ * that is far more complex than anything we can describe in the XML. It also enables the internal formatter to 'key' off 
  * other data members contained in the data object.<br>
  * <br>
  * Indirect formatters use the XML description to perform a recursive formatting.<br>
