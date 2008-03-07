@@ -14,6 +14,8 @@
  */
 package edu.ku.brc.ui.db;
 
+import java.util.List;
+
 import javax.swing.JDialog;
 
 /**
@@ -47,11 +49,16 @@ public interface ViewBasedSearchDialogIFace
     public Object getSelectedObject();
     
     /**
+     * Return the selected objects (but only if setMultipleSelection is set to true).
+     * @return the list of selected objects
+     */
+    public List<Object> getSelectedObjects();
+    
+    /**
      * Sets the title of the dialog.
      * @param title the title (already localized)
      */
     public void setTitle(String title);
-    
 
     /**
      * Registers an interface that can be asked for the Query string and the results info.
@@ -63,4 +70,9 @@ public interface ViewBasedSearchDialogIFace
      * @param helpContext
      */
     public void setHelpContext(String helpContext);
+    
+    /**
+     * @param isMulti
+     */
+    public void setMultipleSelection(boolean isMulti);
 }

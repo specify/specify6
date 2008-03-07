@@ -860,6 +860,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                 }
                 
                 QueryForIdResultsHQL results = new QueryForIdResultsHQL(searchTableConfig, new Color(30, 144, 255), searchTerm, list);
+                results.setMultipleSelection(true);
                 displayResults(esrPane, results, resultsForJoinsHash);
                 
                 //joinIdToTableInfoHash.clear();

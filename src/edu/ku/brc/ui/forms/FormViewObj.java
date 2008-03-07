@@ -476,13 +476,16 @@ public class FormViewObj implements Viewable,
                     log.error("Couldn't find TableInfo for class["+view.getClassName()+"]");
                 }
                 
-                rsController.getSearchRecBtn().setEnabled(true);
-                rsController.getSearchRecBtn().addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        doSearch();
-                    }
-                });
+                if (rsController.getSearchRecBtn() != null)
+                {
+                    rsController.getSearchRecBtn().setEnabled(true);
+                    rsController.getSearchRecBtn().addActionListener(new ActionListener() {
+                        public void actionPerformed(ActionEvent e)
+                        {
+                            doSearch();
+                        }
+                    });
+                }
             }
             
         } else if (isSingleObj)
@@ -1950,9 +1953,12 @@ public class FormViewObj implements Viewable,
      */
     protected void askToRemoveObject()
     {
-        Object[] delBtnLabels = {getResourceString("Delete"), getResourceString("Cancel")};
+        boolean addSearch = mvParent != null && MultiView.isOptionOn(mvParent.getOptions(), MultiView.ADD_SEARCH_BTN);
+        
+        Object[] delBtnLabels = {getResourceString(addSearch ? "Remove" : "Delete"), getResourceString("Cancel")};
         String title = dataObj instanceof FormDataObjIFace ? ((FormDataObjIFace)dataObj).getIdentityTitle() : tableInfo.getTitle();
-        int rv = JOptionPane.showOptionDialog(null, UIRegistry.getLocalizedMessage("ASK_DELETE", title),
+        
+        int rv = JOptionPane.showOptionDialog(null, UIRegistry.getLocalizedMessage(addSearch ? "ASK_REMOVE" : "ASK_DELETE", title),
                                               getResourceString("Delete"),
                                               JOptionPane.YES_NO_OPTION,
                                               JOptionPane.QUESTION_MESSAGE,
@@ -1967,27 +1973,33 @@ public class FormViewObj implements Viewable,
         // We do this because the process of determining whether something can be deleted might take a while.
         if (businessRules != null)
         {
-            
-            UIRegistry.getStatusBar().setIndeterminate(true);
-            final SwingWorker worker = new SwingWorker()
+            if (addSearch)
             {
-                public Object construct()
+                doDeleteDataObj(dataObj, session, true);
+                
+            } else
+            {
+                UIRegistry.getStatusBar().setIndeterminate(true);
+                final SwingWorker worker = new SwingWorker()
                 {
-                    businessRules.okToDelete(dataObj, session, FormViewObj.this);
-                    return null;
-                }
-
-                //Runs on the event-dispatching thread.
-                public void finished()
-                {
-                    UIRegistry.getStatusBar().setIndeterminate(false);
-                    if (session != null)
+                    public Object construct()
                     {
-                        session.close();
+                        businessRules.okToDelete(dataObj, session, FormViewObj.this);
+                        return null;
                     }
-                }
-            };
-            worker.start();
+    
+                    //Runs on the event-dispatching thread.
+                    public void finished()
+                    {
+                        UIRegistry.getStatusBar().setIndeterminate(false);
+                        if (session != null)
+                        {
+                            session.close();
+                        }
+                    }
+                };
+                worker.start();
+            }
         }
     }
 
@@ -2028,8 +2040,16 @@ public class FormViewObj implements Viewable,
         // Delete a child object by caching it in the Top Level MultiView
         if (mvParent != null && !mvParent.isTopLevel())
         {
+            boolean addSearch = mvParent != null && MultiView.isOptionOn(mvParent.getOptions(), MultiView.ADD_SEARCH_BTN);
+            
             removeFromParent(dataObj);
-            mvParent.getTopLevel().addDeletedItem(dataObj);
+            
+            // We don't delete these type of objects from the database
+            // becauses were added as references only
+            if (!addSearch)
+            {
+                mvParent.getTopLevel().addDeletedItem(dataObj);    
+            }
 
             String delMsg = (businessRules != null) ? businessRules.getDeleteMsg(dataObj) : "";
             UIRegistry.getStatusBar().setText(delMsg);
@@ -2307,7 +2327,7 @@ public class FormViewObj implements Viewable,
         if (rsController == null && controlPanel != null)
         {
             boolean inEditMode = altView.getMode() == AltViewIFace.CreationMode.EDIT;
-            rsController = new ResultSetController(formValidator, inEditMode, inEditMode, addSearch, view.getObjTitle(), 0);
+            rsController = new ResultSetController(formValidator, inEditMode, inEditMode, inEditMode && addSearch, view.getObjTitle(), 0);
             rsController.getPanel().setBackground(bgColor);
             
             rsController.addListener(this);
@@ -2381,6 +2401,7 @@ public class FormViewObj implements Viewable,
         if (StringUtils.isNotEmpty(searchName))
         {
             ViewBasedSearchDialogIFace dlg = UIRegistry.getViewbasedFactory().createSearchDialog(UIHelper.getWindow(mainComp), searchName);
+            dlg.setMultipleSelection(true);
             dlg.getDialog().setModal(true);
             dlg.getDialog().setVisible(true);
             if (!dlg.isCancelled())
@@ -2389,17 +2410,22 @@ public class FormViewObj implements Viewable,
                 // so we ask them if they want us to create one for them
                 // and then we hand it to them.
                 // Otherwise we just set the new object into the form.
-                Object  newDataObject   = dlg.getSelectedObject();
+                List<Object>  newDataObjects = dlg.getSelectedObjects();
                 boolean doSetNewDataObj = true;
-                if (businessRules != null)
+                
+                if (businessRules != null && newDataObjects != null)
                 {
                     if (businessRules.doesSearchObjectRequireNewParent())
                     {
                         createNewDataObject(false);
                         doSetNewDataObj = false;
                     }
-                    businessRules.processSearchObject(!doSetNewDataObj ? dataObj : null, newDataObject);
                     
+                    for (Object dObj : newDataObjects)
+                    {
+                        businessRules.processSearchObject(!doSetNewDataObj ? dataObj : null, dObj);
+                    }
+
                     // Set the data and validate
                     this.setDataIntoUI();
                     
@@ -2409,12 +2435,24 @@ public class FormViewObj implements Viewable,
                     }
                 }
                 
-                if (doSetNewDataObj)
+                if (newDataObjects != null && newDataObjects.size() > 0)
                 {
-                    setDataObj(newDataObject);
+                    if (doSetNewDataObj)
+                    {
+                        if (list != null && origDataSet != null)
+                        {
+                            list.addAll(newDataObjects);
+                            int len = list.size();
+                            rsController.setLength(len);
+                            rsController.setIndex(len-1, false);
+                            origDataSet.addAll(newDataObjects);
+                            
+                        } else 
+                        {
+                            setDataObj(newDataObjects.get(0));
+                        }
+                    }
                 }
-                
-                //valueHasChanged();
             }
 
         } else

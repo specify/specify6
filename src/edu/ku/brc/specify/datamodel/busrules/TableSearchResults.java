@@ -28,17 +28,18 @@ import edu.ku.brc.ui.db.QueryForIdResultsIFace;
 public class TableSearchResults implements QueryForIdResultsIFace
 {
     protected List<ERTICaptionInfo> cols;
-    protected String      sql;
-    protected DBTableInfo tableInfo;
-    
+    protected String                sql;
+    protected DBTableInfo           tableInfo;
+    protected boolean               isMultipleSelection = false;
+
     /**
      * @param tableId
      */
     public TableSearchResults(final DBTableInfo tableInfo, 
                               final List<ERTICaptionInfo> cols)
     {
-        this.tableInfo  = tableInfo;
-        this.cols     = cols;
+        this.tableInfo = tableInfo;
+        this.cols      = cols;
     }
 
     /* (non-Javadoc)
@@ -175,5 +176,21 @@ public class TableSearchResults implements QueryForIdResultsIFace
     public void removeIds(List<Integer> ids)
     {
         // no op
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#isMultipleSelection()
+     */
+    public boolean isMultipleSelection()
+    {
+        return isMultipleSelection;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#setMultipleSelection(boolean)
+     */
+    public void setMultipleSelection(boolean isMultiple)
+    {
+        isMultipleSelection = isMultiple;
     }
 }

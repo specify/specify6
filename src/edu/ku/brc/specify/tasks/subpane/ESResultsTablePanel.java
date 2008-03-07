@@ -132,7 +132,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         table = new JTable();
         table.setShowVerticalLines(false);
         table.setRowSelectionAllowed(true);
-        table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        table.setSelectionMode(results.isMultipleSelection() ? ListSelectionModel.MULTIPLE_INTERVAL_SELECTION : ListSelectionModel.SINGLE_SELECTION);
         setBackground(table.getBackground());
         
         if (enableEditing)

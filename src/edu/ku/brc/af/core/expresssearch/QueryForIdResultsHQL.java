@@ -45,11 +45,12 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
     protected Vector<Integer>       recIds       = new Vector<Integer>();
     protected String                searchTerm;
     
-    protected String                overrideSQL  = null;
-    protected List<ERTICaptionInfo> captions     = null; 
-    protected boolean               isExpanded   = false;
+    protected String                overrideSQL           = null;
+    protected List<ERTICaptionInfo> captions              = null; 
+    protected boolean               isExpanded            = false;
     protected boolean               shouldInstallServices = true;
     protected RecordSetIFace        recordSet;
+    protected boolean               isMultipleSelection   = true;
     
     @SuppressWarnings("unchecked")
     public QueryForIdResultsHQL(final SearchTableConfig searchTableConfig,
@@ -316,6 +317,22 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
     public String getDescription()
     {
         return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#isMultipleSelection()
+     */
+    public boolean isMultipleSelection()
+    {
+        return isMultipleSelection;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#setMultipleSelection(boolean)
+     */
+    public void setMultipleSelection(boolean isMultiple)
+    {
+        isMultipleSelection = isMultiple;
     }
 
 }

@@ -44,7 +44,7 @@ public class DataSetterForHashMap implements DataObjectSettable
     @SuppressWarnings("unchecked")
     public void setFieldValue(Object dataObj, String fieldName, Object data)
     {
-        if (dataObj != null)
+        if (dataObj != null && data != null)
         {
             if (!(dataObj instanceof Map))
             {

@@ -30,6 +30,7 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -117,9 +118,10 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
 
     protected Hashtable<String, Object> dataMap = new Hashtable<String, Object>();
     
-    protected ViewBasedSearchQueryBuilderIFace queryBuilder      = null;
-    protected QueryForIdResultsIFace           queryForIdResults = null;
-    
+    protected ViewBasedSearchQueryBuilderIFace queryBuilder        = null;
+    protected QueryForIdResultsIFace           queryForIdResults   = null;
+    protected boolean                          isMultipleSelection = true;
+
     
     /**
      * Constructs a search dialog from form infor and from search info.
@@ -352,7 +354,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
     {
         if (okBtn != null)
         {
-            okBtn.setEnabled(idList != null && idList.size() == 1);
+            okBtn.setEnabled(idList != null && ((idList.size() == 1 && !isMultipleSelection) || (idList.size() > 0 && isMultipleSelection)));
         }
     }
 
@@ -374,6 +376,9 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
         searchBtn.setEnabled(enabled);
     }
     
+    /**
+     * @param comp
+     */
     protected void doStartQuery(final JComponent comp)
     {
         panel.removeAll();
@@ -388,6 +393,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
             {
                 resultsInfo = queryBuilder.createQueryForIdResults();
                 resultsInfo.setSQL(sqlStr);
+                resultsInfo.setMultipleSelection(isMultipleSelection);
                 
             } else
             {
@@ -455,6 +461,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
             
             resultsInfo = new QueryForIdResultsSQL(esTableInfo.getId(), null, esTableInfo, 0, "");
             resultsInfo.setSQL(fullSQL);
+            resultsInfo.setMultipleSelection(isMultipleSelection);
         }
         
         addSearchResults(resultsInfo);
@@ -585,32 +592,49 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
     /**
      * @return
      */
-    public Object getSelectedObject()
+    private Object getSelectedObjects(final boolean doAll)
     {
+        List<Object> objList = null;
         String errMsg = null;
         
         if (idList != null && idList.size() > 0)
         {
-            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-            
-            Integer id = idList.get(0);
+            DataProviderSessionIFace session = null;
             try
             {
-                log.debug("getSelectedObject class["+className+"] idFieldName["+idFieldName+"] id["+id+"]");
-
-                Class<?> classObj = Class.forName(className);
-                List<?> list = session.getDataList(classObj, idFieldName, id, DataProviderSessionIFace.CompareType.Restriction);
-                if (list.size() == 1)
+                session = DataProviderFactory.getInstance().createSession();
+                for (Integer id : idList)
                 {
-                    return list.get(0);
+                    log.debug("getSelectedObject class["+className+"] idFieldName["+idFieldName+"] id["+id+"]");
+                    Class<?> classObj = Class.forName(className);
+                    List<?> list = session.getDataList(classObj, idFieldName, id, DataProviderSessionIFace.CompareType.Restriction);
                     
-                } else if (list.size() == 0)
-                {
-                    errMsg = "Why could we NOT load the object with id["+id+"] for class["+className+"]in DBObjSearchDialog?";
-                } else
-                {
-                    errMsg = "Why would more than one object be found in DBObjSearchDialog? return size["+list.size()+"]";
+                    if (list.size() == 1)
+                    {
+                        if (doAll)
+                        {
+                            if (objList == null)
+                            {
+                                objList = new Vector<Object>();
+                            }
+                            objList.add(list.get(0));
+                            
+                        } else
+                        {
+                            return list.get(0);
+                        }
+                        
+                    } else if (list.size() == 0)
+                    {
+                        errMsg = "Why could we NOT load the object with id["+id+"] for class["+className+"]in DBObjSearchDialog?";
+                    } else
+                    {
+                        errMsg = "Why would more than one object be found in DBObjSearchDialog? return size["+list.size()+"]";
+                    }
                 }
+
+                return objList;
+                
             } catch (Exception ex)
             {
                 errMsg = ex.toString();
@@ -630,6 +654,24 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
             throw new RuntimeException(errMsg);
         }
         return null;
+    }
+    
+    /**
+     * @return
+     */
+    public Object getSelectedObject()
+    {
+        return getSelectedObjects(false);
+    }
+    
+    /**
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public List<Object> getSelectedObjects()
+    {
+        return (List<Object>)getSelectedObjects(true);
+
     }
 
     /* (non-Javadoc)
@@ -654,7 +696,6 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
             okBtn.doClick();
         }
     }
-    
 
     /**
      * @param builder
@@ -663,5 +704,20 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
     {
         this.queryBuilder = builder;
     }
-    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#isMultipleSelection()
+     */
+    public boolean isMultipleSelection()
+    {
+        return isMultipleSelection;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#setMultipleSelection(boolean)
+     */
+    public void setMultipleSelection(boolean isMultiple)
+    {
+        isMultipleSelection = isMultiple;
+    }
 }

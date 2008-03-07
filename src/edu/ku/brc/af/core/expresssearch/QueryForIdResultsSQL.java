@@ -47,7 +47,7 @@ public class QueryForIdResultsSQL implements QueryForIdResultsIFace
     protected boolean                 isExpanded   = false;
     
     protected Hashtable<Integer, Boolean> duplicateRecId = new Hashtable<Integer, Boolean>();
-    
+    protected boolean               isMultipleSelection  = true;
 
     /**
      * Constructs the Results.
@@ -342,5 +342,20 @@ public class QueryForIdResultsSQL implements QueryForIdResultsIFace
     {
         return tableInfo != null ? tableInfo.getDescription() : null;
     }
-    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#isMultipleSelection()
+     */
+    public boolean isMultipleSelection()
+    {
+        return isMultipleSelection;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#setMultipleSelection(boolean)
+     */
+    public void setMultipleSelection(boolean isMultiple)
+    {
+        isMultipleSelection = isMultiple;
+    }
 }

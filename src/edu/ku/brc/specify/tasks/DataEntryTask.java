@@ -585,8 +585,8 @@ public class DataEntryTask extends BaseTask
                 stdViews  = dataEntryXML.getStd();
                 miscViews = dataEntryXML.getMisc();
                 
-                initDataEntryViews(stdViews);
-                initDataEntryViews(miscViews);
+                //initDataEntryViews(stdViews);
+                //initDataEntryViews(miscViews);
                 
                 buildNavBoxes(stdViews, miscViews);
                 

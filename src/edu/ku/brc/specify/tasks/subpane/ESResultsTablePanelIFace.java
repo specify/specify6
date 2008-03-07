@@ -32,7 +32,6 @@ import edu.ku.brc.ui.db.QueryForIdResultsIFace;
  */
 public interface ESResultsTablePanelIFace extends PropertyChangeListener
 {
-    
     /**
      * Initializes 
      * @param esrPane
@@ -43,7 +42,7 @@ public interface ESResultsTablePanelIFace extends PropertyChangeListener
     /**
      * @return the UI component for the results panel
      */
-    public Component getUIComponent();
+    public abstract Component getUIComponent();
     
     /**
      * Cleans up references to other objects.

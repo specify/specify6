@@ -132,4 +132,14 @@ public interface QueryForIdResultsIFace
      */
     public abstract void removeIds(List<Integer> ids);
     
+    /**
+     * Tells the UI for the display of the results to allow Multiple selection if it is available.
+     * @param isMultiple true/false
+     */
+    public abstract void setMultipleSelection(boolean isMultiple); 
+    
+    /**
+     * @return whether the results UI should allow Multiple selection if poissible.
+     */
+    public abstract boolean isMultipleSelection();
 }

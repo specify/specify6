@@ -415,7 +415,7 @@ permit.EndDate,permit.RenewalDate,permit.Type FROM permit left Join agent ON per
         <table id="102" tableid="7" name="AccessionSearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
-                    <![CDATA[SELECT AccessionID, AccessionNumber, Status, Type, DateAccessioned, DateReceived FROM accession WHERE CollectionMemberID = COLMEMID AND (%s)]]>
+                    <![CDATA[SELECT AccessionID, AccessionNumber, Status, Type, DateAccessioned, DateReceived FROM accession WHERE (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="7" col="AccessionID" visible="false"/>

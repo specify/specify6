@@ -22,6 +22,7 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.awt.Window;
+import java.util.List;
 
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -178,6 +179,30 @@ public class DBObjSearchDialog extends CustomDialog implements ViewBasedSearchDi
         {
             log.error("The internal panel is null!");
         }
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.ViewBasedSearchDialogIFace#getSelectedObjects()
+     */
+    public List<Object> getSelectedObjects()
+    {
+        if (!isCancelled)
+        {
+            return ((DBObjSearchPanel)mainPanel).getSelectedObjects();
+        }
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.ViewBasedSearchDialogIFace#setMultipleSelection(boolean)
+     */
+    public void setMultipleSelection(boolean isMultiple)
+    {
+        if (panel != null)
+        {
+            panel.setMultipleSelection(isMultiple);
+        }
+        
     }
     
 }

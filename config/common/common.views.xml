@@ -64,7 +64,8 @@
               resourcelabels="false">
               <desc><![CDATA[The Collection Object Subform for Accessions.]]></desc>
               <altviews>
-                  <altview name="Collection Object Sub View" viewdef="CollectionObjectSub" label="View" mode="view"/>
+                  <altview name="Collection Object Sub View" viewdef="CollectionObjectSub" label="View" mode="view" default="true"/>
+                  <altview name="Collection Object Sub Edit" viewdef="CollectionObjectSub" label="Edit" mode="edit"/>
               </altviews>
             
         </view>
@@ -1267,7 +1268,7 @@
                     <cell type="separator" label="Collection Object" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="CollectionObjectSub" id="11" colspan="10" name="collectionObjects"/>
+                    <cell type="subview" viewname="CollectionObjectSub" id="11" colspan="10" name="collectionObjects" initialize="addsearch=true"/>
                 </row> 
                 
             </rows>
