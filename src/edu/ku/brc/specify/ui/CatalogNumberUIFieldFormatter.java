@@ -105,6 +105,31 @@ public class CatalogNumberUIFieldFormatter implements UIFieldFormatterIFace
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getSample()
+     */
+    public String getSample()
+    {
+    	return "123";
+    }
+
+    public boolean byYearApplies()
+    {
+    	// no auto-year field in here
+    	return false;
+    }
+    
+    public boolean getByYear()
+    {
+    	return false;
+    }
+    
+    public void setByYear(boolean byYear)
+    {
+    	// not applicable
+    	return;
+    }
+    
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getDateWrapper()
      */
     public DateWrapper getDateWrapper()

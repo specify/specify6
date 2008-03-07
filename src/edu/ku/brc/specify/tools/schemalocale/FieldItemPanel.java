@@ -9,6 +9,7 @@ package edu.ku.brc.specify.tools.schemalocale;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Color;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusAdapter;
@@ -18,6 +19,8 @@ import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
@@ -64,10 +67,12 @@ import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.ui.JStatusBar;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.PickListIFace;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
+import edu.ku.brc.ui.forms.formatters.UIFormatterDlg;
 
 /**
  * @author rod
@@ -110,8 +115,9 @@ public class FieldItemPanel extends LocalizerBasePanel
     // Formatting
     protected JLabel           formatLbl     = null;
     protected JComboBox        formatCombo;
-    protected JTextField       formatTxt;
+    protected JButton          formatMoreBtn;
     protected Hashtable<String, UIFieldFormatterIFace> formatHash = new Hashtable<String, UIFieldFormatterIFace>();
+    protected UIFieldFormatterIFace selectedFormatter = null;
     
     // PickList
     protected JLabel           pickListLbl;
@@ -249,16 +255,29 @@ public class FieldItemPanel extends LocalizerBasePanel
         
         if (includeFormatAndAutoNumUI)
         {
-            PanelBuilder inner = new PanelBuilder(new FormLayout("max(p;150px),2px,f:p:g", "p"));
+            PanelBuilder inner = new PanelBuilder(new FormLayout("max(p;150px),2px,min", "p"));
             
             formatCombo = new JComboBox(new DefaultComboBoxModel());
-            formatTxt   = new JTextField(15);
+            //formatCombo.setEditable(true); // leave uneditable for now
+            formatMoreBtn = new JButton("...");
             
             pb.add(formatLbl = new JLabel(getResourceString("SL_FORMAT") + ":", SwingConstants.RIGHT), cc.xy(3, y));
             
             inner.add(formatCombo,   cc.xy(1, 1));   
-            inner.add(formatTxt,     cc.xy(3, 1));
+            inner.add(formatMoreBtn, cc.xy(3, 1));
             pb.add(inner.getPanel(), cc.xywh(5, y, 6, 1));   y += 2;
+            
+            formatMoreBtn.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                	UIFormatterDlg dlg = new UIFormatterDlg(
+                			(Frame)UIRegistry.getTopWindow(), 
+                			fieldInfo, 
+                			formatCombo.getSelectedIndex()); // MUST BE MODAL!
+                	dlg.setVisible(true);
+                	setSelectedFieldFormatter(dlg.getSelectedFormat());
+                }
+            });
             
             //String[] items = {noneStr, getResourceString("Generic"), getResourceString("External")};
             
@@ -272,11 +291,6 @@ public class FieldItemPanel extends LocalizerBasePanel
                     setHasChanged(true);
                     schemaPanel.setHasChanged(true);
                     hasFieldInfoChanged = true;
-                    String  fmtName = (String)formatCombo.getSelectedItem();
-                    if (StringUtils.isNotEmpty(fmtName)) // should never be empty
-                    {
-                        formatTxt.setEnabled(fmtName.equals(noneStr));
-                    }
                 }
             };
             formatCombo.addActionListener(changed);
@@ -366,17 +380,54 @@ public class FieldItemPanel extends LocalizerBasePanel
         
         fieldNameText.getDocument().addDocumentListener(dl);
         fieldDescText.getDocument().addDocumentListener(dl);
-        
+/*        
         if (formatTxt != null)
         {
             formatTxt.getDocument().addDocumentListener(dl);
         }
-        
+*/        
         SchemaI18NService.getInstance().checkCurrentLocaleMenu();
         
         enableUIControls(false);
         
         setIgnoreChanges(false);
+    }
+
+    protected void setSelectedFieldFormatter(UIFieldFormatterIFace formatter)
+    {
+    	// first reset combo box in case any formatters have been deleted
+    	fillWithFieldFormatter();
+    	
+    	if (formatter == null)
+    	{
+    		// no formatter was selected (that's the first entry on the combo list) 
+    		formatCombo.setSelectedIndex(0);
+    		return;
+    	}
+    	
+    	// find if selected formatter is already on the list
+    	DefaultComboBoxModel model = (DefaultComboBoxModel) formatCombo.getModel();
+    	int n = model.getSize();
+		boolean found = false;
+    	for (int index = 0; index < n; ++index)
+    	{
+    		Object elem = model.getElementAt(index);
+    		if (formatter == elem)
+    		{
+    	    	// found formatter selected on dialog on the combo box list: so select it
+    	    	formatCombo.setSelectedIndex(index);
+    	    	found = true;
+    	    	break;
+    		}
+    	} 	
+    	
+    	if (!found)
+    	{
+    		// didn't find formatter on the list; it must be a new one
+    		// so we add it to the list of formatters and point to it (it's the last one on the list)
+    		model.addElement(formatter);
+    		formatCombo.setSelectedIndex(model.getSize() - 1);
+    	}
     }
     
     /**
@@ -405,8 +456,7 @@ public class FieldItemPanel extends LocalizerBasePanel
         {
             ((DefaultComboBoxModel)formatCombo.getModel()).removeAllElements();
             formatCombo.setEnabled(false);
-            formatTxt.setEnabled(false);
-            formatTxt.setText("");
+            formatMoreBtn.setEnabled(false);
             
             if (fieldInfo != null)
             {
@@ -447,7 +497,7 @@ public class FieldItemPanel extends LocalizerBasePanel
         }
         formatCombo.setSelectedIndex(0);
         formatCombo.setEnabled(false);
-        formatTxt.setEnabled(false);
+        formatMoreBtn.setEnabled(false);
     }
     
     /**
@@ -461,12 +511,11 @@ public class FieldItemPanel extends LocalizerBasePanel
         
         cbxModel.addElement(noneStr); // Add None
         
-        /*if (UIHelper.isClassNumeric(fieldInfo.getDataClass()))
+        if (UIHelper.isClassNumeric(fieldInfo.getDataClass()))
         {
             formatCombo.setEnabled(false);
-            formatTxt.setEnabled(false);
-            
-        } */
+            formatMoreBtn.setEnabled(false);
+        }
         
         boolean              isUIFormatter = false;
         String               formatName    = null;
@@ -485,28 +534,33 @@ public class FieldItemPanel extends LocalizerBasePanel
         
         UIFieldFormatterIFace       selectedFmt = null;
         List<UIFieldFormatterIFace> fList       = UIFieldFormatterMgr.getFormatterList(tableInfo.getClassObj(), fieldInfo.getName());
+        // list must be sorted in the same way it's sorted on UIFormatterDlg because selection index is considered equivalent between combo boxes
+        Collections.sort(fList, new Comparator<UIFieldFormatterIFace>() {
+            public int compare(UIFieldFormatterIFace o1, UIFieldFormatterIFace o2)
+            {
+                return o1.toPattern().compareTo(o2.toPattern());
+            }
+        });
         if (fList != null && fList.size() > 0)
         {
             for (UIFieldFormatterIFace fmt : fList)
             {
                 log.debug(fmt.getTitle());
                 
-                cbxModel.addElement(fmt.toString());
-                formatHash.put(fmt.toString(), fmt);
+                cbxModel.addElement(fmt);
                 
-                if (isUIFormatter && formatName != null && formatName.equals(fmt.toString()))
+                if (isUIFormatter && formatName != null && formatName.equals(fmt.getName()))
                 {
-                    selectedInx = formatHash.size();
+                    selectedInx = cbxModel.getSize() - 1;
                     selectedFmt = fmt;
                 }
             }
         }
         
         formatCombo.setSelectedIndex(selectedInx);
-        formatCombo.setEnabled(formatHash.size() > 1);
-        formatTxt.setEnabled(selectedInx == 0);
-        
-        formatTxt.setText(selectedInx != 0 ? "" : formatName);
+        boolean enabled = (formatCombo.getModel().getSize() > 1);
+        formatCombo.setEnabled(enabled);
+        formatMoreBtn.setEnabled(enabled);
         
         return selectedFmt;
     }
@@ -605,10 +659,7 @@ public class FieldItemPanel extends LocalizerBasePanel
         {
             formatLbl.setEnabled(enable);
             formatCombo.setEnabled(enable);
-            formatTxt.setEnabled(enable);
-            
-            //autoNumLbl.setEnabled(enable);
-            //autoNumberCombo.setEnabled(enable);
+            formatMoreBtn.setEnabled(enable);
         }
         
         if (!enable)
@@ -752,28 +803,22 @@ public class FieldItemPanel extends LocalizerBasePanel
             
             if (formatCombo != null)
             {
-                String  fmtName = (String)formatCombo.getSelectedItem();
-                if (StringUtils.isNotEmpty(fmtName)) // should never be empty
+                Object item = formatCombo.getSelectedItem();
+                if (item != null) // should never be null
                 {
-                    boolean isNone = fmtName.equals(noneStr);
+                	// there is only one string in the list... the None string
+                	// others are the format objects themselves
+                	boolean isNone = item instanceof String; 
                     if (!isNone)
                     {
-                        prevField.setFormat(formatHash.get(fmtName).getName());
+                    	UIFieldFormatterIFace frmt = (UIFieldFormatterIFace) item;
+                        prevField.setFormat(frmt.getName());
                         prevField.setIsUIFormatter(true);
                     
                     } else
                     {
                         prevField.setIsUIFormatter(false);
-                        
-                        fmtName = formatTxt.getText();
-                        if (StringUtils.isNotEmpty(fmtName)) 
-                        {
-                            prevField.setFormat(fmtName);     // this should a format string like %s or %5.2f etc
-                            
-                        } else
-                        {
-                            prevField.setFormat(null);
-                        }
+                        prevField.setFormat(null);
                     }
                 } else
                 {

@@ -21,8 +21,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
@@ -33,6 +35,7 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.dbsupport.AutoNumberIFace;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.ui.DateWrapper;
 
 /**
@@ -269,6 +272,47 @@ public class UIFieldFormatterMgr
         }
         return list;
     }
+  
+    /**
+     * Gets a unique name for a formatter if it doesn't yet have one
+     */
+    private String getFormatterUniqueName(UIFieldFormatterIFace formatter)
+    {
+    	String name = formatter.getName();
+ 
+    	if (name == null || name.equals(""))
+    	{
+    		// find a formatter name that doesn't yet exist in the hash
+    		// name formation patter is <field name>.i where i is a counter
+    		int i = 1;
+    		Set<String> names = hash.keySet();
+    		String prefix = formatter.getFieldName();
+    		name = prefix + "." + Integer.toString(i);
+    		while (names.contains((String) name))
+    		{
+        		name = prefix + "." + Integer.toString(++i);
+    		}
+    	}
+    	formatter.setName(name);
+    	return null;
+    }
+    
+    /**
+     * Adds a new formatter
+     */
+    public void addFormatter(UIFieldFormatterIFace formatter)
+    {
+    	getFormatterUniqueName(formatter);
+    	hash.put(formatter.getName(), formatter);
+    }
+    
+    /**
+     * Deletes a formatter from the 
+     */
+    public void removeFormatter(UIFieldFormatterIFace formatter)
+    {
+    	hash.remove(formatter.getName());
+    }
     
     /**
      * Returns the DOM it is suppose to load the formatters from.
@@ -474,6 +518,23 @@ public class UIFieldFormatterMgr
         }
     }
 
+    /**
+     * Saves formatters
+     * @param 
+     */
+    public void save() 
+    {
+		StringBuilder sb = new StringBuilder(1024);
+    	
+    	Iterator<UIFieldFormatterIFace> it = hash.values().iterator();
+    	while (it.hasNext()) {
+    		it.next().toXML(sb);
+    	}
+
+    	// FIXME: not sure why the next line isn't saving the resource to db :( 
+    	SpecifyAppContextMgr.getInstance().putResourceAsXML("UIFormatters", sb.toString());
+    }
+    
     /**
      * Constructs a the fields for a date formatter if the user didn't specify them; it gets the fields
      * for the date from the dat preference

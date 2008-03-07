@@ -16,13 +16,18 @@ package edu.ku.brc.ui.forms.formatters;
 
 import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.dbsupport.AutoNumberIFace;
+import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.ui.DateWrapper;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterField.FieldType;
 import edu.ku.brc.util.Pair;
 
 
@@ -42,10 +47,10 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
     public enum PartialDateEnum {None, Full, Month, Year}
     public enum FormatterType   {Generic, Date, Numeric}
     
+    protected String               fieldName;
     protected String               name;
     protected boolean              isSystem;
     protected String               title;
-    protected String               fieldName;
     protected Class<?>             dataClass;
     protected FormatterType        type;
     protected PartialDateEnum      partialDateType;
@@ -58,6 +63,11 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
     protected int                  precision = 0;
     protected int                  scale     = 0;
 
+    /**
+     * Default constructor
+     */
+    public UIFieldFormatter() {}
+    
     /**
      * Constructor.
      * @param name the unique name of the formatter
@@ -89,6 +99,55 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
         this.isIncrementer   = isIncrementer;
     }
 
+    /**
+     * Factory that creates a new UIFieldFormatter from a formatting string
+     * @param formattingString Formatting string that defines the formatter
+     * @return The UIFieldFormatter corresponding to the formatting string
+     * @throws UIFieldFormattingParsingException (if formatting string is invalid)
+     */
+    public static UIFieldFormatter factory(final String formattingString, DBFieldInfo fieldInfo) 
+    	throws UIFieldFormatterParsingException 
+    {
+     	Class<?> clazz = fieldInfo.getTableInfo().getClassObj();
+    	UIFieldFormatter fmt = new UIFieldFormatter(null, false, fieldInfo.getName(), 
+    			FormatterType.Generic, PartialDateEnum.None, clazz, false, false, null);
+    	
+    	// separators and split pattern strings
+    	Pattern splitPattern = Pattern.compile("([\\/\\-\\_ ])+");
+    	Matcher matcher = splitPattern.matcher(formattingString);
+
+        // Find all the separator matches and create individual fields by calling formatter field factory
+    	UIFieldFormatterField field;
+    	String fieldString = "";
+    	int begin = 0;
+    	while (matcher.find()) 
+    	{
+    		// create a field with what's before the current separator
+    		fieldString = formattingString.substring(begin, matcher.start());
+    		field = UIFieldFormatterField.factory(fieldString);
+    		fmt.addField(field);
+    		begin = matcher.end();
+
+    		// create separator field
+    		field = new UIFieldFormatterField(FieldType.separator, 0, matcher.group(), false);
+    		fmt.addField(field);
+       	}
+    	
+    	// create last bit of formatter
+		fieldString = formattingString.substring(begin);
+		field = UIFieldFormatterField.factory(fieldString);
+		fmt.addField(field);
+
+		// TODO: find out if it is incrementer
+		
+    	return fmt;
+    }
+
+    public String getText()
+    {
+    	return toPattern();
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#isSystem()
      */
@@ -129,6 +188,28 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
         return fields;
     }
 
+    /*
+     * Adds a field to the formatter
+     * @param field Field being added
+     */
+    public void addField(UIFieldFormatterField field)
+    {
+    	if (fields == null) 
+    	{
+    		resetFields();
+    	}
+    	
+    	fields.add(field);
+    }
+
+    /*
+     * Resets formatter fields
+     */
+    public void resetFields()
+    {
+   		fields = new ArrayList<UIFieldFormatterField>();
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getYear()
      */
@@ -155,6 +236,54 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
             }
         }
         return year;
+    }
+    
+    /*
+     * 
+     */
+    public boolean byYearApplies()
+    {
+    	boolean hasYearField = false;
+    	boolean hasAutoNumber = false;
+
+    	for (UIFieldFormatterField field : fields)
+        {
+    		hasYearField |= field.isCurrentYear();
+    		hasAutoNumber |= field.isIncrementer();
+        }
+    	
+    	return (hasYearField && hasAutoNumber);
+    }
+
+    /*
+     * 
+     */
+    public boolean getByYear()
+    {
+    	for (UIFieldFormatterField field : fields)
+        {
+    		if (field.isByYear())
+    			return true;
+        }
+    	
+    	return false;
+    }
+    
+    /*
+     * 
+     */
+    public void setByYear(boolean byYear)
+    {
+    	if (!byYearApplies())
+    		return;
+    	
+    	for (UIFieldFormatterField field : fields)
+        {
+    		if (field.isCurrentYear())
+    		{
+    			field.setByYear(byYear);
+    		}
+        }
     }
     
     /* (non-Javadoc)
@@ -298,6 +427,19 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getSample()
+     */
+    public String getSample()
+    {
+        StringBuilder str = new StringBuilder();
+        for (UIFieldFormatterField field : fields)
+        {
+            str.append(field.getSample());
+        }
+        return str.toString();
+    }
+    
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getDateWrapper()
      */
     public DateWrapper getDateWrapper()
@@ -398,17 +540,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
      */
     public String toString()
     {
-        if (false)
-        {
-            StringBuilder s = new StringBuilder();
-            s.append( "Name["+name+"] isDate["+(type == FormatterType.Date)+"]  isNumeric["+(type == FormatterType.Numeric)+"]  dataClass["+dataClass.getSimpleName()+"] isDefault["+isDefault+"] isIncrementor["+isIncrementer+"]");
-            for (UIFieldFormatterField f : fields)
-            {
-                s.append("\n  "+f.toString());
-            }
-            return s.toString();
-        }
-        return title == null ? name : title;
+    	return toPattern();
     }
 
     /* (non-Javadoc)
@@ -520,6 +652,22 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
         }
         sb.append("  </format>\n\n");
     }
+
+	public void setSystem(boolean isSystem) {
+		this.isSystem = isSystem;
+	}
+
+	public void setFieldName(String fieldName) {
+		this.fieldName = fieldName;
+	}
+
+	public void setDataClass(Class<?> dataClass) {
+		this.dataClass = dataClass;
+	}
+
+	public void setType(FormatterType type) {
+		this.type = type;
+	}
 }
 
 

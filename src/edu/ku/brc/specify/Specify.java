@@ -844,17 +844,6 @@ public class Specify extends JPanel implements DatabaseLoginListener
                             doSchemaConfig(SpLocaleContainer.WORKBENCH_SCHEMA, schema);
                         }
                     });
-            title = getResourceString("UIF_MENU_TITLE");
-            mi = UIHelper.createMenuItem(menu, title, getResourceString("UIF_MENU_MNU"), title, true, null);
-            mi.addActionListener(new ActionListener()
-                    {
-                        public void actionPerformed(ActionEvent ae)
-                        {
-                            UIFormatterDlg dlg = new UIFormatterDlg(topFrame);
-                            dlg.setVisible(true);
-                        }
-                    });
-
         }
         
         /*if (true)
