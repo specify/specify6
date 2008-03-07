@@ -137,7 +137,10 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
         thisItem = this;
         
         validator = new FormValidator(null);
-        validator.addEnableItem(saveBtn, FormValidator.EnableType.ValidAndChangedItems);
+        if (saveBtn != null)
+        {
+            validator.addEnableItem(saveBtn, FormValidator.EnableType.ValidAndChangedItems);
+        }
         validator.setEnabled(true);
         
         boolean createAsHeader = StringUtils.isEmpty(columnDefStr);
@@ -248,6 +251,10 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
      */
     protected String[] getComparatorList(final FieldQRI field)
     {
+        if (fieldQRI ==  null)
+        {
+            return new String[]{"none of the above"};
+        }
         //CatalogNumber needs special treatment - works better as a number.
         //And other fields? Not sure how to tell. Maybe the formatter?????
         if (field.getFieldInfo() != null && field.getFieldInfo().getName().equalsIgnoreCase("catalognumber") 
@@ -457,7 +464,7 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
         comparators = getComparatorList(fieldQRI);
         iconLabel = new JLabel(icon);
         iconLabel.addFocusListener(focusListener);
-        fieldLabel = new JLabel(fieldQRI.getTitle());
+        fieldLabel = new JLabel(fieldQRI != null ? fieldQRI.getTitle() : "WXYZ");
         fieldLabel.addFocusListener(focusListener);
         isNotCheckbox = createCheckBox("isNotCheckbox");
         isNotCheckbox.addFocusListener(focusListener);
@@ -515,8 +522,11 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
             col += 2;
         }
 
-        icon = IconManager.getIcon(fieldQRI.getTableInfo().getTitle(), iconSize);
-        setIcon(icon);
+        if (fieldQRI != null)
+        {
+            icon = IconManager.getIcon(fieldQRI.getTableInfo().getTitle(), iconSize);
+            setIcon(icon);
+        }
         isDisplayedCkbx.setSelected(true);
         
         closeBtn.addMouseListener(new MouseAdapter()
@@ -530,7 +540,7 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
         });
 
         //for now
-        boolean isRel = fieldQRI instanceof RelQRI;
+        boolean isRel = fieldQRI != null && fieldQRI instanceof RelQRI;
         isNotCheckbox.setEnabled(!isRel);
         operatorCBX.setEnabled(!isRel);
         criteria.setEnabled(!isRel);

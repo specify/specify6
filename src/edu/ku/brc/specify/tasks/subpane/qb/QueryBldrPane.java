@@ -88,8 +88,10 @@ import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.RolloverCommand;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -147,7 +149,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 
     protected TableTree                                      tableTree;
     protected Hashtable<String, TableTree>                   tableTreeHash;    
-    protected TableAbbreviator                               tableAbbreviator;
     protected boolean                                        processingLists  = false;
 
     protected RolloverCommand                                queryNavBtn      = null;
@@ -174,8 +175,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         {
             fieldsToSkipHash.put(nameStr, true);
         }
-
-        tableAbbreviator = new TableAbbreviator();
         
         tableTree = readTables();
         tableTreeHash = buildTableTreeHash(tableTree);
@@ -335,12 +334,14 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     }
 
     
-    protected static List<QueryFieldPanel> getQueryFields(final SpQuery q)
+    protected static Vector<QueryFieldPanel> getQueryFieldPanels(final SpQuery q,
+                                                               final QueryFieldPanelContainerIFace container,
+                                                               final TableTree tblTree,
+                                                               final Hashtable<String, TableTree> ttHash)
     {
-        List<QueryFieldPanel> result = new LinkedList<QueryFieldPanel>();
-        
-        return result;
+        return getQueryFieldPanels(container, q.getFields(), tblTree, ttHash, null);
     }
+    
     /**
      * 
      */
@@ -372,24 +373,42 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             }
         }
         
+        Vector<QueryFieldPanel> qfps = null;
         if (query != null)
         {
             TableQRI qri = (TableQRI) tableList.getSelectedValue();
             if (qri == null) { throw new RuntimeException("Invalid context for query."); }
-            Vector<SpQueryField> fields = new Vector<SpQueryField>(query.getFields());
-            Collections.sort(fields);
-            currentInx = 0;
-            for (SpQueryField field : fields)
-            {
-                addQueryFieldItem(field, true, tableTreeHash);
-            }
+            qfps = getQueryFieldPanels(this, query.getFields(), tableTree, tableTreeHash, saveBtn);
         }
 
-        for (QueryFieldPanel qfp : queryFieldItems)
+        boolean header = true;
+        for (final QueryFieldPanel qfp : qfps)
         {
-            qfp.resetValidator();
+            if (header)
+            {
+                header = false;
+            }
+            else
+            {
+                queryFieldItems.add(qfp);
+                qfp.addMouseListener(new MouseInputAdapter()
+                {
+                    @Override
+                    public void mousePressed(MouseEvent e)
+                    {
+                        selectQFP(qfp);
+                    }
+                });
+                qfp.resetValidator();
+            }
+            queryFieldsPanel.add(qfp);
         }
 
+//        QueryParameterPanel qppTest = new QueryParameterPanel();
+//        qppTest.setQuery(query, tableTree, tableTreeHash);
+//        CustomDialog cd = new CustomDialog((Frame)UIRegistry.getTopWindow(), "Testing", true, qppTest);
+//        UIHelper.centerAndShow(cd);
+        
         SwingUtilities.invokeLater(new Runnable()
         {
             public void run()
@@ -399,6 +418,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 if (queryFieldItems.size() > 0)
                 {
                     selectQFP(queryFieldItems.get(0));
+                }
+                for (JList list : listBoxList)
+                {
+                    list.repaint();
                 }
                 saveBtn.setEnabled(false);
                 QueryBldrPane.this.validate();
@@ -416,9 +439,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         setQueryIntoUI();
     }
 
-    protected String buildHQL(final TableQRI rootTable, boolean distinct)
+    protected static String buildHQL(final TableQRI rootTable, boolean distinct, final Vector<QueryFieldPanel> qfps,
+                              final TableTree tblTree)
     {
-        if (queryFieldItems.size() == 0)
+        if (qfps.size() == 0)
             return null;
 
         StringBuilder fieldsStr = new StringBuilder();
@@ -429,7 +453,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         ProcessNode root = new ProcessNode(null);
         int fldPosition = distinct ? 0 : 1;
 
-        for (QueryFieldPanel qfi : queryFieldItems)
+        for (QueryFieldPanel qfi : qfps)
         {
             qfi.updateQueryField();
 
@@ -470,7 +494,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             {
                 list.insertElementAt(pqri, 0);
             }
-            while (parent != tableTree)
+            while (parent != tblTree)
             {
                 list.insertElementAt(parent.getTableQRI(), 0);
                 parent = parent.getParent();
@@ -532,8 +556,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         printTree(root, 0);
 
         StringBuilder fromStr = new StringBuilder();
-        tableAbbreviator.clear();
-        processTree(root, fromStr, 0);
+        TableAbbreviator tableAbbreviator = new TableAbbreviator();
+        processTree(root, fromStr, 0, tableAbbreviator, tblTree);
 
         StringBuilder sqlStr = new StringBuilder();
         sqlStr.append("select ");
@@ -549,7 +573,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
 
         SortedSet<String> checkedForSpecialColumns = new TreeSet<String>();
-        for (QueryFieldPanel qfi : queryFieldItems)
+        for (QueryFieldPanel qfi : qfps)
         {
             if (qfi.isForDisplay())
             {
@@ -646,14 +670,14 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      */
     protected void doSearch(final TableQRI rootTable, boolean distinct)
     {
-        String hql = buildHQL(rootTable, distinct);    
+        String hql = buildHQL(rootTable, distinct, queryFieldItems, tableTree);    
         processSQL(queryFieldItems, hql, rootTable.getTableInfo(), distinct);
         //doReport(rootTable, true /*need to use true to workaround probs with added key column when not distinct*/);
     }
 
     protected void doReport(final TableQRI rootTable, boolean distinct)
     {
-        processReport(queryFieldItems, buildHQL(rootTable, distinct));
+        processReport(queryFieldItems, buildHQL(rootTable, distinct, queryFieldItems, tableTree));
     }
     
     /**
@@ -705,7 +729,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * @return " left join " unless it can be determined that data returned on other side of the join
      * cannot be null in which case " inner join " is returned.
      */
-    protected String getJoin(final ProcessNode node)
+    protected static String getJoin(final ProcessNode node)
     {
         //XXX really should only use left join when necessary.
         return " left join ";
@@ -715,10 +739,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * @param sqlStr
      * @param level
      */
-    protected void processTree(final ProcessNode parent, final StringBuilder sqlStr, final int level)
+    protected static void processTree(final ProcessNode parent, final StringBuilder sqlStr, final int level, 
+                               final TableAbbreviator tableAbbreviator, final TableTree tblTree)
     {
         BaseQRI qri = parent.getQri();
-        if (qri != null && qri.getTableTree() != tableTree)
+        if (qri != null && qri.getTableTree() != tblTree)
         {
             if (qri instanceof TableQRI)
             {
@@ -747,11 +772,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
         for (ProcessNode kid : parent.getKids())
         {
-            processTree(kid, sqlStr, level + 1);
+            processTree(kid, sqlStr, level + 1, tableAbbreviator, tblTree);
         }
     }
 
-    protected List<ERTICaptionInfo> getColumnInfo(final Vector<QueryFieldPanel> queryFieldItemsArg, final boolean fixLabels)
+    protected static List<ERTICaptionInfo> getColumnInfo(final Vector<QueryFieldPanel> queryFieldItemsArg, final boolean fixLabels)
     {
         List<ERTICaptionInfo> result = new Vector<ERTICaptionInfo>();
         for (QueryFieldPanel qfp : queryFieldItemsArg)
@@ -896,6 +921,45 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         CommandDispatcher.dispatch(cmd);
     }
     
+    public static void runReport(final SpReport report)
+    {
+        final TableTree tblTree = readTables();
+        final Hashtable<String, TableTree> ttHash = QueryBldrPane.buildTableTreeHash(tblTree);
+        QueryParameterPanel qpp = new QueryParameterPanel();
+        qpp.setQuery(report.getQuery(), tblTree, ttHash);
+        CustomDialog cd = new CustomDialog((Frame)UIRegistry.getTopWindow(), "Testing", true, qpp);
+        UIHelper.centerAndShow(cd);
+        if (!cd.isCancelled()) //what about x box?
+        {
+            TableQRI rootQRI = null;
+            for (TableTree tt : ttHash.values())
+            {
+                if (report.getQuery().getContextTableId().equals(tt.getTableInfo().getTableId()))
+                {
+                    rootQRI = tt.getTableQRI();
+                    break;
+                }
+            }
+            Vector<QueryFieldPanel> qfps = new Vector<QueryFieldPanel>(qpp.getFields());
+            for (int f=0; f<qpp.getFields(); f++)
+            {
+                qfps.add(qpp.getField(f));
+            }
+            String sql = QueryBldrPane.buildHQL(rootQRI, 
+                    true, 
+                    qfps, 
+                    tblTree);
+            QBJRDataSource src = new QBJRDataSource(sql, getColumnInfo(qfps, true));
+            final CommandAction cmd = new CommandAction(ReportsBaseTask.REPORTS,
+                    ReportsBaseTask.PRINT_REPORT, src);
+            cmd.setProperty("title", report.getQuery().getName()); //probably don't want to do this.
+            String fileName = report.getName() + ".jrxml";  //probably??
+            cmd.setProperty("file", fileName);
+            CommandDispatcher.dispatch(cmd);
+        }
+        cd.dispose();
+    }
+    
     /**
      * @param queryFieldItemsArg
      * @param sql
@@ -929,7 +993,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * @param pn
      * @param lvl
      */
-    protected void printTree(ProcessNode pn, int lvl)
+    protected static void printTree(ProcessNode pn, int lvl)
     {
         for (int i = 0; i < lvl; i++)
         {
@@ -1088,39 +1152,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         return null;
     }
 
-    // -----------------------------------------------------------
-    // -- Inner Classes
-    // -----------------------------------------------------------
-
-    class ProcessNode
-    {
-        protected Vector<ProcessNode> kids = new Vector<ProcessNode>();
-        protected BaseQRI             qri;
-
-        public ProcessNode(BaseQRI qri)
-        {
-            this.qri = qri;
-        }
-
-        public Vector<ProcessNode> getKids()
-        {
-            return kids;
-        }
-
-        public BaseQRI getQri()
-        {
-            return qri;
-        }
-
-        public boolean contains(BaseQRI qriArg)
-        {
-            for (ProcessNode pn : kids)
-            {
-                if (pn.getQri().equals(qriArg)) { return true; }
-            }
-            return false;
-        }
-    }
 
     /**
      * @param parentQRI
@@ -1520,23 +1551,71 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * 
      * @param fieldItem the TableFieldPair to be in the list
      */
-    protected void addQueryFieldItem(final SpQueryField field, final boolean loading, final Hashtable<String, TableTree> ttHash)
+//    protected void addQueryFieldItem(final SpQueryField field, final boolean loading, final Hashtable<String, TableTree> ttHash)
+//    {
+//        if (field != null)
+//        {
+//            FieldQRI fieldQRI = getFieldQRI(tableTree, field, field.getTableIds(), 0, ttHash);
+//            if (fieldQRI != null)
+//            {
+//                addQueryFieldItem(fieldQRI, field, loading);
+//            }
+//            else
+//            {
+//                log.error("Couldn't find [" + field.getFieldName() + "] [" + field.getTableList()
+//                        + "]");
+//            }
+//        }
+//    }
+    
+
+    protected static Vector<QueryFieldPanel> getQueryFieldPanels(final QueryFieldPanelContainerIFace container, 
+            final Set<SpQueryField> fields, final TableTree tblTree, 
+            final Hashtable<String,TableTree> ttHash,
+            final JButton saveBtn)
     {
-        if (field != null)
+        Vector<QueryFieldPanel> result = new Vector<QueryFieldPanel>();
+        List<SpQueryField> orderedFlds = new ArrayList<SpQueryField>(fields);
+        Collections.sort(orderedFlds);
+        result.add(bldQueryFieldPanel(container, null, null, container.getColumnDefStr(), saveBtn));
+        for (SpQueryField fld : orderedFlds)
         {
-            FieldQRI fieldQRI = getFieldQRI(tableTree, field, field.getTableIds(), 0, ttHash);
+            FieldQRI fieldQRI = getFieldQRI(tblTree, fld, fld.getTableIds(), 0, ttHash);
             if (fieldQRI != null)
             {
-                addQueryFieldItem(fieldQRI, field, loading);
+                result.add(bldQueryFieldPanel(container, fieldQRI, fld, container.getColumnDefStr(), saveBtn));
+                fieldQRI.setIsInUse(true);
             }
             else
             {
-                log.error("Couldn't find [" + field.getFieldName() + "] [" + field.getTableList()
+                log.error("Couldn't find [" + fld.getFieldName() + "] [" + fld.getTableList()
                         + "]");
             }
         }
+        return result;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.qb.QueryFieldPanelContainerIFace#getColumnDefStr()
+     */
+    @Override
+    public String getColumnDefStr()
+    {
+        return columnDefStr;
     }
 
+    protected static QueryFieldPanel bldQueryFieldPanel(final QueryFieldPanelContainerIFace container,
+                                                        final FieldQRI fieldQRI,
+                                                        final SpQueryField fld,
+                                                        String colDefStr,
+                                                        final JButton saveBtn)
+    {
+        if (colDefStr == null) { return new QueryFieldPanel(container, fieldQRI,
+                IconManager.IconSize.Std24, colDefStr, saveBtn, null); }
+        return new QueryFieldPanel(container, fieldQRI, IconManager.IconSize.Std24, colDefStr,
+                saveBtn, fld);
+    }
+    
     /**
      * Add QueryFieldItem to the list created with a TableFieldPair.
      * 

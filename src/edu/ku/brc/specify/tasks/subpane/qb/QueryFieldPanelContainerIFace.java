@@ -20,6 +20,10 @@ import javax.swing.JButton;
 public interface QueryFieldPanelContainerIFace
 {
     /**
+     * @return the columnDefStr
+     */
+    String getColumnDefStr();
+    /**
      * @param columnDefStr
      */
     void setColumnDefStr(final String columnDefStr);

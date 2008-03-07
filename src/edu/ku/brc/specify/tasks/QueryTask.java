@@ -92,7 +92,7 @@ import edu.ku.brc.ui.forms.MultiView;
  * @author rods
  *
  */
-public class QueryTask extends BaseTask
+public class QueryTask extends BaseTask 
 {
     private static final Logger log = Logger.getLogger(QueryTask.class);
     
