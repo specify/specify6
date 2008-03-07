@@ -103,8 +103,17 @@ import edu.ku.brc.ui.forms.persist.ViewSetIFace;
 public class SpecifyAppContextMgr extends AppContextMgr
 {
     private static final Logger  log = Logger.getLogger(SpecifyAppContextMgr.class);
+    
+    // Virtual Directory Levels
+    public static final String PERSONALDIR   = "Personal";
+    public static final String USERTYPEDIR   = "UserType";
+    public static final String COLLECTIONDIR = "Collection";
+    public static final String DISCPLINEDIR  = "Discipline";
+    public static final String COMMONDIR     = "Common";
+    public static final String BACKSTOPDIR   = "BackStop";
 
     protected List<SpAppResourceDir>                spAppResourceList = new ArrayList<SpAppResourceDir>();
+    protected Hashtable<String, SpAppResourceDir>   spAppResourceHash = new Hashtable<String, SpAppResourceDir>();
     protected Hashtable<String, List<ViewSetIFace>> viewSetHash       = new Hashtable<String, List<ViewSetIFace>>();
     
 
@@ -742,6 +751,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             // For example: rods/fish/fish/collectionmanager / true (meaning the usr's personal space)
             SpAppResourceDir appResDir = getAppResDir(session, user, discipline, collection, userType, true, true);
             spAppResourceList.add(appResDir);
+            spAppResourceHash.put(PERSONALDIR, appResDir);
             
             // This is the Full Path User / Discipline / Collection / UserType
             // For example: rods/fish/fish/collectionmanager
@@ -752,11 +762,13 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 fillAppResourceDefFromDir(appResDir, disciplineStr+" "+userType, dir);
             }
             spAppResourceList.add(appResDir);
+            spAppResourceHash.put(USERTYPEDIR, appResDir);
             
             // This is the Full Path User / Discipline / Collection
             // For example: rods/fish/fish
             appResDir = getAppResDir(session, user, discipline, collection, null, false, true);
             spAppResourceList.add(appResDir);
+            spAppResourceHash.put(COLLECTIONDIR, appResDir);
 
             // This is the Full Path User / Discipline
             // For example: rods/fish
@@ -767,6 +779,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 fillAppResourceDefFromDir(appResDir, disciplineStr, dir);
             }
             spAppResourceList.add(appResDir);
+            spAppResourceHash.put(DISCPLINEDIR, appResDir);
 
             // Common Views 
             dir = XMLHelper.getConfigDir("common");
@@ -777,8 +790,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 
                 if (debug) log.debug("Adding4 "+getSpAppResDefAsString(appResDef));
                 spAppResourceList.add(appResDef);
+                spAppResourceHash.put(COMMONDIR, appResDir);
             }
-            
+
             // BackStop
             appResDir = getAppResDir(session, user, discipline, null, "BackStop", false, true);
             dir = XMLHelper.getConfigDir("backstop");
@@ -787,7 +801,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 fillAppResourceDefFromDir(appResDir, "backstop", dir);
             }
             spAppResourceList.add(appResDir);
-            
+            spAppResourceHash.put(BACKSTOPDIR, appResDir);
+
             // We close the session here so all SpAppResourceDir get unattached to hibernate
             // because UIFieldFormatterMgr and loading views all need a session
             // and we don't want to reuse in and get a double session
@@ -1091,21 +1106,27 @@ public class SpecifyAppContextMgr extends AppContextMgr
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.AppContextMgr#getResourceFromUserArea(java.lang.String)
+     * @see edu.ku.brc.af.core.AppContextMgr#getResourceFromDir(java.lang.String, java.lang.String)
      */
     @Override
-    public AppResourceIFace getResourceFromUserArea(final String name)
+    public AppResourceIFace getResourceFromDir(final String appResDirName, final String appResName)
     {
-        SpAppResourceDir appResDir = spAppResourceList.get(0);
-        if (appResDir.getIsPersonal())
+        SpAppResourceDir appResDir = spAppResourceHash.get(appResDirName);
+        if (appResDir != null)
         {
-            for (SpAppResource ar : appResDir.getSpAppResources())
+            if (appResDir.getIsPersonal())
             {
-                if (ar.getName().equals(name))
+                for (SpAppResource ar : appResDir.getSpAppResources())
                 {
-                    return ar;
+                    if (ar.getName().equals(appResName))
+                    {
+                        return ar;
+                    }
                 }
             }
+        } else
+        {
+            log.error("Couldn't find AppResDir with name["+appResDirName+"]");
         }
         return null;
     }
@@ -1113,11 +1134,11 @@ public class SpecifyAppContextMgr extends AppContextMgr
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.AppResourceDefaultMgr#getResourceAsDOM(java.lang.String)
      */
-    public Element getResourceAsDOM(final String name)
+    public Element getResourceAsDOM(final String appResName)
     {
         try
         {
-            String xmlStr = getResourceAsXML(name);
+            String xmlStr = getResourceAsXML(appResName);
             if (StringUtils.isNotEmpty(xmlStr))
             {
                 return XMLHelper.readStrToDOM4J(xmlStr);
@@ -1137,7 +1158,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
      * @see edu.ku.brc.af.core.AppContextMgr#getResourceAsDOM(edu.ku.brc.af.core.AppResourceIFace)
      */
     @Override
-    public Element getResourceAsDOM(AppResourceIFace appRes)
+    public Element getResourceAsDOM(final AppResourceIFace appRes)
     {
         try
         {
@@ -1209,9 +1230,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
      * @see edu.ku.brc.af.core.AppContextMgr#getResourceAsXML(java.lang.String)
      */
     @Override
-    public String getResourceAsXML(final String name)
+    public String getResourceAsXML(final String appResName)
     {
-        return getResourceAsXML(getResource(name));
+        return getResourceAsXML(getResource(appResName));
     }
 
     /* (non-Javadoc)
@@ -1280,9 +1301,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
      * @see edu.ku.brc.af.core.AppContextMgr#putResourceAsXMLFromUserArea(java.lang.String, java.lang.String)
      */
     @Override
-    public void putResourceAsXML(String name, String xmlStr)
+    public void putResourceAsXML(String appResName, String xmlStr)
     {
-        AppResourceIFace appRes = getResource(name);
+        AppResourceIFace appRes = getResource(appResName);
         if (appRes != null)
         {
             putResourceAsXML(appRes, xmlStr);
@@ -1317,43 +1338,41 @@ public class SpecifyAppContextMgr extends AppContextMgr
      * @see edu.ku.brc.af.core.AppContextMgr#createUserAreaAppResource()
      */
     @Override
-    public AppResourceIFace createUserAreaAppResource()
+    public AppResourceIFace createAppResourceForDir(final String appResDirName)
     {
-        SpAppResourceDir userAppResDir = spAppResourceList.get(0);
-        if (userAppResDir.getIsPersonal())
+        SpAppResourceDir appResDir = spAppResourceHash.get(appResDirName);
+        if (appResDir != null)
         {
             SpAppResource appRes = new SpAppResource();
             appRes.initialize();
             appRes.setSpecifyUser(SpecifyUser.getCurrentUser());
             
-            userAppResDir.getSpAppResources().add(appRes);
-            appRes.setSpAppResourceDir(userAppResDir);
+            appResDir.getSpAppResources().add(appRes);
+            appRes.setSpAppResourceDir(appResDir);
             return appRes;
-            
-        } else
-        {
-            log.error("Couldn;t find Personal Dir");
+                
         }
+        log.error("Couldn't find AppResDir with name["+appResDirName+"]");
         return null;
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.AppContextMgr#removeUserAreaAppResource(edu.ku.brc.af.core.AppResourceIFace)
+     * @see edu.ku.brc.af.core.AppContextMgr#removeAppResource(java.lang.String, edu.ku.brc.af.core.AppResourceIFace)
      */
     @Override
-    public boolean removeUserAreaAppResource(final AppResourceIFace appResource)
+    public boolean removeAppResource(final String appResDirName, final AppResourceIFace appResource)
     {
         if (!(appResource instanceof SpAppResource))
         {
             return false;
         }
         
-        SpAppResourceDir userAppResDir = spAppResourceList.get(0);
-        if (userAppResDir.getIsPersonal())
+        SpAppResourceDir appResDir = spAppResourceHash.get(appResDirName);
+        if (appResDir != null)
         {
             SpAppResource appRes = (SpAppResource)appResource;
             
-            if (!userAppResDir.getSpPersistedAppResources().contains(appRes))
+            if (!appResDir.getSpPersistedAppResources().contains(appRes))
             {
                 return false;
             }
@@ -1363,10 +1382,10 @@ public class SpecifyAppContextMgr extends AppContextMgr
             {
                 session = DataProviderFactory.getInstance().createSession();
                 session.beginTransaction();
-                userAppResDir.getSpPersistedAppResources().remove(appRes);
-                userAppResDir.getSpAppResources().remove(appRes);
+                appResDir.getSpPersistedAppResources().remove(appRes);
+                appResDir.getSpAppResources().remove(appRes);
                 session.delete(appResource);
-                session.saveOrUpdate(userAppResDir);
+                session.saveOrUpdate(appResDir);
                 session.commit();
                 
                 return true;
@@ -1385,7 +1404,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             }
         } else
         {
-            log.error("Couldn;t find Personal Dir");
+            log.error("Couldn't find AppResDir with name["+appResDirName+"]");
         }
         return false;
     }

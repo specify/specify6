@@ -320,14 +320,22 @@ public class InteractionsTask extends BaseTask
         exchgNavBtn = addCommand(actionsNavBox, NEW_EXCHANGE,NEW_EXCHANGE, name, new int[] {Gift.getClassTableId(), CollectionObject.getClassTableId(), InfoRequest.getClassTableId()});
     }
     
+    /**
+     * @param navBox
+     * @param action
+     * @param cmdName
+     * @param iconName
+     * @param tableIds
+     * @return
+     */
     protected NavBoxButton addCommand(final NavBox navBox, 
                               final String action, 
-                              final String name, 
+                              final String cmdName, 
                               final String iconName,
                               final int[]  tableIds)
     {
         CommandAction cmdAction = new CommandAction(INTERACTIONS, action);
-        NavBoxButton roc = (NavBoxButton)makeDnDNavBtn(navBox, getResourceString(name), iconName, cmdAction, null, true, false);// true means make it draggable
+        NavBoxButton roc = (NavBoxButton)makeDnDNavBtn(navBox, getResourceString(cmdName), iconName, cmdAction, null, true, false);// true means make it draggable
         DataFlavorTableExt dfx = new DataFlavorTableExt(RecordSetTask.RECORDSET_FLAVOR.getDefaultRepresentationClass(), 
                                                         RecordSetTask.RECORDSET_FLAVOR.getHumanPresentableName(), tableIds);
         roc.addDropDataFlavor(dfx);
@@ -433,10 +441,8 @@ public class InteractionsTask extends BaseTask
             //SubPaneMgr.getInstance().showPane(starterPane);
             return starterPane;
             
-        } else
-        {
-            return starterPane = new SimpleDescPane(title, this, getResourceString("INTERACTIONS_OVERVIEW"));
         }
+        return starterPane = new SimpleDescPane(title, this, getResourceString("INTERACTIONS_OVERVIEW"));
     }
 
     /* (non-Javadoc)

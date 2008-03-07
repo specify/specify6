@@ -65,28 +65,29 @@ public abstract class AppContextMgr
      * @param viewName the name of the view (cannot be null)
      * @return the view
      */
-    public abstract ViewIFace getView(final String viewSetName, final String viewName);
+    public abstract ViewIFace getView(final String viewSetName, String viewName);
     
     /**
      * Returns an Application Resource object by name
-     * @param name the name of the resource
+     * @param appResName the name of the resource
      * @return the application resource
      */
-    public abstract AppResourceIFace getResource(final String name);
+    public abstract AppResourceIFace getResource(String appResName);
    
     /**
      * Returns an Application Resource object by name from the user's area
-     * @param name the name of the resource
+     * @param appResDirName the name of the directory for resource (virtual directory).
+     * @param appResName the name of the resource
      * @return the application resource
      */
-    public abstract AppResourceIFace getResourceFromUserArea(final String name);
+    public abstract AppResourceIFace getResourceFromDir(String appResDirName, String appResName);
    
     /**
      * Returns Application Resource objects by mime type
      * @param mimeType the mime type of the files to be returned
      * @return the list application resource
      */
-    public abstract List<AppResourceIFace> getResourceByMimeType(final String mimeType);
+    public abstract List<AppResourceIFace> getResourceByMimeType(String mimeType);
    
     /**
      * Returns the DOM for an Resource that is an XML Resource. 
@@ -137,14 +138,18 @@ public abstract class AppContextMgr
     public abstract void putResourceAsXML(AppResourceIFace appRes, final String xmlStr);
     
     /**
-     * @return an empty AppResource that will be saved in the UserArea
+     * Creates an AppResource and associates it with an AppResourceDir.
+     * @param appResDirName the name of the virtual directory
+     * @return an empty AppResource that will be saved in the AppResourceDir
      */
-    public abstract AppResourceIFace createUserAreaAppResource();
+    public abstract AppResourceIFace createAppResourceForDir(String appResDirName);
    
     /**
-     * @return an empty AppResource that will be saved in the UserArea
+     * Removes a resource from a virtual directorey. Sometimes they cannot be removed because they are a backstop.
+     * @param appResDirName
+     * @return true if it was removed
      */
-    public abstract boolean removeUserAreaAppResource(AppResourceIFace appResource);
+    public abstract boolean removeAppResource(String appResDirName, AppResourceIFace appResource);
     
     /**
      * @return true if save correctly.
@@ -190,17 +195,18 @@ public abstract class AppContextMgr
     }
     
     /**
-     * Looks up a resource by name and copies the contents to a User Area Resource.
+     * Looks up a resource by name and copies the contents to a Resource in a virtual directory.
+     * @param appResDirName
      * @param resourceName the name of an existing resource.
-     * @return the new resource from the User Area with the values form the existing resource.
+     * @return the new resource with the values form the existing resource.
      */
-    public AppResourceIFace copyToAUserAreaAppRes(final String resourceName)
+    public AppResourceIFace copyToDirAppRes(final String appResDirName, final String resourceName)
     {
         AppResourceIFace toAppRes   = null;
         AppResourceIFace fromAppRes = AppContextMgr.getInstance().getResource(resourceName);
         if (fromAppRes != null)
         {
-            toAppRes = AppContextMgr.getInstance().createUserAreaAppResource();
+            toAppRes = AppContextMgr.getInstance().createAppResourceForDir(appResDirName);
             copy(fromAppRes, toAppRes);
         }
         return toAppRes;

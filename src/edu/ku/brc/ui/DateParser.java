@@ -339,10 +339,8 @@ public class DateParser
         {
             return parseForDate(type, dateStr, isZeroMnOK, isZeroDyOK);
             
-        } else
-        {
-            dateError = DateErrorType.UnknownFormat;
         }
+        dateError = DateErrorType.UnknownFormat;
         return null;
     }
 

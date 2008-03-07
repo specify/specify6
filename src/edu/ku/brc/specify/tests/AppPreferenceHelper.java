@@ -79,12 +79,10 @@ public class AppPreferenceHelper
                                    "rods"))
             {
                 throw new RuntimeException("Couldn't login into ["+databaseName+"] "+DBConnection.getInstance().getErrorMsg());
-            } else
-            {
-                HibernateUtil.getCurrentSession();
-                AppPreferences.getRemote().load(); // Loads prefs from the database
-                log.info("Loaded preferences");
             }
+            HibernateUtil.getCurrentSession();
+            AppPreferences.getRemote().load(); // Loads prefs from the database
+            log.info("Loaded preferences");
         }        
     }
 

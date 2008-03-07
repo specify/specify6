@@ -329,17 +329,17 @@ public class QueryTask extends BaseTask
     @SuppressWarnings("unchecked")
     protected Vector<String> readResourceForList(final String resourceName)
     {
-        Vector<String>   list     = null;
-        String           xmlStr   = null;
-        AppResourceIFace uaAppRes = AppContextMgr.getInstance().getResourceFromUserArea(resourceName);
-        if (uaAppRes != null)
+        Vector<String>   list   = null;
+        String           xmlStr = null;
+        AppResourceIFace appRes = AppContextMgr.getInstance().getResourceFromDir("Personal", resourceName);
+        if (appRes != null)
         {
-            xmlStr = uaAppRes.getDataAsString();
+            xmlStr = appRes.getDataAsString();
             
         } else
         {
             // Get the default resource by name and copy it to a new User Area Resource
-            AppResourceIFace newAppRes = AppContextMgr.getInstance().copyToAUserAreaAppRes(resourceName);
+            AppResourceIFace newAppRes = AppContextMgr.getInstance().copyToDirAppRes("Personal", resourceName);
             // Save it in the User Area
             AppContextMgr.getInstance().saveResource(newAppRes);
             xmlStr = newAppRes.getDataAsString();
@@ -368,7 +368,7 @@ public class QueryTask extends BaseTask
                                  final Vector<String> list)
     {
         XStream xstream = new XStream();
-        AppResourceIFace uaAppRes = AppContextMgr.getInstance().getResourceFromUserArea(resourceName);
+        AppResourceIFace uaAppRes = AppContextMgr.getInstance().getResourceFromDir("Personal", resourceName);
         if (uaAppRes != null)
         {
             uaAppRes.setDataAsString(xstream.toXML(list));

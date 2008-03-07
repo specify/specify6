@@ -107,7 +107,7 @@ public class DataDict
         Element node = (Element)e.selectSingleNode("strong");
         if (node == null)
         {
-            node = (Element)e;
+            node = e;
         }
         System.out.println("1 "+e.getName()+" ["+node.getText()+"]");
         return getText(node.getText());
@@ -224,7 +224,7 @@ public class DataDict
         
         for (Element tr : (List<Element>)table.selectNodes("tr"))
         {
-            List<Element> tds = (List<Element>)tr.selectNodes("td");
+            List<Element> tds = tr.selectNodes("td");
             if (tds.size() == 5)
             {
                 String type = getText(tds.get(1).getText());
@@ -359,18 +359,15 @@ public class DataDict
                             System.err.println("  "+fieldDef.getName()+" Length: "+fdLen+" != "+fieldInfo.getLength()); 
                         }
                         break;
-                        
-                    } else
+                    }
+                    if (i == 1)
                     {
-                        if (i == 1)
+                        if (!hasMissing)
                         {
-                            if (!hasMissing)
-                            {
-                                System.err.println("\nComparing "+tableDef.getName());
-                            }
-                            System.err.println("  "+fieldDef.getName()+" is missing.");
-                            hasMissing = true;
+                            System.err.println("\nComparing "+tableDef.getName());
                         }
+                        System.err.println("  "+fieldDef.getName()+" is missing.");
+                        hasMissing = true;
                     }
                     fieldName = "is" + fieldName;
                 }

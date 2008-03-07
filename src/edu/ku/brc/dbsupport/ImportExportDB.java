@@ -1671,41 +1671,39 @@ public class ImportExportDB
                         // otherwise make a generic thing
                         // some things cant be generic
                         // also check the order of how buildsampledb does it ^.^
-                        else
-                        { // a generic map
-                            // get the classtype
-                            /*
-                             * if(compareMe.getName() == "deaccessionPreparation"){ String className =
-                             * tablerel.getClassName().substring(29).toLowerCase();//strip working
-                             * set Object tableObject2 = genericDBObject2(className, num); return
-                             * tableObject2; }
-                             */// else{
-                            // if(compareMe.getName() == "referenceWork"){File path = new
-                            // File(importFolderPath+"ReferenceWork"+".xml");
-                            try
-                            {// if a generic exsists
-                                File path = new File(importFolderPath
-                                        + capFirstChar(compareMe.getName()) + "Generic.xml");
-                                Element dbImport2 = XMLHelper.readFileToDOM4J(path);
-                                Object tableObject = dynamicXMLImportRecReturn(dbImport2,
-                                        capFirstChar(compareMe.getName()));
-                                return tableObject;
-                            } catch (FileNotFoundException e)
-                            {
-                                // normal
-                                String className = tablerel.getClassName().substring(29)
-                                        .toLowerCase();// strip working set
-                                Object tableObject = genericDBObject2(className, num);
-                                return tableObject;
-                            }
-                            // }else{
-                            /*
-                             * Element dbImport = XMLHelper.readFileToDOM4J(path); Object
-                             * tableObject = dynamicXMLImportRecReturn(dbImport,
-                             * capFirstChar(compareMe.getName())); return tableObject;
-                             */
-                            // }
+                        // a generic map
+                        // get the classtype
+                        /*
+                         * if(compareMe.getName() == "deaccessionPreparation"){ String className =
+                         * tablerel.getClassName().substring(29).toLowerCase();//strip working
+                         * set Object tableObject2 = genericDBObject2(className, num); return
+                         * tableObject2; }
+                         */// else{
+                        // if(compareMe.getName() == "referenceWork"){File path = new
+                        // File(importFolderPath+"ReferenceWork"+".xml");
+                        try
+                        {// if a generic exsists
+                            File path = new File(importFolderPath
+                                    + capFirstChar(compareMe.getName()) + "Generic.xml");
+                            Element dbImport2 = XMLHelper.readFileToDOM4J(path);
+                            Object tableObject = dynamicXMLImportRecReturn(dbImport2,
+                                    capFirstChar(compareMe.getName()));
+                            return tableObject;
+                        } catch (FileNotFoundException e)
+                        {
+                            // normal
+                            String className = tablerel.getClassName().substring(29)
+                                    .toLowerCase();// strip working set
+                            Object tableObject = genericDBObject2(className, num);
+                            return tableObject;
                         }
+                        // }else{
+                        /*
+                         * Element dbImport = XMLHelper.readFileToDOM4J(path); Object
+                         * tableObject = dynamicXMLImportRecReturn(dbImport,
+                         * capFirstChar(compareMe.getName())); return tableObject;
+                         */
+                        // }
                         // check if its a collection (one-to-many)
                     } else if ((tablerel != null && tablerel.getType().name() == "OneToMany")
                             || (tablerel != null && tablerel.getType().name() == "ManyToMany"))
@@ -1830,41 +1828,40 @@ public class ImportExportDB
                         // otherwise make a generic thing
                         // some things cant be generic
                         // also check the order of how buildsampledb does it ^.^
-                        else
-                        { // a generic map
-                            // get the classtype
-                            /*
-                             * if(compareMe.getName() == "deaccessionPreparation"){ String className =
-                             * tablerel.getClassName().substring(29).toLowerCase();//strip working
-                             * set Object tableObject2 = genericDBObject2(className, num); return
-                             * tableObject2; }
-                             */// else{
-                            // if(compareMe.getName() == "referenceWork"){File path = new
-                            // File(importFolderPath+"ReferenceWork"+".xml");
-                            try
-                            {// if a generic exsists
-                                File path = new File(importFolderPath
-                                        + capFirstChar(compareMe.getName()) + "Generic.xml");
-                                Element dbImport2 = XMLHelper.readFileToDOM4J(path);
-                                Object tableObject = dynamicXMLImportRecReturn(dbImport2,
-                                        capFirstChar(compareMe.getName()));
-                                return tableObject;
-                            } catch (FileNotFoundException e)
-                            {
-                                // normal
-                                String className = tablerel.getClassName().substring(29)
-                                        .toLowerCase();// strip working set
-                                Object tableObject = genericDBObject2(className, num);
-                                return tableObject;
-                            }
-                            // }else{
-                            /*
-                             * Element dbImport = XMLHelper.readFileToDOM4J(path); Object
-                             * tableObject = dynamicXMLImportRecReturn(dbImport,
-                             * capFirstChar(compareMe.getName())); return tableObject;
-                             */
-                            // }
+                        // a generic map
+                        // get the classtype
+                        /*
+                         * if(compareMe.getName() == "deaccessionPreparation"){ String className =
+                         * tablerel.getClassName().substring(29).toLowerCase();//strip working
+                         * set Object tableObject2 = genericDBObject2(className, num); return
+                         * tableObject2; }
+                         */// else{
+                        // if(compareMe.getName() == "referenceWork"){File path = new
+                        // File(importFolderPath+"ReferenceWork"+".xml");
+                        try
+                        {// if a generic exsists
+                            File path = new File(importFolderPath
+                                    + capFirstChar(compareMe.getName()) + "Generic.xml");
+                            Element dbImport2 = XMLHelper.readFileToDOM4J(path);
+                            Object tableObject = dynamicXMLImportRecReturn(dbImport2,
+                                    capFirstChar(compareMe.getName()));
+                            return tableObject;
+                            
+                        } catch (FileNotFoundException e)
+                        {
+                            // normal
+                            String className = tablerel.getClassName().substring(29)
+                                    .toLowerCase();// strip working set
+                            Object tableObject = genericDBObject2(className, num);
+                            return tableObject;
                         }
+                        // }else{
+                        /*
+                         * Element dbImport = XMLHelper.readFileToDOM4J(path); Object
+                         * tableObject = dynamicXMLImportRecReturn(dbImport,
+                         * capFirstChar(compareMe.getName())); return tableObject;
+                         */
+                        // }
                         // check if its a collection (one-to-many)
                     } else if ((tablerel != null && tablerel.getType().name() == "OneToMany")
                             || (tablerel != null && tablerel.getType().name() == "ManyToMany"))
@@ -1979,11 +1976,9 @@ public class ImportExportDB
                             className = className.toLowerCase();
                             Object tableObject = genericDBObject2(className, num);
                             return tableObject;
-                        } else
-                        {
-                            Object tableObject = getParentDBObject(className, num);
-                            return tableObject;
                         }
+                        Object tableObject = getParentDBObject(className, num);
+                        return tableObject;
                         // check if its a collection (one-to-many)
                     } else if ((tablerel != null && tablerel.getType().name() == "OneToMany")
                             || (tablerel != null && tablerel.getType().name() == "ManyToMany"))

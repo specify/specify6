@@ -566,7 +566,7 @@ public class DataEntryTask extends BaseTask
                 config(xstream);
                 
                 String           xmlStr    = null;
-                AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromUserArea(resourceName);
+                AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromDir("Personal", resourceName);
                 if (escAppRes != null)
                 {
                     xmlStr = escAppRes.getDataAsString();
@@ -574,7 +574,7 @@ public class DataEntryTask extends BaseTask
                 } else
                 {
                     // Get the default resource by name and copy it to a new User Area Resource
-                    AppResourceIFace newAppRes = AppContextMgr.getInstance().copyToAUserAreaAppRes(resourceName);
+                    AppResourceIFace newAppRes = AppContextMgr.getInstance().copyToDirAppRes("Personal", resourceName);
                     // Save it in the User Area
                     AppContextMgr.getInstance().saveResource(newAppRes);
                     xmlStr = newAppRes.getDataAsString();
@@ -584,6 +584,9 @@ public class DataEntryTask extends BaseTask
                 
                 stdViews  = dataEntryXML.getStd();
                 miscViews = dataEntryXML.getMisc();
+                
+                initDataEntryViews(stdViews);
+                initDataEntryViews(miscViews);
                 
                 buildNavBoxes(stdViews, miscViews);
                 
@@ -818,7 +821,7 @@ public class DataEntryTask extends BaseTask
                     //appRes.setDataAsString(xstream.toXML(dataEntryXML));
                     //((SpecifyAppContextMgr)AppContextMgr.getInstance()).saveResource(appRes);
                     
-                    AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromUserArea(resourceName);
+                    AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromDir("Personal", resourceName);
                     if (escAppRes != null)
                     {
                         escAppRes.setDataAsString(xstream.toXML(dataEntryXML));

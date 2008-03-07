@@ -114,11 +114,11 @@ public class TableInfoListRenderer implements ListCellRenderer
         return display;
     }
     
-    private static Border getNoFocusBorder() {
+    private static Border getNoFocusBorder() 
+    {
         if (System.getSecurityManager() != null) {
             return SAFE_NO_FOCUS_BORDER;
-        } else {
-            return noFocusBorder;
         }
+        return noFocusBorder;
     }
 }

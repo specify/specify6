@@ -130,10 +130,8 @@ public class DatamodelGenerator
             {
                 Desc desc = new Desc(d.getText(), d.getCountry(), d.getLanguage(), d.getVariant());
                 return desc;
-            } else
-            {
-                if (showDescErrors) log.error("No Desc for Table["+tableName+"]");
             }
+            if (showDescErrors) log.error("No Desc for Table["+tableName+"]");
         } else
         {
             log.error("No Table["+tableName+"]");
@@ -156,10 +154,8 @@ public class DatamodelGenerator
             {
                 Name nm = new Name(dn.getText(), dn.getCountry(), dn.getLanguage(), dn.getVariant());
                 return nm;
-            } else
-            {
-                log.error("No NameDesc for ["+tableName+"]");
             }
+            log.error("No NameDesc for ["+tableName+"]");
         } else
         {
             log.error("No Table["+tableName+"]");
@@ -185,10 +181,8 @@ public class DatamodelGenerator
                 {
                     Desc desc = new Desc(d.getText(), d.getCountry(), d.getLanguage(), d.getVariant());
                     return desc;
-                } else
-                {
-                    if (showDescErrors) log.error("No Desc for ["+tableName+"] Field["+fieldName+"]");
                 }
+                if (showDescErrors) log.error("No Desc for ["+tableName+"] Field["+fieldName+"]");
             } else
             {
                 log.error("No Field ["+tableName+"] Field["+fieldName+"]");
@@ -218,10 +212,8 @@ public class DatamodelGenerator
                 {
                     Name nm = new Name(dn.getText(), dn.getCountry(), dn.getLanguage(), dn.getVariant());
                     return nm;
-                } else
-                {
-                    log.error("No Name for ["+tableName+"] Field["+fieldName+"]");
                 }
+                log.error("No Name for ["+tableName+"] Field["+fieldName+"]");
             } else
             {
                 log.error("No Field ["+tableName+"] Field["+fieldName+"]");
@@ -602,6 +594,7 @@ public class DatamodelGenerator
     protected String getRightSideForOneToOne(final Class<?> leftSide,
                                              final Class<?> rightSide, 
                                              final String   leftSideVarName,
+                                             @SuppressWarnings("unused")
                                              final String   mappedName,
                                              final boolean  isMappedBy)
     {
@@ -864,11 +857,12 @@ public class DatamodelGenerator
         }  
     }
 
+    @SuppressWarnings("unchecked")
     protected void addCascadeRule(Class<?> cls, Method method, final String rule)
     {
         
         String import1 = "import org.hibernate.annotations.Cascade;";
-        String import2 = "import org.hibernate.annotations.CascadeType;";
+        //String import2 = "import org.hibernate.annotations.CascadeType;";
         try
         {
             File f = new File(srcCodeDir.getAbsoluteFile() + File.separator + cls.getSimpleName() + ".java");
@@ -880,7 +874,7 @@ public class DatamodelGenerator
     
             List<String>   strLines = FileUtils.readLines(f);
             Vector<String> lines    = new Vector<String>();
-            boolean addedImports = false;
+            //boolean addedImports = false;
             boolean fnd          = false;
             boolean passedImport = false;
             
@@ -971,7 +965,7 @@ public class DatamodelGenerator
                         continue;
                     }
                     
-                    String thisSideName = getFieldNameFromMethod(method);
+                    //String thisSideName = getFieldNameFromMethod(method);
 
                     if (method.isAnnotationPresent(javax.persistence.ManyToOne.class))
                     {
@@ -1023,6 +1017,7 @@ public class DatamodelGenerator
         }  
     }
     
+    @SuppressWarnings("unchecked")
     protected void removeCascadeRule(Class<?> cls, Method method)
     {
         
@@ -1087,8 +1082,8 @@ public class DatamodelGenerator
         {
             Class classObj = Class.forName(packageName + "." + className);
             
-            Table   table       = null; 
-            String  tableName   = null;
+            //Table   table       = null; 
+            //String  tableName   = null;
 
             if (classObj.isAnnotationPresent(javax.persistence.Table.class))
             {
@@ -1321,7 +1316,7 @@ public class DatamodelGenerator
      */
     private boolean readTableMetadataFromFile(final String tableIdListingFilePath)
     {
-        Hashtable<String, Boolean> abbrvHash = new Hashtable<String, Boolean>();
+        Hashtable<String, Boolean> abbrvHashLocal = new Hashtable<String, Boolean>();
         
         log.info("Preparing to read in Table and TableID listing from file: " + tableIdListingFilePath);
         try
@@ -1346,9 +1341,9 @@ public class DatamodelGenerator
                     
                     if (StringUtils.isNotEmpty(abbrv))
                     {
-                        if (abbrvHash.get(abbrv) == null)
+                        if (abbrvHashLocal.get(abbrv) == null)
                         {
-                            abbrvHash.put(abbrv, true);
+                            abbrvHashLocal.put(abbrv, true);
                         } else
                         {
                             throw new RuntimeException("`abbrev` ["+abbrv+"]  or table["+ tablename +"] ids already in use.");

@@ -66,11 +66,9 @@ public class PreferenceTest extends TestCase
                                    "rods"))
             {
                 throw new RuntimeException("Couldn't login into ["+databaseName+"] "+DBConnection.getInstance().getErrorMsg());
-            } else
-            {
-                HibernateUtil.getCurrentSession();
-                AppPreferences.getRemote().load(); // Loads prefs from the database
             }
+            HibernateUtil.getCurrentSession();
+            AppPreferences.getRemote().load(); // Loads prefs from the database
         }
     }
     

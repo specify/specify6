@@ -63,7 +63,7 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#fillForm(java.lang.Object, edu.ku.brc.ui.forms.Viewable)
      */
     @Override
-    public void afterFillForm(final Object dataObj, final Viewable viewable)
+    public void afterFillForm(final Object dataObj, final Viewable viewableArg)
     {
         if (formViewObj != null && formViewObj.getDataObj() instanceof Loan)
         {
@@ -82,7 +82,7 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
             for (LoanPreparation loanPrep : loan.getLoanPreparations())
             {
                 Boolean isResolved = loanPrep.getIsResolved();
-                if (isResolved == null && !isResolved)
+                if (isResolved == null && isResolved != null && !isResolved)
                 {
                     allResolved = false;
                     break;

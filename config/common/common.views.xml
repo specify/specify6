@@ -229,7 +229,6 @@
         <view name="Project"
             class="edu.ku.brc.specify.datamodel.Project"
             isinternal="false"
-            isinternal="false"
             resourcelabels="false">
             <desc><![CDATA[Project form.]]></desc>
             <altviews>

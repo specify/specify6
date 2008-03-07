@@ -156,7 +156,7 @@ public class SearchConfigService
         SearchConfig.configXStream(xstream);
         
         String           xmlStr    = null;
-        AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromUserArea(resourceName);
+        AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromDir("Personal", resourceName);
         if (escAppRes != null)
         {
             xmlStr = escAppRes.getDataAsString();
@@ -164,7 +164,7 @@ public class SearchConfigService
         } else
         {
             // Get the default resource by name and copy it to a new User Area Resource
-            AppResourceIFace newAppRes = AppContextMgr.getInstance().copyToAUserAreaAppRes(resourceName);
+            AppResourceIFace newAppRes = AppContextMgr.getInstance().copyToDirAppRes("Personal", resourceName);
             // Save it in the User Area
             AppContextMgr.getInstance().saveResource(newAppRes);
             xmlStr = newAppRes.getDataAsString();
@@ -230,7 +230,7 @@ public class SearchConfigService
             ex.printStackTrace();
         }
         
-        AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromUserArea(resourceName);
+        AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromDir("Personal", resourceName);
         if (escAppRes != null)
         {
             escAppRes.setDataAsString(xstream.toXML(searchConfig));

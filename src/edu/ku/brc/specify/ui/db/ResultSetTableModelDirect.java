@@ -302,16 +302,13 @@ public class ResultSetTableModelDirect extends AbstractTableModel
 
                 return rs;
 
-            } else
+            }
+            for (int i=0;i<rows.length;i++)
             {
-                for (int i=0;i<rows.length;i++)
+                if (resultSet.absolute(rows[i]))
                 {
-                    if (resultSet.absolute(rows[i]))
-                    {
-                        rs.addItem(resultSet.getInt(column+1));
-                    }
+                    rs.addItem(resultSet.getInt(column+1));
                 }
-
             }
         } catch (Exception ex)
         {

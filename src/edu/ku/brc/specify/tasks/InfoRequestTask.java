@@ -282,6 +282,7 @@ public class InfoRequestTask extends BaseTask
         DataProviderSessionIFace session = null;
         try
         {
+            session = DataProviderFactory.getInstance().createSession();
             RecordSet rs = session.get(RecordSet.class, recordSet.getRecordSetId());
             infoRequest.setRecordSet(rs);
             
