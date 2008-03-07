@@ -36,6 +36,29 @@
             </altviews>
         </view>
 
+        <view name="CollectingEventSubform"
+            class="edu.ku.brc.specify.datamodel.CollectingEvent"
+            isinternal="false"
+            resourcelabels="false">
+            <desc><![CDATA[CollectingEvent Form]]></desc>
+            <altviews>
+                <altview name="CollectingEventSubform View" viewdef="CollectingEventSubform" label="View" mode="view" default="true"/>
+                <altview name="CollectingEventSubform Edit" viewdef="CollectingEventSubform" label="Edit" mode="edit"/>
+            </altviews>
+        </view>
+        
+        
+        <view name="CollectingTrip"
+            class="edu.ku.brc.specify.datamodel.CollectingTrip"
+            isinternal="false"
+            resourelabels="false">
+            <desc><![CDATA[CollectingTrip Form]]></desc>
+            <altviews>
+                <altview name="CollectingTrip View" viewdef="CollectingTrip" label="View" mode="view" default="true"/>
+                <altview name="CollectingTrip Edit" viewdef="CollectingTrip" label="Edit" mode="edit"/>
+            </altviews>
+        </view>
+
         <view name="Collectors"
         	class="edu.ku.brc.specify.datamodel.Collector"
         	resourcelabels="false">
@@ -436,6 +459,77 @@
                     <cell type="field" id="2" name="remarks" uitype="textarea" colspan="3" rows="3"/>
                 </row>
 
+            </rows>
+        </viewdef>
+
+        <viewdef
+            type="form"
+            name="CollectingEventSubform"
+            class="edu.ku.brc.specify.datamodel.CollectingEvent"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Collecting Event]]></desc>
+            <columnDef>110px,2px,p,5px,p,2px,p,5px,p,2px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Field Number"/>
+                    <cell type="field" id="1" name="stationFieldNumber" uitype="text"/>
+                    <cell type="label" labelfor="2" label="Date"/>
+                    <cell type="field" id="2" name="startDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
+                    <cell type="label" labelfor="3" label="Gear"/>
+                    <cell type="field" id="3" name="method" uitype="combobox" dspuitype="dsptextfield" picklist="CollectingMethod"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="4" label="Locality"/>
+                    <cell type="field" id="4" name="locality" uitype="querycbx" initialize="name=Locality;title=Locality" colspan="10"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="6" label="Remarks"/>
+                    <cell type="field" id="6" name="remarks" uitype="textarea" colspan="10" cols="50"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5" label="Collectors"/>
+                    <cell type="subview" viewname="Collectors" id="8" name="collectors" colspan="10"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef
+            type="form"
+            name="CollectingTrip"
+            class="edu.ku.brc.specify.datamodel.CollectingTrip"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[CollectingTrip Form]]></desc>
+            
+            <columnDef>110px,2px,100px,2px,p,2px,100px,2px,p,2px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+            <rows>
+                <row>
+                    <cell type="label" label="Collecting Trip" icon="CollectingTrip" recordobj="true" colspan="12"/>
+                </row>
+                <row> 
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="collectingTripName" uitype="text"/>
+                    <cell type="label" labelfor="7"/>
+                    <cell type="field" id="7" name="startDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
+                    <cell type="label" labelfor="2" label="End Date"/>
+                    <cell type="field" id="2" name="endDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>                  
+                </row>              
+                <row>
+                    <cell type="label" labelfor="5" label="Remarks"/>
+                    <cell type="field" id="5" name="remarks" uitype="textarea" colspan="10" cols="40" rows="3"/>
+                </row>
+                <row>
+                    <cell type="separator" label="Collection Events" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="subview" id="10" name="collectingEvents" viewname="CollectingEventSubform" colspan="12"/>
+                 </row>
+                
             </rows>
         </viewdef>
 
