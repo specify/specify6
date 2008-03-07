@@ -105,14 +105,6 @@ public class CatalogNumberUIFieldFormatter implements UIFieldFormatterIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getSample()
-     */
-    public String getSample()
-    {
-    	return "123";
-    }
-
-    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getDateWrapper()
      */
     public DateWrapper getDateWrapper()
