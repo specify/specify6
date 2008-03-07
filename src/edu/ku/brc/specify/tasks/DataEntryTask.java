@@ -107,6 +107,8 @@ public class DataEntryTask extends BaseTask
     
     public static final DataFlavor DATAENTRY_FLAVOR = new DataFlavor(DataEntryTask.class, "Data_Entry");
     
+    protected static final String resourceName = "DataEntryTaskInit";
+    
     protected static Hashtable<String, ImageIcon> iconForFormClass = new Hashtable<String, ImageIcon>();
 
     // Data Members
@@ -225,6 +227,7 @@ public class DataEntryTask extends BaseTask
                 } catch (Exception ex)
                 {
                     log.error(ex);
+                    ex.printStackTrace();
                     throw new RuntimeException(ex);
                 }
             }
@@ -562,7 +565,22 @@ public class DataEntryTask extends BaseTask
                 
                 config(xstream);
                 
-                DataEntryXML dataEntryXML = (DataEntryXML)xstream.fromXML(AppContextMgr.getInstance().getResourceAsXML("DataEntryTaskInit")); // Describes the definitions of the full text search);
+                String           xmlStr    = null;
+                AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromUserArea(resourceName);
+                if (escAppRes != null)
+                {
+                    xmlStr = escAppRes.getDataAsString();
+                    
+                } else
+                {
+                    // Get the default resource by name and copy it to a new User Area Resource
+                    AppResourceIFace newAppRes = AppContextMgr.getInstance().copyToAUserAreaAppRes(resourceName);
+                    // Save it in the User Area
+                    AppContextMgr.getInstance().saveResource(newAppRes);
+                    xmlStr = newAppRes.getDataAsString();
+                }
+                //log.debug(xmlStr);
+                DataEntryXML dataEntryXML = (DataEntryXML)xstream.fromXML(xmlStr); // Describes the definitions of the full text search);
                 
                 stdViews  = dataEntryXML.getStd();
                 miscViews = dataEntryXML.getMisc();
@@ -796,10 +814,20 @@ public class DataEntryTask extends BaseTask
                     XStream xstream = new XStream();
                     config(xstream);
                     
-                    AppResourceIFace appRes = AppContextMgr.getInstance().getResource("DataEntryTaskInit");
-                    appRes.setDataAsString(xstream.toXML(dataEntryXML));
+                    //AppResourceIFace appRes = AppContextMgr.getInstance().getResource("DataEntryTaskInit");
+                    //appRes.setDataAsString(xstream.toXML(dataEntryXML));
+                    //((SpecifyAppContextMgr)AppContextMgr.getInstance()).saveResource(appRes);
                     
-                    ((SpecifyAppContextMgr)AppContextMgr.getInstance()).saveResource(appRes);
+                    AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromUserArea(resourceName);
+                    if (escAppRes != null)
+                    {
+                        escAppRes.setDataAsString(xstream.toXML(dataEntryXML));
+                        AppContextMgr.getInstance().saveResource(escAppRes);
+                        
+                    } else
+                    {
+                        AppContextMgr.getInstance().putResourceAsXML(resourceName, xstream.toXML(dataEntryXML));     
+                    }
                 }
             }
         });

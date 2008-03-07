@@ -93,6 +93,18 @@
 	        <param name="hc" type="string" required="false" default="">
 	            <desc>The help context for the popup dialog.</desc>
 	        </param>
+	        <param name="bgcolor" type="color" required="false" default="">
+	            <desc>The RGB triplet separated by commas. For example: bgcolor=233,233,233</desc>
+	        </param>
+	        <param name="border" type="string" required="false" default="">
+	            <desc>Adds a border to the subview. border=line Possible values: etched, raised, lowered, empty, line.</desc>
+	        </param>
+	        <param name="bordercolor" type="color" required="false" default="">
+	            <desc>The color for a 'line' border. The RGB triplet separated by commas. For example: bgcolor=233,233,233</desc>
+	        </param>
+ 	        <param name="noscrollbars" type="boolean" required="false" default="false">
+	            <desc>This tells the subform not to add scrollbars to the form.</desc>
+	        </param>
         </params>          
 	    
     </control>

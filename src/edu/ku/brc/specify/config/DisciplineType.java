@@ -57,13 +57,19 @@ public class DisciplineType implements Comparable<DisciplineType>
     protected String name;
     protected String title;
     protected int    type;
+    protected String abbrev;
+    
     protected STD_DISCIPLINES disciplineType;
     
-    public DisciplineType(final String name, final String title, final int type)
+    public DisciplineType(final String name, 
+                          final String title, 
+                          final String abbrev,
+                          final int type)
     {
         this.name  = name;
         this.title = title;
         this.type  = type;
+        this.abbrev = abbrev;
         this.disciplineType = STD_DISCIPLINES.valueOf(name);
     }
 
@@ -82,6 +88,14 @@ public class DisciplineType implements Comparable<DisciplineType>
         return type;
     }
     
+    /**
+     * @return the abbrev
+     */
+    public String getAbbrev()
+    {
+        return abbrev;
+    }
+
     /**
      * @return the disciplineType
      */
@@ -196,9 +210,10 @@ public class DisciplineType implements Comparable<DisciplineType>
 
                     String name   = getAttr(disciplineNode, "name", null);
                     String title  = getAttr(disciplineNode, "title", null);
+                    String abbrev = getAttr(disciplineNode, "abbrev", "");
                     int    type   = getAttr(disciplineNode, "type", 0);
 
-                    DisciplineType disciplineType = new DisciplineType(name, title, type);
+                    DisciplineType disciplineType = new DisciplineType(name, title, abbrev, type);
                     list.add(disciplineType);
                 }
             } else

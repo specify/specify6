@@ -59,6 +59,17 @@
         </view>
         
         <view 
+            name="CollectionObjectSearch"
+            class="edu.ku.brc.specify.datamodel.CollectionObject"
+            usedefbusrule="false"
+            resourcelabels="false">
+            <desc><![CDATA[The CollectionObject Search Form]]></desc>
+            <altviews>
+                <altview name="CollectionObjectSearch" viewdef="CollectionObjectSearch" label="Edit" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+        
+        <view 
             name="LocalitySearch"
             class="edu.ku.brc.specify.datamodel.Locality"
             usedefbusrule="false"
@@ -252,6 +263,29 @@ Good: <cell type="field" name="FieldNum" ...>
                     <cell type="field" id="1" name="LastName" uitype="text"/>
                     <cell type="label" labelfor="2" label="First Name"/>
                     <cell type="field" id="2" name="FirstName" uitype="text"/>
+                </row>
+            </rows>
+        </viewdef>        
+        
+        <viewdef type="form"
+            name="CollectionObjectSearch"
+            class="edu.ku.brc.specify.datamodel.CollectionObject"
+            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            
+            <desc><![CDATA[The CollectionObject Search Form]]></desc>
+            <enableRules/>
+            
+            <columnDef>p,3dlu,p,3dlu,p,3dlu,p,3dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="separator" label="Collection Object" colspan="7"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1" label="Catalog Number"/>
+                    <cell type="field" id="1" name="CatalogNumber" uitype="text" formatter="CatalogNumber"/>
                 </row>
             </rows>
         </viewdef>        

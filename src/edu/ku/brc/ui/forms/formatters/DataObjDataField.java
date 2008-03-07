@@ -34,13 +34,15 @@ public class DataObjDataField
     protected Class<?> type;
     protected String   format;
     protected String   sep;
-    protected String   formatterName;
-    
+    protected String   uiFieldFormatter;
+    protected String   dataObjFormatterName;
+       
     public DataObjDataField(final String name, 
                             final Class<?> type, 
                             final String format, 
                             final String sep, 
-                            final String formatterName)
+                            final String dataObjFormatterName,
+                            final String uiFieldFormatter)
     {
         super();
         
@@ -48,7 +50,8 @@ public class DataObjDataField
         this.type   = type;
         this.format = format;
         this.sep    = sep;
-        this.formatterName = formatterName;
+        this.dataObjFormatterName = dataObjFormatterName;
+        this.uiFieldFormatter     = uiFieldFormatter;
     }
     
     public String getFormat()
@@ -71,8 +74,17 @@ public class DataObjDataField
         return type;
     }
     
-    public String getFormatterName()
+    public String getDataObjFormatterName()
     {
-        return formatterName;
+        return dataObjFormatterName;
     }
+
+    /**
+     * @return the uiFieldFormatter
+     */
+    public String getUiFieldFormatter()
+    {
+        return uiFieldFormatter;
+    }
+    
 }

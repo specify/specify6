@@ -29,7 +29,7 @@ public class QueryParameterPanel extends JPanel implements QueryFieldPanelContai
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.qb.QueryFieldPanelContainerIFace#getFields()
      */
-    @Override
+    //@Override
     public int getFields()
     {
         // TODO Auto-generated method stub
@@ -61,7 +61,7 @@ public class QueryParameterPanel extends JPanel implements QueryFieldPanelContai
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.qb.QueryFieldPanelContainerIFace#getAddBtn()
      */
-    @Override
+    //@Override
     public JButton getAddBtn()
     {
         return null;
@@ -70,7 +70,7 @@ public class QueryParameterPanel extends JPanel implements QueryFieldPanelContai
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.qb.QueryFieldPanelContainerIFace#getColumnDefStr()
      */
-    @Override
+    //@Override
     public String getColumnDefStr()
     {
         return columnDefStr;
@@ -79,7 +79,7 @@ public class QueryParameterPanel extends JPanel implements QueryFieldPanelContai
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.qb.QueryFieldPanelContainerIFace#getField(int)
      */
-    @Override
+    //@Override
     public QueryFieldPanel getField(int index)
     {
         return queryFields.get(index);
@@ -89,7 +89,7 @@ public class QueryParameterPanel extends JPanel implements QueryFieldPanelContai
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.qb.QueryFieldPanelContainerIFace#removeQueryFieldItem(edu.ku.brc.specify.tasks.subpane.qb.QueryFieldPanel)
      */
-    @Override
+    //@Override
     public void removeQueryFieldItem(QueryFieldPanel qfp)
     {
         //Shouldn't ever need to do this.
@@ -98,7 +98,7 @@ public class QueryParameterPanel extends JPanel implements QueryFieldPanelContai
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.qb.QueryFieldPanelContainerIFace#selectQFP(edu.ku.brc.specify.tasks.subpane.qb.QueryFieldPanel)
      */
-    @Override
+    //@Override
     public void selectQFP(QueryFieldPanel qfp)
     {
         //Shouldn't ever need to do this.
@@ -107,7 +107,7 @@ public class QueryParameterPanel extends JPanel implements QueryFieldPanelContai
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.qb.QueryFieldPanelContainerIFace#setColumnDefStr(java.lang.String)
      */
-    @Override
+    //@Override
     public void setColumnDefStr(String columnDefStr)
     {
         this.columnDefStr = columnDefStr;

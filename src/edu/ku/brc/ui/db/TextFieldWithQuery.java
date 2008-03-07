@@ -68,6 +68,8 @@ import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 
 /**
  * @author rod
@@ -100,6 +102,8 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     protected String               sql;
     protected String               displayColumns;
     protected String               format;
+    protected String               fieldFormatterName  = null;
+    protected UIFieldFormatterIFace uiFieldFormatter    = null;
     protected String[]             keyColumns;
     protected int                  numColumns          = -1;
     protected Object[]             values;
@@ -123,12 +127,19 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     public TextFieldWithQuery(final DBTableInfo tableInfo,
                               final String keyColumn,
                               final String displayColumns,
-                              final String format)
+                              final String format,
+                              final String fieldFormatterName)
     {
         super();
         this.tableInfo      = tableInfo;
         this.displayColumns = displayColumns != null ? displayColumns : keyColumn;
         this.format         = format;
+        this.fieldFormatterName = fieldFormatterName;
+        
+        if (StringUtils.isNotEmpty(fieldFormatterName))
+        {
+            uiFieldFormatter = UIFieldFormatterMgr.getFormatter(fieldFormatterName);
+        }
 
         if (StringUtils.contains(keyColumn, ","))
         {
@@ -149,6 +160,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     {
         setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
         setLayout(new BorderLayout());
+        setOpaque(false);
         
         textField = new JTextField(10);
         ImageIcon img = IconManager.getIcon("DropDownArrow", IconManager.IconSize.NonStd);
@@ -233,6 +245,30 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     }
     
     /**
+     * @return the format
+     */
+    public String getFormat()
+    {
+        return format;
+    }
+
+    /**
+     * @return the fieldFormatterName
+     */
+    public String getFieldFormatterName()
+    {
+        return fieldFormatterName;
+    }
+
+    /**
+     * @return the uiFieldFormatter
+     */
+    public UIFieldFormatterIFace getUiFieldFormatter()
+    {
+        return uiFieldFormatter;
+    }
+
+    /**
      * @param queryWhereClauseProvider
      */
     public void setQueryWhereClauseProvider(QueryWhereClauseProvider queryWhereClauseProvider)
@@ -299,6 +335,12 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         }
         
         currentText = textField.getText();
+        if (uiFieldFormatter != null)
+        {
+            currentText = uiFieldFormatter.formatOutBound(currentText).toString();
+        } 
+        System.out.println(currentText);
+        
         //log.debug("hasNewText "+hasNewText+"  "+currentText.length());
         if (currentText.length() == 0 || !hasNewText)
         {
@@ -344,13 +386,24 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         if (ev.getKeyCode() == JAutoCompComboBox.SEARCH_KEY ||
             ev.getKeyCode() == KeyEvent.VK_DOWN)
         {
-            doQuery(textField.getText());
+            String text = textField.getText();
+            if (uiFieldFormatter != null)
+            {
+                text = uiFieldFormatter.formatOutBound(text).toString();
+            }
+            doQuery(text);
         }
     }
     
     public void setText(final String text)
     {
-        textField.setText(text);
+        if (uiFieldFormatter != null)
+        {
+            textField.setText(uiFieldFormatter.formatInBound(text).toString());
+        } else
+        {
+            textField.setText(text);
+        }
     }
     
     /**
@@ -433,7 +486,12 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             
             for (String str : list)
             {
-                JMenuItem mi = new JMenuItem(str);
+                String label = str;
+                if (uiFieldFormatter != null)
+                {
+                    label = uiFieldFormatter.formatInBound(label).toString();
+                }
+                JMenuItem mi = new JMenuItem(label);
                 popupMenu.add(mi);
                 mi.addActionListener(al);
             }

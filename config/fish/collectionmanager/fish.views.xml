@@ -72,7 +72,7 @@
     			</row>
 
     			<row>
-    			    <cell type="subview" viewname="Determination" id="6" name="determinations" colspan="12" rows="5"/>
+    			    <cell type="subview" viewname="Determination" id="6" name="determinations" colspan="12" rows="5" initialize="noscrollbars=true;bgcolor=240,240,240;border=line;bordercolor=200,200,200;"/>
     			</row>
    			    <row>
     				<cell type="separator" label="Locality" colspan="12"/>

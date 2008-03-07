@@ -115,7 +115,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
 
     /**
      * Constructor
-     * @param formatterName the formatters name
+     * @param dataObjFormatterName the formatters name
      */
     protected ValFormattedTextField()
     {
@@ -342,7 +342,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
 
     /**
      * Sets the formatter.
-     * @param formatterName the formatter to use
+     * @param dataObjFormatterName the formatter to use
      */
     protected void setFormatterInternal(final UIFieldFormatterIFace formatterArg)
     {
@@ -380,7 +380,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
     
     /**
      * Sets the formatter and reset the current value into the new format.
-     * @param formatterName the formatter to use
+     * @param dataObjFormatterName the formatter to use
      */
     public void setFormatter(final UIFieldFormatterIFace formatter)
     {

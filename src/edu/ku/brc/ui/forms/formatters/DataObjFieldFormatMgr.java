@@ -212,13 +212,14 @@ public class DataObjFieldFormatMgr
                                     String   formatStr     = getAttr(fieldElement, "format",    null);
                                     String   sepStr        = getAttr(fieldElement, "sep",       null);
                                     String   formatterName = getAttr(fieldElement, "formatter", null);
+                                    String   uifieldformatter = getAttr(fieldElement, "uifieldformatter", null);
                                     
                                     Class<?> classObj      = typeHash.get(dataTypeStr);
                                     if (classObj == null)
                                     {
                                         log.error("Couldn't map standard type["+dataTypeStr+"]");
                                     }
-                                    fields[inx] = new DataObjDataField(fieldName, classObj, formatStr, sepStr, formatterName);
+                                    fields[inx] = new DataObjDataField(fieldName, classObj, formatStr, sepStr, formatterName, uifieldformatter);
                                     inx++;
                                 }
                                 switchFormatter.add(new DataObjDataFieldFormat(name, dataClass, isDefault, format, valueStr, fields));
@@ -375,12 +376,23 @@ public class DataObjFieldFormatMgr
                     Object value = values != null ? values[0] : null;//getter.getFieldValue(dataObj, field.getName());
                     if (value != null)
                     {
-                        if (field.getFormatterName() != null )
+                        if (field.getDataObjFormatterName() != null )
                         {
-                            String fmtStr = formatInternal(getDataFormatter(value, field.getFormatterName()), value);
+                            String fmtStr = formatInternal(getDataFormatter(value, field.getDataObjFormatterName()), value);
                             if (fmtStr != null)
                             {
                                 strBuf.append(fmtStr);
+                            }
+                            
+                        } else if (field.getUiFieldFormatter() != null )
+                        {
+                            UIFieldFormatterIFace fmt = UIFieldFormatterMgr.getFormatter(field.getUiFieldFormatter());
+                            if (fmt != null)
+                            {
+                                strBuf.append(fmt.formatInBound(value));
+                            } else
+                            {
+                                strBuf.append(value);
                             }
                             
                         } else if (value.getClass() == field.getType())
@@ -445,12 +457,23 @@ public class DataObjFieldFormatMgr
                         if (value != null)
                         {
                             
-                            if (field.getFormatterName() != null )
+                            if (field.getDataObjFormatterName() != null )
                             {
-                                String fmtStr = formatInternal(getDataFormatter(value, field.getFormatterName()), value);
+                                String fmtStr = formatInternal(getDataFormatter(value, field.getDataObjFormatterName()), value);
                                 if (fmtStr != null)
                                 {
                                     strBuf.append(fmtStr);
+                                }
+                                
+                            } else if (field.getUiFieldFormatter() != null )
+                            {
+                                UIFieldFormatterIFace fmt = UIFieldFormatterMgr.getFormatter(field.getUiFieldFormatter());
+                                if (fmt != null)
+                                {
+                                    strBuf.append(fmt.formatInBound(value));
+                                } else
+                                {
+                                    strBuf.append(value);
                                 }
                                 
                             } else if (value.getClass() == field.getType())

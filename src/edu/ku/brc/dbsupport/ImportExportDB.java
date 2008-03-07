@@ -47,10 +47,15 @@ public class ImportExportDB
                 "testfish", "jdbc:mysql://localhost/testfish", "rods", "rods");
 
         Session testSession = HibernateUtil.getCurrentSession();
-        String workingFolder = "/home/aozor/workspace/ImportExport/DBImport/";
+        String workingFolder = "Specify6ImportExport";
+        File wf = new File(workingFolder);
+        if (!wf.exists())
+        {
+            wf.mkdirs();
+        }
         String dbTable = "Division";
 
-        ImportExportDB impexp = new ImportExportDB(testSession, workingFolder);
+        ImportExportDB impexp = new ImportExportDB(testSession, workingFolder + File.separator);
 
         try
         {
@@ -71,7 +76,7 @@ public class ImportExportDB
             // impexp.importTable("LoanAgent");
             // print results
             System.out.println("printing...");
-            impexp.printXML(dbTable);
+            //impexp.printXML(dbTable);
             // impexp.printXML("Geography");
             // impexp.printXML("LoanAgent");
             // impexp.printXML("CollectionObject");
@@ -81,7 +86,9 @@ public class ImportExportDB
 
             // export
             // impexp.writeSingleRecordXML(dbTable,1);
-            // impexp.exportTables();
+            //impexp.exportTables();
+            
+            impexp.writeXMLfile("PrepType");
 
         } catch (Exception ex)
         {
@@ -2756,7 +2763,10 @@ public class ImportExportDB
         FileOutputStream fout;
 
         Session dom4jSession = session.getSession(EntityMode.DOM4J);
-        String query = "from " + dataBase;
+        String query = "from " + dataBase + " where id = 1";
+        
+        System.out.println(query);
+        
         List userXML = dom4jSession.createQuery(query).list();
         try
         {

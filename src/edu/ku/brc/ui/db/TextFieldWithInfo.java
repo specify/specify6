@@ -52,6 +52,8 @@ import edu.ku.brc.ui.ViewBasedDialogFactoryIFace;
 import edu.ku.brc.ui.forms.DataGetterForObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 
 
 /**
@@ -83,8 +85,9 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
     protected String             idName;
     protected String             keyName;
     protected String             format;
-    protected String             formatName;
-    protected Class<?>              classObj    = null;
+    protected String             uiFieldFormatterName;
+    protected String             dataObjFormatterName;
+    protected Class<?>           classObj    = null;
     protected DataGetterForObj   getter      = null;
     protected String             displayInfoDialogName;
     protected String[]           fieldNames;
@@ -107,7 +110,8 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
                              final String idName,
                              final String keyName,
                              final String format,
-                             final String formatName,
+                             final String uiFieldFormatterName,
+                             final String dataObjFormatterName,
                              final String displayInfoDialogName,
                              final String objTitle)
     {
@@ -115,7 +119,8 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
         this.idName           = idName;
         this.keyName          = keyName;
         this.format           = format;
-        this.formatName       = formatName;
+        this.format           = format;
+        this.uiFieldFormatterName  = uiFieldFormatterName;
         this.displayInfoDialogName = displayInfoDialogName;
 
         textField = new JTextField();
@@ -312,21 +317,30 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
 
             // NOTE: If there was a formatName defined for this then the value coming
             // in will already be correctly formatted.
-            // So just set the cvalue if there is a format name.
+            // So just set the value if there is a format name.
             Object newVal = value;
-            if (isEmpty(formatName))
+            if (isEmpty(dataObjFormatterName))
             {
-                Object[] val = UIHelper.getFieldValues(fieldNames, value, getter);
-                if (isNotEmpty(format))
+                Object[] val = UIHelper.getFieldValues(fieldNames, this.dataObj, getter);
+                
+                UIFieldFormatterIFace uiFieldFormatter = UIFieldFormatterMgr.getFormatter(uiFieldFormatterName);
+                if (uiFieldFormatter != null)
                 {
-                    newVal = UIHelper.getFormattedValue(val, format);
+                    newVal = uiFieldFormatter.formatOutBound(val[0]).toString();
                 } else
                 {
-                    newVal = value;
+                    
+                    if (isNotEmpty(format))
+                    {
+                        newVal = UIHelper.getFormattedValue(val, format);
+                    } else
+                    {
+                        newVal = this.dataObj;
+                    }
                 }
             } else
             {
-                newVal = DataObjFieldFormatMgr.format(value, formatName);
+                newVal = DataObjFieldFormatMgr.format(value, dataObjFormatterName);
             }
 
             textField.setText(newVal.toString());

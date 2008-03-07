@@ -190,6 +190,7 @@ public class DropDownButtonStateful extends DropDownButton
         };
         
         cardPanel = new JPanel(cardLayout);
+        cardPanel.setOpaque(false);
 
         FocusListener     focusListener     = createFocusListener();
         MouseInputAdapter mouseInputAdapter = createMouseInputAdapter();
@@ -210,6 +211,8 @@ public class DropDownButtonStateful extends DropDownButton
             JButton btn = createLabelBtn(mi.getLabel(), mi.getImageIcon(), mi.getTooltip(), this, focusListener, 
                                          mouseInputAdapter, btnAL, this, false);
             btns.add(btn);
+            btn.setOpaque(false);
+            pb.getPanel().setOpaque(false);
             pb.add(btn, cc.xy(2,1));
             cardPanel.add(pb.getPanel(), Integer.toString(i));
             i++;

@@ -30,7 +30,7 @@
         >
         <switch single="true">
             <fields>
-                <field format="%.0f" type="float">catalogNumber</field>
+                <field uifieldformatter="CatalogNumber">catalogNumber</field>
             </fields>
         </switch>
     </format>

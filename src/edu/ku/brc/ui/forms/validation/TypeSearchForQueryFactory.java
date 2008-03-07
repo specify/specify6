@@ -75,7 +75,8 @@ public class TypeSearchForQueryFactory
                         hash.put(name, new TypeSearchInfo(XMLHelper.getAttr(tsElement, "tableid", -1),
                                                           tsElement.attributeValue("displaycols"),
                                                           tsElement.attributeValue("searchfield"),
-                                                          tsElement.attributeValue("format"),
+                                                          XMLHelper.getAttr(tsElement, "format", null),
+                                                          XMLHelper.getAttr(tsElement, "uifieldformatter", null),
                                                           tsElement.attributeValue("dataobjformatter")));
                     } else
                     {
@@ -112,7 +113,8 @@ public class TypeSearchForQueryFactory
                                              tblInfo.getIdFieldName(),
                                              typeSearchInfo.getSearchFieldName(),
                                              typeSearchInfo.getFormat(),
-                                             typeSearchInfo.getFormatName(),
+                                             typeSearchInfo.getUiFieldFormatterName(),
+                                             typeSearchInfo.getDataObjFormatterName(),
                                              tblInfo.getNewObjDialog(),
                                              tblInfo.getTitle());
     
@@ -131,12 +133,12 @@ public class TypeSearchForQueryFactory
      * @param name the name of the formatter to use
      * @return the name of the formatter
      */
-    public static String getFormatName(final String name)
+    public static String etDataObjFormatterName(final String name)
     {
         TypeSearchInfo typeSearchInfo = instance.hash.get(name);
         if (typeSearchInfo != null)
         {
-            return typeSearchInfo.getFormatName();
+            return typeSearchInfo.getDataObjFormatterName();
             
         }            
         // else
@@ -162,7 +164,8 @@ public class TypeSearchForQueryFactory
                                                 typeSearchInfo.getDisplayColumns(),
                                                 typeSearchInfo.getSearchFieldName(),
                                                 typeSearchInfo.getFormat(),
-                                                typeSearchInfo.getFormatName(),
+                                                typeSearchInfo.getUiFieldFormatterName(),
+                                                typeSearchInfo.getDataObjFormatterName(),
                                                 btnOpts);
 
     
@@ -187,20 +190,23 @@ public class TypeSearchForQueryFactory
         protected String displayColumns;
         protected String searchFieldName;
         protected String format;
-        protected String formatName;
+        protected String uiFieldFormatterName;
+        protected String dataObjFormatterName;
 
         public TypeSearchInfo(int    tableId,
                               String displayColumns,
                               String searchFieldName,
                               String format,
-                              String formatName)
+                              String uiFieldFormatterName,
+                              String dataObjFormatterName)
         {
             this.tableId         = tableId;
             this.displayColumns  = displayColumns;
 
             this.searchFieldName = searchFieldName;
             this.format          = format;
-            this.formatName      = formatName;
+            this.uiFieldFormatterName = uiFieldFormatterName;
+            this.dataObjFormatterName = dataObjFormatterName;
         }
 
         public int getTableId()
@@ -218,9 +224,20 @@ public class TypeSearchForQueryFactory
             return format;
         }
 
-        public String getFormatName()
+        /**
+         * @return the uiFieldFormatterName
+         */
+        public String getUiFieldFormatterName()
         {
-            return formatName;
+            return uiFieldFormatterName;
+        }
+
+        /**
+         * @return the dataObjFormatterName
+         */
+        public String getDataObjFormatterName()
+        {
+            return dataObjFormatterName;
         }
 
         public String getSearchFieldName()

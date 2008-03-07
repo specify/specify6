@@ -109,6 +109,7 @@ public class Division extends DataModelObjBase implements java.io.Serializable
         repositoryAgreements = new HashSet<RepositoryAgreement>();
         institution         = null;
         address             = null;
+        disciplines         = new HashSet<Discipline>();
     }
     
     /**

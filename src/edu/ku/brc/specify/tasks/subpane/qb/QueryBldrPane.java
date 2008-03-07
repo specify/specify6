@@ -107,7 +107,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.qb.QueryFieldPanelContainerIFace#getAddBtn()
      */
-    @Override
+    //@Override
     public JButton getAddBtn()
     {
         return addBtn;
@@ -1598,7 +1598,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.qb.QueryFieldPanelContainerIFace#getColumnDefStr()
      */
-    @Override
+    //@Override
     public String getColumnDefStr()
     {
         return columnDefStr;

@@ -478,43 +478,34 @@ public class SpAppResource extends DataModelObjBase implements java.io.Serializa
     @Transient
     public String getDataAsString()
     {
-        DataProviderSessionIFace session = null;
+        SpAppResourceData        appResData = null;
+        DataProviderSessionIFace session    = null;
         try
         {
-            // check to see if it has been loaded yet
-            spAppResourceDatas.size();
-            
-        } catch (org.hibernate.LazyInitializationException hex)
-        {
-            // OK, it hasn't been loaded yet,
-            try
+            if (spAppResourceId != null)
             {
                 session = DataProviderFactory.getInstance().createSession();
                 session.attach(this);
-                
-                spAppResourceDatas.size();
-                
-            } catch (Exception ex)
+            }
+            
+            if (spAppResourceDatas.size() > 0)
             {
-                log.error(ex);
-                return null;
-                
-            } finally
-            {
-                if (session != null)
+                appResData = spAppResourceDatas.iterator().next();
+                if (appResData != null)
                 {
-                    session.close();
+                    return new String(appResData.getData());
                 }
             }
-        }
-        
-        SpAppResourceData ard = null;
-        if (spAppResourceDatas.size() > 0)
+            
+        } catch (Exception ex)
         {
-            ard = spAppResourceDatas.iterator().next();
-            if (ard != null)
+           log.error(ex);
+           
+        } finally
+        {
+            if (session != null)
             {
-                return new String(ard.getData());
+                session.close();
             }
         }
         

@@ -8,24 +8,24 @@
         4 - Minerals 
     -->
     
-    <discipline name="fish"         title="Fish"         type="0"/>
-    <discipline name="amphibian"    title="Amphibians"    type="0"/>
-    <discipline name="reptile"      title="Reptile"      type="0"/>
-    <discipline name="paleobotany"  title="Paleo Botany" type="0"/>
-    <discipline name="invertpaleo"  title="Invertebrate Paleo" type="0"/>
-    <discipline name="vertpaleo"    title="Vertebrate Paleo" type="0"/>
-    <discipline name="bird"         title="Ornthology"   type="0"/>
-    <discipline name="mammal"       title="Mammal"       type="0"/>
-    <discipline name="insect"       title="Insect"       type="0"/>
-    <discipline name="botany"       title="Botany"       type="0"/>
-    <discipline name="invertebrate" title="Invertebrate" type="0"/>
-    <discipline name="minerals"     title="Minerals"     type="4"/>
-    <discipline name="anthropology" title="Anthropology" type="3"/>
-    <discipline name="fungi"        title="Fungi"        type="0"/>
+    <discipline name="fish"         title="Fish"         abbrev="FISH" type="0"/>
+    <discipline name="amphibian"    title="Amphibians"   abbrev="AMPH" type="0"/>
+    <discipline name="reptile"      title="Reptile"      abbrev="RPTL" type="0"/>
+    <discipline name="paleobotany"  title="Paleo Botany" abbrev="PLB" type="0"/>
+    <discipline name="invertpaleo"  title="Invertebrate Paleo" abbrev="IVTP" type="0"/>
+    <discipline name="vertpaleo"    title="Vertebrate Paleo" abbrev="VRTP" type="0"/>
+    <discipline name="bird"         title="Ornthology"   abbrev="ORN" type="0"/>
+    <discipline name="mammal"       title="Mammal"       abbrev="MAM" type="0"/>
+    <discipline name="insect"       title="Insect"       abbrev="ENTO" type="0"/>
+    <discipline name="botany"       title="Botany"       abbrev="BNTY" type="0"/>
+    <discipline name="invertebrate" title="Invertebrate" abbrev="IVTB" type="0"/>
+    <discipline name="minerals"     title="Minerals"     abbrev="MIN" type="4"/>
+    <discipline name="anthropology" title="Anthropology" abbrev="ANTH" type="3"/>
+    <discipline name="fungi"        title="Fungi"        abbrev="FNGI" type="0"/>
     
-    <!-- <discipline name="tissue"       title="Tissue"       type="1"/>
-    <discipline name="accessions"   title="Accessions"   type="2"/>
-    <discipline name="animal"       title="Animal"     type="0"/>  -->
+    <!-- <discipline name="tissue"       title="Tissue"       abbrev="" type="1"/>
+    <discipline name="accessions"   title="Accessions"   abbrev="" type="2"/>
+    <discipline name="animal"       title="Animal"     abbrev="" type="0"/>  -->
     
 </disciplines>
 

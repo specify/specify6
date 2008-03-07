@@ -17,6 +17,7 @@
  */
 package edu.ku.brc.specify.ui;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.dbsupport.AutoNumberIFace;
@@ -121,7 +122,7 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr
     @Override
     protected UIFieldFormatterIFace getFormatterInternal(final String name)
     {
-        if (name.equals("CatalogNumber"))
+        if (StringUtils.isNotEmpty(name) && name.equals("CatalogNumber"))
         {
             CatalogNumberingScheme cns = Collection.getCurrentCollection().getCatalogNumberingScheme();
             if (cns != null)

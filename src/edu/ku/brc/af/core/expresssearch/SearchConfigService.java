@@ -156,7 +156,6 @@ public class SearchConfigService
         SearchConfig.configXStream(xstream);
         
         String           xmlStr    = null;
-        
         AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromUserArea(resourceName);
         if (escAppRes != null)
         {
@@ -164,16 +163,11 @@ public class SearchConfigService
             
         } else
         {
-            AppResourceIFace appRes = AppContextMgr.getInstance().getResource(resourceName);
-            escAppRes = AppContextMgr.getInstance().createUserAreaAppResource();
-            escAppRes.setName(appRes.getName());
-            escAppRes.setDescription(appRes.getDescription());
-            escAppRes.setDataAsString(appRes.getDataAsString());
-            escAppRes.setLevel(appRes.getLevel());
-            escAppRes.setMetaData(appRes.getMetaData());
-            escAppRes.setMimeType(appRes.getMimeType());
-            AppContextMgr.getInstance().saveResource(escAppRes);
-            xmlStr = appRes.getDataAsString();
+            // Get the default resource by name and copy it to a new User Area Resource
+            AppResourceIFace newAppRes = AppContextMgr.getInstance().copyToAUserAreaAppRes(resourceName);
+            // Save it in the User Area
+            AppContextMgr.getInstance().saveResource(newAppRes);
+            xmlStr = newAppRes.getDataAsString();
         }
         
         //log.debug(xmlStr);

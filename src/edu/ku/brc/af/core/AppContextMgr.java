@@ -175,6 +175,38 @@ public abstract class AppContextMgr
     public abstract String getCurrentContextDescription();
     
     /**
+     * Copies all the fields except the data.
+     * @param fromAppRes the from app res
+     * @param toAppRes the to app res
+     */
+    public void copy(final AppResourceIFace fromAppRes, final AppResourceIFace toAppRes)
+    {
+        toAppRes.setName(fromAppRes.getName());
+        toAppRes.setDescription(fromAppRes.getDescription());
+        toAppRes.setDataAsString(fromAppRes.getDataAsString());
+        toAppRes.setLevel(fromAppRes.getLevel());
+        toAppRes.setMetaData(fromAppRes.getMetaData());
+        toAppRes.setMimeType(fromAppRes.getMimeType());
+    }
+    
+    /**
+     * Looks up a resource by name and copies the contents to a User Area Resource.
+     * @param resourceName the name of an existing resource.
+     * @return the new resource from the User Area with the values form the existing resource.
+     */
+    public AppResourceIFace copyToAUserAreaAppRes(final String resourceName)
+    {
+        AppResourceIFace toAppRes   = null;
+        AppResourceIFace fromAppRes = AppContextMgr.getInstance().getResource(resourceName);
+        if (fromAppRes != null)
+        {
+            toAppRes = AppContextMgr.getInstance().createUserAreaAppResource();
+            copy(fromAppRes, toAppRes);
+        }
+        return toAppRes;
+    }
+    
+    /**
      * Returns the instance of the AppContextMgr.
      * @return the instance of the AppContextMgr.
      */

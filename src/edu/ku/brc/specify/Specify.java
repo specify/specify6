@@ -97,8 +97,8 @@ import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.DebugLoggerDialog;
 import edu.ku.brc.specify.config.DisciplineType;
-import edu.ku.brc.specify.config.ResourceImportExportDlg;
 import edu.ku.brc.specify.config.LoggerDialog;
+import edu.ku.brc.specify.config.ResourceImportExportDlg;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.AccessionAttachment;
 import edu.ku.brc.specify.datamodel.Agent;
@@ -124,7 +124,6 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.TaxonAttachment;
 import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
 import edu.ku.brc.specify.tests.SpecifyAppPrefs;
-import edu.ku.brc.specify.tools.FormGenerator;
 import edu.ku.brc.specify.tools.schemalocale.SchemaToolsDlg;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CommandAction;
@@ -199,7 +198,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private String               appName             = "Specify";
     private String               appVersion          = "6.0";
 
-    private String               appBuildVersion     = "200803041130 (SVN: 3486)";
+    private String               appBuildVersion     = "200803051000 (SVN: 3494)";
     
     protected static CacheManager cacheManager        = new CacheManager();
 
@@ -680,7 +679,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
         if (!isWorkbenchOnly)
         {
             // Add Menu for switching Collection
-            changeCollectionMenuItem = UIHelper.createMenuItem(menu, "Change Collection", "C", "Change Collection", false, null);
+            String title = getResourceString("CHANGE_COLLECTION");
+            changeCollectionMenuItem = UIHelper.createMenuItem(menu, title, getResourceString("CHANGE_COLL_MNEU"), title, false, null);
             changeCollectionMenuItem.addActionListener(new ActionListener()
                     {
                         public void actionPerformed(ActionEvent ae)
@@ -710,7 +710,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
         if (UIHelper.getOSType() != UIHelper.OSTYPE.MacOSX)
         {
             menu.addSeparator();
-            mi = UIHelper.createMenuItem(menu, "Exit", "x", "Exit Appication", true, null);
+            String title = getResourceString("Exit");
+            mi = UIHelper.createMenuItem(menu, title, getResourceString("Exit_MNEU"), title, true, null);
             mi.addActionListener(new ActionListener()
                     {
                         public void actionPerformed(ActionEvent ae)
@@ -726,7 +727,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
         if (UIHelper.getOSType() != UIHelper.OSTYPE.MacOSX)
         {
             menu.addSeparator();
-            mi = UIHelper.createMenuItem(menu, "Preferences", "P", "Preferences", false, null);
+            String title = getResourceString("PREFERENCES");
+            mi = UIHelper.createMenuItem(menu, title, getResourceString("PREFERENCES_MNEU"), title, false, null);
             mi.addActionListener(new ActionListener()
                     {
                         public void actionPerformed(ActionEvent ae)
@@ -854,6 +856,20 @@ public class Specify extends JPanel implements DatabaseLoginListener
                     });
 
         }
+        
+        /*if (true)
+        {
+            menu = UIHelper.createMenu(mb, "Forms", "o");
+            Action genForms = new AbstractAction()
+            {
+                public void actionPerformed(ActionEvent ae)
+                {
+                    FormGenerator fg = new FormGenerator();
+                    fg.generateForms();
+                }
+            };
+            mi = UIHelper.createMenuItemWithAction(menu, "Generate All Forms", "G", "", true, genForms);
+        }*/
 
 
         menu = UIHelper.createMenu(mb, "TabsMenu", "TabsMneu");

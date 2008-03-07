@@ -305,7 +305,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
      */
     public boolean removePane(final SubPaneIFace pane)
     {
-        return removePane(pane, true);
+        return removePane(pane, true); // true means ask for save
     }
 
 
@@ -362,7 +362,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
                 
             } catch (ArrayIndexOutOfBoundsException ex)
             {
-                
+                log.error(ex);
             }
             
             panes.remove(pane.getPaneName());
@@ -400,7 +400,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
                     
                 } catch (ArrayIndexOutOfBoundsException ex)
                 {
-                    
+                    log.error(ex);
                 }
                 adjustCloseAllMenu();
             }

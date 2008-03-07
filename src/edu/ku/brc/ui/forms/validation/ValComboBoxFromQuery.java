@@ -80,6 +80,7 @@ import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 
 
 /**
@@ -131,8 +132,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     protected DBTableInfo        tableInfo;
     protected String             frameTitle = null;
     protected String             keyName;
-    protected String             format;
-    protected String             formatName;
+    protected String             dataObjFormatterName;
     protected DataGetterForObj   getter   = null;
     protected String[]           fieldNames;
 
@@ -165,7 +165,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      * @param idName the POJO field name of the ID column
      * @param keyName the POJO field name of the key column
      * @param format the format specification (null is OK if displayNames is null)
-     * @param formatName the name of the pre-defined (user-defined) format
+     * @param dataObjFormatterName the name of the pre-defined (user-defined) format
      * @param searchDialogName the name to look up to display the search dialog (from the dialog factory)
      * @param displayInfoDialogName the name to look up to display the info dialog (from the dialog factory)
      * @param objTitle the title of a single object
@@ -175,7 +175,8 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                                 final String      displayColumn,
                                 final String      keyName,
                                 final String      format,
-                                final String      formatName,
+                                final String      uiFieldFormatterName,
+                                final String      dataObjFormatterName,
                                 final int         btns)
     
     {
@@ -183,9 +184,9 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         {
             throw new RuntimeException("For ValComboBoxFromQuery table["+tableInfo.getName()+"] displayColumn null.");
         }
-        if (StringUtils.isEmpty(format) && StringUtils.isEmpty(formatName))
+        if (StringUtils.isEmpty(format) && StringUtils.isEmpty(uiFieldFormatterName))
         {
-            throw new RuntimeException("For ValComboBoxFromQuery table["+tableInfo.getName()+"] both format and formatName are null.");
+            throw new RuntimeException("For ValComboBoxFromQuery table["+tableInfo.getName()+"] both format and fieldFormatterName are null.");
         }
         if (StringUtils.isEmpty(tableInfo.getNewObjDialog()))
         {
@@ -194,10 +195,9 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         
         this.tableInfo             = tableInfo;
         this.keyName               = keyName;
-        this.format                = format;
-        this.formatName            = formatName;
+        this.dataObjFormatterName  = dataObjFormatterName;
         
-        textWithQuery = new TextFieldWithQuery(tableInfo, keyFieldName, displayColumn, format);
+        textWithQuery = new TextFieldWithQuery(tableInfo, keyFieldName, displayColumn, format, uiFieldFormatterName);
         textWithQuery.addListSelectionListener(this);
         textWithQuery.setAddAddItem(true);
         
@@ -731,19 +731,28 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             // in will already be correctly formatted.
             // So just set the value if there is a format name.
             Object newVal = this.dataObj;
-            if (isEmpty(formatName))
+            if (isEmpty(dataObjFormatterName))
             {
                 Object[] val = UIHelper.getFieldValues(fieldNames, this.dataObj, getter);
-                if (isNotEmpty(format))
+                
+                UIFieldFormatterIFace uiFieldFormatter = textWithQuery.getUiFieldFormatter();
+                if (uiFieldFormatter != null)
                 {
-                    newVal = UIHelper.getFormattedValue(val, format);
+                    newVal = uiFieldFormatter.formatOutBound(val[0]).toString();
                 } else
                 {
-                    newVal = this.dataObj;
+                    
+                    if (isNotEmpty(textWithQuery.getFormat()))
+                    {
+                        newVal = UIHelper.getFormattedValue(val, textWithQuery.getFormat());
+                    } else
+                    {
+                        newVal = this.dataObj;
+                    }
                 }
             } else
             {
-                newVal = DataObjFieldFormatMgr.format(this.dataObj, formatName);
+                newVal = DataObjFieldFormatMgr.format(this.dataObj, dataObjFormatterName);
             }
 
             if (newVal != null)

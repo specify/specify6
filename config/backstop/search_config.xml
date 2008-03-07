@@ -606,5 +606,17 @@ permit.EndDate,permit.RenewalDate,permit.Type FROM permit left Join agent ON per
             </detailView>
         </table>
         
+        <table id="116" tableid="1" name="CollectionObjectSearch" priority="1" color="30, 144, 255">
+            <detailView icon="CollectionObject">
+                <sql>
+                    <![CDATA[SELECT CollectionObjectID, CatalogNumber FROM collectionobject WHERE CollectionMemberID = COLMEMID AND (%s)]]>
+                </sql>
+                <captions>
+                    <caption tableid="1" col="CollectionObjectID" visible="false"/>
+                    <caption tableid="1" col="CatalogNumber" formatter="CatalogNumber"/>
+                </captions>
+            </detailView>
+        </table>
+        
     </generic>
 </searches>

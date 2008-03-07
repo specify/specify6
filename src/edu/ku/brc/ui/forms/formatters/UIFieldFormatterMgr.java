@@ -133,7 +133,7 @@ public class UIFieldFormatterMgr
      */
     protected UIFieldFormatterIFace getFormatterInternal(final String name)
     {
-        return hash.get(name);
+        return StringUtils.isNotEmpty(name) ? hash.get(name) : null;
     }
 
     /**

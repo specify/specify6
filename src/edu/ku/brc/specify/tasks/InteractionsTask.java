@@ -329,7 +329,7 @@ public class InteractionsTask extends BaseTask
         CommandAction cmdAction = new CommandAction(INTERACTIONS, action);
         NavBoxButton roc = (NavBoxButton)makeDnDNavBtn(navBox, getResourceString(name), iconName, cmdAction, null, true, false);// true means make it draggable
         DataFlavorTableExt dfx = new DataFlavorTableExt(RecordSetTask.RECORDSET_FLAVOR.getDefaultRepresentationClass(), 
-                RecordSetTask.RECORDSET_FLAVOR.getHumanPresentableName(), tableIds);
+                                                        RecordSetTask.RECORDSET_FLAVOR.getHumanPresentableName(), tableIds);
         roc.addDropDataFlavor(dfx);
         return roc;
     }
@@ -428,7 +428,15 @@ public class InteractionsTask extends BaseTask
     @Override
     public SubPaneIFace getStarterPane()
     {
-        return starterPane = new SimpleDescPane(title, this, "Please select an Interaction");
+        if (starterPane != null)
+        {
+            //SubPaneMgr.getInstance().showPane(starterPane);
+            return starterPane;
+            
+        } else
+        {
+            return starterPane = new SimpleDescPane(title, this, getResourceString("INTERACTIONS_OVERVIEW"));
+        }
     }
 
     /* (non-Javadoc)
@@ -574,16 +582,18 @@ public class InteractionsTask extends BaseTask
      */
     @SuppressWarnings("unchecked")
     protected void createNewLoan(final InfoRequest infoRequest, final RecordSetIFace recordSet)
-    {      
+    {
+
         DBTableIdMgr.getInClause(recordSet);
 
         DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
         
         DataProviderFactory.getInstance().evict(tableInfo.getClassObj()); // XXX Not sure if this is really needed
         
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        DataProviderSessionIFace session = null;
         try
         {
+            session = DataProviderFactory.getInstance().createSession();
             
             // OK, it COULD be a RecordSet contain one or more InfoRequest, 
             // we will only accept an RS with one InfoRequest
@@ -1167,6 +1177,19 @@ public class InteractionsTask extends BaseTask
         }
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#subPaneRemoved(edu.ku.brc.af.core.SubPaneIFace)
+     */
+    public void subPaneRemoved(final SubPaneIFace subPane)
+    {
+        super.subPaneRemoved(subPane);
+        
+        if (subPane == starterPane)
+        {
+            starterPane = null;
+        }
+    }
+    
     //-------------------------------------------------------
     // CommandListener Interface
     //-------------------------------------------------------
@@ -1393,7 +1416,11 @@ public class InteractionsTask extends BaseTask
                 {
                     if (cmdAction.isAction(InfoRequestName))
                     {
-                        createInfoRequest(null);    
+                        createInfoRequest(null);   
+                        
+                    } else if (cmdAction.isAction(NEW_LOAN))
+                    {
+                        createNewLoan(null, null);
                     }
                 }
             }

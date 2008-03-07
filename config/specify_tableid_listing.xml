@@ -80,7 +80,7 @@
             <businessrule>edu.ku.brc.specify.datamodel.busrules.DisciplineBusRules</businessrule>                    
         </table>
         <table name="edu.ku.brc.specify.datamodel.CollectionObject" abbrev="co" id="1" workbench="true" searchable="true">
-            <display objtitle="Collection Object" view="CollectionObject" dataobjformatter="CollectionObject" searchdlg="" newobjdlg=""/>
+            <display objtitle="Collection Object" view="CollectionObject" dataobjformatter="CollectionObject" searchdlg="CollectionObjectSearch" newobjdlg="CollectionObject"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.CollectionObjectBusRules</businessrule>          
         </table>
         <table name="edu.ku.brc.specify.datamodel.CollectionObjectAttachment" abbrev="coat" id="111" searchable="true">

@@ -204,6 +204,7 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
 
         mainBtn  = createLabelBtn(label, icon, toolTip, this, focusListener, mouseInputAdapter, this, this, overrideButtonBorder);
         arrowBtn = createArrowBtn(mouseInputAdapter);
+        mainBtn.setOpaque(false);
         
         popupAnchorComponent = mainBtn;
 

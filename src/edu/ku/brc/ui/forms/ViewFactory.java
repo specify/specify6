@@ -1317,9 +1317,12 @@ public class ViewFactory
                             log.error("Couldn't find field ["+cellSubView.getName()+"] in class ["+parentView.getClassName()+"]");
                         }
                         
+                        boolean useNoScrollbars = UIHelper.getProperty(props, "noscrollbars", false);
+                        
                         int options = (isACollection && !isSingle ? MultiView.RESULTSET_CONTROLLER : MultiView.IS_SINGLE_OBJ) | MultiView.VIEW_SWITCHER |
                         (MultiView.isOptionOn(parent.getCreateOptions(), MultiView.IS_NEW_OBJECT) ? MultiView.IS_NEW_OBJECT : MultiView.NO_OPTIONS) |
-                        (mode == AltViewIFace.CreationMode.EDIT ? MultiView.IS_EDITTING : MultiView.NO_OPTIONS);
+                        (mode == AltViewIFace.CreationMode.EDIT ? MultiView.IS_EDITTING : MultiView.NO_OPTIONS) |
+                        (useNoScrollbars ? MultiView.NO_SCROLLBARS : MultiView.NO_OPTIONS);
           
                         //MultiView.printCreateOptions("_______________________________", parent.getCreateOptions());
                         //MultiView.printCreateOptions("_______________________________", options);
@@ -1700,7 +1703,20 @@ public class ViewFactory
                     
                 } else if (borderType.equals("line"))
                 {
-                    comp.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
+                    Color  color       = Color.LIGHT_GRAY;
+                    String borderColor = props.getProperty("bordercolor");
+                    if (StringUtils.isNotEmpty(borderColor))
+                    {
+                        try
+                        {
+                            color = UIHelper.parseRGB(borderColor);
+                            
+                        } catch(ConfigurationException ex)
+                        {
+                            log.error(ex);
+                        }
+                    }
+                    comp.setBorder(BorderFactory.createLineBorder(color));
                 }
             }
         }

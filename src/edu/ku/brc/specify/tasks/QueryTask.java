@@ -64,7 +64,6 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
@@ -328,19 +327,30 @@ public class QueryTask extends BaseTask
      * @return the list 
      */
     @SuppressWarnings("unchecked")
-    protected Vector<String> readResourceForList(final String resName)
+    protected Vector<String> readResourceForList(final String resourceName)
     {
-        Vector<String> list = null;
-        AppResourceIFace appRes = AppContextMgr.getInstance().getResource(resName);
-        if (appRes != null)
+        Vector<String>   list     = null;
+        String           xmlStr   = null;
+        AppResourceIFace uaAppRes = AppContextMgr.getInstance().getResourceFromUserArea(resourceName);
+        if (uaAppRes != null)
         {
-            String xmlFreqList = AppContextMgr.getInstance().getResourceAsXML(resName);
-            if (StringUtils.isNotEmpty(xmlFreqList))
-            {
-                XStream xstream = new XStream();
-                list = (Vector<String>)xstream.fromXML(xmlFreqList);
-            }
-        } 
+            xmlStr = uaAppRes.getDataAsString();
+            
+        } else
+        {
+            // Get the default resource by name and copy it to a new User Area Resource
+            AppResourceIFace newAppRes = AppContextMgr.getInstance().copyToAUserAreaAppRes(resourceName);
+            // Save it in the User Area
+            AppContextMgr.getInstance().saveResource(newAppRes);
+            xmlStr = newAppRes.getDataAsString();
+        }
+        
+        if (StringUtils.isNotEmpty(xmlStr))
+        {
+            XStream xstream = new XStream();
+            list = (Vector<String>)xstream.fromXML(xmlStr);
+        }
+        //log.debug(xmlStr);
 
         if (list == null)
         {
@@ -351,19 +361,22 @@ public class QueryTask extends BaseTask
     
     /**
      * Saves a single list to the database.
-     * @param resName the name of the resource to use to save it.
+     * @param resourceName the name of the resource to use to save it.
      * @param list the list to be saved.
      */
-    protected void saveQueryList(final String resName,
+    protected void saveQueryList(final String resourceName,
                                  final Vector<String> list)
     {
-        AppResourceIFace appRes = AppContextMgr.getInstance().getResource(resName);
-        if (appRes != null)
+        XStream xstream = new XStream();
+        AppResourceIFace uaAppRes = AppContextMgr.getInstance().getResourceFromUserArea(resourceName);
+        if (uaAppRes != null)
         {
-            XStream xstream = new XStream();
-            appRes.setDataAsString(xstream.toXML(list));
-            //System.out.println(xstream.toXML(list));
-            ((SpecifyAppContextMgr)AppContextMgr.getInstance()).saveResource(appRes);
+            uaAppRes.setDataAsString(xstream.toXML(list));
+            AppContextMgr.getInstance().saveResource(uaAppRes);
+            
+        } else
+        {
+            AppContextMgr.getInstance().putResourceAsXML(resourceName, xstream.toXML(list));     
         }
     }
     
