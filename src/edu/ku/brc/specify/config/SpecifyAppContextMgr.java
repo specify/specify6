@@ -1241,7 +1241,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     @Override
     public void putResourceAsXML(final AppResourceIFace appResArg, final String xmlStr)
     {
-        if (appResArg == null || appResArg instanceof SpAppResource)
+        if (appResArg == null || !(appResArg instanceof SpAppResource))
         {
             return;
         }
