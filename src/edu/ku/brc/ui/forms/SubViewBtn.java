@@ -19,6 +19,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
@@ -46,6 +47,7 @@ import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.forms.persist.FormCellSubViewIFace;
 import edu.ku.brc.ui.forms.persist.ViewIFace;
 import edu.ku.brc.ui.forms.validation.FormValidator;
+import edu.ku.brc.ui.forms.validation.UIValidatable;
 
 /**
  * @author rods
@@ -234,15 +236,9 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
                 cellName,
                 mvParent,
                 options | MultiView.HIDE_SAVE_BTN | MultiView.DONT_ADD_ALL_ALTVIEWS | MultiView.USE_ONLY_CREATION_MODE,
-                CustomDialog.OK_BTN | (StringUtils.isNotEmpty(helpContext) ? CustomDialog.HELP_BTN : 0));
+                CustomDialog.CANCEL_BTN | (StringUtils.isNotEmpty(helpContext) ? CustomDialog.HELP_BTN : 0));
         
-        /*if (isNewObject)
-        {
-            FormDataObjIFace formDataObj = FormHelper.createAndNewDataObj(view.getClassName());
-            formDataObj.initialize();
-            newDataObj = formDataObj;
-        }*/
-        
+        dlg.setCancelLabel(closeBtnTitle);
         frame = dlg;
         multiView = frame.getMultiView();
         multiView.setParentDataObj(mvParent.getData());
@@ -257,7 +253,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
         }
         
         dlg.createUI();
-        frame.getOkBtn().setEnabled(true);
+        frame.getCancelBtn().setEnabled(true);
         
         frame.showDisplay(true);
         
@@ -266,13 +262,15 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
             mvParent.removeCurrentValidator();
         }
         
-        if (multiView != null && frame.getBtnPressed() == ViewBasedDisplayIFace.OK_BTN)
+        if (multiView != null)
         {
             if (frame.isEditMode())
             {
                 FormViewObj fvo = frame.getMultiView().getCurrentViewAsFormViewObj();
                 if (fvo != null)
                 {
+                    //boolean removeCurrItem = fvo.getValidator().getState() != UIValidatable.ErrorType.Valid;
+
                     switch (dataType)
                     {
                         case IS_SET :
@@ -293,6 +291,13 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
                     }
                 } 
                 updateBtnText();
+                if (fvo.getValidator() != null)
+                {
+                    //fvo.getValidator().setFormValidationState(UIValidatable.ErrorType.Valid);
+                   // fvo.getValidator().validateForm();
+                    //multiView.validate();
+                    //fvo.getValidator().wasValidated(null);
+                }
             }
         } else
         {

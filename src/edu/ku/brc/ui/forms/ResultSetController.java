@@ -217,13 +217,18 @@ public class ResultSetController implements ValidationListener
         
         if (addNewBtn)
         {
-            if (false)
+            if (true)
             {
                 newRecBtn = new JButton("+")
                 {
                     public void setEnabled(boolean enable)
                     {
-                        System.err.println(formValidator.getName() + " " + hashCode() + " "+enable);
+                        //System.err.println(formValidator.getName() + " " + hashCode() + " "+enable);
+                        if (formValidator != null && formValidator.getName() != null && formValidator.getName().equals("Collection Object"))
+                        {
+                            int x = 0;
+                            x++;
+                        }
                         if (!enable)
                         {
                             int x = 0;

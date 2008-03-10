@@ -3566,6 +3566,26 @@ public class FormViewObj implements Viewable,
                 isNewlyCreatedDataObj = false;
             }*/
             
+            if (formValidator != null && formValidator.getState() != UIValidatable.ErrorType.Valid)
+            {
+                if (isNewlyCreatedDataObj)
+                {
+                    if (list != null)
+                    {
+                        list.remove(dataObj);
+                    }
+                    
+                    if (origDataSet != null)
+                    {
+                        origDataSet.remove(dataObj);
+                    }
+                    formValidator.setFormValidationState(UIValidatable.ErrorType.Valid);
+                    formValidator.reset(true);
+                    formValidator.validateRoot();
+                }
+                return;
+            }
+            
             DataObjectSettable ds = formViewDef.getDataSettable();
             DataObjectGettable dg = formViewDef.getDataGettable();
             if (ds != null)

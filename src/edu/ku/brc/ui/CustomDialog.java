@@ -80,6 +80,7 @@ public class CustomDialog extends JDialog
     public static final int OKCANCELHELP       = OK_BTN | CANCEL_BTN | HELP_BTN;
     public static final int OKCANCELAPPLY      = OK_BTN | CANCEL_BTN | APPLY_BTN;
     public static final int OKCANCELAPPLYHELP  = OK_BTN | CANCEL_BTN | APPLY_BTN | HELP_BTN;
+    public static final int CANCELHELP         = CANCEL_BTN | HELP_BTN;
     
     // Data Members
     protected JButton           okBtn            = null;
@@ -217,7 +218,7 @@ public class CustomDialog extends JDialog
      */
     public void createUI()
     {
-        setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
         mainPanel = createMainPanel();
         mainPanel.setBorder(BorderFactory.createEmptyBorder(0, 2, 5, 2));
@@ -228,15 +229,17 @@ public class CustomDialog extends JDialog
         }
 
         // Bottom Button UI
-        okBtn = new JButton(StringUtils.isNotEmpty(okLabel) ? okLabel : getResourceString("OK"));
-        okBtn.addActionListener(new ActionListener()
+        if ((whichBtns & OK_BTN) == OK_BTN)
         {
-            public void actionPerformed(ActionEvent ae)
+            okBtn = new JButton(StringUtils.isNotEmpty(okLabel) ? okLabel : getResourceString("OK"));
+            okBtn.addActionListener(new ActionListener()
             {
-                okButtonPressed();
-            }
-        });
-        
+                public void actionPerformed(ActionEvent ae)
+                {
+                    okButtonPressed();
+                }
+            });
+        }
         
         if ((whichBtns & CANCEL_BTN) == CANCEL_BTN)
         {
@@ -287,6 +290,10 @@ public class CustomDialog extends JDialog
         {
             bb = ButtonBarFactory.buildOKBar(okBtn);
             
+        } else if (whichBtns == CANCEL_BTN)
+        {
+            bb = ButtonBarFactory.buildOKBar(cancelBtn);
+            
         } else if (whichBtns == OKCANCEL)
         {
             bb = ButtonBarFactory.buildOKCancelBar(okBtn, cancelBtn);
@@ -306,6 +313,10 @@ public class CustomDialog extends JDialog
         } else if (whichBtns == OKCANCELAPPLYHELP)
         {
             bb = ButtonBarFactory.buildOKCancelApplyHelpBar(okBtn, cancelBtn, applyBtn, helpBtn);
+            
+        } else if (whichBtns == CANCELHELP)
+        {
+            bb = ButtonBarFactory.buildOKHelpBar(cancelBtn, helpBtn);
             
         } else
         {

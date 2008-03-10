@@ -3062,7 +3062,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
         if (doingStarterPane)
         {
             doingStarterPane = false;
-            return null;
+            return IconManager.getIcon("Workbench", IconManager.IconSize.Std16);
         }
         return IconManager.getIcon("DataSet", IconManager.IconSize.Std16);
     }

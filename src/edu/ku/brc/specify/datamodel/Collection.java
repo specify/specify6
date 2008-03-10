@@ -53,6 +53,7 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
     protected Integer                    collectionId;
     protected String                     collectionName;
     protected String                     collectionPrefix; // Collection Acronym
+    protected Boolean                    isEmbeddedCollectingEvent;
     protected String                     description;
     protected String                     remarks;
     
@@ -126,6 +127,7 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
         collectionId           = null;
         collectionName         = null;
         collectionPrefix       = null;
+        isEmbeddedCollectingEvent = true;
         description            = null;
         remarks                = null;
         discipline             = Discipline.getCurrentDiscipline();
@@ -229,6 +231,23 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
     public String getDescription()
     {
         return description;
+    }
+
+    /**
+     * @return the isEmbeddedCollectingEvent
+     */
+    @Column(name = "IsEmbeddedCollectingEvent", unique = false, nullable = true, insertable = true, updatable = true)
+    public Boolean getIsEmbeddedCollectingEvent()
+    {
+        return isEmbeddedCollectingEvent;
+    }
+
+    /**
+     * @param isEmbeddedCollectingEvent the isEmbeddedCollectingEvent to set
+     */
+    public void setIsEmbeddedCollectingEvent(Boolean isEmbeddedCollectingEvent)
+    {
+        this.isEmbeddedCollectingEvent = isEmbeddedCollectingEvent;
     }
 
     /**

@@ -17,7 +17,7 @@
     <icon name="Export16"         file="ExportDataSet16x16.png" sizes="16"/>
     <icon name="ExportExcel16"    file="ExportExcelTemplate16x16.png" sizes="16"/>
     
-    <icon name="Workbench16"      file="Workbench16x16.png" sizes="16"/>
+    <icon name="Workbench16"      file="Workbench32x32.png" sizes="16"/>
     <icon name="Workbench"        file="Workbench32x32.png" sizes="all"/>
     <icon name="Interactions"     file="interactions.png" sizes="all"/>
     <icon name="Statistics"       file="Statistics32x32.png" sizes="all"/>
@@ -41,7 +41,7 @@
     <icon name="NewDataSet"    file="NewDataSet16x16.png" sizes="16"/>
     <icon name="Labels"        file="Label32x32.png" sizes="all"/>
     <icon name="Form"          file="Form32x32.png" sizes="all"/>
-    <icon name="Data_Entry"    file="Form32x32.png" sizes="all"/>
+    <icon name="Data_Entry"    file="Data_Entry.png" sizes="all"/>
     <icon name="Configure16"   file="Configure16x16.png" sizes="16"/>
     <icon name="CarryForward"  file="CarryForward16x16.png" sizes="16"/>
     <icon name="CarryForward20x20" file="CarryForward20x20.png" sizes="NonStd"/>
@@ -74,7 +74,7 @@
     
     <!-- Done Aliases -->
     
-    <icon name="UserInterface" file="form.gif" sizes="all"/>
+    <icon name="UserInterface" file="FormEditor32x32.png" sizes="all"/>
     
     <icon name="DropDownArrow" file="dropdownarrow.gif" sizes="NonStd"/>
     <icon name="UpArrow"       file="up.png"            sizes="16"/>
