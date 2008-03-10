@@ -122,7 +122,8 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
         this.format           = format;
         this.uiFieldFormatterName  = uiFieldFormatterName;
         this.displayInfoDialogName = displayInfoDialogName;
-
+        this.dataObjFormatterName  = dataObjFormatterName;
+        
         textField = new JTextField();
 
         init(objTitle);
