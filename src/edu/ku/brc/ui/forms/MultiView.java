@@ -586,7 +586,7 @@ public class MultiView extends JPanel
     {
         if (hasChanged())
         {
-            if (currentViewable.isDataCompleteAndValid())
+            if (currentViewable != null && currentViewable.isDataCompleteAndValid())
             {
                 showView(altView.getName());         
             }
@@ -1298,7 +1298,7 @@ public class MultiView extends JPanel
                 if (inx > -1)
                 {
                     FormViewObj formViewObj = getCurrentViewAsFormViewObj();
-                    if (formViewObj != null)
+                    if (formViewObj != null && formViewObj.getRsController() != null)
                     {
                         formViewObj.getRsController().setIndex(inx);
                     }
