@@ -80,6 +80,7 @@ import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 import edu.ku.brc.dbsupport.DBFieldInfo;
+import edu.ku.brc.dbsupport.DBRelationshipInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -673,6 +674,15 @@ public class FormViewObj implements Viewable,
      */
     protected void setUpCarryForward()
     {
+        
+        if (true)
+        {
+            CarryForwardConfigDlg dlg = new CarryForwardConfigDlg(mvParent);
+            dlg.createUI();
+            dlg.setSize(500, 350);
+            UIHelper.centerAndShow(dlg);
+            return;
+        }
         CarryForwardInfo carryForwardInfo = getCarryForwardInfo();
         
         Vector<FieldInfo> itemLabels    = new Vector<FieldInfo>();
@@ -708,9 +718,18 @@ public class FormViewObj implements Viewable,
                 {
                     String fieldName = fieldInfo.getFormCell().getName();
                     DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
-                    DBFieldInfo fi = ti.getFieldByName(fieldName);
-                    fieldInfo.setLabel(fi.getTitle());
-                    itemLabels.add(fieldInfo);
+                    if (ti != null)
+                    {
+                        DBFieldInfo fi = ti.getFieldByName(fieldName);
+                        if (fi != null)
+                        {
+                            fieldInfo.setLabel(fi.getTitle());
+                            itemLabels.add(fieldInfo);
+                        } else
+                        {
+                            log.error("Couldn't find field ["+fieldName+"] in ["+ti.getTitle()+"]");
+                        }
+                    }
                 }
             }
         }
@@ -1353,8 +1372,9 @@ public class FormViewObj implements Viewable,
 
     /**
      * Creates a new Record and adds it to the List and dataSet if necessary
+     * @param doSetIntoAndValidateArg whether the new data object should be set into the form and validated.
      */
-    protected void createNewDataObject(final boolean doSetIntoAndValidate)
+    protected void createNewDataObject(final boolean doSetIntoAndValidateArg)
     {
         //log.debug("createNewDataObject " + this.getView().getName());
 
@@ -1363,7 +1383,9 @@ public class FormViewObj implements Viewable,
             return;
         }
         
-        if (!list.isEmpty())//rsController != null && rsController.getCurrentIndex() == 0)
+        boolean doSetIntoAndValidate = doSetIntoAndValidateArg;
+        
+        if (list != null && !list.isEmpty())//rsController != null && rsController.getCurrentIndex() == 0)
         {
             getDataFromUI();
         }
@@ -1399,7 +1421,26 @@ public class FormViewObj implements Viewable,
         
         if (parentDataObj instanceof FormDataObjIFace)
         {
-            ((FormDataObjIFace)parentDataObj).addReference(obj, cellName);
+            boolean isASingleObj = false;
+            DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(parentDataObj.getClass().getName());
+            if (ti != null)
+            {
+                DBRelationshipInfo ri = ti.getRelationshipByName(cellName);
+                if (ri != null)
+                {
+                    isASingleObj = ri.getType() == DBRelationshipInfo.RelationshipType.ManyToOne;
+                }
+            }
+            
+            if (isASingleObj)
+            {
+                ((FormDataObjIFace)obj).addReference(((FormDataObjIFace)parentDataObj), cellName);
+                doSetIntoAndValidate = true;
+                
+            } else
+            {
+                ((FormDataObjIFace)parentDataObj).addReference(obj, cellName);
+            }
             
         } else
         {
@@ -3942,7 +3983,7 @@ public class FormViewObj implements Viewable,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#setCellName(java.lang.String)
      */
-    public void setCellName(String cellName)
+    public void setCellName(final String cellName)
     {
         this.cellName = cellName;
     }
@@ -3950,7 +3991,7 @@ public class FormViewObj implements Viewable,
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.Viewable#registerSaveBtn(javax.swing.JButton)
      */
-    public void registerSaveBtn(JButton saveBtnArg)
+    public void registerSaveBtn(final JButton saveBtnArg)
     {
         this.saveControl = saveBtnArg;
         this.saveControl.setOpaque(false);
@@ -4513,11 +4554,20 @@ public class FormViewObj implements Viewable,
      */
     public void getFieldIds(final List<String> fieldIds)
     {
+        getFieldIds(fieldIds, false);
+    }
+    
+    /**
+     * @param fieldIds
+     * @param doAll
+     */
+    public void getFieldIds(final List<String> fieldIds, final boolean doAll)
+    {
         for (FieldInfo fieldInfo : controlsById.values())
         {
-            if (fieldInfo.isOfType(FormCellIFace.CellType.field))
+            if (fieldInfo.isOfType(FormCellIFace.CellType.field) || doAll)
             {
-                fieldIds.add(((FormCellField)fieldInfo.getFormCell()).getIdent());
+                fieldIds.add(fieldInfo.getFormCell().getIdent());
             }
         }
     }

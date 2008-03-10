@@ -215,7 +215,6 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         cataloger             = null;
         container             = null;
         containerOwner        = null;
-        appraisal             = null;
         paleoContext          = null;
         dnaSequence           = null;
         fieldNotebookPage     = null;

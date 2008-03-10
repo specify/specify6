@@ -86,6 +86,12 @@ public class XMLHelper
             JOptionPane.showMessageDialog(null, getResourceString("CHECKSUM_MSG"), getResourceString("CHECKSUM_TITLE"), JOptionPane.ERROR_MESSAGE);
             System.exit(0);
         }
+        
+        if (!file.exists())
+        {
+            log.error("the file ["+file+"] doesn't exist.");
+            return null;
+        }
 
         return readFileToDOM4J(new FileInputStream(file));
     }

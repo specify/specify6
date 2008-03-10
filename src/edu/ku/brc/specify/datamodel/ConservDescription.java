@@ -53,28 +53,27 @@ import org.hibernate.annotations.Index;
 public class ConservDescription extends DataModelObjBase implements AttachmentOwnerIFace<ConservDescriptionAttachment>, java.io.Serializable
 {
     // Fields    
-    protected Integer          conservDescriptionId;
-    protected String           shortDesc;
-    protected String           description;
-    protected String           backgroundInfo;
-    protected Float            width;
-    protected Float            height;
-    protected Float            objLength;
-    protected String           units;
-    protected String           composition;
-    protected String           remarks;
-    protected String           source;
+    protected Integer            conservDescriptionId;
+    protected String             shortDesc;
+    protected String             description;
+    protected String             backgroundInfo;
+    protected Float              width;
+    protected Float              height;
+    protected Float              objLength;
+    protected String             units;
+    protected String             composition;
+    protected String             remarks;
+    protected String             source;
+    
+    protected String             lightRecommendations;
+    protected String             displayRecommendations;
+    protected String             otherRecommendations;
     
     protected CollectionObject   collectionObject;
-    protected Accession          accession;
     protected Division           division;
     
     protected Set<ConservEvent>  events;
     protected Set<ConservDescriptionAttachment> conservDescriptionAttachments;
-    
-    protected Set<ConservRecommendation>  lightRecommendations;
-    protected Set<ConservRecommendation>  displayRecommendations;
-    protected Set<ConservRecommendation>  otherRecommendations;
 
     // Constructors
 
@@ -101,19 +100,18 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
         backgroundInfo       = null;
         width                = null;
         height               = null;
-        objLength               = null;
+        objLength            = null;
         units                = null;
         composition          = null;
         remarks              = null;
         source               = null;
+        lightRecommendations   = null;
+        displayRecommendations = null;
+        otherRecommendations   = null;
         collectionObject     = null;
-        accession            = null;
         division             = null;
         events               = new HashSet<ConservEvent>();
         conservDescriptionAttachments = new HashSet<ConservDescriptionAttachment>();
-        lightRecommendations    = new HashSet<ConservRecommendation>();
-        displayRecommendations  = new HashSet<ConservRecommendation>();
-        otherRecommendations    = new HashSet<ConservRecommendation>();
 
     }
 
@@ -281,6 +279,60 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
     {
         this.source = source;
     }
+    
+    /**
+     * @return the lightRecommendations
+     */
+    @Lob
+    @Column(name = "LightRecommendations", unique = false, nullable = true, insertable = true, updatable = true, length = 4096)
+    public String getLightRecommendations()
+    {
+        return lightRecommendations;
+    }
+
+    /**
+     * @param lightRecommendations the lightRecommendations to set
+     */
+    public void setLightRecommendations(String lightRecommendations)
+    {
+        this.lightRecommendations = lightRecommendations;
+    }
+
+    /**
+     * @return the displayRecommendations
+     */
+    @Lob
+    @Column(name = "DisplayRecommendations", unique = false, nullable = true, insertable = true, updatable = true, length = 4096)
+    public String getDisplayRecommendations()
+    {
+        return displayRecommendations;
+    }
+
+    /**
+     * @param displayRecommendations the displayRecommendations to set
+     */
+    public void setDisplayRecommendations(String displayRecommendations)
+    {
+        this.displayRecommendations = displayRecommendations;
+    }
+
+    /**
+     * @return the otherRecommendations
+     */
+    @Lob
+    @Column(name = "OtherRecommendations", unique = false, nullable = true, insertable = true, updatable = true, length = 4096)
+    public String getOtherRecommendations()
+    {
+        return otherRecommendations;
+    }
+
+    /**
+     * @param otherRecommendations the otherRecommendations to set
+     */
+    public void setOtherRecommendations(String otherRecommendations)
+    {
+        this.otherRecommendations = otherRecommendations;
+    }
 
     /**
      *
@@ -295,21 +347,6 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
     public void setCollectionObject(final CollectionObject collectionObject)
     {
         this.collectionObject = collectionObject;
-    }
-
-    /**
-     *
-     */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "AccessionID", unique = false, nullable = true, insertable = true, updatable = true)
-    public Accession getAccession()
-    {
-        return this.accession;
-    }
-
-    public void setAccession(final Accession accession)
-    {
-        this.accession = accession;
     }
 
     /**
@@ -352,52 +389,6 @@ public class ConservDescription extends DataModelObjBase implements AttachmentOw
    {
        this.conservDescriptionAttachments = conservDescriptionAttachments;
    }
-
-   /**
-    * 
-    */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "lightRecommendation")
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    public Set<ConservRecommendation> getLightRecommendations()
-    {
-        return this.lightRecommendations;
-    }
-
-    public void setLightRecommendations(final Set<ConservRecommendation> lightRecommendations)
-    {
-        this.lightRecommendations = lightRecommendations;
-    }
-
-    /**
-     * 
-     */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "displayRecommendation")
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    public Set<ConservRecommendation> getDisplayRecommendations()
-    {
-        return this.displayRecommendations;
-    }
-
-    public void setDisplayRecommendations(final Set<ConservRecommendation> displayRecommendations)
-    {
-        this.displayRecommendations = displayRecommendations;
-    }
-
-    /**
-     * 
-     */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "otherRecommendation")
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    public Set<ConservRecommendation> getOtherRecommendations()
-    {
-        return this.otherRecommendations;
-    }
-
-    public void setOtherRecommendations(final Set<ConservRecommendation> otherRecommendations)
-    {
-        this.otherRecommendations = otherRecommendations;
-    }
-
 
     /**
      * Generic Getter for the ID Property.

@@ -72,7 +72,7 @@
     			</row>
 
     			<row>
-    			    <cell type="subview" viewname="Determination" id="6" name="determinations" colspan="12" rows="5" initialize="noscrollbars=true;bgcolor=240,240,240;border=line;bordercolor=200,200,200;"/>
+    			    <cell type="subview" viewname="Determination" id="6" name="determinations" colspan="12" rows="5" initialize="noscrollbars=true;border=line;bordercolor=150,150,150;"/>
     			</row>
    			    <row>
     				<cell type="separator" label="Locality" colspan="12"/>
@@ -88,7 +88,10 @@
     			    <cell type="subview" viewname="Preparation" id="8" name="preparations" defaulttype="table" colspan="12"/>
     			</row>
     
-	    
+	    <row>
+
+<cell type="subview" viewname="Appraisal" id="30" name="appraisal" colspan="12"/>
+</row>
     		    <row>
                     <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectionObjectAttachments" colspan="12" initialize="btn=true;icon=CollectionObject"/>
                 </row>

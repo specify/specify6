@@ -59,6 +59,24 @@
     <icon name="storage"              file="storage.png" sizes="all"/>
     <icon name="taxon"                file="taxon.png" sizes="all"/>
     
+    <!--  Attachment Icons -->
+    <icon name="AccessionAttachment"             file="accession_attachment.png" sizes="all"/>
+	<icon name="AgentAttachment"                 file="agent_attachment.png" sizes="all"/>
+	<icon name="CollectingEventAttachment"       file="collecting_event_attachment.png" sizes="all"/>
+	<icon name="CollectionObjectAttachment"      file="collection_object_attachment.png" sizes="all"/>
+	<icon name="ConservDescriptionAttachment"    file="conserv_description_attachment.png" sizes="all"/>
+	<icon name="ConservEventAttachment"          file="conserv_event_attachment.png" sizes="all"/>
+	<icon name="DNASequenceAttachment"           file="dna_attachment.png" sizes="all"/>
+	<icon name="FieldNotebookAttachment"         file="field_notebook_attachment.png" sizes="all"/>
+	<icon name="FieldNotebookPageAttachment"     file="field_notebook_page_attachment.png" sizes="all"/>
+	<icon name="FieldNotebookPageSetAttachment"  file="field_notebook_page_set_attachment.png" sizes="all"/>
+	<icon name="LoanAttachment"                  file="loan_attachment.png" sizes="all"/>
+	<icon name="LocalityAttachment"              file="locality_attachment.png" sizes="all"/>
+	<icon name="PermitAttachment"                file="permit_attachment.png" sizes="all"/>
+	<icon name="PreparationAttachment"           file="preparation_attachment.png" sizes="all"/>
+	<icon name="RepositoryAgreementAttachment"   file="repository_agreement_attachment.png" sizes="all"/>
+	<icon name="TaxonAttachment"                 file="taxon_attachment.png" sizes="all"/> 
+	
     <!--  Extra Icons -->
     <icon name="group"                file="group.png" sizes="all"/>
     <icon name="person"               file="person.png" sizes="all"/>
@@ -76,25 +94,25 @@
 	<icon name="accessionauthorization"         alias="permit"/>
 	<icon name="AccessionAuthorization"         alias="permit"/>
 	
-	<icon name="accessionattachment"            alias="attachment"/>
-	<icon name="agentattachment"                alias="attachment"/>
+	<icon name="accessionattachment"            alias="AccessionAttachment"/>
+	<icon name="agentattachment"                alias="AgentAttachment"/>
 	<icon name="attachment"                     alias="attachment"/>
 	<icon name="attachmentmetadata"             alias="attachment"/>
 	<icon name="attachmenttag"                  alias="attachment"/>
-	<icon name="collectingeventattachment"      alias="attachment"/>
-	<icon name="collectionobjectattachment"     alias="attachment"/>
-	<icon name="conservdescriptionattachment"   alias="attachment"/>
-	<icon name="conserveventattachment"         alias="attachment"/>
-	<icon name="dnasequenceattachment"          alias="attachment"/>
-	<icon name="fieldnotebookattachment"        alias="attachment"/>
-	<icon name="fieldnotebookpageattachment"    alias="attachment"/>
-	<icon name="fieldnotebookpageSetattachment" alias="attachment"/>
-	<icon name="loanattachment"                 alias="attachment"/>
-	<icon name="localityattachment"             alias="attachment"/>
-	<icon name="permitattachment"               alias="attachment"/>
-	<icon name="preparationattachment"          alias="attachment"/>
-	<icon name="repositoryagreementattachment"  alias="attachment"/>
-	<icon name="taxonattachment"                alias="attachment"/>
+	<icon name="collectingeventattachment"      alias="CollectingEventAttachment"/>
+	<icon name="collectionobjectattachment"     alias="CollectionObjectAttachment"/>
+	<icon name="conservdescriptionattachment"   alias="ConservDescriptionAttachment"/>
+	<icon name="conserveventattachment"         alias="ConservEventAttachment"/>
+	<icon name="dnasequenceattachment"          alias="DNASequenceAttachment"/>
+	<icon name="fieldnotebookattachment"        alias="FieldNotebookAttachment"/>
+	<icon name="fieldnotebookpageattachment"    alias="FieldNotebookPageAttachment"/>
+	<icon name="fieldnotebookpagesetattachment" alias="FieldNotebookPageSetAttachment"/>
+	<icon name="loanattachment"                 alias="LoanAttachment"/>
+	<icon name="localityattachment"             alias="LocalityAttachment"/>
+	<icon name="permitattachment"               alias="PermitAttachment"/>
+	<icon name="preparationattachment"          alias="PreparationAttachment"/>
+	<icon name="repositoryagreementattachment"  alias="RepositoryAgreementAttachment"/>
+	<icon name="taxonattachment"                alias="TaxonAttachment"/>
     
     
 	<icon name="citation"               file="citation.png" sizes="all"/>

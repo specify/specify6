@@ -508,7 +508,7 @@ public class DBTableIdMgr
             
         } else if (relTypeStr.equals("zero-to-one"))
         {
-            return DBRelationshipInfo.RelationshipType.ZeroToOne;
+            return DBRelationshipInfo.RelationshipType.ZeroOrOne;
         }
         return null;
     }

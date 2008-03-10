@@ -8,7 +8,6 @@
 package edu.ku.brc.specify.utilapps;
 
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
-
 import static edu.ku.brc.specify.utilapps.DataBuilder.createAccession;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createAccessionAgent;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createAddress;
@@ -111,7 +110,6 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
-import org.dom4j.Node;
 import org.hibernate.Session;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -151,8 +149,6 @@ import edu.ku.brc.specify.datamodel.CollectionObjectAttr;
 import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.ConservDescription;
 import edu.ku.brc.specify.datamodel.ConservEvent;
-import edu.ku.brc.specify.datamodel.ConservRecmdType;
-import edu.ku.brc.specify.datamodel.ConservRecommendation;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.Determination;
@@ -493,26 +489,11 @@ public class BuildSampleDatabase
     {
         //startTx();
         
-        ConservRecmdType type = new ConservRecmdType();
-        type.initialize();
-        type.setTitle("Avoid Light");
-        
-        startTx();
-        persist(type);
-        commitTx();
-        
-        ConservRecommendation recommend = new ConservRecommendation();
-        recommend.initialize();
-        recommend.setCompletedDate(Calendar.getInstance());
-        recommend.addReference(userAgent, "curator");
-        recommend.addReference(type, "conservRecmdType");
-
         ConservDescription desc = new ConservDescription();
         desc.initialize();
         desc.setShortDesc("Short Description");
         //desc.addReference(divs.get(0), "division");
         
-        desc.addReference(recommend, "lightRecommendations");
         desc.addReference(colObjs.get(0), "collectionObject");
         
         //desc.setCollectionObject(colObjs.get(0));

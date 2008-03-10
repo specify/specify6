@@ -51,24 +51,40 @@ import org.hibernate.annotations.Index;
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "conservevent")
 @org.hibernate.annotations.Table(appliesTo="conservevent", indexes =
-    {   @Index (name="ConservExamDateIDX", columnNames={"ExamDate"})
+    {   @Index (name="ConservExamDateIDX", columnNames={"ExamDate"}),
+        @Index (name="ConservCompletedDateIDX", columnNames={"completedDate"})
     })
 public class ConservEvent extends DataModelObjBase implements AttachmentOwnerIFace<ConservEventAttachment>, java.io.Serializable
 {
     // Fields    
     protected Integer                    conservEventId;
+    
+    // Step #1
     protected Calendar                   examDate;
     protected String                     conditionReport;
     protected String                     advTestingExam;
     protected String                     advTestingExamResults;
+    protected String                     photoDocs;              // documents the problem
+    protected Agent                      examinedByAgent;
+        
+    // Step #2
+    protected String                     recommendedComments;
+    protected Agent                      curator;
+    protected Calendar                   curatorApprovalDate;
+    
+    // Step #3
     protected String                     treatmentReport;
     protected Calendar                   treatmentCompDate;
-    protected String                     photoDocs;
-    
-    protected Agent                      examinedByAgent;
     protected Agent                      treatedByAgent;
-    protected ConservDescription         conservDescription;
     
+    // Step #4 
+    protected Calendar                   completedDate;
+    protected String                     completedComments; 
+    
+    // Additional Information
+    protected String                     remarks;
+    
+    protected ConservDescription          conservDescription;    
     protected Set<ConservEventAttachment> conservEventAttachments;
 
     // Constructors
@@ -90,6 +106,7 @@ public class ConservEvent extends DataModelObjBase implements AttachmentOwnerIFa
     public void initialize()
     {
         super.init();
+        
         examDate                = null;
         conditionReport         = null;
         advTestingExam          = null;
@@ -100,6 +117,14 @@ public class ConservEvent extends DataModelObjBase implements AttachmentOwnerIFa
         examinedByAgent         = null;
         treatedByAgent          = null;
         conservDescription      = null;
+        
+        recommendedComments     = null;
+        completedDate           = null;
+        completedComments       = null;
+        remarks                 = null;
+        curatorApprovalDate     = null;
+        curator                 = null;
+        
         conservEventAttachments = new HashSet<ConservEventAttachment>();
     }
 
@@ -244,6 +269,51 @@ public class ConservEvent extends DataModelObjBase implements AttachmentOwnerIFa
     }
 
     /**
+     * 
+     */
+    @Lob
+    @Column(name = "CompletedComments", length = 4096)
+    public String getCompletedComments()
+    {
+        return this.completedComments;
+    }
+
+    public void setCompletedComments(String completedComments)
+    {
+        this.completedComments = completedComments;
+    }
+
+    /**
+     * 
+     */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "CuratorApprovalDate", unique = false, nullable = true, insertable = true, updatable = true, length = 8192)
+    public Calendar getCuratorApprovalDate()
+    {
+        return this.curatorApprovalDate;
+    }
+
+    public void setCuratorApprovalDate(final Calendar curatorApprovalDate)
+    {
+        this.curatorApprovalDate = curatorApprovalDate;
+    }
+
+    /**
+     * 
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "CuratorID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Agent getCurator()
+    {
+        return this.curator;
+    }
+
+    public void setCurator(final Agent curator)
+    {
+        this.curator = curator;
+    }
+
+    /**
      *
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
@@ -256,6 +326,33 @@ public class ConservEvent extends DataModelObjBase implements AttachmentOwnerIFa
     public void setTreatedByAgent(final Agent treatedByAgent)
     {
         this.treatedByAgent = treatedByAgent;
+    }
+    
+
+    /**
+     *
+     */
+    @Temporal(TemporalType.DATE)
+    @Column(name = "CompletedDate", unique = false, nullable = true, insertable = true, updatable = true)
+    public Calendar getCompletedDate() {
+        return this.completedDate;
+    }
+
+    public void setCompletedDate(Calendar completedDate) {
+        this.completedDate = completedDate;
+    }
+    
+    /**
+     *
+     */
+    @Lob
+    @Column(name = "Remarks", length = 4096)
+    public String getRemarks() {
+        return this.remarks;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
     }
 
     /**

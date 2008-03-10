@@ -69,6 +69,7 @@ import edu.ku.brc.ui.ImageDisplay;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIPluginable;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.PickListDBAdapterFactory;
 import edu.ku.brc.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.ui.db.TextFieldFromPickListTable;
@@ -1616,7 +1617,23 @@ public class ViewFactory
                 {
                     continue;
                 }
-                Field fld = parentCls.getDeclaredField(fieldNames[i]);
+                
+                Field fld =null;
+                try
+                {
+                    fld = parentCls.getDeclaredField(fieldNames[i]);
+                    
+                } catch (java.lang.NoSuchFieldException ex)
+                {
+                    String parentTitle = parentCls.getSimpleName();
+                    DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(parentCls.getName());
+                    if (ti != null)
+                    {
+                        parentTitle = ti.getTitle();
+                    }
+                    
+                    UIRegistry.showLocalizedError(String.format(UIRegistry.getResourceString("INVALID_FIELD_NAME"), fieldNames[i], parentTitle));
+                }
                 if (fld != null)
                 {
                     if (i == fieldNames.length-1)

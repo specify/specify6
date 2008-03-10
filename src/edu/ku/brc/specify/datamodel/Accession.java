@@ -98,7 +98,6 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
     protected Set<AccessionAuthorization> accessionAuthorizations;
     protected Set<AccessionAgent>         accessionAgents;
     protected Set<AccessionAttachment>    accessionAttachments;
-    protected Set<ConservDescription>     conservDescriptions;
     protected Set<Appraisal>              appraisals;
     protected Set<TreatmentEvent>         treatmentEvents;
 
@@ -145,7 +144,6 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
         accessionAgents         = new HashSet<AccessionAgent>();
         repositoryAgreement     = null;
         accessionAttachments    = new HashSet<AccessionAttachment>();
-        conservDescriptions     = new HashSet<ConservDescription>();
         appraisals              = new HashSet<Appraisal>();
         treatmentEvents         = new HashSet<TreatmentEvent>();
 
@@ -476,21 +474,6 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
     
     public void setRepositoryAgreement(RepositoryAgreement repositoryAgreement) {
         this.repositoryAgreement = repositoryAgreement;
-    }
-
-    /**
-     *
-     */
-    @OneToMany(cascade = { javax.persistence.CascadeType.ALL }, fetch = FetchType.LAZY, mappedBy = "accession")
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    public Set<ConservDescription> getConservDescriptions()
-    {
-        return this.conservDescriptions;
-    }
-
-    public void setConservDescriptions(final Set<ConservDescription> conservDescriptions)
-    {
-        this.conservDescriptions = conservDescriptions;
     }
 
     /**

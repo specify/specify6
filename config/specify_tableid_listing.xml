@@ -4,7 +4,7 @@
 
     Last used ID is 133 or 520
     
-    86 is available
+    86, 104, 105 is available
     
     PLEASE Keep this file in alphabetical order! 
 
@@ -113,8 +113,6 @@
         	<display view="ObjectAttachment" newobjdlg="ConservEventAttachmentDisplay"/>
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules</businessrule>
         </table>
-        <table name="edu.ku.brc.specify.datamodel.ConservRecmdType" abbrev="csrt" id="105"/>
-        <table name="edu.ku.brc.specify.datamodel.ConservRecommendation" abbrev="csr" id="104" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.Container" abbrev="con" id="31" searchable="true"/>
         <table name="edu.ku.brc.specify.datamodel.DataType" abbrev="dt" id="33">
             <businessrule>edu.ku.brc.specify.datamodel.busrules.DataTypeBusRules</businessrule>          

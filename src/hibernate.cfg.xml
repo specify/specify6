@@ -74,8 +74,6 @@
 		<mapping class="edu.ku.brc.specify.datamodel.ConservDescriptionAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.ConservEvent"/>
 		<mapping class="edu.ku.brc.specify.datamodel.ConservEventAttachment"/>
-		<mapping class="edu.ku.brc.specify.datamodel.ConservRecommendation"/>
-		<mapping class="edu.ku.brc.specify.datamodel.ConservRecmdType"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Container"/>
 		<mapping class="edu.ku.brc.specify.datamodel.DataType"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Deaccession"/>

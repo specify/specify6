@@ -90,13 +90,14 @@ public class DatamodelGenerator
     protected boolean      doGerman          = false;
     protected boolean      showDescErrors    = false;
     protected boolean      showDebug         = false;
-    
 
     /**
      * 
      */
-    public DatamodelGenerator()
+    public DatamodelGenerator(final boolean includeDesc)
     {
+        this.includeDesc = includeDesc;
+        
         readDescriptions();
     }
     
@@ -668,7 +669,7 @@ public class DatamodelGenerator
     {
         try
         {
-            Class classObj = Class.forName(packageName + "." + className);
+            Class<?> classObj = Class.forName(packageName + "." + className);
             
             Table   table       = null; 
             String  tableName   = null;
@@ -1387,26 +1388,30 @@ public class DatamodelGenerator
         return false;
 
     }
-
+    
     /**
-     * @param args
+     * @param includeDescArg
      */
-    public static void main(String[] args)
+    public void process(final String outputFileName)
     {
+        if (StringUtils.isNotEmpty(outputFileName))
+        {
+            DatamodelHelper.setOutputFileName(outputFileName);
+        }
+        
         System.out.println("Starting...");
-        List<Table>        tableList              = new ArrayList<Table>(100);
-        DatamodelGenerator datamodelWriter        = new DatamodelGenerator();
+        List<Table>        tableList              = new ArrayList<Table>(150);
         String             tableIdListingFilePath = DatamodelHelper.getTableIdFilePath();
         
-        if (datamodelWriter.readTableMetadataFromFile(tableIdListingFilePath))
+        if (readTableMetadataFromFile(tableIdListingFilePath))
         {
             String dmSrc = DatamodelHelper.getDataModelSrcDirPath();
-            tableList    = datamodelWriter.generateDatamodelTree(tableList, dmSrc);
+            tableList    = generateDatamodelTree(tableList, dmSrc);
             
             // Sort all the elements by class name
             Collections.sort(tableList);
 
-            boolean didWrite = datamodelWriter.writeTree(tableList);
+            boolean didWrite = writeTree(tableList);
             if (!didWrite)
             {
                 log.error("Failed to write out datamodel document");
@@ -1417,6 +1422,15 @@ public class DatamodelGenerator
         }
         log.info("Done.");
         System.out.println("Done.");
+    }
+
+    /**
+     * @param args
+     */
+    public static void main(String[] args)
+    {
+        DatamodelGenerator datamodelWriter = new DatamodelGenerator(false);
+        datamodelWriter.process(null);
     }
     
     

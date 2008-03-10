@@ -157,7 +157,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
 
     /**
      *  Constructor.
-     * @param tableName name of the table to be searched
+     * @param domName name of the table to be searched
      * @param idColumn the column name that contains the record ID
      * @param keyFieldName the column that is searched
      * @param displayColumn a comma separated list of columns to be displayed and formatted by the format clause (null is OK)

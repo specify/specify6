@@ -40,7 +40,7 @@ public class UIControlTOHTML
                                     FileNotFoundException, 
                                     IOException
     {
-        boolean doUIControls = true;
+        boolean doUIControls = false;
         boolean doGerman     = false;
         String  outFileName  = "UIControls.html";
         
@@ -57,7 +57,14 @@ public class UIControlTOHTML
             
             outFileName  = doGerman ? germanOUT : englishOUT;
             
-            Transformer transformer = tFactory.newTransformer(new StreamSource("src/edu/ku/brc/specify/utilapps/" + xsltFileName));
+            String filePath = "src/edu/ku/brc/specify/utilapps/" + xsltFileName;
+            File transFile = new File(filePath);
+            if (!transFile.exists())
+            {
+                System.err.println("File path["+filePath+"] doesn't exist!");
+                System.exit(1);
+            }
+            Transformer transformer = tFactory.newTransformer(new StreamSource(filePath));
             try
             {
                 // Need to read it in as a string because of the embedded German characters

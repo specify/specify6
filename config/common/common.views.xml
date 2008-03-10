@@ -35,7 +35,17 @@
                 <altview name="AccessionAuthorization Edit" viewdef="AccessionAuthorization" label="Edit" mode="edit"/>
             </altviews>
         </view>
-
+        
+        <view name="Appraisal"
+            class="edu.ku.brc.specify.datamodel.Appraisal"
+            resourcelabels="false">
+            <desc><![CDATA[The appraisal subform.]]></desc>
+            <altviews>
+                <altview name="Appraisal View" viewdef="Appraisal" label="View" mode="view" default="true"/>
+                <altview name="Appraisal Edit" viewdef="Appraisal" label="Edit" mode="edit"/>
+            </altviews>
+        </view>
+        
         <view name="CollectingEventSubform"
             class="edu.ku.brc.specify.datamodel.CollectingEvent"
             isinternal="false"
@@ -457,6 +467,42 @@
                 <row>
                     <cell type="label" labelfor="2" label="Remarks"/>
                     <cell type="field" id="2" name="remarks" uitype="textarea" colspan="3" rows="3"/>
+                </row>
+
+            </rows>
+        </viewdef>
+        
+        <viewdef 
+            type="form"
+            name="Appraisal"
+            class="edu.ku.brc.specify.datamodel.Appraisal"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            <desc><![CDATA[Form For Appraisal]]></desc>
+            
+            <columnDef>125px,2px,125px,2px,125px,2px,125px,2px,125px,2px,125px,p:g</columnDef>
+            <rowDef auto="true" sep="2px" cell="p"/>
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Appraisal Date"/>
+                    <cell type="field" id="1" name="appraisalDate" uitype="formattedtext" isrequired="true" uifieldformatter="Date" default="today"/>
+                    <cell type="label" labelfor="2" label="Appraisal Number"/>
+                    <cell type="field" id="2" name="appraisalNumber" uitype="text"/>
+
+                    <cell type="label" labelfor="4" label="Unit Type"/>
+                    <cell type="field" id="4" name="monetaryUnitType" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="7" label="Agent"/>
+                    <cell type="field" id="7" name="agent" uitype="querycbx" initialize="name=Agent;title=Agent" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="8" label="Appraisal Value"/>
+                    <cell type="field" id="8" name="appraisalValue" uitype="textarea" rows="3" colspan="10"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5" label="Notes"/>
+                    <cell type="field" id="5" name="notes" uitype="textarea" colspan="10" rows="3"/>
                 </row>
 
             </rows>
@@ -1566,6 +1612,7 @@
                 </row>
             </rows>
         </viewdef>
+
 
     </viewdefs>
 </viewset>

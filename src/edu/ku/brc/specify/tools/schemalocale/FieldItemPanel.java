@@ -393,7 +393,10 @@ public class FieldItemPanel extends LocalizerBasePanel
         setIgnoreChanges(false);
     }
 
-    protected void setSelectedFieldFormatter(UIFieldFormatterIFace formatter)
+    /**
+     * @param formatter
+     */
+    protected void setSelectedFieldFormatter(final UIFieldFormatterIFace formatter)
     {
     	// first reset combo box in case any formatters have been deleted
     	fillWithFieldFormatter();
@@ -1048,7 +1051,16 @@ public class FieldItemPanel extends LocalizerBasePanel
                         DBRelationshipInfo ri = ti.getRelationshipByName(fld.getName());
                         if (ri != null)
                         {
-                            fieldTypeTxt.setText(ri.getType().toString());
+                            String title = ri.getType().toString();
+                            if (ri.getType() == DBRelationshipInfo.RelationshipType.OneToMany)
+                            {
+                                title = DBRelationshipInfo.RelationshipType.ManyToOne.toString();
+                                
+                            } else if (ri.getType() == DBRelationshipInfo.RelationshipType.ManyToOne)
+                            {
+                                title = DBRelationshipInfo.RelationshipType.OneToMany.toString();
+                            }
+                            fieldTypeTxt.setText(title +" to "+getNameDescStrForCurrLocale(currContainer));
                             fieldTypeLbl.setEnabled(true);
                             
                             fieldLengthTxt.setText(" ");

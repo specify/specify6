@@ -31,6 +31,11 @@ public class DatamodelHelper
 	// Static Data Members
 	//private static final Logger log = Logger.getLogger(DatamodelHelper.class);
 
+    private static String outputFileName = "specify_datamodel.xml";
+    
+	/**
+	 * 
+	 */
 	public DatamodelHelper() 
 	{
 		super();
@@ -85,7 +90,7 @@ public class DatamodelHelper
 	 */
 	public static String getDatamodelFilePath() 
 	{
-		return XMLHelper.getConfigDirPath("specify_datamodel.xml");
+		return XMLHelper.getConfigDirPath(outputFileName);
 	}
 
 	/**
@@ -108,12 +113,19 @@ public class DatamodelHelper
         return XMLHelper.getConfigDirPath("specify_workbench_upload_def.xml");
     }
 
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) 
-	{
-		// TODO Auto-generated method stub
+    /**
+     * @return the outputFileName
+     */
+    public static String getOutputFileName()
+    {
+        return outputFileName;
+    }
 
-	}
+    /**
+     * @param outputFileName the outputFileName to set
+     */
+    public static void setOutputFileName(String outputFileName)
+    {
+        DatamodelHelper.outputFileName = outputFileName;
+    }
 }

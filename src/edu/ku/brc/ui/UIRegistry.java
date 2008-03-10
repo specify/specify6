@@ -790,11 +790,24 @@ public class UIRegistry
         return instance.viewbasedFactory;
     }
     
-    public static void showLocalizedError(final String key)
+    /**
+     * Displays an error dialog with a non-localized error message.
+     * @param msg the message
+     */
+    public static void showError(final String msg)
     {
         JOptionPane.showMessageDialog((Frame)UIRegistry.getTopWindow(), 
-                getResourceString(key), 
+                msg, 
                 getResourceString("UNRECOVERABLE_ERROR_TITLE"), JOptionPane.ERROR_MESSAGE);
+    }
+
+    /**
+     * Displays an error dialog with a localized error message.
+     * @param key the bundle key for the message
+     */
+    public static void showLocalizedError(final String key)
+    {
+        showError(getResourceString(key));
     }
 
     /**
