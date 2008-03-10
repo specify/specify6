@@ -1200,7 +1200,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 {
                     try
                     {
-                        return appRes.getDataAsString();
+                        return appRes.getDataAsString(session);
     
                     } catch (Exception ex)
                     {

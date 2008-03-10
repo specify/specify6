@@ -478,13 +478,24 @@ public class SpAppResource extends DataModelObjBase implements java.io.Serializa
     @Transient
     public String getDataAsString()
     {
+        return getDataAsString(null);
+    }
+
+    /**
+     * Gets the contents with a possible existing session.
+     * @param sessionArg the current session or null.
+     * @return the contents as a string
+     */
+    @Transient
+    public String getDataAsString(final DataProviderSessionIFace sessionArg)
+    {
         SpAppResourceData        appResData = null;
         DataProviderSessionIFace session    = null;
         try
         {
             if (spAppResourceId != null)
             {
-                session = DataProviderFactory.getInstance().createSession();
+                session = sessionArg != null ? sessionArg : DataProviderFactory.getInstance().createSession();
                 session.attach(this);
             }
             
@@ -500,10 +511,11 @@ public class SpAppResource extends DataModelObjBase implements java.io.Serializa
         } catch (Exception ex)
         {
            log.error(ex);
+           ex.printStackTrace();
            
         } finally
         {
-            if (session != null)
+            if (sessionArg == null && session != null)
             {
                 session.close();
             }
