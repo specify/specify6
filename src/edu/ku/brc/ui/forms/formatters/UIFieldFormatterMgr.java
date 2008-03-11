@@ -26,17 +26,24 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.dbsupport.AutoNumberIFace;
+import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.ui.DateWrapper;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatter.FormatterType;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatter.PartialDateEnum;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterField.FieldType;
 
 /**
  * The Format Manager; reads in all the formats from XM
@@ -328,34 +335,6 @@ public class UIFieldFormatterMgr
     }
     
     /**
-     * Creates and returns an autonumbering object for the formatter.
-     * @param autoNumberClassName the class name to be instantiated
-     * @param dataClassName the data class name (which the auto number will operate on
-     * @param fieldName the field that will be incremented in the dataClassName object
-     * @return the auto number object or null
-     */
-    protected AutoNumberIFace createAutoNumber(final String autoNumberClassName, 
-                                               final String dataClassName, 
-                                               final String fieldName)
-    {
-        AutoNumberIFace autoNumberObj = null;
-        try 
-        {
-            autoNumberObj = Class.forName(autoNumberClassName).asSubclass(AutoNumberIFace.class).newInstance();
-            Properties props = new Properties();
-            props.put("class", dataClassName);
-            props.put("field", fieldName);
-            autoNumberObj.setProperties(props);
-            
-        } catch (Exception ex)
-        {
-            log.error(ex);
-            ex.printStackTrace();
-        }
-        return autoNumberObj;
-    }
-
-    /**
      * Loads the formats from the config file.
      *
      */
@@ -526,15 +505,94 @@ public class UIFieldFormatterMgr
     {
 		StringBuilder sb = new StringBuilder(1024);
     	
+		sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<formats>\n");
     	Iterator<UIFieldFormatterIFace> it = hash.values().iterator();
     	while (it.hasNext()) {
     		it.next().toXML(sb);
     	}
+		sb.append("\n</formats>\n");
 
-    	// FIXME: not sure why the next line isn't saving the resource to db :( 
-    	SpecifyAppContextMgr.getInstance().putResourceAsXML("UIFormatters", sb.toString());
+		//SpecifyAppContextMgr.getInstance().putResourceAsXML("UIFormatters", sb.toString());
+		AppResourceIFace resource = SpecifyAppContextMgr.getInstance().getResource("UIFormatters");
+		SpecifyAppContextMgr.getInstance().putResourceAsXML(resource, sb.toString());
     }
     
+    /**
+     * Factory that creates a new UIFieldFormatter from a formatting string
+     * @param formattingString Formatting string that defines the formatter
+     * @return The UIFieldFormatter corresponding to the formatting string
+     * @throws UIFieldFormattingParsingException (if formatting string is invalid)
+     */
+    public static UIFieldFormatter factory(final String formattingString, DBFieldInfo fieldInfo) 
+    	throws UIFieldFormatterParsingException 
+    {
+     	Class<?> clazz = fieldInfo.getTableInfo().getClassObj();
+    	UIFieldFormatter fmt = new UIFieldFormatter(null, false, fieldInfo.getName(), 
+    			FormatterType.Generic, PartialDateEnum.Full, clazz, false, false, null);
+    	
+    	AutoNumberIFace autoNumber = createAutoNumber("edu.ku.brc.dbsupport.AutoNumberGeneric", 
+    												  clazz.getName(), fieldInfo.getName());
+    	fmt.setAutoNumber(autoNumber);
+    	
+    	// separators and split pattern strings
+    	Pattern splitPattern = Pattern.compile("([\\/\\-\\_ ])+");
+    	Matcher matcher = splitPattern.matcher(formattingString);
+
+        // Find all the separator matches and create individual fields by calling formatter field factory
+    	UIFieldFormatterField field;
+    	String fieldString = "";
+    	int begin = 0;
+    	while (matcher.find()) 
+    	{
+    		// create a field with what's before the current separator
+    		fieldString = formattingString.substring(begin, matcher.start());
+    		field = UIFieldFormatterField.factory(fieldString);
+    		fmt.addField(field);
+    		begin = matcher.end();
+
+    		// create separator field
+    		field = new UIFieldFormatterField(FieldType.separator, 0, matcher.group(), false);
+    		fmt.addField(field);
+       	}
+    	
+    	// create last bit of formatter
+		fieldString = formattingString.substring(begin);
+		field = UIFieldFormatterField.factory(fieldString);
+		fmt.addField(field);
+
+		// TODO: find out if it is incrementer
+		
+    	return fmt;
+    }
+
+    /**
+     * Creates and returns an autonumbering object for the formatter.
+     * @param autoNumberClassName the class name to be instantiated
+     * @param dataClassName the data class name (which the auto number will operate on
+     * @param fieldName the field that will be incremented in the dataClassName object
+     * @return the auto number object or null
+     */
+    protected static AutoNumberIFace createAutoNumber(final String autoNumberClassName, 
+    												  final String dataClassName, 
+    											      final String fieldName)
+    {
+        AutoNumberIFace autoNumberObj = null;
+        try 
+        {
+            autoNumberObj = Class.forName(autoNumberClassName).asSubclass(AutoNumberIFace.class).newInstance();
+            Properties props = new Properties();
+            props.put("class", dataClassName);
+            props.put("field", fieldName);
+            autoNumberObj.setProperties(props);
+            
+        } catch (Exception ex)
+        {
+            log.error(ex);
+            ex.printStackTrace();
+        }
+        return autoNumberObj;
+    }
+
     /**
      * Constructs a the fields for a date formatter if the user didn't specify them; it gets the fields
      * for the date from the dat preference

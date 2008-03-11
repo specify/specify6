@@ -19,10 +19,12 @@ import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.dbsupport.AutoNumberIFace;
 import edu.ku.brc.dbsupport.DBFieldInfo;
@@ -46,7 +48,9 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
 {
     public enum PartialDateEnum {None, Full, Month, Year}
     public enum FormatterType   {Generic, Date, Numeric}
-    
+
+    private static final Logger log = Logger.getLogger(UIFieldFormatter.class);
+
     protected String               fieldName;
     protected String               name;
     protected boolean              isSystem;
@@ -97,50 +101,6 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
         this.isDefault       = isDefault;
         this.fields          = fields;
         this.isIncrementer   = isIncrementer;
-    }
-
-    /**
-     * Factory that creates a new UIFieldFormatter from a formatting string
-     * @param formattingString Formatting string that defines the formatter
-     * @return The UIFieldFormatter corresponding to the formatting string
-     * @throws UIFieldFormattingParsingException (if formatting string is invalid)
-     */
-    public static UIFieldFormatter factory(final String formattingString, DBFieldInfo fieldInfo) 
-    	throws UIFieldFormatterParsingException 
-    {
-     	Class<?> clazz = fieldInfo.getTableInfo().getClassObj();
-    	UIFieldFormatter fmt = new UIFieldFormatter(null, false, fieldInfo.getName(), 
-    			FormatterType.Generic, PartialDateEnum.None, clazz, false, false, null);
-    	
-    	// separators and split pattern strings
-    	Pattern splitPattern = Pattern.compile("([\\/\\-\\_ ])+");
-    	Matcher matcher = splitPattern.matcher(formattingString);
-
-        // Find all the separator matches and create individual fields by calling formatter field factory
-    	UIFieldFormatterField field;
-    	String fieldString = "";
-    	int begin = 0;
-    	while (matcher.find()) 
-    	{
-    		// create a field with what's before the current separator
-    		fieldString = formattingString.substring(begin, matcher.start());
-    		field = UIFieldFormatterField.factory(fieldString);
-    		fmt.addField(field);
-    		begin = matcher.end();
-
-    		// create separator field
-    		field = new UIFieldFormatterField(FieldType.separator, 0, matcher.group(), false);
-    		fmt.addField(field);
-       	}
-    	
-    	// create last bit of formatter
-		fieldString = formattingString.substring(begin);
-		field = UIFieldFormatterField.factory(fieldString);
-		fmt.addField(field);
-
-		// TODO: find out if it is incrementer
-		
-    	return fmt;
     }
 
     public String getText()

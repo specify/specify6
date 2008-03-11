@@ -103,9 +103,9 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr#createAutoNumber(java.lang.String, java.lang.String, java.lang.String)
      */
-    protected AutoNumberIFace createAutoNumber(final String autoNumberClassName, 
-                                               final String dataClassName, 
-                                               final String fieldName)
+    protected static AutoNumberIFace createAutoNumber(final String autoNumberClassName, 
+                                                      final String dataClassName, 
+                                                      final String fieldName)
     {
         if (dataClassName.equals("edu.ku.brc.specify.datamodel.CollectionObject") && 
             fieldName.equals("catalogNumber"))
@@ -113,7 +113,7 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr
             return new CollectionAutoNumberAlphaNum();
         }
 
-        return super.createAutoNumber(autoNumberClassName, dataClassName, fieldName);
+        return UIFieldFormatterMgr.createAutoNumber(autoNumberClassName, dataClassName, fieldName);
     }
 
     /* (non-Javadoc)

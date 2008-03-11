@@ -386,15 +386,14 @@ public class CatalogNumberUIFieldFormatter implements UIFieldFormatterIFace
         xmlAttr(sb, "system", true);
         xmlAttr(sb, "name", name);
         xmlAttr(sb, "class", CollectionObject.class.getName());
+        xmlAttr(sb, "fieldname", getFieldName());
         xmlAttr(sb, "default", isDefault);
         sb.append(">\n");
         if (autoNumber != null)
         {
             autoNumber.toXML(sb);
         }
-        sb.append("    <external ");
-        xmlAttr(sb, "class", getClass().getName());
-        sb.append("/>\n");
+        sb.append("    <external>" + getClass().getName() + "</external>\n");
         sb.append("  </format>\n\n");
     }
 

@@ -43,6 +43,8 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -136,7 +138,7 @@ public class UIFormatterDlg extends CustomDialog
     	try 
     	{
     		// FIXME: not calling setSelectedFormat() intentionally not to change the value of the 
-    		selectedFormat = UIFieldFormatter.factory(pattern, fieldInfo);
+    		selectedFormat = UIFieldFormatterMgr.factory(pattern, fieldInfo);
     		formatIsNew = true;
         	updateSample();
     	}
@@ -366,6 +368,7 @@ public class UIFormatterDlg extends CustomDialog
         PanelBuilder    pb = new PanelBuilder(new FormLayout("10px,p:g,10px,p,10px",  
         		"10px,"       + // empty space on top of panel 
         		"p,p,"        + // table and field names 
+        		"p,p,"        + // field type and length 
         		"10px,"       + // --- separator 
         		"p,"          + // sample panel 
         		"10px,"       + // --- separator 
@@ -392,10 +395,18 @@ public class UIFormatterDlg extends CustomDialog
         });
 
         // table and field titles
-        String tableTitle = fieldInfo.getTableInfo().getTitle();
-        String fieldTitle = fieldInfo.getTitle();
-        JLabel tableTitleLbl = new JLabel(getResourceString("FFE_TABLE") + tableTitle, SwingConstants.LEFT); 
-        JLabel fieldTitleLbl = new JLabel(getResourceString("FFE_FIELD") + fieldTitle, SwingConstants.LEFT); 
+        String typeStr = fieldInfo.getType();
+        typeStr = typeStr.indexOf('.') > -1 ? StringUtils.substringAfterLast(fieldInfo.getType(), ".") : typeStr;
+
+        JLabel tableTitleLbl = new JLabel(getResourceString("FFE_TABLE") + ": " + 
+        		fieldInfo.getTableInfo().getTitle(), SwingConstants.LEFT); 
+        JLabel fieldTitleLbl = new JLabel(getResourceString("FFE_FIELD") + ": " + 
+        		fieldInfo.getTitle(),  SwingConstants.LEFT); 
+        JLabel fieldTypeLbl = new JLabel(getResourceString("FFE_TYPE") + ": " + 
+        		typeStr, SwingConstants.LEFT);
+        JLabel fieldLengthLbl = new JLabel(getResourceString("FFE_LENGTH") + ": " + 
+        		Integer.toString(fieldInfo.getLength()), SwingConstants.LEFT);
+        
         
         // sample panel
         sampleLabel = new JLabel("YYYY-AAA-BB", SwingConstants.LEFT); 
@@ -469,10 +480,13 @@ public class UIFormatterDlg extends CustomDialog
         keyPanel.add(new JLabel(" ")); 
 
         int y = 2; // leave first row blank 
-        int y2; // add formatting legend key from this row
-        pb.add(tableTitleLbl, cc.xyw(2, y, 3)); y += 1;
-        pb.add(fieldTitleLbl, cc.xyw(2, y, 3)); y += 2;
-        pb.add(samplePanel, cc.xy(2, y)); y2 = y; y += 2;
+        pb.add(tableTitleLbl,  cc.xyw(2, y, 3)); y += 1;
+        pb.add(fieldTitleLbl,  cc.xyw(2, y, 3)); y += 1;
+        pb.add(fieldTypeLbl,   cc.xyw(2, y, 3)); y += 1;
+        pb.add(fieldLengthLbl, cc.xyw(2, y, 3)); y += 2;
+        
+        int y2 = y; // align formatting legend key with row marked by y2 (see below)
+        pb.add(samplePanel, cc.xy(2, y)); y += 2;  
 
         pb.add(new JLabel("Type Format Pattern:", SwingConstants.LEFT), cc.xy(2,y)); y += 1; 
         pb.add(formatTF, cc.xy(2,y)); y += 1;

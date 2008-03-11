@@ -403,7 +403,8 @@ public class FieldItemPanel extends LocalizerBasePanel
     	
     	if (formatter == null)
     	{
-    		// no formatter was selected (that's the first entry on the combo list) 
+    		// no formatter was selected (that's the first entry on the combo list)
+    		setHasChanged(formatCombo.getSelectedIndex() != 0);
     		formatCombo.setSelectedIndex(0);
     		return;
     	}
@@ -418,6 +419,7 @@ public class FieldItemPanel extends LocalizerBasePanel
     		if (formatter == elem)
     		{
     	    	// found formatter selected on dialog on the combo box list: so select it
+        		setHasChanged(formatCombo.getSelectedIndex() != index);
     	    	formatCombo.setSelectedIndex(index);
     	    	found = true;
     	    	break;
@@ -430,6 +432,7 @@ public class FieldItemPanel extends LocalizerBasePanel
     		// so we add it to the list of formatters and point to it (it's the last one on the list)
     		model.addElement(formatter);
     		formatCombo.setSelectedIndex(model.getSize() - 1);
+    		setHasChanged(true);
     	}
     }
     
@@ -514,10 +517,11 @@ public class FieldItemPanel extends LocalizerBasePanel
         
         cbxModel.addElement(noneStr); // Add None
         
-        if (UIHelper.isClassNumeric(fieldInfo.getDataClass()))
+        //if ( UIHelper.isClassNumeric(fieldInfo.getDataClass()) )
+        if (fieldInfo.getType().equals("java.lang.String"))
         {
-            formatCombo.setEnabled(false);
-            formatMoreBtn.setEnabled(false);
+            formatCombo.setEnabled(true);
+            formatMoreBtn.setEnabled(true);
         }
         
         boolean              isUIFormatter = false;
@@ -561,9 +565,6 @@ public class FieldItemPanel extends LocalizerBasePanel
         }
         
         formatCombo.setSelectedIndex(selectedInx);
-        boolean enabled = (formatCombo.getModel().getSize() > 1);
-        formatCombo.setEnabled(enabled);
-        formatMoreBtn.setEnabled(enabled);
         
         return selectedFmt;
     }
