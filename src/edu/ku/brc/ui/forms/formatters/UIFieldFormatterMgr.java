@@ -39,7 +39,6 @@ import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.dbsupport.AutoNumberIFace;
 import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatter.FormatterType;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatter.PartialDateEnum;
@@ -331,7 +330,20 @@ public class UIFieldFormatterMgr
         {
             return XMLHelper.readDOMFromConfigDir("backstop/uiformatters.xml");
         }
-        return AppContextMgr.getInstance().getResourceAsDOM("UIFormatters");
+
+        AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromDir("Collection", "UIFormatters");
+        if (escAppRes != null)
+        {
+            return AppContextMgr.getInstance().getResourceAsDOM(escAppRes);
+           
+        } else
+        {
+            // Get the default resource by name and copy it to a new User Area Resource
+            AppResourceIFace newAppRes = AppContextMgr.getInstance().copyToDirAppRes("Collection", "UIFormatters");
+            // Save it in the User Area
+            AppContextMgr.getInstance().saveResource(newAppRes);
+            return AppContextMgr.getInstance().getResourceAsDOM(newAppRes);
+        }
     }
     
     /**
@@ -512,9 +524,16 @@ public class UIFieldFormatterMgr
     	}
 		sb.append("\n</formats>\n");
 
-		//SpecifyAppContextMgr.getInstance().putResourceAsXML("UIFormatters", sb.toString());
-		AppResourceIFace resource = SpecifyAppContextMgr.getInstance().getResource("UIFormatters");
-		SpecifyAppContextMgr.getInstance().putResourceAsXML(resource, sb.toString());
+        AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromDir("Collection", "UIFormatters");
+        if (escAppRes != null)
+        {
+            escAppRes.setDataAsString(sb.toString());
+            AppContextMgr.getInstance().saveResource(escAppRes);
+           
+        } else
+        {
+            AppContextMgr.getInstance().putResourceAsXML("UIFormatters", sb.toString());    
+        }
     }
     
     /**
