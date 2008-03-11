@@ -16,6 +16,8 @@ package edu.ku.brc.specify.datamodel.busrules;
 
 import static edu.ku.brc.specify.utilapps.DataBuilder.createTaxonTreeDef;
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
@@ -91,7 +93,8 @@ public class DisciplineBusRules extends BaseBusRules
     {
         if (dataObj instanceof Discipline)
         {
-            return getLocalizedMessage("DISCIPLINE_DELETED", ((Discipline)dataObj).getName());
+            DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(Discipline.getClassTableId());
+            return getLocalizedMessage("DISCIPLINE_DELETED", ti.getTitle());
         }
         // else
         return super.getDeleteMsg(dataObj);

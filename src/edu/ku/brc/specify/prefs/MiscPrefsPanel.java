@@ -59,7 +59,7 @@ public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, P
         Component comp = form.getCompById(id);
         if (comp instanceof ValCheckBox)
         {
-            String ds = Discipline.getCurrentDiscipline().getDiscipline();
+            String ds = Discipline.getCurrentDiscipline().getName();
             AppPreferences remotePrefs = AppPreferences.getRemote();
             boolean value = remotePrefs.getBoolean("Interactions."+prefName+"."+ds, defVal);
             ((ValCheckBox)comp).setSelected(value);
@@ -75,7 +75,7 @@ public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, P
         Component comp = form.getCompById(id);
         if (comp instanceof ValCheckBox)
         {
-            String ds = Discipline.getCurrentDiscipline().getDiscipline();
+            String ds = Discipline.getCurrentDiscipline().getName();
             AppPreferences remotePrefs = AppPreferences.getRemote();
             remotePrefs.putBoolean("Interactions."+prefName+"."+ds, ((ValCheckBox)comp).isSelected());
         } 

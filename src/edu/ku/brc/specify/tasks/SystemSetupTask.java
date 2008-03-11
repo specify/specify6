@@ -54,9 +54,9 @@ import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.SwingWorker;
-import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.DataType;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.busrules.PickListBusRules;
@@ -166,10 +166,13 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             navBoxes.add(sysNavBox);
 
             
-            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            DataProviderSessionIFace session = null;
             try
             {
-                final List<?> pickLists = session.getDataList(PickList.class);
+                session = DataProviderFactory.getInstance().createSession();
+                
+                String sql = QueryAdjusterForDomain.getInstance().adjustSQL("FROM PickList WHERE collectionId = COLLID");
+                List<?> pickLists = session.getDataList(sql);
     
                 navBox = new NavBox(getResourceString("PL_PICKLISTS"), true, true);
     
@@ -180,7 +183,6 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                 }
                 Collections.sort(pls);
                 
-    
                 for (PickList pickList : pls)
                 {
                     addPickList(pickList, false);
@@ -191,11 +193,15 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             }  catch (Exception ex)
             {
                 log.error(ex);
+                ex.printStackTrace();
                 // XXX error dialog
                 
             } finally
             {
-                session.close();
+                if (session != null)
+                {
+                    session.close();
+                }
             }
         }
     }
@@ -375,9 +381,9 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                                final String viewName)
     {
         DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(clazz.getName());
-        String      title     = tableInfo.getTitle();
+        String      tiTitle   = tableInfo.getTitle();
         
-        if (!checkForPaneWithName(title))
+        if (!checkForPaneWithName(tiTitle))
         {
             List<?> dataItems = null;
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
@@ -412,7 +418,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             {
                 ViewIFace view = AppContextMgr.getInstance().getView("SystemSetup", viewName);
                 
-                createFormPanel(title, 
+                createFormPanel(tiTitle, 
                                 view.getViewSetName(), 
                                 view.getName(), 
                                 "edit", 
@@ -437,9 +443,9 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                                final String   iconName, 
                                final String   viewName)
     {
-        String title = value == null ? getResourceString("PL_NEWPICKLIST") : value;
+        String plTitle = value == null ? getResourceString("PL_NEWPICKLIST") : value;
         
-        if (!checkForPaneWithName(title))
+        if (!checkForPaneWithName(plTitle))
         {
             Object dataObj = null;
             if (value != null)
@@ -467,7 +473,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             
             ViewIFace view = AppContextMgr.getInstance().getView("SystemSetup", viewName);
             
-            createFormPanel(title,
+            createFormPanel(plTitle,
                             view.getViewSetName(), 
                             view.getName(), 
                             "edit", 
@@ -688,36 +694,43 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
         {
             if (data instanceof Integer)
             {
-                final DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                try
+                final Integer id = (Integer) data;
+                UIRegistry.getStatusBar().setIndeterminate(true);
+                final SwingWorker worker = new SwingWorker()
                 {
-                    final PickList pickList = session.getData(PickList.class, "pickListId", (Integer)data, DataProviderSessionIFace.CompareType.Equals);
-                    if (pickList != null)
+                    public Object construct()
                     {
-                        UIRegistry.getStatusBar().setIndeterminate(true);
-                        final SwingWorker worker = new SwingWorker()
+                        DataProviderSessionIFace session = null;
+                        try
                         {
-                            public Object construct()
+                            session = DataProviderFactory.getInstance().createSession();
+                            PickList pickList = session.getData(PickList.class, "pickListId", id, DataProviderSessionIFace.CompareType.Equals);
+                            if (pickList != null)
                             {
                                 pickListBusRules.okToDelete(pickList, session, SystemSetupTask.this);
-                                return null;
                             }
-
-                            //Runs on the event-dispatching thread.
-                            public void finished()
+                        } catch (Exception ex)
+                        {
+                            log.error(ex); // XXX need error dialog
+                            
+                        } finally
+                        {
+                            if (session != null)
                             {
-                                UIRegistry.getStatusBar().setIndeterminate(false);
                                 session.close();
                             }
-                        };
-                        worker.start();
+                        }
+                        return null;
+                    }
+
+                    //Runs on the event-dispatching thread.
+                    public void finished()
+                    {
+                        UIRegistry.getStatusBar().setIndeterminate(false);
                         
                     }
-                } catch (Exception ex)
-                {
-                    log.error(ex); // XXX need error dialog
-                    session.close();
-                }
+                };
+                worker.start();
             }
         }
         

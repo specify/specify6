@@ -640,14 +640,14 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     protected String getSpAppResDefAsString(final SpAppResourceDir appResDef)
     {
-        SpecifyUser      spUser = appResDef.getSpecifyUser();
-        Collection    cs   = appResDef.getCollection();
-        Discipline ct  = appResDef.getDiscipline();
+        SpecifyUser spUser      = appResDef.getSpecifyUser();
+        Collection  collection  = appResDef.getCollection();
+        Discipline  discipline  = appResDef.getDiscipline();
 
         StringBuilder strBuf = new StringBuilder();
-        strBuf.append("CS["+(cs != null ? cs.getCollectionName() : "null") + "]");
+        strBuf.append("CS["+(collection != null ? collection.getCollectionName() : "null") + "]");
         strBuf.append(" SU["+(spUser != null ? spUser.getName() : "null") + "]");
-        strBuf.append(" COD["+(ct != null ? ct.getName() : "null") + "]");
+        strBuf.append(" COD["+(discipline != null ? discipline.getTitle() : "null") + "]");
         strBuf.append(" DSP["+appResDef.getDisciplineType() + "]");
         strBuf.append(" UTYP["+appResDef.getUserType() + "]");
         
@@ -733,7 +733,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             discipline.getDeterminationStatuss().size(); // make sure they are loaded
             Discipline.setCurrentDiscipline(discipline);
             
-            String disciplineStr = discipline.getDiscipline().toLowerCase();
+            String disciplineStr = discipline.getName().toLowerCase();
             
             // This is the Full Path User / Discipline / Collection / UserType / isPersonal
             // For example: rods/fish/fish/collectionmanager / true (meaning the usr's personal space)

@@ -236,7 +236,7 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
     /**
      * @return the isEmbeddedCollectingEvent
      */
-    @Column(name = "IsEmbeddedCollectingEvent", unique = false, nullable = true, insertable = true, updatable = true)
+    @Column(name = "IsEmbeddedCollectingEvent", unique = false, nullable = false, insertable = true, updatable = true)
     public Boolean getIsEmbeddedCollectingEvent()
     {
         return isEmbeddedCollectingEvent;

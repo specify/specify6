@@ -939,6 +939,12 @@ public class MultiView extends JPanel
      */
     protected void setData(final Object data, final boolean doSelector)
     {
+        // If this happens it is because there was a major error elsewhere.
+        if (currentViewable == null)
+        {
+            return;
+        }
+        
         this.data = data;
         
         ignoreDataChanges = true;

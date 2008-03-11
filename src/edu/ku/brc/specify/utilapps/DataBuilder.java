@@ -39,7 +39,6 @@ import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttr;
 import edu.ku.brc.specify.datamodel.CollectionObjectCitation;
-import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.Container;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
@@ -50,6 +49,7 @@ import edu.ku.brc.specify.datamodel.DeaccessionPreparation;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.DeterminationCitation;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
@@ -70,9 +70,6 @@ import edu.ku.brc.specify.datamodel.LoanReturnPreparation;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.LocalityCitation;
 import edu.ku.brc.specify.datamodel.LocalityDetail;
-import edu.ku.brc.specify.datamodel.Storage;
-import edu.ku.brc.specify.datamodel.StorageTreeDef;
-import edu.ku.brc.specify.datamodel.StorageTreeDefItem;
 import edu.ku.brc.specify.datamodel.OtherIdentifier;
 import edu.ku.brc.specify.datamodel.Permit;
 import edu.ku.brc.specify.datamodel.PickList;
@@ -88,6 +85,9 @@ import edu.ku.brc.specify.datamodel.Shipment;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpQueryField;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.datamodel.Storage;
+import edu.ku.brc.specify.datamodel.StorageTreeDef;
+import edu.ku.brc.specify.datamodel.StorageTreeDefItem;
 import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonCitation;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
@@ -301,9 +301,9 @@ public class DataBuilder
         return attrDef;
     }
 
-    public static Discipline createDiscipline(final Division         division,
+    public static Discipline createDiscipline(final Division                 division,
                                                       final String           name,
-                                                      final String           disciplineName,
+                                                      final String           title,
                                                       final DataType         dataType,
                                                       final TaxonTreeDef     taxonTreeDef,
                                                       final GeographyTreeDef geographyTreeDef,
@@ -314,7 +314,7 @@ public class DataBuilder
         Discipline discipline = new Discipline();
         discipline.initialize();
         discipline.setName(name);
-        discipline.setDiscipline(disciplineName);
+        discipline.setTitle(title);
         discipline.setDataType(dataType);
         discipline.setTaxonTreeDef(taxonTreeDef);
         discipline.setGeographyTreeDef(geographyTreeDef);//meg added to support not-null constraints
@@ -329,18 +329,27 @@ public class DataBuilder
         return discipline;
     }
 
+    /**
+     * @param prefix
+     * @param name
+     * @param catalogNumberingScheme
+     * @param disciplines
+     * @param isEmbeddedCollectingEvent
+     * @return
+     */
     public static Collection createCollection(final String prefix,
                                               final String name,
                                               final CatalogNumberingScheme catalogNumberingScheme,
-                                              final Discipline[] disciplines)
+                                              final Discipline[] disciplines,
+                                              final boolean isEmbeddedCollectingEvent)
     {
         Collection collection = new Collection();
         collection.initialize();
         collection.setCollectionPrefix(prefix);
         collection.setModifiedByAgent(null);
-        collection.setRemarks("These are the remarks");
         collection.setCollectionName(name);
         collection.setCatalogNumberingScheme(catalogNumberingScheme);
+        collection.setIsEmbeddedCollectingEvent(isEmbeddedCollectingEvent);
         
         catalogNumberingScheme.getCollections().add(collection);
         
@@ -364,7 +373,22 @@ public class DataBuilder
                                               final CatalogNumberingScheme numberingScheme,
                                               final Discipline discipline)
     {
-        return createCollection(prefix, name, numberingScheme, new Discipline[] { discipline });
+        return createCollection(prefix, name, numberingScheme, discipline, true);
+    }
+
+    /**
+     * @param prefix
+     * @param name
+     * @param discipline
+     * @return
+     */
+    public static Collection createCollection(final String prefix,
+                                              final String name,
+                                              final CatalogNumberingScheme numberingScheme,
+                                              final Discipline discipline,
+                                              final boolean isEmbeddedCE)
+    {
+        return createCollection(prefix, name, numberingScheme, new Discipline[] { discipline }, isEmbeddedCE);
     }
 
     /**

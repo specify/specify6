@@ -54,22 +54,25 @@ public class DisciplineType implements Comparable<DisciplineType>
     protected static WeakReference<Hashtable<String, DisciplineType>> disciplineHash  = null;
     
     // Data Members
-    protected String name;
-    protected String title;
-    protected int    type;
-    protected String abbrev;
+    protected String  name;
+    protected String  title;
+    protected int     type;
+    protected String  abbrev;
+    protected boolean isEmbeddedCollecingEvent;
     
     protected STD_DISCIPLINES disciplineType;
     
     public DisciplineType(final String name, 
                           final String title, 
                           final String abbrev,
-                          final int type)
+                          final int type,
+                          final boolean isEmbeddedCollecingEvent)
     {
         this.name  = name;
         this.title = title;
         this.type  = type;
         this.abbrev = abbrev;
+        this.isEmbeddedCollecingEvent = isEmbeddedCollecingEvent;
         this.disciplineType = STD_DISCIPLINES.valueOf(name);
     }
 
@@ -118,11 +121,26 @@ public class DisciplineType implements Comparable<DisciplineType>
         return name.compareTo(obj.name);
     }
     
+    /**
+     * @return the isEmbeddedCollecingEvent
+     */
+    public boolean isEmbeddedCollecingEvent()
+    {
+        return isEmbeddedCollecingEvent;
+    }
+
+    /**
+     * @param isEmbeddedCollecingEvent the isEmbeddedCollecingEvent to set
+     */
+    public void setEmbeddedCollecingEvent(boolean isEmbeddedCollecingEvent)
+    {
+        this.isEmbeddedCollecingEvent = isEmbeddedCollecingEvent;
+    }
+
     //-------------------------------------------------------------------------------
     //-- Static Methods
     //-------------------------------------------------------------------------------
     
-
     /**
      * Returns a DisciplineType by name.
      * @param name the name of the disciplineType
@@ -208,12 +226,12 @@ public class DisciplineType implements Comparable<DisciplineType>
                 {
                     Element disciplineNode = (Element) i.next();
 
-                    String name   = getAttr(disciplineNode, "name", null);
-                    String title  = getAttr(disciplineNode, "title", null);
-                    String abbrev = getAttr(disciplineNode, "abbrev", "");
-                    int    type   = getAttr(disciplineNode, "type", 0);
-
-                    DisciplineType disciplineType = new DisciplineType(name, title, abbrev, type);
+                    String  name      = getAttr(disciplineNode, "name", null);
+                    String  title     = getAttr(disciplineNode, "title", null);
+                    String  abbrev    = getAttr(disciplineNode, "abbrev", "");
+                    int     type      = getAttr(disciplineNode, "type", 0);
+                    boolean isEmbedCE = getAttr(disciplineNode, "isembedce", true);
+                    DisciplineType disciplineType = new DisciplineType(name, title, abbrev, type, isEmbedCE);
                     list.add(disciplineType);
                 }
             } else

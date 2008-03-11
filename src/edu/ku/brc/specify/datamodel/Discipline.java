@@ -61,8 +61,7 @@ import edu.ku.brc.specify.config.DisciplineType;
 //@org.hibernate.annotations.Proxy(lazy = false)
 @Table(name="discipline")
 @org.hibernate.annotations.Table(appliesTo="discipline", indexes =
-    {   @Index (name="DisciplineNameIDX", columnNames={"Name"}),
-        @Index (name="DisciplineTypeIDX", columnNames={"DisciplineType"})
+    {   @Index (name="DisciplineNameIDX", columnNames={"Name"})
     })
 public class Discipline extends DataModelObjBase implements java.io.Serializable, Comparable<Discipline>
 {
@@ -73,7 +72,7 @@ public class Discipline extends DataModelObjBase implements java.io.Serializable
 
     protected Integer                   disciplineId;
     protected String                    name;
-    protected String                    discipline;
+    protected String                    title;
     protected DataType                  dataType;
     protected Set<Collection>           collections;
     protected Set<AttributeDef>         attributeDefs;
@@ -130,8 +129,8 @@ public class Discipline extends DataModelObjBase implements java.io.Serializable
     {
         if (Discipline.currentDiscipline != null)
         {
-            String dsc = Discipline.currentDiscipline.getDiscipline();
-            return StringUtils.isNotEmpty(dsc) && dsc.equals(disciplineArg.toString());
+            String discplineTitle = Discipline.currentDiscipline.getTitle();
+            return StringUtils.isNotEmpty(discplineTitle) && discplineTitle.equals(disciplineArg.toString());
         }
         return false;
     }
@@ -142,9 +141,9 @@ public class Discipline extends DataModelObjBase implements java.io.Serializable
     {
         super.init();
         
-        disciplineId      = null;
+        disciplineId          = null;
         name                  = null;
-        discipline            = null;
+        title                 = null;
         dataType              = null;
         userPermissions       = null;
         collections           = new HashSet<Collection>();
@@ -203,27 +202,27 @@ public class Discipline extends DataModelObjBase implements java.io.Serializable
     /**
      *
      */
-    @Column(name="Name", length=64)
-    public String getName() {
-        return this.name;
+    @Column(name="Title", length=64)
+    public String getTitle() {
+        return this.title;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     /**
     *
     */
-    @Column(name="DisciplineType", length=64)
-    public String getDiscipline()
+    @Column(name="Name", length=64)
+    public String getName()
     {
-        return discipline;
+        return name;
     }
 
-    public void setDiscipline(String discipline)
+    public void setName(String name)
     {
-        this.discipline = discipline;
+        this.name = name;
     }
 
     /**
@@ -454,7 +453,7 @@ public class Discipline extends DataModelObjBase implements java.io.Serializable
         StringBuffer buffer = new StringBuffer(128);
 
         buffer.append(getClass().getName()).append("@").append(Integer.toHexString(hashCode())).append(" [");
-        buffer.append("name").append("='").append(getName()).append("' ");
+        //buffer.append("name").append("='").append(getName()).append("' ");
         buffer.append("]");
 
         return buffer.toString();
@@ -498,13 +497,14 @@ public class Discipline extends DataModelObjBase implements java.io.Serializable
      */
     public int compareTo(Discipline obj)
     {
+        if (title != null && obj != null && StringUtils.isNotEmpty(obj.title))
+        {
+            return title.compareTo(obj.title);
+        }
+        
         if (name != null && obj != null && StringUtils.isNotEmpty(obj.name))
         {
             return name.compareTo(obj.name);
-        }
-        if (discipline != null && obj != null && StringUtils.isNotEmpty(obj.discipline))
-        {
-            return discipline.compareTo(obj.discipline);
         }
         // else
         return timestampCreated.compareTo(obj.timestampCreated);

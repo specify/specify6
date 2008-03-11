@@ -217,7 +217,7 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
         middleText.setText(isPerson ? agent.getMiddleInitial() : agent.getAbbreviation());
         
         // Agent Variants
-        boolean useAgentVariant = AppPreferences.getRemote().getBoolean("Agent.Use.Variants."+Discipline.getCurrentDiscipline().getDiscipline(),
+        boolean useAgentVariant = AppPreferences.getRemote().getBoolean("Agent.Use.Variants."+Discipline.getCurrentDiscipline().getName(),
                 Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.botany));
         Component agentVarSep = formViewObj.getCompById("100");
         if (agentVarSep != null)

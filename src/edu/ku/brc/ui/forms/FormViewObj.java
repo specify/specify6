@@ -4104,7 +4104,9 @@ public class FormViewObj implements Viewable,
         {
             if (labels.get(formCell.getLabelFor()) != null)
             {
-                throw new RuntimeException("Two labels have the same id ["+formCell.getLabelFor()+"] "+formViewDef.getName());
+                String str = "Two labels have the same id ["+formCell.getLabelFor()+"] "+formViewDef.getName();
+                UIRegistry.showError(str);
+                //throw new RuntimeException("Two labels have the same id ["+formCell.getLabelFor()+"] "+formViewDef.getName());
             }
             labels.put(formCell.getLabelFor(), new FieldInfo(formCell, label, null, labels.size()));
         }

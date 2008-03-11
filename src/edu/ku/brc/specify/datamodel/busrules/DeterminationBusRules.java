@@ -28,7 +28,6 @@ import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.ui.forms.BaseBusRules;
-import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.validation.ValComboBox;
 
@@ -52,7 +51,7 @@ public class DeterminationBusRules extends BaseBusRules
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#beforeFormFill(edu.ku.brc.ui.forms.Viewable)
      */
     @Override
-    public void beforeFormFill(final Viewable viewable)
+    public void beforeFormFill(final Viewable viewableArg)
     {
         determination = null;
     }
@@ -61,52 +60,48 @@ public class DeterminationBusRules extends BaseBusRules
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#fillForm(java.lang.Object, edu.ku.brc.ui.forms.Viewable)
      */
     @Override
-    public void afterFillForm(final Object dataObj, final Viewable viewable)
+    public void afterFillForm(final Object dataObj, final Viewable viewableArg)
     {
         determination = null;
         
-        if (viewable instanceof FormViewObj)
+        if (formViewObj.getDataObj() instanceof Determination)
         {
-            FormViewObj formViewObj = (FormViewObj)viewable;
-            if (formViewObj.getDataObj() instanceof Determination)
+            determination = (Determination)formViewObj.getDataObj();
+            
+            Component comp     = formViewObj.getControlByName("status");
+            if (comp instanceof ValComboBox)
             {
-                determination = (Determination)formViewObj.getDataObj();
-                
-                Component comp     = formViewObj.getControlByName("status");
-                if (comp instanceof ValComboBox)
+                if (detAL == null)
                 {
-                    if (detAL == null)
+                    detAL = new ActionListener() 
                     {
-                        detAL = new ActionListener() 
+                        //@Override
+                        public void actionPerformed(final ActionEvent e)
                         {
-                            //@Override
-                            public void actionPerformed(final ActionEvent e)
-                            {
-                                SwingUtilities.invokeLater(new Runnable() {
-                                     //@Override
-                                     public void run()
-                                     {
-                                         determinationStatusSelected(e);
-                                     }
-                                 });
-                            }
-                        };
-                    }
-                    
-                    JComboBox cbx = ((ValComboBox)comp).getComboBox();
-                    boolean fnd = false;
-                    for (ActionListener al : cbx.getActionListeners())
-                    {
-                        if (al == detAL)
-                        {
-                            fnd = true;
-                            break;
+                            SwingUtilities.invokeLater(new Runnable() {
+                                 //@Override
+                                 public void run()
+                                 {
+                                     determinationStatusSelected(e);
+                                 }
+                             });
                         }
-                    }
-                    if (!fnd)
+                    };
+                }
+                
+                JComboBox cbx = ((ValComboBox)comp).getComboBox();
+                boolean fnd = false;
+                for (ActionListener al : cbx.getActionListeners())
+                {
+                    if (al == detAL)
                     {
-                        cbx.addActionListener(detAL);
+                        fnd = true;
+                        break;
                     }
+                }
+                if (!fnd)
+                {
+                    cbx.addActionListener(detAL);
                 }
             }
         }

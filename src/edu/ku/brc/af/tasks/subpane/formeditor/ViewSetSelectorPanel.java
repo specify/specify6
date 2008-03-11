@@ -157,7 +157,7 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
             Discipline ct = agent.getDiscipline();
             if (usedColTypes.get(ct) == null)
             {
-                levelsVec.add(ct.getDiscipline());
+                levelsVec.add(ct.getName());
                 usedColTypes.put(ct, true);
             }
         }

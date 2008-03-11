@@ -966,7 +966,7 @@ public class FieldItemPanel extends LocalizerBasePanel
             String dsciplineName = disciplineType != null ? disciplineType.getName() : null;
             if (Discipline.getCurrentDiscipline() != null)
             {
-                dsciplineName = Discipline.getCurrentDiscipline().getDiscipline();
+                dsciplineName = Discipline.getCurrentDiscipline().getName();
             }
             
             if (pickLists == null)

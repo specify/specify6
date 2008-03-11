@@ -269,7 +269,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         remotePrefs.getBoolean("google.earth.useorigheaders", true, true);
         remotePrefs.getInt("SubPaneMgr.MaxPanes", 12, true);
         
-        String ds = Discipline.getCurrentDiscipline().getDiscipline();
+        String ds = Discipline.getCurrentDiscipline().getName();
         remotePrefs.getBoolean("Interactions.Using.Interactions."+ds, true, true);
         remotePrefs.getBoolean("Interactions.Doing.Gifts."+ds, true, true);
         remotePrefs.getBoolean("Interactions.Doing.Exchanges."+ds, Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.botany), true);

@@ -227,7 +227,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     protected void adjustMenus()
     {
         String clsName    = treeDefClass.getSimpleName();
-        String discipline = Discipline.getCurrentDiscipline().getDiscipline();
+        String discipline = Discipline.getCurrentDiscipline().getName();
         
         String prefName = "Trees.Menu." + discipline + "." + clsName;
         

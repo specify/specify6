@@ -147,7 +147,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="typesCBX" label="Type"/>
-                    <cell type="field" id="typesCBX" name="typesCBX" uitype="combobox"/>
+                    <cell type="field" id="typesCBX" name="typesCBX" uitype="combobox" ignore="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="name" label="Name"/>
@@ -159,15 +159,15 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="tablesCBX" label="Table Name"/>
-                    <cell type="field" id="tablesCBX" name="tablesCBX" uitype="combobox"/>
+                    <cell type="field" id="tablesCBX" name="tablesCBX" uitype="combobox" ignore="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="formatterCBX" label="Formatter"/>
-                    <cell type="field" id="formatterCBX" name="formatterCBX" uitype="combobox"/>
+                    <cell type="field" id="formatterCBX" name="formatterCBX" uitype="combobox" ignore="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="fieldsCBX" label="Field Name"/>
-                    <cell type="field" id="fieldsCBX" name="fieldsCBX" uitype="combobox"/>
+                    <cell type="field" id="fieldsCBX" name="fieldsCBX" uitype="combobox" ignore="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="sizeLimit" label="Size Limit"/>
@@ -379,11 +379,15 @@
                     <cell type="field" id="1" name="collectionName" uitype="text" isrequired="true"/> 
                 </row>
                 <row>
+                    <cell type="label" labelfor="6" label=""/>
+                    <cell type="field" id="6" name="isEmbeddedCollectingEvent" label="Add Collecting Event Automatically" uitype="checkbox"/> 
+                </row>
+                <row>
                     <cell type="label" labelfor="2" label="Prefix"/>
                     <cell type="field" id="2" name="collectionPrefix" uitype="text" isrequired="false"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="3" label="Collection Object Def"/>
+                    <cell type="label" labelfor="3" label="Discipline"/>
                     <cell type="field" id="3" name="discipline" uitype="combobox" picklist="Discipline" isrequired="true"/>
                 </row>
                 

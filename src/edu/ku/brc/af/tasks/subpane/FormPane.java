@@ -364,7 +364,9 @@ public class FormPane extends DroppableTaskPane
                     multiView.setIsNewForm(true, false); // traverse immediate children only
                 }
 
-                if (multiView.getCurrentView() != null && multiView.getCurrentView().getValidator() != null)
+                if (multiView != null && 
+                    multiView.getCurrentView() != null &&
+                    multiView.getCurrentView().getValidator() != null)
                 {
                     multiView.getCurrentView().getValidator().validateForm();
                 }

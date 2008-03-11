@@ -123,7 +123,7 @@ public class LocalityGoogleEarthPlugin extends JButton implements GetSetValueIFa
     
     protected ImageIcon getDisciplineIcon(final CollectionObject co)
     {
-        return IconManager.getIcon(co.getCollection().getDiscipline().getDiscipline(),  IconManager.IconSize.Std32);
+        return IconManager.getIcon(co.getCollection().getDiscipline().getName(),  IconManager.IconSize.Std32);
     }
 
     /* (non-Javadoc)

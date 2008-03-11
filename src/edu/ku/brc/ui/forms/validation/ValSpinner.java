@@ -9,6 +9,7 @@
  */
 package edu.ku.brc.ui.forms.validation;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 
@@ -42,7 +43,9 @@ public class ValSpinner extends JSpinner implements UIValidatable, GetSetValueIF
     protected boolean                 isChanged    = false;
     protected boolean                 isNew        = false;
     protected boolean                 currentValue = false;
-    
+    protected Color                   bgColor      = null;
+    protected JTextField              textField    = null;
+
     protected int                     minValue = -1;
     protected int                     maxValue = -1;
     
@@ -83,10 +86,33 @@ public class ValSpinner extends JSpinner implements UIValidatable, GetSetValueIF
         
         init();
         
+        textField = getTextField(this);
+        if (textField != null)
+        {
+            bgColor = textField.getBackground(); 
+        }
+        
         if (this.isRequired)
         {
-            fixBGOfJSpinner(this);
+            fixBGOfJSpinner();
         }
+    }
+    
+
+    /* (non-Javadoc)
+     * @see java.awt.Component#setEnabled(boolean)
+     */
+    @Override
+    public void setEnabled(boolean enabled)
+    {
+        if (textField != null)
+        {
+            if (requiredfieldcolor != null)
+            {
+                textField.setBackground(this.isRequired && enabled ? requiredfieldcolor.getColor() : bgColor);
+            }
+        }
+        super.setEnabled(enabled);
     }
     
     /**
@@ -94,7 +120,6 @@ public class ValSpinner extends JSpinner implements UIValidatable, GetSetValueIF
      */
     protected void init()
     {
-        //bgColor = getBackground();
         if (requiredfieldcolor == null)
         {
             requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
@@ -104,23 +129,39 @@ public class ValSpinner extends JSpinner implements UIValidatable, GetSetValueIF
     /**
      * Sets the spinner to the proper color.
      */
-    protected void fixBGOfJSpinner(Container container)
+    protected void fixBGOfJSpinner()
+    {
+        if (textField != null)
+        {
+            if (requiredfieldcolor != null)
+            {
+                textField.setBackground(requiredfieldcolor.getColor());
+            } 
+        }
+    }
+    
+    /**
+     * Sets the spinner to the proper color.
+     */
+    protected JTextField getTextField(final Container container)
     {
         for (int i=0;i<container.getComponentCount();i++)
         {
             Component c = container.getComponent(i);
             if (c instanceof JTextField)
             {
-                if (requiredfieldcolor != null)
-                {
-                    c.setBackground(requiredfieldcolor.getColor());
-                }
+                return (JTextField)c;
                 
             } else if (c instanceof Container)
             {
-                fixBGOfJSpinner((Container)c);
+                JTextField tf = getTextField((Container)c);
+                if (tf != null)
+                {
+                    return tf;
+                }
             }
         }
+        return null;
     }
 
     //--------------------------------------------------

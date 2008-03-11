@@ -8,36 +8,23 @@
         4 - Minerals 
     -->
     
-    <discipline name="fish"         title="Fish"         abbrev="FISH" type="0"/>
-    <discipline name="amphibian"    title="Amphibians"   abbrev="AMPH" type="0"/>
-    <discipline name="reptile"      title="Reptile"      abbrev="RPTL" type="0"/>
-    <discipline name="paleobotany"  title="Paleo Botany" abbrev="PLB" type="0"/>
-    <discipline name="invertpaleo"  title="Invertebrate Paleo" abbrev="IVTP" type="0"/>
-    <discipline name="vertpaleo"    title="Vertebrate Paleo" abbrev="VRTP" type="0"/>
-    <discipline name="bird"         title="Ornthology"   abbrev="ORN" type="0"/>
-    <discipline name="mammal"       title="Mammal"       abbrev="MAM" type="0"/>
-    <discipline name="insect"       title="Insect"       abbrev="ENTO" type="0"/>
-    <discipline name="botany"       title="Botany"       abbrev="BNTY" type="0"/>
-    <discipline name="invertebrate" title="Invertebrate" abbrev="IVTB" type="0"/>
-    <discipline name="minerals"     title="Minerals"     abbrev="MIN" type="4"/>
-    <discipline name="anthropology" title="Anthropology" abbrev="ANTH" type="3"/>
-    <discipline name="fungi"        title="Fungi"        abbrev="FNGI" type="0"/>
+    <discipline name="fish"         title="Fish"         abbrev="FISH" isembedce="false" type="0"/>
+    <discipline name="amphibian"    title="Amphibians"   abbrev="AMPH" isembedce="true" type="0"/>
+    <discipline name="reptile"      title="Reptile"      abbrev="RPTL" isembedce="true" type="0"/>
+    <discipline name="paleobotany"  title="Paleo Botany" abbrev="PLB" isembedce="true" type="0"/>
+    <discipline name="invertpaleo"  title="Invertebrate Paleo" abbrev="IVTP" isembedce="true" type="0"/>
+    <discipline name="vertpaleo"    title="Vertebrate Paleo" abbrev="VRTP" isembedce="true" type="0"/>
+    <discipline name="bird"         title="Ornthology"   abbrev="ORN" isembedce="true" type="0"/>
+    <discipline name="mammal"       title="Mammal"       abbrev="MAM" isembedce="true" type="0"/>
+    <discipline name="insect"       title="Insect"       abbrev="ENTO" isembedce="true" type="0"/>
+    <discipline name="botany"       title="Botany"       abbrev="BNTY" isembedce="true" type="0"/>
+    <discipline name="invertebrate" title="Invertebrate" abbrev="IVTB" isembedce="true" type="0"/>
+    <discipline name="minerals"     title="Minerals"     abbrev="MIN" isembedce="true" type="4"/>
+    <discipline name="anthropology" title="Anthropology" abbrev="ANTH" isembedce="true" type="3"/>
+    <discipline name="fungi"        title="Fungi"        abbrev="FNGI" isembedce="true" type="0"/>
     
-    <!-- <discipline name="tissue"       title="Tissue"       abbrev="" type="1"/>
-    <discipline name="accessions"   title="Accessions"   abbrev="" type="2"/>
-    <discipline name="animal"       title="Animal"     abbrev="" type="0"/>  -->
+    <!-- <discipline name="tissue"       title="Tissue"       abbrev="" isembedce="true" type="1"/>
+    <discipline name="accessions"   title="Accessions"   abbrev="" isembedce="true" type="2"/>
+    <discipline name="animal"       title="Animal"     abbrev="" isembedce="true" type="0"/>  -->
     
 </disciplines>
-
-<!--
-Botany
-Entomology
-Herpetology
-Ichthyology
-Invertebrate Paleontology
-Invertebrate zoology
-Mammalogy
-Ornithology
-Paleobotany
-Vertebrate paleontology
--->

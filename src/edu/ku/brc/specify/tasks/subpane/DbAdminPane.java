@@ -534,9 +534,8 @@ class CodCellRenderer extends DefaultListCellRenderer
             setBackground(list.getBackground());
             setForeground(list.getForeground());
         }
-        System.out.println("getlistcellrenderer");
-        Discipline group = (Discipline) value;
-        setText(group.getName());
+        Discipline discipline = (Discipline) value;
+        setText(discipline.getTitle());
         return this;
     }
 

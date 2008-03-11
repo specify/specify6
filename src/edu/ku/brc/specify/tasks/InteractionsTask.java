@@ -191,7 +191,7 @@ public class InteractionsTask extends BaseTask
     protected void setUpCachedPrefs()
     {
         AppPreferences remotePrefs = AppPreferences.getRemote();
-        String ds = Discipline.getCurrentDiscipline().getDiscipline();
+        String ds = Discipline.getCurrentDiscipline().getName();
         isUsingInteractions = remotePrefs.getBoolean(IS_USING_INTERACTIONS_PREFNAME+ds, true);
         isDoingGifts        = remotePrefs.getBoolean(IS_DOING_GIFT_PREFNAME+ds, true);
         isDoingExchanges    = remotePrefs.getBoolean(IS_DOING_EXCH_PREFNAME+ds, Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.botany));
@@ -460,7 +460,7 @@ public class InteractionsTask extends BaseTask
         AppPreferences remotePrefs = AppPreferences.getRemote();
         if (remotePrefs == AppPreferences.getRemote())
         {
-            String ds = Discipline.getCurrentDiscipline().getDiscipline();
+            String ds = Discipline.getCurrentDiscipline().getName();
             isUsingInteractions = remotePrefs.getBoolean(IS_USING_INTERACTIONS_PREFNAME+ds, true);
         }
 
@@ -1208,7 +1208,7 @@ public class InteractionsTask extends BaseTask
         AppPreferences remotePrefs = (AppPreferences)cmdAction.getData();
         if (remotePrefs == AppPreferences.getRemote())
         {
-            String ds = Discipline.getCurrentDiscipline().getDiscipline();
+            String ds = Discipline.getCurrentDiscipline().getName();
             isUsingInteractions = remotePrefs.getBoolean(IS_USING_INTERACTIONS_PREFNAME+ds, true);
             
             boolean isDoingGiftsNew        = remotePrefs.getBoolean(IS_DOING_GIFT_PREFNAME+ds, true);

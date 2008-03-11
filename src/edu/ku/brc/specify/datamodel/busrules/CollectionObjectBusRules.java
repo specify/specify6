@@ -24,13 +24,12 @@ import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
-import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
+import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.DeaccessionPreparation;
-import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
@@ -135,30 +134,20 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
     {
         super.addChildrenToNewDataObjects(newDataObj);
         
-        CollectionObject co              = (CollectionObject)newDataObj;
-        Discipline       ct              = Discipline.getCurrentDiscipline();
-        DisciplineType   disciplineType  = DisciplineType.getDiscipline(ct.getDiscipline());
-        //DisciplineType       plantDiscipline = DisciplineType.getDiscipline("plant");
-        if (disciplineType != null)
+        CollectionObject colObj = (CollectionObject)newDataObj;
+        if (Collection.getCurrentCollection().getIsEmbeddedCollectingEvent())
         {
-            //if (disciplineType == plantDiscipline || ct.getName().equals("Plant")) // RELEASE (remove Plant)
-            {
-                CollectingEvent ce = new CollectingEvent();
-                ce.initialize();
-                co.addReference(ce, "collectingEvent");
-                
-                Preparation prep = new Preparation();
-                prep.initialize();
-                prep.setCount(1);
-                prep.setPrepType(getDefaultPrepType());
-                prep.setPreparedDate(Calendar.getInstance());
-                co.addReference(prep, "preparations");
-                prep.setPreparedByAgent(getDefaultPreparedByAgent());
-            }
+            CollectingEvent ce = new CollectingEvent();
+            ce.initialize();
+            colObj.addReference(ce, "collectingEvent");
             
-        } else
-        {
-            log.error("Unknown disciplineType ["+ct.getDiscipline()+"]");
+            Preparation prep = new Preparation();
+            prep.initialize();
+            prep.setCount(1);
+            prep.setPrepType(getDefaultPrepType());
+            prep.setPreparedDate(Calendar.getInstance());
+            colObj.addReference(prep, "preparations");
+            prep.setPreparedByAgent(getDefaultPreparedByAgent());
         }
     }
 
@@ -166,9 +155,9 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#beforeFormFill(edu.ku.brc.ui.forms.Viewable)
      */
     @Override
-    public void beforeFormFill(Viewable viewable)
+    public void beforeFormFill(Viewable viewableArg)
     {
-        super.beforeFormFill(viewable);
+        super.beforeFormFill(viewableArg);
     }
     
     /* (non-Javadoc)

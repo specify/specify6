@@ -458,7 +458,7 @@ permit.EndDate,permit.RenewalDate,permit.Type FROM permit left Join agent ON per
         <table id="105" tableid="26" name="DisciplineSearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
-                    <![CDATA[SELECT DisciplineID, Name, Discipline FROM collectiontype WHERE (%s)]]>
+                    <![CDATA[SELECT DisciplineID, Name, Discipline FROM discipline WHERE (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="26" col="DisciplineID" visible="false"/>

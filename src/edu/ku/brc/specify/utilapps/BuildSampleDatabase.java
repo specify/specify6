@@ -346,8 +346,15 @@ public class BuildSampleDatabase
         frame.setDesc("Creating Discipline...");
         frame.setProcess(++createStep);
 
-        Discipline discipline = createDiscipline(division, config.getDiscipline().getName(), config.getDiscipline().getTitle(), 
-                                                             dataType, taxonTreeDef, geoTreeDef, gtpTreeDef, locTreeDef, lithoStratTreeDef);
+        Discipline discipline = createDiscipline(division, 
+                                                 config.getDiscipline().getName(), 
+                                                 config.getDiscipline().getTitle(), 
+                                                 dataType, 
+                                                 taxonTreeDef, 
+                                                 geoTreeDef, 
+                                                 gtpTreeDef, 
+                                                 locTreeDef, 
+                                                 lithoStratTreeDef);
         Discipline.setCurrentDiscipline(discipline);
         
         persist(discipline);
@@ -524,7 +531,7 @@ public class BuildSampleDatabase
         
         Collection collection = Collection.getCurrentCollection();
         
-        List<BldrPickList> pickLists = DataBuilder.getBldrPickLists(discipline != null ? discipline.getDiscipline() : "common");
+        List<BldrPickList> pickLists = DataBuilder.getBldrPickLists(discipline != null ? discipline.getName() : "common");
         if (pickLists != null)
         {
             for (BldrPickList pl : pickLists)
@@ -638,7 +645,7 @@ public class BuildSampleDatabase
         
         lithoStratTreeDef.setRemarks("A simple super, group, formation, member, bed Litho Stratigraphy tree");
         
-        Discipline discipline = createDiscipline(division, "Botany", disciplineType.getName(), 
+        Discipline discipline = createDiscipline(division, disciplineType.getName(), disciplineType.getTitle(), 
                                                              dataType, taxonTreeDef, geoTreeDef, gtpTreeDef, 
                                                              locTreeDef, lithoStratTreeDef);
         Discipline.setCurrentDiscipline(discipline);
@@ -1392,7 +1399,7 @@ public class BuildSampleDatabase
         
         lithoStratTreeDef.setRemarks("A simple super, group, formation, member, bed Litho Stratigraphy tree");
         
-        Discipline discipline = createDiscipline(division, disciplineType.getTitle(), disciplineType.getName(), 
+        Discipline discipline = createDiscipline(division, disciplineType.getName(), disciplineType.getTitle(), 
                                                              dataType, taxonTreeDef, geoTreeDef, gtpTreeDef, 
                                                              locTreeDef, lithoStratTreeDef);
         Discipline.setCurrentDiscipline(discipline);
@@ -2393,7 +2400,7 @@ public class BuildSampleDatabase
         LithoStratTreeDef         lithoStratTreeDef = createLithoStratTreeDef("LithoStrat");
         StorageTreeDef            locTreeDef        = createStorageTreeDef("Storage");
         
-        Discipline discipline = createDiscipline(division, disciplineType.getTitle(), disciplineType.getName(), 
+        Discipline discipline = createDiscipline(division, disciplineType.getName(), disciplineType.getTitle(), 
                                                              dataType, taxonTreeDef, geoTreeDef, gtpTreeDef, 
                                                              locTreeDef, lithoStratTreeDef);
         Discipline.setCurrentDiscipline(discipline);
@@ -2442,7 +2449,7 @@ public class BuildSampleDatabase
         // Create Collection
         ////////////////////////////////
         log.info("Creating a Collection");
-        Collection collection = createCollection("KU", disciplineType.getTitle(), cns, discipline);
+        Collection collection = createCollection("KU", disciplineType.getTitle(), cns, discipline, disciplineType.isEmbeddedCollecingEvent());
         persist(collection);
         
         Collection.setCurrentCollection(collection);
@@ -3258,7 +3265,15 @@ public class BuildSampleDatabase
         
         lithoStratTreeDef.setRemarks("A simple super, group, formation, member, bed Litho Stratigraphy tree");
         
-        Discipline discipline = createDiscipline(division, disciplineType.getTitle(), disciplineType.getName(), dataType, taxonTreeDef, geoTreeDef, gtpTreeDef, locTreeDef, lithoStratTreeDef);
+        Discipline discipline = createDiscipline(division, 
+                                                 disciplineType.getName(), 
+                                                 disciplineType.getTitle(), 
+                                                 dataType, 
+                                                 taxonTreeDef, 
+                                                 geoTreeDef, 
+                                                 gtpTreeDef, 
+                                                 locTreeDef, 
+                                                 lithoStratTreeDef);
         Discipline.setCurrentDiscipline(discipline);
         
         persist(discipline);
@@ -3406,7 +3421,7 @@ public class BuildSampleDatabase
         xstream.omitField(DataModelObjBase.class,  "timestampModified");
         xstream.omitField(DataModelObjBase.class,  "lastEditedBy");
         
-        String discipline = Discipline.getCurrentDiscipline().getDiscipline();
+        String discipline = Discipline.getCurrentDiscipline().getName();
         File   file       = XMLHelper.getConfigDir(discipline + File.separator + "preptypes.xml");
         if (file.exists())
         {
@@ -3474,7 +3489,7 @@ public class BuildSampleDatabase
         // Create Collection
         ////////////////////////////////
         log.info("Creating a Collection");
-        Collection collection = createCollection(colPrefix, colName, cns, discipline);
+        Collection collection = createCollection(colPrefix, colName, cns, discipline, true);
         persist(collection);
         
         Collection.setCurrentCollection(collection);
