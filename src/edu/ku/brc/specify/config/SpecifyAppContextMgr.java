@@ -491,18 +491,26 @@ public class SpecifyAppContextMgr extends AppContextMgr
                                             final boolean        isPersonal,
                                             final boolean        createWhenNotFound)
     {
-        StringBuilder sb = new StringBuilder("FROM SpAppResourceDir WHERE specifyUserId =");
+        StringBuilder sb = new StringBuilder("FROM SpAppResourceDir WHERE specifyUserId = ");
         sb.append(specifyUser.getSpecifyUserId());
         if (discipline != null)
         {
             sb.append(" AND disciplineId = ");
             sb.append(discipline.getId());
+        } else
+        {
+            sb.append(" AND disciplineId is null");
         }
+        
         if (collection != null)
         {
             sb.append(" AND collectionId = ");
             sb.append(collection.getId());
+        } else
+        {
+            sb.append(" AND collectionId is null");
         }
+        
         if (userType != null)
         {
             sb.append(" AND userType = '");
@@ -516,6 +524,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
         sb.append(" AND isPersonal = ");
         sb.append(isPersonal);
         
+        log.debug(sb.toString());
+        
         List<?> list = sessionArg.getDataList(sb.toString());
         if (list.size() == 1)
         {
@@ -524,6 +534,14 @@ public class SpecifyAppContextMgr extends AppContextMgr
             // This loads the lazy sets
             appResDir.getSpPersistedAppResources();
             appResDir.getSpPersistedViewSets();
+            
+            if (true)
+            {
+                for (SpAppResource appRes : appResDir.getSpPersistedAppResources())
+                {
+                    log.debug(appRes.getName());
+                }
+            }
             return appResDir;
         }
         
@@ -798,8 +816,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
             // and we don't want to reuse in and get a double session
             closeSession();
             session = null;
-            
-            
             
             // Here is where you turn on View/Viewdef re-use.
             if (true)
@@ -1104,14 +1120,11 @@ public class SpecifyAppContextMgr extends AppContextMgr
         SpAppResourceDir appResDir = spAppResourceHash.get(appResDirName);
         if (appResDir != null)
         {
-            if (appResDir.getIsPersonal())
+            for (SpAppResource ar : appResDir.getSpAppResources())
             {
-                for (SpAppResource ar : appResDir.getSpAppResources())
+                if (ar.getName().equals(appResName))
                 {
-                    if (ar.getName().equals(appResName))
-                    {
-                        return ar;
-                    }
+                    return ar;
                 }
             }
         } else
