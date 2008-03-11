@@ -129,6 +129,14 @@ public class ExtendedTabbedPane extends JTabbedPane
     protected void adjustTab(final String title, final Icon icon, Component comp, final int index)
     {
         /*
+         * XXX iReport
+         * NOTE: un-commenting the block below causes iReport to fail while loading.
+         * (Somehow related to lookandfeel settings. This note may no longer apply when/if
+         * the current code to handle iReport lookandfeel vs. Specify lookandfeel conflicts is changed.)
+         */
+        
+        
+        /*
         final JLabel closeBtn = new JLabel(IconManager.getIcon("Close"));
         closeBtn.setBorder(null);
         
