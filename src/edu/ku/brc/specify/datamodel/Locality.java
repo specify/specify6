@@ -38,9 +38,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -61,13 +59,11 @@ import edu.ku.brc.services.mapping.LocalityMapper.MapLocationIFace;
 @Table(name = "locality")
 @org.hibernate.annotations.Table(appliesTo="locality", indexes =
     {   @Index (name="localityNameIDX", columnNames={"LocalityName"}),
-        @Index (name="LocalityColMemIDX", columnNames={"CollectionMemberID"})
+        @Index (name="LocalityDisciplineIDX", columnNames={"DisciplineID"})
     })
-public class Locality extends CollectionMember implements AttachmentOwnerIFace<LocalityAttachment>, java.io.Serializable, MapLocationIFace 
+public class Locality extends DataModelObjBase implements AttachmentOwnerIFace<LocalityAttachment>, java.io.Serializable, MapLocationIFace 
 {
-
     // Fields    
-
     protected Integer               localityId;
     protected String                namedPlace;
     protected String                shortName;
@@ -98,7 +94,7 @@ public class Locality extends CollectionMember implements AttachmentOwnerIFace<L
     protected Integer               visibility;
     protected String                visibilitySetBy;
      
-    protected Set<Discipline>     disciplines;
+    protected Discipline              discipline;
     protected Geography               geography;
     protected Set<LocalityCitation>   localityCitations;
     protected Set<CollectingEvent>    collectingEvents;
@@ -126,6 +122,7 @@ public class Locality extends CollectionMember implements AttachmentOwnerIFace<L
     public void initialize()
     {
         super.init();
+        
         localityId = null;
         shortName = null;
         namedPlace = null;
@@ -155,6 +152,7 @@ public class Locality extends CollectionMember implements AttachmentOwnerIFace<L
         long2text = null;
         visibility = null;
         
+        discipline          = Discipline.getCurrentDiscipline();
         geography           = null;
         localityCitations   = new HashSet<LocalityCitation>();
         collectingEvents    = new HashSet<CollectingEvent>();
@@ -608,16 +606,16 @@ public class Locality extends CollectionMember implements AttachmentOwnerIFace<L
     /**
      * 
      */
-    @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
-    @JoinTable(name = "coltype_locality", joinColumns = { @JoinColumn(name = "LocalityID", unique = false, nullable = false, insertable = true, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "DisciplineID", unique = false, nullable = false, insertable = true, updatable = false) })
-    public Set<Discipline> getDisciplines()
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "DisciplineID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Discipline getDiscipline()
     {
-        return this.disciplines;
+        return this.discipline;
     }
 
-    public void setDisciplines(Set<Discipline> disciplines)
+    public void setDiscipline(Discipline discipline)
     {
-        this.disciplines = disciplines;
+        this.discipline = discipline;
     }
 
     /**

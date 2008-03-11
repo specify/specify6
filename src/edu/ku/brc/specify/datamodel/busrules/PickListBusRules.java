@@ -318,16 +318,15 @@ public class PickListBusRules extends BaseBusRules
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#afterFillForm(java.lang.Object, edu.ku.brc.ui.forms.Viewable)
      */
     @Override
-    public void afterFillForm(final Object dataObj, final Viewable viewable)
+    public void afterFillForm(final Object dataObj, final Viewable viewableArg)
     {
         super.afterFillForm(dataObj, viewable);
         
         PickList    pickList = (PickList)dataObj;
-        FormViewObj fvo      = (FormViewObj)viewable;
+        FormViewObj fvo      = (FormViewObj)viewableArg;
         
         if (pickList != null)
         {
-        
             ValComboBox typesCBX       = (ValComboBox)fvo.getControlByName("typesCBX");
             ValComboBox tablesCBX      = (ValComboBox)fvo.getControlByName("tablesCBX");
             ValComboBox formatterCBX   = (ValComboBox)fvo.getControlByName("formatterCBX");
@@ -373,7 +372,7 @@ public class PickListBusRules extends BaseBusRules
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#beforeFormFill(edu.ku.brc.ui.forms.Viewable)
      */
     @Override
-    public void beforeFormFill(Viewable viewable)
+    public void beforeFormFill(Viewable viewableArg)
     {
         // TODO Auto-generated method stub
         super.beforeFormFill(viewable);

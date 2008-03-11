@@ -1434,7 +1434,7 @@ public class FormViewObj implements Viewable,
             
             if (isASingleObj)
             {
-                ((FormDataObjIFace)obj).addReference(((FormDataObjIFace)parentDataObj), cellName);
+                obj.addReference(((FormDataObjIFace)parentDataObj), cellName);
                 doSetIntoAndValidate = true;
                 
             } else

@@ -23,6 +23,7 @@ import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.LithoStrat;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
+import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Storage;
@@ -44,7 +45,7 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
     
     private static final String SPECIFYUSERID  = "SPECIFYUSERID";
     private static final String DIVISIONID     = "DIVISIONID";
-    private static final String DSPLNID       = "DSPLNID";
+    private static final String DSPLNID        = "DSPLNID";
     private static final String COLMEMID       = "COLMEMID";
     private static final String COLLID         = "COLLID";
     //private static final String COLMEMIDGRP    = "COLMEMIDGRP";
@@ -82,31 +83,43 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
             {
                 fld = isHQL ? "discipline" : "DisciplineID";
                 criterion = DSPLNID;
+                
             } else if (tableInfo.getTableId() == Geography.getClassTableId())
             {
                 fld = isHQL ? "definition" : "GeographyTreeDefID";
                 criterion = GEOTREEDEFID;
+                
             } else if (tableInfo.getTableId() == GeologicTimePeriodTreeDef.getClassTableId())
             {
                 fld = isHQL ? "definition" : "GeologicTimePeriodTreeDefID"; 
                 criterion = GTPTREEDEFID;
+                
             } else if (tableInfo.getTableId() == LithoStrat.getClassTableId())
             {
                 fld = isHQL ? "definition" : "LithoStratTreeDefID";
                 criterion = LITHOTREEDEFID;
+                
             } else if (tableInfo.getTableId() == Storage.getClassTableId())
             {
                 fld = isHQL ? "definition" : "StorageTreeDefID";
                 criterion = STORTREEDEFID;
+                
             } else if (tableInfo.getTableId() == PrepType.getClassTableId())
             {
                 fld = isHQL ? "collection" : "CollectionID";
-                criterion = COLLID;           
+                criterion = COLLID;  
+                
             } else if (tableInfo.getTableId() == Taxon.getClassTableId())
             {
                 fld = isHQL ? "definition" : "TaxonTreeDefID"; 
                 criterion = TAXTREEDEFID;
+                
+            } else if (tableInfo.getTableId() == Locality.getClassTableId())
+            {
+                fld = "disciplineId";
+                criterion = DSPLNID;
             }
+            
             if (criterion != null && fld != null)
             {
                 String sql = prefix + fld + " = " + criterion;

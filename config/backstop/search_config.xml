@@ -356,7 +356,7 @@
  localitynamealias.Name, 
  %s
  FROM locality INNER JOIN localitynamealias ON locality.LocalityID = localitynamealias.LocalityID
- WHERE locality.CollectionMemberID = COLMEMID AND %s]]>
+ WHERE locality.DisciplineID = DSPLNID AND %s]]>
                 </sql>
                 <captions>
                     <caption tableid="2" col="locality.LocalityID" visible="false"/>
@@ -458,12 +458,12 @@ permit.EndDate,permit.RenewalDate,permit.Type FROM permit left Join agent ON per
         <table id="105" tableid="26" name="DisciplineSearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
-                    <![CDATA[SELECT DisciplineID, Name, Discipline FROM discipline WHERE (%s)]]>
+                    <![CDATA[SELECT DisciplineID, Name, Title FROM discipline WHERE (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="26" col="DisciplineID" visible="false"/>
                     <caption tableid="26" col="Name"/>
-                    <caption tableid="26" col="Discipline"/>
+                    <caption tableid="26" col="Title"/>
                 </captions>
             </detailView>
         </table>  
@@ -583,7 +583,7 @@ permit.EndDate,permit.RenewalDate,permit.Type FROM permit left Join agent ON per
         <table id="114" tableid="2" name="LocalitySearch" priority="1" color="30, 144, 255">
             <detailView icon="Locality">
                 <sql>
-                    <![CDATA[SELECT LocalityID, LocalityName,Latitude1,Longitude1 FROM locality WHERE CollectionMemberID = COLMEMID AND (%s)]]>
+                    <![CDATA[SELECT LocalityID, LocalityName,Latitude1,Longitude1 FROM locality WHERE DisciplineID = DSPLNID AND (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="2" col="LocalityID" visible="false"/>

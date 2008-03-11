@@ -39,7 +39,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -153,7 +152,6 @@ public class Discipline extends DataModelObjBase implements java.io.Serializable
         storageTreeDef       = null;
         taxonTreeDef          = null;
         lithoStratTreeDef     = null;
-        localities            = new HashSet<Locality>();
         determinationStatuss  = new HashSet<DeterminationStatus>();
         localities            = new HashSet<Locality>();
         spAppResourceDirs     = new HashSet<SpAppResourceDir>();
@@ -337,13 +335,15 @@ public class Discipline extends DataModelObjBase implements java.io.Serializable
     /**
      *
      */
-    @ManyToMany(mappedBy="disciplines")
-    @Cascade( {CascadeType.SAVE_UPDATE} )
-    public Set<Locality> getLocalities() {
+    @OneToMany(mappedBy="discipline")
+    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
+    public Set<Locality> getLocalities() 
+    {
         return this.localities;
     }
 
-    public void setLocalities(Set<Locality> localities) {
+    public void setLocalities(Set<Locality> localities) 
+    {
         this.localities = localities;
     } 
 

@@ -243,6 +243,7 @@ public class BuildSampleDatabase
     
     protected Random             rand = new Random(12345678L);
     
+    protected Vector<Locality>    globalLocalities = new Vector<Locality>();
     protected Vector<Agent>       globalAgents = new Vector<Agent>();
     protected DeterminationStatus current      = null;
     protected DeterminationStatus notCurrent   = null;
@@ -3373,6 +3374,7 @@ public class BuildSampleDatabase
                     "KUTIS", "Fish Tissue", false, true);
         }
 
+        globalLocalities.clear();
     }
     
     /**
@@ -3472,7 +3474,7 @@ public class BuildSampleDatabase
                                              final List<Object>              lithoStrats,
                                              final String                    colPrefix,
                                              final String                    colName,
-                                             final boolean                   createAgents,
+                                             final boolean                   isVoucherCol,
                                              final boolean                   doTissues)
     {
         int createStep = 0;
@@ -3545,50 +3547,65 @@ public class BuildSampleDatabase
         String LINE  = "Line";
         String RECT  = "Rectangle";
         
-        log.info("Creating localities");
-        Locality forestStream = createLocality("Unnamed forest stream pond", (Geography)geos.get(12));
-        localities.add(forestStream);
-        forestStream.setLatLongType(POINT);
-        forestStream.setOriginalLatLongUnit(0);
-        forestStream.setLat1text("38.925467 deg N");
-        forestStream.setLatitude1(new BigDecimal(38.925467));
-        forestStream.setLong1text("94.984867 deg W");
-        forestStream.setLongitude1(new BigDecimal(-94.984867));
+        Locality forestStream;
+        Locality lake;
+        Locality farmpond;
         
-        Locality lake   = createLocality("Deep, dark lake pond", (Geography)geos.get(17));
-        localities.add(lake);
-        lake.setLatLongType(RECT);
-        lake.setOriginalLatLongUnit(1);
-        lake.setLat1text("41.548842 deg N");
-        lake.setLatitude1(new BigDecimal(41.548842));
-        lake.setLong1text("93.732129 deg W");
-        lake.setLongitude1(new BigDecimal(-93.732129));
-        
-        lake.setLat2text("41.642195 deg N");
-        lake.setLatitude2(new BigDecimal(41.642195));
-        lake.setLong2text("100.403180 deg W");
-        lake.setLongitude2(new BigDecimal(-100.403180));
-        
-        Locality farmpond = createLocality("Shoal Creek at Schermerhorn Park, S of Galena at Rt. 26", (Geography)geos.get(11));
-        localities.add(farmpond);
-        farmpond.setLatLongType(LINE);
-        farmpond.setOriginalLatLongUnit(2);
-        farmpond.setLat1text("41.642187 deg N");
-        farmpond.setLatitude1(new BigDecimal(41.642187));
-        farmpond.setLong1text("100.403163 deg W");
-        farmpond.setLongitude1(new BigDecimal(-100.403163));
+        if (isVoucherCol)
+        {
+            log.info("Creating localities");
+            forestStream = createLocality("Unnamed forest stream pond", (Geography)geos.get(12));
+            localities.add(forestStream);
+            globalLocalities.add(forestStream);
+            forestStream.setLatLongType(POINT);
+            forestStream.setOriginalLatLongUnit(0);
+            forestStream.setLat1text("38.925467 deg N");
+            forestStream.setLatitude1(new BigDecimal(38.925467));
+            forestStream.setLong1text("94.984867 deg W");
+            forestStream.setLongitude1(new BigDecimal(-94.984867));
+            
+            lake   = createLocality("Deep, dark lake pond", (Geography)geos.get(17));
+            localities.add(lake);
+            globalLocalities.add(lake);
+            lake.setLatLongType(RECT);
+            lake.setOriginalLatLongUnit(1);
+            lake.setLat1text("41.548842 deg N");
+            lake.setLatitude1(new BigDecimal(41.548842));
+            lake.setLong1text("93.732129 deg W");
+            lake.setLongitude1(new BigDecimal(-93.732129));
+            
+            lake.setLat2text("41.642195 deg N");
+            lake.setLatitude2(new BigDecimal(41.642195));
+            lake.setLong2text("100.403180 deg W");
+            lake.setLongitude2(new BigDecimal(-100.403180));
+            
+            farmpond = createLocality("Shoal Creek at Schermerhorn Park, S of Galena at Rt. 26", (Geography)geos.get(11));
+            localities.add(farmpond);
+            globalLocalities.add(farmpond);
+            
+            farmpond.setLatLongType(LINE);
+            farmpond.setOriginalLatLongUnit(2);
+            farmpond.setLat1text("41.642187 deg N");
+            farmpond.setLatitude1(new BigDecimal(41.642187));
+            farmpond.setLong1text("100.403163 deg W");
+            farmpond.setLongitude1(new BigDecimal(-100.403163));
+    
+            farmpond.setLat2text("49.647435 deg N");
+            farmpond.setLatitude2(new BigDecimal(49.647435));
+            farmpond.setLong2text("-55.112163 deg W");
+            farmpond.setLongitude2(new BigDecimal(-55.112163));
+            
+            persist(forestStream);
+            persist(lake);
+            persist(farmpond);
+        } else
+        {
+            forestStream = globalLocalities.get(0);
+            lake         = globalLocalities.get(1);
+            farmpond     = globalLocalities.get(2);
+            localities.addAll(globalLocalities);
+        }
 
-        farmpond.setLat2text("49.647435 deg N");
-        farmpond.setLatitude2(new BigDecimal(49.647435));
-        farmpond.setLong2text("-55.112163 deg W");
-        farmpond.setLongitude2(new BigDecimal(-55.112163));
-
-        //startTx();
-        persist(forestStream);
-        persist(lake);
-        persist(farmpond);
-        //commitTx();
-        
         frame.setProcess(++createStep);
         
         ////////////////////////////////
@@ -3599,7 +3616,7 @@ public class BuildSampleDatabase
         Agent johnByrn = null;
         Agent ku = new Agent();
         
-        if (createAgents)
+        if (isVoucherCol)
         {
             johnByrn = createAgent("Mr.", "John", "D", "Byrn", "jb", "jb@net.edu");
             agents.add(createAgent("Mr.", "David", "D", "Smith", "ds", "ds@whitehouse.gov"));
@@ -3786,7 +3803,7 @@ public class BuildSampleDatabase
         ////////////////////////////////
         log.info("Creating determinations status");
         
-        if (createAgents)
+        if (isVoucherCol)
         {
             current    = createDeterminationStatus(discipline, "Current",    "", DeterminationStatus.CURRENT);
             notCurrent = createDeterminationStatus(discipline, "Not current","", DeterminationStatus.NOTCURRENT);
@@ -4466,7 +4483,7 @@ public class BuildSampleDatabase
             
             TaxonCitation taxonCitation = new TaxonCitation();
             taxonCitation.initialize();
-            Taxon ammocrypta = (Taxon)taxa2.get(0);
+            Taxon ammocrypta = taxa2.get(0);
             taxonCitation.setTaxon(ammocrypta);
             taxonCitation.setReferenceWork(rwList.get(0));
             rwList.get(0).addTaxonCitations(taxonCitation);
@@ -4474,15 +4491,18 @@ public class BuildSampleDatabase
             dataObjects.add(taxonCitation);
             persist(taxonCitation);
             
-            Locality locality = (Locality)localities.get(0);
-            LocalityCitation localityCitation = new LocalityCitation();
-            localityCitation.initialize();
-            localityCitation.setLocality(locality);
-            locality.getLocalityCitations().add(localityCitation);
-            localityCitation.setReferenceWork(rwList.get(1));
-            rwList.get(1).addLocalityCitations(localityCitation);
-            dataObjects.add(localityCitation);
-            persist(localityCitation);
+            if (isVoucherCol)
+            {
+                Locality locality = localities.get(0);
+                LocalityCitation localityCitation = new LocalityCitation();
+                localityCitation.initialize();
+                localityCitation.setLocality(locality);
+                locality.getLocalityCitations().add(localityCitation);
+                localityCitation.setReferenceWork(rwList.get(1));
+                rwList.get(1).addLocalityCitations(localityCitation);
+                dataObjects.add(localityCitation);
+                persist(localityCitation);
+            }
             commitTx();
         }
         frame.setProcess(++createStep);
