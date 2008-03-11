@@ -616,18 +616,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
             // Set up File Name to load the ViewSet
             vso.setFileName(dir.getAbsoluteFile() + File.separator + vs.getFileName());
 
-            if (false)
-            {
-                String dataStr = vso.getDataAsString(); // causes the file to be loaded and returned into this string
-
-                // now clear the file names o it thinks it is a database object,
-                // and not created from disk
-                vso.setFileName(null);
-
-                // Now set the Blob from the string
-                vso.setDataAsString(dataStr);
-            }
-
             vso.setLevel((short)0);
             vso.setName(vs.getFileName());
 
@@ -882,9 +870,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 {
                     try
                     {
-                        log.error(vso.getFileName());
-                        //System.out.println(vso.getDataAsString());
+                        //log.error(vso.getFileName());
                         
+                        // This call assumes there is already a Session open and attached
                         Element root = XMLHelper.readStrToDOM4J(vso.getDataAsString());
                         ViewSet vs = new ViewSet(root, true);
                         vs.setFileName(vso.getFileName());
