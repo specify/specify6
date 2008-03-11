@@ -345,9 +345,32 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
         
         if (Discipline.getCurrentDiscipline() != null)
         {
-            //Discipline.getCurrentDiscipline().addReference((Agent)dataObj, "agents");
-            ((Agent)dataObj).setDiscipline(Discipline.getCurrentDiscipline());
+            Agent agent = (Agent)dataObj;
+            if (!contains(agent, Discipline.getCurrentDiscipline()))
+            {
+                agent.getDisciplines().add(Discipline.getCurrentDiscipline());
+                Discipline.getCurrentDiscipline().getAgents().add(agent);
+            }
         }
+    }
+    
+    /**
+     * Checks to see if the agent has already been added to the Discipline.
+     * @param agent the agent being saved
+     * @param discipline the discipline it is being saved into
+     * @return true if it is already associated with the Discipline
+     */
+    protected boolean contains(final Agent agent, final Discipline discipline)
+    {
+        
+        for (Discipline d : agent.getDisciplines())
+        {
+            if (d.getDisciplineId().equals(discipline.getDisciplineId()))
+            {
+                return true;
+            }
+        }
+        return false;
     }
     
 
@@ -376,10 +399,10 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
             }
         }
         
-        if (Discipline.getCurrentDiscipline() != null)
+        if (!contains(agent, Discipline.getCurrentDiscipline()))
         {
-            //Discipline.getCurrentDiscipline().addReference((Agent)dataObj, "agents");
-            ((Agent)dataObj).setDiscipline(Discipline.getCurrentDiscipline());
+            agent.getDisciplines().add(Discipline.getCurrentDiscipline());
+            Discipline.getCurrentDiscipline().getAgents().add(agent);
         }
     }
     /* (non-Javadoc)
@@ -402,6 +425,23 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
         }
         
         return super.beforeSaveCommit(dataObj, session);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeDeleteCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)
+     */
+    @Override
+    public boolean beforeDeleteCommit(Object dataObj, DataProviderSessionIFace session)
+            throws Exception
+    {
+        Agent agent = (Agent)dataObj;
+        if (Discipline.getCurrentDiscipline() != null)
+        {
+            agent.getDisciplines().remove(Discipline.getCurrentDiscipline());
+            Discipline.getCurrentDiscipline().getAgents().remove(agent);
+        }
+        
+        return super.beforeDeleteCommit(dataObj, session);
     }     
 
 }

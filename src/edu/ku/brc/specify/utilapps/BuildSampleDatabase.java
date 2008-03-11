@@ -846,7 +846,8 @@ public class BuildSampleDatabase
         ku.setLastName("University of Kansas");
         ku.setEmail("webadmin@ku.edu");
         ku.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        ku.setDiscipline(Discipline.getCurrentDiscipline());
+        ku.getDisciplines().add(Discipline.getCurrentDiscipline());
+        Discipline.getCurrentDiscipline().getAgents().add(ku);
         
         agents.add(ku);
         agents.get(0).setOrganization(ku);
@@ -862,7 +863,8 @@ public class BuildSampleDatabase
         otherAgent.setLastName("The Other Guys");
         otherAgent.setEmail("other@other.com");
         otherAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        otherAgent.setDiscipline(Discipline.getCurrentDiscipline());
+        otherAgent.getDisciplines().add(Discipline.getCurrentDiscipline());
+        Discipline.getCurrentDiscipline().getAgents().add(otherAgent);
         agents.add(otherAgent);
         
         commitTx();
@@ -884,7 +886,8 @@ public class BuildSampleDatabase
             groupAgent.setLastName("The Group");
             groupAgent.setEmail("group@group.com");
             groupAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-            groupAgent.setDiscipline(Discipline.getCurrentDiscipline());
+            groupAgent.getDisciplines().add(Discipline.getCurrentDiscipline());
+            Discipline.getCurrentDiscipline().getAgents().add(groupAgent);
             
             agents.add(groupAgent);
             
@@ -1616,7 +1619,8 @@ public class BuildSampleDatabase
         ku.setLastName("University of Kansas");
         ku.setEmail("webadmin@ku.edu");
         ku.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        ku.setDiscipline(Discipline.getCurrentDiscipline());
+        ku.getDisciplines().add(Discipline.getCurrentDiscipline());
+        Discipline.getCurrentDiscipline().getAgents().add(ku);
         
         agents.add(ku);
         agents.get(0).setOrganization(ku);
@@ -1632,7 +1636,8 @@ public class BuildSampleDatabase
         otherAgent.setLastName("The Other Guys");
         otherAgent.setEmail("other@other.com");
         otherAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        otherAgent.setDiscipline(Discipline.getCurrentDiscipline());
+        otherAgent.getDisciplines().add(Discipline.getCurrentDiscipline());
+        Discipline.getCurrentDiscipline().getAgents().add(otherAgent);
         agents.add(otherAgent);
         
         commitTx();
@@ -1654,7 +1659,8 @@ public class BuildSampleDatabase
             groupAgent.setLastName("The Group");
             groupAgent.setEmail("group@group.com");
             groupAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-            groupAgent.setDiscipline(Discipline.getCurrentDiscipline());
+            groupAgent.getDisciplines().add(Discipline.getCurrentDiscipline());
+            Discipline.getCurrentDiscipline().getAgents().add(groupAgent);
             
             agents.add(groupAgent);
             
@@ -2609,7 +2615,8 @@ public class BuildSampleDatabase
         ku.setLastName("University of Kansas");
         ku.setEmail("webadmin@ku.edu");
         ku.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        ku.setDiscipline(Discipline.getCurrentDiscipline());
+        ku.getDisciplines().add(Discipline.getCurrentDiscipline());
+        Discipline.getCurrentDiscipline().getAgents().add(ku);
         
         agents.add(ku);
         agents.get(0).setOrganization(ku);
@@ -2625,7 +2632,8 @@ public class BuildSampleDatabase
         otherAgent.setLastName("The Other Guys");
         otherAgent.setEmail("other@other.com");
         otherAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-        otherAgent.setDiscipline(Discipline.getCurrentDiscipline());
+        otherAgent.getDisciplines().add(Discipline.getCurrentDiscipline());
+        Discipline.getCurrentDiscipline().getAgents().add(otherAgent);
         agents.add(otherAgent);
         
         commitTx();
@@ -2647,7 +2655,8 @@ public class BuildSampleDatabase
             groupAgent.setLastName("The Group");
             groupAgent.setEmail("group@group.com");
             groupAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-            groupAgent.setDiscipline(Discipline.getCurrentDiscipline());
+            groupAgent.getDisciplines().add(Discipline.getCurrentDiscipline());
+            Discipline.getCurrentDiscipline().getAgents().add(groupAgent);
             
             agents.add(groupAgent);
             
@@ -3636,7 +3645,8 @@ public class BuildSampleDatabase
             ku.setLastName("University of Kansas");
             ku.setEmail("webadmin@ku.edu");
             ku.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-            ku.setDiscipline(Discipline.getCurrentDiscipline());
+            ku.getDisciplines().add(Discipline.getCurrentDiscipline());
+            Discipline.getCurrentDiscipline().getAgents().add(ku);
             
             agents.add(ku);
             agents.get(0).setOrganization(ku);
@@ -3652,7 +3662,8 @@ public class BuildSampleDatabase
             otherAgent.setLastName("The Other Guys");
             otherAgent.setEmail("other@other.com");
             otherAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-            otherAgent.setDiscipline(Discipline.getCurrentDiscipline());
+            otherAgent.getDisciplines().add(Discipline.getCurrentDiscipline());
+            Discipline.getCurrentDiscipline().getAgents().add(otherAgent);
             agents.add(otherAgent);
 
             List<GroupPerson> gpList = new ArrayList<GroupPerson>();
@@ -3672,7 +3683,8 @@ public class BuildSampleDatabase
                 groupAgent.setLastName("The Group");
                 groupAgent.setEmail("group@group.com");
                 groupAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
-                groupAgent.setDiscipline(Discipline.getCurrentDiscipline());
+                groupAgent.getDisciplines().add(Discipline.getCurrentDiscipline());
+                Discipline.getCurrentDiscipline().getAgents().add(groupAgent);
                 
                 agents.add(groupAgent);
                 

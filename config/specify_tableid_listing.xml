@@ -75,10 +75,6 @@
         <table name="edu.ku.brc.specify.datamodel.CollectingTrip" abbrev="clt" id="87" workbench="true" searchable="true">
             <display objtitle="Collecting Trip"/>
         </table>
-        <table name="edu.ku.brc.specify.datamodel.Discipline" abbrev="ct" id="26">
-            <display objtitle="Collection Object Def" view="Discipline" dataobjformatter="Discipline" uiformatter="" searchdlg="DisciplineSearch" newobjdlg="Discipline"/>
-            <businessrule>edu.ku.brc.specify.datamodel.busrules.DisciplineBusRules</businessrule>                    
-        </table>
         <table name="edu.ku.brc.specify.datamodel.CollectionObject" abbrev="co" id="1" workbench="true" searchable="true">
             <display objtitle="Collection Object" view="CollectionObject" dataobjformatter="CollectionObject" searchdlg="CollectionObjectSearch" newobjdlg="CollectionObject"/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.CollectionObjectBusRules</businessrule>          
@@ -127,6 +123,10 @@
         <table name="edu.ku.brc.specify.datamodel.DeterminationStatus" abbrev="dets" id="88">
             <display objtitle="Determination Status" view="DeterminationStatus" searchdlg="" newobjdlg=""/>
             <businessrule>edu.ku.brc.specify.datamodel.busrules.DeterminationStatusBusRules</businessrule>          
+        </table>
+        <table name="edu.ku.brc.specify.datamodel.Discipline" abbrev="dsp" id="26">
+            <display objtitle="Collection Object Def" view="Discipline" dataobjformatter="Discipline" uiformatter="" searchdlg="DisciplineSearch" newobjdlg="Discipline"/>
+            <businessrule>edu.ku.brc.specify.datamodel.busrules.DisciplineBusRules</businessrule>                    
         </table>
         <table name="edu.ku.brc.specify.datamodel.Division" abbrev="dv" id="96" searchable="true">
             <display view="Division"/>

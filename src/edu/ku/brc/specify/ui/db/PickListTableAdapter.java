@@ -74,13 +74,22 @@ public class PickListTableAdapter extends PickListDBAdapter
         if (fieldName != null)
         {
             strBuf.append("SELECT "); 
+            strBuf.append(tableInfo.getAbbrev()); 
+            strBuf.append('.'); 
             strBuf.append(fieldName); 
         }
         strBuf.append("FROM ");
-        strBuf.append(tableInfo.getName());
+        strBuf.append(tableInfo.getShortClassName());
         strBuf.append(" in class ");
         strBuf.append(tableInfo.getShortClassName());
         
+        String joinSnipet = QueryAdjusterForDomain.getInstance().getJoinClause(tableInfo, true); // false means SQL
+        if (joinSnipet != null)
+        {
+            strBuf.append(' ');
+            strBuf.append(joinSnipet);
+            strBuf.append(' ');
+        }
         String specialWhereClause = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, true);
         if (StringUtils.isNotEmpty(specialWhereClause))
         {

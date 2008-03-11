@@ -235,9 +235,9 @@ public class SearchTableConfig implements DisplayOrderingIFace,
      * @param idsOnly
      * @return
      */
-    public String getSQL(final String searchTerm, final boolean idsOnly)
+    public String getSQL(final String searchTerm, final boolean idsOnly, final boolean isHQL)
     {
-        return getSQL(searchTerm, idsOnly, null);
+        return getSQL(searchTerm, idsOnly, null, isHQL);
     }
     
     /**
@@ -246,7 +246,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
      * @param ids
      * @return
      */
-    public String getSQL(final String searchTermArg, final boolean idsOnly, final Vector<Integer> ids)
+    public String getSQL(final String searchTermArg, final boolean idsOnly, final Vector<Integer> ids, final boolean isHQL)
     {
         DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
         
@@ -272,9 +272,12 @@ public class SearchTableConfig implements DisplayOrderingIFace,
         
         StringBuilder sqlStr = new StringBuilder("SELECT ");
         
-        DBTableInfo ti = getTableInfo();
+        DBTableInfo ti = getTableInfo(); // this sets the data member tableInfo
         
-        String primaryKey = ti.getIdFieldName();
+        String primaryKey = ti.getIdFieldName(); 
+        
+        sqlStr.append(tableInfo.getAbbrev());
+        sqlStr.append('.');
         sqlStr.append(primaryKey);
         
         if (!idsOnly)
@@ -282,18 +285,32 @@ public class SearchTableConfig implements DisplayOrderingIFace,
             for (DisplayFieldConfig field : displayFields)
             {
                 sqlStr.append(',');
+                sqlStr.append(tableInfo.getAbbrev()); 
+                sqlStr.append('.'); 
                 sqlStr.append(field.getFieldInfo().getName());
             }
         }
         
         sqlStr.append(" FROM ");
         sqlStr.append(ti.getClassObj().getSimpleName());
+        sqlStr.append(" as ");
+        sqlStr.append(tableInfo.getAbbrev());
+
+        String joinSnipet = QueryAdjusterForDomain.getInstance().getJoinClause(tableInfo, isHQL); // false means SQL
+        if (joinSnipet != null)
+        {
+            sqlStr.append(' ');
+            sqlStr.append(joinSnipet);
+            sqlStr.append(' ');
+        }
         
         sqlStr.append(" WHERE ");
         
         boolean addParen = false;
         if (ids != null || searchTerm.length() == 0)
         {
+            sqlStr.append(tableInfo.getAbbrev()); 
+            sqlStr.append('.'); 
             sqlStr.append(primaryKey);
             sqlStr.append(" IN (");
             for (int i=0;i<ids.size();i++)
@@ -305,7 +322,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
             
         } else
         {
-            String sqlSnipet = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, false); // false means SQL
+            String sqlSnipet = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, isHQL); // false means SQL
             if (sqlSnipet != null)
             {
                 sqlStr.append(sqlSnipet);
@@ -347,10 +364,14 @@ public class SearchTableConfig implements DisplayOrderingIFace,
                     hasDecimalPoint = StringUtils.contains(term, '.');
                 }
     
+                String abbrev = tableInfo.getAbbrev(); 
+
                 for (SearchFieldConfig searchField : searchFields)
                 {
                     String clause;
                     DBFieldInfo fi = searchField.getFieldInfo();
+                    
+                    String fieldName = isHQL ? fi.getName() : fi.getColumn();
                     
                     if (ids == null)
                     {
@@ -360,14 +381,14 @@ public class SearchTableConfig implements DisplayOrderingIFace,
                             {
                                 if (isNumeric && ! hasDecimalPoint && term.length() == 4)
                                 {
-                                    clause = "YEAR("+fi.getName()+") = " + term;
+                                    clause = "YEAR("+abbrev + '.' + fi.getName()+") = " + term;
                                 } else
                                 {
                                     continue;
                                 }
                             } else
                             {
-                                clause = fi.getColumn() + " = " + "'" + term + "'";
+                                clause = abbrev + '.' + fieldName + " = " + "'" + term + "'";
                             }
                             
                         } else if (fi.getDataClass() == Float.class || fi.getDataClass() == Double.class || fi.getDataClass() == BigDecimal.class)
@@ -376,7 +397,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
                             {
                                 continue;
                             }
-                            clause = fi.getColumn() + " = " + term;
+                            clause = fieldName + " = " + term;
                             
                         } else if (fi.getDataClass() == Byte.class || fi.getDataClass() == Short.class || 
                                    fi.getDataClass() == Integer.class|| fi.getDataClass() == Long.class)
@@ -385,7 +406,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
                             {
                                 continue;
                             }
-                            clause = fi.getColumn() + " = " + term;
+                            clause = abbrev + '.' + fieldName + " = " + term;
                             
                         } else 
                         {
@@ -393,7 +414,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
                             {
                                 log.error("Handling class ["+fi.getDataClass()+"] as a String");
                             }*/
-                            clause = "lower(" + fi.getColumn() + ") like " + "'%" + term + "%'";
+                            clause = "lower(" + abbrev + '.' + fieldName + ") like " + "'%" + term + "%'";
                         }
         
                         if (cnt > 0) sqlStr.append(" OR ");
@@ -413,6 +434,8 @@ public class SearchTableConfig implements DisplayOrderingIFace,
                             {
                                 orderBy.append(", ");
                             }
+                            orderBy.append(abbrev);
+                            orderBy.append('.');
                             orderBy.append(searchField.getFieldName());
                             orderBy.append(searchField.getIsAscending() ? " ASC" : " DESC");
                             
@@ -441,6 +464,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
             sqlStr.append(orderBy);
         }
 
+        //System.err.println(sqlStr.toString());
         return sqlStr.toString();
 
     }

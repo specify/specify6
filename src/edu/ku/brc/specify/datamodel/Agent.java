@@ -33,10 +33,13 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
@@ -126,7 +129,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     protected Set<Address>                  addresses;
     protected Set<AgentVariant>             variants;
     
-    protected Discipline                    discipline;
+    protected Set<Discipline>               disciplines;
     protected SpecifyUser                   specifyUser;
 
     
@@ -196,7 +199,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
         collectorName             = null;
         guid                      = null;
         authors                   = new HashSet<Author>();
-        loanReturnPreparations = new HashSet<LoanReturnPreparation>();
+        loanReturnPreparations    = new HashSet<LoanReturnPreparation>();
         borrowReturnMaterials     = new HashSet<BorrowReturnMaterial>();
         exchangeInCatalogedBys    = new HashSet<ExchangeIn>();
         orgMembers                = new HashSet<Agent>();
@@ -216,7 +219,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
         division                  = null;
         instTechContact           = null;
         instContentContact        = null;
-        discipline                = Discipline.getCurrentDiscipline();
+        disciplines               = new HashSet<Discipline>();
         specifyUser               = null;
         
         // Agent
@@ -728,19 +731,26 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
    /**
      * @return the discipline
      */
-    @ManyToOne
-    @JoinColumn(name = "DisciplineID", unique = false, nullable = true, insertable = true, updatable = true)
-    public Discipline getDiscipline()
+   @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
+   @JoinTable(name = "agent_discpline", joinColumns = 
+           { 
+               @JoinColumn(name = "AgentID", unique = false, nullable = false, insertable = true, updatable = false) 
+           }, 
+           inverseJoinColumns = 
+           { 
+               @JoinColumn(name = "DisciplineID", unique = false, nullable = false, insertable = true, updatable = false) 
+           })
+    public Set<Discipline> getDisciplines()
     {
-        return discipline;
+        return disciplines;
     }
     
     /**
      * @param discipline the discipline to set
      */
-    public void setDiscipline(Discipline discipline)
+    public void setDisciplines(Set<Discipline> disciplines)
     {
-        this.discipline = discipline;
+        this.disciplines = disciplines;
     }
     
     /**

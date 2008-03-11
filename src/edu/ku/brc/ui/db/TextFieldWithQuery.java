@@ -102,8 +102,9 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     protected String               sql;
     protected String               displayColumns;
     protected String               format;
-    protected String               fieldFormatterName  = null;
+    protected String               fieldFormatterName;
     protected UIFieldFormatterIFace uiFieldFormatter    = null;
+    protected String               sqlTemplate         = null;
     protected String[]             keyColumns;
     protected int                  numColumns          = -1;
     protected Object[]             values;
@@ -128,13 +129,15 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                               final String keyColumn,
                               final String displayColumns,
                               final String format,
-                              final String fieldFormatterName)
+                              final String fieldFormatterName,
+                              final String sqlTemplate)
     {
         super();
         this.tableInfo      = tableInfo;
         this.displayColumns = displayColumns != null ? displayColumns : keyColumn;
         this.format         = format;
         this.fieldFormatterName = fieldFormatterName;
+        this.sqlTemplate        = sqlTemplate;
         
         if (StringUtils.isNotEmpty(fieldFormatterName))
         {
@@ -527,6 +530,66 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
      */
     protected String buildSQL(final String newEntryStr, final boolean isForCount)
     {
+        StringBuilder whereSB = new StringBuilder();
+        if (keyColumns.length > 1)
+        {
+            whereSB.append("(");
+        }
+
+        int cnt = 0;
+        for (String keyCol : keyColumns)
+        {
+            if (cnt > 0) whereSB.append(" OR ");
+            whereSB.append(" LOWER(");
+            whereSB.append(keyCol);
+            whereSB.append(") LIKE '");
+            whereSB.append(newEntryStr.toLowerCase());
+            whereSB.append("%' ");
+            cnt++;
+        }
+        
+        if (keyColumns.length > 1)
+        {
+            whereSB.append(")");
+        }
+
+        whereSB.append(" ORDER BY ");
+
+        cnt = 0;
+        for (String keyCol : keyColumns)
+        {
+            if (cnt > 0) whereSB.append(", ");
+            whereSB.append(keyCol);
+            whereSB.append(" ASC");
+            cnt++;
+        }
+
+        if (StringUtils.isNotEmpty(sqlTemplate))
+        {
+            StringBuilder selectSB = new StringBuilder();
+            if (isForCount)
+            {
+                selectSB.append("count(");                
+                selectSB.append(tableInfo.getAbbrev());    
+                selectSB.append(".");    
+                selectSB.append(tableInfo.getIdFieldName());               
+                selectSB.append(")");
+                
+            } else
+            {
+                selectSB.append(displayColumns);
+                selectSB.append(",");
+                selectSB.append(tableInfo.getAbbrev());    
+                selectSB.append(".");    
+                selectSB.append(tableInfo.getIdFieldName());    
+            }
+            sql = StringUtils.replace(sqlTemplate, "%s1", selectSB.toString());
+            sql = StringUtils.replace(sql, "%s2", whereSB.toString());
+            sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
+            System.err.println(sql);
+            return sql;
+        }
+        
         if (sql == null)
         {
             StringBuilder sb = new StringBuilder();
@@ -536,7 +599,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 if (isForCount)
                 {
                     sb.append("count(");                
-                    sb.append(tableInfo.getIdFieldName());                
+                    sb.append(tableInfo.getIdFieldName());
                     sb.append(")");
                     
                 } else
@@ -548,47 +611,28 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     
                 sb.append(" FROM ");
                 sb.append(tableInfo.getClassName());
+                sb.append(" as ");
+                sb.append(tableInfo.getAbbrev());
+                
+                String joinSnipet = QueryAdjusterForDomain.getInstance().getJoinClause(tableInfo, true); // false means SQL
+                if (joinSnipet != null)
+                {
+                    sb.append(' ');
+                    sb.append(joinSnipet);
+                    sb.append(' ');
+                }
+                
                 sb.append(" WHERE ");
                 
                 String specialCols = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, true);
                 if (StringUtils.isNotEmpty(specialCols))
                 {
-                    sb.append(specialCols);
-                    sb.append(" AND ");
+                    whereSB.append(specialCols);
+                    whereSB.append(" AND ");
                 }
+
+                sb.append(whereSB.toString());
                 
-                if (keyColumns.length > 1)
-                {
-                    sb.append("(");
-                }
-
-                int cnt = 0;
-                for (String keyCol : keyColumns)
-                {
-                    if (cnt > 0) sb.append(" OR ");
-                    sb.append(" LOWER(");
-                    sb.append(keyCol);
-                    sb.append(") LIKE '");
-                    sb.append(newEntryStr.toLowerCase());
-                    sb.append("%' ");
-                    cnt++;
-                }
-                
-                if (keyColumns.length > 1)
-                {
-                    sb.append(")");
-                }
-
-                sb.append(" ORDER BY ");
-
-                cnt = 0;
-                for (String keyCol : keyColumns)
-                {
-                    if (cnt > 0) sb.append(", ");
-                    sb.append(keyCol);
-                    sb.append(" ASC");
-                    cnt++;
-                }
             }
             return sb.toString();
         }

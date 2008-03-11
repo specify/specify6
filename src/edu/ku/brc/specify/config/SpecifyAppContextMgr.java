@@ -253,10 +253,12 @@ public class SpecifyAppContextMgr extends AppContextMgr
             sessionArg.attach(spUser);
             for (Agent agent : spUser.getAgents())
             {
-                Discipline type = agent.getDiscipline();
-                for (Collection collection : type.getCollections())
+                for (Discipline discipline : agent.getDisciplines())
                 {
-                    list.add(collection.getCollectionId().intValue());
+                    for (Collection collection : discipline.getCollections())
+                    {
+                        list.add(collection.getCollectionId().intValue());
+                    }
                 }
             }
         } else
@@ -1256,8 +1258,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     session.beginTransaction();
                     if (appResDir != null)
                     {
-                        appRes.setTimestampModified(new Timestamp(System.currentTimeMillis()));
-                        appRes.setModifiedByAgent(Agent.getUserAgent());
+                        appResDir.setTimestampModified(new Timestamp(System.currentTimeMillis()));
+                        appResDir.setModifiedByAgent(Agent.getUserAgent());
                         session.saveOrUpdate(appResDir);
                     }
                     appRes.setTimestampModified(new Timestamp(System.currentTimeMillis()));

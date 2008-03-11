@@ -54,6 +54,8 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
 {
     private static final Logger log = Logger.getLogger(DataModelObjBase.class);
     
+    private static final String DATASETTEROBJ = "edu.ku.brc.ui.forms.DataSetterForObj";
+    
     protected PropertyChangeSupport changes;
     
     protected Timestamp timestampCreated;
@@ -313,6 +315,33 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
 
         return false;
     }
+    
+    /**
+     * Retruns whether a given field in a data object is a collection/
+     * @param dataObject the data object
+     * @param fieldName the field name in the data object
+     * @return null the field wasn't found, true it is a Java Collection, False it isn't
+     */
+    protected Boolean isJavaCollection(final Object dataObject, final String fieldName)
+    {
+        try
+        {
+            Field fld = dataObject.getClass().getDeclaredField(fieldName);
+            if (fld != null)
+            {
+                return Collection.class.isAssignableFrom(fld.getType());
+                
+            } else
+            {
+                log.error("Couldn't find field ["+fieldName+"] in class ["+getClass().getSimpleName()+"]");
+            }
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return null;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#addReference(edu.ku.brc.ui.forms.FormDataObjIFace, java.lang.String)
@@ -355,37 +384,30 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
         DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(parentDataObject.getTableId());
         if (tblInfo != null)
         {
-            
             DBRelationshipInfo rel = tblInfo.getRelationshipByName(fldName);
             if (rel != null)
             {
-                String otherSide = rel.getOtherSide();
+                Boolean isJavaCollection = isJavaCollection(parentDataObject, fldName);
                 
-                Field   fld           = null;
-                boolean isACollection = false;
-                try
+                if (isJavaCollection != null)
                 {
-                    fld = parentDataObject.getClass().getDeclaredField(fldName);
-                    if (fld != null)
-                    {
-                        isACollection = Collection.class.isAssignableFrom(fld.getType());
-                    } else
-                    {
-                        log.error("Couldn't find field ["+fldName+"] in class ["+getClass().getSimpleName()+"]");
-                    }
-                    
-                } catch (Exception ex)
-                {
-                    ex.printStackTrace();
-                }
-                
-                if (fld != null)
-                {
-                    if (isACollection)
+                    String  otherSide = rel.getOtherSide();
+                    if (isJavaCollection)
                     {
                         addToCollection(parentDataObject, fldName, ref);
-                        DataObjectSettable setter = DataObjectSettableFactory.get(ref.getClass().getName(), "edu.ku.brc.ui.forms.DataSetterForObj");
-                        setter.setFieldValue(ref, otherSide, parentDataObject);
+                        
+                        if (StringUtils.isNotEmpty(otherSide))
+                        {
+                            Boolean isOtherSideCollection = isJavaCollection(ref, otherSide);
+                            if (isOtherSideCollection != null && isOtherSideCollection)
+                            {
+                                addToCollection(ref, otherSide, parentDataObject);
+                            } else
+                            {
+                                DataObjectSettable setter = DataObjectSettableFactory.get(ref.getClass().getName(), DATASETTEROBJ);
+                                setter.setFieldValue(ref, otherSide, parentDataObject);
+                            }
+                        }
 
                     } else
                     {
@@ -393,7 +415,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
                         {
                             addToCollection(ref, otherSide, parentDataObject);
                         }
-                        DataObjectSettable setter = DataObjectSettableFactory.get(ref.getClass().getName(), "edu.ku.brc.ui.forms.DataSetterForObj");
+                        DataObjectSettable setter = DataObjectSettableFactory.get(ref.getClass().getName(), DATASETTEROBJ);
                         setter.setFieldValue(parentDataObject, fldName, ref);
                     }
                 } else
@@ -454,35 +476,30 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
             DBRelationshipInfo rel = tblInfo.getRelationshipByName(fldName);
             if (rel != null)
             {
-                Field   fld           = null;
-                boolean isACollection = false;
-                try
+                Boolean isJavaCollection = isJavaCollection(parentDataObject, fldName);
+                if (isJavaCollection != null)
                 {
-                    fld = parentDataObject.getClass().getDeclaredField(fldName);
-                    if (fld != null)
+                    if (isJavaCollection)
                     {
-                        isACollection = Collection.class.isAssignableFrom(fld.getType());
-                    } else
-                    {
-                        log.error("Couldn't find field ["+fldName+"] in class ["+getClass().getSimpleName()+"]");
-                    }
-                    
-                } catch (Exception ex)
-                {
-                    ex.printStackTrace();
-                }
-                
-                if (fld != null)
-                {
-                    if (isACollection)
-                    {
+                        String  otherSide = rel.getOtherSide();
                         removeFromCollection(parentDataObject, fldName, ref);
-//                        DataObjectSettable setter = DataObjectSettableFactory.get(ref.getClass().getName(), "edu.ku.brc.ui.forms.DataSetterForObj");
-//                        setter.setFieldValue(ref, otherSide, null);
+                        if (StringUtils.isNotEmpty(otherSide))
+                        {
+                            Boolean isOtherSideCollection = isJavaCollection(ref, otherSide);
+                            if (isOtherSideCollection != null && isOtherSideCollection)
+                            {
+                                removeFromCollection(ref, otherSide, parentDataObject);
+                            }
+                            // else
+                            //{
+                              //DataObjectSettable setter = DataObjectSettableFactory.get(ref.getClass().getName(), DATASETTEROBJ);
+                              //setter.setFieldValue(ref, otherSide, null);
+                            //}
+                        }
         
                     } else
                     {
-                        DataObjectSettable setter = DataObjectSettableFactory.get(ref.getClass().getName(), "edu.ku.brc.ui.forms.DataSetterForObj");
+                        DataObjectSettable setter = DataObjectSettableFactory.get(ref.getClass().getName(), DATASETTEROBJ);
                         setter.setFieldValue(parentDataObject, fldName, null);
                         // in this case, most likely, the Collection isn't even loaded since the parent object probably isn't visible in a form
                         // calling removeFromCollection() would trigger a LazyInstantiationException

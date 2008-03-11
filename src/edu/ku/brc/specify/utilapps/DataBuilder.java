@@ -223,7 +223,8 @@ public class DataBuilder
         agent.setTitle(title);
         agent.setEmail(email);
         
-        agent.setDiscipline(Discipline.getCurrentDiscipline());
+        agent.getDisciplines().add(Discipline.getCurrentDiscipline());
+        Discipline.getCurrentDiscipline().getAgents().add(agent);
 
         persist(agent);
         return agent;

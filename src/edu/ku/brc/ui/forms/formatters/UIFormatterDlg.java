@@ -41,7 +41,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -50,7 +49,6 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.dbsupport.DBFieldInfo;
-import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.ui.CustomDialog;
 
 /**
@@ -103,7 +101,7 @@ public class UIFormatterDlg extends CustomDialog
     private UIFieldFormatterIFace getFormatByPattern(String pattern)
     {
     	DefaultListModel model = (DefaultListModel) formatList.getModel();
-    	Enumeration en = model.elements();
+    	Enumeration<?> en = model.elements();
     	while (en.hasMoreElements())
     	{
     		Object elem = en.nextElement();

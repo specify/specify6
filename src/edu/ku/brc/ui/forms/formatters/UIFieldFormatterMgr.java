@@ -519,7 +519,8 @@ public class UIFieldFormatterMgr
     	
 		sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<formats>\n");
     	Iterator<UIFieldFormatterIFace> it = hash.values().iterator();
-    	while (it.hasNext()) {
+    	while (it.hasNext()) 
+    	{
     		it.next().toXML(sb);
     	}
 		sb.append("\n</formats>\n");

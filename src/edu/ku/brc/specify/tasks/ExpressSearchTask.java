@@ -210,7 +210,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                                              final String            searchTerm)
     {
         JPAQuery jpaQuery = null;
-        String sqlStr = searchTableConfig.getSQL(searchTerm, true);
+        String sqlStr = searchTableConfig.getSQL(searchTerm, true, true);
         if (sqlStr != null)
         {
             instance.sqlResultsCount++;

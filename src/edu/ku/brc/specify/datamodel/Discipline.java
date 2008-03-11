@@ -39,6 +39,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -411,8 +412,8 @@ public class Discipline extends DataModelObjBase implements java.io.Serializable
     /**
      * @return the agents
      */
-    @OneToMany(mappedBy="discipline")
-    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
+    @ManyToMany(mappedBy="disciplines")
+    @Cascade( {CascadeType.SAVE_UPDATE} )
     public Set<Agent> getAgents()
     {
         return agents;

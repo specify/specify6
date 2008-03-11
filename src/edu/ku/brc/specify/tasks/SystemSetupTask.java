@@ -392,6 +392,16 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                 StringBuffer sb = new StringBuffer();
                 sb.append("FROM ");
                 sb.append(clazz.getName());
+                sb.append(" as ");
+                sb.append(tableInfo.getAbbrev());
+
+                String joinSnipet = QueryAdjusterForDomain.getInstance().getJoinClause(tableInfo, true); // false means SQL
+                if (joinSnipet != null)
+                {
+                    sb.append(' ');
+                    sb.append(joinSnipet);
+                    sb.append(' ');
+                }
                 
                 if (tableInfo != null)
                 {

@@ -78,8 +78,7 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                 fld = "collectionMemberId";
                 criterion = COLMEMID;
                 
-            } else if (tableInfo.getTableId() == Agent.getClassTableId() ||
-                       tableInfo.getTableId() == DeterminationStatus.getClassTableId())
+            } else if (tableInfo.getTableId() == DeterminationStatus.getClassTableId())
             {
                 fld = isHQL ? "discipline" : "DisciplineID";
                 criterion = DSPLNID;
@@ -118,6 +117,11 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
             {
                 fld = "disciplineId";
                 criterion = DSPLNID;
+                
+            } else if (tableInfo.getTableId() == Agent.getClassTableId())
+            {
+                fld = isHQL ? "dsp.disciplineId" : "agent_discpline.DisciplineID"; 
+                criterion = DSPLNID;
             }
             
             if (criterion != null && fld != null)
@@ -148,6 +152,27 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
     }
     
     
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain#getJoinClause(edu.ku.brc.dbsupport.DBTableInfo, boolean)
+     */
+    @Override
+    public String getJoinClause(DBTableInfo tableInfo, boolean isHQL)
+    {
+        if (tableInfo.getTableId() == Agent.getClassTableId())
+        {
+            if (isHQL)
+            {
+                return "JOIN ag.disciplines as dsp";
+            } else
+            {
+                return "INNER JOIN agent_discpline ON agent.AgentID = agent_discpline.AgentID";
+            }
+        }
+        return super.getJoinClause(tableInfo, isHQL);
+    }
+
+
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain#adjustSQL(java.lang.String, boolean)
      */

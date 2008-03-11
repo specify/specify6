@@ -72,12 +72,19 @@ public class TypeSearchForQueryFactory
                     String name = tsElement.attributeValue("name");
                     if (StringUtils.isNotBlank(name))
                     {
-                        hash.put(name, new TypeSearchInfo(XMLHelper.getAttr(tsElement, "tableid", -1),
-                                                          tsElement.attributeValue("displaycols"),
-                                                          tsElement.attributeValue("searchfield"),
-                                                          XMLHelper.getAttr(tsElement, "format", null),
-                                                          XMLHelper.getAttr(tsElement, "uifieldformatter", null),
-                                                          tsElement.attributeValue("dataobjformatter")));
+                        TypeSearchInfo tsi = new TypeSearchInfo(XMLHelper.getAttr(tsElement, "tableid", -1),
+                                                                tsElement.attributeValue("displaycols"),
+                                                                tsElement.attributeValue("searchfield"),
+                                                                XMLHelper.getAttr(tsElement, "format", null),
+                                                                XMLHelper.getAttr(tsElement, "uifieldformatter", null),
+                                                                tsElement.attributeValue("dataobjformatter"));
+                        hash.put(name, tsi);
+                        
+                        String sqlTemplate = tsElement.getTextTrim();
+                        if (StringUtils.isNotEmpty(sqlTemplate))
+                        {
+                            tsi.setSqlTemplate(sqlTemplate);
+                        }
                     } else
                     {
                         log.error("TypeSearchInfo element is missing or has a blank name!");
@@ -166,6 +173,7 @@ public class TypeSearchForQueryFactory
                                                 typeSearchInfo.getFormat(),
                                                 typeSearchInfo.getUiFieldFormatterName(),
                                                 typeSearchInfo.getDataObjFormatterName(),
+                                                typeSearchInfo.getSqlTemplate(),
                                                 btnOpts);
 
     
@@ -192,6 +200,7 @@ public class TypeSearchForQueryFactory
         protected String format;
         protected String uiFieldFormatterName;
         protected String dataObjFormatterName;
+        protected String sqlTemplate = null;
 
         public TypeSearchInfo(int    tableId,
                               String displayColumns,
@@ -244,6 +253,23 @@ public class TypeSearchForQueryFactory
         {
             return searchFieldName;
         }
+
+        /**
+         * @return the sqlTemplate
+         */
+        public String getSqlTemplate()
+        {
+            return sqlTemplate;
+        }
+
+        /**
+         * @param sqlTemplate the sqlTemplate to set
+         */
+        public void setSqlTemplate(String sqlTemplate)
+        {
+            this.sqlTemplate = sqlTemplate;
+        }
+        
     }
 
 

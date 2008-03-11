@@ -118,6 +118,16 @@ public class QueryAdjusterForDomain
     }
     
     /**
+     * @param tableInfo
+     * @param isHQL
+     * @return
+     */
+    public String getJoinClause(final DBTableInfo tableInfo, final boolean isHQL)
+    {
+        return null;
+    }
+    
+    /**
      * Checks to make sure the user isn't trying to type in some SQL 
      * to get at some tables they shouldn't.
      * 

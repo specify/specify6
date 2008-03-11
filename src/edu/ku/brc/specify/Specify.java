@@ -621,8 +621,25 @@ public class Specify extends JPanel implements DatabaseLoginListener
      */
     public void preferences()
     {
-        PreferencesDlg dlg = new PreferencesDlg(false);
-        dlg.setVisible(true);
+        //PreferencesDlg dlg = new PreferencesDlg(false);
+        //dlg.setVisible(true);
+        
+        DataProviderSessionIFace session = null;
+        try
+        {
+            String sqlStr = "SELECT a.lastName,a.firstName FROM Agent a JOIN a.disciplines as d WHERE d.disciplineId = 1 AND  LOWER(lastName) LIKE 's%'  ORDER BY lastName ASC";
+            session = DataProviderFactory.getInstance().createSession();
+            Object  result     = session.getDataList(sqlStr);
+            System.out.println(result);
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            
+        } finally
+        {
+            session.close();
+        }
     }
 
     /**

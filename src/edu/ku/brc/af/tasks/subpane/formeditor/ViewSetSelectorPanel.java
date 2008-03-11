@@ -154,12 +154,13 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
 
         for (Agent agent : user.getAgents())
         {
-            Discipline ct = agent.getDiscipline();
+            // XXX Commented Out
+            /*Discipline ct = agent.getDiscipline();
             if (usedColTypes.get(ct) == null)
             {
                 levelsVec.add(ct.getName());
                 usedColTypes.put(ct, true);
-            }
+            }*/
         }
         levelsVec.add("BackStop");
         

@@ -329,8 +329,9 @@
  agent.FirstName,
  agent.AgentType,
  %s
- FROM agentvariant INNER JOIN agent ON agentvariant.AgentID = agent.AgentID
- WHERE agent.DisciplineID = DSPLNID AND %s order by agentvariant.Name asc]]>
+ FROM agent INNER JOIN agent_discpline ON agent.AgentID = agent_discpline.AgentID
+ INNER JOIN agentvariant ON agent.AgentID = agentvariant.AgentID
+ WHERE agent_discpline.DisciplineID = DSPLNID AND %s order by agentvariant.Name asc]]>
                 </sql>
                 <captions>
                     <caption tableid="5" col="agent.AgentID" visible="false"/>
@@ -375,9 +376,18 @@
         <table id="100" tableid="5" name="AgentSearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
-                    <![CDATA[SELECT * FROM (SELECT agent.AgentID,
-agent.FirstName, agent.LastName, agent.Email, address.Address, address.City,
-address.State, address.PostalCode, address.Country FROM agent Left Join address ON agent.AgentID = address.AgentID WHERE agent.DisciplineID = DSPLNID) AS newTable WHERE (%s)]]>
+                    <![CDATA[SELECT agent.AgentID,
+ agent.FirstName, 
+ agent.LastName, 
+ agent.EMail, 
+ address.Address, 
+ address.City, 
+ address.State, 
+ address.Postalcode, 
+ address.Country
+ FROM agent INNER JOIN agent_discpline ON agent.AgentID = agent_discpline.AgentID
+ INNER JOIN address ON agent.AgentID = address.AgentID
+ WHERE agent_discpline.DisciplineID = DSPLNID AND (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="5" col="AgentID" visible="false"/>
@@ -396,8 +406,15 @@ address.State, address.PostalCode, address.Country FROM agent Left Join address 
         <table id="101" tableid="6" name="PermitSearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
-                    <![CDATA[SELECT * FROM (SELECT permit.PermitID, permit.PermitNumber,agent.LastName,permit.IssuedDate,permit.StartDate,
-permit.EndDate,permit.RenewalDate,permit.Type FROM permit left Join agent ON permit.IssuedByID = agent.AgentID WHERE permit.CollectionMemberID = COLMEMID) AS newTable WHERE (%s)]]>
+                    <![CDATA[SELECT permit.PermitID, 
+ permit.PermitNumber, 
+ agent.LastName, 
+ permit.IssuedDate, 
+ permit.StartDate, 
+ permit.EndDate, 
+ permit.RenewalDate, 
+ permit.Type
+ FROM permit INNER JOIN agent ON permit.IssuedByID = agent.AgentID WHERE (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="6" col="PermitID" visible="false"/>

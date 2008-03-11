@@ -177,6 +177,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                                 final String      format,
                                 final String      uiFieldFormatterName,
                                 final String      dataObjFormatterName,
+                                final String      sqlTemplate,
                                 final int         btns)
     
     {
@@ -197,7 +198,12 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         this.keyName               = keyName;
         this.dataObjFormatterName  = dataObjFormatterName;
         
-        textWithQuery = new TextFieldWithQuery(tableInfo, keyFieldName, displayColumn, format, uiFieldFormatterName);
+        textWithQuery = new TextFieldWithQuery(tableInfo, 
+                                               keyFieldName, 
+                                               displayColumn, 
+                                               format, 
+                                               uiFieldFormatterName,
+                                               sqlTemplate);
         textWithQuery.addListSelectionListener(this);
         textWithQuery.setAddAddItem(true);
         
