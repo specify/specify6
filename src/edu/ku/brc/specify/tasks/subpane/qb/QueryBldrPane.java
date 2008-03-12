@@ -846,30 +846,34 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         List<ERTICaptionInfo> result = new Vector<ERTICaptionInfo>();
         for (SpQueryField qf : queryFields)
         {
-            DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(qf.getContextTableIdent());
-            DBFieldInfo fi = ti.getFieldByColumnName(qf.getFieldName());
-            String colName = ti.getAbbrev() + '.' + qf.getFieldName();
-            if (qf.getIsDisplay())
+            if (qf.getContextTableIdent() != null)
             {
-                String lbl = qf.getColumnAlias();
-                if (fixLabels)
+                DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(qf.getContextTableIdent());
+                DBFieldInfo fi = ti.getFieldByColumnName(qf.getFieldName());
+                String colName = ti.getAbbrev() + '.' + qf.getFieldName();
+                if (qf.getIsDisplay())
                 {
-                    lbl = lbl.replaceAll(" ", "_");
-                    lbl = lbl.replaceAll("/", "_");
+                    String lbl = qf.getColumnAlias();
+                    if (fixLabels)
+                    {
+                        lbl = lbl.replaceAll(" ", "_");
+                        lbl = lbl.replaceAll("/", "_");
+                    }
+                    ERTICaptionInfo erti;
+                    if (fi != null)
+                    {
+                        erti = new ERTICaptionInfo(colName, lbl, true, fi.getFormatter(), 0);
+                        erti.setColClass(fi.getDataClass());
+                    }
+                    else
+                    {
+                        erti = new ERTICaptionInfo(colName, lbl, true, null, 0);
+                        erti.setColClass(String.class);
+                    }
+                    result.add(erti);
                 }
-                ERTICaptionInfo erti;
-                if (fi != null)
-                {
-                    erti = new ERTICaptionInfo(colName, lbl, true, fi.getFormatter(), 0);
-                    erti.setColClass(fi.getDataClass());
-                }
-                else
-                {
-                    erti = new ERTICaptionInfo(colName, lbl, true, null, 0);
-                    erti.setColClass(String.class);
-                }
-                result.add(erti);
             }
+            else log.error("null contextTableIdent for" + qf.getFieldName());
         }
         return result;
     }
@@ -1741,7 +1745,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      */
     protected void qualifyFieldLabels()
     {
-        List<String> labels = new ArrayList<String>(queryFieldItems.size()-1);
+        List<String> labels = new ArrayList<String>(queryFieldItems.size());
         Map<String, List<QueryFieldPanel>> map = new HashMap<String, List<QueryFieldPanel>>();
         for (QueryFieldPanel qfp : queryFieldItems)
         {
