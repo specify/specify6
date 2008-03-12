@@ -672,7 +672,31 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     {
         String hql = buildHQL(rootTable, distinct, queryFieldItems, tableTree);    
         processSQL(queryFieldItems, hql, rootTable.getTableInfo(), distinct);
-        //doReport(rootTable, true /*need to use true to workaround probs with added key column when not distinct*/);
+        
+        //doReport(rootTable, true /* XXX need to use true to workaround probs with added key column when not distinct*/);
+        
+//        DataProviderSessionIFace session = DataProviderFactory.getInstance()
+//        .createSession();
+//        try
+//        {
+//            SpReport report = session.getData(SpReport.class, "name", "RunRunRun",
+//                    DataProviderSessionIFace.CompareType.Equals);
+//            if (report == null)
+//            {
+//                throw new Exception("Unable to load report " + "RunRunRun");
+//            }
+//            runReport(report);
+//        }
+//        catch (Exception e)
+//        {
+//            e.printStackTrace();
+//            throw new RuntimeException(e);
+//        }
+//        finally
+//        {
+//            session.close();
+//        }
+        
     }
 
     protected void doReport(final TableQRI rootTable, boolean distinct)
@@ -936,9 +960,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         if (!cd.isCancelled()) //what about x box?
         {
             TableQRI rootQRI = null;
+            int cId = report.getQuery().getContextTableId();
             for (TableTree tt : ttHash.values())
             {
-                if (report.getQuery().getContextTableId().equals(tt.getTableInfo().getTableId()))
+                if (cId == tt.getTableInfo().getTableId())
                 {
                     rootQRI = tt.getTableQRI();
                     break;
@@ -949,6 +974,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             {
                 qfps.add(qpp.getField(f));
             }
+            //XXX selectDistinct hard-coded to true?? see doSearch()
             String sql = QueryBldrPane.buildHQL(rootQRI, 
                     true, 
                     qfps, 

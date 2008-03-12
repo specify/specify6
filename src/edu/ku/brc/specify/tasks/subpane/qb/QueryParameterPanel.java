@@ -32,8 +32,7 @@ public class QueryParameterPanel extends JPanel implements QueryFieldPanelContai
     //@Override
     public int getFields()
     {
-        // TODO Auto-generated method stub
-        return 0;
+        return queryFields.size();
     }
 
     /**

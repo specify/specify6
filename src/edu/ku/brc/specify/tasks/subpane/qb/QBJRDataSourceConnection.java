@@ -17,6 +17,7 @@ import java.util.List;
 
 import net.sf.jasperreports.engine.JRDataSource;
 import edu.ku.brc.af.core.expresssearch.ERTICaptionInfo;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author timbo
@@ -32,6 +33,7 @@ import edu.ku.brc.af.core.expresssearch.ERTICaptionInfo;
  */
 @SuppressWarnings("unchecked") //iReport's code has no generic parameters.
 public class QBJRDataSourceConnection extends IReportConnection
+//public class QBJRDataSourceConnection extends JRDataSourceProviderConnection
 {
     protected String queryName = null; //apparently iReport has it's own uses for the
                                       //name prop(s) so need to declare a new var.
@@ -142,5 +144,14 @@ public class QBJRDataSourceConnection extends IReportConnection
         {
             return fldClass;
         }
+    }
+
+    /* (non-Javadoc)
+     * @see it.businesslogic.ireport.IReportConnection#getDescription()
+     */
+    @Override
+    public String getDescription()
+    {
+        return UIRegistry.getResourceString("SPECIFY_REPORT_CONNECTION");
     }
 }

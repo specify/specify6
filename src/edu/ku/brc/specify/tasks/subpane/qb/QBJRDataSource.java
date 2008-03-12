@@ -43,7 +43,7 @@ public class QBJRDataSource implements JRDataSource, CustomQueryListener
 
     protected final String hql;
     protected final List<ERTICaptionInfo> columnInfo;
-    protected final List<Pair<String, Integer>> colNames = new ArrayList<Pair<String, Integer>>();
+    protected final ArrayList<Pair<String, Integer>> colNames = new ArrayList<Pair<String, Integer>>();
     protected List<?> results;
     protected final Comparator<Pair<String, Integer>> colPairComparator = 
         new Comparator<Pair<String, Integer>>()
@@ -79,31 +79,34 @@ public class QBJRDataSource implements JRDataSource, CustomQueryListener
                     colPairComparator);
         if (fldIdx < 0) 
             return null;
-        if (rowVals == null || rowVals[fldIdx] == null)
-            return null;
-
-        Object result;
-        UIFieldFormatterIFace formatter = columnInfo.get(fldIdx).getUiFieldFormatter();
-        /*
-         * do stuff to handle aggregation / related obj formatted her
-         *
-        else */if (formatter != null)
-        {
-            result = formatter.formatInBound(rowVals[fldIdx]);
-        }
-        else if (arg0.getValueClass().equals(String.class)) 
-        //IReport mystery: when a field is dragged onto a report from the iReport fields window
-        //the corresponding JRField will have a valueClass matching the field's class. But,
-        //if a report element is added to the report and the field attached to it by the user
-        //(this user me) then the JRField will always have a value class of String regardless 
-        //of the field's class. 
-        {
-            result = rowVals[fldIdx].toString();
-        }
-        else
-        {
-            result = rowVals[fldIdx];
-        }
+        fldIdx = colNames.get(fldIdx).getSecond();
+        Object result = columnInfo.get(fldIdx).processValue(rowVals[fldIdx]);
+        
+//        if (rowVals == null || rowVals[fldIdx] == null)
+//            return null;
+//        
+//        Object result;
+//        UIFieldFormatterIFace formatter = columnInfo.get(fldIdx).getUiFieldFormatter();
+//        /*
+//         * do stuff to handle aggregation / related obj formatted her
+//         *
+//        else */if (formatter != null)
+//        {
+//            result = formatter.formatInBound(rowVals[fldIdx]);
+//        }
+//        else if (arg0.getValueClass().equals(String.class)) 
+//        //IReport mystery: when a field is dragged onto a report from the iReport fields window
+//        //the corresponding JRField will have a valueClass matching the field's class. But,
+//        //if a report element is added to the report and the field attached to it by the user
+//        //(this user me) then the JRField will always have a value class of String regardless 
+//        //of the field's class. 
+//        {
+//            result = rowVals[fldIdx].toString();
+//        }
+//        else
+//        {
+//            result = rowVals[fldIdx];
+//        }
         log.debug(arg0.getName() + " = " + result);
         return result;
     }
