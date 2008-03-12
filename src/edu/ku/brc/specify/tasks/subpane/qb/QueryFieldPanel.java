@@ -45,6 +45,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.tasks.subpane.DroppableTaskPane;
 import edu.ku.brc.dbsupport.DBFieldInfo;
+import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.SpQueryField;
 import edu.ku.brc.ui.IconManager;
@@ -854,7 +855,12 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
         if (needToQualify)
         {
             String newLabel = getFieldInfo().getTitle();
-            TableTree parent = fieldQRI.getTable().getTableTree().getParent();
+            TableTree parent = fieldQRI.getTableTree();
+            if (parent.getTableInfo().getClassObj().equals(Agent.class) && parent.getParent().getTableQRI() != null)
+            //agent (and what others??) generally offers no informative distinguishing info
+            {
+                parent = parent.getParent();
+            }
             do
             {
                 newLabel = parent.getTableQRI().getTitle() + "/" + newLabel;
