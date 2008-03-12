@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<viewset name="Fish Views" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<viewset name="Insect Views" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
     <views>
         <view name="CollectingEvent"
@@ -320,7 +320,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="1" label="Legal Description"/>
-                    <cell type="field" id="1" name="namedPlace" uitype="text" colspan="10"/>
+                    <cell type="field" id="1" name="remarks" uitype="text" colspan="10"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="4" label="Geography"/>
