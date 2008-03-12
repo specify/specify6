@@ -575,9 +575,15 @@ public class DataEntryTask extends BaseTask
                 {
                     // Get the default resource by name and copy it to a new User Area Resource
                     AppResourceIFace newAppRes = AppContextMgr.getInstance().copyToDirAppRes("Personal", resourceName);
-                    // Save it in the User Area
-                    AppContextMgr.getInstance().saveResource(newAppRes);
-                    xmlStr = newAppRes.getDataAsString();
+                    if (newAppRes != null)
+                    {
+                        // Save it in the User Area
+                        AppContextMgr.getInstance().saveResource(newAppRes);
+                        xmlStr = newAppRes.getDataAsString();
+                    } else
+                    {
+                        return;
+                    }
                 }
                 //log.debug(xmlStr);
                 DataEntryXML dataEntryXML = (DataEntryXML)xstream.fromXML(xmlStr); // Describes the definitions of the full text search);
