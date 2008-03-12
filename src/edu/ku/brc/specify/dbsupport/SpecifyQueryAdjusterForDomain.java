@@ -80,37 +80,37 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                 
             } else if (tableInfo.getTableId() == DeterminationStatus.getClassTableId())
             {
-                fld = isHQL ? "discipline" : "DisciplineID";
+                fld = isHQL ? "disciplineId" : "DisciplineID";
                 criterion = DSPLNID;
                 
             } else if (tableInfo.getTableId() == Geography.getClassTableId())
             {
-                fld = isHQL ? "definition" : "GeographyTreeDefID";
+                fld = isHQL ? "geographyTreeDefId" : "GeographyTreeDefID";
                 criterion = GEOTREEDEFID;
                 
             } else if (tableInfo.getTableId() == GeologicTimePeriodTreeDef.getClassTableId())
             {
-                fld = isHQL ? "definition" : "GeologicTimePeriodTreeDefID"; 
+                fld = isHQL ? "geologicTimePeriodTreeDefId" : "GeologicTimePeriodTreeDefID"; 
                 criterion = GTPTREEDEFID;
                 
             } else if (tableInfo.getTableId() == LithoStrat.getClassTableId())
             {
-                fld = isHQL ? "definition" : "LithoStratTreeDefID";
+                fld = isHQL ? "lithoStratTreeDefId" : "LithoStratTreeDefID";
                 criterion = LITHOTREEDEFID;
                 
             } else if (tableInfo.getTableId() == Storage.getClassTableId())
             {
-                fld = isHQL ? "definition" : "StorageTreeDefID";
+                fld = isHQL ? "storageTreeDefId" : "StorageTreeDefID";
                 criterion = STORTREEDEFID;
                 
             } else if (tableInfo.getTableId() == PrepType.getClassTableId())
             {
-                fld = isHQL ? "collection" : "CollectionID";
+                fld = isHQL ? "collectionId" : "CollectionID";
                 criterion = COLLID;  
                 
             } else if (tableInfo.getTableId() == Taxon.getClassTableId())
             {
-                fld = isHQL ? "definition" : "TaxonTreeDefID"; 
+                fld = isHQL ? "taxonTreeDefId" : "TaxonTreeDefID"; 
                 criterion = TAXTREEDEFID;
                 
             } else if (tableInfo.getTableId() == Locality.getClassTableId())

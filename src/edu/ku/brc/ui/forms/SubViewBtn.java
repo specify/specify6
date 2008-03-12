@@ -16,17 +16,20 @@ package edu.ku.brc.ui.forms;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.Color;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Properties;
 import java.util.Set;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -40,7 +43,6 @@ import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
@@ -115,7 +117,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
 
         cellName     = subviewDef.getName();
         frameTitle   = props.getProperty("title");
-        String align =  props.getProperty("align", "left");
+        String  align   =  props.getProperty("align", "left");
         String iconName =  props.getProperty("icon", null);
         
         icon = null;
@@ -146,29 +148,22 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
             x = 1;  
         }
         
-        if (false)
-        {
-            subViewBtn = UIHelper.createIconBtn("Attach", IconManager.IconSize.Std16, "", false, new ActionListener() {
-                //@Override
-                public void actionPerformed(ActionEvent e)
-                {
-                    showForm();
-                }
-            });
-        } else
-        {
-            subViewBtn = new JButton(IconManager.getIcon("Attach", IconManager.IconSize.Std16));
-            subViewBtn.addActionListener(new ActionListener() {
-                //@Override
-                public void actionPerformed(ActionEvent e)
-                {
-                    showForm();
-                }
-            });
-        }
+        subViewBtn = icon != null ? new JButton("...", icon) : new JButton(baseLabel);
+        subViewBtn.addActionListener(new ActionListener() {
+            //@Override
+            public void actionPerformed(ActionEvent e)
+            {
+                showForm();
+            }
+        });
         subViewBtn.setEnabled(true);
         
-        label              = icon != null ? new JLabel(icon) : new JLabel(baseLabel);
+        label  = new JLabel("  ");
+        label.setHorizontalAlignment(SwingConstants.CENTER);
+        label.setOpaque(true);
+        label.setBackground(Color.WHITE);
+        label.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        
         PanelBuilder    pb = new PanelBuilder(new FormLayout(colDef, "p"), this);
         CellConstraints cc = new CellConstraints();
         pb.add(subViewBtn, cc.xy(x,1));
@@ -350,17 +345,8 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
             int    size   = ((Set<?>)dataObj).size();
             if (icon != null)
             {
-                label.setText(String.format("(%s) ...", size));
-            } else
-            {
-                String format = UIRegistry.getResourceString("SUBVIEW_BTN_TITLE_FORMAT");
-                if (StringUtils.isEmpty(format))
-                {
-                    format = "%s (%s) ...";
-                }
-                label.setText(String.format(format, baseLabel, size));
+                label.setText(" " + String.format("%s", size)+ " ");
             }
-            
         }
     }
     

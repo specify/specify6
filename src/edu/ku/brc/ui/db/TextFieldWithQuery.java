@@ -553,17 +553,6 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             whereSB.append(")");
         }
 
-        whereSB.append(" ORDER BY ");
-
-        cnt = 0;
-        for (String keyCol : keyColumns)
-        {
-            if (cnt > 0) whereSB.append(", ");
-            whereSB.append(keyCol);
-            whereSB.append(" ASC");
-            cnt++;
-        }
-
         if (StringUtils.isNotEmpty(sqlTemplate))
         {
             StringBuilder selectSB = new StringBuilder();
@@ -624,16 +613,30 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 
                 sb.append(" WHERE ");
                 
+                System.err.println(sb.toString());
+                
                 String specialCols = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, true);
                 if (StringUtils.isNotEmpty(specialCols))
                 {
+                    if (whereSB.length() > 0) whereSB.append(" AND ");
                     whereSB.append(specialCols);
-                    whereSB.append(" AND ");
+                    System.err.println(whereSB.toString());
+                }
+                
+                whereSB.append(" ORDER BY ");
+                cnt = 0;
+                for (String keyCol : keyColumns)
+                {
+                    if (cnt > 0) whereSB.append(", ");
+                    whereSB.append(keyCol);
+                    whereSB.append(" ASC");
+                    cnt++;
                 }
 
                 sb.append(whereSB.toString());
                 
             }
+            System.err.println(sb.toString());
             return sb.toString();
         }
         return sql;

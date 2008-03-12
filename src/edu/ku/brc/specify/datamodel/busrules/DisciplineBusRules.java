@@ -42,11 +42,6 @@ public class DisciplineBusRules extends BaseBusRules
     @Override
     public boolean okToEnableDelete(Object dataObj)
     {
-        if (!okToDelete("colobjdef_locality", "DisciplineID", ((FormDataObjIFace)dataObj).getId()))
-        {
-            return false;
-        }
-        
         if (!okToDelete("collection", "DisciplineID", ((FormDataObjIFace)dataObj).getId()))
         {
             return false;

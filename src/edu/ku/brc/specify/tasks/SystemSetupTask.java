@@ -116,6 +116,22 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
     }
 
 
+    /**
+     * @param sysNavBox
+     * @param tableId
+     */
+    protected void createSysNavBtn(final NavBox sysNavBox, final int tableId)
+    {
+        final DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(tableId);
+        sysNavBox.add(NavBox.createBtnWithTT(ti.getTitle(), ti.getShortClassName(), 
+                "", IconManager.IconSize.Std16, new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                startEditor(ti.getClassObj(), SYSTEMSETUPTASK, ti.getShortClassName());
+            }
+        }));
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.core.Taskable#initialize()
      */
@@ -126,43 +142,19 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             super.initialize(); // sets isInitialized to false
 
             // Temporary
-            NavBox sysNavBox = new NavBox("Core Data Objects");
-            sysNavBox.add(NavBox.createBtnWithTT("Data Type", SYSTEMSETUPTASK, "", IconManager.IconSize.Std16, new ActionListener() {
+            NavBox sysNavBox = new NavBox(getResourceString("CORE_DATA_OBJECTS"));
+            createSysNavBtn(sysNavBox, DataType.getClassTableId());
+            createSysNavBtn(sysNavBox, Discipline.getClassTableId());
+            createSysNavBtn(sysNavBox, PrepType.getClassTableId());
+            createSysNavBtn(sysNavBox, DeterminationStatus.getClassTableId());
+            createSysNavBtn(sysNavBox, edu.ku.brc.specify.datamodel.Collection.getClassTableId());
+            
+            sysNavBox.add(NavBox.createBtnWithTT(getResourceString("PL_NEWPICKLIST"), "PickList", "", IconManager.IconSize.Std16, new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
-                    startEditor(DataType.class, SYSTEMSETUPTASK, "DataType");
+                    startEditor(edu.ku.brc.specify.datamodel.PickList.class, "PickList", null, name, "PickList");
                 }
-            })); // I18N
-            sysNavBox.add(NavBox.createBtnWithTT("Discipline", SYSTEMSETUPTASK, "", IconManager.IconSize.Std16, new ActionListener() {
-                public void actionPerformed(ActionEvent e)
-                {
-                    startEditor(Discipline.class, SYSTEMSETUPTASK, "Discipline");
-                }
-            })); // I18N
-            sysNavBox.add(NavBox.createBtnWithTT("Prep Type", SYSTEMSETUPTASK, "", IconManager.IconSize.Std16, new ActionListener() {
-                public void actionPerformed(ActionEvent e)
-                {
-                    startEditor(PrepType.class, "PrepType", "PrepType");
-                }
-            })); // I18N
-            sysNavBox.add(NavBox.createBtnWithTT("Determination Status", name, "", IconManager.IconSize.Std16, new ActionListener() {
-                public void actionPerformed(ActionEvent e)
-                {
-                    startEditor(DeterminationStatus.class, name, "DeterminationStatus");
-                }
-            })); // I18N
-            sysNavBox.add(NavBox.createBtnWithTT("Collections", name, "", IconManager.IconSize.Std16, new ActionListener() {
-                public void actionPerformed(ActionEvent e)
-                {
-                    startEditor(edu.ku.brc.specify.datamodel.Collection.class, name, "Collection");
-                }
-            })); // I18N
-            sysNavBox.add(NavBox.createBtnWithTT(getResourceString("PL_NEWPICKLIST"), name, "", IconManager.IconSize.Std16, new ActionListener() {
-                public void actionPerformed(ActionEvent e)
-                {
-                    startEditor(edu.ku.brc.specify.datamodel.PickList.class, "name", null, name, "PickList");
-                }
-            })); // I18N
+            })); 
             navBoxes.add(sysNavBox);
 
             
@@ -217,7 +209,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
         RolloverCommand roc;
         if (pickList.getIsSystem())
         {
-            roc = (RolloverCommand)NavBox.createBtnWithTT(nameStr, name, "", IconManager.IconSize.Std16, new ActionListener() {
+            roc = (RolloverCommand)NavBox.createBtnWithTT(nameStr, "PickList", "", IconManager.IconSize.Std16, new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
                     startEditor(edu.ku.brc.specify.datamodel.PickList.class, "name", nameStr, name, "PickList");
@@ -225,7 +217,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             });
         } else
         {
-            roc = (RolloverCommand)makeDnDNavBtn(navBox, nameStr, name, null, 
+            roc = (RolloverCommand)makeDnDNavBtn(navBox, nameStr, "PickList", null, 
                 new CommandAction(SYSTEMSETUPTASK, DELETE_CMD_ACT, pickList.getPickListId()), 
                 true, true);// true means make it draggable
         

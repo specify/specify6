@@ -28,8 +28,10 @@
     <icon name="conservator"          file="conservator.png" sizes="all"/>
     <icon name="conservdescription"   file="conserv_description.png" sizes="all"/>
     <icon name="conservevent"         file="conserv_event.png" sizes="all"/>
+    <icon name="datatype"             file="data_type.png" sizes="all"/>
     <icon name="determination"        file="determination.png" sizes="all"/>
     <icon name="determinationstatus"  file="determination_status.png" sizes="all"/>
+    <icon name="discipline"           file="discipline.png" sizes="all"/>
     <icon name="division"             file="division.png" sizes="all"/>
     <icon name="dnasequence"          file="dna.png" sizes="all"/>
     <icon name="exchangein"           file="exchange_in.png" sizes="all"/>
@@ -52,6 +54,7 @@
     <icon name="permit"               file="permit.png" sizes="all"/>
     <icon name="preparation"          file="preparation.png" sizes="all"/>
     <icon name="preptype"             file="prep_type.png" sizes="all"/>
+    <icon name="picklist"             file="pick_list.png" sizes="all"/>
     <icon name="project"              file="project.png" sizes="all"/>
     <icon name="referencework"        file="reference_work.png" sizes="all"/>
     <icon name="repositoryagreement"  file="repository_agreement.png" sizes="all"/>
@@ -60,22 +63,22 @@
     <icon name="taxon"                file="taxon.png" sizes="all"/>
     
     <!--  Attachment Icons -->
-    <icon name="AccessionAttachment"             file="accession_attachment.png" sizes="all"/>
-	<icon name="AgentAttachment"                 file="agent_attachment.png" sizes="all"/>
-	<icon name="CollectingEventAttachment"       file="collecting_event_attachment.png" sizes="all"/>
-	<icon name="CollectionObjectAttachment"      file="collection_object_attachment.png" sizes="all"/>
-	<icon name="ConservDescriptionAttachment"    file="conserv_description_attachment.png" sizes="all"/>
-	<icon name="ConservEventAttachment"          file="conserv_event_attachment.png" sizes="all"/>
-	<icon name="DNASequenceAttachment"           file="dna_attachment.png" sizes="all"/>
-	<icon name="FieldNotebookAttachment"         file="field_notebook_attachment.png" sizes="all"/>
-	<icon name="FieldNotebookPageAttachment"     file="field_notebook_page_attachment.png" sizes="all"/>
-	<icon name="FieldNotebookPageSetAttachment"  file="field_notebook_page_set_attachment.png" sizes="all"/>
-	<icon name="LoanAttachment"                  file="loan_attachment.png" sizes="all"/>
-	<icon name="LocalityAttachment"              file="locality_attachment.png" sizes="all"/>
-	<icon name="PermitAttachment"                file="permit_attachment.png" sizes="all"/>
-	<icon name="PreparationAttachment"           file="preparation_attachment.png" sizes="all"/>
-	<icon name="RepositoryAgreementAttachment"   file="repository_agreement_attachment.png" sizes="all"/>
-	<icon name="TaxonAttachment"                 file="taxon_attachment.png" sizes="all"/> 
+    <icon name="AccessionAttachment"             file="accession_attachment.png" sizes="NonStd"/>
+	<icon name="AgentAttachment"                 file="agent_attachment.png" sizes="NonStd"/>
+	<icon name="CollectingEventAttachment"       file="collecting_event_attachment.png" sizes="NonStd"/>
+	<icon name="CollectionObjectAttachment"      file="collection_object_attachment.png" sizes="NonStd"/>
+	<icon name="ConservDescriptionAttachment"    file="conserv_description_attachment.png" sizes="NonStd"/>
+	<icon name="ConservEventAttachment"          file="conserv_event_attachment.png" sizes="NonStd"/>
+	<icon name="DNASequenceAttachment"           file="dna_attachment.png" sizes="NonStd"/>
+	<icon name="FieldNotebookAttachment"         file="field_notebook_attachment.png" sizes="NonStd"/>
+	<icon name="FieldNotebookPageAttachment"     file="field_notebook_page_attachment.png" sizes="NonStd"/>
+	<icon name="FieldNotebookPageSetAttachment"  file="field_notebook_page_set_attachment.png" sizes="NonStd"/>
+	<icon name="LoanAttachment"                  file="loan_attachment.png" sizes="NonStd"/>
+	<icon name="LocalityAttachment"              file="locality_attachment.png" sizes="NonStd"/>
+	<icon name="PermitAttachment"                file="permit_attachment.png" sizes="NonStd"/>
+	<icon name="PreparationAttachment"           file="preparation_attachment.png" sizes="NonStd"/>
+	<icon name="RepositoryAgreementAttachment"   file="repository_agreement_attachment.png" sizes="NonStd"/>
+	<icon name="TaxonAttachment"                 file="taxon_attachment.png" sizes="NonStd"/> 
 	
     <!--  Extra Icons -->
     <icon name="group"                file="group.png" sizes="all"/>
@@ -94,6 +97,7 @@
 	<icon name="accessionauthorization"         alias="permit"/>
 	<icon name="AccessionAuthorization"         alias="permit"/>
 	
+	<!--  Attachment Icons Alias -->
 	<icon name="accessionattachment"            alias="AccessionAttachment"/>
 	<icon name="agentattachment"                alias="AgentAttachment"/>
 	<icon name="attachment"                     alias="attachment"/>
@@ -175,9 +179,11 @@
     <icon name="Conservator"            alias="conservator"/>
     <icon name="ConservDescription"     alias="conservdescription"/>
     <icon name="ConservEvent"           alias="conservevent"/>
+    <icon name="DataType"               alias="datatype"/>
     <icon name="Determination"          alias="determination"/>
     <icon name="DeterminationStatus"    alias="determinationstatus"/>
     <icon name="Division"               alias="division"/>
+    <icon name="Discipline"             alias="discipline"/>
     <icon name="DNASequence"            alias="dnasequence"/>
     <icon name="Deaccession"            alias="deaccession"/>
     <icon name="ExchangeIn"             alias="exchangein"/>
@@ -199,6 +205,7 @@
     <icon name="Permit"                 alias="permit"/>
     <icon name="PaleoContext"           alias="permit"/>
     <icon name="Preparation"            alias="preparation"/>
+    <icon name="PickList"               alias="picklist"/>
     <icon name="PrepType"               alias="preptype"/>
     <icon name="Project"                alias="project"/>
     <icon name="ReferenceWork"          alias="referencework"/>
@@ -207,27 +214,6 @@
     <icon name="Storage"                alias="storage"/>
     <icon name="Taxon"                  alias="taxon"/>
     
-    <!-- Attachment Capitalized -->
-    <icon name="AccessionAttachment"            alias="attachment"/>
-	<icon name="AgentAttachment"                alias="attachment"/>
-	<icon name="Attachment"                     alias="attachment"/>
-	<icon name="AttachmentMetadata"             alias="attachment"/>
-	<icon name="AttachmentTag"                  alias="attachment"/>
-	<icon name="CollectingEventAttachment"      alias="attachment"/>
-	<icon name="CollectionObjectAttachment"     alias="attachment"/>
-	<icon name="ConservDescriptionAttachment"   alias="attachment"/>
-	<icon name="ConservEventAttachment"         alias="attachment"/>
-	<icon name="DNASequenceAttachment"          alias="attachment"/>
-	<icon name="FieldNotebookAttachment"        alias="attachment"/>
-	<icon name="FieldNotebookPageAttachment"    alias="attachment"/>
-	<icon name="FieldNotebookPageSetAttachment" alias="attachment"/>
-	<icon name="LoanAttachment"                 alias="attachment"/>
-	<icon name="LocalityAttachment"             alias="attachment"/>
-	<icon name="PermitAttachment"               alias="attachment"/>
-	<icon name="PreparationAttachment"          alias="attachment"/>
-	<icon name="RepositoryAgreementAttachment"  alias="attachment"/>
-	<icon name="TaxonAttachment"                alias="attachment"/>
-	
     <icon name="taxontreedef"              alias="taxon"/>
     <icon name="geographytreedef"          alias="geography"/>
     <icon name="geologictimePeriodtreedef" alias="geologictimeperiod"/>
