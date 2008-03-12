@@ -415,7 +415,7 @@
                     <cell type="separator" label="Attachments" colspan="12" collapse="accessionAttachments"/>
                 </row>
                 <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="accessionAttachments" colspan="12" initialize="addsearch=true;btn=true;icon=Accession;hc=xxx"/>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="accessionAttachments" colspan="12" initialize="addsearch=true;btn=true;icon=AccessionAttachment;hc=xxx"/>
                 </row>
                 <row>
                     <cell type="separator" label="" colspan="12"/>
@@ -1037,7 +1037,7 @@
                     <cell type="separator" label="Attachments" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="loanAttachments" colspan="12" initialize="btn=true;icon=Loan"/>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="loanAttachments" colspan="12" initialize="btn=true;icon=LoanAttachment"/>
                 </row>
                 <row>
                     <cell type="panel" id="16" name="outerPanel" coldef="p,5px,p" rowdef="p" colspan="12">
@@ -1173,7 +1173,7 @@
                     <cell type="separator" label="Attachments" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="localityAttachments" colspan="12" initialize="btn=true;icon=Locality"/>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="localityAttachments" colspan="12" initialize="btn=true;icon=LocalityAttachment"/>
                 </row>
             </rows>
         </viewdef>
@@ -1307,7 +1307,7 @@
                     <cell type="field" id="9" name="remarks" uitype="textarea" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="ObjectAttachment" id="10" name="permitAttachments" colspan="10" initialize="btn=true;icon=Permit"/>
+                    <cell type="subview" viewname="ObjectAttachment" id="10" name="permitAttachments" colspan="10" initialize="btn=true;icon=PermitAttachment"/>
                 </row>
             </rows>
         </viewdef>
@@ -1562,7 +1562,7 @@
     			    <cell type="field" id="4" name="storageLocation" uitype="text" cols="20"/>
     			</row>
     		    <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="preparationAttachments" colspan="12" initialize="btn=true;icon=Preparation"/>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="preparationAttachments" colspan="12" initialize="btn=true;icon=PreparationAttachment"/>
                 </row>
     		</rows>
     	</viewdef>
