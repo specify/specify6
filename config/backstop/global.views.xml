@@ -426,6 +426,18 @@
 				<altview name="AttachmentMetadata Table View" viewdef="AttachmentMetadata Table" label="Grid" mode="edit"/>
 			</altviews>
 		</view>
+        
+        <view name="SubPaleoContext"
+            class="edu.ku.brc.specify.datamodel.PaleoContext"
+            isinternal="false"
+            resourcelabels="false">
+            <desc><![CDATA[PaleoContext subform within Collection Object form.]]></desc>
+            <altviews>
+                <altview name="SubPaleoContext View" viewdef="SubPaleoContext" label="View" mode="view"/>
+                <altview name="SubPaleoContext Edit" viewdef="SubPaleoContext" label="Edit" mode="edit" default="true"/>
+            </altviews>
+        </view>
+        
 
     </views>
 
@@ -1963,6 +1975,39 @@
             <desc><![CDATA[AttachmentMetadata Grid View.]]></desc>
             <definition>AttachmentMetadata Form</definition>
         </viewdef>
+        
+        <viewdef
+            name="SubPaleoContext"
+            type="form"
+            class="edu.ku.brc.specify.datamodel.PaleoContext"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Stratigraphy subform within Collection Object form.]]></desc>
+            <enableRules/>
+            <columnDef>90px,2px,p,2px,100px,2px,p,2px,60px,2px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
+            
+            <rows>
+                <row>
+                    <!--               <cell type="label" labelfor="1" label="BioStrat"/>
+                        <cell type="field" id="1" name="bioStrat" uitype="text" cols="20"/> 
+                        <cell type="field" id="1" name="bioStrat" uitype="querycbx" initialize="name=Accession;title=Accession" isrequired="false"/>
+                        
+                        <cell type="label" labelfor="2" label="ChronosStrat"/>
+                        <cell type="field" id="2" name="chronosStrat" uitype="text" cols="20"/>
+                    -->              
+                    <cell type="label" labelfor="3" label="LithoStrat"/>
+                    <cell type="field" id="3" name="lithoStrat" uitype="querycbx" initialize="name=LithoStrat;title=LithoStrat"/> 
+                </row>
+                <row>
+                    <cell type="label" labelfor="4" label="Remarks"/>
+                    <cell type="field" id="4" name="text1" uitype="text"/>                    
+                </row>
+            </rows>
+        </viewdef>
+        
+        
 
     </viewdefs>
 </viewset>
