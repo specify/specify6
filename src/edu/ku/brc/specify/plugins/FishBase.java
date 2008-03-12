@@ -101,7 +101,7 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
         frame.showDisplay(true);
         frame.setCloseListener(new ViewBasedDisplayActionAdapter()
         {
-            public void okPressed(@SuppressWarnings("unused") ViewBasedDisplayIFace vbd)
+            public boolean okPressed(@SuppressWarnings("unused") ViewBasedDisplayIFace vbd)
             {
                 if (multiView != null)
                 {
@@ -109,6 +109,7 @@ public class FishBase extends JPanel implements GetSetValueIFace, UIPluginable, 
                 }
                 frame.dispose();
                 frame = null;
+                return true;
             }
         });
         

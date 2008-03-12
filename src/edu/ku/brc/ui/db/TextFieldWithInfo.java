@@ -180,7 +180,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
         frame.setCloseListener(new ViewBasedDisplayActionAdapter()
         {
             @Override
-            public void okPressed(ViewBasedDisplayIFace vbd)
+            public boolean okPressed(ViewBasedDisplayIFace vbd)
             {
                 if (frame != null)
                 {
@@ -191,6 +191,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
                     frame.dispose();
                     frame = null;
                 }
+                return true;
             }
             
         });

@@ -27,30 +27,48 @@ package edu.ku.brc.ui.db;
  */
 public class ViewBasedDisplayActionAdapter
 {
-
+    /**
+     * 
+     */
     public ViewBasedDisplayActionAdapter()
     {
         // no op
     }
     
-    public void okPressed(@SuppressWarnings("unused") ViewBasedDisplayIFace vbd)
+    /**
+     * @param vbd
+     * @return
+     */
+    public boolean okPressed(@SuppressWarnings("unused") ViewBasedDisplayIFace vbd)
     {
-        // no op
+        return true;
     }
     
-    public void cancelPressed(@SuppressWarnings("unused") ViewBasedDisplayIFace vbd)
+    /**
+     * @param vbd
+     * @return
+     */
+    public boolean cancelPressed(@SuppressWarnings("unused") ViewBasedDisplayIFace vbd)
     {
-        // no op
+        return true;
     }
     
-    public void applyPressed(@SuppressWarnings("unused") ViewBasedDisplayIFace vbd)
+    /**
+     * @param vbd
+     * @return
+     */
+    public boolean applyPressed(@SuppressWarnings("unused") ViewBasedDisplayIFace vbd)
     {
-        
+        return true;
     }
     
-    public void helpPressed(@SuppressWarnings("unused") ViewBasedDisplayIFace vbd)
+    /**
+     * @param vbd
+     * @return
+     */
+    public boolean helpPressed(@SuppressWarnings("unused") ViewBasedDisplayIFace vbd)
     {
-        // no op
+        return true;
     }
     
 }

@@ -17,10 +17,6 @@ package edu.ku.brc.ui.db;
 import java.awt.BorderLayout;
 import java.awt.Dialog;
 import java.awt.Frame;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.JButton;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -40,7 +36,7 @@ import edu.ku.brc.ui.forms.MultiView;
  *
  */
 @SuppressWarnings("serial")
-public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDisplayIFace, ActionListener
+public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDisplayIFace
 {
     protected ViewBasedDisplayPanel         viewBasedPanel = null;
     protected ViewBasedDisplayActionAdapter vbdaa          = null;
@@ -231,10 +227,6 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
         
         pack();
         
-        addAL(okBtn);
-        addAL(cancelBtn);
-        addAL(applyBtn);
-        addAL(helpBtn);
     }
 
     /* (non-Javadoc)
@@ -245,18 +237,6 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
         this.parentDataObj = parentDataObj;
     }
 
-    /**
-     * Helper for adding action listeners
-     * @param btn the btn
-     */
-    protected void addAL(final JButton btn)
-    {
-        if (btn != null)
-        {
-            btn.addActionListener(this);
-        }
-    }
-    
     /*
      * (non-Javadoc)
      * @see java.awt.Dialog#setVisible(boolean)
@@ -276,34 +256,42 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
     //------------------------------------------------------------
 
     /* (non-Javadoc)
-     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+     * @see edu.ku.brc.ui.CustomDialog#applyButtonPressed()
      */
-    public void actionPerformed(ActionEvent e)
+    @Override
+    protected void applyButtonPressed()
     {
-        if (e.getSource() == okBtn)
+        if (vbdaa != null && !vbdaa.cancelPressed(this))
         {
-            FormHelper.updateLastEdittedInfo(viewBasedPanel.getMultiView().getData());
+            return;
         }
-        
-        if (vbdaa != null)
+        super.applyButtonPressed();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CustomDialog#cancelButtonPressed()
+     */
+    @Override
+    protected void cancelButtonPressed()
+    {
+        if (vbdaa != null && !vbdaa.cancelPressed(this))
         {
-            if (e.getSource() == okBtn)
-            {
-                vbdaa.okPressed(this);
-                
-            } else if (e.getSource() == cancelBtn)
-            {
-                vbdaa.cancelPressed(this);
-                
-            } else if (e.getSource() == applyBtn)
-            {
-                vbdaa.applyPressed(this);
-                
-            } else if (e.getSource() == helpBtn)
-            {
-                vbdaa.helpPressed(this);
-            }
+            return;
         }
+        super.cancelButtonPressed();
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CustomDialog#helpButtonPressed()
+     */
+    @Override
+    protected void helpButtonPressed()
+    {
+        if (vbdaa != null && !vbdaa.helpPressed(this))
+        {
+            return;
+        }
+        super.helpButtonPressed();
     }
 
     /* (non-Javadoc)
@@ -312,6 +300,15 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
     @Override
     protected void okButtonPressed()
     {
+        if (vbdaa != null)
+        {
+            if (!vbdaa.helpPressed(this))
+            {
+                return;
+            }
+            FormHelper.updateLastEdittedInfo(viewBasedPanel.getMultiView().getData());
+        }
+        
         FormViewObj fvo = viewBasedPanel.getMultiView().getCurrentViewAsFormViewObj();
         if (fvo != null)
         {

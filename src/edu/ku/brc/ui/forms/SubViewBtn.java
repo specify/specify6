@@ -19,13 +19,13 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.apache.commons.lang.StringUtils;
@@ -236,7 +236,40 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
                 cellName,
                 mvParent,
                 options | MultiView.HIDE_SAVE_BTN | MultiView.DONT_ADD_ALL_ALTVIEWS | MultiView.USE_ONLY_CREATION_MODE,
-                CustomDialog.CANCEL_BTN | (StringUtils.isNotEmpty(helpContext) ? CustomDialog.HELP_BTN : 0));
+                CustomDialog.CANCEL_BTN | (StringUtils.isNotEmpty(helpContext) ? CustomDialog.HELP_BTN : 0))
+        {
+
+            /* (non-Javadoc)
+             * @see edu.ku.brc.ui.db.ViewBasedDisplayDialog#cancelButtonPressed()
+             */
+            @Override
+            protected void cancelButtonPressed()
+            {
+                FormValidator validator = multiView.getCurrentValidator();
+                if (validator != null && validator.getState() != UIValidatable.ErrorType.Valid)
+                {
+                    FormViewObj fvo = multiView.getCurrentViewAsFormViewObj();
+                    if (fvo != null)
+                    {
+                        boolean  isNew   = fvo.isNewlyCreatedDataObj();
+                        String   msgKey  = isNew ? "MV_INCOMPLETE_DATA_NEW" : "MV_INCOMPLETE_DATA";
+                        String   btnKey  = isNew ? "MV_REMOVE_ITEM" : "MV_DISCARD_ITEM";
+                        Object[] options = { getResourceString(btnKey), getResourceString("Cancel") };
+                        int rv = JOptionPane.showOptionDialog(null, 
+                                    getResourceString(msgKey),
+                                    getResourceString("MV_INCOMPLETE_DATA_TITLE"),
+                                    JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
+                                    null, options, options[0]);                        
+                        if (rv == JOptionPane.NO_OPTION)
+                        {
+                            return;
+                        }
+                    }
+                }
+                super.cancelButtonPressed();
+            }
+            
+        };
         
         dlg.setCancelLabel(closeBtnTitle);
         frame = dlg;

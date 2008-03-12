@@ -1452,9 +1452,6 @@ public class FormViewObj implements Viewable,
             businessRules.addChildrenToNewDataObjects(obj);
         }
         
-        isNewlyCreatedDataObj = true;
-        formValidator.setNewObj(isNewlyCreatedDataObj);
-
         if (carryFwdDataObj == null && dataObj != null)
         {
             carryFwdDataObj = dataObj;
@@ -1502,6 +1499,9 @@ public class FormViewObj implements Viewable,
             recordSetItemList.add(recordSetItem);
         }
         
+        isNewlyCreatedDataObj = true;
+        formValidator.setNewObj(isNewlyCreatedDataObj);
+
         // Not calling setHasNewData because we need to traverse and setHasNewData doesn't
         traverseToToSetAsNew(mvParent, true, false); // don't traverse deeper than our immediate children
         
@@ -3183,7 +3183,7 @@ public class FormViewObj implements Viewable,
     /**
      * @return the actual value of isNewlyCreatedDataObj
      */
-    public boolean getNewlyCreatedDataObj()
+    public boolean getIsNewlyCreatedDataObj()
     {
         return isNewlyCreatedDataObj;
     }
@@ -3193,7 +3193,7 @@ public class FormViewObj implements Viewable,
      */
     public boolean isNewlyCreatedDataObj()
     {
-        return (mvParent != null && mvParent.isTopLevel()) ?  mvParent.getCurrentViewAsFormViewObj().getNewlyCreatedDataObj() : isNewlyCreatedDataObj;
+        return (mvParent != null && mvParent.isTopLevel()) ?  mvParent.getCurrentViewAsFormViewObj().getIsNewlyCreatedDataObj() : isNewlyCreatedDataObj;
     }
 
     /* (non-Javadoc)
@@ -4457,6 +4457,14 @@ public class FormViewObj implements Viewable,
         {
             dataObj = listDO;    
         }
+        
+        /////////////////////////////////////////////////////////////////////////////////
+        // NOTE: This needs to be here below the setting of the index call because
+        // changing the index will set it to false and we need it to be set
+        // to true when leaving this method.
+        /////////////////////////////////////////////////////////////////////////////////
+        isNewlyCreatedDataObj = false; // shouldn't be needed, but just in case
+        formValidator.setNewObj(isNewlyCreatedDataObj);
         
         //log.debug("Before2 setDataIntoUI");
         //log.debug("Form     Val: "+(formValidator != null && formValidator.hasChanged()));
