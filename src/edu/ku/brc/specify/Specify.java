@@ -198,7 +198,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private String               appName             = "Specify";
     private String               appVersion          = "6.0";
 
-    private String               appBuildVersion     = "200803071130 (SVN: 3541)";
+    private String               appBuildVersion     = "200803121300 (SVN: 3577)";
     
     protected static CacheManager cacheManager        = new CacheManager();
 
@@ -621,8 +621,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
      */
     public void preferences()
     {
-        //PreferencesDlg dlg = new PreferencesDlg(false);
-        //dlg.setVisible(true);
+        PreferencesDlg dlg = new PreferencesDlg(false);
+        dlg.setVisible(true);
         
         DataProviderSessionIFace session = null;
         try
@@ -823,6 +823,33 @@ public class Specify extends JPanel implements DatabaseLoginListener
         dataMenu.add(saveAndNewCBMI);
         UIRegistry.register("SaveAndNew", saveAndNewCBMI);
         UIRegistry.registerAction("SaveAndNew", saveAndNewAction);
+        mb.add(dataMenu);
+        
+        // Carry Forward Menu Item
+        Action carryForwardAction = new AbstractAction(getResourceString("CARRY_FORWARD_IS_ON")) {
+            public void actionPerformed(ActionEvent e)
+            {
+                SubPaneIFace sp = SubPaneMgr.getInstance().getCurrentSubPane();
+                if (sp instanceof FormPane)
+                {
+                    MultiView mv = ((FormPane)sp).getMultiView();
+                    if (mv != null)
+                    {
+                        FormViewObj fvo = mv.getCurrentViewAsFormViewObj();
+                        if (fvo != null)
+                        {
+                            fvo.toggleCarryForward();
+                            ((JCheckBoxMenuItem)e.getSource()).setSelected(fvo.isDoCarryForward());
+                        }
+                    }
+                }
+            }
+        };
+        carryForwardAction.setEnabled(false);
+        JCheckBoxMenuItem carryForwardCBMI = new JCheckBoxMenuItem(carryForwardAction);
+        dataMenu.add(carryForwardCBMI);
+        UIRegistry.register("CarryForward", carryForwardCBMI);
+        UIRegistry.registerAction("CarryForward", carryForwardAction);
         mb.add(dataMenu);
         
         if (!isWorkbenchOnly)

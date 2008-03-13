@@ -84,6 +84,9 @@ public class Determination extends CollectionMember implements java.io.Serializa
     
 
     // Initializer
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#initialize()
+     */
     @Override
     public void initialize()
     {

@@ -28,6 +28,8 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.sql.Timestamp;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -58,7 +60,10 @@ import edu.ku.brc.util.Orderable;
     {   
         @Index (name="COLTRColMemIDX", columnNames={"CollectionMemberID"})
     })
-public class Collector extends CollectionMember implements java.io.Serializable, Orderable, Comparable<Collector> 
+public class Collector extends CollectionMember implements java.io.Serializable, 
+                                                           Orderable, 
+                                                           Comparable<Collector>,
+                                                           Cloneable
 {
 
     // Fields    
@@ -251,4 +256,25 @@ public class Collector extends CollectionMember implements java.io.Serializable,
     {
         return orderNumber.compareTo(obj.orderNumber);
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        Collector obj = (Collector)super.clone();
+        obj.initialize();
+        
+        obj.remarks         = remarks;
+        obj.collectingEvent = collectingEvent;
+        obj.agent           = agent;
+        obj.orderNumber     = orderNumber;
+        
+        obj.timestampCreated     = new Timestamp(System.currentTimeMillis());
+        obj.timestampModified    = timestampCreated;
+        
+        return obj;
+    }
+
 }

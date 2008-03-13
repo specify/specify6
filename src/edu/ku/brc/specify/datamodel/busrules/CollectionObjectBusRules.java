@@ -225,4 +225,24 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         }
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BaseBusRules#shouldCloneField(java.lang.String)
+     */
+    @Override
+    public boolean shouldCloneField(String fieldName)
+    {
+        // Depending on the Type of Discipline the Collecting Events can be shared 
+        // a ManyToOne from CollectionObject to Collecting (Fish).
+        //
+        // Or it acts like a OneToOne where each CE acts as if it is "embedded" or is
+        // a part of the CO.
+        System.err.println(fieldName);
+        if (fieldName.equals("collectingEvent"))
+        {
+            // So we need to clone it make a full copy when it is embedded.
+            return Collection.getCurrentCollection().getIsEmbeddedCollectingEvent();
+        }
+        return false;
+    }
+
 }

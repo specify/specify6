@@ -31,55 +31,55 @@ public interface FormDataObjIFace
      * The Record Id.
      * @return Record Id.
      */
-    public Integer getId();
+    public abstract Integer getId();
     
     /**
      * Return a String that uniquely identifies this object, usually this is a String field in the object (This should never return null).
      * @return String that uniquely identifies this object, usually this is a String field in the object.
      */
-    public String getIdentityTitle();
+    public abstract String getIdentityTitle();
     
     /**
      * Return the Timestamp Created.
      * @return the Timestamp Created
      */
-    public Timestamp getTimestampCreated();
+    public abstract Timestamp getTimestampCreated();
 
     /**
      * Sets the Timestamp Created.
      * @param timestampCreated
      */
-    public void setTimestampCreated(Timestamp timestampCreated);
+    public abstract void setTimestampCreated(Timestamp timestampCreated);
 
     /**
      * Returns the Timestamp Modified.
      * @return the Timestamp Modified.
      */
-    public Timestamp getTimestampModified();
+    public abstract Timestamp getTimestampModified();
 
     /**
      * Sets the Timestamp Modified.
      * @param timestampModified the new timestamp 
      */
-    public void setTimestampModified(Timestamp timestampModified);
+    public abstract void setTimestampModified(Timestamp timestampModified);
     
     /**
      * Returns modifiedByAgent.
      * @return modifiedByAgent
      */
-    public Agent getModifiedByAgent();
+    public abstract Agent getModifiedByAgent();
 
     /**
      * Sets modifiedByAgent.
      * @param modifiedByAgent the agent who changed the data object
      */
-    public void setModifiedByAgent(Agent modifiedByAgent);
+    public abstract void setModifiedByAgent(Agent modifiedByAgent);
     
     /**
      * Sets modifiedByAgent.
      * @param modifiedByAgent the agent who changed the data object
      */
-    public void setCreatedByAgent(Agent createdByAgent);
+    public abstract void setCreatedByAgent(Agent createdByAgent);
     
     /**
      * Add a new foreign key reference to this object.  This method provides
@@ -89,7 +89,7 @@ public interface FormDataObjIFace
      * @param ref the new foreign key record
      * @param refName a String indicating the relationship to which the reference should be added
      */
-    public void addReference(FormDataObjIFace ref, String refName);
+    public abstract void addReference(FormDataObjIFace ref, String refName);
     
     /**
      * Removes a foreign key reference to this object.  This method provides
@@ -99,7 +99,7 @@ public interface FormDataObjIFace
      * @param ref the foreign key record to detach from this object
      * @param refName a String indicating which relationship from which to remove the reference
      */
-    public void removeReference(FormDataObjIFace ref, String refName);
+    public abstract void removeReference(FormDataObjIFace ref, String refName);
     
     /**
      * Gets the value of a foreign key reference for this object.  This method provides
@@ -108,29 +108,29 @@ public interface FormDataObjIFace
      * @param ref the foreign key record to grab the value of
      * @return the value of that foreign key record
      */
-    public Object getReferenceValue(String ref);
+    public abstract Object getReferenceValue(String ref);
     
-    public void onSave();
-    public void onDelete();
-    public void onUpdate();
+    public abstract void onSave();
+    public abstract void onDelete();
+    public abstract void onUpdate();
     
     /**
      * Returns the internal Table Id.
      * @return the internal Table Id
      */
-    public int getTableId();
+    public abstract int getTableId();
     
     /**
      * Returns whether the viewing of this class is restrictable
      * @return - boolean whether the viewing of this class is restrictable
      */
-    public boolean isRestrictable();
+    public abstract boolean isRestrictable();
     
     /**
      * Returns the actual class object befoire being wrapped by ORM tools.
      * @return the actual class object befoire being wrapped by ORM tools.
      */
-    public Class<?> getDataClass();
+    public abstract Class<?> getDataClass();
     
     /**
      * Indicates whether this object should be indexed by the Express Search Indexer.
@@ -138,6 +138,11 @@ public interface FormDataObjIFace
      * @return true - index, false - don't
      */
     public abstract boolean isChangeNotifier();
+    
+    /**
+     * @return
+     */
+    public abstract Object clone() throws CloneNotSupportedException;
     
     //---------------------------------------------------------------------------
     // Property Change Support
@@ -147,26 +152,26 @@ public interface FormDataObjIFace
      * Adds a property change listener for any property (all properties).
      * @param l the listener
      */
-    public void addPropertyChangeListener(PropertyChangeListener l);
+    public abstract void addPropertyChangeListener(PropertyChangeListener l);
     
     /**
      * Adds a property change listener.
      * @param propertyName
      * @param l the listener
      */
-    public void addPropertyChangeListener(String propertyName, PropertyChangeListener l);
+    public abstract void addPropertyChangeListener(String propertyName, PropertyChangeListener l);
     
     /**
      * Removes a property change listener for any property (all properties).
      * @param l the listener
      */
-    public void removePropertyChangeListener(PropertyChangeListener l);
+    public abstract void removePropertyChangeListener(PropertyChangeListener l);
     
     /**
      * Removes a property change listener.
      * @param propertyName the property name
      * @param l the listener
      */
-    public void removePropertyChangeListener(String propertyName, PropertyChangeListener l);
+    public abstract void removePropertyChangeListener(String propertyName, PropertyChangeListener l);
     
 }

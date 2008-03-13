@@ -138,21 +138,25 @@ public class FormPane extends DroppableTaskPane
     @Override
     public void setVisible(boolean visible)
     {
-        super.setVisible(visible);
-        
-        if (multiView != null)
+        boolean isVis = super.isVisible();
+        if (isVis != visible)
         {
-            multiView.aboutToShow(visible);
+            super.setVisible(visible);
             
-            FormViewObj fvo = multiView.getCurrentViewAsFormViewObj();
-            if (fvo !=  null)
+            if (multiView != null)
             {
-                if (visible)
+                multiView.aboutToShow(visible);
+                
+                FormViewObj fvo = multiView.getCurrentViewAsFormViewObj();
+                if (fvo !=  null)
                 {
-                    ResultSetController.setBackStopRS(fvo.getRsController());
-                } else
-                {
-                    ResultSetController.setBackStopRS(null);
+                    if (visible)
+                    {
+                        ResultSetController.setBackStopRS(fvo.getRsController());
+                    } else
+                    {
+                        ResultSetController.setBackStopRS(null);
+                    }
                 }
             }
         }

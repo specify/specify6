@@ -29,6 +29,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -80,6 +81,7 @@ import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 import edu.ku.brc.dbsupport.DBFieldInfo;
+import edu.ku.brc.dbsupport.DBInfoBase;
 import edu.ku.brc.dbsupport.DBRelationshipInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
@@ -184,9 +186,9 @@ public class FormViewObj implements Viewable,
     protected Vector<AltViewIFace>          altViewsList   = null;
     protected Class<?>                      classToCreate  = null;
 
-    protected Hashtable<String, FieldInfo>  controlsById   = new Hashtable<String, FieldInfo>();
-    protected Hashtable<String, FieldInfo>  controlsByName = new Hashtable<String, FieldInfo>();
-    protected Hashtable<String, FieldInfo>  labels         = new Hashtable<String, FieldInfo>(); // ID is the Key
+    protected Hashtable<String, FVOFieldInfo>  controlsById   = new Hashtable<String, FVOFieldInfo>();
+    protected Hashtable<String, FVOFieldInfo>  controlsByName = new Hashtable<String, FVOFieldInfo>();
+    protected Hashtable<String, FVOFieldInfo>  labels         = new Hashtable<String, FVOFieldInfo>(); // ID is the Key
     
     protected FormLayout                    formLayout;
     protected PanelBuilder                  builder;
@@ -605,7 +607,7 @@ public class FormViewObj implements Viewable,
     }
 
     /**
-     * 
+     * Adds the Save Button to the form.
      */
     protected void addSaveBtn()
     {
@@ -631,7 +633,7 @@ public class FormViewObj implements Viewable,
     }
 
     /**
-     * Returns the CarryForwardInfo Object for the Form
+     * Returns the CarryForwardInfo Object for the Form.
      * @return the CarryForwardInfo Object for the Form
      */
     private CarryForwardInfo getCarryForwardInfo()
@@ -652,7 +654,7 @@ public class FormViewObj implements Viewable,
     }
 
     /**
-     * Returns whether this form is doing Carry Forward
+     * Returns whether this form is doing Carry Forward.
      * @return whether this form is doing Carry Forward
      */
     public boolean isDoCarryForward()
@@ -667,68 +669,156 @@ public class FormViewObj implements Viewable,
     public void setDoCarryForward(boolean doCarryForward)
     {
         this.doCarryForward = doCarryForward;
+        adjustCarryForwardUI();
     }
     
     /**
-     * Shows a Dialog to setup Carry Forward.
+     * @return returns whether there is any set up information.
+     */
+    public boolean isCarryForwardConfgured()
+    {
+        if (carryFwdInfo != null)
+        {
+            return carryFwdInfo.hasConfiguredFields();
+        }
+        return false;
+    }
+    
+    /**
+     * Adjust the Action and MenuItem for CarryForward.
+     */
+    private void adjustCarryForwardUI()
+    {
+        // Now Adjust Carry Forward for the form
+        Action action = UIRegistry.getAction("CarryForward");
+        if (action != null)
+        {
+            action.setEnabled(isCarryForwardConfgured());
+        }
+        
+        Component comp = UIRegistry.get("CarryForward");
+        if (comp instanceof JCheckBoxMenuItem)
+        {
+            ((JCheckBoxMenuItem)comp).setSelected(isCarryForwardConfgured() && isDoCarryForward());
+        }
+    }
+    
+    /**
+     * Shows a Dialog to setup Carry Forward. 
+     * The hard part is figuring out which fields are candidates for Carry Forward.
      */
     protected void setUpCarryForward()
     {
-        
-        if (true)
-        {
-            CarryForwardConfigDlg dlg = new CarryForwardConfigDlg(mvParent);
-            dlg.createUI();
-            dlg.setSize(500, 350);
-            UIHelper.centerAndShow(dlg);
-            return;
-        }
         CarryForwardInfo carryForwardInfo = getCarryForwardInfo();
         
-        Vector<FieldInfo> itemLabels    = new Vector<FieldInfo>();
-        Vector<FieldInfo> selectedItems = new Vector<FieldInfo>(carryForwardInfo.getFieldList());
+        DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
         
+        Vector<FVOFieldInfo> itemLabels    = new Vector<FVOFieldInfo>();
+        Vector<FVOFieldInfo> selectedItems = new Vector<FVOFieldInfo>(carryForwardInfo.getFieldList());
+
+        // This next section loops through all the UI components in the form that has an ID
+        // It checks to make sure that it is a candidate for CF
         Vector<String> ids = new Vector<String>();
-        getFieldIds(ids);
+        getFieldIds(ids, true); // true means return all the UI components with ids not just the fields
         for (String id : ids)
         {
-            FieldInfo fieldInfo = getFieldInfoForId(id);
+            FVOFieldInfo fieldInfo = getFieldInfoForId(id);
+            String       fieldName = fieldInfo.getFormCell().getName();
+            log.debug(fieldName);
+
+            // Start by assuming it is OK to be added
             boolean isOK = true;
             if (fieldInfo.getFormCell() instanceof FormCellFieldIFace)
             {
-                FieldType type = ((FormCellFieldIFace)fieldInfo.getFormCell()).getUiType();
-                if (type == FieldType.dsptextfield || type == FieldType.dsptextarea || type == FieldType.label)
+                // Only the ones that are editable.
+                FormCellFieldIFace fcf = (FormCellFieldIFace)fieldInfo.getFormCell();
+                FieldType type = fcf.getUiType();
+                if (fcf.isReadOnly() || 
+                    type == FieldType.dsptextfield || 
+                    type == FieldType.dsptextarea || 
+                    type == FieldType.label)
                 {
                     isOK = false; 
                 }
             }
-            
+            // At this point we have weeded out any "fields" and we need to get a label for the field
+            // And weed out any SubViews.
             if (isOK)
             {
-                FieldInfo labelInfo = getLabelInfoFor(id);
+                // Check to see if the field has a label
+                String label = null;
+                FVOFieldInfo labelInfo = getLabelInfoFor(id);
                 if (labelInfo != null)
                 {
                     if (!(fieldInfo.getFormCell() instanceof FormCellLabel))
                     {
-                        String lbl = ((FormCellLabel)labelInfo.getFormCell()).getLabel();
-                        fieldInfo.setLabel(lbl);
-                        itemLabels.add(fieldInfo);
+                        label = ((FormCellLabel)labelInfo.getFormCell()).getLabel();
                     }
-                } else 
+                }
+                
+                // Now we go get the DBFieldInfo and DBRelationshipInfo and check to make
+                // that the field or Relationship is still a candidate for CF
+                DBInfoBase infoBase = null;
+                if (ti != null)
                 {
-                    String fieldName = fieldInfo.getFormCell().getName();
-                    DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
-                    if (ti != null)
+                    DBFieldInfo fi = ti.getFieldByName(fieldName);
+                    if (fi != null)
                     {
-                        DBFieldInfo fi = ti.getFieldByName(fieldName);
-                        if (fi != null)
+                        infoBase = fi;
+                        
+                        // Skip any fields that are AutoNumbered
+                        if (fieldInfo.getComp() instanceof AutoNumberableIFace)
                         {
-                            fieldInfo.setLabel(fi.getTitle());
-                            itemLabels.add(fieldInfo);
+                            isOK = !((AutoNumberableIFace)fieldInfo.getComp()).isFormatterAutoNumber();
+                        } else
+                        {
+                            isOK = true;
+                        }
+                        
+                    } else
+                    {
+                        DBRelationshipInfo ri = ti.getRelationshipByName(fieldName);
+                        if (ri != null)
+                        {
+                            infoBase = ri;
+                            
+                            // If the field is a OneToMany then it is a s Set
+                            // and we need to make sure the items in the set are clonable
+                            // if they are not clonable then we can't include this in 
+                            // the Carry Forward list
+                            Class<?> dataClass = ri.getDataClass();
+                            if (ri.getType() == DBRelationshipInfo.RelationshipType.OneToMany)
+                            {
+                                try
+                                {
+                                    Method method = dataClass.getMethod("clone", new Class<?>[] {});
+                                    // Pretty much every Object has a "clone" method but we need 
+                                    // to check to make sure it is implemented by the same class of 
+                                    // Object that is in the Set.
+                                    isOK = method.getDeclaringClass() == dataClass;
+                                    
+                                } catch (Exception ex) 
+                                {
+                                    isOK = false; // this really shouldn't happen
+                                }
+                            }
+                            
                         } else
                         {
                             log.error("Couldn't find field ["+fieldName+"] in ["+ti.getTitle()+"]");
+                            isOK = false;
                         }
+                    }
+                    
+                    if (isOK)
+                    {
+                        if (infoBase != null && StringUtils.isEmpty(label))
+                        {
+                            label = infoBase.getTitle();
+                        }
+                        fieldInfo.setLabel(label);
+                        itemLabels.add(fieldInfo);
+                        fieldInfo.setFieldInfo(infoBase);
                     }
                 }
             }
@@ -736,7 +826,7 @@ public class FormViewObj implements Viewable,
         
         Collections.sort(itemLabels);
         
-        ToggleButtonChooserDlg<FieldInfo> dlg = new ToggleButtonChooserDlg<FieldInfo>((Frame)UIRegistry.getTopWindow(),
+        ToggleButtonChooserDlg<FVOFieldInfo> dlg = new ToggleButtonChooserDlg<FVOFieldInfo>((Frame)UIRegistry.getTopWindow(),
                 UIRegistry.getResourceString("MV_CONFIG_CARRY_FORWARD"), 
                 itemLabels);
         dlg.setUseScrollPane(true);
@@ -748,7 +838,20 @@ public class FormViewObj implements Viewable,
         {
             carryForwardInfo.add(dlg.getSelectedObjects());
         }
-            
+    }
+    
+    /**
+     * Toggles Carry Forward State (Turning it on and off).
+     */
+    public void toggleCarryForward()
+    {
+        setDoCarryForward(!isDoCarryForward());
+        
+        JCheckBoxMenuItem mi = (JCheckBoxMenuItem)UIRegistry.get("CarryForward");
+        if (mi != null)
+        {
+            mi.setSelected(isDoCarryForward());
+        }
     }
     
     /**
@@ -757,7 +860,7 @@ public class FormViewObj implements Viewable,
      */
     protected void showContextMenu(MouseEvent e)
     {
-        if (e.isPopupTrigger())
+        if (e.isPopupTrigger() && mvParent != null && mvParent.isTopLevel())
         {
             JPopupMenu popup = new JPopupMenu();
             JMenuItem menuItem = new JMenuItem(UIRegistry.getResourceString("MV_CONFIG_CARRY_FORWARD"));
@@ -767,8 +870,19 @@ public class FormViewObj implements Viewable,
                     setUpCarryForward();
                 }
             });
-
             popup.add(menuItem);
+
+            JCheckBoxMenuItem chkMI = new JCheckBoxMenuItem(UIRegistry.getResourceString("CARRY_FORWARD_IS_ON"));
+            chkMI.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent ex)
+                {
+                    toggleCarryForward();
+                }
+            });
+            chkMI.setSelected(isCarryForwardConfgured() && isDoCarryForward());
+            chkMI.setEnabled(isCarryForwardConfgured());
+            popup.add(chkMI);
+
             popup.show(e.getComponent(), e.getX(), e.getY());
 
         }
@@ -880,17 +994,9 @@ public class FormViewObj implements Viewable,
         
         if (mvParent != null && mvParent.isTopLevel())
         {
-            Action action = UIRegistry.getAction("SaveAndNew");
-            if (action != null)
-            {
-                action.setEnabled(show);
-            }
+            adjustSaveAndNewUI(show);
             
-            Component sanComp = UIRegistry.get("SaveAndNew");
-            if (sanComp instanceof JCheckBoxMenuItem)
-            {
-                ((JCheckBoxMenuItem)sanComp).setSelected(saveAndNew);
-            }
+            adjustCarryForwardUI();
         }
         
         // Moving this to the MultiView
@@ -899,6 +1005,25 @@ public class FormViewObj implements Viewable,
             log.debug("Dispatching a Data_Entry/ViewWasShown command/action");
             CommandDispatcher.dispatch(new CommandAction("Data_Entry", "ViewWasShown", this));
         }*/
+    }
+    
+    /**
+     * Adjust the UI for the SaveAndNew MenuItem and Action.
+     * @param show the form is being shown.
+     */
+    private void adjustSaveAndNewUI(final boolean show)
+    {
+        Action action = UIRegistry.getAction("SaveAndNew");
+        if (action != null)
+        {
+            action.setEnabled(show);
+        }
+        
+        Component comp = UIRegistry.get("SaveAndNew");
+        if (comp instanceof JCheckBoxMenuItem)
+        {
+            ((JCheckBoxMenuItem)comp).setSelected(saveAndNew);
+        } 
     }
 
     /* (non-Javadoc)
@@ -1290,7 +1415,7 @@ public class FormViewObj implements Viewable,
      */
     public void updateAutoNumbers()
     {
-        for (FieldInfo fieldInfo : controlsById.values())
+        for (FVOFieldInfo fieldInfo : controlsById.values())
         {
             Component comp = fieldInfo.getComp();
             if (comp instanceof AutoNumberableIFace)
@@ -1305,7 +1430,7 @@ public class FormViewObj implements Viewable,
      * @param fieldInfo the field info
      * @return true it is, false it isn't
      */
-    public boolean isFieldAutoNumbered(final FieldInfo fieldInfo)
+    public boolean isFieldAutoNumbered(final FVOFieldInfo fieldInfo)
     {
         if (fieldInfo != null)
         {
@@ -1329,7 +1454,7 @@ public class FormViewObj implements Viewable,
     {
         if (businessRules != null)
         {
-            for (FieldInfo fieldInfo : controlsById.values())
+            for (FVOFieldInfo fieldInfo : controlsById.values())
             {
                 if (fieldInfo.getFormCell() instanceof FormCellSubViewIFace &&
                     fieldInfo.getComp() instanceof MultiView &&
@@ -1391,7 +1516,7 @@ public class FormViewObj implements Viewable,
         }
     
         UIValidator.setIgnoreAllValidation(this, true);
-        for (FieldInfo fieldInfo : controlsById.values())
+        for (FVOFieldInfo fieldInfo : controlsById.values())
         {
             Component comp = fieldInfo.getComp();
             if (comp != null && comp instanceof UIValidatable)
@@ -1401,7 +1526,7 @@ public class FormViewObj implements Viewable,
         }
         UIValidator.setIgnoreAllValidation(this, false);
         
-        for (FieldInfo fi : controlsByName.values())
+        for (FVOFieldInfo fi : controlsByName.values())
         {
             if (fi.getComp() instanceof EditViewCompSwitcherPanel)
             {
@@ -1459,7 +1584,31 @@ public class FormViewObj implements Viewable,
 
         if (doCarryForward && carryFwdDataObj != null  && carryFwdInfo != null)
         {
-            carryFwdInfo.carryForward(carryFwdDataObj, obj);
+            // We don't need a Session when we are not cloning sets.
+            if (false)
+            {
+                carryFwdInfo.carryForward(businessRules, carryFwdDataObj, obj);
+                
+            } else
+            {
+                DataProviderSessionIFace sessionLocal = null;
+                try
+                {
+                    sessionLocal = DataProviderFactory.getInstance().createSession();
+                    sessionLocal.attach(carryFwdDataObj);
+                    carryFwdInfo.carryForward(businessRules, carryFwdDataObj, obj);
+                    
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                } finally
+                {
+                    if (sessionLocal != null)
+                    {
+                        sessionLocal.close();
+                    }
+                }
+            }
         }
         
         if (formValidator != null && formValidator.hasChanged())
@@ -1712,7 +1861,7 @@ public class FormViewObj implements Viewable,
                 
                 dataObj = dObj;
                 
-                for (FieldInfo fi : controlsByName.values())
+                for (FVOFieldInfo fi : controlsByName.values())
                 {
                     if (fi.getComp() instanceof EditViewCompSwitcherPanel)
                     {
@@ -2239,7 +2388,7 @@ public class FormViewObj implements Viewable,
                 log.debug("=================================== "+formValidator.getDCNs().values().size());
                 for (DataChangeNotifier dcn : formValidator.getDCNs().values())
                 {
-                    FieldInfo fieldInfo = controlsById.get(dcn.getId());
+                    FVOFieldInfo fieldInfo = controlsById.get(dcn.getId());
                     if (fieldInfo != null)
                     {
                         log.debug("Changed Field["+fieldInfo.getName()+"]\t["+(dcn.isDataChanged() ? "CHANGED" : "not changed")+"]");
@@ -2268,7 +2417,7 @@ public class FormViewObj implements Viewable,
         int       insertPos = Integer.MAX_VALUE;
         Component focusable = null;
         Component first     = null;
-        for (FieldInfo compFI : controlsById.values())
+        for (FVOFieldInfo compFI : controlsById.values())
         {
             Component comp = compFI.getComp();
 
@@ -2543,7 +2692,7 @@ public class FormViewObj implements Viewable,
      */
     public Component getCompById(final String id)
     {
-        FieldInfo fi = controlsById.get(id);
+        FVOFieldInfo fi = controlsById.get(id);
         if (fi != null)
         {
             return fi.getComp();
@@ -2557,7 +2706,7 @@ public class FormViewObj implements Viewable,
      */
     public JLabel getLabelFor(final String id)
     {
-        FieldInfo fi = labels.get(id);
+        FVOFieldInfo fi = labels.get(id);
         if (fi != null)
         {
             return (JLabel)fi.getComp();
@@ -2570,9 +2719,9 @@ public class FormViewObj implements Viewable,
      * @param id the id of the label to be returned.
      * @return the FieldInfo for a label
      */
-    public FieldInfo getLabelInfoFor(final String id)
+    public FVOFieldInfo getLabelInfoFor(final String id)
     {
-        for (FieldInfo fi : labels.values())
+        for (FVOFieldInfo fi : labels.values())
         {
             String labelForId = ((FormCellLabel)fi.getFormCell()).getLabelFor();
             if (labelForId != null && labelForId.equals(id))
@@ -2590,7 +2739,7 @@ public class FormViewObj implements Viewable,
      */
     public JLabel getLabelFor(final Component comp)
     {
-        for (FieldInfo fi : controlsById.values())
+        for (FVOFieldInfo fi : controlsById.values())
         {
             if (fi.getComp() == comp)
             {
@@ -2606,7 +2755,7 @@ public class FormViewObj implements Viewable,
     public Map<String, Component> getControlMapping()
     {
         Map<String, Component> map = new Hashtable<String, Component>();
-        for (FieldInfo fieldInfo : controlsById.values())
+        for (FVOFieldInfo fieldInfo : controlsById.values())
         {
             map.put(fieldInfo.getId(), fieldInfo.getComp());
         }
@@ -2618,7 +2767,7 @@ public class FormViewObj implements Viewable,
      */
     public Component getControlById(String id)
     {
-        FieldInfo fi = controlsById.get(id);
+        FVOFieldInfo fi = controlsById.get(id);
         return fi != null ? fi.getComp() : null;
     }
     
@@ -2634,11 +2783,11 @@ public class FormViewObj implements Viewable,
             Font        boldFont = null;
             for (String idFor : labels.keySet())
             {
-                FieldInfo     labelInfo = labels.get(idFor);
+                FVOFieldInfo     labelInfo = labels.get(idFor);
                 JLabel        label     = (JLabel)labelInfo.getComp();
                 FormCellLabel labelCell = (FormCellLabel)labelInfo.getFormCell();
                 
-                FormViewObj.FieldInfo fieldInfo = controlsById.get(idFor);
+                FormViewObj.FVOFieldInfo fieldInfo = controlsById.get(idFor);
                 if (fieldInfo.getFormCell().getType() == FormCellIFace.CellType.field)
                 {
                     FormCellField cell = (FormCellField)fieldInfo.getFormCell();
@@ -2670,7 +2819,7 @@ public class FormViewObj implements Viewable,
      * @param id
      * @return
      */
-    public FieldInfo getFieldInfoForId(final String id)
+    public FVOFieldInfo getFieldInfoForId(final String id)
     {
         return controlsById.get(id);
     }
@@ -3009,7 +3158,7 @@ public class FormViewObj implements Viewable,
         
         boolean isDataValueNew = objToCheck instanceof FormDataObjIFace && ((FormDataObjIFace)objToCheck).getId() == null;
 
-        for (FieldInfo fieldInfo : controlsById.values())
+        for (FVOFieldInfo fieldInfo : controlsById.values())
         {
             if (fieldInfo.isOfType(FormCellIFace.CellType.subview) ||
                 fieldInfo.isOfType(FormCellIFace.CellType.iconview))
@@ -3168,13 +3317,13 @@ public class FormViewObj implements Viewable,
     public void setFormEnabled(final boolean enabled)
     {
         // Enable the labels
-        for (FieldInfo labelFI : labels.values())
+        for (FVOFieldInfo labelFI : labels.values())
         {
             labelFI.getComp().setEnabled(true);
         }
 
         // Enable the formn controls
-        for (FieldInfo compFI : controlsById.values())
+        for (FVOFieldInfo compFI : controlsById.values())
         {
             compFI.setEnabled(true);
         }
@@ -3275,13 +3424,13 @@ public class FormViewObj implements Viewable,
         if (dataObj == null && !wasNull)
         {
             // Disable all the labels
-            for (FieldInfo labelFI : labels.values())
+            for (FVOFieldInfo labelFI : labels.values())
             {
                 labelFI.getComp().setEnabled(false);
             }
 
             // Disable all the form controls and set their values to NULL
-            for (FieldInfo fieldInfo : controlsById.values())
+            for (FVOFieldInfo fieldInfo : controlsById.values())
             {
                 fieldInfo.getComp().setEnabled(false);
                 if (fieldInfo.isOfType(FormCellIFace.CellType.field))
@@ -3337,7 +3486,7 @@ public class FormViewObj implements Viewable,
             
             // Now we know the we have data, so loop through all the controls
             // and set their values
-            for (FieldInfo fieldInfo : controlsById.values())
+            for (FVOFieldInfo fieldInfo : controlsById.values())
             {
                 Component comp = fieldInfo.getComp();
                 
@@ -3612,7 +3761,7 @@ public class FormViewObj implements Viewable,
                     }
                 }
                 
-                for (FieldInfo fieldInfo : controlsById.values())
+                for (FVOFieldInfo fieldInfo : controlsById.values())
                 {
                     String nm = fieldInfo.getFormCell().getName();
                     if (nm.equals("agentAuthorizations"))
@@ -3678,7 +3827,7 @@ public class FormViewObj implements Viewable,
      */
     public boolean hasFormControlChanged(final String id)
     {
-        FieldInfo fieldInfo = controlsById.get(id);
+        FVOFieldInfo fieldInfo = controlsById.get(id);
         if (fieldInfo != null)
         {
             Component comp = fieldInfo.getComp();
@@ -3782,7 +3931,7 @@ public class FormViewObj implements Viewable,
      */
     public Object getDataFromUIComp(final String id)
     {
-        FieldInfo fieldInfo = controlsById.get(id);
+        FVOFieldInfo fieldInfo = controlsById.get(id);
         if (fieldInfo != null)
         {
             boolean isSingleValueFromSet = false;
@@ -4050,9 +4199,9 @@ public class FormViewObj implements Viewable,
      */
     public void shutdown()
     {
-        for (Enumeration<FieldInfo> e=controlsById.elements(); e.hasMoreElements();)
+        for (Enumeration<FVOFieldInfo> e=controlsById.elements(); e.hasMoreElements();)
         {
-            FieldInfo fieldInfo = e.nextElement();
+            FVOFieldInfo fieldInfo = e.nextElement();
             fieldInfo.shutdown();
         }
         controlsById.clear();
@@ -4108,7 +4257,7 @@ public class FormViewObj implements Viewable,
                 UIRegistry.showError(str);
                 //throw new RuntimeException("Two labels have the same id ["+formCell.getLabelFor()+"] "+formViewDef.getName());
             }
-            labels.put(formCell.getLabelFor(), new FieldInfo(formCell, label, null, labels.size()));
+            labels.put(formCell.getLabelFor(), new FVOFieldInfo(formCell, label, null, labels.size()));
         }
     }
 
@@ -4143,7 +4292,7 @@ public class FormViewObj implements Viewable,
                 comp = control;
             }
             
-            FieldInfo fieldInfo = new FieldInfo(formCell, comp, scrPane, controlsById.size());
+            FVOFieldInfo fieldInfo = new FVOFieldInfo(formCell, comp, scrPane, controlsById.size());
             controlsById.put(formCell.getIdent(), fieldInfo);
             if (!isThis)
             {
@@ -4170,7 +4319,7 @@ public class FormViewObj implements Viewable,
             throw new RuntimeException("Two controls have the same name ["+formCell.getName()+"] "+formViewDef.getName());
         }
         
-        FieldInfo fieldInfo = new FieldInfo(formCell, uip, controlsById.size());
+        FVOFieldInfo fieldInfo = new FVOFieldInfo(formCell, uip, controlsById.size());
         controlsById.put(formCell.getIdent(), fieldInfo);
         if (!isThis)
         {
@@ -4242,7 +4391,7 @@ public class FormViewObj implements Viewable,
                 builder.add(subView, cc.xywh(colInx, rowInx, colSpan, rowSpan, "fill,fill"));
             }
             
-            FieldInfo fi = new FieldInfo(formCell, subView, controlsById.size());
+            FVOFieldInfo fi = new FVOFieldInfo(formCell, subView, controlsById.size());
             controlsById.put(formCell.getIdent(), fi);
             controlsByName.put(formCell.getName(), fi);
             kids.add(subView);
@@ -4279,7 +4428,7 @@ public class FormViewObj implements Viewable,
      */
     public Component getControlByName(final String name)
     {
-        FieldInfo fieldInfo = controlsByName.get(name);
+        FVOFieldInfo fieldInfo = controlsByName.get(name);
         // If it wasn't found in the immediate form then 
         // recurse through all the SubViews
         if (fieldInfo == null)
@@ -4317,7 +4466,7 @@ public class FormViewObj implements Viewable,
      */
     public FormViewObj getFormViewObjForControlName(final String name)
     {
-        FieldInfo fieldInfo = controlsByName.get(name);
+        FVOFieldInfo fieldInfo = controlsByName.get(name);
         // If it wasn't found in the immediate form then 
         // recurse through all the SubViews
         if (fieldInfo == null)
@@ -4348,7 +4497,7 @@ public class FormViewObj implements Viewable,
      */
     public void setControlChanged(final String controlName)
     {
-        FieldInfo   fieldInfo   = controlsByName.get(controlName);
+        FVOFieldInfo   fieldInfo   = controlsByName.get(controlName);
         Component   comp        = null;
         FormViewObj formViewObj = null;
         
@@ -4526,7 +4675,7 @@ public class FormViewObj implements Viewable,
 
     protected void setColorOnControls(final int colorType, final Color color)
     {
-        for (FieldInfo fieldInfo : controlsById.values())
+        for (FVOFieldInfo fieldInfo : controlsById.values())
         {
             if (fieldInfo.isOfType(FormCellIFace.CellType.field))
             {
@@ -4572,7 +4721,7 @@ public class FormViewObj implements Viewable,
     public Hashtable<String, String> getIdToNameHash()
     {
         Hashtable<String, String> hash = new Hashtable<String, String>();
-        for (FieldInfo fieldInfo : controlsById.values())
+        for (FVOFieldInfo fieldInfo : controlsById.values())
         {
             hash.put(fieldInfo.getId(), fieldInfo.getName());
         }
@@ -4593,7 +4742,7 @@ public class FormViewObj implements Viewable,
      */
     public void getFieldIds(final List<String> fieldIds, final boolean doAll)
     {
-        for (FieldInfo fieldInfo : controlsById.values())
+        for (FVOFieldInfo fieldInfo : controlsById.values())
         {
             if (fieldInfo.isOfType(FormCellIFace.CellType.field) || doAll)
             {
@@ -4607,9 +4756,9 @@ public class FormViewObj implements Viewable,
      */
     public void getFieldNames(final List<String> fieldNames)
     {
-        ArrayList<FieldInfo> flds = new ArrayList<FieldInfo>();
+        ArrayList<FVOFieldInfo> flds = new ArrayList<FVOFieldInfo>();
         
-        for (FieldInfo fieldInfo : controlsByName.values())
+        for (FVOFieldInfo fieldInfo : controlsByName.values())
         {
             if (fieldInfo.isOfType(FormCellIFace.CellType.field))
             {
@@ -4619,7 +4768,7 @@ public class FormViewObj implements Viewable,
         
         Collections.sort(flds);
         
-        for (FieldInfo fieldInfo : flds)
+        for (FVOFieldInfo fieldInfo : flds)
         {
             fieldNames.add(fieldInfo.getName());
         }
@@ -4652,18 +4801,20 @@ public class FormViewObj implements Viewable,
     //-------------------------------------------------
     // FieldInfo
     //-------------------------------------------------
-    class FieldInfo implements Comparable<FieldInfo>
+    class FVOFieldInfo implements Comparable<FVOFieldInfo>
     {
-        protected String        label = null; // used by CarryForwardSetup
-        
         protected FormCellIFace formCell;
         protected MultiView     subView;
         protected Component     comp;
         protected JScrollPane   fieldScrollPane;
         protected Integer       insertPos;
         protected UIPluginable  uiPlugin;
-
-        public FieldInfo(FormCellIFace formCell, Component comp, JScrollPane scrollPane, int insertPos)
+        
+        // used by CarryForwardSetup
+        protected String        label = null; 
+        protected DBInfoBase    fieldInfo;;
+        
+        public FVOFieldInfo(FormCellIFace formCell, Component comp, JScrollPane scrollPane, int insertPos)
         {
             this.comp     = comp;
             this.formCell = formCell;
@@ -4673,7 +4824,7 @@ public class FormViewObj implements Viewable,
             this.uiPlugin  = null;
         }
 
-        public FieldInfo(FormCellIFace formCell, MultiView subView, int insertPos)
+        public FVOFieldInfo(FormCellIFace formCell, MultiView subView, int insertPos)
         {
             this.formCell = formCell;
             this.subView  = subView;
@@ -4682,7 +4833,7 @@ public class FormViewObj implements Viewable,
             this.uiPlugin  = null;
         }
         
-        public FieldInfo(FormCellIFace formCell, UIPluginable uiPlugin, int insertPos)
+        public FVOFieldInfo(FormCellIFace formCell, UIPluginable uiPlugin, int insertPos)
         {
             this.formCell  = formCell;
             this.subView   = null;
@@ -4761,12 +4912,13 @@ public class FormViewObj implements Viewable,
             comp       = null;
             fieldScrollPane = null;
             label      = null;
+            fieldInfo  = null;
         }
 
         /* (non-Javadoc)
          * @see java.lang.Comparable#compareTo(java.lang.Object)
          */
-        public int compareTo(FieldInfo o)
+        public int compareTo(FVOFieldInfo o)
         {
             return insertPos.compareTo(o.insertPos);
         }
@@ -4788,6 +4940,24 @@ public class FormViewObj implements Viewable,
         {
             return label;
         }
+
+        /**
+         * @return the fieldInfo
+         */
+        public DBInfoBase getFieldInfo()
+        {
+            return fieldInfo;
+        }
+
+        /**
+         * @param fieldInfo the fieldInfo to set
+         */
+        public void setFieldInfo(DBInfoBase fieldInfo)
+        {
+            this.fieldInfo = fieldInfo;
+        }
+        
+        
     }
 
     /**

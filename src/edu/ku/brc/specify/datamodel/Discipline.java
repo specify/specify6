@@ -129,8 +129,8 @@ public class Discipline extends DataModelObjBase implements java.io.Serializable
     {
         if (Discipline.currentDiscipline != null)
         {
-            String discplineTitle = Discipline.currentDiscipline.getTitle();
-            return StringUtils.isNotEmpty(discplineTitle) && discplineTitle.equals(disciplineArg.toString());
+            String discplineName = Discipline.currentDiscipline.getName();
+            return StringUtils.isNotEmpty(discplineName) && discplineName.equals(disciplineArg.toString());
         }
         return false;
     }

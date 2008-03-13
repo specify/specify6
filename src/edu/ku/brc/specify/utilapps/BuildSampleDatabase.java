@@ -3500,7 +3500,7 @@ public class BuildSampleDatabase
         // Create Collection
         ////////////////////////////////
         log.info("Creating a Collection");
-        Collection collection = createCollection(colPrefix, colName, cns, discipline, true);
+        Collection collection = createCollection(colPrefix, colName, cns, discipline, false);
         persist(collection);
         
         Collection.setCurrentCollection(collection);

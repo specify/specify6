@@ -13,6 +13,17 @@
            </altviews>
         </view>
         
+        <view name="SubCollectingEvent"
+            class="edu.ku.brc.specify.datamodel.CollectingEvent"
+            isinternal="false"
+            resourcelabels="false">
+            <desc><![CDATA[CollectingEvent Form]]></desc>
+            <altviews>
+                <altview name="SubCollectingEvent View" viewdef="SubCollectingEvent" label="View" mode="view" default="true"/>
+                <altview name="SubCollectingEvent Edit" viewdef="SubCollectingEvent" label="Edit" mode="edit"/>
+           </altviews>
+        </view>
+        
         <view name="CollectionObject"
             class="edu.ku.brc.specify.datamodel.CollectionObject"
             isinternal="false"
@@ -24,12 +35,10 @@
                 <altview name="Collection Object Edit" viewdef="Collection Object" label="Edit" mode="edit" default="true"/>
             </altviews>
         </view>
-        
     </views>
 
 
     <viewdefs>
-    
         <viewdef
             type="form"
             name="Collection Object"
@@ -75,11 +84,10 @@
     			    <cell type="subview" viewname="Determination" id="6" name="determinations" colspan="12" rows="5" initialize="noscrollbars=true;border=line;bordercolor=150,150,150;"/>
     			</row>
    			    <row>
-    				<cell type="separator" label="Locality" colspan="12"/>
+    				<cell type="separator" label="Collecting Event" colspan="12"/>
     			</row>
     		    <row>
-    		        <!-- <cell type="subview" viewname="Locality" id="7" name="collectingEvent.locality" colspan="12"/> -->
-    		        <cell type="field" id="7" name="collectingEvent.locality" uitype="querycbx" initialize="name=Locality;title=Locality" colspan="12"/>
+                    <cell type="subview" id="7" viewname="SubCollectingEvent" name="collectingEvent" colspan="12"/>
     		    </row>  	
     			<row>
     			    <cell type="separator" label="Preparations" collapse="preparations" colspan="12"/>
@@ -87,12 +95,10 @@
     			<row>
     			    <cell type="subview" viewname="Preparation" id="8" name="preparations" defaulttype="table" colspan="12"/>
     			</row>
-    
-	    <row>
-
-<cell type="subview" viewname="Appraisal" id="30" name="appraisal" colspan="12"/>
-</row>
-    		    <row>
+    			<row>
+    				<cell type="subview" viewname="Appraisal" id="30" name="appraisal" colspan="12" />
+    			</row>
+    			<row>
                     <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectionObjectAttachments" colspan="12" initialize="btn=true;icon=CollectionObjectAttachment"/>
                 </row>
     			<row>
@@ -149,7 +155,7 @@
                     <cell type="separator" label="Attachments" collapse="collectingEventAttachments" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectingEventAttachments" colspan="12" initialize="btn=true;icon=CollectingEventAttachment"/>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectingEventAttachments" colspan="12" initialize="btn=true;icon=CollectingEvent"/>
                 </row>
                 <!--
                 <row>
@@ -161,7 +167,37 @@
         </viewdef>
         
 
+        <viewdef
+            type="form"
+            name="SubCollectingEvent"
+            class="edu.ku.brc.specify.datamodel.CollectingEvent"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
 
+            <desc><![CDATA[Sub Collecting Event]]></desc>
+            <columnDef>p,2px,p,5px,p,2px,p,5px,p,2px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Field Number"/>
+                    <cell type="field" id="1" name="stationFieldNumber" uitype="text"/>
+                    <cell type="label" labelfor="2" label="Date"/>
+                    <cell type="field" id="2" name="startDate" uitype="formattedtext" uifieldformatter="Date"/>
+                    <cell type="label" labelfor="3" label="Gear"/>
+                    <cell type="field" id="3" name="method" uitype="combobox" dspuitype="dsptextfield" picklist="CollectingMethod"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="4" label="Locality"/>
+                    <cell type="field" id="4" name="locality" uitype="querycbx" initialize="name=Locality;title=Locality" colspan="10"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5" label="Collectors"/>
+                    <cell type="subview" viewname="Collectors" id="8" name="collectors" colspan="10"/>
+                </row>
+            </rows>
+        </viewdef>
         
+       
     </viewdefs>
 </viewset>

@@ -495,6 +495,14 @@ public abstract class BaseBusRules implements BusinessRulesIFace
     {
         return dataObjectFromSearch;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#shouldCloneField(java.lang.String)
+     */
+    public boolean shouldCloneField(final String fieldName)
+    {
+        return false;
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#formShutdown()

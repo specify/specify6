@@ -200,7 +200,7 @@ public interface BusinessRulesIFace
     
     /**
      * Returns whether a the form should create a new object and pass it in. This new object
-     * is usually a requried parent for the the search object.
+     * is usually a required parent for the the search object.
      * @return whether to create a new object
      */
     public abstract boolean doesSearchObjectRequireNewParent();
@@ -212,6 +212,17 @@ public interface BusinessRulesIFace
      * @return the dataObjectFromSearch
      */
     public abstract Object processSearchObject(Object newParentDataObj, Object dataObjectFromSearch);
+    
+    /**
+     * During CarryForward some fields should be copied and some cloned depending on there context 
+     * within the parent data object. For example, most many-to-one relationships will have the data 
+     * object's reference copied so the new object reuses and points at the same object as the previous 
+     * (Carry Forward source object). But in some circumstances the entire data object gets cloned.
+     * 
+     * @return true if field is to be cloned false if the value (or the value reference) is to be copied. 
+     * (most of the time this returns false).
+     */
+    public abstract boolean shouldCloneField(final String fieldName);
     
     /**
      * The form is being tossed.

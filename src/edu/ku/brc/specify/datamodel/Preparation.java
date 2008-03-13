@@ -65,7 +65,11 @@ import edu.ku.brc.dbsupport.AttributeProviderIFace;
     {   @Index (name="PreparedDateIDX", columnNames={"preparedDate"}),
         @Index (name="PrepColMemIDX", columnNames={"CollectionMemberID"})
     })
-public class Preparation extends CollectionMember implements AttachmentOwnerIFace<PreparationAttachment>, AttributeProviderIFace, java.io.Serializable, Comparable<Preparation>
+public class Preparation extends CollectionMember implements AttachmentOwnerIFace<PreparationAttachment>, 
+                                                             AttributeProviderIFace, 
+                                                             java.io.Serializable, 
+                                                             Comparable<Preparation>,
+                                                             Cloneable
 {
 
     // Fields    
@@ -103,19 +107,21 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     /** default constructor */
     public Preparation() 
     {
-        //
         // do nothing
     }
     
     /** constructor with id */
-    public Preparation(Integer preparationId) {
+    public Preparation(Integer preparationId) 
+    {
         this.preparationId = preparationId;
     }
    
     
     
 
-    // Initializer
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#initialize()
+     */
     @Override
     public void initialize()
     {
@@ -580,6 +586,47 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     public Set<PreparationAttachment> getAttachmentReferences()
     {
         return preparationAttachments;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        Preparation obj = (Preparation)super.clone();
+        obj.initialize();
+        
+        obj.text1        = text1;
+        obj.text2        = text2;
+        obj.count        = count;
+        obj.storageLocation = storageLocation;
+        obj.remarks      = remarks;
+        obj.preparedDate = preparedDate;
+        obj.status       = status;
+        obj.sampleNumber = sampleNumber;
+        
+        obj.number1      = number1;
+        obj.number2      = number2;
+        obj.yesNo1       = yesNo1;
+        obj.yesNo2       = yesNo2;
+        obj.yesNo3       = yesNo2;
+        obj.prepType     = prepType;
+        obj.preparedByAgent = preparedByAgent;
+        obj.collectionObject = collectionObject;
+        
+        // These are for documentation purposes (to know what isn't being cloned)
+        
+        //giftPreparations = new HashSet<GiftPreparation>();
+        //loanPreparations = new HashSet<LoanPreparation>();
+        //collectionObject = null;
+        //storage = null;
+        //deaccessionPreparations = new HashSet<DeaccessionPreparation>();
+        //preparationAttributes  = null;
+        //preparationAttrs       = new HashSet<PreparationAttr>();
+        //preparationAttachments = new HashSet<PreparationAttachment>();
+        
+        return obj;
     }
 
     //----------------------------------------------------------------------

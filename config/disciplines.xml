@@ -19,7 +19,7 @@
     <discipline name="insect"       title="Insect"       abbrev="ENTO" isembedce="true" type="0"/>
     <discipline name="botany"       title="Botany"       abbrev="BNTY" isembedce="true" type="0"/>
     <discipline name="invertebrate" title="Invertebrate" abbrev="IVTB" isembedce="true" type="0"/>
-    <discipline name="minerals"     title="Minerals"     abbrev="MIN" isembedce="true" type="4"/>
+    <discipline name="minerals"     title="Minerals"     abbrev="MIN"  isembedce="true" type="4"/>
     <discipline name="anthropology" title="Anthropology" abbrev="ANTH" isembedce="true" type="3"/>
     <discipline name="fungi"        title="Fungi"        abbrev="FNGI" isembedce="true" type="0"/>
     

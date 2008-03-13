@@ -14,12 +14,17 @@
  */
 package edu.ku.brc.ui.forms;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
-import edu.ku.brc.ui.forms.FormViewObj.FieldInfo;
+import edu.ku.brc.dbsupport.DBRelationshipInfo;
+import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.forms.FormViewObj.FVOFieldInfo;
 import edu.ku.brc.ui.forms.persist.FormCellField;
 import edu.ku.brc.ui.forms.persist.FormCellFieldIFace;
+import edu.ku.brc.ui.forms.persist.FormCellSubViewIFace;
 import edu.ku.brc.ui.forms.persist.FormViewDefIFace;
 
 /**
@@ -34,7 +39,7 @@ import edu.ku.brc.ui.forms.persist.FormViewDefIFace;
 public class CarryForwardInfo
 {
     
-    protected List<FieldInfo>     fieldList = new ArrayList<FieldInfo>();
+    protected List<FVOFieldInfo>  fieldList = new ArrayList<FVOFieldInfo>();
     protected DataObjectGettable  getter;
     protected DataObjectSettable  setter;
     protected FormViewDefIFace    formViewDef;
@@ -60,7 +65,7 @@ public class CarryForwardInfo
      * Clears the internal list and adds a list of fields.
      * @param id the ID to be added
      */
-    public void add(final List<FieldInfo> items)
+    public void add(final List<FVOFieldInfo> items)
     {
         fieldList.clear();
         
@@ -74,10 +79,10 @@ public class CarryForwardInfo
      */
     public void add(final String id)
     {
-        FieldInfo fieldInfo = formViewObj.getFieldInfoForId(id);
-        if (fieldInfo != null && fieldInfo.getFormCell() instanceof FormCellField)
+        FVOFieldInfo fvoFieldInfo = formViewObj.getFieldInfoForId(id);
+        if (fvoFieldInfo != null && fvoFieldInfo.getFormCell() instanceof FormCellField)
         {
-            fieldList.add(fieldInfo);
+            fieldList.add(fvoFieldInfo);
             formViewObj.setDoCarryForward(true);
         }
     }
@@ -88,10 +93,10 @@ public class CarryForwardInfo
      */
     public void remove(final String id)
     {
-        FieldInfo fieldInfo = formViewObj.getFieldInfoForId(id);
-        if (fieldInfo != null && fieldInfo.getFormCell() instanceof FormCellField)
+        FVOFieldInfo fvoFieldInfo = formViewObj.getFieldInfoForId(id);
+        if (fvoFieldInfo != null && fvoFieldInfo.getFormCell() instanceof FormCellField)
         {
-            fieldList.remove(fieldInfo);
+            fieldList.remove(fvoFieldInfo);
             formViewObj.setDoCarryForward(fieldList.size() > 0);
         }
     }
@@ -99,7 +104,7 @@ public class CarryForwardInfo
     /**
      * @return the fieldList
      */
-    public List<FieldInfo> getFieldList()
+    public List<FVOFieldInfo> getFieldList()
     {
         return fieldList;
     }
@@ -111,14 +116,22 @@ public class CarryForwardInfo
      */
     public boolean contains(final String id)
     {
-        for (FieldInfo fieldInfo : fieldList)
+        for (FVOFieldInfo fvoFieldInfo : fieldList)
         {
-            if (fieldInfo.getFormCell().getIdent().equals(id))
+            if (fvoFieldInfo.getFormCell().getIdent().equals(id))
             {
                 return true;
             }
         }
         return false;
+    }
+    
+    /**
+     * @return true if there is one or more fields configured.
+     */
+    public boolean hasConfiguredFields()
+    {
+        return fieldList.size() > 0;
     }
     
     /**
@@ -129,20 +142,114 @@ public class CarryForwardInfo
         fieldList.clear();
     }
     
+    private boolean isClonable(final Object obj)
+    {
+        try
+        {
+            Method method = obj.getClass().getMethod("clone", new Class<?>[] {});
+            // Pretty much every Object has a "clone" method but we need 
+            // to check to make sure it is implemented by the same class of 
+            // Object that is in the Set.
+            return method.getDeclaringClass() == obj.getClass();
+            
+        } catch (Exception ex) 
+        {
+        }
+        return false;
+    }
+    
+    /**
+     * Sets the Value (ManyToOne) or Clones it like a OneToOne.
+     * @param businessRules the rules
+     * @param carryFwdData the carry forward object
+     * @param fvoFieldInfo field info
+     * @param newData the new data
+     */
+    protected void setOrCloneDataValue(final BusinessRulesIFace businessRules, 
+                                       final Object             carryFwdData,
+                                       final FVOFieldInfo       fvoFieldInfo,
+                                       final Object             newData)
+    {
+        String fieldName      = fvoFieldInfo.getFormCell().getName();
+        Object fieldDataValue = getter.getFieldValue(carryFwdData, fieldName);
+        
+        System.err.println(fieldName);
+        
+        if (fieldDataValue != null && 
+            businessRules != null && 
+            businessRules.shouldCloneField(fieldName))
+        {
+            if (isClonable(fieldDataValue))
+            {
+                try
+                {
+                    fieldDataValue = ((FormDataObjIFace)fieldDataValue).clone();
+                    
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                }
+            } else
+            {
+                UIRegistry.showError("A request has been made to Clone an object ["+fieldDataValue.getClass().getSimpleName()+"] and it doesn't implement Clone\nPlease ask engineering to do that.");
+                return;
+            }
+        }
+        setter.setFieldValue(newData, fieldName, fieldDataValue);
+    }
+    
     /**
      * Copies a field's data from the old object to the new.
      * @param carryFwdData the old data object
      * @param newData the new data object
      */
-    public void carryForward(final Object carryFwdData, final Object newData)
+    @SuppressWarnings("unchecked")
+    public void carryForward(final BusinessRulesIFace businessRules, 
+                             final Object carryFwdData, 
+                             final Object newData)
     {
-        for (FieldInfo fieldInfo : fieldList)
+        for (FVOFieldInfo fvoFieldInfo : fieldList)
         {
-            FormCellFieldIFace cellField = (FormCellFieldIFace)fieldInfo.getFormCell();
             
-            //Object data = getter.getFieldValue(carryFwdData, cellField.getName());
-            //System.out.println(data);
-            setter.setFieldValue(newData, cellField.getName(), getter.getFieldValue(carryFwdData, cellField.getName()));
+            if (fvoFieldInfo.getFormCell() instanceof FormCellFieldIFace)
+            {
+                setOrCloneDataValue(businessRules, carryFwdData, fvoFieldInfo, newData);
+                
+            } else if (fvoFieldInfo.getFormCell() instanceof FormCellSubViewIFace)
+            {
+                FormCellSubViewIFace subViewFormCell = (FormCellSubViewIFace)fvoFieldInfo.getFormCell();
+                Object fromData = getter.getFieldValue(carryFwdData, subViewFormCell.getName());
+                Object toData   = getter.getFieldValue(newData, subViewFormCell.getName());
+                
+                if (fromData instanceof Set<?> && toData instanceof Set<?>)
+                {
+                    Set<?> fromSet = (Set<?>)fromData;
+                    for (Object dObj : fromSet)
+                    {
+                        if (dObj instanceof FormDataObjIFace)
+                        {
+                            try
+                            {
+                                Object newObj = ((FormDataObjIFace)dObj).clone();
+                                ((FormDataObjIFace)newData).addReference((FormDataObjIFace)newObj, subViewFormCell.getName());
+                                
+                            } catch (CloneNotSupportedException ex)
+                            {
+                                //log.error(ex);
+                                ex.printStackTrace();
+                            }
+                        }
+                    }
+                } else if (fvoFieldInfo.getFieldInfo() instanceof DBRelationshipInfo)
+                {
+                    DBRelationshipInfo ri = (DBRelationshipInfo)fvoFieldInfo.getFieldInfo();
+                    if (ri.getType() == DBRelationshipInfo.RelationshipType.ManyToOne)
+                    {
+                        setOrCloneDataValue(businessRules, carryFwdData, fvoFieldInfo, newData);
+                    }
+                }
+                    
+            }
         }
     }
     

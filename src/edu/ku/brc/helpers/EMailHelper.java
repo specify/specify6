@@ -908,7 +908,7 @@ public class EMailHelper
         
          String smtpStr  = AppPreferences.getRemote().get("settings.email.smtp", null);
          
-         if (smtpStr.equals("smtp.gmail.com"))
+         if (StringUtils.isNotEmpty(smtpStr) && smtpStr.equals("smtp.gmail.com"))
          {
              return true;
          }

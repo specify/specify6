@@ -32,7 +32,7 @@ import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.forms.FormViewObj.FieldInfo;
+import edu.ku.brc.ui.forms.FormViewObj.FVOFieldInfo;
 import edu.ku.brc.ui.forms.persist.FormCellFieldIFace;
 import edu.ku.brc.ui.forms.persist.FormCellLabel;
 import edu.ku.brc.ui.forms.persist.FormCellSubView;
@@ -125,7 +125,7 @@ public class CarryForwardConfigDlg extends CustomDialog
                 fvo.getFieldIds(ids, true);
                 for (String id : ids)
                 {
-                    FieldInfo fieldInfo = fvo.getFieldInfoForId(id);
+                    FVOFieldInfo fieldInfo = fvo.getFieldInfoForId(id);
                     boolean isOK = true;
                     if (fieldInfo.getFormCell() instanceof FormCellFieldIFace)
                     {
@@ -138,13 +138,13 @@ public class CarryForwardConfigDlg extends CustomDialog
                     } else if (fieldInfo.getFormCell() instanceof FormCellSubView &&
                                fieldInfo.getSubView() != null)
                     {
-                        buildTableModel(fieldInfo.getSubView());
+                        //buildTableModel(fieldInfo.getSubView());
                         continue;
                     }
                     
                     if (isOK)
                     {
-                        FieldInfo labelInfo = fvo.getLabelInfoFor(id);
+                        FVOFieldInfo labelInfo = fvo.getLabelInfoFor(id);
                         if (labelInfo != null)
                         {
                             if (!(fieldInfo.getFormCell() instanceof FormCellLabel))
@@ -195,7 +195,7 @@ public class CarryForwardConfigDlg extends CustomDialog
     {
         protected MultiView   mv;
         protected FormViewObj fvo;
-        protected FieldInfo   fieldInfo;
+        protected FVOFieldInfo   fieldInfo;
         protected DBTableInfo ti;
         protected Boolean     isChecked = false;
         protected Color       color;
@@ -207,7 +207,7 @@ public class CarryForwardConfigDlg extends CustomDialog
          */
         public CFWItem(MultiView   mv, 
                        FormViewObj fvo, 
-                       FieldInfo   fieldInfo)
+                       FVOFieldInfo   fieldInfo)
         {
             super();
             this.mv         = mv;
@@ -234,7 +234,7 @@ public class CarryForwardConfigDlg extends CustomDialog
         /**
          * @return the fieldInfo
          */
-        public FieldInfo getFieldInfo()
+        public FVOFieldInfo getFieldInfo()
         {
             return fieldInfo;
         }

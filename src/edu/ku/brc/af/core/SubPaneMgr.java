@@ -359,6 +359,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             try
             {
                 this.remove(pane.getUIComponent());
+                pane.getUIComponent().setVisible(false);
                 
             } catch (ArrayIndexOutOfBoundsException ex)
             {
@@ -664,7 +665,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
                 return;
             }
             
-            subPane.shutdown();
+            //subPane.shutdown();
             
             boolean isCurrentPaneStarter = subPane.getTask().isStarterPane();
             

@@ -28,6 +28,7 @@
  */
 package edu.ku.brc.specify.datamodel;
 
+import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -67,7 +68,12 @@ import edu.ku.brc.dbsupport.AttributeProviderIFace;
         @Index (name="CEEndDateIDX", columnNames={"EndDate"}),
         @Index (name="CEColMemIDX", columnNames={"CollectionMemberID"})
     })
-public class CollectingEvent extends CollectionMember implements AttachmentOwnerIFace<CollectingEventAttachment>, AttributeProviderIFace, java.io.Serializable, Comparable<CollectingEvent> {
+public class CollectingEvent extends CollectionMember implements AttachmentOwnerIFace<CollectingEventAttachment>, 
+                                                                 AttributeProviderIFace, 
+                                                                 java.io.Serializable,
+                                                                 Comparable<CollectingEvent>,
+                                                                 Cloneable
+{
 
     // Fields    
 
@@ -117,6 +123,7 @@ public class CollectingEvent extends CollectionMember implements AttachmentOwner
     public void initialize()
     {
         super.init();
+        
         collectingEventId = null;
         stationFieldNumber = null;
         method = null;
@@ -508,25 +515,6 @@ public class CollectingEvent extends CollectionMember implements AttachmentOwner
         this.collectingEventAttachments = collectingEventAttachments;
     }
 
-    // Comparable
-    public int compareTo(CollectingEvent obj)
-    {
-        if (obj == null)
-        {
-            return 0;
-        }
-        
-        Calendar startDateObj = obj.getStartDate();
-        Date     date1        = startDate != null ? startDate.getTime() : null;
-        Date     date2        = startDateObj != null ? startDateObj.getTime() : null;
-        if (startDate == null || startDateObj == null)
-        {
-            return 0;
-        }
-        
-        return date1.compareTo(date2);
-    }
-    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
@@ -553,4 +541,79 @@ public class CollectingEvent extends CollectionMember implements AttachmentOwner
     {
         return collectingEventAttachments;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#clone()
+     */
+    @Override
+    public Object clone() throws CloneNotSupportedException
+    {
+        CollectingEvent obj = (CollectingEvent)super.clone();
+        obj.initialize();
+        
+        obj.collectingEventId = null;
+        obj.stationFieldNumber = stationFieldNumber;
+        obj.method = method;
+        obj.verbatimDate = verbatimDate;
+        obj.startDate = startDate;
+        obj.startDatePrecision = startDatePrecision;
+        obj.startDateVerbatim = startDateVerbatim;
+        obj.endDate = endDate;
+        obj.endDatePrecision = endDatePrecision;
+        obj.endDateVerbatim = endDateVerbatim;
+        obj.startTime = startTime;
+        obj.endTime = endTime;
+        obj.verbatimLocality = verbatimLocality;
+        obj.groupPermittedToView = groupPermittedToView;
+        obj.remarks = remarks;
+        obj.visibility = visibility;
+        obj.locality = locality;
+        
+        //obj.collectionObjects = new HashSet<CollectionObject>();
+        //obj.collectors = new HashSet<Collector>();
+        
+        //obj.collectingEventAttributes    = null;
+        //obj.collectingEventAttrs         = new HashSet<CollectingEventAttr>();
+        //obj.collectingEventAttachments   = new HashSet<CollectingEventAttachment>();
+        
+        obj.timestampCreated     = new Timestamp(System.currentTimeMillis());
+        obj.timestampModified    = timestampCreated;
+        
+        for (Collector collector : collectors)
+        {
+            Collector newCollector = (Collector)collector.clone();
+            newCollector.setCollectingEvent(obj);
+            obj.collectors.add(newCollector);
+        }
+         
+        return obj;
+    }
+
+
+    //----------------------------------------------------------------------
+    //-- Comparable Interface
+    //----------------------------------------------------------------------
+    
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    public int compareTo(CollectingEvent obj)
+    {
+        if (obj == null)
+        {
+            return 0;
+        }
+        
+        Calendar startDateObj = obj.getStartDate();
+        Date     date1        = startDate != null ? startDate.getTime() : null;
+        Date     date2        = startDateObj != null ? startDateObj.getTime() : null;
+        if (startDate == null || startDateObj == null)
+        {
+            return 0;
+        }
+        
+        return date1.compareTo(date2);
+    }
+    
+
 }
