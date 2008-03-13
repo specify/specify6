@@ -61,6 +61,7 @@ public class SpFieldValueDefault extends CollectionMember implements java.io.Ser
     public void initialize()
     {
         super.init();
+        
         spFieldValueDefaultId = null;
         tableName       = null;
         fieldName       = null;

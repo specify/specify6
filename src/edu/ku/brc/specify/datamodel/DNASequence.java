@@ -79,6 +79,8 @@ public class DNASequence extends CollectionMember
     @Override
     public void initialize()
     {
+        super.init();
+
         dnaSequenceId     = null;
         geneName          = null;
         geneSequence      = null;

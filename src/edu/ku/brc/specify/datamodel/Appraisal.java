@@ -74,6 +74,8 @@ public class Appraisal extends DataModelObjBase
     @Override
     public void initialize()
     {
+        super.init();
+        
         appraisalId       = null;
         appraisalDate     = null;
         appraisalNumber   = null;

@@ -35,6 +35,8 @@ public class AttachmentTag extends DataModelObjBase implements Serializable
     @Override
     public void initialize()
     {
+        super.init();
+        
         attachmentTagID = null;
         tag             = null;
         attachment      = null;

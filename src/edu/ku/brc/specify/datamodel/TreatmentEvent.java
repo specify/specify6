@@ -90,6 +90,8 @@ public class TreatmentEvent extends DataModelObjBase
     @Override
     public void initialize()
     {
+        super.init();
+        
         treatmentEventId     = null;
         dateReceived         = null;
         dateCompleted        = null;

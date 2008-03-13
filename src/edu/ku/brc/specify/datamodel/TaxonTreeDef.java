@@ -86,6 +86,7 @@ public class TaxonTreeDef extends BaseTreeDef<Taxon, TaxonTreeDef, TaxonTreeDefI
     public void initialize()
 	{
         super.init();
+        
 		taxonTreeDefId = null;
 		name = null;
 		remarks = null;

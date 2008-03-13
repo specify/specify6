@@ -49,6 +49,8 @@ public class FieldNotebookPageAttachment extends DataModelObjBase implements Obj
     @Override
     public void initialize()
     {
+        super.init();
+
         fieldNotebookPageAttachmentId = null;
         ordinal                       = null;
         remarks                       = null;

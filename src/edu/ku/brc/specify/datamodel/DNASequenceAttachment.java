@@ -53,6 +53,8 @@ public class DNASequenceAttachment extends DataModelObjBase implements ObjectAtt
     @Override
     public void initialize()
     {
+        super.init();
+
         dnaSequenceAttachmentId = null;
         dnaSequence             = null;
         attachment              = null;

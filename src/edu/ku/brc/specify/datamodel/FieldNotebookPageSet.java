@@ -74,6 +74,8 @@ public class FieldNotebookPageSet extends CollectionMember
     @Override
     public void initialize()
     {
+        super.init();
+
         fieldNotebookPageSetId = null;
         startDate              = null;
         endDate                = null;

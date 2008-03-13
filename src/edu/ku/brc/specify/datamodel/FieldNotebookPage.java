@@ -71,6 +71,8 @@ public class FieldNotebookPage extends CollectionMember
     @Override
     public void initialize()
     {
+        super.init();
+
         fieldNotebookPageId = null;
         pageNumber          = null;
         scanDate            = null;
