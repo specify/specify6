@@ -1,4 +1,3 @@
-
 <?xml version="1.0" encoding="UTF-8"?>
 <viewset name="Bird Views" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
@@ -268,7 +267,8 @@
                     <cell type="label" labelfor="3" label="Determiner"/>
                     <cell type="field" id="3" name="determiner" uitype="querycbx" initialize="name=Agent;title=Determiner Agent" isrequired="true"/>
                     
-                    <cell type="field" id="7" name="yesNo1" uitype="checkbox" label="In Question"/>
+                    <cell type="label" labelfor="2" label="Status"/>
+                    <cell type="field" id="2" name="status" uitype="combobox" picklist="DeterminationStatus" isrequired="true"/>
                 </row>
                 
                 <row>
