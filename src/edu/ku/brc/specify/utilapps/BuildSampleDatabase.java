@@ -1504,12 +1504,12 @@ public class BuildSampleDatabase
         LithoStrat earth = convertLithoStratFromCSV(lithoStratTreeDef);
         if (earth == null)
         {
-            throw new RuntimeException("No Tree");
-            /*startTx();
+            //throw new RuntimeException("No Tree");
+            startTx();
             List<Object> lithoStrats = createSimpleLithoStrat(lithoStratTreeDef);
             persist(lithoStrats);
             commitTx();
-            */
+            
         }
 
         
@@ -2166,14 +2166,12 @@ public class BuildSampleDatabase
         {
             log.error("Couldn't file[" + file.getAbsolutePath() + "] checking the config dir");
             file = XMLHelper.getConfigDir("Stratigraphy.csv");
+            if (!file.exists())
+            {
+                file = new File("Specify/demo_files/Stratigraphy.csv");
+            }
         }
         
-        file = new File("Specify/demo_files/Stratigraphy.csv");
-        if (!file.exists())
-        {
-            log.error("Couldn't file[" + file.getAbsolutePath() + "] checking the config dir");
-            file = XMLHelper.getConfigDir("Stratigraphy.csv");
-        }
 
         if (file == null || !file.exists())
         {
