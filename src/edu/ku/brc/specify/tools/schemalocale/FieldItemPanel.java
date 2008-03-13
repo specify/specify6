@@ -67,7 +67,6 @@ import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.ui.JStatusBar;
-import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.PickListIFace;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
@@ -404,8 +403,11 @@ public class FieldItemPanel extends LocalizerBasePanel
     	if (formatter == null)
     	{
     		// no formatter was selected (that's the first entry on the combo list)
-    		setHasChanged(formatCombo.getSelectedIndex() != 0);
-    		formatCombo.setSelectedIndex(0);
+    		if (formatCombo.getSelectedIndex() != 0)
+    		{
+        		formatCombo.setSelectedIndex(0);
+    			setHasChanged(true);
+    		}
     		return;
     	}
     	
@@ -419,8 +421,11 @@ public class FieldItemPanel extends LocalizerBasePanel
     		if (formatter == elem)
     		{
     	    	// found formatter selected on dialog on the combo box list: so select it
-        		setHasChanged(formatCombo.getSelectedIndex() != index);
-    	    	formatCombo.setSelectedIndex(index);
+    			if (formatCombo.getSelectedIndex() != index)
+    			{
+    				setHasChanged(true);
+        	    	formatCombo.setSelectedIndex(index);
+    			}
     	    	found = true;
     	    	break;
     		}
@@ -811,7 +816,7 @@ public class FieldItemPanel extends LocalizerBasePanel
                 if (item != null) // should never be null
                 {
                 	// there is only one string in the list... the None string
-                	// others are the format objects themselves
+                	// others are the formatter objects (not only strings with their names) 
                 	boolean isNone = item instanceof String; 
                     if (!isNone)
                     {

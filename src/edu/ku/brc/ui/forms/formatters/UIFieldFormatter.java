@@ -47,7 +47,7 @@ import edu.ku.brc.util.Pair;
 public class UIFieldFormatter implements UIFieldFormatterIFace
 {
     public enum PartialDateEnum {None, Full, Month, Year}
-    public enum FormatterType   {Generic, Date, Numeric}
+    public enum FormatterType   {generic, date, numeric} // all lower case to follow convention in uiformatters.xml
 
     private static final Logger log = Logger.getLogger(UIFieldFormatter.class);
 
@@ -267,7 +267,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
      */
     public boolean isDate()
     {
-        return type == FormatterType.Date;
+        return type == FormatterType.date;
     }
 
     /* (non-Javadoc)
@@ -275,7 +275,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
      */
     public boolean isNumeric()
     {
-        return type == FormatterType.Numeric;
+        return type == FormatterType.numeric;
     }
 
     /* (non-Javadoc)
@@ -587,7 +587,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
             xmlAttr(sb, "default", isDefault);
         }
         
-        if (type != FormatterType.Generic)
+        if (type != FormatterType.generic)
         {
             xmlAttr(sb, "type", type.toString());
         }
@@ -603,7 +603,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
             autoNumber.toXML(sb);
         }
         
-        if (type != FormatterType.Numeric && type != FormatterType.Date)
+        if (type != FormatterType.numeric && type != FormatterType.date)
         {
             for (UIFieldFormatterField field : fields)
             {

@@ -127,7 +127,7 @@ public class UIFieldFormatterMgr
         for (UIFieldFormatterIFace fmt : instance.hash.values())
         {
             boolean isUIF = fmt instanceof UIFieldFormatter;
-            if (!isUIF || ((UIFieldFormatter)fmt).getType() == UIFieldFormatter.FormatterType.Generic)
+            if (!isUIF || ((UIFieldFormatter)fmt).getType() == UIFieldFormatter.FormatterType.generic)
             {
                 list.add(fmt);
             }
@@ -451,9 +451,26 @@ public class UIFieldFormatterMgr
                             }
                         }
                         
-                        UIFieldFormatter.FormatterType type = UIFieldFormatter.FormatterType.Generic;
-                        
-                        UIFieldFormatter.PartialDateEnum partialDateType = UIFieldFormatter.PartialDateEnum.Full;
+                        // set field type
+                        UIFieldFormatter.FormatterType type = UIFieldFormatter.FormatterType.generic;
+                        UIFieldFormatter.PartialDateEnum partialDateType = UIFieldFormatter.PartialDateEnum.None;
+                        if (StringUtils.isNotEmpty(fType) && fType.equals("numeric"))
+                        {
+                            type = UIFieldFormatter.FormatterType.numeric;
+                        } 
+                        else if (StringUtils.isNotEmpty(fType) && fType.equals("date"))
+                        {
+                            type = UIFieldFormatter.FormatterType.date;
+                            if (StringUtils.isNotEmpty(partialDateTypeStr))
+                            {
+                                partialDateType = UIFieldFormatter.PartialDateEnum.valueOf(partialDateTypeStr);
+                            }
+                            else
+                            {
+                            	partialDateType = UIFieldFormatter.PartialDateEnum.Full;
+                            }
+                        }
+
                         Class<?> dataClass = null;
                         if (StringUtils.isNotEmpty(dataClassName))
                         {
@@ -465,28 +482,17 @@ public class UIFieldFormatterMgr
                                 log.error("Couldn't load class ["+dataClassName+"] for ["+name+"]");
                             }
                             
-                            if (StringUtils.isNotEmpty(fType) && fType.equals("numeric"))
-                            {
-                                type = UIFieldFormatter.FormatterType.Numeric;
-                            }
-                            
                         } else if (StringUtils.isNotEmpty(fType) && fType.equals("date"))
                         {
                             dataClass = Date.class;
-                            if (StringUtils.isNotEmpty(partialDateTypeStr))
-                            {
-                                partialDateType = UIFieldFormatter.PartialDateEnum.valueOf(partialDateTypeStr);
-                            }
-                            type = UIFieldFormatter.FormatterType.Date;
-                              
                         }
 
                         UIFieldFormatter formatter = new UIFieldFormatter(name, isSystem, fieldName, type, partialDateType, dataClass, isDefault, isInc, fields);
-                        if (type == UIFieldFormatter.FormatterType.Date && fields.size() == 0)
+                        if (type == UIFieldFormatter.FormatterType.date && fields.size() == 0)
                         {
                             addFieldsForDate(formatter);
                             
-                        } else if (type == UIFieldFormatter.FormatterType.Numeric)
+                        } else if (type == UIFieldFormatter.FormatterType.numeric)
                         {
                             formatter.setPrecision(precision);
                             formatter.setScale(scale);
@@ -548,7 +554,7 @@ public class UIFieldFormatterMgr
     {
      	Class<?> clazz = fieldInfo.getTableInfo().getClassObj();
     	UIFieldFormatter fmt = new UIFieldFormatter(null, false, fieldInfo.getName(), 
-    			FormatterType.Generic, PartialDateEnum.Full, clazz, false, false, null);
+    			FormatterType.generic, PartialDateEnum.None, clazz, false, false, null);
     	
     	AutoNumberIFace autoNumber = createAutoNumber("edu.ku.brc.dbsupport.AutoNumberGeneric", 
     												  clazz.getName(), fieldInfo.getName());
@@ -571,7 +577,8 @@ public class UIFieldFormatterMgr
     		begin = matcher.end();
 
     		// create separator field
-    		field = new UIFieldFormatterField(FieldType.separator, 0, matcher.group(), false);
+    		String value = matcher.group();
+    		field = new UIFieldFormatterField(FieldType.separator, value.length(), value, false);
     		fmt.addField(field);
        	}
     	

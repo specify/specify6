@@ -992,13 +992,21 @@ public class ViewFactory
                 fieldInfo != null)
             {
                 Class<?> cls = fieldInfo.getDataClass();
-                if (cls != String.class &&   // it's usually a string so short circuit
-                    (cls == Integer.class || 
-                     cls == Long.class || 
-                     cls == Byte.class || 
-                     cls == Double.class || 
-                     cls == Float.class || 
-                     cls == BigDecimal.class))
+                if (cls == String.class)
+                {
+                	// check whether there's a formatter defined for this field in the schema
+                    if (fieldInfo.getFormatter() != null)
+                    {
+                    	uiFormatName = fieldInfo.getFormatter().getName();
+                        uiType =  FormCellField.FieldType.formattedtext;
+                    }
+                }
+                else if (cls == Integer.class || 
+                		 cls == Long.class || 
+                		 cls == Byte.class || 
+                		 cls == Double.class || 
+                		 cls == Float.class || 
+                		 cls == BigDecimal.class)
                 {
                     log.debug(cellField.getName()+"  is being changed to NUMERIC");
                     uiType =  FormCellField.FieldType.formattedtext;
@@ -1006,7 +1014,6 @@ public class ViewFactory
                 }
             }
 
-            
             // Create the UI Component
             
             switch (uiType)

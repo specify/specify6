@@ -457,25 +457,10 @@ public class UIFormatterDlg extends CustomDialog
         // formatting key panel
         JPanel keyPanel = new JPanel();
         keyPanel.setLayout(new BoxLayout(keyPanel, BoxLayout.Y_AXIS));
-        keyPanel.setBorder(BorderFactory.createTitledBorder(getResourceString("FFE_HELP"))); 
-        keyPanel.add(new JLabel("  Use these patterns to specify the field format:")); 
-        keyPanel.add(new JLabel(" ")); 
-        keyPanel.add(new JLabel("    AAAA - alphanumeric")); 
-        keyPanel.add(new JLabel("    aaaa - alphabetic only")); 
-        keyPanel.add(new JLabel("    NNNN - integer number")); 
-        keyPanel.add(new JLabel("    NNN.NN - number with decimal places")); 
-        keyPanel.add(new JLabel("    #### - auto-incrementing number")); 
-        keyPanel.add(new JLabel("    DD - day of the month from 01 to 31")); 
-        keyPanel.add(new JLabel("    MM - month number from 01 to 12")); 
-        keyPanel.add(new JLabel("    MMM - abbreviated month name (Jan-Dec)")); 
-        keyPanel.add(new JLabel("    MMMM - full month name (January-December)")); 
-        keyPanel.add(new JLabel("    YY - any year with 2 digits")); 
-        keyPanel.add(new JLabel("    YYYY - any year with 4 digits")); 
-        keyPanel.add(new JLabel("    YEAR - current year with 4 digits")); 
-        keyPanel.add(new JLabel(" ")); 
-        keyPanel.add(new JLabel(" ")); 
-        keyPanel.add(new JLabel("  As separators, use '/', '-', '_' or space")); 
-        keyPanel.add(new JLabel(" ")); 
+        keyPanel.setBorder(BorderFactory.createTitledBorder(getResourceString("FFE_HELP")));
+        // left help body text in a single string resource until we build infrastructure to 
+        // localize long texts (in files maybe)
+        keyPanel.add(new JLabel(getResourceString("FFE_HELP_HTML")));
 
         int y = 2; // leave first row blank 
         pb.add(tableTitleLbl,  cc.xyw(2, y, 3)); y += 1;

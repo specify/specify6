@@ -99,7 +99,10 @@ public class UIFieldFormatterField
     {
     	UIFieldFormatterField field = new UIFieldFormatterField();
     	
-    	Pattern pattern = Pattern.compile("^(A+|a+|N+|\\#+|YEAR|Y{4}|Y{2}|M{2,3})$");
+    	//Pattern pattern = Pattern.compile("^(A+|a+|N+|\\#+|YEAR|Y{4}|Y{2}|M{2,3})$");
+    	// restricting set of valid formats to those that can be applied to String for now
+    	// will open up possibilities when supporting dates and numeric fields
+    	Pattern pattern = Pattern.compile("^(A+|a+|N+|\\#+|YEAR)$");
     	Matcher matcher = pattern.matcher(formattingString);
     	
     	if (matcher.find()) 
@@ -118,7 +121,8 @@ public class UIFieldFormatterField
     			field.setType(FieldType.alpha); 
     			break;
     		case 'N': 
-    			field.setType(FieldType.numeric); 
+    			field.setType(FieldType.numeric);
+    			field.setIncrementer(false);
     			break;
     		case '#': 
     			field.setType(FieldType.numeric);
