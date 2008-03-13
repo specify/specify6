@@ -1501,7 +1501,14 @@ public class BuildSampleDatabase
         commitTx();
         
         
-        convertLithoStratFromCSV(lithoStratTreeDef);
+        LithoStrat earth = convertLithoStratFromCSV(lithoStratTreeDef);
+        if (earth == null)
+        {
+            startTx();
+            List<Object> lithoStrats = createSimpleLithoStrat(lithoStratTreeDef);
+            persist(lithoStrats);
+            commitTx();
+        }
 
         
         startTx();

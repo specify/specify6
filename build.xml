@@ -712,6 +712,7 @@
 				<exclude name="**/.svn" />
 				<exclude name="**/.csv" />
 				<include name="**/topbrc195x68.png" />
+				<include name="**/Stratigraphy.csv" />
 			</fileset>
 		</copy>
 		
