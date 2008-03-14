@@ -129,6 +129,8 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                 }
                 else
                 {
+                    //this probably won't actually work without additional
+                    //changes to the from clause for the query
                     fld = "agent_discpline.DisciplineID"; 
                 }
             }
