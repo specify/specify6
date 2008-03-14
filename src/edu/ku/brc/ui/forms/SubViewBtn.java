@@ -319,13 +319,13 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
                     }
                 } 
                 updateBtnText();
-                if (fvo.getValidator() != null)
-                {
+                //if (fvo.getValidator() != null)
+                //{
                     //fvo.getValidator().setFormValidationState(UIValidatable.ErrorType.Valid);
                    // fvo.getValidator().validateForm();
                     //multiView.validate();
                     //fvo.getValidator().wasValidated(null);
-                }
+                //}
             }
         } else
         {
