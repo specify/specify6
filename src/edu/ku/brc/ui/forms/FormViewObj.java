@@ -1553,7 +1553,7 @@ public class FormViewObj implements Viewable,
                 DBRelationshipInfo ri = ti.getRelationshipByName(cellName);
                 if (ri != null)
                 {
-                    log.debug(ri.getType());
+                    //log.debug(ri.getType());
                     if (ri.getType() == DBRelationshipInfo.RelationshipType.ManyToOne)
                     {
                         // not sure this is right anymore - rods 03/14/08
@@ -2891,7 +2891,7 @@ public class FormViewObj implements Viewable,
         }
         sql.append(')');
         
-        log.debug(sql.toString());
+        //log.debug(sql.toString());
         
         SQLExecutionListener listener = new SQLExecutionListener()
         {

@@ -575,7 +575,9 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             sql = StringUtils.replace(sqlTemplate, "%s1", selectSB.toString());
             sql = StringUtils.replace(sql, "%s2", whereSB.toString());
             sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
-            System.err.println(sql);
+            
+            //System.err.println(sql);
+            
             return sql;
         }
         

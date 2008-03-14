@@ -236,7 +236,7 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         //
         // Or it acts like a OneToOne where each CE acts as if it is "embedded" or is
         // a part of the CO.
-        System.err.println(fieldName);
+        //System.err.println(fieldName);
         if (fieldName.equals("collectingEvent"))
         {
             // So we need to clone it make a full copy when it is embedded.
