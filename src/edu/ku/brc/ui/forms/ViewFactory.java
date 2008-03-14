@@ -53,8 +53,7 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.dbsupport.DBFieldInfo;
-import edu.ku.brc.dbsupport.DBInfoBase;
-import edu.ku.brc.dbsupport.DBRelationshipInfo;
+import edu.ku.brc.dbsupport.DBTableChildIFace;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.exceptions.ConfigurationException;
@@ -121,7 +120,8 @@ public class ViewFactory
     // Statics
     private static final Logger log = Logger.getLogger(ViewFactory.class);
     private static final ViewFactory  instance = new ViewFactory();
-
+    private static final String LF = "\\" + "n";
+    
     // Data Members
     protected static ColorWrapper     viewFieldColor = null;
     protected static boolean          doFixLabels    = true;
@@ -834,7 +834,7 @@ public class ViewFactory
     }
 
 
-    protected void createItem(final DBFieldInfo                 fieldInfo,
+    protected void createItem(final DBTableChildIFace           childInfo,
                               final MultiView                   parent,
                               final FormViewDefIFace            formViewDef,
                               final FormValidator               validator,
@@ -927,6 +927,10 @@ public class ViewFactory
                     }
                 }
                 
+                if (lStr.indexOf(LF) > -1)
+                {
+                    lStr = "<html>" + StringUtils.replace(lStr, LF, "<br>") + "</html>";
+                }
                 JLabel lbl = new JLabel(lStr, align);
                 labelsForHash.put(cellLabel.getLabelFor(), lbl);
                 bi.compToAdd =  lbl;
@@ -941,17 +945,26 @@ public class ViewFactory
         {
             FormCellField cellField = (FormCellField)cell;
             
-            bi.isRequired = cellField.isRequired() || (fieldInfo != null && fieldInfo.isRequired());
+            if (childInfo == null)
+            {
+               log.debug("No DBChild "+cellField.getName()); 
+            }
+            
+            bi.isRequired = cellField.isRequired() || (childInfo != null && childInfo.isRequired());
+            
+            DBFieldInfo fieldInfo = childInfo instanceof DBFieldInfo ? (DBFieldInfo)childInfo : null;
             
             FormCellField.FieldType uiType = cellField.getUiType();
             
             // Check to see if there is a picklist and get it if there is
+            PickListDBAdapterIFace adapter = null;
+            
             String pickListName = cellField.getPickListName();
-            if (fieldInfo != null && StringUtils.isEmpty(pickListName))
+            if (childInfo != null && StringUtils.isEmpty(pickListName) && fieldInfo != null)
             {
                 pickListName = fieldInfo.getPickListName();
             }
-            PickListDBAdapterIFace adapter = null;
+            
             if (isNotEmpty(pickListName))
             {
                 adapter = PickListDBAdapterFactory.getInstance().create(pickListName, false);
@@ -989,9 +1002,9 @@ public class ViewFactory
             String uiFormatName = cellField.getUIFieldFormatterName();
             if (mode == AltViewIFace.CreationMode.EDIT && 
                 uiType == FormCellField.FieldType.text && 
-                fieldInfo != null)
+                childInfo != null)
             {
-                Class<?> cls = fieldInfo.getDataClass();
+                Class<?> cls = childInfo.getDataClass();
                 if (cls == String.class)
                 {
                 	// check whether there's a formatter defined for this field in the schema
@@ -1499,10 +1512,11 @@ public class ViewFactory
 
             for (FormCellIFace cell : row.getCells())
             {
-                DBFieldInfo fieldInfo = null;
-                if (tableInfo != null)
+                DBTableChildIFace childInfo = null;
+                String            cellName  = cell.getName();
+                if (tableInfo != null && StringUtils.isNotEmpty(cellName))
                 {
-                    fieldInfo = tableInfo.getFieldByName(cell.getName());
+                    childInfo = tableInfo.getItemByName(cellName);
                 }
                 
                 boolean isEditOnCreateOnly = false;
@@ -1512,7 +1526,7 @@ public class ViewFactory
                     ((FormCellField)cell).setEditOnCreate(true);
                 }
                 
-                createItem(fieldInfo, parent, formViewDef, validator, viewBldObj, mode, labelsForHash, currDataObj, cell, isEditOnCreateOnly, rowInx, bi);
+                createItem(childInfo, parent, formViewDef, validator, viewBldObj, mode, labelsForHash, currDataObj, cell, isEditOnCreateOnly, rowInx, bi);
                 
                 //log.debug(cell.getType()+" "+cell.getName()+" col: "+bi.colInx);
                 if (bi.compToAdd != null)
@@ -1529,12 +1543,12 @@ public class ViewFactory
                     bi2.curMaxRow  = 1;
                     bi2.colInx     = 1;
                     
-                    createItem(fieldInfo, parent, formViewDef, evcsp.getValidator(), viewBldObj, AltViewIFace.CreationMode.EDIT, 
+                    createItem(childInfo, parent, formViewDef, evcsp.getValidator(), viewBldObj, AltViewIFace.CreationMode.EDIT, 
                                labelsForHash, currDataObj, cell, false, rowInx, bi2);
                     Component editCompReg = bi2.compToReg;
                     Component editCompAdd = bi2.compToAdd;
                     
-                    createItem(fieldInfo, parent, formViewDef, null, viewBldObj, AltViewIFace.CreationMode.VIEW, 
+                    createItem(childInfo, parent, formViewDef, null, viewBldObj, AltViewIFace.CreationMode.VIEW, 
                                labelsForHash, currDataObj, cell, false, rowInx, bi2);
                     Component viewCompReg = bi2.compToReg;
                     Component viewCompAdd = bi2.compToAdd;
@@ -1673,22 +1687,11 @@ public class ViewFactory
         DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(multiView.getView().getClassName());
         if (tableInfo != null)
         {
-            DBInfoBase ib = tableInfo.getItemByName(cell.getName());
-            if (ib != null)
+            DBTableChildIFace tblChild = tableInfo.getItemByName(cell.getName());
+            if (tblChild != null)
             {
-                if (ib instanceof DBFieldInfo)
-                {
-                    DBFieldInfo fi = (DBFieldInfo)ib;
-                    return fi.getDataClass();
-                    
-                } else if (ib instanceof DBRelationshipInfo)
-                {
-                    DBRelationshipInfo ri = (DBRelationshipInfo)ib;
-                    return ri.getDataClass();
-                } else
-                {
-                    log.debug("How did we get here.");
-                }
+                return tblChild.getDataClass();
+                
             } else
             {
                 log.debug("How did we get here? ["+cell.getName()+"]");

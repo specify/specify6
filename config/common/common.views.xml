@@ -38,6 +38,7 @@
         
         <view name="Appraisal"
             class="edu.ku.brc.specify.datamodel.Appraisal"
+            isinternal="false"
             resourcelabels="false">
             <desc><![CDATA[The appraisal subform.]]></desc>
             <altviews>

@@ -161,7 +161,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
      */
     public void createUI()
     {
-        setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        //setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
         setLayout(new BorderLayout());
         setOpaque(false);
         

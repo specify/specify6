@@ -31,7 +31,7 @@ import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
  * Created Date: Oct 3, 2007
  *
  */
-public class DBFieldInfo extends DBInfoBase
+public class DBFieldInfo extends DBInfoBase implements DBTableChildIFace
 {
     protected static final Logger log = Logger.getLogger(DBFieldInfo.class);
     

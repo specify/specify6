@@ -1553,7 +1553,17 @@ public class FormViewObj implements Viewable,
                 DBRelationshipInfo ri = ti.getRelationshipByName(cellName);
                 if (ri != null)
                 {
-                    isASingleObj = ri.getType() == DBRelationshipInfo.RelationshipType.ManyToOne;
+                    log.debug(ri.getType());
+                    if (ri.getType() == DBRelationshipInfo.RelationshipType.ManyToOne)
+                    {
+                        // not sure this is right anymore - rods 03/14/08
+                        //isASingleObj = true;
+                        doSetIntoAndValidate = true;
+                        
+                    } else if (ri.getType() == DBRelationshipInfo.RelationshipType.ZeroOrOne)
+                    {
+                        doSetIntoAndValidate = true;
+                    }
                 }
             }
             

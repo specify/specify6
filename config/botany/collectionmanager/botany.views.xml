@@ -64,7 +64,7 @@
             <desc><![CDATA[The Collection Object form.]]></desc>
             <enableRules/>
 
-            <columnDef>p,2px,p,2px,100px,2px,p,2px,p,2px,p,2px,p,2px,p,p:g,p,p</columnDef>
+            <columnDef>110px,2px,p,2px,100px,2px,p,2px,p,2px,p,2px,p,2px,p,p:g,p,p</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
     		<rows>
     		    <row>
@@ -99,7 +99,7 @@
     		        <cell type="field" id="20" name="text1" uitype="combobox" picklist="Phenology" colspan="4"/>
     		    </row>
     		    <row>
-    		        <cell type="label" labelfor="18" label="Specimen Description"/>
+    		        <cell type="label" labelfor="18" label="Specimen\nDescription"/>
     		        <cell type="field" id="18" name="description" uitype="textarea" rows="3" colspan="14"/>
     		    </row>
    			    <row>
@@ -120,7 +120,7 @@
     
 	    
     		    <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectionObjectAttachments" colspan="16" initialize="btn=true;icon=CollectionObject"/>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectionObjectAttachments" colspan="16" initialize="btn=true;icon=CollectionObjectAttachment"/>
                 </row>
     			<row>
     				<cell type="separator" label="" colspan="16"/>
@@ -145,7 +145,7 @@
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
 
             <desc><![CDATA[Collecting Event]]></desc>
-            <columnDef>p,2px,p,5px,p,2px,p,5px,p,2px,p,p:g</columnDef>
+            <columnDef>110px,2px,p,5px,p,2px,p,5px,p,2px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             
             <rows>
@@ -163,7 +163,7 @@
                     <cell type="field" id="4" name="locality" uitype="querycbx" initialize="name=Locality;title=Locality" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="6" label="Locality and Habitat Notes"/>
+                    <cell type="label" labelfor="6" label="Locality and\n Habitat Notes"/>
                     <cell type="field" id="6" name="remarks" uitype="textarea" colspan="10" cols="50"/>
                 </row>
                 <row>
@@ -206,7 +206,7 @@
                     <cell type="field" id="4" name="locality" uitype="querycbx" initialize="name=Locality;title=Locality" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="6" label="Locality and Habitat Notes"/>
+                    <cell type="label" labelfor="6" label="Locality and\n Habitat Notes"/>
                     <cell type="field" id="6" name="remarks" uitype="textarea" colspan="10" cols="50" rows="3"/>
                 </row>
                 <row>

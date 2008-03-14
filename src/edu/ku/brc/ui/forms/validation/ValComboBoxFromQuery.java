@@ -356,7 +356,10 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             x += 2;
         }
 
-        setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        if (!UIHelper.isMacOS())
+        {
+            setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        }
 
         bgColor = textWithQuery.getTextField().getBackground();
         if (valtextcolor == null || requiredfieldcolor == null)

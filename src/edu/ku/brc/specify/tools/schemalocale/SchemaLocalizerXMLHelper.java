@@ -31,8 +31,8 @@ import com.thoughtworks.xstream.XStream;
 
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.dbsupport.DBFieldInfo;
-import edu.ku.brc.dbsupport.DBInfoBase;
 import edu.ku.brc.dbsupport.DBRelationshipInfo;
+import edu.ku.brc.dbsupport.DBTableChildIFace;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.helpers.XMLHelper;
@@ -405,8 +405,8 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                         for (LocalizableItemIFace itemIF : new Vector<LocalizableItemIFace>(container.getContainerItems()))
                         {
                             SpLocaleContainerItem item     = (SpLocaleContainerItem)itemIF;
-                            DBInfoBase            baseItem = ti.getItemByName(item.getName());
-                            if (baseItem == null)
+                            DBTableChildIFace     tblChild = ti.getItemByName(item.getName());
+                            if (tblChild == null)
                             {
                                 container.removeItem(item);
                                 log.info("For Table["+ti.getName()+"] Removing Rel ["+item.getName()+"]");

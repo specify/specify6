@@ -30,7 +30,7 @@ import org.apache.log4j.Logger;
 import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBFieldInfo;
-import edu.ku.brc.dbsupport.DBInfoBase;
+import edu.ku.brc.dbsupport.DBTableChildIFace;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
@@ -119,22 +119,22 @@ public class SpecifySchemaI18NService extends SchemaI18NService
             
             if (ti != null)
             {
-                DBInfoBase fi = ti.getItemByName(p.get(1));
-                if (fi != null)
+                DBTableChildIFace tblChild = ti.getItemByName(p.get(1));
+                if (tblChild != null)
                 {
-                    fi.setTitle(p.get(5));
+                    tblChild.setTitle(p.get(5));
                     
                 } else
                 {
                     log.error("Couldn't find field["+p.get(1)+"] for table ["+p.get(0)+"]");
                 }
                 
-                if (fi instanceof DBFieldInfo)
+                if (tblChild instanceof DBFieldInfo)
                 {
                     String format   = p.get(2);
                     boolean isUIFmt = p.get(3) == null ? false : !p.get(3).equals("0");
                     
-                    DBFieldInfo fieldInfo = (DBFieldInfo)fi;
+                    DBFieldInfo fieldInfo = (DBFieldInfo)tblChild;
                     fieldInfo.setPickListName(p.get(4));
                     
                     if (isUIFmt)
@@ -181,11 +181,11 @@ public class SpecifySchemaI18NService extends SchemaI18NService
             
             if (ti != null)
             {
-                DBInfoBase fi = ti.getItemByName(p.get(1));
-                if (fi != null)
+                DBTableChildIFace tblChild = ti.getItemByName(p.get(1));
+                if (tblChild != null)
                 {
-                    fi.setDescription(p.get(2));
-                    fi.setHidden(!p.get(3).equals("0"));
+                    tblChild.setDescription(p.get(2));
+                    tblChild.setHidden(!p.get(3).equals("0"));
                     
                 } else
                 {

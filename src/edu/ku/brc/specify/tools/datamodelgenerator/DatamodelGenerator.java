@@ -67,7 +67,7 @@ import edu.ku.brc.util.DatamodelHelper;
  */
 public class DatamodelGenerator
 {
-    enum RelType {OneToMany, OneToOne, ManyToOne, ManyToMany}
+    enum RelType {OneToMany, OneToOne, ManyToOne, ManyToMany, ZeroOrOne}
     
     private static final Logger log = Logger.getLogger(DatamodelGenerator.class);
     
@@ -86,7 +86,7 @@ public class DatamodelGenerator
     protected Hashtable<String, String> abbrvHash = new Hashtable<String, String>();
     
     protected boolean      includeDesc       = false;
-    protected boolean      doRelsToZeroToOne = includeDesc;
+    protected boolean      doRelsToZeroToOne = true;
     protected boolean      doGerman          = false;
     protected boolean      showDescErrors    = false;
     protected boolean      showDebug         = false;
@@ -1243,12 +1243,13 @@ public class DatamodelGenerator
 
     protected void adjustRelsForZeroToOne(final Table tbl)
     {
-        System.out.println(tbl.getName());
-        if (StringUtils.contains(tbl.getName().toLowerCase(), "collectionobject"))
+        String shortTableName = StringUtils.substringAfterLast(tbl.getName(), ".");
+        System.out.println(shortTableName);
+        if (shortTableName.equals("CollectionObject"))
         {
             setRelToZeroToOne(tbl.getRelationships(), "paleoContext");
-        }
-        if (StringUtils.contains(tbl.getName().toLowerCase(), "locality"))
+            
+        } else if (shortTableName.equals("Locality"))
         {
             setRelToZeroToOne(tbl.getRelationships(), "localityDetails");
             setRelToZeroToOne(tbl.getRelationships(), "geoCoordDetails");

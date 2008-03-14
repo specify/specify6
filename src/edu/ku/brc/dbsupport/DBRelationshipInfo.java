@@ -27,7 +27,7 @@ import org.apache.log4j.Logger;
  * Created Date: Oct 3, 2007
  *
  */
-public class DBRelationshipInfo extends DBInfoBase
+public class DBRelationshipInfo extends DBInfoBase implements DBTableChildIFace
 {
     protected static final Logger log = Logger.getLogger(DBRelationshipInfo.class);
     

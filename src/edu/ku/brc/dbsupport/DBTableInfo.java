@@ -283,7 +283,7 @@ public class DBTableInfo extends DBInfoBase
      * @param name the name of the field
      * @return the DBFieldInfo
      */
-    public DBInfoBase getItemByName(final String itemName)
+    public DBTableChildIFace getItemByName(final String itemName)
     {
         DBFieldInfo fieldInfo = getFieldByName(itemName);
         if (fieldInfo != null)
