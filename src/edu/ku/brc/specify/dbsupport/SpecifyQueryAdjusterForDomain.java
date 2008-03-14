@@ -73,6 +73,7 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
             String prefix = tblAlias == null ? "" : tblAlias + ".";
             String criterion = null;
             String fld = null;
+            boolean adjustFldToSQL = true;
             if (tableInfo.getFieldByName("collectionMemberId") != null)
             {
                 fld = "collectionMemberId";
@@ -120,13 +121,29 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                 
             } else if (tableInfo.getTableId() == Agent.getClassTableId())
             {
-                fld = isHQL ? "dsp.disciplineId" : "agent_discpline.DisciplineID"; 
                 criterion = DSPLNID;
+                if (isHQL)
+                {
+                    fld = criterion + " in elements(" + prefix + "disciplines)";
+                    adjustFldToSQL = false;
+                }
+                else
+                {
+                    fld = "agent_discpline.DisciplineID"; 
+                }
             }
             
             if (criterion != null && fld != null)
             {
-                String sql = prefix + fld + " = " + criterion;
+                String sql;
+                if (adjustFldToSQL)
+                {
+                    sql = prefix + fld + " = " + criterion;
+                }
+                else
+                {
+                    sql = fld;
+                }
                 if (isLeftJoin)
                 {
                     if (isHQL)
