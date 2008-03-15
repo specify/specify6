@@ -155,6 +155,25 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
      */
     public Class<?> getColumnClass(int column)
     {
+        /*
+         * Modified this to fix a bug that (so far) had only shown itself for Timestamp columns.
+         * 
+         * ResultSetTableModel.getValueAt(row, column) returns a formatted object for the column.
+         * 
+         * Then in the JTable display code, JTable.getCellRenderer calls getDefaultRenderer(getColumnClass())
+         * Which returns a formatter for columnClass and trie to format the already-formatted value
+         * from getValueAt(). Which actually works out (except the "centered" property is sometimes overridden
+         * for Numbers) for all classes (usually a default formatter Object is eventually returned) except
+         * java.sql.Timestamp. 
+         * 
+         * Everything seems OK now.
+         * 
+         */
+        return Object.class; //whatever getValueAt(?, column) returns.
+    }
+    
+    protected Class<?> getColumnClass2(int column)
+    {
         if (captionInfo != null)
         {
             if (captionInfo.get(column).getColClass() == null)
@@ -211,7 +230,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
             {
                 Object obj = rowArray.get(column);
                 
-                Class<?> dataClassObj = getColumnClass(column);
+                Class<?> dataClassObj = getColumnClass2(column); //see comment for getColumnClass().
                 if (obj == null && (dataClassObj == null || dataClassObj == String.class))
                 {
                     return "";
@@ -221,11 +240,10 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                 {
                     return scrDateFormat.format((Calendar)obj);
                     
-                } else if (obj instanceof java.sql.Date || obj instanceof Date )
+                } else if (obj instanceof Timestamp )
                 {
                     return scrDateFormat.format((Date)obj);
-                    
-                } else if (obj instanceof Timestamp )
+                } else if (obj instanceof java.sql.Date || obj instanceof Date )
                 {
                     return scrDateFormat.format((Date)obj);
                 }
