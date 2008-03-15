@@ -643,6 +643,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         //return "select ce0.collectingEventId, ce0.startDate, ce0.collectingEventId, ce0.locality from CollectingEvent ce0 where (ce0.collectionMemberId = 1 or ce0 is null)";
         
         String result = sqlStr.toString();
+        
+        
+        //String result = "select co0.collectionObjectId, ag0.lastName from CollectionObject co0  left join co0.collectingEvent ce0  left join ce0.collectors ctr0  left join ctr0.agent ag0  where (1 in elements(ag0.disciplines) or ag0 is null)";
+        
         //String result = "select ce0.collectingEventId, ce0.startDate, ce0.collectingEventId, co0.accession from CollectingEvent ce0  left join ce0.collectionObjects co0  where (ce0.collectionMemberId = 1 or ce0 is null)";
 //        DataProviderSessionIFace session = DataProviderFactory.getInstance()
 //        .createSession();
@@ -1432,26 +1436,40 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     }
 
     
+    /**
+     * @param rel
+     * @param classObj
+     * @return false if rel represents a 'system' relationship.
+     */
+    protected static boolean isRelevantRel(final DBRelationshipInfo rel, final Class<?> classObj)
+    {
+        if (classObj.equals(edu.ku.brc.specify.datamodel.Agent.class))
+        {
+            return rel.getColName() == null ||
+                (!rel.getColName().equalsIgnoreCase("modifiedbyagentid") &&
+                 !rel.getColName().equalsIgnoreCase("createdbyagentid"));
+        }
+        return true;
+    }
+    
+    /**
+     * @param qri
+     * @return qri if it is already a FieldQRI, else constructs a RelQRI and returns it.
+     */
     protected static FieldQRI buildFieldQRI(final BaseQRI qri)
     {
         if (qri instanceof FieldQRI) { return (FieldQRI) qri; }
         if (qri instanceof TableQRI)
         {
+            Class<?> classObj = qri.getTableTree().getTableInfo().getClassObj();
             DBRelationshipInfo relInfo = null;
             List<DBRelationshipInfo> rels = new LinkedList<DBRelationshipInfo>();
             for (DBRelationshipInfo rel : qri.getTableTree().getParent().getTableInfo().getRelationships())
             {
-                if (rel.getDataClass().equals(qri.getTableTree().getTableInfo().getClassObj()))
+                if (rel.getDataClass().equals(classObj) && isRelevantRel(rel, classObj))
                 {
                     rels.add(rel);
                 }
-            }
-            for (DBRelationshipInfo rel : rels)
-            {
-                System.out.println(rel.getName());
-                System.out.println("   " + rel.getDataClass().getSimpleName());
-                System.out.println("   " + rel.getColName());
-                System.out.println("   " + rel.getOtherSide());
             }
             if (rels.size() == 1)
             {
