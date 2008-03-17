@@ -61,7 +61,7 @@
     <icon name="ControlEdit"    file="EditProperties20x20.png" sizes="NonStd"/>
     <icon name="Tools"          file="EditProperties32x32.png" sizes="32"/>
     <icon name="DropIndicator"  file="dropindicator.png" sizes="NonStd"/>
-    <icon name="Formatting"     file="format.png" sizes="32"/>
+    <icon name="Formatting"     file="formatting.png" sizes="32"/>
     
 
     <!-- Aliases -->
