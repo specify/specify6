@@ -585,8 +585,16 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 }
             }
 
-            String alias = tableAbbreviator.getAbbreviation(qfi.getFieldQRI().getTableTree());
-            if (!checkedForSpecialColumns.contains(alias)  && !(qfi.getFieldQRI() instanceof RelQRI))
+            
+            TableTree tt = qfi.getFieldQRI().getTableTree();
+            if (qfi.getFieldQRI() instanceof RelQRI)
+            {
+                //Treating the RelQRI as just another field of the parent in this case.
+                //Don't think it is necessary to worry about the related table.
+                tt = tt.getParent();
+            }
+            String alias = tableAbbreviator.getAbbreviation(tt);
+            if (!checkedForSpecialColumns.contains(alias))  
             {
                 String specialColumnWhere = QueryAdjusterForDomain.getInstance().getSpecialColumns(
                         qfi.getFieldQRI().getTableInfo(), true, true/*XXX should only use left join when necessary*/, alias);
