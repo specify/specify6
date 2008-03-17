@@ -86,7 +86,7 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                 
             } else if (tableInfo.getTableId() == Geography.getClassTableId())
             {
-                fld = isHQL ? "geographyTreeDefId" : "GeographyTreeDefID";
+                fld = isHQL ? "definition" : "GeographyTreeDefID";
                 criterion = GEOTREEDEFID;
                 
             } else if (tableInfo.getTableId() == GeologicTimePeriodTreeDef.getClassTableId())
@@ -111,12 +111,12 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                 
             } else if (tableInfo.getTableId() == Taxon.getClassTableId())
             {
-                fld = isHQL ? "taxonTreeDefId" : "TaxonTreeDefID"; 
+                fld = isHQL ? "definition" : "TaxonTreeDefID"; 
                 criterion = TAXTREEDEFID;
                 
             } else if (tableInfo.getTableId() == Locality.getClassTableId())
             {
-                fld = "disciplineId";
+                fld = isHQL ? "discipline" : "disciplineId";
                 criterion = DSPLNID;
                 
             } else if (tableInfo.getTableId() == Agent.getClassTableId())
