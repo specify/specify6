@@ -141,7 +141,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected Vector<JScrollPane>                            spList           = new Vector<JScrollPane>();
     protected JPanel                                         contextPanel;
     protected JButton                                        saveBtn;
-
+    protected JButton                                        searchBtn;
+    
     protected Hashtable<String, Boolean>                     fieldsToSkipHash = new Hashtable<String, Boolean>();
     protected QryListRenderer                                qryRenderer      = new QryListRenderer(
                                                                                       IconManager.IconSize.Std16);
@@ -191,7 +192,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     {
         removeAll();
 
-        saveBtn = new JButton("Save");
+        saveBtn = new JButton(UIRegistry.getResourceString("QB_SAVE"));
         saveBtn.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
@@ -283,7 +284,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         contextPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
 
         JPanel schemaPanel = new JPanel(new BorderLayout());
-        schemaPanel.add(new JLabel("Search Fields"), BorderLayout.NORTH);
+        schemaPanel.add(new JLabel(UIRegistry.getResourceString("QB_SEARCH_FIELDS")), BorderLayout.NORTH);
         schemaPanel.add(scrollPane, BorderLayout.CENTER);
 
         topPanel.add(contextPanel, BorderLayout.WEST);
@@ -298,8 +299,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         queryFieldsScroll.setBorder(null);
         add(queryFieldsScroll);
 
-        JButton searchBtn = new JButton("Search");
-        final JCheckBox distinctChk = new JCheckBox("distinct", false);
+        searchBtn = new JButton(UIRegistry.getResourceString("QB_SEARCH"));
+        final JCheckBox distinctChk = new JCheckBox(UIRegistry.getResourceString("QB_DISTINCT"), false);
         PanelBuilder outer = new PanelBuilder(new FormLayout("f:p:g,p", "p"));
         PanelBuilder builder = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g,f:p:g,f:p:g", "p"));
         CellConstraints cc = new CellConstraints();
@@ -403,11 +404,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             }
             queryFieldsPanel.add(qfp);
         }
-
-//        QueryParameterPanel qppTest = new QueryParameterPanel();
-//        qppTest.setQuery(query, tableTree, tableTreeHash);
-//        CustomDialog cd = new CustomDialog((Frame)UIRegistry.getTopWindow(), "Testing", true, qppTest);
-//        UIHelper.centerAndShow(cd);
         
         SwingUtilities.invokeLater(new Runnable()
         {
@@ -424,6 +420,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     list.repaint();
                 }
                 saveBtn.setEnabled(false);
+                updateSearchBtn();
                 QueryBldrPane.this.validate();
             }
         });
@@ -1510,6 +1507,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 }
                 queryFieldsPanel.repaint();
                 saveBtn.setEnabled(QueryBldrPane.this.queryFieldItems.size() > 0);
+                updateSearchBtn();
             }
         });
     }
@@ -1689,6 +1687,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                         if (!loading)
                         {
                             saveBtn.setEnabled(true);
+                            updateSearchBtn();
                         }
                         //Sorry, but a new context can't be selected if any fields are selected from the current context.
                         tableList.setEnabled(queryFieldItems.size() == 0);
@@ -2136,14 +2135,28 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         queryFieldsScroll.getViewport().scrollRectToVisible(rect);
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.qb.QueryFieldPanelContainerIFace#getFields()
+     */
     public int getFields()
     {
         return queryFieldItems.size();
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.qb.QueryFieldPanelContainerIFace#getField(int)
+     */
     public QueryFieldPanel getField(int index)
     {
         return queryFieldItems.get(index);
+    }
+    
+    /**
+     * Disables search button when there is nothing to search for.
+     */
+    protected void updateSearchBtn()
+    {
+        searchBtn.setEnabled(queryFieldItems.size() > 0);
     }
 }
 

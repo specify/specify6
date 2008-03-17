@@ -104,7 +104,12 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
     
     protected QueryFieldPanel  thisItem;
     
-    protected String[] labelStrs   = {" ", "Field", "Not", "Operator", "Criteria", "Sort", "Display", " ", " "};
+    //protected String[] labelStrs   = {" ", "Field", "Not", "Operator", "Criteria", "Sort", "Display", " ", " "};
+    protected String[]                      labelStrs             = { " ",
+            UIRegistry.getResourceString("QB_FIELD"), UIRegistry.getResourceString("QB_NOT"),
+            UIRegistry.getResourceString("QB_OPERATOR"),
+            UIRegistry.getResourceString("QB_CRITERIA"), UIRegistry.getResourceString("QB_SORT"),
+            UIRegistry.getResourceString("QB_DISPLAY"), " ", " " };
     protected String[] comparators;
     
     public static final DataFlavor    QUERY_FLD_PANE_FLAVOR = new DataFlavor(DroppableTaskPane.class, "QueryFldPane");
