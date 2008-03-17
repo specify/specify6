@@ -13,7 +13,6 @@ import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.dbsupport.DBRelationshipInfo;
 import edu.ku.brc.dbsupport.DBTableInfo;
-import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -28,6 +27,10 @@ public class RelQRI extends FieldQRI
 {
     protected DBRelationshipInfo relationshipInfo;
     
+    /**
+     * @param parent
+     * @param ri
+     */
     public RelQRI(final TableQRI parent, final DBRelationshipInfo ri)
     {
         super(parent, null);
@@ -100,7 +103,7 @@ public class RelQRI extends FieldQRI
      * @see edu.ku.brc.specify.tasks.subpane.qb.FieldQRI#getSQLFldSpec(edu.ku.brc.specify.tasks.subpane.qb.TableAbbreviator)
      */
     @Override
-    public String getSQLFldSpec(TableAbbreviator ta)
+    public String getSQLFldSpec(TableAbbreviator ta, final boolean forWhereClause)
     {
         if (relationshipInfo.getType().equals(DBRelationshipInfo.RelationshipType.OneToMany))
         {
@@ -109,6 +112,9 @@ public class RelQRI extends FieldQRI
         return ta.getAbbreviation(table.getTableTree().getParent()) + "." + relationshipInfo.getName();
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.qb.FieldQRI#hasChildren()
+     */
     @Override
     public boolean hasChildren()
     {

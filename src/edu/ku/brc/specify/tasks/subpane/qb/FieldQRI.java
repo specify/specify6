@@ -27,6 +27,10 @@ public class FieldQRI extends BaseQRI
     protected DBFieldInfo fi;
     protected String[] values = null;
     
+    /**
+     * @param table
+     * @param fi
+     */
     public FieldQRI(final TableQRI table, final DBFieldInfo fi)
     {
         super(null);
@@ -39,34 +43,35 @@ public class FieldQRI extends BaseQRI
         }
         iconName = "BlankIcon";
     }
-    
-//    protected void buildValues()
-//    {
-//        if (getTableInfo() != null)
-//        {
-//            if (SystemPicklistTableIFace.class.isAssignableFrom(getTableInfo().getClassObj()))
-//            {
-//                SystemPicklistTableIFace pt = 
-//            }
-//        }
-//    }
-    
+        
+    /**
+     * @return the fieldInfo.
+     */
     public DBFieldInfo getFieldInfo()
     {
         return fi;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.qb.BaseQRI#hasChildren()
+     */
     @Override
     public boolean hasChildren()
     {
         return false;
     }
 
+    /**
+     * @return the name of the field.
+     */
     public String getFieldName()
     {
         return fi.getName();
     }
     
+    /**
+     * @return the formatter for the field.
+     */
     public UIFieldFormatterIFace getFormatter()
     {
         if (fi != null)
@@ -74,6 +79,9 @@ public class FieldQRI extends BaseQRI
         return null;
     }
     
+    /**
+     * @return the tableInfo.
+     */
     public DBTableInfo getTableInfo()
     {
         if (fi != null)
@@ -81,7 +89,12 @@ public class FieldQRI extends BaseQRI
         return null;
     }
     
-    public String getSQLFldSpec(final TableAbbreviator ta)
+    /**
+     * @param ta
+     * @param forWhereClause
+     * @return sql/hql specification for this field.
+     */
+    public String getSQLFldSpec(final TableAbbreviator ta, final boolean forWhereClause)
     {
         return ta.getAbbreviation(table.getTableTree()) + "." + getFieldName();
     }

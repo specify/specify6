@@ -577,7 +577,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         {
             if (qfi.isForDisplay())
             {
-                String fldSpec = qfi.getFieldQRI().getSQLFldSpec(tableAbbreviator);
+                String fldSpec = qfi.getFieldQRI().getSQLFldSpec(tableAbbreviator, false);
                 if (StringUtils.isNotEmpty(fldSpec))
                 {
                     if (fieldsStr.length() > 0)
@@ -636,37 +636,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             System.out.println(sqlStr.toString());
         }
         
-        //return "select co0.collectionObjectId, co0.catalogNumber, pp0.count from CollectionObject co0  left join co0.preparations pp0  where (pp0.collectionMemberId = 1 or pp0 is null)";
-        
-        
-        //return "select co0.collectionObjectId, co0.catalogNumber, det0.determinedDate from CollectionObject co0  left join co0.determinations det0  where (co0.collectionMemberId = 1) AND (det0.collectionMemberId = 1)";
-        //return "select ce0.collectingEventId, ce0.startDate, ce0.collectingEventId, ce0.locality from CollectingEvent ce0 where (ce0.collectionMemberId = 1 or ce0 is null)";
-        
         String result = sqlStr.toString();
         
-        
-        //String result = "select co0.collectionObjectId, ag0.lastName from CollectionObject co0  left join co0.collectingEvent ce0  left join ce0.collectors ctr0  left join ctr0.agent ag0  where (1 in elements(ag0.disciplines) or ag0 is null)";
-        
-        //String result = "select ce0.collectingEventId, ce0.startDate, ce0.collectingEventId, co0.accession from CollectingEvent ce0  left join ce0.collectionObjects co0  where (ce0.collectionMemberId = 1 or ce0 is null)";
-//        DataProviderSessionIFace session = DataProviderFactory.getInstance()
-//        .createSession();
-//        try
-//        {
-//            QueryIFace q = session.createQuery(result);
-//            System.out.println("Records returned:" + q.list().size());
-//        }
-//        catch (Exception e)
-//        {
-//            e.printStackTrace();
-//            throw new RuntimeException(e);
-//        }
-//        finally
-//        {
-//            session.close();
-//        }
         return result;
-        //return "select ce0.collectingEventId, ce0.startDate, ce0.collectingEventId, co0.accession from CollectingEvent ce0  left join ce0.collectionObjects co0  where (ce0.collectionMemberId = 1 or ce0 is null)";
-        //return sqlStr.toString();
     }
     
     /**

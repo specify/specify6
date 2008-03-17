@@ -25,6 +25,12 @@ public class TreeLevelQRI extends FieldQRI
 {
     protected final int rankId;
     
+    /**
+     * @param parent
+     * @param fi
+     * @param rankId
+     * @throws Exception
+     */
     public TreeLevelQRI(final TableQRI parent, final DBFieldInfo fi, final int rankId)
             throws Exception
     {
@@ -45,23 +51,36 @@ public class TreeLevelQRI extends FieldQRI
         }
     }
     
+    /**
+     * @return
+     */
     public int getRankId()
     {
         return rankId;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.qb.FieldQRI#getFieldName()
+     */
     @Override
     public String getFieldName()
     {
         return title;
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.qb.FieldQRI#getTableInfo()
+     */
     @Override
     public DBTableInfo getTableInfo()
     {
         return table.getTableTree().getTableInfo();
     }
     
+    /**
+     * @param ta
+     * @return complete specification of the field to be used in sql/hql fields clause.
+     */
     protected String getSQLFldName(final TableAbbreviator ta)
     {
         StringBuilder result = new StringBuilder("(select treelevel.name from ");
@@ -81,6 +100,9 @@ public class TreeLevelQRI extends FieldQRI
         return result.toString();
     }
     
+    /**
+     * @return name of the field which links to the level's tree definition.
+     */
     protected String getTreeDefIdFldName()
     {
         //sql?
@@ -90,14 +112,33 @@ public class TreeLevelQRI extends FieldQRI
         return "definition";
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.qb.FieldQRI#getSQLFldSpec(edu.ku.brc.specify.tasks.subpane.qb.TableAbbreviator, boolean)
+     */
     @Override
-    public String getSQLFldSpec(final TableAbbreviator ta)
+    public String getSQLFldSpec(final TableAbbreviator ta, final boolean forWhereClause)
     {
-        return getSQLFldName(ta) + " as " + getFieldName().replace(' ', '_'); //can't figure out what the delimiter is for fld aliases so...
+        String result = getSQLFldName(ta);
+        if (!forWhereClause)
+        {
+            result = result + " as " + getFieldName().replace(' ', '_'); // can't figure out what
+                                                                            // the delimiter is for
+                                                                            // fld aliases so...
+        }
+        return result;
     }
     
+    /**
+     * @author timbo
+     *
+     * @code_status Alpha
+     *
+     */
     public class NoTreeDefItemException extends Exception
     {
+        /**
+         * @param rankId - rank of the level without a definition.
+         */
         public NoTreeDefItemException(int rankId)
         {
             super("No TreeDefItem for " + String.valueOf(rankId));

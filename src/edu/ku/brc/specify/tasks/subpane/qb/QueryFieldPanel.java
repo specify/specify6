@@ -362,7 +362,7 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
             }
             if (criteriaStr.length() > 0)
             {
-                str.append(fieldQRI.getSQLFldSpec(ta) + " ");
+                str.append(fieldQRI.getSQLFldSpec(ta, true) + " ");
                 if (operStr.equals("="))
                 {
                     str.append(isNotCheckbox.isSelected() ? "!" : "");
