@@ -58,7 +58,7 @@ public class AddRemoveEditPanel extends JPanel
     {
         if (editAL != null)
         {
-            editBtn = UIHelper.createIconBtn("EditIcon", addTTKey, editAL);
+            editBtn = UIHelper.createIconBtn("EditIcon", editTTKey, editAL);
         }
         
         if (delAL != null)
@@ -68,7 +68,7 @@ public class AddRemoveEditPanel extends JPanel
         
         if (addAL != null)
         {
-            addBtn = UIHelper.createIconBtn("PlusSign", editTTKey, addAL);
+            addBtn = UIHelper.createIconBtn("PlusSign", addTTKey, addAL);
         }
         
         int numBtns = (addAL != null ? 1 : 0) + (delAL != null ? 1 : 0) + (addAL != null ? 1 : 0);
