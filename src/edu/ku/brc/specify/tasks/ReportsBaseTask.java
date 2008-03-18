@@ -37,6 +37,8 @@ import net.sf.jasperreports.engine.JRDataSource;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
@@ -54,6 +56,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpReport;
+import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
 import edu.ku.brc.specify.tasks.subpane.LabelsPane;
 import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
 import edu.ku.brc.specify.tools.IReportSpecify.MainFrameSpecify;
@@ -656,6 +659,10 @@ public class ReportsBaseTask extends BaseTask
             {
                 runReport(cmdAction);
             }
+            if (cmdAction.getData() instanceof CommandAction && ((CommandAction)cmdAction.getData()).isAction(OPEN_EDITOR))
+            {
+                openIReportEditor(cmdAction);
+            }
             else
             {
                 printReport(cmdAction);
@@ -677,8 +684,30 @@ public class ReportsBaseTask extends BaseTask
      * Open the IReport editor.
      * @param cmdAction the command to be processed
      */
-    private void openIReportEditor(final CommandAction cmdAction) 
+    protected void openIReportEditor(final CommandAction cmdAction) 
     {
+        CommandAction repAction = null;
+        AppResourceIFace repRes = null;
+        
+        if (cmdAction.isAction(OPEN_EDITOR)) //EditReport was clicked or dropped on
+        {
+            Object data = cmdAction.getData();
+            if (data instanceof CommandAction && ((CommandAction)data).isAction(PRINT_REPORT))
+            {
+                repAction = (CommandAction)data;
+            }
+        }
+        else if (cmdAction.isAction(PRINT_REPORT))//Report was dropped upon
+        {
+            repAction = cmdAction;
+        }
+        
+        if (repAction != null)
+        {
+            JasperReportsCache.refreshCacheFromDatabase();
+            repRes = AppContextMgr.getInstance().getResource((String)repAction.getProperty("name")); 
+        }
+        
         //XXX
         //better to use iReport config file to deal with laf issue?
         final LookAndFeel laf = UIManager.getLookAndFeel();
@@ -690,6 +719,10 @@ public class ReportsBaseTask extends BaseTask
                 Thread.currentThread().setContextClassLoader( MainFrame.reportClassLoader );
                 Map<?,?> args = MainFrameSpecify.getArgs();
                 iReportMainFrame = new MainFrameSpecify(args);
+                if (repRes != null)
+                {
+                    iReportMainFrame.openReportFromResource(repRes);
+                }
             }
             catch (Exception e)
             {

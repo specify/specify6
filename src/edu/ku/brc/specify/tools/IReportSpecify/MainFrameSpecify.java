@@ -19,6 +19,8 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -205,11 +207,31 @@ public class MainFrameSpecify extends MainFrame
         // DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
         {
+            //XXX which of the reports should be editable? by whom? when? ...
             for (AppResourceIFace ap : AppContextMgr.getInstance().getResourceByMimeType(
                     "jrxml/label"))
             {
                 list.add(ap);
             }
+            for (AppResourceIFace ap : AppContextMgr.getInstance().getResourceByMimeType(
+            "jrxml/report"))
+            {
+                list.add(ap);
+            }
+            Collections.sort(list, new Comparator<AppResourceIFace>()
+                    {
+
+                        /* (non-Javadoc)
+                         * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
+                         */
+                        @Override
+                        public int compare(AppResourceIFace o1, AppResourceIFace o2)
+                        {
+                            // TODO Auto-generated method stub
+                            return o1.toString().compareTo(o2.toString());
+                        }
+                        
+                    });
             if (list.size() > 0)
             {
                 ChooseFromListDlg<AppResourceIFace> dlg = new ChooseFromListDlg<AppResourceIFace>(
@@ -263,7 +285,7 @@ public class MainFrameSpecify extends MainFrame
      *            a specify report resource
      * @return - a iReport designer frame for rep
      */
-    private JReportFrame openReportFromResource(final AppResourceIFace rep)
+    public JReportFrame openReportFromResource(final AppResourceIFace rep)
     {
         JReportFrame reportFrame = findReportFrameByResource(rep);
         if (reportFrame == null)
