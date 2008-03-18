@@ -22,14 +22,18 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Formatter;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.Set;
+import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.ui.UIHelper;
@@ -278,6 +282,77 @@ public class DataObjFieldFormatMgr
     }
     
     /**
+     * Gets a unique name for a formatter if it doesn't yet have one
+     */
+    private String getFormatterUniqueName(DataObjSwitchFormatter formatter)
+    {
+    	String name = formatter.getName();
+ 
+    	if (name == null || name.equals(""))
+    	{
+    		// find a formatter name that doesn't yet exist in the hash
+    		// name formation patter is <field name>.i where i is a counter
+    		int i = 1;
+    		Set<String> names = formatHash.keySet();
+    		String prefix = formatter.getFieldName();
+    		name = prefix + "." + Integer.toString(i);
+    		while (names.contains((String) name))
+    		{
+        		name = prefix + "." + Integer.toString(++i);
+    		}
+    	}
+    	formatter.setName(name);
+    	return null;
+    }
+    
+    /**
+     * Saves formatters
+     * @param 
+     */
+    public void save() 
+    {
+		StringBuilder sb = new StringBuilder(1024);
+    	
+		sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<formats>\n");
+    	Iterator<DataObjSwitchFormatter> it = formatHash.values().iterator();
+    	while (it.hasNext()) 
+    	{
+    		//it.next().toXML(sb);
+    	}
+		sb.append("\n</formats>\n");
+
+        AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromDir("Collection", "XXX");
+        if (escAppRes != null)
+        {
+            escAppRes.setDataAsString(sb.toString());
+            AppContextMgr.getInstance().saveResource(escAppRes);
+           
+        } else
+        {
+            AppContextMgr.getInstance().putResourceAsXML("XXX", sb.toString());    
+        }
+    }
+    
+    /**
+     * Adds a new formatter
+     */
+    public void addFormatter(DataObjSwitchFormatter formatter)
+    {
+    	getFormatterUniqueName(formatter);
+    	formatHash.put(formatter.getName(), formatter);
+    	formatClassHash.put(formatter.getDataClass(), formatter);
+    }
+    
+    /**
+     * Deletes a formatter from the 
+     */
+    public void removeFormatter(UIFieldFormatterIFace formatter)
+    {
+    	formatHash.remove(formatter.getName());
+    	formatClassHash.remove(formatter.getName());
+    }
+    
+    /**
      * Returns a data formatter.
      * @param formatName the name
      * @return the formatter
@@ -307,7 +382,7 @@ public class DataObjFieldFormatMgr
         DataObjSwitchFormatter switcherFormatter = formatHash.get(formatName);
         if (switcherFormatter != null)
         {
-            return getDataFormatter(dataObj, switcherFormatter);
+            return switcherFormatter.getDataFormatter(dataObj);
             
         }
         // else
@@ -317,35 +392,34 @@ public class DataObjFieldFormatMgr
     }
 
     /**
-     * Format a data object using a named formatter.
-     * @param dataObj the data object for which fields will be formatted for it
-     * @param switcherFormatter the switch formatter
-     * @return the string result of the format
+     * Returns a list of formatters that match the class, the default (if there is one) is at the beginning of the list.
+     * @param clazz the class of the data that the formatter is used for.
+     * @return return a list of formatters that match the class
      */
-    protected DataObjDataFieldFormatIFace getDataFormatter(final Object dataObj, final DataObjSwitchFormatter switcherFormatter)
+    public static List<DataObjSwitchFormatter> getFormatterList(final Class<?> clazz)
     {
-        if (switcherFormatter.isSingle())
+        Vector<DataObjSwitchFormatter> list = new Vector<DataObjSwitchFormatter>();
+        DataObjSwitchFormatter         defFormatter = null;
+        
+        for (Enumeration<DataObjSwitchFormatter> e=getInstance().formatHash.elements();e.hasMoreElements();)
         {
-            return switcherFormatter.getFormatterForValue(null); // null is ignored
-        }
-
-        DataObjectGettable getter = DataObjectGettableFactory.get(dataObj.getClass().getName(), "edu.ku.brc.ui.forms.DataGetterForObj");
-
-        DataObjDataFieldFormatIFace dff = null;
-        Object[] values = UIHelper.getFieldValues(new String[] {switcherFormatter.getFieldName()}, dataObj, getter);
-        if (values != null)
-        {
-            String value = values[0] != null ? values[0].toString() : "null";
-            dff = switcherFormatter.getFormatterForValue(value);
-            if (dff == null)
+        	DataObjSwitchFormatter f = e.nextElement();
+            if (clazz == f.getDataClass())
             {
-                throw new RuntimeException("Couldn't find a switchable data formatter for ["+switcherFormatter.getName()+"] field["+switcherFormatter.getFieldName()+"] value["+value+"]");
+                if (f.isDefault() && defFormatter == null)
+                {
+                    defFormatter = f;
+                } else
+                {
+                    list.add(f);
+                }
             }
-        } else
-        {
-            throw new RuntimeException("Values Array was null for Class["+dataObj.getClass().getSimpleName()+"] couldn't find field["+switcherFormatter.getFieldName()+"] (you probably passed in the wrong type of object)");
         }
-        return dff;
+        if (defFormatter != null)
+        {
+            list.insertElementAt(defFormatter, 0);
+        }
+        return list;
     }
 
     /**
@@ -563,7 +637,7 @@ public class DataObjFieldFormatMgr
             DataObjSwitchFormatter sf = getInstance().formatHash.get(formatName);
             if (sf != null)
             {
-                DataObjDataFieldFormatIFace dff = getInstance().getDataFormatter(dataObj, sf);
+                DataObjDataFieldFormatIFace dff = sf.getDataFormatter(dataObj);
                 if (dff != null)
                 {
                     return getInstance().formatInternal(dff, dataObj);
@@ -592,7 +666,7 @@ public class DataObjFieldFormatMgr
             DataObjSwitchFormatter sf = getInstance().formatClassHash.get(dataClass);
             if (sf != null)
             {
-                DataObjDataFieldFormatIFace dff = getInstance().getDataFormatter(dataObj, sf);
+                DataObjDataFieldFormatIFace dff = sf.getDataFormatter(dataObj);
                 if (dff != null)
                 {
                     return getInstance().formatInternal(dff, dataObj);
@@ -730,7 +804,16 @@ public class DataObjFieldFormatMgr
             }
         } 
         
-        return instance = new DataObjFieldFormatMgr();
+        instance = new DataObjFieldFormatMgr();
+        
+        // now that all formats have been loaded, set table/field/formatter info\
+        // must be executed after the instance is set
+        for ( DataObjSwitchFormatter format : instance.formatHash.values() )
+        {
+        	format.setTableAndFieldInfo();
+        }
+
+        return instance;
         
         // should not happen
         //throw new RuntimeException("Can't instantiate DataObjFieldFormatMgr factory [" + factoryNameStr+"]");

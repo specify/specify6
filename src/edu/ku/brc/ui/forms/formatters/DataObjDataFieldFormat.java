@@ -19,6 +19,10 @@ package edu.ku.brc.ui.forms.formatters;
 
 import java.util.Properties;
 
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBFieldInfo;
+import edu.ku.brc.dbsupport.DBTableInfo;
+
 /**
  * This class represents a single format. A DataobjectFormatter can switch between formats for a given field's value.
  * So either there is one of these (meaning the format is not switchable) or there is multiple formats.<br><br>
@@ -39,6 +43,7 @@ public class DataObjDataFieldFormat implements DataObjDataFieldFormatIFace
     protected String             format;
     protected String             value;
     protected DataObjDataField[] fields;
+    protected DBTableInfo		 tableInfo;
 
     public DataObjDataFieldFormat(final String   name, 
                                   final Class<?> dataClass, 
@@ -55,6 +60,16 @@ public class DataObjDataFieldFormat implements DataObjDataFieldFormatIFace
         this.fields     = fields;
     }
 
+    public String toString()
+    {
+        StringBuilder str = new StringBuilder();
+        for (DataObjDataField field : fields)
+        {
+            str.append(field.toString());
+        }
+        return str.toString();
+    }
+    
     public String getFormat()
     {
         return format;
@@ -122,5 +137,17 @@ public class DataObjDataFieldFormat implements DataObjDataFieldFormatIFace
     public DataObjDataField[] getFields()
     {
         return fields;
+    }
+    
+    /*
+     * Note: do not call this method from the constructor as it will trigger infinite recursion
+     */
+    public void setTableAndFieldInfo() 
+    {
+        tableInfo = DBTableIdMgr.getInstance().getByClassName(dataClass.getName());
+        for (DataObjDataField field : fields)
+        {
+            field.setTableAndFieldInfo(tableInfo);
+        }
     }
 }

@@ -374,7 +374,7 @@ public class UIFormatterDlg extends CustomDialog
         		"p,"          + // by year checkbox  
         		"5px,"        + // --- separator 
         		"p,"          + // available formats label 
-        		"f:100px:g,"  + // available formats list 
+        		"t:100px:g,"  + // available formats list 
         		"10px,"       + // --- separator 
         		"p,"          + // delete button 
         		"15px"          // --- separator 

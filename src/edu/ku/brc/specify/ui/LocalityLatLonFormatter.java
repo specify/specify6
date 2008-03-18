@@ -195,4 +195,12 @@ public class LocalityLatLonFormatter implements DataObjDataFieldFormatIFace
     {
         return null;
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.DataObjDataFieldFormatIFace#setTableAndFieldInfo()
+     */
+    public void setTableAndFieldInfo()
+    {
+    	return;
+    }
 }

@@ -19,17 +19,12 @@ import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Properties;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.dbsupport.AutoNumberIFace;
-import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.ui.DateWrapper;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatterField.FieldType;
 import edu.ku.brc.util.Pair;
 
 

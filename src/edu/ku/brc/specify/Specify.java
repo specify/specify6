@@ -88,6 +88,7 @@ import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.dbsupport.CustomQueryFactory;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
@@ -145,8 +146,8 @@ import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.ResultSetController;
+import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatDlg;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
-import edu.ku.brc.ui.forms.formatters.UIFormatterDlg;
 import edu.ku.brc.ui.forms.persist.ViewLoader;
 import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
@@ -888,6 +889,23 @@ public class Specify extends JPanel implements DatabaseLoginListener
                             doSchemaConfig(SpLocaleContainer.WORKBENCH_SCHEMA, schema);
                         }
                     });
+            
+            // XXX For testing only - please remove menu item before releasing
+            title = "Data Object Format Dialog";
+            mi = UIHelper.createMenuItem(menu, title, "Data Object Format Dialog", title, true, null);
+            mi.addActionListener(new ActionListener()
+            		{
+            			public void actionPerformed(ActionEvent ae)
+            			{
+            				//DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoByTableName("agent");
+            				DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoByTableName("accessionagent");
+            				DataObjFieldFormatDlg dlg = new DataObjFieldFormatDlg(topFrame, tableInfo, 0);
+            				dlg.setVisible(true);
+            			}
+            		});
+        }
+                     
+                     /*if (true)
         }
         
         /*if (true)

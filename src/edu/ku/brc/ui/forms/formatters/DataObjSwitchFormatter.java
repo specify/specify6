@@ -14,10 +14,16 @@
  */
 package edu.ku.brc.ui.forms.formatters;
 
+import java.util.Collection;
 import java.util.Hashtable;
+import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+
+import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.forms.DataObjectGettable;
+import edu.ku.brc.ui.forms.DataObjectGettableFactory;
 
 /**
  * A formatter that can have one or more formatters that depend on an external value, typically from the database.
@@ -107,7 +113,50 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
         }
         return formatsHashtable.get(value);
     }
+    
+    public Collection<DataObjDataFieldFormatIFace> getFormatters()
+    {
+    	if (isSingle)
+    	{
+    		// code below is used to return single as part of a Collection
+    		Vector<DataObjDataFieldFormatIFace> vector = new Vector<DataObjDataFieldFormatIFace>();
+    		vector.add(single);
+    		return vector;
+    	}
+    	
+    	return formatsHashtable.values();
+    }
 
+    /**
+     * Format a data object using a named formatter.
+     * @param dataObj the data object for which fields will be formatted for it
+     * @return the string result of the format
+     */
+    protected DataObjDataFieldFormatIFace getDataFormatter(final Object dataObj)
+    {
+        if (isSingle())
+        {
+            return getFormatterForValue(null); // null is ignored
+        }
+
+        DataObjectGettable getter = DataObjectGettableFactory.get(dataObj.getClass().getName(), "edu.ku.brc.ui.forms.DataGetterForObj");
+
+        DataObjDataFieldFormatIFace dff = null;
+        Object[] values = UIHelper.getFieldValues(new String[] {getFieldName()}, dataObj, getter);
+        if (values != null)
+        {
+            String value = values[0] != null ? values[0].toString() : "null";
+            dff = getFormatterForValue(value);
+            if (dff == null)
+            {
+                throw new RuntimeException("Couldn't find a switchable data formatter for ["+getName()+"] field["+getFieldName()+"] value["+value+"]");
+            }
+        } else
+        {
+            throw new RuntimeException("Values Array was null for Class["+dataObj.getClass().getSimpleName()+"] couldn't find field["+getFieldName()+"] (you probably passed in the wrong type of object)");
+        }
+        return dff;
+    }
 
     /**
      * Returns the field names.
@@ -124,7 +173,12 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
     @Override
     public String toString()
     {
-        return name;
+    	if (isSingle)
+    	{
+    		return single.toString();
+    	}
+    	
+    	return "[" + name + " by " + getFieldName() + "]";
     }
     
     //-----------------------------------------------------------------------
@@ -188,6 +242,21 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
         throw new RuntimeException("This method cannot be called on this type of object");
     }
 
+    public void setTableAndFieldInfo()
+    {
+    	if (single != null)
+    	{
+    		single.setTableAndFieldInfo();
+    		return;
+    	} 
+    	// else 
+    	for (DataObjDataFieldFormatIFace format : formatsHashtable.values())
+    	{
+    		format.setTableAndFieldInfo();
+    	}
+    }
+
+    
     //-----------------------------------------------------------------------
     //-- Comparable Interface
     //-----------------------------------------------------------------------
@@ -199,4 +268,8 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
     {
         return name.compareTo(o.name);
     }
+
+	public void setName(String name) {
+		this.name = name;
+	}
 }
