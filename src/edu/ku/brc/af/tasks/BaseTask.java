@@ -1055,6 +1055,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
                (classTableId == null || (Integer.parseInt(tableid) == classTableId.intValue())) &&
                StringUtils.isEmpty(reportType) || (StringUtils.isNotEmpty(rptType) && reportType.equals(rptType)))
             {
+                params.put("name", ap.getName());
                 params.put("title", ap.getDescription());
                 params.put("file", ap.getName());
                 params.put("mimetype", mimeType);

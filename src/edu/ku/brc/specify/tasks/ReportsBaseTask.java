@@ -19,6 +19,7 @@ import it.businesslogic.ireport.gui.MainFrame;
 
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -48,9 +49,13 @@ import edu.ku.brc.af.core.TaskCommandDef;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.tasks.subpane.LabelsPane;
+import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
 import edu.ku.brc.specify.tools.IReportSpecify.MainFrameSpecify;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
@@ -86,9 +91,13 @@ public class ReportsBaseTask extends BaseTask
     public static final String NEWRECORDSET_ACTION = "RPT.NewRecordSet";
     public static final String PRINT_REPORT        = "RPT.PrintReport";
     public static final String OPEN_EDITOR         = "RPT.OpenEditor";
+    public static final String RUN_REPORT          = "RPT.RunReport";
 
     // Data Members
     protected DataFlavor              defaultFlavor    = null;
+    protected DataFlavor              spReportFlavor   = new DataFlavor(SpReport.class, "SpReport");
+    protected DataFlavor              runReportFlavor  = new DataFlavor(SpReport.class, RUN_REPORT);
+    protected DataFlavor              editReportFlavor = new DataFlavor(SpReport.class, OPEN_EDITOR);  
     protected String                  mimeType         = null;
     protected Vector<NavBoxIFace>     extendedNavBoxes = new Vector<NavBoxIFace>();
     protected Vector<NavBoxItemIFace> reportsList      = new Vector<NavBoxItemIFace>();
@@ -162,25 +171,7 @@ public class ReportsBaseTask extends BaseTask
                         String tableIdStr = tcd.getParams().getProperty("tableid");
                         if (tableIdStr != null)
                         {
-                            CommandAction cmdAction = new CommandAction(REPORTS, PRINT_REPORT, tableIdStr);
-                            cmdAction.addStringProperties(tcd.getParams());
-                            cmdAction.getProperties().put("icon", IconManager.getIcon(tcd.getIconName()));
-                            cmdAction.getProperties().put("task name", getName());
-                            
-                            NavBoxItemIFace nbi = makeDnDNavBtn(navBox, 
-                                                                tcd.getName(), 
-                                                                tcd.getIconName(), 
-                                                                cmdAction, 
-                                                                null, 
-                                                                true,  // true means make it draggable
-                                                                true); // true means add sorted
-                            reportsList.add(nbi);
-                            
-                            RolloverCommand roc = (RolloverCommand)nbi;
-                            roc.addDropDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
-                            roc.addDragDataFlavor(defaultFlavor);
-                            roc.setToolTip(getResourceString(reportHintKey));
-
+                            makeROCForCommand(tcd, navBox);
                         } else
                         {
                             log.error("Interaction Command is missing the table id");
@@ -195,6 +186,62 @@ public class ReportsBaseTask extends BaseTask
         }
     }
 
+    protected RolloverCommand makeROCForCommand(final TaskCommandDef tcd, final NavBox navBox)
+    {
+        CommandAction cmdAction = new CommandAction(REPORTS, PRINT_REPORT, tcd.getParams().getProperty("tableid"));
+        cmdAction.addStringProperties(tcd.getParams());
+        cmdAction.getProperties().put("icon", IconManager.getIcon(tcd.getIconName()));
+        cmdAction.getProperties().put("task name", getName());
+        
+        //Rough
+        //See if there is an SpReport record for the resource.
+        String resourceName = cmdAction.getProperties().getProperty("name").replace(".jrxml", "");
+        if (resourceName != null)
+        {
+            DataProviderSessionIFace session = DataProviderFactory.getInstance()
+            .createSession();
+            try
+            {
+                SpReport rep = (SpReport)session.getData("from SpReport where name = '" + resourceName + "'");
+                if (rep != null)
+                {
+                    RecordSet     rs  = new RecordSet(resourceName, SpReport.getClassTableId());
+                    rs.addItem(rep.getId());
+                    cmdAction.setProperty("spreport", rs);
+                }
+            }
+            finally
+            {
+                session.close();
+            }
+        }
+        
+        
+        NavBoxItemIFace nbi = makeDnDNavBtn(navBox, 
+                                            tcd.getName(), 
+                                            tcd.getIconName(), 
+                                            cmdAction, 
+                                            null, 
+                                            true,  // true means make it draggable
+                                            true); // true means add sorted
+        reportsList.add(nbi);
+        
+        //XXX work out appResource/SpReport details...
+        RolloverCommand roc = (RolloverCommand)nbi;
+        roc.addDropDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
+        roc.addDragDataFlavor(defaultFlavor);
+        if (cmdAction.getProperties().get("spreport") != null)
+        {
+            roc.addDragDataFlavor(spReportFlavor);
+            roc.addDropDataFlavor(runReportFlavor);
+            roc.addDropDataFlavor(editReportFlavor);
+        }
+        roc.setToolTip(getResourceString(reportHintKey));
+        roc.setEnabled(true);
+        
+        return roc;
+    }
+    
     /**
      * Performs a command (to create a label).
      * @param labelName the name of lable (the file name)
@@ -590,35 +637,47 @@ public class ReportsBaseTask extends BaseTask
         {
             if (cmdAction.getData() instanceof GhostActionable)
             {
-                GhostActionable        ga  = (GhostActionable)cmdAction.getData();
+                GhostActionable ga = (GhostActionable) cmdAction.getData();
                 GhostMouseInputAdapter gpa = ga.getMouseInputAdapter();
 
                 for (NavBoxItemIFace nbi : reportsList)
                 {
                     if (nbi instanceof GhostActionable)
                     {
-                        gpa.addGhostDropListener(new GhostActionableDropManager(UIRegistry.getGlassPane(), nbi.getUIComponent(), ga));
+                        gpa.addGhostDropListener(new GhostActionableDropManager(UIRegistry
+                                .getGlassPane(), nbi.getUIComponent(), ga));
                     }
-                 }
-            }
-        } else if (cmdAction.isAction(PRINT_REPORT))
-        {
-            printReport(cmdAction);
-            
-        } else if (cmdAction.isAction(OPEN_EDITOR))
-        {
-            if (cmdAction.getData() == null) //no dropping yet.
-            {
-                openIReportEditor();
+                }
             }
         }
+        else if (cmdAction.isAction(PRINT_REPORT))
+        {
+            if (cmdAction.getData() instanceof CommandAction && ((CommandAction)cmdAction.getData()).isAction(RUN_REPORT))
+            {
+                runReport(cmdAction);
+            }
+            else
+            {
+                printReport(cmdAction);
+            }
+
+        }
+        else if (cmdAction.isAction(OPEN_EDITOR))
+        {
+            openIReportEditor(cmdAction);
+        }
+        else if (cmdAction.isAction(RUN_REPORT))
+        {
+            runReport(cmdAction);
+        }
+
     }
     
     /**
      * Open the IReport editor.
      * @param cmdAction the command to be processed
      */
-    private void openIReportEditor() 
+    private void openIReportEditor(final CommandAction cmdAction) 
     {
         //XXX
         //better to use iReport config file to deal with laf issue?
@@ -654,6 +713,108 @@ public class ReportsBaseTask extends BaseTask
         });
     }
         
+    /**
+     * @param cmd
+     * @return a fully-loaded SpReport 
+     */
+    protected SpReport loadReport(final RecordSet repRS)
+    {
+        SpReport result = null;
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
+        {
+            result = session.get(SpReport.class, repRS.getItems().iterator().next().getRecordId());
+            result.forceLoad();
+        }
+        finally
+        {
+            session.close();
+        }
+        return result;
+    }
+    
+    /**
+     * @param helpContext
+     * @return a fully-loaded SpReport of the User's choosing.
+     */
+    protected SpReport selectReport(final String helpContext)
+    {
+        List<NavBoxItemIFace> options = new LinkedList<NavBoxItemIFace>();
+        //select reports that have an SpReport object.
+        for (NavBoxItemIFace face : this.reportsList)
+        {
+            CommandAction cmd = (CommandAction)face.getData();
+            if (cmd.getProperty("spreport") != null)
+            {
+                options.add(face);
+            }
+        }
+        if (options.size() == 0)
+        {
+            UIRegistry.getStatusBar().setText(getResourceString("NO_RUNNABLE_REPORTS"));
+            return null;
+        }
+        ChooseFromListDlg<NavBoxItemIFace> dlg = new ChooseFromListDlg<NavBoxItemIFace>((Frame)UIRegistry.get(UIRegistry.FRAME),
+                getResourceString("REP_CHOOSE_REPORT"), 
+                null, 
+                ChooseFromListDlg.OKCANCELHELP, 
+                options, 
+                helpContext);
+    
+        dlg.setModal(true);
+        UIHelper.centerAndShow(dlg);
+        NavBoxItemIFace selection = dlg.getSelectedObject();
+        if (selection != null)
+        {
+            RecordSet repRS = (RecordSet)((CommandAction)selection.getData()).getProperty("spreport");
+            return loadReport(repRS);
+        }
+        return null;
+    }
+    
+    /**
+     * @param cmdAction
+     */
+    protected void runReport(final CommandAction cmdAction)
+    {
+        SpReport toRun = null;
+        CommandAction runAction = null;
+        CommandAction repAction = null;
+        if (cmdAction.isAction(RUN_REPORT)) //RunReport was clicked or dropped on
+        {
+            runAction = cmdAction;
+            Object data = cmdAction.getData();
+            if (data instanceof CommandAction && ((CommandAction)data).isAction(PRINT_REPORT))
+            {
+                repAction = (CommandAction)data;
+            }
+        }
+        else if (cmdAction.isAction(PRINT_REPORT))//Report was dropped upon
+        {
+            repAction = cmdAction;
+            Object data = cmdAction.getData();
+            if (data instanceof CommandAction && ((CommandAction)data).isAction(RUN_REPORT))
+            {
+                runAction = (CommandAction)data;
+            }
+        }
+        
+        if (runAction != null && repAction == null)
+        {
+            toRun = selectReport("ReportRunReport"); //XXX add help
+        }
+        else if (runAction != null && repAction != null)
+        {
+            toRun = loadReport((RecordSet)repAction.getProperty("spreport"));
+        }
+        
+        if (toRun != null)
+        {
+            QueryBldrPane.runReport(toRun);
+        }
+    }
+    
+    
     /*private void dumpProps(final Properties props, final int level)
     {
         StringBuilder sb = new StringBuilder();

@@ -253,6 +253,26 @@ public class SpQuery extends DataModelObjBase
         return this.specifyUser;
     }
     
+    /**
+     * @param forceReports
+     * 
+     * Assuming object is attached to an open session, loads lazy-loaded members.
+     */
+    public void forceLoad(boolean forceReports)
+    {
+        for (SpQueryField qf : getFields())
+        {
+            qf.getFieldName();
+        }
+        getSpecifyUser();
+        if (forceReports)
+        {
+            for (SpReport r: getReports())
+            {
+                r.forceLoad();
+            }
+        }
+    }
     //----------------------------------------------------------------------
     //-- DataModelObjBase
     //----------------------------------------------------------------------
@@ -316,6 +336,7 @@ public class SpQuery extends DataModelObjBase
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.DataModelObjBase#toString()
      */
+    @Override
     public String toString()
     {
         return name;

@@ -172,6 +172,16 @@ public class SpReport extends DataModelObjBase
     {
         return this.specifyUser;
     }
+
+    /**
+     * Assuming object is attached to an open session, loads lazily-loaded members.
+     */
+    public void forceLoad()
+    {
+        getQuery().forceLoad(false);
+        getAppResource();
+        getSpecifyUser();
+    }
     
     //----------------------------------------------------------------------
     //-- DataModelObjBase

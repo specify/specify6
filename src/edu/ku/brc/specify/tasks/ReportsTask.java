@@ -25,12 +25,15 @@ import org.apache.commons.lang.StringUtils;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxAction;
+import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
+import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.tasks.subpane.LabelsPane;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 
 /**
@@ -81,7 +84,19 @@ public class ReportsTask extends ReportsBaseTask
         super.preInitialize();
         
         actionNavBox.add(NavBox.createBtnWithTT(getResourceString("Create_New_Report"), name, getResourceString("CREATE_REPORT_TT"), IconManager.IconSize.Std16, null));
-        actionNavBox.add(NavBox.createBtnWithTT(getResourceString("ReportEditor"),  "EditIcon", getResourceString("EDIT_REPORT_TT"), IconManager.IconSize.Std16, new NavBoxAction(REPORTS, OPEN_EDITOR))); // I18N
+        
+        RolloverCommand roc = (RolloverCommand)makeDnDNavBtn(actionNavBox, getResourceString("ReportEditor"), "EditIcon", 
+                getResourceString("EDIT_REPORT_TT"), 
+                new CommandAction(REPORTS, OPEN_EDITOR, SpReport.getClassTableId()), null, true, false);// true means make it draggable
+        roc.addDropDataFlavor(spReportFlavor);
+        roc.addDragDataFlavor(new DataFlavor(SpReport.class, OPEN_EDITOR));
+       
+        roc = (RolloverCommand)makeDnDNavBtn(actionNavBox, getResourceString("ReportRunner"), name, 
+                getResourceString("RUN_REPORT_TT"), 
+                new CommandAction(REPORTS, RUN_REPORT, SpReport.getClassTableId()), null, true, false);// true means make it draggable
+        //roc.addDropDataFlavor(spReportFlavor);
+        roc.addDropDataFlavor(runReportFlavor);
+        roc.addDragDataFlavor(runReportFlavor);
    }
 
     /**
