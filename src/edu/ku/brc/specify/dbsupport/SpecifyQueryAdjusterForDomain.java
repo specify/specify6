@@ -110,7 +110,7 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                 
             } else if (tableInfo.getTableId() == PrepType.getClassTableId())
             {
-                fld = isHQL ? "collectionId" : "CollectionID";
+                fld = isHQL ? "collection" : "CollectionID";
                 criterion = COLLID;  
                 
             } else if (tableInfo.getTableId() == Taxon.getClassTableId())
