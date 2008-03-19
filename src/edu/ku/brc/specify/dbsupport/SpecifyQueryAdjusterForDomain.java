@@ -95,17 +95,17 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                 
             } else if (tableInfo.getTableId() == GeologicTimePeriodTreeDef.getClassTableId())
             {
-                fld = isHQL ? "geologicTimePeriodTreeDefId" : "GeologicTimePeriodTreeDefID"; 
+                fld = isHQL ? "definition" : "GeologicTimePeriodTreeDefID"; 
                 criterion = GTPTREEDEFID;
                 
             } else if (tableInfo.getTableId() == LithoStrat.getClassTableId())
             {
-                fld = isHQL ? "lithoStratTreeDefId" : "LithoStratTreeDefID";
+                fld = isHQL ? "definition" : "LithoStratTreeDefID";
                 criterion = LITHOTREEDEFID;
                 
             } else if (tableInfo.getTableId() == Storage.getClassTableId())
             {
-                fld = isHQL ? "storageTreeDefId" : "StorageTreeDefID";
+                fld = isHQL ? "definition" : "StorageTreeDefID";
                 criterion = STORTREEDEFID;
                 
             } else if (tableInfo.getTableId() == PrepType.getClassTableId())
@@ -120,7 +120,7 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                 
             } else if (tableInfo.getTableId() == Locality.getClassTableId())
             {
-                fld = isHQL ? "disciplineId" : "DisciplineID";
+                fld = isHQL ? "discipline" : "DisciplineID";
                 criterion = DSPLNID;
                 
             } else if (tableInfo.getTableId() == Agent.getClassTableId())
