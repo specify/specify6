@@ -224,7 +224,7 @@ public class MainFrameSpecify extends MainFrame
                         /* (non-Javadoc)
                          * @see java.util.Comparator#compare(java.lang.Object, java.lang.Object)
                          */
-                        @Override
+                        //@Override
                         public int compare(AppResourceIFace o1, AppResourceIFace o2)
                         {
                             // TODO Auto-generated method stub
