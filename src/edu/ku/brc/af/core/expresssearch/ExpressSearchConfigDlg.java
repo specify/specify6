@@ -187,6 +187,19 @@ public class ExpressSearchConfigDlg extends CustomDialog
             
             for (DBFieldInfo fi : fieldList)
             {
+                if (fi.isHidden())
+                {
+                    if (config.findSearchField(stc, fi.getName(), true) != null)
+                    {
+                        config.removeSearchField(stc.getTableName(), fi.getName());
+                    }
+                    if (config.findDisplayField(stc, fi.getName(), true) != null)
+                    {
+                        config.removeDisplayField(stc.getTableName(), fi.getName());
+                    }
+                    continue;
+                }
+                
                 if (fi.isIndexed())
                 {
                     // If found it sets inUse to true, otherwise it is false when created
@@ -200,7 +213,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
                     searchCnt++;
                 }
                 
-                if (fi.isIndexed() || !fi.isHidden())
+                if (!fi.isHidden())
                 {
                     // If found it sets inUse to true, otherwise it is false when created
                     DisplayFieldConfig dfc = config.findDisplayField(stc, fi.getName(), true);

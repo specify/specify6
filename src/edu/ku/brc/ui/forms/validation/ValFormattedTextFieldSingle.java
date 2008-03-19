@@ -656,8 +656,11 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             }
         } else
         {
-
-            data = "";//StringUtils.isNotEmpty(defaultValue) ? defaultValue : "";
+            // rods - 3/15/08 This was commented out because of AutoNumbering
+            // and it was just set to " (empty). But for Dates we need to use the default
+            // so I tested checking for "isDate" and it worked now let's try when
+            // it isn't an AutoNumber.
+            data = StringUtils.isNotEmpty(defaultValue) && formatter.getAutoNumber() == null ? defaultValue : "";
             needsUpdating = true;
         }
         

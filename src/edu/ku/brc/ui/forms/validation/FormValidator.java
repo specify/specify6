@@ -372,10 +372,10 @@ public class FormValidator implements ValidationListener, DataChangeListener
         return enabled;
     }
     
-    
     /**
-     * @param parent
+     * @param parentFV
      * @param enable
+     * @param type
      */
     protected void enabledTreeForUI(final FormValidator parentFV, 
                                     final boolean enable,
@@ -985,7 +985,9 @@ public class FormValidator implements ValidationListener, DataChangeListener
      * @param uiv the UI validator
      * @return the dcn
      */
-    public DataChangeNotifier createDataChangeNotifer(final String id, final Component comp, final UIValidator uiv)
+    public DataChangeNotifier createDataChangeNotifer(final String      id, 
+                                                      final Component   comp, 
+                                                      final UIValidator uiv)
     {
         DataChangeNotifier dcn = new DataChangeNotifier(id, comp, uiv);
         dcn.addDataChangeListener(this);
@@ -1233,6 +1235,17 @@ public class FormValidator implements ValidationListener, DataChangeListener
             {
                 saveComp.setEnabled(false);
             }
+        }
+    }
+    
+    /**
+     * Asks the Save button to update the enabled state based on whether the form is valid.
+     */
+    public void updateSaveUIEnabledState()
+    {
+        if (saveComp != null)
+        {
+            saveComp.setEnabled(isFormValid(true));
         }
     }
 

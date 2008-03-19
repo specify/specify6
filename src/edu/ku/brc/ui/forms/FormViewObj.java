@@ -439,7 +439,15 @@ public class FormViewObj implements Viewable,
         {
             if (!hideSaveBtn)
             {
-                saveControl = new JButton(UIRegistry.getResourceString("Search"), IconManager.getImage("Search", IconManager.IconSize.Std16));
+                saveControl = new JButton(UIRegistry.getResourceString("Search"), 
+                        IconManager.getImage("Search", IconManager.IconSize.Std16));/*
+                {
+                    public void setEnabled(boolean enabled)
+                    {
+                        System.err.println("Save: "+enabled);
+                        super.setEnabled(enabled);
+                    }
+                };*/
                 saveControl.setOpaque(false);
                 comps.add(saveControl);
             }
@@ -611,7 +619,14 @@ public class FormViewObj implements Viewable,
      */
     protected void addSaveBtn()
     {
-        JButton saveBtn = new JButton(UIRegistry.getResourceString("Save"));
+        JButton saveBtn = new JButton(UIRegistry.getResourceString("Save"));/*
+        {
+            public void setEnabled(boolean enabled)
+            {
+                System.err.println("Save: "+enabled);
+                super.setEnabled(enabled);
+            }
+        };*/
         saveBtn.setEnabled(false);
         
         saveBtn.addActionListener(new ActionListener()
@@ -1676,6 +1691,51 @@ public class FormViewObj implements Viewable,
             if (formValidator != null)
             {
                 formValidator.validateForm();
+
+                // OK, here we need to figure out if there are any required fields
+                // that are empty. If there are than we need to tell the validator and the parent
+                // validators that the forms are changed and are incomplete.
+                boolean hasEmptyRequiredField = false;
+                for (FVOFieldInfo fieldInfo : controlsById.values())
+                {
+                    if (fieldInfo.isOfType(FormCellIFace.CellType.field))
+                    {
+                        Component comp = fieldInfo.getComp();
+                        if (comp instanceof UIValidatable &&
+                            comp instanceof GetSetValueIFace)
+                        {
+                            if (((UIValidatable)comp).isRequired() &&
+                                ((GetSetValueIFace)comp).getValue() == null)
+                            {
+                                hasEmptyRequiredField = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+                
+                // OK, now tell all the validators up the chain that 
+                // things have changed and are incomplete.
+                if (hasEmptyRequiredField)
+                {
+                    formValidator.setFormValidationState(UIValidatable.ErrorType.Incomplete);
+                    formValidator.setHasChanged(true);
+                    formValidator.updateValidationBtnUIState();
+                    
+                    if (mvParent != null)
+                    {
+                        MultiView mvp = mvParent;
+                        do
+                        {
+                            mvp.getCurrentValidator().setFormValidationState(UIValidatable.ErrorType.Incomplete);
+                            mvp.getCurrentValidator().setHasChanged(true);
+                            mvParent.getTopLevel().getCurrentViewAsFormViewObj().getValidator().updateValidationBtnUIState();
+                            mvp = mvp.getMultiViewParent();
+                        } while (mvp!= null);
+                    }
+                    mvParent.getTopLevel().getCurrentViewAsFormViewObj().getValidator().updateValidationBtnUIState();
+                    mvParent.getTopLevel().getCurrentValidator().updateSaveUIEnabledState();
+                }
             }
         }
         
@@ -3443,6 +3503,7 @@ public class FormViewObj implements Viewable,
             for (FVOFieldInfo fieldInfo : controlsById.values())
             {
                 fieldInfo.getComp().setEnabled(false);
+                
                 if (fieldInfo.isOfType(FormCellIFace.CellType.field))
                 {
                     setDataIntoUIComp(fieldInfo.getComp(), null, null);
