@@ -39,4 +39,19 @@
       <picklistitem title="skeleton" value="skeleton"/>
     </items>
   </picklist>
+<picklist name="Typestatus" issystem="true" type="0" readonly="true" sizelimit="11">
+    <items>
+      <picklistitem title="No Data" value="No Data"/>
+      <picklistitem title="Cotype" value="Cotype"/>
+      <picklistitem title="Holotype" value="Holotype"/>
+      <picklistitem title="Lectotype" value="Lectotype"/>
+      <picklistitem title="Neotype" value="Neotype"/>
+      <picklistitem title="Paralectotype" value="Paralectotype"/>
+      <picklistitem title="Paratopotype" value="Paratopotype"/>
+      <picklistitem title="Paratype" value="Paratype"/>
+      <picklistitem title="Syntype" value="Syntype"/>
+      <picklistitem title="Topotype" value="Topotype"/>
+      <picklistitem title="Type" value="Type"/>
+    </items>
+  </picklist>
 </list>
