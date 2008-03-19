@@ -6,7 +6,7 @@
         <table name="AccessionAgent" field="accessionAgents">
             <alias name="Agent"/>
         </table>
-        <table name="AccessionAttachment">
+        <table name="AccessionAttachment" field="accessionAttachments">
             <alias name="Attachment"/>
         </table>
         <table name="AccessionAuthorization">
@@ -17,7 +17,7 @@
 
     <table name="Agent">
         <table name="Address"/>
-        <table name="AgentAttachment">
+        <table name="AgentAttachment" field="agentAttachments">
             <alias name="Attachment"/>
         </table>
         <table name="AgentVariant"/>
@@ -44,7 +44,7 @@
 	    <table name="Collector" field="collectors">
              <alias name="Agent"/>
         </table>
-        <table name="CollectingEventAttachment">
+        <table name="CollectingEventAttachment" field="collectingEventAttachments">
             <alias name="Attachment"/>
         </table>
         <alias name="CollectionObject" field="collectionObjects"/>
@@ -61,10 +61,10 @@
     <table name="CollectionObject">
 		<alias name="Accession"/>    	
     	<table name="CollectionObjectAttributes"/>
-        <table name="CollectionObjectAttachment">
+        <table name="CollectionObjectAttachment" field="collectionObjectAttachments">
             <alias name="Attachment"/>
         </table>
-    	<table name="CollectionObjectCitation">
+    	<table name="CollectionObjectCitation" field="collectionObjectCitations">
     		<alias name="ReferenceWork"/>
     	</table>
     	
@@ -89,25 +89,26 @@
     <table name="Locality">
     	<table name="Geography">
     	</table>
-        <table name="LocalityNameAlias"/>
-        <table name="LocalityAttachment">
+        <table name="LocalityDetail" field="localityDetails"/>
+        <table name="LocalityNameAlias" field="localityNameAliass"/>
+        <table name="LocalityAttachment" field="localityAttachments">
         	<alias name="Attachment"/>
         </table>
-        <table name="LocalityCitation">
+        <table name="LocalityCitation" field="localityCitations">
             <alias name="ReferenceWork"/>
         </table>
         <alias name="CollectingEvent" field="collectingEvents"/>
     </table>
     
     <table name="Permit">
-        <table name="PermitAttachment">
+        <table name="PermitAttachment" field="permitAttachments">
             <alias name="Attachment"/>
         </table>
     </table>
 
     <table name="Preparation">
         <table name="PrepType"/>
-        <table name="PreparationAttachment">
+        <table name="PreparationAttachment" field="preparationAttachments">
             <table name="Attachment"/>
         </table>
         <table name="PreparationAttributes"/>
@@ -115,16 +116,19 @@
     
     <table name="ReferenceWork">
         <table name="Journal"/>
-        <table name="Author">
+        <table name="Author" field="authors">
             <alias name="Agent"/>
         </table>
     </table>
     
     <table name="Taxon">
-        <table name="TaxonAttachment">
+        <table name="TaxonAttachment" field="taxonAttachments">
            	<alias name="Attachment"/>
         </table>
-        <table name="TaxonCitation">
+        <table name="TaxonCitation" field="taxonCitations">
+           	<alias name="ReferenceWork"/>
+        </table>
+        <table name="CommonName" field="commonNames">
            	<alias name="ReferenceWork"/>
         </table>
         <table name="Determination" field="determinations" title="Determinations">
