@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tree>
+
+	<treedef>
+		<level name="Life" enforced="false" infullname="false" rank="0"/>
+		<level name="Kingdom" enforced="false" infullname="false" rank="10"/>
+		<level name="Phylum" enforced="false" infullname="false" rank="30"/>
+		<level name="Class" enforced="false" infullname="false" rank="60"/>
+		<level name="Order" enforced="false" infullname="false" rank="100"/>
+		<level name="Family" enforced="true" infullname="false" rank="140"/>
+		<level name="Genus"  enforced="true" infullname="true" rank="180"/>
+		<level name="Species" enforced="false" infullname="true" rank="220"/>
+    </treedef>
+	
+	<nodes>
+		<node name="Animalia" rank="10">
+			<node name="Chordata" rank="30">
+				<node name="Sauropsida" rank="60">
+					<node name="Testudines" rank="100">
+						<node name="Testudinoidea" rank="140">
+							<node name="Indotestudo" rank="180">
+								<node name="elongata" rank="220"/>
+							</node>
+						</node>
+						<node name="Chelonioidea" rank="140">
+							<node name="Caretta" common="" rank="180">
+								<node name="caretta" common="loggerhead sea turtle" rank="220"/>
+							</node>
+						</node>
+					</node>
+				</node>
+			</node>
+		</node>
+    </nodes> 
+</tree>
