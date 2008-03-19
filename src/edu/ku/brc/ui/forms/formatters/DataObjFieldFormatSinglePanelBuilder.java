@@ -1,3 +1,18 @@
+/* This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 package edu.ku.brc.ui.forms.formatters;
 
 
@@ -5,8 +20,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -18,6 +37,7 @@ import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.text.JTextComponent;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -28,8 +48,11 @@ import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBRelationshipInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterField.FieldType;
 
 public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPanelBuilder {
+	
+	protected DataObjDataFieldFormatIFace selectedFormat;
 	
 	// ui controls
 	protected JTextArea formatText;
@@ -42,63 +65,28 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
 	protected MouseAdapter addFieldMA;
 	
 	// hash mapping fields or formatters that go inside the available field list
-	protected Hashtable<String, Object> fieldHash = new Hashtable<String, Object>();
+	protected Hashtable<String, Object> fieldHash;
 
-	DataObjFieldFormatSinglePanelBuilder(DBTableInfo tableInfo)
+	DataObjFieldFormatSinglePanelBuilder(DBTableInfo tableInfo,
+		      							 JList formatList,	
+		      							 ListSelectionListener formatListSL,
+		      							DataObjDataFieldFormatIFace selectedFormat)
 	{
-		super(tableInfo);
+		super(tableInfo, formatList, formatListSL);
+		this.selectedFormat = selectedFormat;
+	    fillWithObjFormatter(selectedFormat);
 	}
 	
-/*	Old version of buildUI() using list box
- 
-    protected void buildUI() {
-	    CellConstraints cc = new CellConstraints();
-	    PanelBuilder pb = new PanelBuilder(new FormLayout("f:100px:g,5px,p,5px,f:p:g",  
-	    		"10px,"       + // empty space on top of panel 
-	    		"p,2px,"      + // row + small separator 
-	    		"p,2px,"      + // row + small separator 
-	    		"p,2px,"      + // row + small separator 
-	    		"p,2px,"      + // row + small separator 
-	    		"p,2px,"      + // row + small separator 
-	    		"p,0px:g,"    + // row + small separator
-	    		"10px,21px,15px"  // empty space where the delete button goes for the multiple value panel
-	    		
-	    		), new FormDebugPanel());
-	    
-	    JLabel currentFieldsLbl = new JLabel("Fields:");
-	    JLabel availableFieldsLbl = new JLabel("Available Fields:");
-	
-	    fieldsLst = new JList(new DefaultListModel());
-	
-	    DefaultListModel availableFieldListModel = new DefaultListModel();
-	    availableFieldsLst = new JList(availableFieldListModel);
-	
-	    JButton includeBtn  = new JButton("<= Include");
-	    JButton excludeBtn  = new JButton("=> Exclude");
-	    JButton moveUpBtn   = new JButton("^ Move Up");
-	    JButton moveDownBtn = new JButton("v Move Down");
-	    JButton addSepBtn   = new JButton("Add Separator");
-	    
-	    // lay out components on main panel        
-	    int y = 2; // leave first row blank 
-	    pb.add(currentFieldsLbl,            cc.xy  (1, y)); y += 2;
-	    pb.add(new JScrollPane(fieldsLst),  cc.xywh(1, y, 1, 10)); y += 2;
-	
-	    y = 4; // start from the top to fill 2nd column
-	    pb.add(includeBtn,                  cc.xy(3, y)); y += 2;
-	    pb.add(excludeBtn,                  cc.xy(3, y)); y += 2;
-	    pb.add(moveUpBtn,                   cc.xy(3, y)); y += 2;
-	    pb.add(moveDownBtn,                 cc.xy(3, y)); y += 2;
-	    pb.add(addSepBtn,                   cc.xy(3, y)); y += 2;
-	    
-	    y = 2;
-	    pb.add(availableFieldsLbl,                  cc.xy  (5, y)); y += 2;
-	    pb.add(new JScrollPane(availableFieldsLst), cc.xywh(5, y, 1, 10)); y += 2;
-	    
-	    this.mainPanelBuilder = pb;
+	public DataObjDataFieldFormatIFace getSelectedFormat() 
+	{
+		return selectedFormat;
 	}
-*/
-	
+
+	public void setSelectedFormat(DataObjDataFieldFormatIFace selectedFormat) 
+	{
+		this.selectedFormat = selectedFormat;
+	}
+
 	/*
 	 * 
 	 */
@@ -113,6 +101,8 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
 	    		
 	    		)/*, new FormDebugPanel()*/);
 	    
+	    fieldHash = new Hashtable<String, Object>();
+
 	    JLabel currentFieldsLbl = new JLabel("Display Format:");
 	    formatText = new JTextArea(4, 50);
 	    formatText.setLineWrap(true);
@@ -126,7 +116,7 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
 
 	    DefaultListModel availableFieldListModel = new DefaultListModel();
 	    availableFieldsLst = new JList(availableFieldListModel);
-	
+	    
 	    // lay out components on main panel        
 	    int y = 2; // leave first row blank 
 	    pb.add(currentFieldsLbl,   cc.xy(1, y)); y += 1;
@@ -189,14 +179,12 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
                 public void insertUpdate (DocumentEvent e) { changed(e); }
                 public void changedUpdate(DocumentEvent e) { changed(e); }
 
-                private void changed(DocumentEvent e)
-                {
-                }            	
+                private void changed(DocumentEvent e)      { formatChanged(); }
             };
 		}
 		formatText.getDocument().addDocumentListener(formatTextDL);
 
-		if (1 == 1 || formatTextCL == null)
+		if (formatTextCL == null)
 		{
 			formatTextCL = new CaretListener()
 			{
@@ -221,12 +209,54 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
 	}
 	
 	/*
+	 * Check whether newly typed format already exists on format list or not
+	 * Change formatList selection accordingly
+	 */
+	protected void formatChanged()
+	{
+		if (formatList == null)
+			return;
+		
+		// if new value cannot be found among those listed, then it's a new one
+		DefaultListModel listModel = (DefaultListModel) formatList.getModel();
+		Enumeration elements = listModel.elements();
+		int i = 0;
+		int index = -1;
+		while (elements.hasMoreElements())
+		{
+			Object obj = elements.nextElement();
+			if (obj instanceof DataObjSwitchFormatter)
+			{
+				DataObjSwitchFormatter fmt = (DataObjSwitchFormatter) obj;
+				if (formatText.getText().equals(fmt.toString()))
+				{
+					index = i;
+					break;
+				}
+			}
+			++i;
+		}
+		
+	
+		if (index == -1) {
+			// it's a new format: change index to last value (i.e. "New")
+			index = formatList.getModel().getSize() - 1;
+		}
+		
+		// detach selection listeners from formatList, change value to New (last on the list)
+		// and attach listeners again
+		formatList.removeListSelectionListener(formatListSL);
+		formatList.setSelectedIndex(index);
+		formatList.addListSelectionListener(formatListSL);
+	}
+	
+	/*
 	 * Adds a field to the format being composed
 	 */
 	public void addField(Object selectedValue)
 	{
-		if (selectedValue instanceof String)
-			// not really a field that can be added, just a string
+		if (selectedValue == null || selectedValue instanceof String)
+			// not really a field that can be added, just empty or a string
 			return;
 		
 		formatText.insert(selectedValue.toString(), formatText.getCaretPosition());
@@ -234,13 +264,28 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
 	
 	public void fillWithObjFormatter(DataObjSwitchFormatter switchFormatter)
 	{
-		if (switchFormatter == null)
+		if (switchFormatter != null)
+		{
+			fillWithObjFormatter(switchFormatter.getSingle());
+		}
+		else
+		{
+			fillWithObjFormatter((DataObjDataFieldFormatIFace) null);
+		}
+	}
+	
+	protected void fillWithObjFormatter(DataObjDataFieldFormatIFace singleFormatter)
+	{
+		if (singleFormatter != null)
+		{
+			formatText.setText(singleFormatter.toString());
+			setSelectedFormat(singleFormatter);
+		}
+		else
 		{
 			formatText.setText("");
-			return;
+			setSelectedFormat(null);
 		}
-		
-		formatText.setText(switchFormatter.toString());
 		
 		// set 2nd list box with all available fields
 		DefaultListModel listModel = (DefaultListModel) availableFieldsLst.getModel();
@@ -281,6 +326,98 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
 				fieldHash.put(fieldWrapper.toString(), fieldWrapper);
 			}
 		}
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * @see edu.ku.brc.ui.forms.formatters.DataObjFieldFormatPanelBuilder#getSwitchFormatter()
+	 */
+	public DataObjSwitchFormatter getSwitchFormatter()
+	{
+		// check whether format selected is an existing one
+		if (formatList != null && formatList.getSelectedIndex() < formatList.getModel().getSize() - 1)
+		{
+			// selected entry is not the last one, so it's an existing one
+			// just return it
+			Object value = formatList.getSelectedValue(); 
+			if (value instanceof DataObjSwitchFormatter)
+				return (DataObjSwitchFormatter) value;
+			
+			// should never get here... if we do, then I'm not sure what we have here :(
+			return null;
+		}
+		
+		// last entry is selected, so return the new formatter that has been composed
+		return createFormatterFromFormatText();
+	}
+	
+	protected DataObjSwitchFormatter createFormatterFromFormatText()
+	{
+		String text = formatText.getText();
+		
+    	Pattern splitPattern = Pattern.compile("([^\\[]*\\[[^\\]]+\\])");
+    	Matcher matcher = splitPattern.matcher(text);
+
+		Vector<DataObjDataField> fields = new Vector<DataObjDataField>();
+    	while (matcher.find()) 
+    	{
+    		int mStart   = matcher.start();
+    		int mEnd     = matcher.end();
+    		String group = matcher.group();
+    		
+    		int openBracketPos = text.indexOf('[', matcher.start());
+    		String sepStr   = text.substring(matcher.start(), openBracketPos);
+    		String fieldStr = text.substring(openBracketPos, matcher.end());
+    		
+    		Object value = fieldHash.get(fieldStr);
+    		if (value != null)
+    		{
+    			String fieldName = "";
+    			String formatStr = "";
+    			String formatterName = "";    // if another formatter has been used, use it's name here
+    			String uifieldformatter = ""; // not implemented yet
+
+    			if (value instanceof DBFieldInfoWrapper)
+    			{
+    				DBFieldInfoWrapper fieldWrapper = (DBFieldInfoWrapper) value;
+        			fieldName     = fieldWrapper.getFieldInfo().getName();
+    				formatterName = "";
+    			}
+    			else if (value instanceof DataObjSwitchFormatter)
+    			{
+    				DataObjSwitchFormatter fmt = (DataObjSwitchFormatter) value;
+        			fieldName     = fmt.getFieldName();
+    				formatterName = fmt.getName();
+    			}
+    				
+    			Class<?> classObj = null;
+    			fields.add(new DataObjDataField(fieldName, classObj, formatStr, sepStr, "", uifieldformatter));
+    			
+    			// separator has been used up, so clean it for next matches 
+    			sepStr = "";
+    		}
+    		else
+    		{
+    			// what's enclosed in brackets is not a field definition, so copy it verbatim as separator
+    			sepStr = sepStr + fieldStr;
+    		}
+    		
+    		// move begin pointer to end of current match
+    		//begin = matcher.end();
+       	}
+
+    	// XXX: what do we do with the remaining of the text? right now we ignore it
+    	DataObjDataField[] fieldsArray = new DataObjDataField[fields.size()];
+    	for (int i = 0; i < fields.size(); ++i)
+    	{
+    		fieldsArray[i] = (DataObjDataField) fields.elementAt(i); 
+    	}
+    	
+    	DataObjDataFieldFormat newFormatter = new DataObjDataFieldFormat("", tableInfo.getClassObj(), false, "", "", fieldsArray);
+    	DataObjSwitchFormatter newSwitchFmt = new DataObjSwitchFormatter("", true, false, tableInfo.getClassObj(), "");
+    	newFormatter.setTableAndFieldInfo();
+    	newSwitchFmt.add(newFormatter);
+		return newSwitchFmt;
 	}
 	
 	/*
@@ -418,6 +555,7 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
 			int closeBracketAfterPos  = text.indexOf    (']', caretPos); // first ] after caret
 			int closeBracketBeforePos = text.lastIndexOf(']', caretPos - 1); // first ] before caret
 
+			/*
 			//debugging code
 			char[] sample = (text + " ").toCharArray();
 			if (openBracketAfterPos   >= 0) sample[openBracketAfterPos]   = '[';
@@ -426,7 +564,7 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
 			if (closeBracketBeforePos >= 0) sample[closeBracketBeforePos] = ']';
 			if (caretPos >= 0)              sample[caretPos]              = '|';
 			System.out.println(new String(sample) + " Caret Pos: " + caretPos);
-			
+*/			
 
 			// adjust position of brackets after caret if that's not found to point to after the end of the string
 			openBracketAfterPos   = (openBracketAfterPos   >= 0)? openBracketAfterPos   : text.length();

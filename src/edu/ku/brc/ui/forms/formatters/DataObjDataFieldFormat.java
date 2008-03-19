@@ -20,7 +20,6 @@ package edu.ku.brc.ui.forms.formatters;
 import java.util.Properties;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableInfo;
 
 /**
@@ -45,6 +44,10 @@ public class DataObjDataFieldFormat implements DataObjDataFieldFormatIFace
     protected DataObjDataField[] fields;
     protected DBTableInfo		 tableInfo;
 
+    public DataObjDataFieldFormat()
+    {
+    }
+
     public DataObjDataFieldFormat(final String   name, 
                                   final Class<?> dataClass, 
                                   final boolean  isDefault, 
@@ -62,6 +65,11 @@ public class DataObjDataFieldFormat implements DataObjDataFieldFormatIFace
 
     public String toString()
     {
+    	if (fields == null)
+    	{
+    		return "";
+    	}
+    	
         StringBuilder str = new StringBuilder();
         for (DataObjDataField field : fields)
         {

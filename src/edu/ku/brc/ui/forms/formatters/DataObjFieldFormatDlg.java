@@ -1,3 +1,18 @@
+/* This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 package edu.ku.brc.ui.forms.formatters;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
@@ -35,8 +50,8 @@ import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.ui.CustomDialog;
 
-public class DataObjFieldFormatDlg extends CustomDialog {
-
+public class DataObjFieldFormatDlg extends CustomDialog 
+{
 	protected DBTableInfo tableInfo;
 	protected DataObjSwitchFormatter selectedFormat;
     protected Vector<DataObjSwitchFormatter> deletedFormats = new Vector<DataObjSwitchFormatter>(); 
@@ -50,14 +65,9 @@ public class DataObjFieldFormatDlg extends CustomDialog {
 	protected JRadioButton multipleDisplayBtn;
 	
 	protected ActionListener displayTypeRadioBtnL = null;
-	protected ListSelectionListener formatListSelectionListener = null;
+	protected ListSelectionListener formatListSL = null;
 	
     /**
-     * @param dialog
-     * @param title
-     * @param isModal
-     * @param whichBtns
-     * @param contentPanel
      * @throws HeadlessException
      */
     public DataObjFieldFormatDlg(Frame                 frame, 
@@ -147,10 +157,15 @@ public class DataObjFieldFormatDlg extends CustomDialog {
         
         // combo box that lists fields that can be selected when multiple display radio button is selected  
         DefaultComboBoxModel cboModel = new DefaultComboBoxModel();
-        cboModel.addElement("First Name");
-        cboModel.addElement("Last Name");
-        cboModel.addElement("Separator");
         valueFieldCbo = new JComboBox(cboModel);
+        ActionListener valueFieldCboAL = new ActionListener()
+        {
+        	public void actionPerformed(ActionEvent e)
+        	{
+        		valueFieldChanged();
+        	}
+        };
+        valueFieldCbo.addActionListener(valueFieldCboAL);
         
         // little panel to hold multiple display radio button and its combo box
         PanelBuilder multipleDisplayPB = new PanelBuilder(new FormLayout("l:p,l:p", "p"));  
@@ -158,8 +173,8 @@ public class DataObjFieldFormatDlg extends CustomDialog {
         multipleDisplayPB.add(valueFieldCbo,      cc.xy(2,1));
 
         // format editing panels (dependent on the type for format: single/multiple
-        fmtSingleEditingPB = new DataObjFieldFormatSinglePanelBuilder(tableInfo);
-        fmtMultipleEditingPB = new DataObjFieldFormatMultiplePanelBuilder(tableInfo);
+        fmtSingleEditingPB = new DataObjFieldFormatSinglePanelBuilder(tableInfo, formatList, formatListSL, null);
+        fmtMultipleEditingPB = new DataObjFieldFormatMultiplePanelBuilder(tableInfo, formatList, formatListSL);
         
         // panel for radio buttons and display formatting editing panel
         PanelBuilder rightPB = new PanelBuilder(new FormLayout("f:p:g", "p,p,f:p:g")/*, new FormDebugPanel()*/);
@@ -169,12 +184,6 @@ public class DataObjFieldFormatDlg extends CustomDialog {
         rightPB.add(fmtSingleEditingPB.getPanel(),   cc.xy(1,3));
         rightPB.add(fmtMultipleEditingPB.getPanel(), cc.xy(1,3));
 
-        // sample list box
-        String[] listItems = {"Salutation", "First Name", "Separator ','", "Last Name"};
-        JList sampleList = new JList(listItems);
-        sampleList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        
-        
         // lay out components on main panel        
         int y = 2; // leave first row blank 
         pb.add(tableTitleLbl,  cc.xyw(2, y, 3)); y += 2;
@@ -201,9 +210,20 @@ public class DataObjFieldFormatDlg extends CustomDialog {
         DataObjSwitchFormatter fmt = fmtrs.get(0);
         fillWithObjFormatter(fmt);
 
+    	updateUIEnabled();
+
         pack();
     }
 
+    private void setFormatListSelectionWithoutListeners(int index)
+    {
+		// detach selection listeners from formatList, change value to New (last on the list)
+		// and attach listeners again
+		formatList.removeListSelectionListener(formatListSL);
+		formatList.setSelectedIndex(index);
+		formatList.addListSelectionListener(formatListSL);
+    }
+    
     /*
      * Populates the dialog controls with data from a given formatter
      */
@@ -219,9 +239,11 @@ public class DataObjFieldFormatDlg extends CustomDialog {
     	{
     		multipleDisplayBtn.setSelected(true);
     		setVisibleFormatPanel(multipleDisplayBtn);
-    		updateFieldValueCombo(fmt);
     		fmtMultipleEditingPB.fillWithObjFormatter(fmt);
     	}
+
+    	updateFieldValueCombo(fmt);
+    	updateUIEnabled();
     }
     
     /*
@@ -240,7 +262,8 @@ public class DataObjFieldFormatDlg extends CustomDialog {
     	{
     		DBFieldInfo currentField = fields.get(i);
     		cboModel.addElement(currentField);
-    		if (currentField.getName().equals(switchFormatter.getFieldName()))
+    		if (switchFormatter != null && 
+    			currentField.getName().equals(switchFormatter.getFieldName()))
     		{
     			// found the selected field
     			selectedFieldIndex = i;
@@ -271,9 +294,9 @@ public class DataObjFieldFormatDlg extends CustomDialog {
     
 	private void hookFormatListSelectionListener() 
 	{
-		if (formatListSelectionListener == null)
+		if (formatListSL == null)
 		{
-	        formatListSelectionListener = new ListSelectionListener()
+	        formatListSL = new ListSelectionListener()
 	        {
 	        	public void valueChanged(ListSelectionEvent e)
 	        	{
@@ -300,42 +323,12 @@ public class DataObjFieldFormatDlg extends CustomDialog {
 	        };
 		}
 		
-        formatList.addListSelectionListener(formatListSelectionListener);
+        formatList.addListSelectionListener(formatListSL);
 	}
 
 	protected void setSelectedFormat(DataObjSwitchFormatter format)
 	{
 		fillWithObjFormatter(format);
-	}
-	
-	protected void formatTextChanged()
-	{
-		// XXX may need to move this to single panel builder
-		
-		// if new value cannot be found among those listed, then it's a new one
-		DefaultListModel listModel = (DefaultListModel) formatList.getModel();
-		Enumeration elements = listModel.elements();
-		int i = 0;
-		int index = -1;
-		while (elements.hasMoreElements())
-		{
-			Object obj = elements.nextElement();
-			if (obj instanceof DataObjSwitchFormatter)
-			{
-				DataObjSwitchFormatter fmt = (DataObjSwitchFormatter) obj;
-				// XXX format text isn't here
-				// Finish implementation
-			}
-		}
-		
-	
-		if (index != -1) {
-			// it's a new format
-		}
-		
-		// detach selection listeners from formatList, change value to New (last on the list)
-		// and attach listeners again
-		
 	}
 	
 	protected void hookupDisplayTypeRadioButtonListeners()
@@ -350,6 +343,8 @@ public class DataObjFieldFormatDlg extends CustomDialog {
     				{
     					JRadioButton btn = (JRadioButton) e.getSource();
     					setVisibleFormatPanel(btn);
+    					formatChanged();
+    			    	updateUIEnabled();
     				}
     			}
     		};
@@ -358,12 +353,95 @@ public class DataObjFieldFormatDlg extends CustomDialog {
     	multipleDisplayBtn.addActionListener(displayTypeRadioBtnL);
     }
 
-	protected void updateSample()
+	protected void formatChanged()
 	{
-		// no sample being used, just a placeholder
-		return;
+		if (singleDisplayBtn.isSelected())
+		{
+			((DataObjFieldFormatSinglePanelBuilder) fmtSingleEditingPB).formatChanged();
+			return;
+		}
+		// else
+		
+		// if new value cannot be found among those listed, then it's a new one
+		DefaultListModel listModel = (DefaultListModel) formatList.getModel();
+		Enumeration elements = listModel.elements();
+		int i = 0;
+		int index = -1;
+		while (elements.hasMoreElements())
+		{
+			Object obj = elements.nextElement();
+			if (obj instanceof DataObjSwitchFormatter)
+			{
+				DataObjSwitchFormatter switchFormatter = (DataObjSwitchFormatter) obj;
+				Object item = valueFieldCbo.getSelectedItem();
+				if (item instanceof DBFieldInfo)
+				{
+					DBFieldInfo currentField = (DBFieldInfo) item;
+					if (currentField.getName().equals(switchFormatter.getFieldName()))
+					{
+						index = i;
+						break;
+					}
+				}
+			}
+			++i;
+		}
+
+
+		if (index == -1) {
+			// it's a new format: change index to last value (i.e. "New")
+			index = formatList.getModel().getSize() - 1;
+		}
+
+		// detach selection listeners from formatList, change value to New (last on the list)
+		// and attach listeners again
+		setFormatListSelectionWithoutListeners(index);
 	}
+
+    public void valueFieldChanged()
+    {
+		if (formatList == null)
+			return;
+		
+		Object obj = valueFieldCbo.getSelectedItem();
+		if (!(obj instanceof DBFieldInfo))
+			// strange... it should be a DBFieldInfo there... let's just bail out
+			return;
+		
+		DBFieldInfo field = (DBFieldInfo) obj;
+		String fieldValueName = field.getName(); 
+
+		// if new value cannot be found among those listed, then it's a new one
+		DefaultListModel listModel = (DefaultListModel) formatList.getModel();
+		Enumeration elements = listModel.elements();
+		int i = 0;
+		int index = -1;
+		while (elements.hasMoreElements())
+		{
+			obj = elements.nextElement();
+			if (obj instanceof DataObjSwitchFormatter)
+			{
+				DataObjSwitchFormatter fmt = (DataObjSwitchFormatter) obj;
+				if (fieldValueName.equals(fmt.getFieldName()))
+				{
+					index = i;
+					break;
+				}
+			}
+			++i;
+		}
+		
 	
+		if (index == -1) {
+			// it's a new format: change index to last value (i.e. "New")
+			index = formatList.getModel().getSize() - 1;
+		}
+
+		// detach selection listeners from formatList, change value to New (last on the list)
+		// and attach listeners again
+		setFormatListSelectionWithoutListeners(index);
+    }
+    
     protected void setVisibleFormatPanel(JRadioButton btn)
     {
     	fmtSingleEditingPB.getPanel().setVisible  (btn == singleDisplayBtn); 
@@ -375,6 +453,20 @@ public class DataObjFieldFormatDlg extends CustomDialog {
      */
     protected void updateUIEnabled()
     {
+		valueFieldCbo.setEnabled(multipleDisplayBtn.isSelected());
+
+		if (singleDisplayBtn.isSelected())
+    	{
+    		fmtSingleEditingPB.enableUIControls();
+    	}
+    	else 
+    	{
+    		fmtMultipleEditingPB.enableUIControls();
+    	}
+    	
+    	// ok button is only enabled when a valid formatter is selected (or was composed)
+    	
+    	// TODO: determine when the delete button is to be enabled 
     }
     
     /* (non-Javadoc)

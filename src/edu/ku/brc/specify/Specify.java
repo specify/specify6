@@ -897,8 +897,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
             		{
             			public void actionPerformed(ActionEvent ae)
             			{
-            				//DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoByTableName("agent");
-            				DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoByTableName("accessionagent");
+            				DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoByTableName("agent");
+            				//DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoByTableName("accessionagent");
             				DataObjFieldFormatDlg dlg = new DataObjFieldFormatDlg(topFrame, tableInfo, 0);
             				dlg.setVisible(true);
             			}
