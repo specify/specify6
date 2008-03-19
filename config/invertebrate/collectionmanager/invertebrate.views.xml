@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<viewset name="Fish Views" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+    <views>
+        <view name="CollectingEvent"
+            class="edu.ku.brc.specify.datamodel.CollectingEvent"
+            isinternal="false"
+            resourcelabels="false">
+            <desc><![CDATA[CollectingEvent Form]]></desc>
+            <altviews>
+                <altview name="CollectingEvent View" viewdef="CollectingEvent" label="View" mode="view" default="true"/>
+                <altview name="CollectingEvent Edit" viewdef="CollectingEvent" label="Edit" mode="edit"/>
+           </altviews>
+        </view>
+        
+        <view name="SubCollectingEvent"
+            class="edu.ku.brc.specify.datamodel.CollectingEvent"
+            isinternal="false"
+            resourcelabels="false">
+            <desc><![CDATA[CollectingEvent Form]]></desc>
+            <altviews>
+                <altview name="SubCollectingEvent View" viewdef="SubCollectingEvent" label="View" mode="view" default="true"/>
+                <altview name="SubCollectingEvent Edit" viewdef="SubCollectingEvent" label="Edit" mode="edit"/>
+           </altviews>
+        </view>
+        
+        <view name="CollectionObject"
+            class="edu.ku.brc.specify.datamodel.CollectionObject"
+            isinternal="false"
+            resourcelabels="false"
+            >
+            <desc><![CDATA[The Collection Object form.]]></desc>
+            <altviews>
+                <altview name="Collection Object View" viewdef="Collection Object" label="View" mode="view"/>
+                <altview name="Collection Object Edit" viewdef="Collection Object" label="Edit" mode="edit" default="true"/>
+            </altviews>
+        </view>
+    </views>
+
+
+    <viewdefs>
+        <viewdef
+            type="form"
+            name="Collection Object"
+            class="edu.ku.brc.specify.datamodel.CollectionObject"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+
+            <desc><![CDATA[The Collection Object form.]]></desc>
+            <enableRules/>
+
+            <columnDef>90px,2px,p,2px,100px,2px,p,2px,p,2px,p,p:g,p,p</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+    		<rows>
+    		    <row>
+    		        <cell type="label" label="Fish" icon="CollectionObject" recordobj="true" colspan="12"/>
+    		    </row>
+    			<row>
+    			    <cell type="label" labelfor="1" label="Cat Num"/>
+    			    <cell type="field" id="1" name="catalogNumber" uitype="formattedtext"/>
+
+                    <cell type="label" labelfor="2" label="Collection"/>
+    			    <cell type="field" id="2" name="collection.collectionName" uitype="dsptextfield"/>
+
+    			    <cell type="label" labelfor="13" label="Exchg"/>
+    			    <cell type="field" id="13" name="countAmt" uitype="text"/>
+    			</row>
+    			<row>
+                 <cell type="label" labelfor="3" label="Accession #"/>
+    			 <cell type="field" id="3" name="accession" uitype="querycbx" initialize="name=Accession;title=Accession" isrequired="false"/>
+
+                 <cell type="label" labelfor="4" label="Cataloger"/>
+    			    <cell type="field" id="4" name="cataloger" uitype="querycbx" initialize="name=Agent;title=Catalog Agent;editoncreate=true" isrequired="true"/>
+
+                    <cell type="label" labelfor="5" label="Date"/>
+    			    <cell type="field" id="5" name="catalogedDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
+    			    <!-- <cell type="field" id="5" name="this" uitype="plugin" initialize="name=PartialDateUI;dateField=catalogedDate;dateTypeField=text1" default="today"/> -->
+    			</row>
+     			<row>
+    				<cell type="separator" label="Determination" collapse="determinations" colspan="12"/>
+    			</row>
+
+    			<row>
+    			    <cell type="subview" viewname="Determination" id="6" name="determinations" colspan="12" rows="5" initialize="noscrollbars=true;border=line;bordercolor=150,150,150;"/>
+    			</row>
+   			    <row>
+    				<cell type="separator" label="Collecting Event" colspan="12"/>
+    			</row>
+    		    <row>
+                    <cell type="subview" id="7" viewname="SubCollectingEvent" name="collectingEvent" colspan="12"/>
+    		    </row>  	
+    			<row>
+    			    <cell type="separator" label="Preparations" collapse="preparations" colspan="12"/>
+    			</row>
+    			<row>
+    			    <cell type="subview" viewname="Preparation" id="8" name="preparations" defaulttype="table" colspan="12"/>
+    			</row>
+    			<row>
+    				<cell type="subview" viewname="Appraisal" id="30" name="appraisal" colspan="12" />
+    			</row>
+    			<row>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectionObjectAttachments" colspan="12" initialize="btn=true;icon=CollectionObjectAttachment"/>
+                </row>
+    			<row>
+    				<cell type="separator" label="" colspan="12"/>
+    			</row>
+    			
+    			<row>
+                    <cell type="label" labelfor="10" label="Edited By"/>
+    			    <cell type="field" id="10" name="modifiedByAgent" uitype="label" readonly="true"  uifieldformatter="Agent"/>
+
+                    <cell type="label" labelfor="11" label="Last Edited"/>
+    			    <cell type="field" id="11" name="timestampModified" uitype="label" readonly="true" cols="20" colspan="2"/>
+    			</row>
+    			
+    		</rows>
+    	</viewdef>
+
+        <viewdef
+            type="form"
+            name="CollectingEvent"
+            class="edu.ku.brc.specify.datamodel.CollectingEvent"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+
+            <desc><![CDATA[Collecting Event]]></desc>
+            <columnDef>p,2px,p,5px,p,2px,p,5px,p,2px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+            
+            <rows>
+                <row>
+                    <cell type="label" label="Collecting Event" icon="CollectingEvent" recordobj="true" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1" label="Field Number"/>
+                    <cell type="field" id="1" name="stationFieldNumber" uitype="text"/>
+                    <cell type="label" labelfor="2" label="Date"/>
+                    <cell type="field" id="2" name="startDate" uitype="formattedtext" uifieldformatter="Date"/>
+                    <cell type="label" labelfor="3" label="Gear"/>
+                    <cell type="field" id="3" name="method" uitype="combobox" dspuitype="dsptextfield" picklist="CollectingMethod"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="4" label="Locality"/>
+                    <cell type="field" id="4" name="locality" uitype="querycbx" initialize="name=Locality;title=Locality" colspan="10"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="6" label="Remarks"/>
+                    <cell type="field" id="6" name="remarks" uitype="textarea" colspan="10" cols="50"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5" label="Collectors"/>
+                    <cell type="subview" viewname="Collectors" id="8" name="collectors" colspan="10"/>
+                </row>
+                <row>
+                    <cell type="separator" label="Attachments" collapse="collectingEventAttachments" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectingEventAttachments" colspan="12" initialize="btn=true;icon=CollectingEvent"/>
+                </row>
+                <!--
+                <row>
+                    <cell type="label" labelfor="7" label="Geography"/>
+                    <cell type="field" id="7" name="geography" uitype="querycbx" initialize="name=Geography;title=Geography" isrequired="true"/>
+                </row>
+                -->
+            </rows>
+        </viewdef>
+        
+
+        <viewdef
+            type="form"
+            name="SubCollectingEvent"
+            class="edu.ku.brc.specify.datamodel.CollectingEvent"
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+
+            <desc><![CDATA[Sub Collecting Event]]></desc>
+            <columnDef>p,2px,p,5px,p,2px,p,5px,p,2px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2px"/>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1" label="Field Number"/>
+                    <cell type="field" id="1" name="stationFieldNumber" uitype="text"/>
+                    <cell type="label" labelfor="2" label="Date"/>
+                    <cell type="field" id="2" name="startDate" uitype="formattedtext" uifieldformatter="Date"/>
+                    <cell type="label" labelfor="3" label="Gear"/>
+                    <cell type="field" id="3" name="method" uitype="combobox" dspuitype="dsptextfield" picklist="CollectingMethod"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="4" label="Locality"/>
+                    <cell type="field" id="4" name="locality" uitype="querycbx" initialize="name=Locality;title=Locality" colspan="10"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5" label="Collectors"/>
+                    <cell type="subview" viewname="Collectors" id="8" name="collectors" colspan="10"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+       
+    </viewdefs>
+</viewset>
