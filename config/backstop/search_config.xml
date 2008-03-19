@@ -45,9 +45,9 @@
             </detailView>
         </table>
     
-        <table id="2" tableid="1" indexed="false" name="CollObToLocality" priority="1" color="30, 144, 144">
+        <table id="2" tableid="10" indexed="false" name="CollObToLocality" priority="1" color="30, 144, 144">
             <joins>
-                <join tableid="1" primary="true">collectingevent.CollectingEventID</join>
+                <join tableid="10" primary="true">collectingevent.CollectingEventID</join>
                 <join tableid="2">locality.LocalityID</join>
             </joins>
             <detailView icon="ColEvent">
@@ -66,7 +66,7 @@
  WHERE collectingevent.CollectionMemberID = COLMEMID AND %s order by StartDate]]>
                 </sql>
                 <captions>
-                    <caption tableid="1" col="CollectingEventID" visible="false"/>
+                    <caption tableid="10" col="CollectingEventID" visible="false"/>
                     <caption tableid="2" col="LocalityName"/>
                     <caption tableid="10" col="StartDate"/>
                     <caption tableid="10" col="EndDate"/>

@@ -24,6 +24,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Enumeration;
@@ -36,6 +38,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 
 import org.apache.commons.lang.StringUtils;
@@ -75,6 +78,7 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.SearchBox;
 import edu.ku.brc.ui.UIHelper;
@@ -580,6 +584,22 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                 }
             }
         });
+        
+        searchText.addMouseListener(new MouseAdapter() 
+        {
+            @Override
+            public void mousePressed(MouseEvent e)
+            {
+                showContextMenu(e);
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e)
+            {
+                showContextMenu(e);
+
+            }
+        });
 
         c.weightx = 1.0;
         gridbag.setConstraints(spacer, c);
@@ -600,6 +620,35 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         list.add(new ToolBarItemDesc(searchPanel, ToolBarItemDesc.Position.AdjustRightLastComp));
 
         return list;
+    }
+    
+    /**
+     * Shows the Reset menu.
+     * @param e the mouse event
+     */
+    protected void showContextMenu(MouseEvent e)
+    {
+        if (e.isPopupTrigger())
+        {
+            JPopupMenu popup = new JPopupMenu();
+            JMenuItem menuItem = new JMenuItem(UIRegistry.getResourceString("ES_TEXT_RESET"));
+            menuItem.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent ex)
+                {
+                    searchText.setEnabled(true);
+                    searchText.setBackground(textBGColor);
+                    searchText.setText("");
+                    JStatusBar statusBar = UIRegistry.getStatusBar();
+                    if (statusBar != null)
+                    {
+                        statusBar.setIndeterminate(false);
+                    }
+                }
+            });
+            popup.add(menuItem);
+            popup.show(e.getComponent(), e.getX(), e.getY());
+
+        }
     }
 
     /* (non-Javadoc)
@@ -680,6 +729,19 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         }
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#subPaneRemoved(edu.ku.brc.af.core.SubPaneIFace)
+     */
+    @Override
+    public void subPaneRemoved(SubPaneIFace subPane)
+    {
+        if (subPane == queryResultsPane)
+        {
+            queryResultsPane = null;
+        }
+        super.subPaneRemoved(subPane);
+    }
+
     //-------------------------------------------------------------
     // SQLExecutionListener Interface
     //-------------------------------------------------------------
@@ -794,7 +856,6 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
             instance.sqlResultsCount--;
         }
         
-        //System.out.println(instance.sqlResultsCount+"  "+decrement);
         if (instance.sqlResultsCount < 1)
         {
             searchText.setEnabled(true);
@@ -976,13 +1037,12 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
             //currently, this means an instance of ResultSetTableModel sent it's result.
             if (queryResultsPane != null)
             {
-                int rowCount = ((JPAQuery) cmdAction.getData()).getDataObjects().size();
-                boolean isError = ((JPAQuery) cmdAction.getData()).isInError();
+                int     rowCount = ((JPAQuery) cmdAction.getData()).getDataObjects().size();
+                boolean isError  = ((JPAQuery) cmdAction.getData()).isInError();
                 boolean showPane = !isError && rowCount > 0;
                 //print status bar msg if error or rowCount == 0, 
                 //else show the queryResults pane if rowCount > 0
-                int index = SubPaneMgr.getInstance().indexOfComponent(
-                        queryResultsPane.getUIComponent());
+                int index = SubPaneMgr.getInstance().indexOfComponent(queryResultsPane.getUIComponent());
                 if (index == -1)
                 {
                     if (showPane)

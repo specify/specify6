@@ -65,15 +65,19 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain#getSpecialColumns(edu.ku.brc.dbsupport.DBTableInfo, boolean)
      */
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain#getSpecialColumns(edu.ku.brc.dbsupport.DBTableInfo, boolean, boolean, java.lang.String)
+     */
     @Override
     public String getSpecialColumns(final DBTableInfo tableInfo, final boolean isHQL, final boolean isLeftJoin, final String tblAlias)
     {
         if (tableInfo != null)
         {
-            String prefix = tblAlias == null ? "" : tblAlias + ".";
-            String criterion = null;
-            String fld = null;
+            String  prefix         = tblAlias == null ? "" : tblAlias + ".";
+            String  criterion      = null;
+            String  fld            = null;
             boolean adjustFldToSQL = true;
+            
             if (tableInfo.getFieldByName("collectionMemberId") != null)
             {
                 fld = "collectionMemberId";
@@ -116,11 +120,15 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                 
             } else if (tableInfo.getTableId() == Locality.getClassTableId())
             {
-                fld = isHQL ? "discipline" : "disciplineId";
+                fld = isHQL ? "disciplineId" : "DisciplineID";
                 criterion = DSPLNID;
                 
             } else if (tableInfo.getTableId() == Agent.getClassTableId())
             {
+                if (StringUtils.isEmpty(prefix))
+                {
+                    prefix = "ag.";
+                }
                 criterion = DSPLNID;
                 if (isHQL)
                 {
@@ -132,6 +140,7 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                     //this probably won't actually work without additional
                     //changes to the from clause for the query
                     fld = "agent_discpline.DisciplineID"; 
+                    throw new RuntimeException("Fix me I am probably broken!");
                 }
             }
             

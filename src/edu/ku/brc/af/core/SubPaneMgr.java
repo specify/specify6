@@ -120,24 +120,36 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         int maxNumPanes = AppPreferences.getRemote().getInt("SubPaneMgr.MaxPanes", 12);
         if (getComponentCount() >= maxNumPanes)
         {
-            Object[] options = { getResourceString("SUBPANE_OPTIONS_CLOSE_ALLBUT"), 
-                                 getResourceString("Cancel") 
-                               };
-            int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
-                                                          getResourceString("SUBPANE_OPTIONS"), 
-                                                          getResourceString("SUBPANE_OPTIONS_TITLE"), 
-                                                          JOptionPane.YES_NO_CANCEL_OPTION,
-                                                          JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-            if (userChoice == JOptionPane.YES_OPTION)
-            {
-                closeAll(false); // false means don't close current tab
-                
-            } else
-            {
-                pane.aboutToShutdown();
-                pane.shutdown();
-                return null;
-            }
+            SwingUtilities.invokeLater(new Runnable() {
+
+                /* (non-Javadoc)
+                 * @see java.lang.Runnable#run()
+                 */
+                public void run()
+                {
+                    Object[] options = { getResourceString("SUBPANE_OPTIONS_CLOSE_ALLBUT"), 
+                            getResourceString("SUBPANE_OPTIONS_CLOSE_OLDEST") 
+                          };
+                    int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+                                                                 getResourceString("SUBPANE_OPTIONS"), 
+                                                                 getResourceString("SUBPANE_OPTIONS_TITLE"), 
+                                                                 JOptionPane.YES_NO_CANCEL_OPTION,
+                                                                 JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+                    if (userChoice == JOptionPane.YES_OPTION)
+                    {
+                        closeAll(false); // false means don't close current tab
+                       
+                    } else
+                    {
+                        SubPaneIFace oldestPane = getSubPaneAt(0);
+                        if (oldestPane != null)
+                        {
+                            removePane(oldestPane);
+                        }
+                    }                    
+                }
+            });
+
         }
         
         Component firstFocusable = pane.getFirstFocusable();

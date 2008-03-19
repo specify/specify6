@@ -527,6 +527,11 @@ public class FormViewObj implements Viewable,
                 }
             });
         }
+        
+        if (rsController != null)
+        {
+            rsController.setNewObj(isNewlyCreatedDataObj);
+        }
     }
     
     /**
@@ -1657,8 +1662,8 @@ public class FormViewObj implements Viewable,
             ((Orderable)obj).setOrderIndex(maxOrder+1);
         }
         
-       dataObj = obj;
-
+        dataObj = obj;
+       
         if (list != null)
         {
             list.add(obj);
@@ -1674,6 +1679,11 @@ public class FormViewObj implements Viewable,
         }
         
         isNewlyCreatedDataObj = true;
+        if (rsController != null)
+        {
+            rsController.setNewObj(isNewlyCreatedDataObj);
+        }
+
         formValidator.setNewObj(isNewlyCreatedDataObj);
 
         // Not calling setHasNewData because we need to traverse and setHasNewData doesn't
@@ -1925,6 +1935,10 @@ public class FormViewObj implements Viewable,
                 tryAgain = false;
                 
                 isNewlyCreatedDataObj = false; // shouldn't be needed, but just in case
+                if (rsController != null)
+                {
+                    rsController.setNewObj(isNewlyCreatedDataObj);
+                }
                 formValidator.setNewObj(isNewlyCreatedDataObj);
 
                 saveState = SAVE_STATE.SaveOK;
@@ -2325,6 +2339,10 @@ public class FormViewObj implements Viewable,
             mvParent.getTopLevel().getCurrentValidator().validateForm();
             
             isNewlyCreatedDataObj = false; // shouldn't be needed, but just in case
+            if (rsController != null)
+            {
+                rsController.setNewObj(isNewlyCreatedDataObj);
+            }
             formValidator.setNewObj(isNewlyCreatedDataObj);
             
             return;
@@ -2384,6 +2402,10 @@ public class FormViewObj implements Viewable,
                     }
                     
                     isNewlyCreatedDataObj = false; // shouldn't be needed, but just in case
+                    if (rsController != null)
+                    {
+                        rsController.setNewObj(isNewlyCreatedDataObj);
+                    }
                     formValidator.setNewObj(isNewlyCreatedDataObj);
                 }
                 
@@ -2951,7 +2973,7 @@ public class FormViewObj implements Viewable,
         }
         sql.append(')');
         
-        //log.debug(sql.toString());
+        log.debug(sql.toString());
         
         SQLExecutionListener listener = new SQLExecutionListener()
         {
@@ -3022,7 +3044,11 @@ public class FormViewObj implements Viewable,
                 
                 if (recordSet == null)
                 {
+                    /////////////////////////////////////////////////////////////////////////////////////
+                    /////////////////////////////////////////////////////////////////////////////////////
                     // XXX This is VERY BAD, it needs it's own factory, I thought I had one already.
+                    /////////////////////////////////////////////////////////////////////////////////////
+                    /////////////////////////////////////////////////////////////////////////////////////
                     recordSet = new RecordSet();
                 }
                 
@@ -4684,6 +4710,10 @@ public class FormViewObj implements Viewable,
         // to true when leaving this method.
         /////////////////////////////////////////////////////////////////////////////////
         isNewlyCreatedDataObj = false; // shouldn't be needed, but just in case
+        if (rsController != null)
+        {
+            rsController.setNewObj(isNewlyCreatedDataObj);
+        }
         formValidator.setNewObj(isNewlyCreatedDataObj);
         
         //log.debug("Before2 setDataIntoUI");

@@ -580,7 +580,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                             
                         } else if (id != prevId)
                         {
-                            log.debug("Agg List len: "+aggList.size());
+                            //log.debug("Agg List len: "+aggList.size());
                             
                             if (row != null && aggList != null)
                             {

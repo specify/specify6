@@ -337,7 +337,8 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
                     public void run()
                     {
                         adjustDisplay();
-                        CommandDispatcher.unregister(ExpressSearchTask.EXPRESSSEARCH, ESResultsSubPane.this);                        
+                        // rods - 03/19/08 doing this doubles the unregister
+                        //CommandDispatcher.unregister(ExpressSearchTask.EXPRESSSEARCH, ESResultsSubPane.this);                        
                     }
                 });
 

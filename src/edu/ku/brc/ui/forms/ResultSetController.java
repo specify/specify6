@@ -89,6 +89,7 @@ public class ResultSetController implements ValidationListener
     protected int     currentInx = 0;
     protected int     lastInx    = 0;
     protected int     numRecords = 0;
+    protected boolean isNewObj   = false;
     
     // Global Key Actions
     private enum CommandType { First, Previous, Next, Last, Save, NewItem, DelItem}
@@ -432,11 +433,11 @@ public class ResultSetController implements ValidationListener
     protected void updateUI()
     {
         if (panel == null) return;
-        
-        firstBtn.setEnabled(currentInx > 0);
-        prevBtn.setEnabled(currentInx > 0);
-        nextBtn.setEnabled(currentInx < lastInx);
-        lastBtn.setEnabled(currentInx < lastInx);
+     
+        firstBtn.setEnabled(currentInx > 0 && !isNewObj);
+        prevBtn.setEnabled(currentInx > 0 && !isNewObj);
+        nextBtn.setEnabled(currentInx < lastInx && !isNewObj);
+        lastBtn.setEnabled(currentInx < lastInx && !isNewObj);
         
         boolean enabled = numRecords > 0;
         
@@ -556,6 +557,24 @@ public class ResultSetController implements ValidationListener
         {
            updateUI(); 
         }
+    }
+
+    /**
+     * @return the isNewObj
+     */
+    public boolean isNewObj()
+    {
+        return isNewObj;
+    }
+
+    /**
+     * @param isNewObj the isNewObj to set
+     */
+    public void setNewObj(boolean isNewObj)
+    {
+        //System.err.println("this.isNewObj "+this.isNewObj+ " isNewObj "+isNewObj);
+        this.isNewObj = isNewObj;
+        updateUI();
     }
 
     /**

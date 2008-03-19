@@ -156,6 +156,10 @@ public class JPAQuery implements CustomQueryIFace
             try
             {
                 log.debug("["+sqlStr+"]");
+                if (sqlStr.startsWith("SELECT gtp.geologicTimePeriodId"))
+                {
+                    sqlStr = "SELECT gtp.geologicTimePeriodId FROM GeologicTimePeriod as gtp WHERE lower(gtp.fullName) like '%taylor%' OR lower(gtp.name) like '%taylor%'";
+                }
                 Query qry = query != null ? query : session.createQuery(sqlStr);
                 if (isUnique)
                 {
@@ -184,8 +188,9 @@ public class JPAQuery implements CustomQueryIFace
             
         } catch (Exception ex)
         {
+            log.error("** In Exception ["+sqlStr+"]");
             log.error(ex);
-            //ex.printStackTrace();
+            ex.printStackTrace();
             inError = true;
             
         } finally
