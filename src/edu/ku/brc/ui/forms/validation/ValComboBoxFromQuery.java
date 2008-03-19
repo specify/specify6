@@ -326,6 +326,16 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     {
         fieldNames = split(StringUtils.deleteWhitespace(keyName), ",");
 
+        // strip off any table prefixes
+        for (int i=0;i<fieldNames.length;i++)
+        {
+            String fName = fieldNames[i];
+            if (fName.indexOf('.') > -1)
+            {
+                fieldNames[i] = StringUtils.substringAfterLast(fName, ".");
+            }
+        }
+        
         boolean hasSearchBtn = StringUtils.isNotEmpty(tableInfo.getSearchDialog());
 
         PanelBuilder    pb = new PanelBuilder(new FormLayout("p:g,1px,p,1px,p"+(hasSearchBtn ? ",1px,p" : ""), "c:p"), this);

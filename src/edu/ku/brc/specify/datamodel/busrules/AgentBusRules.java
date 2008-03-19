@@ -346,6 +346,7 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
         if (Discipline.getCurrentDiscipline() != null)
         {
             Agent agent = (Agent)dataObj;
+            
             if (!contains(agent, Discipline.getCurrentDiscipline()))
             {
                 agent.getDisciplines().add(Discipline.getCurrentDiscipline());
@@ -382,8 +383,9 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
     {
         super.beforeMerge(dataObj, session);
         
-        
         Agent agent = (Agent)dataObj;
+        
+        //session.attach(agent);
         
         if (agent.getAgentType() == null)
         {
@@ -399,11 +401,11 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
             }
         }
         
-        if (!contains(agent, Discipline.getCurrentDiscipline()))
+        /*if (!contains(agent, Discipline.getCurrentDiscipline()))
         {
             agent.getDisciplines().add(Discipline.getCurrentDiscipline());
             Discipline.getCurrentDiscipline().getAgents().add(agent);
-        }
+        }*/
     }
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.AttachmentOwnerBaseBusRules#beforeSaveCommit(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace)

@@ -1683,9 +1683,11 @@ public class FormViewObj implements Viewable,
         {
             rsController.setNewObj(isNewlyCreatedDataObj);
         }
-
-        formValidator.setNewObj(isNewlyCreatedDataObj);
-
+        if (formValidator != null)
+        {
+            formValidator.setNewObj(isNewlyCreatedDataObj);
+        }
+        
         // Not calling setHasNewData because we need to traverse and setHasNewData doesn't
         traverseToToSetAsNew(mvParent, true, false); // don't traverse deeper than our immediate children
         
@@ -1939,7 +1941,10 @@ public class FormViewObj implements Viewable,
                 {
                     rsController.setNewObj(isNewlyCreatedDataObj);
                 }
-                formValidator.setNewObj(isNewlyCreatedDataObj);
+                if (formValidator != null)
+                {
+                    formValidator.setNewObj(isNewlyCreatedDataObj);
+                }
 
                 saveState = SAVE_STATE.SaveOK;
                 
@@ -2343,7 +2348,10 @@ public class FormViewObj implements Viewable,
             {
                 rsController.setNewObj(isNewlyCreatedDataObj);
             }
-            formValidator.setNewObj(isNewlyCreatedDataObj);
+            if (formValidator != null)
+            {
+                formValidator.setNewObj(isNewlyCreatedDataObj);
+            }
             
             return;
         }
@@ -2406,7 +2414,10 @@ public class FormViewObj implements Viewable,
                     {
                         rsController.setNewObj(isNewlyCreatedDataObj);
                     }
-                    formValidator.setNewObj(isNewlyCreatedDataObj);
+                    if (formValidator != null)
+                    {
+                        formValidator.setNewObj(isNewlyCreatedDataObj);
+                    }
                 }
                 
             } catch (edu.ku.brc.dbsupport.StaleObjectException e)
@@ -4714,7 +4725,11 @@ public class FormViewObj implements Viewable,
         {
             rsController.setNewObj(isNewlyCreatedDataObj);
         }
-        formValidator.setNewObj(isNewlyCreatedDataObj);
+        
+        if (formValidator != null)
+        {
+            formValidator.setNewObj(isNewlyCreatedDataObj);
+        }
         
         //log.debug("Before2 setDataIntoUI");
         //log.debug("Form     Val: "+(formValidator != null && formValidator.hasChanged()));

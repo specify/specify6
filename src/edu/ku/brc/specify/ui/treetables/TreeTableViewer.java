@@ -1894,6 +1894,14 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	}
 
 	/**
+     * @return the isEditMode
+     */
+    public boolean isEditMode()
+    {
+        return isEditMode;
+    }
+
+    /**
 	 * Reparents <code>dragged</code> to <code>droppedOn</code> by calling
 	 * {@link TreeDataListModel#reparent(T, T)}.
 	 *
