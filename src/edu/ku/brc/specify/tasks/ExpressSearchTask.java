@@ -73,6 +73,7 @@ import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.tasks.subpane.ESResultsSubPane;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
 import edu.ku.brc.specify.tasks.subpane.ExpressTableResultsFromQuery;
+import edu.ku.brc.specify.tasks.subpane.qb.QBQueryForIdResultsHQL;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -1027,8 +1028,8 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         {
             QueryForIdResultsIFace results = (QueryForIdResultsIFace)cmdAction.getProperty("QueryForIdResultsIFace");
             
-            //currently, this means an instance of ResultSetTableModel sent it's result.
-            if (queryResultsPane != null && results != null && queryResultsPane.contains(results))
+            //Only execute this block for QueryBuilder results...
+            if (queryResultsPane != null && results != null && results instanceof QBQueryForIdResultsHQL)
             {
                 int     rowCount = ((JPAQuery) cmdAction.getData()).getDataObjects().size();
                 boolean isError  = ((JPAQuery) cmdAction.getData()).isInError();
