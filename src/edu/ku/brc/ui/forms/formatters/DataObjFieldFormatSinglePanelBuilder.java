@@ -70,9 +70,10 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
 	DataObjFieldFormatSinglePanelBuilder(DBTableInfo tableInfo,
 		      							 JList formatList,	
 		      							 ListSelectionListener formatListSL,
-		      							DataObjDataFieldFormatIFace selectedFormat)
+					                     JButton               okButton,
+		      							 DataObjDataFieldFormatIFace selectedFormat)
 	{
-		super(tableInfo, formatList, formatListSL);
+		super(tableInfo, formatList, formatListSL, okButton);
 		this.selectedFormat = selectedFormat;
 	    fillWithObjFormatter(selectedFormat);
 	}

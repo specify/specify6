@@ -14,13 +14,20 @@
  */
 package edu.ku.brc.ui.forms.formatters;
 
+import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
+
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.dbsupport.DBFieldInfo;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.forms.DataObjectGettable;
 import edu.ku.brc.ui.forms.DataObjectGettableFactory;
@@ -45,6 +52,7 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
     protected boolean                isDefault;
     protected Class<?>               dataClass;
     protected String                 fieldName;
+    protected DBFieldInfo			 fieldInfo;
     protected DataObjDataFieldFormatIFace single     = null;
     
     protected Hashtable<String, DataObjDataFieldFormatIFace> formatsHashtable= null;
@@ -178,7 +186,16 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
     		return single.toString();
     	}
     	
-    	return "[" + name + " by " + getFieldName() + "]";
+    	String title = "";
+    	if (fieldInfo != null)
+    	{
+    		title = fieldInfo.getTitle();
+    	}
+    	else
+    	{
+    		title = getFieldName();
+    	}
+    	return "[" + dataClass.getSimpleName() + " by " + title + "]";
     }
     
     //-----------------------------------------------------------------------
@@ -244,18 +261,73 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
 
     public void setTableAndFieldInfo()
     {
+    	if (StringUtils.isNotEmpty(fieldName))
+    	{
+    		DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(dataClass.getName());
+    		fieldInfo = tableInfo.getFieldByName(fieldName);
+    	}
+    	
     	if (single != null)
     	{
     		single.setTableAndFieldInfo();
     		return;
     	} 
     	// else 
+    	if (formatsHashtable.size() == 0)
+    		return;
+    	
     	for (DataObjDataFieldFormatIFace format : formatsHashtable.values())
     	{
     		format.setTableAndFieldInfo();
     	}
     }
 
+    public void toXML(StringBuilder sb)
+    {
+        sb.append("  <format");
+        xmlAttr(sb, "name", name);
+        
+        if (dataClass != null)
+        {
+            xmlAttr(sb, "class", dataClass.getName());
+        }
+        
+        if (isDefault)
+        {
+            xmlAttr(sb, "default", isDefault);
+        }
+        sb.append(">\n");
+        
+        sb.append("    <switch");
+        xmlAttr(sb, "single", isSingle);
+        xmlAttr(sb, "field", fieldName);
+        sb.append(">\n");
+
+        if (isSingle && single != null)
+        {
+        	single.toXML(sb);
+        }
+        else 
+        {
+        	// sort fields value and get their XML representation 
+    		Vector<DataObjDataFieldFormatIFace> formatVector;
+    		formatVector = new Vector<DataObjDataFieldFormatIFace>(formatsHashtable.values());
+    		Collections.sort(formatVector, new Comparator<DataObjDataFieldFormatIFace>()
+    		{
+    			public int compare(DataObjDataFieldFormatIFace o1, DataObjDataFieldFormatIFace o2)
+    			{
+    				return o1.getValue().compareTo(o2.getValue());
+    			}
+    		});
+    		for (DataObjDataFieldFormatIFace field : formatVector)
+            {
+            	field.toXML(sb);
+            }
+        }
+
+        sb.append("    </switch>\n");
+        sb.append("  </format>\n\n");
+    }
     
     //-----------------------------------------------------------------------
     //-- Comparable Interface
@@ -271,5 +343,9 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public void setFieldName(String fieldName) {
+		this.fieldName = fieldName;
 	}
 }

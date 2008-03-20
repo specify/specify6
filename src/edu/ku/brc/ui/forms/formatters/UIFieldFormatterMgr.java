@@ -18,6 +18,8 @@ import java.math.BigDecimal;
 import java.security.AccessController;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -524,10 +526,19 @@ public class UIFieldFormatterMgr
 		StringBuilder sb = new StringBuilder(1024);
     	
 		sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<formats>\n");
-    	Iterator<UIFieldFormatterIFace> it = hash.values().iterator();
-    	while (it.hasNext()) 
+
+		// sort formatters by name, then save them to db
+		Vector<UIFieldFormatterIFace> formatVector = new Vector<UIFieldFormatterIFace>(hash.values());
+		Collections.sort(formatVector, new Comparator<UIFieldFormatterIFace>()
+		{
+			public int compare(UIFieldFormatterIFace o1, UIFieldFormatterIFace o2)
+			{
+				return o1.getName().compareTo(o2.getName());
+			}
+		});
+		for (UIFieldFormatterIFace format : formatVector)
     	{
-    		it.next().toXML(sb);
+			format.toXML(sb);
     	}
 		sb.append("\n</formats>\n");
 

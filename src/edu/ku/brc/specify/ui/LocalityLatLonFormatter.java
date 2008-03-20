@@ -14,6 +14,8 @@
  */
 package edu.ku.brc.specify.ui;
 
+import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
+
 import java.math.BigDecimal;
 import java.util.Properties;
 
@@ -60,11 +62,11 @@ public class LocalityLatLonFormatter implements DataObjDataFieldFormatIFace
         String typeStr = properties.getProperty("type"); 
         if (StringUtils.isNotEmpty(typeStr))
         {
-            if (typeStr.equals("latitude"))
+            if (typeStr.equals("Latitude"))
             {
                 latLonType = LatLonConverter.LATLON.Latitude;
                 
-            } else if (typeStr.equals("longitude"))
+            } else if (typeStr.equals("Longitude"))
             {
                 latLonType = LatLonConverter.LATLON.Longitude;
             } else
@@ -114,7 +116,7 @@ public class LocalityLatLonFormatter implements DataObjDataFieldFormatIFace
         
         which = 1;
         String whichStr = properties.getProperty("which"); 
-        if (StringUtils.isNotEmpty(whichStr) && formatStr.equals("2"))
+        if (StringUtils.isNotEmpty(whichStr) && whichStr.equals("2"))
         {
             which = 2;   
         }
@@ -194,6 +196,43 @@ public class LocalityLatLonFormatter implements DataObjDataFieldFormatIFace
     public DataObjDataField[] getFields()
     {
         return null;
+    }
+
+    public void toXML(StringBuilder sb)
+    {
+        sb.append("      <external");
+        xmlAttr(sb, "class", getClass().getName());
+        sb.append(">\n");
+
+        // param: type
+        sb.append("        <param");
+        xmlAttr(sb, "name", "type");
+        sb.append(">");
+        sb.append(latLonType.name());
+        sb.append("</param>\n");
+        
+        // param: dir
+        sb.append("        <param");
+        xmlAttr(sb, "name", "dir");
+        sb.append(">");
+        sb.append("symbol");
+        sb.append("</param>\n");
+        
+        // param: format
+        sb.append("        <param");
+        xmlAttr(sb, "name", "dir");
+        sb.append(">");
+        sb.append(format.name());
+        sb.append("</param>\n");
+        
+        // param: which
+        sb.append("        <param");
+        xmlAttr(sb, "name", "which");
+        sb.append(">");
+        sb.append(which);
+        sb.append("</param>\n");
+        
+        sb.append("      </external>\n");
     }
 
     /* (non-Javadoc)

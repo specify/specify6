@@ -90,5 +90,11 @@ public interface DataObjDataFieldFormatIFace
      */
     public abstract DataObjDataField[] getFields();
     
+    /**
+     * Returns a XML representation of the object 
+     * @return String with XML representation of the object
+     */
+    public abstract void toXML(StringBuilder sb);
+    
     public void setTableAndFieldInfo(); 
 }

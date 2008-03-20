@@ -18,7 +18,10 @@ package edu.ku.brc.ui.forms.formatters;
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
 
 import java.security.AccessController;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Formatter;
 import java.util.Hashtable;
@@ -63,9 +66,9 @@ public class DataObjFieldFormatMgr
     protected boolean domFound = false;
 
 
-    protected Hashtable<String, DataObjSwitchFormatter>   formatHash      = new Hashtable<String, DataObjSwitchFormatter>();
+    protected Hashtable<String,   DataObjSwitchFormatter> formatHash      = new Hashtable<String, DataObjSwitchFormatter>();
     protected Hashtable<Class<?>, DataObjSwitchFormatter> formatClassHash = new Hashtable<Class<?>, DataObjSwitchFormatter>();
-    protected Hashtable<String, DataObjAggregator>        aggHash         = new Hashtable<String, DataObjAggregator>();
+    protected Hashtable<String,   DataObjAggregator>      aggHash         = new Hashtable<String, DataObjAggregator>();
     protected Hashtable<Class<?>, DataObjAggregator>      aggClassHash    = new Hashtable<Class<?>, DataObjAggregator>();
     protected Object[]                                    args            = new Object[2]; // start with two slots
     
@@ -294,7 +297,7 @@ public class DataObjFieldFormatMgr
     		// name formation patter is <field name>.i where i is a counter
     		int i = 1;
     		Set<String> names = formatHash.keySet();
-    		String prefix = formatter.getFieldName();
+    		String prefix = formatter.getDataClass().getSimpleName();
     		name = prefix + "." + Integer.toString(i);
     		while (names.contains((String) name))
     		{
@@ -313,15 +316,46 @@ public class DataObjFieldFormatMgr
     {
 		StringBuilder sb = new StringBuilder(1024);
     	
-		sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<formats>\n");
-    	Iterator<DataObjSwitchFormatter> it = formatHash.values().iterator();
-    	while (it.hasNext()) 
-    	{
-    		//it.next().toXML(sb);
-    	}
-		sb.append("\n</formats>\n");
+		sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+		
+		// data obj formatters
+		sb.append("<formatters>\n");
 
-        AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromDir("Collection", "XXX");
+		Vector<DataObjSwitchFormatter> formatVector = new Vector<DataObjSwitchFormatter>(formatHash.values());
+		Collections.sort(formatVector, new Comparator<DataObjSwitchFormatter>()
+		{
+			public int compare(DataObjSwitchFormatter o1, DataObjSwitchFormatter o2)
+			{
+				return o1.getName().compareTo(o2.getName());
+			}
+		});
+		for (DataObjSwitchFormatter format : formatVector)
+		{
+    		format.toXML(sb);
+    	}
+
+		// aggregators
+		sb.append("  <aggregators>\n");
+
+		Vector<DataObjAggregator> aggVector = new Vector<DataObjAggregator>(aggHash.values());
+		Collections.sort(aggVector, new Comparator<DataObjAggregator>()
+		{
+			public int compare(DataObjAggregator o1, DataObjAggregator o2)
+			{
+				return o1.getName().compareTo(o2.getName());
+			}
+		});
+		for (DataObjAggregator agg : aggVector)
+		{
+			// TODO: implement DataObjAggregator.toXML(StringBuilder sb)
+    		//agg.toXML(sb);
+    	}
+		
+		sb.append("  </aggregators>\n");
+		sb.append("\n\n</formatters>\n");
+
+		// save resource back to database
+        AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromDir("Collection", "DataObjFormatters");
         if (escAppRes != null)
         {
             escAppRes.setDataAsString(sb.toString());
@@ -329,7 +363,7 @@ public class DataObjFieldFormatMgr
            
         } else
         {
-            AppContextMgr.getInstance().putResourceAsXML("XXX", sb.toString());    
+            AppContextMgr.getInstance().putResourceAsXML("DataObjFormatters", sb.toString());    
         }
     }
     
@@ -339,7 +373,9 @@ public class DataObjFieldFormatMgr
     public void addFormatter(DataObjSwitchFormatter formatter)
     {
     	getFormatterUniqueName(formatter);
-    	formatHash.put(formatter.getName(), formatter);
+    	Object previousObj = formatHash.put(formatter.getName(), formatter);
+    	if (previousObj != null)
+    		log.debug("Formatter in formatHash replaced by new value. That's ok.");
     	formatClassHash.put(formatter.getDataClass(), formatter);
     }
     

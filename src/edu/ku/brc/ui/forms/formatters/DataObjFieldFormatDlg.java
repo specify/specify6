@@ -173,8 +173,10 @@ public class DataObjFieldFormatDlg extends CustomDialog
         multipleDisplayPB.add(valueFieldCbo,      cc.xy(2,1));
 
         // format editing panels (dependent on the type for format: single/multiple
-        fmtSingleEditingPB = new DataObjFieldFormatSinglePanelBuilder(tableInfo, formatList, formatListSL, null);
-        fmtMultipleEditingPB = new DataObjFieldFormatMultiplePanelBuilder(tableInfo, formatList, formatListSL);
+        fmtSingleEditingPB = new DataObjFieldFormatSinglePanelBuilder(
+        		tableInfo, formatList, formatListSL, getOkBtn(), null);
+        fmtMultipleEditingPB = new DataObjFieldFormatMultiplePanelBuilder(
+        		tableInfo, formatList, formatListSL, getOkBtn());
         
         // panel for radio buttons and display formatting editing panel
         PanelBuilder rightPB = new PanelBuilder(new FormLayout("f:p:g", "p,p,f:p:g")/*, new FormDebugPanel()*/);
@@ -240,9 +242,9 @@ public class DataObjFieldFormatDlg extends CustomDialog
     		multipleDisplayBtn.setSelected(true);
     		setVisibleFormatPanel(multipleDisplayBtn);
     		fmtMultipleEditingPB.fillWithObjFormatter(fmt);
+        	updateFieldValueCombo(fmt);
     	}
 
-    	updateFieldValueCombo(fmt);
     	updateUIEnabled();
     }
     
@@ -317,8 +319,12 @@ public class DataObjFieldFormatDlg extends CustomDialog
 	        	    else
 	        	    {
 	        	    	// set selected formatter to null
+	        			// but detach selection listeners from formatList before that
+	        			// and attach listeners again once selection is changed
 	        	    	setSelectedFormat(null);
 	        	    }
+	        	    
+	        	    updateUIEnabled();
 	        	}
 	        };
 		}
@@ -437,15 +443,36 @@ public class DataObjFieldFormatDlg extends CustomDialog
 			index = formatList.getModel().getSize() - 1;
 		}
 
-		// detach selection listeners from formatList, change value to New (last on the list)
-		// and attach listeners again
-		setFormatListSelectionWithoutListeners(index);
+		formatList.setSelectedIndex(index);
     }
     
     protected void setVisibleFormatPanel(JRadioButton btn)
     {
     	fmtSingleEditingPB.getPanel().setVisible  (btn == singleDisplayBtn); 
     	fmtMultipleEditingPB.getPanel().setVisible(btn == multipleDisplayBtn);
+    }
+    
+    protected DataObjSwitchFormatter getSwitchFormatter()
+    {
+    	if (singleDisplayBtn.isSelected())
+    	{
+    		return fmtSingleEditingPB.getSwitchFormatter();
+    	}
+    	else
+    	{
+    		// get formatter that's been composed
+    		DataObjSwitchFormatter fmt = fmtMultipleEditingPB.getSwitchFormatter();
+    		
+    		// set formatter field name with selected value field on combo box
+    		Object item = valueFieldCbo.getSelectedItem();
+    		if (item instanceof DBFieldInfo)
+    		{
+    			DBFieldInfo field = (DBFieldInfo) item; 
+        		fmt.setFieldName(field.getName());
+    		}
+    		
+    		return fmt;
+    	}
     }
     
     /**
@@ -464,8 +491,6 @@ public class DataObjFieldFormatDlg extends CustomDialog
     		fmtMultipleEditingPB.enableUIControls();
     	}
     	
-    	// ok button is only enabled when a valid formatter is selected (or was composed)
-    	
     	// TODO: determine when the delete button is to be enabled 
     }
     
@@ -475,27 +500,35 @@ public class DataObjFieldFormatDlg extends CustomDialog
     @Override
     protected void okButtonPressed()
     {
-/*    	UIFieldFormatterMgr instance = UIFieldFormatterMgr.getInstance();
-    	
+    	DataObjFieldFormatMgr instance = DataObjFieldFormatMgr.getInstance();
+
+    	// XXX delete button not implemented yet
+    	// not sure what can be deleted
+    	// maybe we should add a "system" flag to the formats just like UIFieldFormatters
+
+    	/*
     	// remove non-system formatters marked for deletion
     	Iterator<UIFieldFormatterIFace> it = deletedFormats.iterator();
     	while (it.hasNext()) 
     	{
     		instance.removeFormatter(it.next());
     	}
+    	*/
     	
     	// save formatter if new
-    	if (formatIsNew) 
+    	// save formatter anyway if it is a multiple switch formatter as its contents may have changed
+    	// without affecting the format list selection
+    	// that's because a multiple switch formatter is only considered new if its switch field is changed
+    	// and not if just the internal formatters have changed
+		if (multipleDisplayBtn.isSelected() ||
+			formatList.getSelectedIndex() == formatList.getModel().getSize() - 1)
     	{
-    		// if format is new, maybe the "by year" field hasn't been flipped correctly 
-    		// (i.e. if formatter was created (ie. by a key press) after the checkbox was clicked
-    		selectedFormat.setByYear(byYearCB.isSelected());
-    		
     		// add formatter to list of existing ones and save it
+			selectedFormat = getSwitchFormatter();
     		instance.addFormatter(selectedFormat);
     		instance.save();
     	}
-*/        
+
         super.okButtonPressed();
     }
     

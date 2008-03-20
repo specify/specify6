@@ -17,7 +17,11 @@
  */
 package edu.ku.brc.ui.forms.formatters;
 
+import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
+
 import java.util.Properties;
+
+import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
@@ -158,4 +162,24 @@ public class DataObjDataFieldFormat implements DataObjDataFieldFormatIFace
             field.setTableAndFieldInfo(tableInfo);
         }
     }
+
+	public void setValue(String value) {
+		this.value = value;
+	}
+	
+	public void toXML(StringBuilder sb)
+	{
+        sb.append("      <fields");
+        if (StringUtils.isNotEmpty(value))
+        {
+            xmlAttr(sb, "value", value);
+        }
+        sb.append(">\n");
+
+        for (DataObjDataField field : fields)
+        {
+        	field.toXML(sb);
+        }
+        sb.append("      </fields>\n");
+	}
 }

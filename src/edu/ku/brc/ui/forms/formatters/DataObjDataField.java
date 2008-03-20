@@ -17,6 +17,8 @@
  */
 package edu.ku.brc.ui.forms.formatters;
 
+import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
+
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.dbsupport.DBFieldInfo;
@@ -59,6 +61,24 @@ public class DataObjDataField {
 		this.uiFieldFormatter = uiFieldFormatter;
 
 		// table info is set during parent (DataObjDataFieldFormat) construction
+	}
+
+	public void toXML(StringBuilder sb)
+	{
+        sb.append("        <field");
+
+        // omit type for Strings
+        if (type != null && type != String.class)
+        {
+            xmlAttr(sb, "type", type.getName());
+        }
+        
+        xmlAttr(sb, "format",    format);
+        xmlAttr(sb, "sep",       sep);
+        xmlAttr(sb, "uifieldformatter", uiFieldFormatter);
+        sb.append(">");
+        sb.append(name);
+        sb.append("</field>\n");
 	}
 
 	public String toString() {

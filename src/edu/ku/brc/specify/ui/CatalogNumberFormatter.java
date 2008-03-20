@@ -116,6 +116,11 @@ public class CatalogNumberFormatter implements DataObjDataFieldFormatIFace
         return null;
     }
     
+    public void toXML(StringBuilder sb)
+    {
+    	// not yet implemented
+    }
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.DataObjDataFieldFormatIFace#setTableAndFieldInfo()
      */

@@ -15,6 +15,7 @@
 
 package edu.ku.brc.ui.forms.formatters;
 
+import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.event.ListSelectionListener;
@@ -29,18 +30,22 @@ public abstract class DataObjFieldFormatPanelBuilder {
 	protected DBTableInfo  			tableInfo;
 	protected JList 	   			formatList;
 	protected ListSelectionListener formatListSL;
+	protected JButton				okButton;
 
 	public abstract void fillWithObjFormatter(DataObjSwitchFormatter fmt);
 	public abstract DataObjSwitchFormatter getSwitchFormatter();
 	
 	public DataObjFieldFormatPanelBuilder(DBTableInfo tableInfo, 
 									      JList formatList,
-									      ListSelectionListener formatListSL) {
+									      ListSelectionListener formatListSL,
+									      JButton okButton) 
+	{
 		super();
 
 		this.tableInfo = tableInfo;
 		this.formatList = formatList;
 		this.formatListSL = formatListSL;
+		this.okButton = okButton;
 		
         init();
         buildUI();

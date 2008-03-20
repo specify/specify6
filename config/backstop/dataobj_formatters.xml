@@ -407,7 +407,7 @@
         >
         <switch single="true">
             <external class="edu.ku.brc.specify.ui.LocalityLatLonFormatter">
-                <param name="type">latitude</param>
+                <param name="type">Latitude</param>
                 <param name="dir">symbol</param>
                 <param name="format">DDDDDD</param>
                 <param name="which">1</param>
@@ -422,7 +422,7 @@
         >
         <switch single="true">
             <external class="edu.ku.brc.specify.ui.LocalityLatLonFormatter">
-                <param name="type">longitude</param>
+                <param name="type">Longitude</param>
                 <param name="dir">symbol</param>
                 <param name="format">DDDDDD</param>
                 <param name="which">1</param>

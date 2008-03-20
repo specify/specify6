@@ -62,7 +62,7 @@ public class DataObjFieldFormatSingleDlg extends CustomDialog
         PanelBuilder    pb = new PanelBuilder(new FormLayout("p", "p")/*, new FormDebugPanel()*/);
         
         // format editing panel (single format only)
-        fmtSingleEditingPB = new DataObjFieldFormatSinglePanelBuilder(tableInfo, null, null, formatter);
+        fmtSingleEditingPB = new DataObjFieldFormatSinglePanelBuilder(tableInfo, null, null, getOkBtn(), formatter);
         pb.add(fmtSingleEditingPB.getPanel());
         contentPanel = pb.getPanel();
         mainPanel.add(contentPanel, BorderLayout.CENTER);

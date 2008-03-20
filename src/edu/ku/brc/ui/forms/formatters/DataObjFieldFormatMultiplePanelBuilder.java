@@ -42,6 +42,8 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
@@ -61,9 +63,10 @@ public class DataObjFieldFormatMultiplePanelBuilder extends DataObjFieldFormatPa
 
 	DataObjFieldFormatMultiplePanelBuilder(DBTableInfo           tableInfo,
 					                       JList                 formatList, 
-					                       ListSelectionListener formatListSL) 
+					                       ListSelectionListener formatListSL,
+					                       JButton               okButton) 
 	{
-		super(tableInfo, formatList, formatListSL);
+		super(tableInfo, formatList, formatListSL, okButton);
 	}
 
 	protected void buildUI() 
@@ -97,6 +100,11 @@ public class DataObjFieldFormatMultiplePanelBuilder extends DataObjFieldFormatPa
 		DefaultTableModel model = (DefaultTableModel) formatSwitchTbl.getModel();
 		delRowBtn.setEnabled(formatSwitchTbl.getSelectedRowCount() > 0);
 		resetRowBtn.setEnabled(model.getRowCount() > 0);
+		
+		if (okButton != null)
+		{
+			okButton.setEnabled(isValidFormatter());
+		}
 	}
 
 	public JPanel getPanel() 
@@ -109,9 +117,70 @@ public class DataObjFieldFormatMultiplePanelBuilder extends DataObjFieldFormatPa
 		return mainPanelBuilder;
 	}
 
+	protected boolean isValidFormatter()
+	{
+		// check if there's an empty row in the switch formatter table
+		DefaultTableModel model = (DefaultTableModel) formatSwitchTbl.getModel();
+		
+		if (model.getRowCount() == 0)
+		{
+			// formatter is not valid if there are no internal formatters attached to it
+			return false;
+		}
+		
+		for (int i = 0; i < model.getRowCount(); ++i)
+		{
+			for (int j = 0; j <= 1; ++j)
+			{
+				if (StringUtils.isEmpty(model.getValueAt(i, j).toString()))
+					return false;
+			}
+		}
+		return true;
+	}
+	
 	public DataObjSwitchFormatter getSwitchFormatter() 
 	{
-		return null;
+		String formatterName = "";
+		String formatterField = "";
+		
+		// check whether format selected is an existing one
+		if (formatList != null && formatList.getSelectedIndex() < formatList.getModel().getSize() - 1)
+		{
+			// selected entry is not the last one, so it's an existing one
+			// however, the internal formatters may have changed
+			// so, only keep formatter name and create a new one to replace the existing one
+			Object value = formatList.getSelectedValue(); 
+			if (value instanceof DataObjSwitchFormatter)
+			{
+				DataObjSwitchFormatter tmpFormatter = (DataObjSwitchFormatter) value;
+				formatterName  = tmpFormatter.getName();
+				formatterField = tmpFormatter.getFieldName();
+			}
+		}
+		
+		// note: if formatter is a new one, formatterField will be set on the parent dialog class (DataObjFieldFormatDlg)
+		
+		// return the new formatter that has been composed
+		DataObjSwitchFormatter switchFormatter = new DataObjSwitchFormatter(
+				formatterName, false, false, 
+				tableInfo.getClassObj(), formatterField);
+		
+		// gather formatters for each table row
+		DefaultTableModel model = (DefaultTableModel) formatSwitchTbl.getModel();
+		for (int i = 0; i < model.getRowCount(); ++i)
+		{
+			Object obj   = model.getValueAt(i, 1);
+			String value = (String) model.getValueAt(i, 0);
+			if (obj instanceof DataObjDataFieldFormat)
+			{
+				DataObjDataFieldFormat subFormat = (DataObjDataFieldFormat) obj;
+				subFormat.setValue(value);
+				switchFormatter.add(subFormat);
+			}
+		}
+		
+		return switchFormatter;
 	}
 
 	private DefaultTableModel getCleanTableModel() 
@@ -324,9 +393,10 @@ public class DataObjFieldFormatMultiplePanelBuilder extends DataObjFieldFormatPa
 					dlg = new DataObjFieldFormatSingleDlg((Frame) UIRegistry.getTopWindow(), tableInfo, formatter);
 					dlg.setVisible(true);
 
-					// TODO: save format back to table row data object
+					// save format back to table row data object
 					DataObjDataFieldFormatIFace fmt = dlg.getSwitchFormatter().getSingle();
 					table.setValueAt(fmt, row, 1);
+					enableUIControls();
 				}
 			}
 			isPushed = false;
