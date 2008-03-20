@@ -209,6 +209,8 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         {
             closeAllBut.setEnabled(panes.size() > 1);//  || TaskMgr.getToolbarTaskCount() > 1);
         }
+        
+        checkForTaskableConfig();
     }
     
     /**
@@ -291,6 +293,8 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             //log.debug("Putting SubPane ["+newPane.getPaneName()+"] ");
             panes.put(newPane.getPaneName(), newPane);
             
+            checkForTaskableConfig();
+            
             SwingUtilities.invokeLater(new Runnable() {
                 public void run()
                 {
@@ -308,7 +312,21 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         return null;
     }
 
-
+    /**
+     * Checks for and enables the Configure Menu item for the current tab.
+     */
+    protected void checkForTaskableConfig()
+    {
+        if (currentPane != null)
+        {
+            Action configTaskAction = UIRegistry.getAction("ConfigureTask");
+            if (configTaskAction != null)
+            {
+                configTaskAction.setEnabled(currentPane.getTask().isConfigurable());
+            }
+        }
+    }
+    
     /**
      * Asks the pane if it can be closed via a call to aboutToShutdown and it it returns true
      * then the pane is closed and removed.
@@ -415,7 +433,6 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
                 {
                     log.error(ex);
                 }
-                adjustCloseAllMenu();
             }
         }
         
@@ -547,6 +564,9 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             // Notify the new pane it is about to be show
             pane.showingPane(true);
             this.setSelectedComponent(pane.getUIComponent());
+            
+            checkForTaskableConfig();
+            
         } else
         {
             throw new NullPointerException();
@@ -803,10 +823,11 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
                 }
              }
              currentPane = subPane;
-       } else
-       {
+        } else
+        {
             ContextMgr.requestContext(null);
-       }
+        }
+        checkForTaskableConfig();
     }
 
     

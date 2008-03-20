@@ -592,6 +592,46 @@ public class QueryTask extends BaseTask
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#isConfigurable()
+     */
+    @Override
+    public boolean isConfigurable()
+    {
+        return true;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#doConfigure()
+     */
+    @Override
+    public void doConfigure()
+    {
+        String configCreators = UIRegistry.getResourceString("QY_CONFIGURE_CREATORS");
+        String configQueries  = UIRegistry.getResourceString("QY_CONFIGURE_QUERIES");
+        
+        Vector<String> configNames = new Vector<String>();
+        Collections.addAll(configNames, configCreators, configQueries);
+        
+        ToggleButtonChooserDlg<String> dlg = new ToggleButtonChooserDlg<String>((Frame)UIRegistry.getTopWindow(), 
+                "QY_CHOOSE_CONFIG", 
+                configNames, 
+                ToggleButtonChooserPanel.Type.RadioButton);
+        dlg.setUseScrollPane(true);
+        dlg.setVisible(true);
+        if (!dlg.isCancelled())
+        {
+            if (dlg.getSelectedObject().equals(configCreators))
+            {
+                configureCreatorQueries();
+            } else
+            {
+                configureFavoriteQueries();
+            }
+        }
+    }
+
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.BaseTask#getPopupMenu()
      */
     @Override

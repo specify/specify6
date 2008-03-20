@@ -405,7 +405,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
      */
     public SubPaneIFace getStarterPane()
     {
-        return starterPane = new SimpleDescPane(name, this, "Drop a Bundle here."); // I18N
+        return starterPane = new SimpleDescPane(name, this, getResourceString("RCT_DROP_BUNDLE_HERE"));
     }
 
      /*
@@ -473,7 +473,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
             persistRecordSet(rs);    
         } else
         {
-            String msg = String.format(UIRegistry.getResourceString("RECORDSET_RENAMING_ERROR"), newName);
+            String msg = String.format(UIRegistry.getResourceString("RST_RENAMING_ERROR"), newName);
             UIRegistry.getStatusBar().setErrorMessage(msg);
             rs.setName(oldName);
             roc.setLabelText(oldName);
@@ -533,7 +533,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                     session.close();
                 }
                 String rsName  = JOptionPane.showInputDialog(UIRegistry.get(UIRegistry.FRAME), 
-                                                             getResourceString("RECORDSET_ASKFORNAME"), intialName);
+                                                             getResourceString("RST_ASKFORNAME"), intialName);
                 if (isNotEmpty(rsName))
                 {
                     RecordSet rs = (RecordSet)data;
@@ -561,8 +561,8 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
             if (recordSet != null)
             {
                 int option = JOptionPane.showOptionDialog(UIRegistry.getMostRecentWindow(), 
-                        String.format(UIRegistry.getResourceString("RECORDSET_CONFIRM_DELETE"), recordSet.getName()),
-                        UIRegistry.getResourceString("RECORDSET_CONFIRM_DELETE_TITLE"), 
+                        String.format(UIRegistry.getResourceString("RST_CONFIRM_DELETE"), recordSet.getName()),
+                        UIRegistry.getResourceString("RST_CONFIRM_DELETE_TITLE"), 
                         JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, JOptionPane.NO_OPTION); // I18N
                 
                 if (option == JOptionPane.YES_OPTION)
@@ -626,7 +626,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                     DBTableInfo srcTI = DBTableIdMgr.getInstance().getInfoById(srcRecordSet.getDbTableId());
                     DBTableInfo dstTI = DBTableIdMgr.getInstance().getInfoById(dstRecordSet.getDbTableId());
                     JOptionPane.showMessageDialog(null, 
-                        String.format(getResourceString("RECORDSET_MERGE_ERROR"), new Object[] {srcTI.getShortClassName(), dstTI.getShortClassName()}), 
+                        String.format(getResourceString("RST_MERGE_ERROR"), new Object[] {srcTI.getShortClassName(), dstTI.getShortClassName()}), 
                             getResourceString("Error"), 
                             JOptionPane.ERROR_MESSAGE);
 
@@ -676,7 +676,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
         {
             Object src = e.getSource();
             
-            log.debug(src.hashCode()+"  "+ro.hashCode());
+            //log.debug(src.hashCode()+"  "+ro.hashCode());
             
             if (e instanceof DataActionEvent)
             {
@@ -687,7 +687,6 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
                     if (data instanceof CommandAction)
                     {
                         CommandAction cmdAction = (CommandAction)data;
-                        //System.out.println(cmdAction.getData());
                         cmdAction.setData(rs);
                         CommandDispatcher.dispatch(cmdAction);
                     } else
@@ -700,7 +699,6 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
             } else
             {
                 throw new RuntimeException("How did we get here?");
-                //CommandDispatcher.dispatch(new CommandAction(RECORD_SET, "Clicked", null, rs, null));
             }
         }
     }

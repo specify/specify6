@@ -763,6 +763,86 @@ public class DataEntryTask extends BaseTask
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#isConfigurable()
+     */
+    @Override
+    public boolean isConfigurable()
+    {
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#doConfigure()
+     */
+    @Override
+    public void doConfigure()
+    {
+        DataEntryConfigureDlg dlg = new DataEntryConfigureDlg(DataEntryTask.this);
+        UIHelper.centerAndShow(dlg);
+        if (!dlg.isCancelled())
+        {
+            viewsNavBox.clear();
+            
+            Vector<DataEntryView> stds  = dlg.getStdViews();
+            Vector<DataEntryView> miscs = dlg.getMiscViews();
+            
+            // Add the non-visible once from the old list
+            for (DataEntryView dev : stdViews)
+            {
+                if (!dev.isSideBar())
+                {
+                    stds.add(dev);
+                }
+                // Unregister it as a service
+                ContextMgr.removeServicesByTaskAndTable(DataEntryTask.this, dev.getTableInfo().getTableId());
+            }
+            
+            // Add the non-visible once from the old list
+            for (DataEntryView dev : miscViews)
+            {
+                if (!dev.isSideBar())
+                {
+                    miscs.add(dev);
+                }
+                // Unregister it as a service
+                ContextMgr.removeServicesByTaskAndTable(DataEntryTask.this, dev.getTableInfo().getTableId());
+            }
+            
+            buildNavBoxes(stds, miscs);
+            
+            viewsNavBox.validate();
+            viewsNavBox.doLayout();
+            NavBoxMgr.getInstance().validate();
+            NavBoxMgr.getInstance().doLayout();
+            NavBoxMgr.getInstance().repaint();
+            
+            stdViews  = stds;
+            miscViews = miscs;
+            
+            // Persist out to database
+            DataEntryXML dataEntryXML = new DataEntryXML(stdViews, miscViews);
+            
+            XStream xstream = new XStream();
+            config(xstream);
+            
+            //AppResourceIFace appRes = AppContextMgr.getInstance().getResource("DataEntryTaskInit");
+            //appRes.setDataAsString(xstream.toXML(dataEntryXML));
+            //((SpecifyAppContextMgr)AppContextMgr.getInstance()).saveResource(appRes);
+            
+            AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromDir("Personal", resourceName);
+            if (escAppRes != null)
+            {
+                escAppRes.setDataAsString(xstream.toXML(dataEntryXML));
+                AppContextMgr.getInstance().saveResource(escAppRes);
+                
+            } else
+            {
+                AppContextMgr.getInstance().putResourceAsXML(resourceName, xstream.toXML(dataEntryXML));     
+            }
+        }
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.BaseTask#getPopupMenu()
      */
     @Override
@@ -775,69 +855,7 @@ public class DataEntryTask extends BaseTask
         mi.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
-                DataEntryConfigureDlg dlg = new DataEntryConfigureDlg(DataEntryTask.this);
-                UIHelper.centerAndShow(dlg);
-                if (!dlg.isCancelled())
-                {
-                    viewsNavBox.clear();
-                    
-                    Vector<DataEntryView> stds  = dlg.getStdViews();
-                    Vector<DataEntryView> miscs = dlg.getMiscViews();
-                    
-                    // Add the non-visible once from the old list
-                    for (DataEntryView dev : stdViews)
-                    {
-                        if (!dev.isSideBar())
-                        {
-                            stds.add(dev);
-                        }
-                        // Unregister it as a service
-                        ContextMgr.removeServicesByTaskAndTable(DataEntryTask.this, dev.getTableInfo().getTableId());
-                    }
-                    
-                    // Add the non-visible once from the old list
-                    for (DataEntryView dev : miscViews)
-                    {
-                        if (!dev.isSideBar())
-                        {
-                            miscs.add(dev);
-                        }
-                        // Unregister it as a service
-                        ContextMgr.removeServicesByTaskAndTable(DataEntryTask.this, dev.getTableInfo().getTableId());
-                    }
-                    
-                    buildNavBoxes(stds, miscs);
-                    
-                    viewsNavBox.validate();
-                    viewsNavBox.doLayout();
-                    NavBoxMgr.getInstance().validate();
-                    NavBoxMgr.getInstance().doLayout();
-                    NavBoxMgr.getInstance().repaint();
-                    
-                    stdViews  = stds;
-                    miscViews = miscs;
-                    
-                    // Persist out to database
-                    DataEntryXML dataEntryXML = new DataEntryXML(stdViews, miscViews);
-                    
-                    XStream xstream = new XStream();
-                    config(xstream);
-                    
-                    //AppResourceIFace appRes = AppContextMgr.getInstance().getResource("DataEntryTaskInit");
-                    //appRes.setDataAsString(xstream.toXML(dataEntryXML));
-                    //((SpecifyAppContextMgr)AppContextMgr.getInstance()).saveResource(appRes);
-                    
-                    AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromDir("Personal", resourceName);
-                    if (escAppRes != null)
-                    {
-                        escAppRes.setDataAsString(xstream.toXML(dataEntryXML));
-                        AppContextMgr.getInstance().saveResource(escAppRes);
-                        
-                    } else
-                    {
-                        AppContextMgr.getInstance().putResourceAsXML(resourceName, xstream.toXML(dataEntryXML));     
-                    }
-                }
+                doConfigure();
             }
         });
         

@@ -727,7 +727,7 @@ public class FormViewObj implements Viewable,
      * Shows a Dialog to setup Carry Forward. 
      * The hard part is figuring out which fields are candidates for Carry Forward.
      */
-    protected void setUpCarryForward()
+    public void configureCarryForward()
     {
         CarryForwardInfo carryForwardInfo = getCarryForwardInfo();
         
@@ -847,7 +847,7 @@ public class FormViewObj implements Viewable,
         Collections.sort(itemLabels);
         
         ToggleButtonChooserDlg<FVOFieldInfo> dlg = new ToggleButtonChooserDlg<FVOFieldInfo>((Frame)UIRegistry.getTopWindow(),
-                UIRegistry.getResourceString("MV_CONFIG_CARRY_FORWARD"), 
+                UIRegistry.getResourceString("CONFIG_CARRY_FORWARD_TITLE"), 
                 itemLabels);
         dlg.setUseScrollPane(true);
         dlg.setAddSelectAll(true);
@@ -883,16 +883,16 @@ public class FormViewObj implements Viewable,
         if (e.isPopupTrigger() && mvParent != null && mvParent.isTopLevel())
         {
             JPopupMenu popup = new JPopupMenu();
-            JMenuItem menuItem = new JMenuItem(UIRegistry.getResourceString("MV_CONFIG_CARRY_FORWARD"));
+            JMenuItem menuItem = new JMenuItem(UIRegistry.getResourceString("CONFIG_CARRY_FORWARD_MENU"));
             menuItem.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ex)
                 {
-                    setUpCarryForward();
+                    configureCarryForward();
                 }
             });
             popup.add(menuItem);
 
-            JCheckBoxMenuItem chkMI = new JCheckBoxMenuItem(UIRegistry.getResourceString("CARRY_FORWARD_IS_ON"));
+            JCheckBoxMenuItem chkMI = new JCheckBoxMenuItem(UIRegistry.getResourceString("CARRY_FORWARD_CHECKED_MENU"));
             chkMI.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent ex)
                 {
@@ -1017,6 +1017,13 @@ public class FormViewObj implements Viewable,
             adjustSaveAndNewUI(show);
             
             adjustCarryForwardUI();
+            
+            Action action = UIRegistry.getAction("ConfigCarryForward");
+            if (action != null)
+            {
+                action.setEnabled(show && isEditting);
+            }
+            
         }
         
         // Moving this to the MultiView

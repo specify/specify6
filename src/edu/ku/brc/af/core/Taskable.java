@@ -125,8 +125,19 @@ public interface Taskable
     public abstract boolean isShowDefault();
     
     /**
-     * @return a popup menu for the left side pane or null.
+     * @return whether the task supports being configured. Meaning the getPopupMenu menu
+     * will return a menu. (If false, getPopupMenu will return null).
+     */
+    public abstract boolean isConfigurable();
+    
+    /**
+     * @return a popup menu for the left side pane or null, that is used to configure the task.
      */
     public abstract JPopupMenu getPopupMenu();
+    
+    /**
+     * Displays any UI necessary to configure the task.
+     */
+    public abstract void doConfigure();
 
 }

@@ -1023,17 +1023,32 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     }
 
     /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.Taskable#isConfigurable()
+     */
+    public boolean isConfigurable()
+    {
+        return false;
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#getPopupMenu()
      */
     public JPopupMenu getPopupMenu()
     {
         return null;
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.Taskable#doConfigure()
+     */
+    public void doConfigure()
+    {
+        // do nothing
+    }    
     
     //--------------------------------------------------------------
     // NavBoxButton Helpers
     //--------------------------------------------------------------
-
 
     /**
      * Creates Command Items for a mime type in the AppResources XML.

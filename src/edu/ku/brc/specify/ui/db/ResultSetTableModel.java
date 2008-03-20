@@ -797,7 +797,9 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
         {
             propertyListener.propertyChange(new PropertyChangeEvent(this, "rowCount", null, new Integer(cache.size())));
         }
-        CommandDispatcher.dispatch(new CommandAction(ExpressSearchTask.EXPRESSSEARCH, "SearchComplete", customQuery));
+        CommandAction cmdAction = new CommandAction(ExpressSearchTask.EXPRESSSEARCH, "SearchComplete", customQuery);
+        cmdAction.setProperty("QueryForIdResultsIFace", results);
+        CommandDispatcher.dispatch(cmdAction);
     }
 
     /* (non-Javadoc)

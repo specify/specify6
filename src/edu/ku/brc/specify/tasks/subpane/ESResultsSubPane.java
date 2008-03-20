@@ -134,6 +134,23 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
         
         CommandDispatcher.register(ExpressSearchTask.EXPRESSSEARCH, this);
     }
+    
+    /**
+     * Check to see if the QueryForIdResultsIFace is in this pane.
+     * @param results the QueryForIdResultsIFace to check for
+     * @return true if it is there
+     */
+    public boolean contains(final QueryForIdResultsIFace results)
+    {
+        for (ESResultsTablePanelIFace ertp : expTblResults)
+        {
+            if (ertp.getResults() == results)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * Add search results box to UI.

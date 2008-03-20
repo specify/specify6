@@ -89,11 +89,6 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
 							        extends BaseTask
 {
     protected static final Logger log = Logger.getLogger(BaseTreeTask.class);
-            
-    
-    public static final String OPEN_TREE        = "OpenTree";
-    public static final String EDIT_TREE_DEF    = "EditTreeDef";
-    public static final String SWITCH_VIEW_TYPE = "SwitchViewType";
     
     /** The toolbar items provided by this task. */
     protected List<ToolBarItemDesc> toolBarItems;

@@ -446,7 +446,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         Hashtable<String, ExpressResultsTableInfo> idToTableInfoMap = ExpressSearchConfigCache.getSearchIdToTableInfoHash();
         for (ExpressResultsTableInfo erti : idToTableInfoMap.values())
         {
-            log.error("["+erti.getName()+"]["+searchName+"]");
+            //log.debug("["+erti.getName()+"]["+searchName+"]");
             if (erti.getName().equals(searchName))
             {
                 // This needs to be fixed in that it might not return any results
@@ -481,19 +481,10 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
             {
                 queryResultsPane = new ESResultsSubPane(getResourceString("ES_QUERY_RESULTS"), this, true);
                 queryResultsPane.setIcon(IconManager.getIcon("Query", IconManager.IconSize.Std16));
-                //addSubPaneToMgr(queryResultsPane);
                 
             } else
             {
                 queryResultsPane.reset();
-//                int index = SubPaneMgr.getInstance().indexOfComponent(queryResultsPane.getUIComponent());
-//                if (index == -1)
-//                {
-//                    addSubPaneToMgr(queryResultsPane);
-//                } else
-//                {
-//                    SubPaneMgr.getInstance().showPane(queryResultsPane);
-//                }
             }
             queryResultsPane.addSearchResults(results);
         }
@@ -1034,8 +1025,10 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         UIRegistry.getStatusBar().setIndeterminate(false);
         if (cmdAction.getData() instanceof JPAQuery)
         {
+            QueryForIdResultsIFace results = (QueryForIdResultsIFace)cmdAction.getProperty("QueryForIdResultsIFace");
+            
             //currently, this means an instance of ResultSetTableModel sent it's result.
-            if (queryResultsPane != null)
+            if (queryResultsPane != null && results != null && queryResultsPane.contains(results))
             {
                 int     rowCount = ((JPAQuery) cmdAction.getData()).getDataObjects().size();
                 boolean isError  = ((JPAQuery) cmdAction.getData()).isInError();

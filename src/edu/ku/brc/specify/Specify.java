@@ -79,6 +79,7 @@ import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskMgr;
+import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.UsageTracker;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
@@ -199,7 +200,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private String               appName             = "Specify";
     private String               appVersion          = "6.0";
 
-    private String               appBuildVersion     = "200803191430 (SVN: 3637)";
+    private String               appBuildVersion     = "200803191600 (SVN: 3642)";
     
     protected static CacheManager cacheManager        = new CacheManager();
 
@@ -651,6 +652,9 @@ public class Specify extends JPanel implements DatabaseLoginListener
         JMenuBar mb = new JMenuBar();
         JMenuItem mi;
 
+        //--------------------------------------------------------------------
+        //-- File Menu
+        //--------------------------------------------------------------------
         JMenu menu = UIHelper.createMenu(mb, "FileMenu", "FileMneu");
         mi = UIHelper.createMenuItem(menu, "Login", "L", "Database Login", true, null);
         mi.addActionListener(new ActionListener()
@@ -794,7 +798,9 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 });
         */
         
-        // Data Menu
+        //--------------------------------------------------------------------
+        //-- Data Menu
+        //--------------------------------------------------------------------
         String title;
         JMenu dataMenu = UIHelper.createMenu(mb, "DataMenu", "DataMneu");
         ResultSetController.addMenuItems(dataMenu);
@@ -826,8 +832,35 @@ public class Specify extends JPanel implements DatabaseLoginListener
         UIRegistry.registerAction("SaveAndNew", saveAndNewAction);
         mb.add(dataMenu);
         
-        // Carry Forward Menu Item
-        Action carryForwardAction = new AbstractAction(getResourceString("CARRY_FORWARD_IS_ON")) {
+        // Configure Carry Forward
+        Action configCarryForwardAction = new AbstractAction(getResourceString("CONFIG_CARRY_FORWARD_MENU")) {
+            public void actionPerformed(ActionEvent e)
+            {
+                SubPaneIFace sp = SubPaneMgr.getInstance().getCurrentSubPane();
+                if (sp instanceof FormPane)
+                {
+                    MultiView mv = ((FormPane)sp).getMultiView();
+                    if (mv != null)
+                    {
+                        FormViewObj fvo = mv.getCurrentViewAsFormViewObj();
+                        if (fvo != null)
+                        {
+                            fvo.configureCarryForward();
+                        }
+                    }
+                }
+            }
+        };
+        configCarryForwardAction.setEnabled(false);
+        JMenuItem configCFWMI = new JMenuItem(configCarryForwardAction);
+        dataMenu.add(configCFWMI);
+        UIRegistry.register("ConfigCarryForward", configCFWMI);
+        UIRegistry.registerAction("ConfigCarryForward", configCarryForwardAction);
+        mb.add(dataMenu);
+
+        //---------------------------------------
+        // Carry Forward Menu Item (On / Off)
+        Action carryForwardAction = new AbstractAction(getResourceString("CARRY_FORWARD_CHECKED_MENU")) {
             public void actionPerformed(ActionEvent e)
             {
                 SubPaneIFace sp = SubPaneMgr.getInstance().getCurrentSubPane();
@@ -856,7 +889,13 @@ public class Specify extends JPanel implements DatabaseLoginListener
         if (!isWorkbenchOnly)
         {
             menu = UIHelper.createMenu(mb, "ToolsMenu", "ToolsMneu");
+            
             menu = UIHelper.createMenu(mb, "AdvMenu", "AdvMneu");
+            
+            //--------------------------------------------------------------------
+            //-- System Menu
+            //--------------------------------------------------------------------
+
             menu.add(UIHelper.createMenu(mb, "SystemMenu", "SystemMneu"));
             
             title = getResourceString("SCHEMA_CONFIG");
@@ -923,6 +962,9 @@ public class Specify extends JPanel implements DatabaseLoginListener
         }*/
 
 
+        //--------------------------------------------------------------------
+        //-- Tab Menu
+        //--------------------------------------------------------------------
         menu = UIHelper.createMenu(mb, "TabsMenu", "TabsMneu");
         
         Action closeCurrent = new AbstractAction()
@@ -955,6 +997,33 @@ public class Specify extends JPanel implements DatabaseLoginListener
         ttl = getResourceString("SBP_CLOSE_ALLBUT_MENU");
         mi = UIHelper.createMenuItemWithAction(menu, ttl, getResourceString("SBP_CLOSE_ALLBUT_MNEU"), ttl, true, closeAllBut);
         UIRegistry.registerAction("CloseAllBut", closeAllBut);
+        
+        menu.addSeparator();
+        
+        // Configure Task
+        Action configureToolAction = new AbstractAction(getResourceString("CONFIG_TASK_MENU")) {
+            public void actionPerformed(ActionEvent e)
+            {
+                SubPaneIFace sp = SubPaneMgr.getInstance().getCurrentSubPane();
+                if (sp != null)
+                {
+                    Taskable task = sp.getTask();
+                    if (task != null && task.isConfigurable())
+                    {
+                        task.doConfigure();
+                    }
+                }
+            }
+        };
+        configureToolAction.setEnabled(false);
+        JMenuItem configTaskMI = new JMenuItem(configureToolAction);
+        menu.add(configTaskMI);
+        UIRegistry.register("ConfigureTask", configTaskMI);
+        UIRegistry.registerAction("ConfigureTask", configureToolAction);
+
+        //--------------------------------------------------------------------
+        //-- Debug Menu
+        //--------------------------------------------------------------------
 
         if (!isRelease)
         {

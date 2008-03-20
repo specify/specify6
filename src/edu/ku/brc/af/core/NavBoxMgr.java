@@ -71,15 +71,16 @@ public class NavBoxMgr extends JPanel
                  Taskable currTask = ContextMgr.getCurrentContext();
                  if (currTask != null)
                  {
-                     JPopupMenu popupMenu = currTask.getPopupMenu();
-                     if (popupMenu != null && 
-                         mouseEvent.isPopupTrigger() && 
-                         popupMenu.getComponentCount() > 0) 
+                     if (mouseEvent.isPopupTrigger() && currTask.isConfigurable())
                      {
-                         popupMenu.show(mouseEvent.getComponent(),
-                                 mouseEvent.getX(),
-                                 mouseEvent.getY());
-                         return true;
+                         JPopupMenu popupMenu = currTask.getPopupMenu();
+                         if (popupMenu != null && popupMenu.getComponentCount() > 0) 
+                         {
+                             popupMenu.show(mouseEvent.getComponent(),
+                                     mouseEvent.getX(),
+                                     mouseEvent.getY());
+                             return true;
+                         }
                      }
                  }
                  return false;
