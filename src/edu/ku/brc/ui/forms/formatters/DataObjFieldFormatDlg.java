@@ -54,7 +54,8 @@ public class DataObjFieldFormatDlg extends CustomDialog
 {
 	protected DBTableInfo tableInfo;
 	protected DataObjSwitchFormatter selectedFormat;
-    protected Vector<DataObjSwitchFormatter> deletedFormats = new Vector<DataObjSwitchFormatter>(); 
+    protected Vector<DataObjSwitchFormatter> deletedFormats = new Vector<DataObjSwitchFormatter>();
+    protected int initialFormatSelectionIndex;
 	
 	// UI controls
 	protected JList formatList;
@@ -77,6 +78,7 @@ public class DataObjFieldFormatDlg extends CustomDialog
     {
         super(frame, getResourceString("FFE_DLG_TITLE"), true, OKCANCELHELP, null); //I18N 
         this.tableInfo = tableInfo;
+        this.initialFormatSelectionIndex = initialFormatSelectionIndex;
     }
 
     /* (non-Javadoc)
@@ -203,15 +205,22 @@ public class DataObjFieldFormatDlg extends CustomDialog
         contentPanel = pb.getPanel();
         mainPanel.add(contentPanel, BorderLayout.CENTER);
 
+        // after all is created, set initial selection on format list 
+        if (fmtrs.size() > 0 && initialFormatSelectionIndex < fmtrs.size())
+        {
+        	DataObjSwitchFormatter fmt = fmtrs.get(initialFormatSelectionIndex);
+        	fillWithObjFormatter(fmt);
+        }
+        else 
+        {
+        	fillWithObjFormatter(null);
+        }
+
         // pack after largest of the two panels is visible then set the other one visible  
         //multipleDisplayBtn.setSelected(true);
         //singleDisplayBtn.setSelected(true);
+        //pack();
         
-        // after all is created, set initial selection on format list 
-        //formatList.setSelectedIndex(initialFormatSelectionIndex);
-        DataObjSwitchFormatter fmt = fmtrs.get(0);
-        fillWithObjFormatter(fmt);
-
     	updateUIEnabled();
 
         pack();
@@ -450,6 +459,22 @@ public class DataObjFieldFormatDlg extends CustomDialog
     {
     	fmtSingleEditingPB.getPanel().setVisible  (btn == singleDisplayBtn); 
     	fmtMultipleEditingPB.getPanel().setVisible(btn == multipleDisplayBtn);
+    }
+    
+    /*
+     * Indicates whether switch format returned by getSwitchFormatter() is new or existing
+     * Must be called after call to getSwitchFormatter()  
+     */
+    public boolean isNewFormat()
+    {
+    	if (singleDisplayBtn.isSelected())
+    	{
+    		return fmtSingleEditingPB.isNewFormat();
+    	}
+    	else
+    	{
+    		return fmtMultipleEditingPB.isNewFormat();
+    	}
     }
     
     protected DataObjSwitchFormatter getSwitchFormatter()

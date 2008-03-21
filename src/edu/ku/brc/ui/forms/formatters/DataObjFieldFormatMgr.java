@@ -287,25 +287,44 @@ public class DataObjFieldFormatMgr
     /**
      * Gets a unique name for a formatter if it doesn't yet have one
      */
-    private String getFormatterUniqueName(DataObjSwitchFormatter formatter)
+    private void getFormatterUniqueName(DataObjSwitchFormatter formatter)
     {
-    	String name = formatter.getName();
- 
+    	String name   = formatter.getName();
+    	String prefix = formatter.getDataClass().getSimpleName();
+    	formatter.setName(getUniqueNameInHash(name, prefix, formatHash));
+    }
+    
+    /**
+     * Gets a unique name for an aggregator if it doesn't yet have one
+     */
+    private void getAggregatorUniqueName(DataObjAggregator aggregator)
+    {
+    	String name   = aggregator.getName();
+    	String prefix = aggregator.getDataClass().getSimpleName();
+    	aggregator.setName(getUniqueNameInHash(name, prefix, aggHash));
+    }
+    
+    /**
+     * Generic method that creates a unique name for an object in a hash if it doesn't yet have one
+     */
+    private <T> String getUniqueNameInHash(final String name, 
+    									   final String prefix, 
+    									   final Hashtable<String, T> hash)
+    {
+    	String newName = "";
     	if (name == null || name.equals(""))
     	{
-    		// find a formatter name that doesn't yet exist in the hash
-    		// name formation patter is <field name>.i where i is a counter
+    		// find a name that doesn't yet exist in the hash
+    		// name formation patter is prefix.i, where i is a counter
     		int i = 1;
-    		Set<String> names = formatHash.keySet();
-    		String prefix = formatter.getDataClass().getSimpleName();
-    		name = prefix + "." + Integer.toString(i);
-    		while (names.contains((String) name))
+    		Set<String> names = hash.keySet();
+    		newName = prefix + "." + Integer.toString(i);
+    		while (names.contains((String) newName))
     		{
-        		name = prefix + "." + Integer.toString(++i);
+    			newName = prefix + "." + Integer.toString(++i);
     		}
     	}
-    	formatter.setName(name);
-    	return null;
+    	return newName;
     }
     
     /**
@@ -347,8 +366,7 @@ public class DataObjFieldFormatMgr
 		});
 		for (DataObjAggregator agg : aggVector)
 		{
-			// TODO: implement DataObjAggregator.toXML(StringBuilder sb)
-    		//agg.toXML(sb);
+    		agg.toXML(sb);
     	}
 		
 		sb.append("  </aggregators>\n");
@@ -801,6 +819,56 @@ public class DataObjFieldFormatMgr
             log.error("Could find aggregator of class ["+dataClass.getCanonicalName()+"]");
         }
         return "";
+    }
+    
+    /**
+     * Returns a list of aggregators that match the class, the default (if there is one) is at the beginning of the list.
+     * @param clazz the class of the data that the aggregator is used for.
+     * @return return a list of aggregators that match the class
+     */
+    public static List<DataObjAggregator> getAggregatorList(final Class<?> clazz)
+    {
+        Vector<DataObjAggregator> list = new Vector<DataObjAggregator>();
+        DataObjAggregator defFormatter = null;
+        
+        for (Enumeration<DataObjAggregator> e=getInstance().aggHash.elements();e.hasMoreElements();)
+        {
+        	DataObjAggregator f = e.nextElement();
+            if (clazz == f.getDataClass())
+            {
+                if (f.isDefault() && defFormatter == null)
+                {
+                    defFormatter = f;
+                } else
+                {
+                    list.add(f);
+                }
+            }
+        }
+        if (defFormatter != null)
+        {
+            list.insertElementAt(defFormatter, 0);
+        }
+        return list;
+    }
+
+    /**
+     * Adds a new aggregator
+     */
+    public void addAggregator(DataObjAggregator aggregator)
+    {
+    	getAggregatorUniqueName(aggregator);
+    	aggHash.put(aggregator.getName(), aggregator);
+    	aggClassHash.put(aggregator.getDataClass(), aggregator);
+    }
+    
+    /**
+     * Deletes a aggregator from the hashes
+     */
+    public void removeAggregator(DataObjAggregator aggregator)
+    {
+    	aggHash.remove(aggregator.getName());
+    	aggClassHash.remove(aggregator.getName());
     }
     
     /**

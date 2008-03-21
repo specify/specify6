@@ -31,6 +31,7 @@ public abstract class DataObjFieldFormatPanelBuilder {
 	protected JList 	   			formatList;
 	protected ListSelectionListener formatListSL;
 	protected JButton				okButton;
+	protected boolean 				newFormat;
 
 	public abstract void fillWithObjFormatter(DataObjSwitchFormatter fmt);
 	public abstract DataObjSwitchFormatter getSwitchFormatter();
@@ -46,6 +47,8 @@ public abstract class DataObjFieldFormatPanelBuilder {
 		this.formatList = formatList;
 		this.formatListSL = formatListSL;
 		this.okButton = okButton;
+		
+		this.newFormat = false;
 		
         init();
         buildUI();
@@ -63,6 +66,11 @@ public abstract class DataObjFieldFormatPanelBuilder {
 	{
 	}
 
+	public boolean isNewFormat()
+	{
+		return newFormat;
+	}
+	
 	public JPanel getPanel() 
 	{
 		return mainPanelBuilder.getPanel();

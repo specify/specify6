@@ -340,6 +340,7 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
 		{
 			// selected entry is not the last one, so it's an existing one
 			// just return it
+			newFormat = false;
 			Object value = formatList.getSelectedValue(); 
 			if (value instanceof DataObjSwitchFormatter)
 				return (DataObjSwitchFormatter) value;
@@ -349,6 +350,7 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
 		}
 		
 		// last entry is selected, so return the new formatter that has been composed
+		newFormat = true;
 		return createFormatterFromFormatText();
 	}
 	

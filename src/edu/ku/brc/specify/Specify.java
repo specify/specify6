@@ -147,7 +147,7 @@ import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.ResultSetController;
-import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatDlg;
+import edu.ku.brc.ui.forms.formatters.DataObjAggregatorDlg;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.ui.forms.persist.ViewLoader;
 import edu.ku.brc.util.AttachmentManagerIface;
@@ -936,9 +936,12 @@ public class Specify extends JPanel implements DatabaseLoginListener
             		{
             			public void actionPerformed(ActionEvent ae)
             			{
-            				DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoByTableName("agent");
+            				//DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoByTableName("agent");
             				//DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoByTableName("accessionagent");
-            				DataObjFieldFormatDlg dlg = new DataObjFieldFormatDlg(topFrame, tableInfo, 0);
+            				//DataObjFieldFormatDlg dlg = new DataObjFieldFormatDlg(topFrame, tableInfo, 0);
+            				//DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoByTableName("determination");
+            				DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoByTableName("collector");
+            				DataObjAggregatorDlg dlg = new DataObjAggregatorDlg(topFrame, tableInfo, 0);
             				dlg.setVisible(true);
             			}
             		});

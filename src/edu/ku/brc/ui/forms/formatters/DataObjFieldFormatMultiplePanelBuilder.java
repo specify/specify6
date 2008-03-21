@@ -150,6 +150,7 @@ public class DataObjFieldFormatMultiplePanelBuilder extends DataObjFieldFormatPa
 			// selected entry is not the last one, so it's an existing one
 			// however, the internal formatters may have changed
 			// so, only keep formatter name and create a new one to replace the existing one
+			newFormat = false;
 			Object value = formatList.getSelectedValue(); 
 			if (value instanceof DataObjSwitchFormatter)
 			{
@@ -160,6 +161,7 @@ public class DataObjFieldFormatMultiplePanelBuilder extends DataObjFieldFormatPa
 		}
 		
 		// note: if formatter is a new one, formatterField will be set on the parent dialog class (DataObjFieldFormatDlg)
+		newFormat = true;
 		
 		// return the new formatter that has been composed
 		DataObjSwitchFormatter switchFormatter = new DataObjSwitchFormatter(

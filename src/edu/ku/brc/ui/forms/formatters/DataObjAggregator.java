@@ -14,6 +14,10 @@
  */
 package edu.ku.brc.ui.forms.formatters;
 
+import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
+
+import org.apache.commons.lang.StringUtils;
+
 /**
  * This class aggregates to several Data Objects into a single value by taking the output from the formatters and appending them
  * together with a separator character (or string).
@@ -36,7 +40,11 @@ public class DataObjAggregator
     protected String          formatName;
     protected String          orderFieldName;
     
-    public DataObjAggregator(final String   name, 
+    public DataObjAggregator()
+    {
+    }
+    
+	public DataObjAggregator(final String   name, 
                              final Class<?> dataClass,
                              final boolean  isDefault, 
                              final String   separator, 
@@ -98,4 +106,71 @@ public class DataObjAggregator
     {
         return orderFieldName;
     }
+
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+    public void setDataClass(Class<?> dataClass) {
+		this.dataClass = dataClass;
+	}
+
+	public void setDefault(boolean isDefault) {
+		this.isDefault = isDefault;
+	}
+
+	public void setSeparator(String separator) {
+		this.separator = separator;
+	}
+
+	public void setCount(Integer count) {
+		this.count = count;
+	}
+
+	public void setEnding(String ending) {
+		this.ending = ending;
+	}
+
+	public void setFormatName(String formatName) {
+		this.formatName = formatName;
+	}
+
+	public void setOrderFieldName(String orderFieldName) {
+		this.orderFieldName = orderFieldName;
+	}
+
+	public String toString()
+	{
+		String countStr = "";
+		String orderStr = "";
+		if (count != null)
+		{
+			countStr = ""; // XXX: what does count mean?
+		}
+		if (StringUtils.isNotEmpty(orderFieldName))
+		{
+			orderStr = " (sorted by " + orderFieldName + ")";
+		}
+		// following string should really be the formatter field name rather than the class simple name
+		String simpleName = dataClass.getSimpleName();
+		return simpleName + separator + simpleName + ending + orderStr;
+	}
+
+	/*
+	 * 
+	 */
+	public void toXML(StringBuilder sb)
+	{
+		String padding = "\n               ";
+		sb.append         ("    <aggregator");
+		xmlAttr(sb, "name", 		  name);                       sb.append(padding);
+		xmlAttr(sb, "class", 		  dataClass.getName());        sb.append(padding);
+		xmlAttr(sb, "default", 	      String.valueOf(isDefault));  sb.append(padding);
+		xmlAttr(sb, "separator", 	  separator);                  sb.append(padding);
+		xmlAttr(sb, "ending", 		  ending);                     sb.append(padding);
+		xmlAttr(sb, "count",          String.valueOf(count));      sb.append(padding);
+		xmlAttr(sb, "formatName",     formatName);                 sb.append(padding);
+        xmlAttr(sb, "orderFieldName", orderFieldName);             sb.append(padding);
+		sb.append("/>\n\n");
+	}
 }

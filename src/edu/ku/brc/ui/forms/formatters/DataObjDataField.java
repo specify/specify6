@@ -21,9 +21,10 @@ import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
 
 import org.apache.commons.lang.StringUtils;
 
-import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.dbsupport.DBRelationshipInfo;
+import edu.ku.brc.dbsupport.DBFieldInfo;
 
 /**
  * This describes a single field that is used as part of a DataObjectFormatter.
@@ -45,6 +46,7 @@ public class DataObjDataField {
 	protected String dataObjFormatterName;
 	protected DBTableInfo tableInfo;
 	protected DBFieldInfo fieldInfo;
+	protected DBRelationshipInfo relInfo;
 	protected DataObjSwitchFormatter objFormatter;
 	
 
@@ -136,6 +138,14 @@ public class DataObjDataField {
 		this.tableInfo = tableInfo;
 	}
 
+	public DBRelationshipInfo getRelInfo() {
+		return relInfo;
+	}
+
+	public void setRelInfo(DBRelationshipInfo relInfo) {
+		this.relInfo = relInfo;
+	}
+
 	public DBFieldInfo getFieldInfo() {
 		return fieldInfo;
 	}
@@ -147,7 +157,21 @@ public class DataObjDataField {
 	public void setTableAndFieldInfo(DBTableInfo tableInfo)
 	{
 		setTableInfo(tableInfo);
-		fieldInfo = tableInfo.getFieldByName(name);
+
+		String[] parts = name.split("\\.");
+		if (parts.length == 2)
+		{
+			// there's a dot on field name, which means it represents a field in a related table
+			// split name into relation.fieldName
+			setRelInfo(tableInfo.getRelationshipByName(parts[0]));
+			DBTableInfo otherTable = DBTableIdMgr.getInstance().getByClassName(relInfo.getClassName());
+			fieldInfo = otherTable.getFieldByName(parts[1]);
+		}
+		else 
+		{
+			fieldInfo = tableInfo.getFieldByName(name);
+		}
+
 		if (StringUtils.isNotEmpty(dataObjFormatterName))
 		{
 			objFormatter = DataObjFieldFormatMgr.getFormatter(dataObjFormatterName);
