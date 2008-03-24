@@ -130,7 +130,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
             if (tableInfo != null)
             {
                 baseLabel = tableInfo.getTitle();
-                icon = IconManager.getIcon(StringUtils.isNotEmpty(iconName) ? iconName : tableInfo.getName(), IconManager.IconSize.Std24);
+                icon = IconManager.getIcon(StringUtils.isNotEmpty(iconName) ? iconName : tableInfo.getName(), IconManager.IconSize.NonStd);
             }
         }
         
@@ -150,7 +150,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
             x = 1;  
         }
         
-        subViewBtn = icon != null ? createButton("...", icon) : createButton(baseLabel);
+        subViewBtn = icon != null ? createButton(icon) : createButton(baseLabel);
         subViewBtn.addActionListener(new ActionListener() {
             //@Override
             public void actionPerformed(ActionEvent e)

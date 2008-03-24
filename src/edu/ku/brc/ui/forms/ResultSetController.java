@@ -91,6 +91,7 @@ public class ResultSetController implements ValidationListener
     protected int     currentInx = 0;
     protected int     lastInx    = 0;
     protected int     numRecords = 0;
+    
     protected boolean isNewObj   = false;
     
     // Global Key Actions
@@ -434,14 +435,24 @@ public class ResultSetController implements ValidationListener
     /**
      * Enables/Disables the UI according to where we are in the resultset
      */
-    protected void updateUI()
+    public void updateUI()
     {
         if (panel == null) return;
-     
-        firstBtn.setEnabled(currentInx > 0 && !isNewObj);
-        prevBtn.setEnabled(currentInx > 0 && !isNewObj);
-        nextBtn.setEnabled(currentInx < lastInx && !isNewObj);
-        lastBtn.setEnabled(currentInx < lastInx && !isNewObj);
+        
+        boolean isNewAndValid = newRecBtn == null ? true : newRecBtn.isEnabled();
+        
+        /*boolean isNewAndValid = true;
+        if (formValidator != null)
+        {
+            isNewAndValid = !isNewObj || (isNewObj && formValidator.isFormValid());
+        }*/
+        System.err.println("isNewObj "+isNewObj+" isNewAndValid "+isNewAndValid);
+        
+        
+        firstBtn.setEnabled(currentInx > 0 && isNewAndValid);
+        prevBtn.setEnabled(currentInx > 0 && isNewAndValid);
+        nextBtn.setEnabled(currentInx < lastInx && isNewAndValid);
+        lastBtn.setEnabled(currentInx < lastInx && isNewAndValid);
         
         boolean enabled = numRecords > 0;
         

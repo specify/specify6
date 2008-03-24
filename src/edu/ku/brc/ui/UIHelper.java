@@ -2412,6 +2412,13 @@ public final class UIHelper
         }
     }
     
+    public static JButton createButton(final ImageIcon icon)
+    {
+        JButton btn = new JButton(icon);
+        setControlSize(btn);
+        return btn;
+    }
+
     public static JButton createButton(final String text)
     {
         JButton btn = new JButton(text);

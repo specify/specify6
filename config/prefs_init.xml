@@ -6,13 +6,13 @@
         -->
         <pref title="Formatting" icon="Formatting"   panelClass="edu.ku.brc.specify.prefs.FormattingPrefsPanel"/>
         <pref title="System"     icon="SystemSetup"  panelClass="edu.ku.brc.specify.prefs.SystemPrefs"/>
-        <pref title="Tree"       icon="SystemSetup"  panelClass="edu.ku.brc.specify.prefs.TreePrefs"/>
+        <pref title="Tree"       icon="TreePref"  panelClass="edu.ku.brc.specify.prefs.TreePrefs"/>
      </section>
     
     
     <section title="settings">
         <pref title="email" icon="EMail" panelClass="edu.ku.brc.specify.prefs.EMailPrefsPanel"/>
-        <pref title="Misc" icon="SystemSetup" panelClass="edu.ku.brc.specify.prefs.MiscPrefsPanel"/>
+        <pref title="Misc" icon="MiscPref" panelClass="edu.ku.brc.specify.prefs.MiscPrefsPanel"/>
     </section>
        
     <!-- 

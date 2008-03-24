@@ -8,23 +8,26 @@
         4 - Minerals 
     -->
     
-    <discipline name="fish"         title="Fish"         abbrev="FISH" isembedce="false" type="0"/>
-    <discipline name="amphibian"    title="Amphibians"   abbrev="AMPH" isembedce="true" type="0"/>
+    <discipline name="fish"         title="Ichthyology"  abbrev="FISH" isembedce="false" type="0"/>
+    <discipline name="amphibian"    title="Amphibian"    abbrev="AMPH" isembedce="true" type="0"/>
     <discipline name="reptile"      title="Reptile"      abbrev="RPTL" isembedce="true" type="0"/>
-    <discipline name="paleobotany"  title="Paleo Botany" abbrev="PLB" isembedce="true" type="0"/>
-    <discipline name="invertpaleo"  title="Invertebrate Paleo" abbrev="IVTP" isembedce="true" type="0"/>
-    <discipline name="vertpaleo"    title="Vertebrate Paleo" abbrev="VRTP" isembedce="true" type="0"/>
-    <discipline name="bird"         title="Ornthology"   abbrev="ORN" isembedce="true" type="0"/>
-    <discipline name="mammal"       title="Mammal"       abbrev="MAM" isembedce="true" type="0"/>
-    <discipline name="insect"       title="Insect"       abbrev="ENTO" isembedce="true" type="0"/>
+    <discipline name="paleobotany"  title="Paleobotany"  abbrev="PLB"  isembedce="true" type="0"/>
+    <discipline name="invertpaleo"  title="Invertebrate Paleontology"  abbrev="IVTP" isembedce="true" type="0"/>
+    <discipline name="vertpaleo"    title="Vertebrate Paleontology"    abbrev="VRTP" isembedce="true" type="0"/>
+    <discipline name="bird"         title="Ornithology"  abbrev="ORN"  isembedce="true" type="0"/>
+    <discipline name="mammal"       title="Mammalogy"    abbrev="MAM"  isembedce="true" type="0"/>
+    <discipline name="insect"       title="Entomology"   abbrev="ENTO" isembedce="true" type="0"/>
     <discipline name="botany"       title="Botany"       abbrev="BNTY" isembedce="true" type="0"/>
     <discipline name="invertebrate" title="Invertebrate" abbrev="IVTB" isembedce="true" type="0"/>
-    <discipline name="minerals"     title="Minerals"     abbrev="MIN"  isembedce="true" type="4"/>
-    <discipline name="anthropology" title="Anthropology" abbrev="ANTH" isembedce="true" type="3"/>
-    <discipline name="fungi"        title="Fungi"        abbrev="FNGI" isembedce="true" type="0"/>
     
-    <!-- <discipline name="tissue"       title="Tissue"       abbrev="" isembedce="true" type="1"/>
+    <!-- 
+    <discipline name="minerals"     title="Mineralogy"   abbrev="MIN"  isembedce="true" type="4"/>
+    <discipline name="anthropology" title="Anthropology" abbrev="ANTH" isembedce="true" type="3"/>
+    <discipline name="fungi"        title="Mycology"     abbrev="MYCO" isembedce="true" type="0"/>
+    
+    <discipline name="tissue"       title="Tissue"       abbrev="" isembedce="true" type="1"/>
     <discipline name="accessions"   title="Accessions"   abbrev="" isembedce="true" type="2"/>
-    <discipline name="animal"       title="Animal"     abbrev="" isembedce="true" type="0"/>  -->
+    <discipline name="animal"       title="Animal"     abbrev="" isembedce="true" type="0"/>
+    -->
     
 </disciplines>

@@ -3204,6 +3204,11 @@ public class FormViewObj implements Viewable,
             }
         }
         
+        if (rsController != null)
+        {
+            rsController.updateUI();
+        }
+        
         if (srchRecBtn != null)
         {
             srchRecBtn.setEnabled(enableNewBtn && StringUtils.isNotBlank(searchName));

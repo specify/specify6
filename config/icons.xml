@@ -54,7 +54,7 @@
     <icon name="Spreadsheet24" file="Grid20x20.png" sizes="NonStd"/>
     <icon name="Spreadsheet"   file="Grid32x32.png" sizes="all"/>
     <icon name="Export"        file="ExportDataSet20x20.png" sizes="NonStd"/>
-    <icon name="Upload"        file="upload_data.gif" sizes="NonStd"/>	
+    <icon name="Upload"        file="upload_data.gif" sizes="NonStd"/>    
     <icon name="Eraser"        file="Clear20x20.png"   sizes="NonStd"/>
     <icon name="CardImage"     file="ImageWindow20x20.png" sizes="NonStd"/>
     <icon name="LocalityMapper" file="map20x20.png" sizes="NonStd"/>
@@ -65,14 +65,14 @@
     
 
     <!-- Aliases -->
-    <icon name="ShowMap"		           alias="LocalityMapper"/>
+    <icon name="ShowMap"                   alias="LocalityMapper"/>
     
     <icon name="taxontreedef"              alias="taxon"/>
     <icon name="geographytreedef"          alias="geography"/>
     <icon name="geologictimePeriodtreedef" alias="geologictimeperiod"/>
     <icon name="locationlreedef"           alias="location"/>
     
-    <icon name="Startup"	               alias="AppIcon"/>
+    <icon name="Startup"                   alias="AppIcon"/>
     
     <!-- Done Aliases -->
     
@@ -170,6 +170,7 @@
     <icon name="pdf"                file="pdf.png"        sizes="all"/>
     <icon name="html"               file="html.png"        sizes="all"/>
     
+    
     <!-- sorting button icons -->
     <icon name="move_to_start"      file="start.png"        sizes="all"/>
     <icon name="move_left"          file="1leftarrow.png"   sizes="all"/>
@@ -192,8 +193,13 @@
     <icon name="LatLonRectBottomRight" file="LatLonRectRight32x32.png"  sizes="all"/>
     
     <!-- Tree Node Find Widget -->
-    <icon name="Top"				file="RightSideUp.png"		sizes="all"/>
-    <icon name="Bottom"				file="LeftSideDown.png"		sizes="all"/>
-    <icon name="Both"				file="UpAndDown.png"		sizes="all"/>
+    <icon name="Top"                   file="RightSideUp.png"     sizes="all"/>
+    <icon name="Bottom"                file="LeftSideDown.png"    sizes="all"/>
+    <icon name="Both"                  file="UpAndDown.png"       sizes="all"/>
+    
+    <!--  Prefs -->
+    <icon name="MiscPref"              file="Miscellaneous32x32.png" sizes="all"/>
+    <icon name="TreePref"              file="Tree32x32.png" sizes="all"/>
+    
     
 </icons>
