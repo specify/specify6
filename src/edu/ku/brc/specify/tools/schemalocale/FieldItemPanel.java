@@ -14,6 +14,7 @@ import static edu.ku.brc.ui.UIHelper.createTextField;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -200,6 +201,9 @@ public class FieldItemPanel extends LocalizerBasePanel
         fieldDescText.setRows(5);
         fieldDescText.setLineWrap(true);
         fieldDescText.addKeyListener(new LengthWatcher(255));
+        // setting min and pref sizes to some bogus values so that textarea shrinks with dialog
+        fieldDescText.setMinimumSize(new Dimension(50, 5));
+        fieldDescText.setPreferredSize(new Dimension(50, 5));
         fieldNameText.addKeyListener(new LengthWatcher(64));
 
         CellConstraints cc = new CellConstraints();

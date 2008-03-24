@@ -918,23 +918,6 @@ public class Specify extends JPanel implements DatabaseLoginListener
                             doSchemaConfig(SpLocaleContainer.WORKBENCH_SCHEMA, schema);
                         }
                     });
-            
-            // XXX For testing only - please remove menu item before releasing
-            title = "Data Object Format Dialog";
-            mi = UIHelper.createMenuItem(menu, title, "Data Object Format Dialog", title, true, null);
-            mi.addActionListener(new ActionListener()
-            		{
-            			public void actionPerformed(ActionEvent ae)
-            			{
-            				//DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoByTableName("agent");
-            				//DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoByTableName("accessionagent");
-            				//DataObjFieldFormatDlg dlg = new DataObjFieldFormatDlg(topFrame, tableInfo, 0);
-            				//DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoByTableName("determination");
-            				DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoByTableName("collector");
-            				DataObjAggregatorDlg dlg = new DataObjAggregatorDlg(topFrame, tableInfo, 0);
-            				dlg.setVisible(true);
-            			}
-            		});
         }
                      
                      /*if (true)

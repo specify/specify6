@@ -18,6 +18,7 @@ package edu.ku.brc.ui.forms.formatters;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -90,7 +91,12 @@ public class DataObjFieldFormatMultiplePanelBuilder extends DataObjFieldFormatPa
 		hookToolbarActionListeners();
 
 		// lay out components on main panel
-		pb.add(new JScrollPane(formatSwitchTbl), cc.xy(1, 2));
+		JScrollPane sp = new JScrollPane(formatSwitchTbl);
+		// set minimum and preferred sizes so that table shrinks with the dialog
+		sp.setMinimumSize(new Dimension(50, 5));
+		sp.setPreferredSize(new Dimension(50, 5));
+
+		pb.add(sp, cc.xy(1, 2));
 		pb.add(deletePB.getPanel(), cc.xy(1, 4));
 		this.mainPanelBuilder = pb;
 	}
@@ -201,6 +207,20 @@ public class DataObjFieldFormatMultiplePanelBuilder extends DataObjFieldFormatPa
 		return model;
 	}
 
+	/*
+	 * Removes all editors listeners (so that format list selection can be updated without side-effects
+	 */
+	public void removeEditorListeners()
+	{
+	}
+	
+	/*
+	 * Adds all editors listeners (after calling removeEditorListeners)
+	 */
+	public void addEditorListeners()
+	{
+	}
+
 	private void hookToolbarActionListeners() 
 	{
 		ActionListener addBtnAL = new ActionListener() 
@@ -250,6 +270,8 @@ public class DataObjFieldFormatMultiplePanelBuilder extends DataObjFieldFormatPa
 
 	public void fillWithObjFormatter(DataObjSwitchFormatter switchFormatter) 
 	{
+		removeEditorListeners();
+
 		// display each formatter as a table row
 		// DefaultTableModel tableModel = (DefaultTableModel)
 		// formatSwitch.getModel();
@@ -275,6 +297,8 @@ public class DataObjFieldFormatMultiplePanelBuilder extends DataObjFieldFormatPa
 
 		formatSwitchTbl.setModel(model);
 		setFormatSwitchTblColumnProperties();
+		
+		addEditorListeners();
 	}
 	
 	private void setFormatSwitchTblColumnProperties()

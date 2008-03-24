@@ -36,6 +36,9 @@ public abstract class DataObjFieldFormatPanelBuilder {
 	public abstract void fillWithObjFormatter(DataObjSwitchFormatter fmt);
 	public abstract DataObjSwitchFormatter getSwitchFormatter();
 	
+	public abstract void addEditorListeners();
+	public abstract void removeEditorListeners();
+	
 	public DataObjFieldFormatPanelBuilder(DBTableInfo tableInfo, 
 									      JList formatList,
 									      ListSelectionListener formatListSL,

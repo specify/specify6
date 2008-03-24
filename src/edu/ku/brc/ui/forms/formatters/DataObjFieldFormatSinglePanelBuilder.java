@@ -16,6 +16,7 @@
 package edu.ku.brc.ui.forms.formatters;
 
 
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -48,7 +49,6 @@ import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBRelationshipInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatterField.FieldType;
 
 public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPanelBuilder {
 	
@@ -93,7 +93,7 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
 	 */
 	protected void buildUI() {
 	    CellConstraints cc = new CellConstraints();
-	    PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g",  
+	    PanelBuilder pb = new PanelBuilder(new FormLayout("f:d:g",  
 	    		"10px,"       + // empty space on top of panel 
 	    		"p,p,"        + // Label & text box for format
 	    		"10px,p,"     + // separator & label
@@ -107,6 +107,10 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
 	    JLabel currentFieldsLbl = new JLabel("Display Format:");
 	    formatText = new JTextArea(4, 50);
 	    formatText.setLineWrap(true);
+	    // to make sure the component shrinks with the dialog
+	    formatText.setMinimumSize(new Dimension(50, 5));
+	    formatText.setPreferredSize(new Dimension(100, 10));
+	    //formatText.setMaximumSize(new Dimension(5, 1));
 
         PanelBuilder addFieldPB = new PanelBuilder(new FormLayout("l:m:g,r:m", "p"));  
 	    JLabel availableFieldsLbl = new JLabel("Available Fields:");
@@ -128,12 +132,12 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
 	    
 	    this.mainPanelBuilder = pb;
 
-	    hookupFormatTextListeners();
+	    addFormatTextListeners();
 	    // must be called after list of available fields has been created
-	    hookupAddFieldListeners();
+	    addFieldListeners();
 	}
 
-	public void hookupAddFieldListeners()
+	public void addFieldListeners()
 	{
 		// action listener for add field button
 		if (addFieldAL == null)
@@ -169,7 +173,7 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
 
 	}
 
-	public void hookupFormatTextListeners()
+	public void addFormatTextListeners()
 	{
 		// action listener for add field button
 		if (formatTextDL == null)
@@ -244,13 +248,31 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
 			index = formatList.getModel().getSize() - 1;
 		}
 		
-		// detach selection listeners from formatList, change value to New (last on the list)
-		// and attach listeners again
+		removeEditorListeners();
 		formatList.removeListSelectionListener(formatListSL);
 		formatList.setSelectedIndex(index);
 		formatList.addListSelectionListener(formatListSL);
+		addEditorListeners();
+	}
+
+	/*
+	 * Removes all editors listeners (so that format list selection can be updated without side-effects
+	 */
+	public void removeEditorListeners()
+	{
+		formatText.removeCaretListener(formatTextCL);
+		formatText.getDocument().removeDocumentListener(formatTextDL);
 	}
 	
+	/*
+	 * Adds all editors listeners (after calling removeEditorListeners)
+	 */
+	public void addEditorListeners()
+	{
+		formatText.addCaretListener(formatTextCL);
+		formatText.getDocument().addDocumentListener(formatTextDL);
+	}
+
 	/*
 	 * Adds a field to the format being composed
 	 */
@@ -277,6 +299,7 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
 	
 	protected void fillWithObjFormatter(DataObjDataFieldFormatIFace singleFormatter)
 	{
+		removeEditorListeners();
 		if (singleFormatter != null)
 		{
 			formatText.setText(singleFormatter.toString());
@@ -287,6 +310,7 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
 			formatText.setText("");
 			setSelectedFormat(null);
 		}
+		addEditorListeners();
 		
 		// set 2nd list box with all available fields
 		DefaultListModel listModel = (DefaultListModel) availableFieldsLst.getModel();

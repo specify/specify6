@@ -12,18 +12,25 @@ import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIHelper.createTextField;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.Collections;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Locale;
+import java.util.Vector;
 
 import javax.swing.BorderFactory;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
@@ -50,11 +57,20 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.SchemaI18NService;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.SpLocaleContainerItem;
 import edu.ku.brc.specify.tools.schemalocale.LocalizerApp.PackageTracker;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.forms.formatters.DataObjAggregator;
+import edu.ku.brc.ui.forms.formatters.DataObjAggregatorDlg;
+import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatDlg;
+import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
+import edu.ku.brc.ui.forms.formatters.DataObjSwitchFormatter;
+import edu.ku.brc.util.ComparatorByStringRepresentation;
 
 /**
  * @author rod
@@ -69,6 +85,8 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
     private static final Logger log = Logger.getLogger(SchemaLocalizerPanel.class);
             
     protected LocalizableIOIFace localizableIO = null;
+    
+    protected DBTableInfo tableInfo = null;
     
     protected LocalizableContainerIFace currContainer   = null;
     protected boolean                   includeHiddenUI = true;              // Must be set before creatng the panel
@@ -93,6 +111,14 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
     
     protected JStatusBar                statusBar      = null;
     protected JButton                   tblSpellChkBtn = null;
+    
+    // data obj formatter and aggregator controls
+    protected JLabel                    dataObjFmtLbl = null;
+    protected JLabel 					aggregatorLbl = null;
+    protected JComboBox					dataObjFmtCbo = null;
+    protected JComboBox					aggregatorCbo = null;
+    protected JButton					dataObjFmtBtn = null;
+    protected JButton					aggregatorBtn = null;
     
     protected Hashtable<String, String>         resHash     = new Hashtable<String, String>();
     protected Hashtable<String, PackageTracker> packageHash = new Hashtable<String, PackageTracker>();
@@ -119,7 +145,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         
         tablesList = new JList(localizableIO.getContainerDisplayItems());
         
-        tablesList.setVisibleRowCount(10);
+        tablesList.setVisibleRowCount(14);
         tablesList.getSelectionModel().addListSelectionListener(new ListSelectionListener()
         {
             public void valueChanged(ListSelectionEvent e)
@@ -134,22 +160,41 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         CellConstraints cc = new CellConstraints();
         
         // LocalizableContainerIFace Section Layout
-        tblSpellChkBtn               = createButton("Spell Check");
+        tblSpellChkBtn               = createButton(getResourceString("SL_SPELL_CHECK"));
         JPanel      tpbbp            = ButtonBarFactory.buildCenteredBar(new JButton[] {tblSpellChkBtn});
         JScrollPane sp               = new JScrollPane(tblDescText, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         tblDescText.setRows(4);
         tblDescText.setLineWrap(true);
         tblDescText.setWrapStyleWord(true);
+        // setting min and pref sizes to some bogus values so that textarea shrinks with dialog
+        tblDescText.setMinimumSize(new Dimension(50, 5));
+        tblDescText.setPreferredSize(new Dimension(50, 5));
         tblDescText.addKeyListener(new LengthWatcher(255));
         tblNameText.addKeyListener(new LengthWatcher(64));
         
+        // data obj formatter control
+        dataObjFmtLbl = new JLabel("Display Format:", SwingConstants.RIGHT);
+        dataObjFmtCbo = new JComboBox();
+        dataObjFmtBtn = new JButton("...");
+        fillFormatterCombo();
+        addFormatterActionListener();
+
+        // aggregator controls
+        aggregatorLbl = new JLabel("Aggregation:", SwingConstants.RIGHT);
+        aggregatorCbo = new JComboBox();
+        aggregatorBtn = new JButton("...");
+        fillAggregatorCombo();
+        addAggregatorActionListener();
+        
+        
         String descStr  = getResourceString("SL_DESC") + ":";
         String nameStr  = getResourceString("SL_NAME") + ":";
-
+        
         int y = 1;
-        PanelBuilder topInner   = new PanelBuilder(new FormLayout("p,2px,f:p:g", 
+        PanelBuilder topInner   = new PanelBuilder(new FormLayout("p,2px,f:p:g",
                                                                   "p,2px," + (includeHiddenUI ? "p,2px," : "") + "p,2px,p" +
-                                                                  (useDisciplines ? ",2px,p" : "")
+                                                                  (useDisciplines ? ",2px,p" : "") +
+                                                                  ",6px,p,2px,p"  // formatter & aggregator panel
                                                                   ));
         
         topInner.add(tblDescLbl = createLabel(nameStr, SwingConstants.RIGHT), cc.xy(1, y));
@@ -163,8 +208,22 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         topInner.add(tblNameLbl = createLabel(descStr, SwingConstants.RIGHT), cc.xy(1, y)); 
         topInner.add(sp,    cc.xy(3, y));   y += 2;
 
-        topInner.add(tpbbp, cc.xywh(1, y, 3, 1));
+        topInner.add(tpbbp, cc.xywh(1, y, 3, 1)); y += 2;
 
+        // formatter panel
+        PanelBuilder fmtPanel = new PanelBuilder(new FormLayout("f:p:g,r:m", "p"));
+        fmtPanel.add(dataObjFmtCbo, cc.xy(1, 1));
+        fmtPanel.add(dataObjFmtBtn, cc.xy(2, 1));
+
+        // aggregator panel
+        PanelBuilder aggPanel = new PanelBuilder(new FormLayout("f:p:g,r:m", "p"));
+        aggPanel.add(aggregatorCbo, cc.xy(1, 1));
+        aggPanel.add(aggregatorBtn, cc.xy(2, 1));
+
+        topInner.add(dataObjFmtLbl, cc.xy(1, y)); 
+        topInner.add(fmtPanel.getPanel(), cc.xy(3, y)); y += 2;
+        topInner.add(aggregatorLbl,    cc.xy(1, y)); 
+        topInner.add(aggPanel.getPanel(), cc.xy(3, y)); y += 2;
         
         JScrollPane tblsp = new JScrollPane(tablesList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         
@@ -247,6 +306,116 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
     }
     
     /**
+     * 
+     */
+    private void fillFormatterCombo()
+    {
+        List<DataObjSwitchFormatter> fList;
+    	if (tableInfo != null)
+    	{
+            fList = DataObjFieldFormatMgr.getFormatterList(tableInfo.getClassObj());
+            // list must be sorted in the same way it's sorted on UIFormatterDlg because selection index is considered equivalent between combo boxes
+            Collections.sort(fList, new ComparatorByStringRepresentation<DataObjSwitchFormatter>()); 
+    	}
+    	else 
+    	{
+    		fList = new Vector<DataObjSwitchFormatter>(0);
+    	}
+        
+    	DefaultComboBoxModel model = (DefaultComboBoxModel) dataObjFmtCbo.getModel();
+    	model.removeAllElements();
+        for (DataObjSwitchFormatter format : fList)
+        {
+        	model.addElement(format);
+        }
+        
+        // TODO: select format from list that is currently assigned to table
+    }
+    
+    /**
+     * 
+     */
+    private void fillAggregatorCombo()
+    {
+    	List<DataObjAggregator> fList;
+    	if (tableInfo != null)
+    	{
+            fList = DataObjFieldFormatMgr.getAggregatorList(tableInfo.getClassObj());
+            // list must be sorted in the same way it's sorted on UIFormatterDlg because selection index is considered equivalent between combo boxes
+            Collections.sort(fList, new ComparatorByStringRepresentation<DataObjAggregator>()); 
+    	}
+    	else 
+    	{
+    		fList = new Vector<DataObjAggregator>(0);
+    	}
+        
+    	DefaultComboBoxModel model = (DefaultComboBoxModel) aggregatorCbo.getModel();
+    	model.removeAllElements();
+        for (DataObjAggregator aggregator : fList)
+        {
+        	model.addElement(aggregator);
+        }
+        
+        // TODO: select format from list that is currently assigned to table
+    }
+
+    /**
+     * Creates and adds action listeners for data obj formatter ellipsis button
+     */
+    private void addFormatterActionListener()
+    {
+        ActionListener dataObjFmtBtnAL = new ActionListener()
+        {
+        	public void actionPerformed(ActionEvent e)
+        	{
+    			Frame frame = (Frame)UIRegistry.getTopWindow(); 
+        		DataObjFieldFormatDlg dlg = new DataObjFieldFormatDlg(frame, tableInfo, dataObjFmtCbo.getSelectedIndex());
+        		dlg.setVisible(true);
+        		
+        		// set combo selection to formatter selected in dialog
+        		if (dlg.getBtnPressed() == dlg.OK_BTN)
+        		{
+        			DataObjSwitchFormatter format = dlg.getSelectedFormatter();
+        			
+        			// TODO: assign selected obj formatter as the default for current table 
+        			
+	        		// fill combo again, adding new formatter if it was new and selecting the appropriate one
+        			fillFormatterCombo();
+        		}
+        	}
+        };
+        dataObjFmtBtn.addActionListener(dataObjFmtBtnAL);
+    }
+    
+    /**
+     * Creates and adds action listener for aggregator ellipsis button
+     */
+    private void addAggregatorActionListener()
+    {
+        ActionListener aggregatorBtnAL = new ActionListener()
+        {
+        	public void actionPerformed(ActionEvent e)
+        	{
+    			Frame frame = (Frame)UIRegistry.getTopWindow(); 
+    			DataObjAggregatorDlg dlg = new DataObjAggregatorDlg(frame, tableInfo, aggregatorCbo.getSelectedIndex());
+        		dlg.setVisible(true);
+        		
+        		// set combo selection to formatter selected in dialog
+        		if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
+        		{
+        			DataObjAggregator agg = dlg.getSelectedAggregator();
+        			
+        			// TODO: assign selected aggregator as the default for current table 
+        			
+	        		// fill combo again, adding new formatter if it was new and selecting the appropriate one 
+        			fillAggregatorCombo();
+        		}
+        	}
+        };
+        aggregatorBtn.addActionListener(aggregatorBtnAL);
+    }
+    
+    /**
      * @return the statusBar
      */
     public JStatusBar getStatusBar()
@@ -320,6 +489,14 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         {
             enableSpellCheck();
         }
+
+        // formatter and aggregator controls
+        dataObjFmtLbl.setEnabled(enable);
+        dataObjFmtCbo.setEnabled(enable);
+        dataObjFmtBtn.setEnabled(enable);
+        aggregatorLbl.setEnabled(enable);
+        aggregatorCbo.setEnabled(enable);
+        aggregatorBtn.setEnabled(enable);
     }
     
     /**
@@ -343,6 +520,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         if (jlistItem != null)
         {
             currContainer = localizableIO.getContainer(jlistItem);
+            tableInfo = DBTableIdMgr.getInstance().getInfoByTableName(currContainer.getName());
             if (currContainer != null)
             {
                 
@@ -352,6 +530,9 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
                     tblDescText.setText(getDescStrForCurrLocale(currContainer));
                     tblNameText.setText(getNameDescStrForCurrLocale(currContainer));
                     tblHideChk.setSelected(currContainer.getIsHidden());
+                    
+                    fillFormatterCombo();
+                    fillAggregatorCombo();
                     
                     if (doAutoSpellCheck)
                     {

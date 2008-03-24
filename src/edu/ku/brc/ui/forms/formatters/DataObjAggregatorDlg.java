@@ -11,6 +11,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
@@ -41,11 +42,13 @@ import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.util.ComparatorByStringRepresentation;
 
 public class DataObjAggregatorDlg extends CustomDialog {
-	protected Frame aggDlgFrame; 
-	protected DBTableInfo tableInfo;
-	protected DataObjAggregator selectedAggregator;
+	protected Frame 					aggDlgFrame; 
+	protected DBTableInfo 				tableInfo;
+	protected DataObjAggregator 		selectedAggregator;
+	protected boolean 					newAggregator;
     protected Vector<DataObjAggregator> deletedFormats = new Vector<DataObjAggregator>(); 
 	
 	// UI controls
@@ -112,7 +115,8 @@ public class DataObjAggregatorDlg extends CustomDialog {
 
         // add available data object formatters
         List<DataObjAggregator> aggs;
-        aggs = DataObjFieldFormatMgr.getAggregatorList(tableInfo.getClassObj());        
+        aggs = DataObjFieldFormatMgr.getAggregatorList(tableInfo.getClassObj());
+        Collections.sort(aggs, new ComparatorByStringRepresentation<DataObjAggregator>()); 
         for (DataObjAggregator agg : aggs)
         {
         	listModel.addElement(agg);
@@ -172,12 +176,7 @@ public class DataObjAggregatorDlg extends CustomDialog {
         		// set combo selection to formatter selected in dialog
         		if (dlg.getBtnPressed() == OK_BTN)
         		{
-	        		DataObjSwitchFormatter format = dlg.getSwitchFormatter();
-	        		if (dlg.isNewFormat())
-	        		{
-	        			// data obj formatter has just been created, so add it to the list
-	        			((DefaultComboBoxModel) displayCbo.getModel()).addElement(format);
-	        		}
+	        		DataObjSwitchFormatter format = dlg.getSelectedFormatter();
 	        		selectedAggregator.setFormatName(format.getName());
 	        		updateDisplayCombo();
         		}
@@ -326,6 +325,9 @@ public class DataObjAggregatorDlg extends CustomDialog {
      */
     protected void updateDisplayCombo()
     {
+    	// save selected aggregator because that one will be reset when elements are removed from combo box model
+    	DataObjAggregator tempAgg = selectedAggregator;
+    	
     	// clear combo box list
     	DefaultComboBoxModel cboModel = (DefaultComboBoxModel) displayCbo.getModel();
     	cboModel.removeAllElements();
@@ -344,12 +346,12 @@ public class DataObjAggregatorDlg extends CustomDialog {
     	{
     		DataObjSwitchFormatter currentFormat = fmts.get(i);
     		cboModel.addElement(currentFormat);
-    		if (selectedAggregator != null && 
-    			currentFormat.getName().equals(selectedAggregator.getFormatName()))
+    		if (tempAgg != null && 
+    			currentFormat.getName().equals(tempAgg.getFormatName()))
     		{
     			// found the selected field
     			// current combo index is (i+1) because of empty entry at the beginning
-    			selectedFieldIndex = i + 1;
+    			selectedFieldIndex = i + 1; 
     		}
     	}
     	
@@ -380,7 +382,8 @@ public class DataObjAggregatorDlg extends CustomDialog {
     			currentField.getName().equals(selectedAggregator.getOrderFieldName()))
     		{
     			// found the selected field
-    			selectedFieldIndex = i;
+    			// current combo index is (i+1) because of empty entry at the beginning
+    			selectedFieldIndex = i + 1;
     		}
     	}
     	
@@ -393,10 +396,12 @@ public class DataObjAggregatorDlg extends CustomDialog {
      */
     protected void fillWithObjAggregator(DataObjAggregator agg)
     {
+    	newAggregator = false;
     	if (agg == null)
     	{
     		agg = new DataObjAggregator();
     		agg.setDataClass(tableInfo.getClassObj());
+    		newAggregator = true;
     	}
     	selectedAggregator = agg;
     	
@@ -545,11 +550,21 @@ public class DataObjAggregatorDlg extends CustomDialog {
     	aggragatorList.addListSelectionListener(aggregatorListSL);
 	}
 
-    protected DataObjAggregator getSelectedAggregator()
+    public DataObjAggregator getSelectedAggregator()
     {
     	return selectedAggregator;
     }
-    
+
+    public int getSelectedAggregatorIndex()
+    {
+    	return aggragatorList.getSelectedIndex();
+    }
+
+    public boolean isNewAggregator()
+    {
+    	return newAggregator;
+    }
+
     /**
      * 
      */
