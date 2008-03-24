@@ -17,6 +17,7 @@
       <picklistitem title="net" value="net"/>
       <picklistitem title="trap" value="trap"/>
     </items>
+ </picklist>
  <picklist name="BiologicalSex" issystem="true" type="0" readonly="true" sizelimit="4">
     <items>
       <picklistitem title="Unknown" value="Unknown"/>
