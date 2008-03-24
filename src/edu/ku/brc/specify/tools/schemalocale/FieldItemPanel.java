@@ -10,7 +10,10 @@ import static edu.ku.brc.ui.UIHelper.createButton;
 import static edu.ku.brc.ui.UIHelper.createCheckBox;
 import static edu.ku.brc.ui.UIHelper.createComboBox;
 import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.createList;
 import static edu.ku.brc.ui.UIHelper.createTextField;
+import static edu.ku.brc.ui.UIHelper.createTextArea;
+import static edu.ku.brc.ui.UIHelper.adjustButtonArray;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Color;
@@ -106,7 +109,7 @@ public class FieldItemPanel extends LocalizerBasePanel
     
     // LocalizableItemIFace Fields
     protected JList            fieldsList;
-    protected JTextArea        fieldDescText = new JTextArea();
+    protected JTextArea        fieldDescText = createTextArea();
     protected JTextField       fieldNameText = createTextField();
     protected JLabel           fieldDescLbl;
     protected JLabel           fieldNameLbl;
@@ -175,7 +178,7 @@ public class FieldItemPanel extends LocalizerBasePanel
     {
         setIgnoreChanges(true);
         
-        fieldsList = new JList(fieldsModel);
+        fieldsList = createList(fieldsModel);
         
         fieldsList.getSelectionModel().addListSelectionListener(new ListSelectionListener()
         {
@@ -322,7 +325,7 @@ public class FieldItemPanel extends LocalizerBasePanel
         nxtEmptyBtn    = createButton(getResourceString("SL_NEXT_EMPTY"));
         fldSpellChkBtn = createButton(getResourceString("SL_SPELL_CHECK"));
         
-        JPanel bbp = ButtonBarFactory.buildCenteredBar(new JButton[] {nxtEmptyBtn, nxtBtn, fldSpellChkBtn});
+        JPanel bbp = ButtonBarFactory.buildCenteredBar(adjustButtonArray(new JButton[] {nxtEmptyBtn, nxtBtn, fldSpellChkBtn}));
         bbp.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
         pb.add(bbp,   cc.xywh(3, y, 8, 1));
         

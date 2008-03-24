@@ -15,6 +15,8 @@
 
 package edu.ku.brc.ui.forms.formatters;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createCheckBox;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Component;
@@ -82,9 +84,9 @@ public class DataObjFieldFormatMultiplePanelBuilder extends DataObjFieldFormatPa
 
 		// tool bar (which hosts the add and delete buttons)
 		PanelBuilder deletePB = new PanelBuilder(new FormLayout("p,p,p", "p"));
-		addRowBtn = new JButton(getResourceString("Add"));
-		delRowBtn = new JButton(getResourceString("Delete"));
-		resetRowBtn = new JButton(getResourceString("Reset"));
+		addRowBtn = createButton(getResourceString("Add"));
+		delRowBtn = createButton(getResourceString("Delete"));
+		resetRowBtn = createButton(getResourceString("Reset"));
 		deletePB.add(addRowBtn, cc.xy(1, 1));
 		deletePB.add(delRowBtn, cc.xy(2, 1));
 		deletePB.add(resetRowBtn, cc.xy(3, 1));
@@ -315,7 +317,7 @@ public class DataObjFieldFormatMultiplePanelBuilder extends DataObjFieldFormatPa
 		// set details of 3rd column (ellipsis buttons)
 		column = formatSwitchTbl.getColumnModel().getColumn(2);
 		column.setCellRenderer(new EditDataObjFormatButtonRenderer());
-		column.setCellEditor(new EditDataObjFormatButtonEditor(new JCheckBox()));
+		column.setCellEditor(new EditDataObjFormatButtonEditor(createCheckBox()));
 		column.setMinWidth(20);
 		column.setMaxWidth(20);
 		column.setPreferredWidth(20);
@@ -373,7 +375,7 @@ public class DataObjFieldFormatMultiplePanelBuilder extends DataObjFieldFormatPa
 		public EditDataObjFormatButtonEditor(JCheckBox checkBox) 
 		{
 			super(checkBox);
-			button = new JButton();
+			button = createButton();
 			button.setOpaque(true);
 			button.addActionListener(new ActionListener() 
 			{

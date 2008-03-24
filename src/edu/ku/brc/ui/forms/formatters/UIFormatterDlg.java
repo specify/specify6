@@ -15,6 +15,11 @@
 
 package edu.ku.brc.ui.forms.formatters;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createCheckBox;
+import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.createList;
+import static edu.ku.brc.ui.UIHelper.createTextField;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -405,24 +410,24 @@ public class UIFormatterDlg extends CustomDialog
         String typeStr = fieldInfo.getType();
         typeStr = typeStr.indexOf('.') > -1 ? StringUtils.substringAfterLast(fieldInfo.getType(), ".") : typeStr;
 
-        JLabel tableTitleLbl = new JLabel(getResourceString("FFE_TABLE") + ": " + 
+        JLabel tableTitleLbl = createLabel(getResourceString("FFE_TABLE") + ": " + 
         		fieldInfo.getTableInfo().getTitle(), SwingConstants.LEFT); 
-        JLabel fieldTitleLbl = new JLabel(getResourceString("FFE_FIELD") + ": " + 
+        JLabel fieldTitleLbl = createLabel(getResourceString("FFE_FIELD") + ": " + 
         		fieldInfo.getTitle(),  SwingConstants.LEFT); 
-        JLabel fieldTypeLbl = new JLabel(getResourceString("FFE_TYPE") + ": " + 
+        JLabel fieldTypeLbl = createLabel(getResourceString("FFE_TYPE") + ": " + 
         		typeStr, SwingConstants.LEFT);
-        JLabel fieldLengthLbl = new JLabel(getResourceString("FFE_LENGTH") + ": " + 
+        JLabel fieldLengthLbl = createLabel(getResourceString("FFE_LENGTH") + ": " + 
         		Integer.toString(fieldInfo.getLength()), SwingConstants.LEFT);
         
         
         // sample panel
-        sampleLabel = new JLabel("YYYY-AAA-BB", SwingConstants.LEFT); 
+        sampleLabel = createLabel("", SwingConstants.LEFT); 
         JPanel samplePanel = new JPanel();
         samplePanel.setBorder(BorderFactory.createTitledBorder(getResourceString("FFE_SAMPLE"))); 
         samplePanel.add(sampleLabel);
 
         // format text field
-        formatTF = new JTextField();
+        formatTF = createTextField();
         formatTF.setColumns(20);
         hookFormatTextChangeListener();
         
@@ -436,12 +441,12 @@ public class UIFormatterDlg extends CustomDialog
         	listModel.addElement(format);
         }
         
-        formatList = new JList(listModel);
+        formatList = createList(listModel);
         formatList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         hookFormatListSelectionListener();
         hookFormatListMouseListener();
         
-        byYearCB = new JCheckBox(getResourceString("FFE_BY_YEAR_CHECKBOX")); 
+        byYearCB = createCheckBox(getResourceString("FFE_BY_YEAR_CHECKBOX")); 
         hookByYearCheckBoxListener();
         
         ActionListener deleteListener = new ActionListener()
@@ -458,7 +463,7 @@ public class UIFormatterDlg extends CustomDialog
         };
         
         PanelBuilder deletePB = new PanelBuilder(new FormLayout("l:p", "p"));  
-        deleteBtn = new JButton(getResourceString("FFE_DELETE")); 
+        deleteBtn = createButton(getResourceString("FFE_DELETE")); 
         deleteBtn.setEnabled(false);
         deleteBtn.addActionListener(deleteListener);
         deletePB.add(deleteBtn);
@@ -469,7 +474,7 @@ public class UIFormatterDlg extends CustomDialog
         keyPanel.setBorder(BorderFactory.createTitledBorder(getResourceString("FFE_HELP")));
         // left help body text in a single string resource until we build infrastructure to 
         // localize long texts (in files maybe)
-        keyPanel.add(new JLabel(getResourceString("FFE_HELP_HTML")));
+        keyPanel.add(createLabel(getResourceString("FFE_HELP_HTML")));
 
         int y = 2; // leave first row blank 
         pb.add(tableTitleLbl,  cc.xyw(2, y, 3)); y += 1;
@@ -480,11 +485,11 @@ public class UIFormatterDlg extends CustomDialog
         int y2 = y; // align formatting legend key with row marked by y2 (see below)
         pb.add(samplePanel, cc.xy(2, y)); y += 2;  
 
-        pb.add(new JLabel("Type Format Pattern:", SwingConstants.LEFT), cc.xy(2,y)); y += 1; 
+        pb.add(createLabel("Type Format Pattern:", SwingConstants.LEFT), cc.xy(2,y)); y += 1; 
         pb.add(formatTF, cc.xy(2,y)); y += 1;
         pb.add(byYearCB, cc.xy(2,y)); y += 2;
         
-        pb.add(new JLabel(getResourceString("FFE_AVAILABLE_FORMATS"), SwingConstants.LEFT), cc.xy(2,y)); y += 1; 
+        pb.add(createLabel(getResourceString("FFE_AVAILABLE_FORMATS"), SwingConstants.LEFT), cc.xy(2,y)); y += 1; 
         pb.add(new JScrollPane(formatList), cc.xy(2,y)); y += 2;
 
         pb.add(deletePB.getPanel(), cc.xy(2,y)); y += 2;

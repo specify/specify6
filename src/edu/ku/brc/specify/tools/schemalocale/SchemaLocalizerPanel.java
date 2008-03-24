@@ -8,8 +8,12 @@ package edu.ku.brc.specify.tools.schemalocale;
 
 import static edu.ku.brc.ui.UIHelper.createButton;
 import static edu.ku.brc.ui.UIHelper.createCheckBox;
+import static edu.ku.brc.ui.UIHelper.createComboBox;
 import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.createList;
 import static edu.ku.brc.ui.UIHelper.createTextField;
+import static edu.ku.brc.ui.UIHelper.createTextArea;
+import static edu.ku.brc.ui.UIHelper.adjustButtonArray;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Dimension;
@@ -100,7 +104,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
     
     // LocalizableContainerIFace Tables
     protected JList                     tablesList;
-    protected JTextArea                 tblDescText   = new JTextArea();
+    protected JTextArea                 tblDescText   = createTextArea();
     protected JTextField                tblNameText   = createTextField();
     protected JLabel                    tblDescLbl;
     protected JLabel                    tblNameLbl;
@@ -143,7 +147,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
     {
         setIgnoreChanges(true);
         
-        tablesList = new JList(localizableIO.getContainerDisplayItems());
+        tablesList = createList(localizableIO.getContainerDisplayItems());
         
         tablesList.setVisibleRowCount(14);
         tablesList.getSelectionModel().addListSelectionListener(new ListSelectionListener()
@@ -161,7 +165,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         
         // LocalizableContainerIFace Section Layout
         tblSpellChkBtn               = createButton(getResourceString("SL_SPELL_CHECK"));
-        JPanel      tpbbp            = ButtonBarFactory.buildCenteredBar(new JButton[] {tblSpellChkBtn});
+        JPanel      tpbbp            = ButtonBarFactory.buildCenteredBar(adjustButtonArray(new JButton[] {tblSpellChkBtn}));
         JScrollPane sp               = new JScrollPane(tblDescText, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         tblDescText.setRows(4);
         tblDescText.setLineWrap(true);
@@ -173,16 +177,16 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         tblNameText.addKeyListener(new LengthWatcher(64));
         
         // data obj formatter control
-        dataObjFmtLbl = new JLabel("Display Format:", SwingConstants.RIGHT);
-        dataObjFmtCbo = new JComboBox();
-        dataObjFmtBtn = new JButton("...");
+        dataObjFmtLbl = createLabel("Display Format:", SwingConstants.RIGHT);
+        dataObjFmtCbo = createComboBox();
+        dataObjFmtBtn = createButton("...");
         fillFormatterCombo();
         addFormatterActionListener();
 
         // aggregator controls
-        aggregatorLbl = new JLabel("Aggregation:", SwingConstants.RIGHT);
-        aggregatorCbo = new JComboBox();
-        aggregatorBtn = new JButton("...");
+        aggregatorLbl = createLabel("Aggregation:", SwingConstants.RIGHT);
+        aggregatorCbo = createComboBox();
+        aggregatorBtn = createButton("...");
         fillAggregatorCombo();
         addAggregatorActionListener();
         

@@ -83,8 +83,10 @@ import javax.swing.JProgressBar;
 import javax.swing.JRadioButton;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import javax.swing.ListModel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -1203,7 +1205,7 @@ public final class UIHelper
     /**
      * @return string list
      */
-    public static List<String> createList()
+    public static List<String> createStringList()
     {
         return new ArrayList<String>();
     }
@@ -2412,6 +2414,13 @@ public final class UIHelper
         }
     }
     
+    public static JButton createButton()
+    {
+        JButton btn = new JButton();
+        setControlSize(btn);
+        return btn;
+    }
+
     public static JButton createButton(final ImageIcon icon)
     {
         JButton btn = new JButton(icon);
@@ -2438,6 +2447,15 @@ public final class UIHelper
         JButton btn = new JButton(action);
         setControlSize(btn);
         return btn;
+    }
+    
+    public static JButton[] adjustButtonArray(JButton[] buttonArray)
+    {
+    	for (JButton btn : buttonArray)
+    	{
+            setControlSize(btn);
+    	}
+    	return buttonArray;
     }
     
     public static JTextField createTextField()
@@ -2524,6 +2542,13 @@ public final class UIHelper
         return rb;
     }
     
+    public static JCheckBox createCheckBox()
+    {
+        JCheckBox chkbx = new JCheckBox();
+        setControlSize(chkbx);
+        return chkbx;
+    }
+    
     public static JCheckBox createCheckBox(final String text)
     {
         JCheckBox chkbx = new JCheckBox(text);
@@ -2587,5 +2612,39 @@ public final class UIHelper
             cbx.putClientProperty("JComboBox.isPopDown", Boolean.TRUE);
         }
         return cbx;
+    }
+    
+    public static JTextArea createTextArea()
+    {
+    	JTextArea text = new JTextArea();
+    	setControlSize(text);
+        return text;
+    }
+
+	public static JTextArea createTextArea(int rows, int columns)
+    {
+    	JTextArea text = new JTextArea(rows, columns);
+    	setControlSize(text);
+        return text;
+    }
+
+    public static JList createList(final ListModel model)
+    {
+    	JList lst = new JList(model);
+        if (isMacOS_10_5_X)
+        {
+        	lst.putClientProperty("JComboBox.isPopDown", Boolean.TRUE);
+        }
+        return lst;
+    }
+
+    public static JList createList(final Vector<?> items)
+    {
+    	JList lst = new JList(items);
+        if (isMacOS_10_5_X)
+        {
+        	lst.putClientProperty("JComboBox.isPopDown", Boolean.TRUE);
+        }
+        return lst;
     }
 }

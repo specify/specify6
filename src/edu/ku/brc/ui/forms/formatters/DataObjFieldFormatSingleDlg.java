@@ -22,7 +22,6 @@ import java.awt.Frame;
 import java.awt.HeadlessException;
 
 import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.dbsupport.DBTableInfo;

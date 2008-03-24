@@ -1,5 +1,11 @@
 package edu.ku.brc.ui.forms.formatters;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createCheckBox;
+import static edu.ku.brc.ui.UIHelper.createComboBox;
+import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.createList;
+import static edu.ku.brc.ui.UIHelper.createTextField;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -103,10 +109,10 @@ public class DataObjAggregatorDlg extends CustomDialog {
         		)/*, new FormDebugPanel()*/);
         
         // table info
-        JLabel tableTitleLbl = new JLabel(getResourceString("FFE_TABLE") + ": " + 
+        JLabel tableTitleLbl = createLabel(getResourceString("FFE_TABLE") + ": " + 
         		tableInfo.getTitle(), SwingConstants.LEFT); 
 
-        JLabel helpLbl = new JLabel("<html><p>Define how multiple records of this table " +
+        JLabel helpLbl = createLabel("<html><p>Define how multiple records of this table " +
         		"that participate <br />in one-to-many and many-to-many relationships " +
         		"are to be shown in a compact manner</p></html>", SwingConstants.LEFT);
 
@@ -124,7 +130,7 @@ public class DataObjAggregatorDlg extends CustomDialog {
         // add "New" string as last entry
         listModel.addElement("New");
         
-        aggragatorList = new JList(listModel);
+        aggragatorList = createList(listModel);
         aggragatorList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         addAggregatorListSelectionListener();
         addAggregatorListMouseListener();
@@ -144,7 +150,7 @@ public class DataObjAggregatorDlg extends CustomDialog {
         
         // delete button
         PanelBuilder deletePB = new PanelBuilder(new FormLayout("l:p", "p"));  
-        JButton deleteBtn = new JButton(getResourceString("FFE_DELETE")); 
+        JButton deleteBtn = createButton(getResourceString("FFE_DELETE")); 
         deleteBtn.setEnabled(false);
         deleteBtn.addActionListener(deleteListener);
         deletePB.add(deleteBtn);
@@ -156,12 +162,12 @@ public class DataObjAggregatorDlg extends CustomDialog {
         // display combo box with available data obj formatters
         PanelBuilder displayPB = new PanelBuilder(new FormLayout("f:p:g,min", "p")/*, new FormDebugPanel()*/);
 
-        displayCbo = new JComboBox();
-        JButton displayDlgBtn = new JButton("...");
+        displayCbo = createComboBox();
+        JButton displayDlgBtn = createButton("...");
         displayPB.add(displayCbo,    cc.xy(1, 1));
         displayPB.add(displayDlgBtn, cc.xy(2, 1));
         
-        fieldOrderCbo = new JComboBox();
+        fieldOrderCbo = createComboBox();
         
         ActionListener displayDlgBtnAL = new ActionListener()
         {
@@ -185,28 +191,28 @@ public class DataObjAggregatorDlg extends CustomDialog {
         displayDlgBtn.addActionListener(displayDlgBtnAL);
         
         // text fields
-        sepText    = new JTextField(10);
-        endingText = new JTextField(10);
-        countText  = new JTextField(10); 
+        sepText    = createTextField(10);
+        endingText = createTextField(10);
+        countText  = createTextField(10); 
 
         // checkbox
-        defaultCheck = new JCheckBox("Default");
+        defaultCheck = createCheckBox("Default");
         addEditorListeners();
         
         int yr = 2; // leave blank on top
-        rightPB.add(new JLabel("Display:"), cc.xy(1, yr)); 
+        rightPB.add(createLabel("Display:"), cc.xy(1, yr)); 
         rightPB.add(displayPB.getPanel(),   cc.xy(3, yr)); 
         yr += 2;
         
-        rightPB.add(new JLabel("Separator:"), cc.xy(1, yr)); 
+        rightPB.add(createLabel("Separator:"), cc.xy(1, yr)); 
         rightPB.add(sepText,                  cc.xy(3, yr)); 
         yr += 2;
 
-        rightPB.add(new JLabel("Ending:"), cc.xy(1, yr));
+        rightPB.add(createLabel("Ending:"), cc.xy(1, yr));
         rightPB.add(endingText,            cc.xy(3, yr)); 
         yr += 2;
 
-        rightPB.add(new JLabel("Sort by:"), cc.xy(1, yr)); 
+        rightPB.add(createLabel("Sort by:"), cc.xy(1, yr)); 
         rightPB.add(fieldOrderCbo,          cc.xy(3, yr)); 
         yr += 2;
 
@@ -218,7 +224,7 @@ public class DataObjAggregatorDlg extends CustomDialog {
         pb.add(tableTitleLbl,  cc.xyw(2, y, 3)); y += 2;
         pb.add(helpLbl,        cc.xyw(2, y, 3)); y += 2;
         
-        pb.add(new JLabel("Display Formats:", SwingConstants.LEFT), cc.xy(2, y)); y += 1; 
+        pb.add(createLabel("Display Formats:", SwingConstants.LEFT), cc.xy(2, y)); y += 1; 
         int y2 = y; // align 3rd column with this row 
         pb.add(new JScrollPane(aggragatorList), cc.xy(2,y)); y += 2;
 

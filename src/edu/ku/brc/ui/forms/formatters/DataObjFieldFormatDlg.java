@@ -15,6 +15,11 @@
 
 package edu.ku.brc.ui.forms.formatters;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createComboBox;
+import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.createList;
+import static edu.ku.brc.ui.UIHelper.createRadioButton;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -107,10 +112,10 @@ public class DataObjFieldFormatDlg extends CustomDialog
         		)/*, new FormDebugPanel()*/);
         
         // table info
-        JLabel tableTitleLbl = new JLabel(getResourceString("FFE_TABLE") + ": " + 
+        JLabel tableTitleLbl = createLabel(getResourceString("FFE_TABLE") + ": " + 
         		tableInfo.getTitle(), SwingConstants.LEFT); 
 
-        JLabel helpLbl = new JLabel("Define how records of this table are to be shown " +
+        JLabel helpLbl = createLabel("Define how records of this table are to be shown " +
         		"in a compact manner", SwingConstants.LEFT);
 
         // list of existing formats
@@ -127,7 +132,7 @@ public class DataObjFieldFormatDlg extends CustomDialog
         // add "New" string as last entry
         listModel.addElement("New");
         
-        formatList = new JList(listModel);
+        formatList = createList(listModel);
         formatList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         addFormatListSelectionListener();
         addFormatListMouseListener();
@@ -147,14 +152,14 @@ public class DataObjFieldFormatDlg extends CustomDialog
         
         // delete button
         PanelBuilder deletePB = new PanelBuilder(new FormLayout("l:p", "p"));  
-        JButton deleteBtn = new JButton(getResourceString("FFE_DELETE")); 
+        JButton deleteBtn = createButton(getResourceString("FFE_DELETE")); 
         deleteBtn.setEnabled(false);
         deleteBtn.addActionListener(deleteListener);
         deletePB.add(deleteBtn);
         
         // radio buttons (single/multiple/external object display formats
-        singleDisplayBtn = new JRadioButton("Single display format");
-        multipleDisplayBtn = new JRadioButton("Display depends on value of field:");
+        singleDisplayBtn = createRadioButton("Single display format");
+        multipleDisplayBtn = createRadioButton("Display depends on value of field:");
         singleDisplayBtn.setSelected(true);
         
         ButtonGroup displayTypeGrp = new ButtonGroup();
@@ -164,7 +169,7 @@ public class DataObjFieldFormatDlg extends CustomDialog
         
         // combo box that lists fields that can be selected when multiple display radio button is selected  
         DefaultComboBoxModel cboModel = new DefaultComboBoxModel();
-        valueFieldCbo = new JComboBox(cboModel);
+        valueFieldCbo = createComboBox(cboModel);
         addValueFieldCboAL();
         
         // little panel to hold multiple display radio button and its combo box
@@ -191,7 +196,7 @@ public class DataObjFieldFormatDlg extends CustomDialog
         pb.add(tableTitleLbl,  cc.xyw(2, y, 3)); y += 2;
         pb.add(helpLbl,        cc.xyw(2, y, 3)); y += 2;
         
-        pb.add(new JLabel("Display Formats:", SwingConstants.LEFT), cc.xy(2, y)); y += 1; 
+        pb.add(createLabel("Display Formats:", SwingConstants.LEFT), cc.xy(2, y)); y += 1; 
         int y2 = y; // align 3rd column with this row 
         pb.add(new JScrollPane(formatList), cc.xy(2,y)); y += 2;
 

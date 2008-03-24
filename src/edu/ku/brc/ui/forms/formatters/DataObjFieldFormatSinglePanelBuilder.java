@@ -15,6 +15,10 @@
 
 package edu.ku.brc.ui.forms.formatters;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.createList;
+import static edu.ku.brc.ui.UIHelper.createTextArea;
 
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -104,8 +108,8 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
 	    
 	    fieldHash = new Hashtable<String, Object>();
 
-	    JLabel currentFieldsLbl = new JLabel("Display Format:");
-	    formatText = new JTextArea(4, 50);
+	    JLabel currentFieldsLbl = createLabel("Display Format:");
+	    formatText = createTextArea(4, 50);
 	    formatText.setLineWrap(true);
 	    // to make sure the component shrinks with the dialog
 	    formatText.setMinimumSize(new Dimension(50, 5));
@@ -113,14 +117,14 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
 	    //formatText.setMaximumSize(new Dimension(5, 1));
 
         PanelBuilder addFieldPB = new PanelBuilder(new FormLayout("l:m:g,r:m", "p"));  
-	    JLabel availableFieldsLbl = new JLabel("Available Fields:");
-        addFieldBtn = new JButton("Add Field ^"); 
+	    JLabel availableFieldsLbl = createLabel("Available Fields:");
+        addFieldBtn = createButton("Add Field ^"); 
         addFieldBtn.setEnabled(true);
 	    addFieldPB.add(availableFieldsLbl, cc.xy(1,1));
 	    addFieldPB.add(addFieldBtn, cc.xy(2,1));
 
 	    DefaultListModel availableFieldListModel = new DefaultListModel();
-	    availableFieldsLst = new JList(availableFieldListModel);
+	    availableFieldsLst = createList(availableFieldListModel);
 	    
 	    // lay out components on main panel        
 	    int y = 2; // leave first row blank 
