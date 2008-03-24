@@ -62,8 +62,12 @@ import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.Action;
 import javax.swing.BorderFactory;
+import javax.swing.ComboBoxModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -73,9 +77,13 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JPopupMenu;
+import javax.swing.JProgressBar;
+import javax.swing.JRadioButton;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -137,11 +145,14 @@ import edu.ku.brc.ui.forms.persist.FormCellIFace;
 public final class UIHelper
 {
     public enum OSTYPE {Unknown, Windows, MacOSX, Linux}
+    public enum CONTROLSIZE {regular, small, mini}
+    
     
     // Static Data Members
     protected static final Logger   log      = Logger.getLogger(UIHelper.class);
     protected static Calendar       calendar = new GregorianCalendar();
     protected static OSTYPE         oSType;
+    protected static boolean        isMacOS_10_5_X   = false;
 
     protected static Object[]       values           = new Object[2];
     protected static DateWrapper    scrDateFormat    = null;
@@ -150,6 +161,7 @@ public final class UIHelper
     protected static Border          focusBorder     = new LineBorder(Color.GRAY, 1, true);
     protected static RenderingHints  txtRenderingHints;
     protected static Hashtable<String, Boolean> baseClassHash = new Hashtable<String, Boolean>();
+    protected static CONTROLSIZE     controlSize = CONTROLSIZE.regular;
     
     static {
 
@@ -157,6 +169,12 @@ public final class UIHelper
         if (osStr.startsWith("Mac OS X"))
         {
             oSType   = OSTYPE.MacOSX;
+            
+            String osVersion = System.getProperty("os.version");
+            if (StringUtils.isNotEmpty(osVersion) && osVersion.compareTo("10.5.0") >= 0)
+            {
+                isMacOS_10_5_X = true;
+            }
 
         } else if (osStr.indexOf("Windows") != -1)
         {
@@ -189,6 +207,14 @@ public final class UIHelper
     }
     
     /**
+     * @return the isMacOS_10_5_X
+     */
+    public static boolean isMacOS_10_5_X()
+    {
+        return isMacOS_10_5_X;
+    }
+
+    /**
      * @return whether the OS is Mac.
      */
     public static boolean isWindows()
@@ -202,6 +228,33 @@ public final class UIHelper
     public static boolean isLinux()
     {
         return oSType == OSTYPE.Linux;
+    }
+    
+    /**
+     * @return the controlSize
+     */
+    public static CONTROLSIZE getControlSize()
+    {
+        return controlSize;
+    }
+
+    /**
+     * @param controlSize the controlSize to set
+     */
+    public static void setControlSize(CONTROLSIZE controlSize)
+    {
+        UIHelper.controlSize = controlSize;
+    }
+
+    /**
+     * @param comp
+     */
+    public static void setControlSize(JComponent comp)
+    {
+        if (isMacOS_10_5_X && comp != null)
+        {
+            comp.putClientProperty("JComponent.sizeVariant", controlSize.toString());
+        }
     }
     
     /**
@@ -1874,6 +1927,7 @@ public final class UIHelper
        
         btn.setFocusable(true);
         btn.setMargin(new Insets(0,0,0,0));
+        setControlSize(btn);
         return btn;
     }
     
@@ -2295,7 +2349,7 @@ public final class UIHelper
      */
     public static JLabel createI18NLabel(final String key)
     {
-        return new JLabel(getResourceString(key));
+        return createLabel(getResourceString(key));
     }
     
     /**
@@ -2305,7 +2359,7 @@ public final class UIHelper
      */
     public static JLabel createI18NLabel(final String key, final int align)
     {
-        return new JLabel(getResourceString(key), align);
+        return createLabel(getResourceString(key), align);
     }
     
     /**
@@ -2356,5 +2410,175 @@ public final class UIHelper
                 }
             });
         }
+    }
+    
+    public static JButton createButton(final String text)
+    {
+        JButton btn = new JButton(text);
+        setControlSize(btn);
+        return btn;
+    }
+
+    public static JButton createButton(final String text, final ImageIcon icon)
+    {
+        JButton btn = new JButton(text, icon);
+        setControlSize(btn);
+        return btn;
+    }
+
+    public static JButton createButton(final Action action)
+    {
+        JButton btn = new JButton(action);
+        setControlSize(btn);
+        return btn;
+    }
+    
+    public static JTextField createTextField()
+    {
+        JTextField tf = new JTextField();
+        setControlSize(tf);
+        return tf;
+    }
+    
+    public static JTextField createTextField(final String text)
+    {
+        JTextField tf = new JTextField(text);
+        setControlSize(tf);
+        return tf;
+    }
+    
+    public static JTextField createTextField(final String text, final int size)
+    {
+        JTextField tf = new JTextField(text, size);
+        setControlSize(tf);
+        return tf;
+    }
+    
+    public static JTextField createTextField(final int size)
+    {
+        JTextField tf = new JTextField(size);
+        setControlSize(tf);
+        return tf;
+    }
+
+    public static JPasswordField createPasswordField()
+    {
+        JPasswordField tf = new JPasswordField();
+        setControlSize(tf);
+        return tf;
+    }
+
+    public static JPasswordField createPasswordField(final String val)
+    {
+        JPasswordField tf = new JPasswordField(val);
+        setControlSize(tf);
+        return tf;
+    }
+
+    public static JPasswordField createPasswordField(final int size)
+    {
+        JPasswordField tf = new JPasswordField(size);
+        setControlSize(tf);
+        return tf;
+    }
+
+    public static JLabel createLabel(final String text)
+    {
+        JLabel lbl = new JLabel(text);
+        setControlSize(lbl);
+        return lbl;
+    }
+
+    public static JLabel createLabel(final String text, final int horzAlignment)
+    {
+        JLabel lbl = new JLabel(text, horzAlignment);
+        setControlSize(lbl);
+        return lbl;
+    }
+    
+    public static JLabel createLabel(final String text, final ImageIcon icon, final int horzAlignment)
+    {
+        JLabel lbl = new JLabel(text, icon, horzAlignment);
+        setControlSize(lbl);
+        return lbl;
+    }
+    
+    public static JLabel createLabel(final String text, final ImageIcon icon)
+    {
+        JLabel lbl = new JLabel(text, icon, SwingConstants.TRAILING);
+        setControlSize(lbl);
+        return lbl;
+    }
+    
+    public static JRadioButton createRadioButton(final String text)
+    {
+        JRadioButton rb = new JRadioButton(text);
+        setControlSize(rb);
+        return rb;
+    }
+    
+    public static JCheckBox createCheckBox(final String text)
+    {
+        JCheckBox chkbx = new JCheckBox(text);
+        setControlSize(chkbx);
+        return chkbx;
+    }
+    
+    public static JProgressBar createProgressBar(final int start, final int end)
+    {
+        JProgressBar pb = new JProgressBar(start, end);
+        setControlSize(pb);
+        return pb;
+    }
+    
+    public static JProgressBar createProgressBar()
+    {
+        JProgressBar pb = new JProgressBar();
+        setControlSize(pb);
+        return pb;
+    }
+    
+    public static JComboBox createComboBox()
+    {
+        JComboBox cbx = new JComboBox();
+        setControlSize(cbx);
+        if (isMacOS_10_5_X)
+        {
+            cbx.putClientProperty("JComboBox.isPopDown", Boolean.TRUE);
+        }
+        return cbx;
+    }
+    
+    public static JComboBox createComboBox(final Object[] items)
+    {
+        JComboBox cbx = new JComboBox(items);
+        setControlSize(cbx);
+        if (isMacOS_10_5_X)
+        {
+            cbx.putClientProperty("JComboBox.isPopDown", Boolean.TRUE);
+        }
+        return cbx;
+    }
+    
+    public static JComboBox createComboBox(final Vector<?> items)
+    {
+        JComboBox cbx = new JComboBox(items);
+        setControlSize(cbx);
+        if (isMacOS_10_5_X)
+        {
+            cbx.putClientProperty("JComboBox.isPopDown", Boolean.TRUE);
+        }
+        return cbx;
+    }
+    
+    public static JComboBox createComboBox(final ComboBoxModel model)
+    {
+        JComboBox cbx = new JComboBox(model);
+        setControlSize(cbx);
+        if (isMacOS_10_5_X)
+        {
+            cbx.putClientProperty("JComboBox.isPopDown", Boolean.TRUE);
+        }
+        return cbx;
     }
 }

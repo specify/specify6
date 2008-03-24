@@ -14,6 +14,10 @@
  */
 package edu.ku.brc.ui;
 
+import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.createProgressBar;
+import static edu.ku.brc.ui.UIHelper.setControlSize;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -83,8 +87,8 @@ public class JStatusBar extends JPanel
 
         setBorder(new MyBevelBorder());
 
-        statusLabel = new JLabel(" ");
-        progressBar = new JProgressBar(0, 100);
+        statusLabel = createLabel(" ");
+        progressBar = createProgressBar(0, 100);
 
         statusLabel.setPreferredSize(new Dimension(100, statusLabel.getPreferredSize().height));
         progressBar.setPreferredSize(new Dimension(150, statusLabel.getPreferredSize().height));
@@ -110,6 +114,7 @@ public class JStatusBar extends JPanel
             for (int i=0;i<sectionSize.length;i++)
             {
                 labels[i] = new JLabel(" ", SwingConstants.CENTER);
+                setControlSize(labels[i]);
                 labels[i].setBorder(new CompoundBorder(new EndsBorder(i == sectionSize.length-1), new EmptyBorder(0,5,0,5)));
                 sbBldr.add(labels[i], cc.xy(i+2, 1));
             }

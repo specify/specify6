@@ -13,6 +13,8 @@
  */
 package edu.ku.brc.ui;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Frame;
@@ -50,7 +52,9 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.specify.ui.HelpMgr;
 
 /**
- * Choose an object from a list of Objects using their "toString"
+ * Choose an object from a list of Objects using their "toString".
+ * 
+ * (This should be converted over to use the CustomDialog.)
  * 
  * @code_status Complete
  * 
@@ -251,12 +255,12 @@ public class ChooseFromListDlg<T> extends JDialog
      * 
      * @param title title for dialog
      * @param desc the list to be selected from
-     * @param includeCancelBtn  indicates whether to create and displaty a cancel btn
-     * @param includeHelpBtn indicates whether to create and displaty a help btn
+     * @param includeCancelBtn  indicates whether to create and display a cancel btn
+     * @param includeHelpBtn indicates whether to create and display a help btn
      * @param helpContext help context identifier
      * @param titleArg title for dialog
      * @param desc the list to be selected from
-     * @param includeCancelBtn indicates whether to create and displaty a cancel btn
+     * @param includeCancelBtn indicates whether to create and display a cancel btn
      */
     protected void createUI()
     {
@@ -270,7 +274,7 @@ public class ChooseFromListDlg<T> extends JDialog
         int y = 1;
         if (hasDesc)
         {
-            JLabel lbl = new JLabel(desc, SwingConstants.CENTER);
+            JLabel lbl = createLabel(desc, SwingConstants.CENTER);
             builder.add(lbl, cc.xy(1,y)); y += 2;
         }
 
@@ -329,7 +333,7 @@ public class ChooseFromListDlg<T> extends JDialog
             builder.add(listScroller, cc.xy(1,y)); y += 2;
 
             // Bottom Button UI
-            okBtn = new JButton(StringUtils.isNotEmpty(okLabel) ? okLabel : getResourceString("OK"));
+            okBtn = createButton(StringUtils.isNotEmpty(okLabel) ? okLabel : getResourceString("OK"));
             okBtn.addActionListener(new ActionListener()
             {
                 public void actionPerformed(ActionEvent ae)
@@ -341,10 +345,9 @@ public class ChooseFromListDlg<T> extends JDialog
             });
             getRootPane().setDefaultButton(okBtn);
             
-            
             if ((whichBtns & CANCEL_BTN) == CANCEL_BTN)
             {
-                cancelBtn = new JButton(StringUtils.isNotEmpty(cancelLabel) ? cancelLabel : getResourceString("Cancel"));
+                cancelBtn = createButton(StringUtils.isNotEmpty(cancelLabel) ? cancelLabel : getResourceString("Cancel"));
                 cancelBtn.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent ae)
@@ -358,7 +361,7 @@ public class ChooseFromListDlg<T> extends JDialog
             
             if ((whichBtns & HELP_BTN) == HELP_BTN)
             {
-                helpBtn = new JButton(StringUtils.isNotEmpty(cancelLabel) ? cancelLabel : getResourceString("Help"));
+                helpBtn = createButton(StringUtils.isNotEmpty(cancelLabel) ? cancelLabel : getResourceString("Help"));
                 if (StringUtils.isNotEmpty(helpContext))
                 {
                     HelpMgr.registerComponent(helpBtn, helpContext);
@@ -376,7 +379,7 @@ public class ChooseFromListDlg<T> extends JDialog
             
             if ((whichBtns & APPLY_BTN) == APPLY_BTN)
             {
-                applyBtn = new JButton(StringUtils.isNotEmpty(applyLabel) ? applyLabel : getResourceString("Apply"));
+                applyBtn = createButton(StringUtils.isNotEmpty(applyLabel) ? applyLabel : getResourceString("Apply"));
                 applyBtn.addActionListener(new ActionListener()
                 {
                     public void actionPerformed(ActionEvent ae)

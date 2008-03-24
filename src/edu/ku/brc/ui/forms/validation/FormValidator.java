@@ -14,6 +14,7 @@
  */
 package edu.ku.brc.ui.forms.validation;
 
+import static edu.ku.brc.ui.UIHelper.setControlSize;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.Component;
@@ -36,6 +37,7 @@ import org.apache.commons.jexl.JexlHelper;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * This class manages all the validators for a single form. One or all the UI components
@@ -607,7 +609,8 @@ public class FormValidator implements ValidationListener, DataChangeListener
      */
     public JLabel createLabel(final String labelName, final String labelStr)
     {
-        JLabel lbl = new JLabel(labelStr);
+        JLabel lbl = UIHelper.createLabel(labelStr);
+        setControlSize(lbl);
         labels.put(labelName, lbl);
         return lbl;
     }

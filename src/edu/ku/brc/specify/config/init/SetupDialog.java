@@ -7,6 +7,7 @@
 package edu.ku.brc.specify.config.init;
 
 import static edu.ku.brc.specify.config.init.BaseSetupPanel.makeName;
+import static edu.ku.brc.ui.UIHelper.createButton;
 
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
@@ -94,12 +95,12 @@ public class SetupDialog extends JFrame
         cardPanel = new JPanel(cardLayout);
         
         
-        cancelBtn  = new JButton(UIRegistry.getResourceString("Cancel"));
-        helpBtn    = new JButton(UIRegistry.getResourceString("Help"));
+        cancelBtn  = createButton(UIRegistry.getResourceString("Cancel"));
+        helpBtn    = createButton(UIRegistry.getResourceString("Help"));
         
         JPanel btnBar;
-        backBtn    = new JButton("Back");    // XXX I18N
-        nextBtn    = new JButton("Next");    // XXX I18N
+        backBtn    = createButton("Back");    // XXX I18N
+        nextBtn    = createButton("Next");    // XXX I18N
         
         HelpMgr.registerComponent(helpBtn, "ConfiguringDatabase");
         CellConstraints cc = new CellConstraints();

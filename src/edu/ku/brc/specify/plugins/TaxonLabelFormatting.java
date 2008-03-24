@@ -17,7 +17,9 @@
  */
 package edu.ku.brc.specify.plugins;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
 import static edu.ku.brc.ui.UIHelper.createIconBtn;
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Color;
@@ -129,7 +131,7 @@ public class TaxonLabelFormatting extends UIPluginBase
             }
         });
         
-        newAgentBtn = new JButton(); // Label set when new Resource Bundle is installed (below)
+        newAgentBtn = createButton(""); // Label set when new Resource Bundle is installed (below)
         searchPanel = new DBObjSearchPanel("Search", "AgentNameSearch", "AgentNameSearch", "edu.ku.brc.specify.datamodel.Agent", "agentId", SwingConstants.BOTTOM);
         searchPanel.getScrollPane().setMinimumSize(new Dimension(100, 200));
         searchPanel.getScrollPane().setPreferredSize(new Dimension(100, 150));
@@ -223,8 +225,8 @@ public class TaxonLabelFormatting extends UIPluginBase
             middlePanel.add(unmapBtn, cc.xy(1, 4));
             
             PanelBuilder rwPanel = new PanelBuilder(new FormLayout("p, 2px, f:p:g", "p"));
-            refWorkLabel = new JLabel(getResourceString("None"));
-            rwPanel.add(new JLabel(getResourceString("ReferenceWork")+":"), cc.xy(1, 1));
+            refWorkLabel = createLabel(getResourceString("None"));
+            rwPanel.add(createLabel(getResourceString("ReferenceWork")+":"), cc.xy(1, 1));
             rwPanel.add(refWorkLabel, cc.xy(3, 1));
             
             int y = 1;
@@ -243,14 +245,14 @@ public class TaxonLabelFormatting extends UIPluginBase
             
             bldr.add(newAgentPanel.getPanel(), cc.xy(1, y));  y += 2;
             
-            JLabel fmtLabel = new JLabel(getResourceString("LabelFormat"));
+            JLabel fmtLabel = createLabel(getResourceString("LabelFormat"));
             bldr.add(fmtLabel, cc.xy(1, y));  y += 2;
             bldr.add(formatCBX, cc.xywh(1, y, 7, 1));  y += 2;
             
             Font plain = fmtLabel.getFont();
             specialLabel = new SpecialLabel(plain, new Font(plain.getName(), Font.ITALIC, plain.getSize()));
             specialLabel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-            bldr.add(new JLabel(getResourceString("SampleOutput") + ":"), cc.xywh(1, y, 7, 1));  y += 2;
+            bldr.add(createLabel(getResourceString("SampleOutput") + ":"), cc.xywh(1, y, 7, 1));  y += 2;
             bldr.add(specialLabel, cc.xywh(1, y, 7, 1));
             
             searchPanel.setOKBtn(mapToBtn);
@@ -260,7 +262,6 @@ public class TaxonLabelFormatting extends UIPluginBase
             ex.printStackTrace();
         }
         UIRegistry.popResourceBundle();
-        
     }
 
     /**

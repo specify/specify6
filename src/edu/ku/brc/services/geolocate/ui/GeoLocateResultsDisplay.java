@@ -6,6 +6,7 @@
  */
 package edu.ku.brc.services.geolocate.ui;
 
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Color;
@@ -78,13 +79,12 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener
         rowIndex+=2;
 
         // add the JLabel to show the map
-        mapLabel = new JLabel();
-        mapLabel.setText(getResourceString("LOADING_MAP"));
+        mapLabel = createLabel(getResourceString("LOADING_MAP"));
         mapLabel.setPreferredSize(new Dimension(MAP_WIDTH, MAP_HEIGHT));
         add(mapLabel, cc.xywh(5,1,1,9));
 
         // add the results table
-        tableModel = new ResultsTableModel();
+        tableModel   = new ResultsTableModel();
         resultsTable = new JTable(tableModel);
         resultsTable.setShowVerticalLines(false);
         resultsTable.setShowHorizontalLines(false);
@@ -207,7 +207,7 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener
                                 final int column,
                                 final int row)
     {
-        add(new JLabel(labelStr+":", SwingConstants.RIGHT), cc.xy(column,row));
+        add(createLabel(labelStr+":", SwingConstants.RIGHT), cc.xy(column,row));
         JTextField tf = createTextField();
         tf.setEditable(false);
         add(tf, cc.xy(column+2,row));
@@ -221,7 +221,7 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener
      */
     protected JTextField createTextField()
     {
-        JTextField tf     = new JTextField();
+        JTextField tf     = createTextField();
         Insets     insets = tf.getBorder().getBorderInsets(tf);
         tf.setBorder(BorderFactory.createEmptyBorder(insets.top, insets.left, insets.bottom, insets.bottom));
         tf.setForeground(Color.BLACK);

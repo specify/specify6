@@ -6,6 +6,7 @@
  */
 package edu.ku.brc.ui.forms;
 
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -738,7 +739,7 @@ public class IconViewObj implements Viewable
             {
                 log.error("Icon view data set contains non-FormDataObjIFace objects.  Item being ignored.");
                 mainComp.removeAll();
-                JLabel lbl = new JLabel(getResourceString("Error"));
+                JLabel lbl = createLabel(getResourceString("Error"));
                 mainComp.add(lbl);
  
                 dataTypeError = true;

@@ -14,6 +14,11 @@
  */
 package edu.ku.brc.helpers;
 
+import static edu.ku.brc.ui.UIHelper.createCheckBox;
+import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.createPasswordField;
+import static edu.ku.brc.ui.UIHelper.createTextField;
+import static edu.ku.brc.ui.UIHelper.setControlSize;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
@@ -282,9 +287,9 @@ public class EMailHelper
     {
         PanelBuilder    builder   = new PanelBuilder(new FormLayout("p,2px,p", "p,2px,p"));
         CellConstraints cc        = new CellConstraints();
-        JLabel          label     = new JLabel(getResourceString("password")+":", SwingConstants.RIGHT);
-        JPasswordField  passField = new JPasswordField(25);
-        JCheckBox       savePassword = new JCheckBox(getResourceString("SAVE_PASSWORD"));
+        JLabel          label     = createLabel(getResourceString("password")+":", SwingConstants.RIGHT);
+        JPasswordField  passField = createPasswordField(25);
+        JCheckBox       savePassword = createCheckBox(getResourceString("SAVE_PASSWORD"));
 
         builder.add(label, cc.xy(1,1));
         builder.add(passField, cc.xy(3,1));
@@ -321,12 +326,11 @@ public class EMailHelper
         
         PanelBuilder    builder   = new PanelBuilder(new FormLayout("p,2px,p", "p,2px,p,2px,p"));
         CellConstraints cc        = new CellConstraints();
-        JLabel          plabel    = new JLabel(getResourceString("password")+":", SwingConstants.RIGHT);
-        JLabel          ulabel    = new JLabel(getResourceString("username")+":", SwingConstants.RIGHT);
-        JPasswordField  passField = new JPasswordField(25);
-        JTextField      userField = new JTextField(remoteUsername, 25);
-        JCheckBox       savePassword = new JCheckBox(getResourceString("SAVE_PASSWORD"));
-
+        JLabel          plabel    = createLabel(getResourceString("password")+":", SwingConstants.RIGHT);
+        JLabel          ulabel    = createLabel(getResourceString("username")+":", SwingConstants.RIGHT);
+        JPasswordField  passField = createPasswordField(25);
+        JTextField      userField = createTextField(remoteUsername, 25);
+        JCheckBox       savePassword = createCheckBox(getResourceString("SAVE_PASSWORD"));
         
         builder.add(ulabel, cc.xy(1,1));
         builder.add(userField, cc.xy(3,1));

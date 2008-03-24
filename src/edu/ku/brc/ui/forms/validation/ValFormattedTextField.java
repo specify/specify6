@@ -15,6 +15,9 @@
 
 package edu.ku.brc.ui.forms.validation;
 
+import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.setControlSize;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -231,6 +234,14 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
     }
     
     /**
+     * @return the comps
+     */
+    public JComponent[] getTextComps()
+    {
+        return comps;
+    }
+
+    /**
      * Creates the various UI Components for the formatter.
      */
     protected void createUI()
@@ -240,6 +251,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
         if (isViewOnly || !formatter.isUserInputNeeded())
         {
             viewtextField = new JTextField();
+            setControlSize(viewtextField);
             
             JFormattedDoc document = new JFormattedDoc(viewtextField, formatter, formatter.getFields().get(0));
             viewtextField.setDocument(document);
@@ -293,8 +305,8 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
                 JComponent comp = null;
                 if (f.getType() == UIFieldFormatterField.FieldType.separator)
                 {
-                    comp = new JLabel(f.getValue());
-                    
+                    comp = createLabel(f.getValue());
+
                 } else
                 {
                     JTextField tf = new BGTextField(f.getSize(), isViewOnly ? "" : f.getValue());
@@ -325,6 +337,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
                     comp.setFont(font);
                     
                 }
+                setControlSize(comp);
                 builder.add(comp, cc.xy(inx+2, 2));
                 comps[inx] = comp;
                 inx++;

@@ -14,6 +14,8 @@
  */
 package edu.ku.brc.specify.ui;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -92,7 +94,9 @@ public class ChooseColObjIdsDlg extends JDialog implements ActionListener
         JPanel panel = new JPanel(new BorderLayout());
         //panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         
-        panel.add(new JLabel(getResourceString("RECORDSET_CHOOSE"), IconManager.getImage(RecordSetTask.RECORD_SET, IconManager.IconSize.Std24), SwingConstants.LEFT), BorderLayout.NORTH);
+        panel.add(createLabel(getResourceString("RECORDSET_CHOOSE"), 
+                IconManager.getImage(RecordSetTask.RECORD_SET, IconManager.IconSize.Std24), SwingConstants.LEFT), 
+                BorderLayout.NORTH);
 
         try
         {
@@ -154,8 +158,8 @@ public class ChooseColObjIdsDlg extends JDialog implements ActionListener
             panel.add(listScroller, BorderLayout.CENTER);
             
             // Bottom Button UI
-            cancelBtn         = new JButton(getResourceString("Cancel"));
-            okBtn             = new JButton(getResourceString("OK"));
+            cancelBtn         = createButton(getResourceString("Cancel"));
+            okBtn             = createButton(getResourceString("OK"));
 
             okBtn.addActionListener(this);
             getRootPane().setDefaultButton(okBtn);

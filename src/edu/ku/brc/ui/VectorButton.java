@@ -14,6 +14,8 @@
  */
 package edu.ku.brc.ui;
 
+import static edu.ku.brc.ui.UIHelper.setControlSize;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
@@ -63,6 +65,8 @@ public class VectorButton extends JButton implements MouseListener
         setTextColor(Color.BLACK);
         super.setBorderPainted(false);
         this.addMouseListener(this);
+        setControlSize(this);
+
     }
 
     /**
@@ -79,6 +83,7 @@ public class VectorButton extends JButton implements MouseListener
         setTextColor(Color.BLACK);
         super.setBorderPainted(false);
         this.addMouseListener(this);
+        setControlSize(this);
     }
 
     /* (non-Javadoc)

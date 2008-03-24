@@ -6,6 +6,11 @@
  */
 package edu.ku.brc.specify.tools.schemalocale;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createCheckBox;
+import static edu.ku.brc.ui.UIHelper.createComboBox;
+import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.createTextField;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Color;
@@ -101,7 +106,7 @@ public class FieldItemPanel extends LocalizerBasePanel
     // LocalizableItemIFace Fields
     protected JList            fieldsList;
     protected JTextArea        fieldDescText = new JTextArea();
-    protected JTextField       fieldNameText = new JTextField();
+    protected JTextField       fieldNameText = createTextField();
     protected JLabel           fieldDescLbl;
     protected JLabel           fieldNameLbl;
     protected JLabel           fieldTypeLbl;
@@ -128,7 +133,7 @@ public class FieldItemPanel extends LocalizerBasePanel
     protected DefaultListModel fieldsModel   = new DefaultListModel();
     protected JButton          nxtBtn;
     protected JButton          nxtEmptyBtn;
-    protected JCheckBox        fieldHideChk  = new JCheckBox(getResourceString("SL_FIELD_HIDE_CHK"));
+    protected JCheckBox        fieldHideChk  = createCheckBox(getResourceString("SL_FIELD_HIDE_CHK"));
     protected boolean          hasFieldInfoChanged  = false;
 
     protected LocalizableItemIFace prevField = null;
@@ -214,7 +219,7 @@ public class FieldItemPanel extends LocalizerBasePanel
                                                              "p,2px,p,2px,p,2px,p,2px,p,2px,p,2px,f:p:g"), this);
         
         pb.add(fldsp, cc.xywh(1, y, 1, 7+(isDBSchema ? 4 : 0)));
-        pb.add(fieldNameLbl = new JLabel(labelStr, SwingConstants.RIGHT), cc.xy(3, y));
+        pb.add(fieldNameLbl = createLabel(labelStr, SwingConstants.RIGHT), cc.xy(3, y));
         pb.add(fieldNameText, cc.xywh(5, y, 6, 1));   y += 2;
         
         if (includeHiddenUI)
@@ -222,7 +227,7 @@ public class FieldItemPanel extends LocalizerBasePanel
             pb.add(fieldHideChk, cc.xy(5, y)); y += 2;
         }
        
-        pb.add(fieldDescLbl = new JLabel(descStr, SwingConstants.RIGHT), cc.xy(3, y));
+        pb.add(fieldDescLbl = createLabel(descStr, SwingConstants.RIGHT), cc.xy(3, y));
         JScrollPane sp = new JScrollPane(fieldDescText, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         pb.add(sp,   cc.xywh(5, y, 6, 1));   y += 2;
         fieldDescText.setLineWrap(true);
@@ -231,16 +236,16 @@ public class FieldItemPanel extends LocalizerBasePanel
         
         if (isDBSchema)
         {
-            fieldTypeTxt   = new JLabel("");
-            fieldLengthTxt = new JLabel("");
+            fieldTypeTxt   = createLabel("");
+            fieldLengthTxt = createLabel("");
             
-            pb.add(fieldTypeLbl   = new JLabel(getResourceString("SL_TYPE") + ":", SwingConstants.RIGHT), cc.xy(3, y));
+            pb.add(fieldTypeLbl   = createLabel(getResourceString("SL_TYPE") + ":", SwingConstants.RIGHT), cc.xy(3, y));
             pb.add(fieldTypeTxt,   cc.xy(5, y));  
             
-            pb.add(fieldReqLbl   = new JLabel(getResourceString("SL_REQ") + ":", SwingConstants.RIGHT), cc.xy(7, y));
-            pb.add(fieldReqTxt   = new JLabel(""),   cc.xy(9, y)); y += 2;
+            pb.add(fieldReqLbl   = createLabel(getResourceString("SL_REQ") + ":", SwingConstants.RIGHT), cc.xy(7, y));
+            pb.add(fieldReqTxt   = createLabel(""),   cc.xy(9, y)); y += 2;
             
-            pb.add(fieldLengthLbl = new JLabel(getResourceString("SL_LENGTH") + ":", SwingConstants.RIGHT), cc.xy(3, y));
+            pb.add(fieldLengthLbl = createLabel(getResourceString("SL_LENGTH") + ":", SwingConstants.RIGHT), cc.xy(3, y));
             pb.add(fieldLengthTxt, cc.xy(5, y));   y += 2;
             
             fieldTypeTxt.setBackground(Color.WHITE);
@@ -256,11 +261,11 @@ public class FieldItemPanel extends LocalizerBasePanel
         {
             PanelBuilder inner = new PanelBuilder(new FormLayout("max(p;150px),2px,min", "p"));
             
-            formatCombo = new JComboBox(new DefaultComboBoxModel());
+            formatCombo = createComboBox(new DefaultComboBoxModel());
             //formatCombo.setEditable(true); // leave uneditable for now
-            formatMoreBtn = new JButton("...");
+            formatMoreBtn = createButton("...");
             
-            pb.add(formatLbl = new JLabel(getResourceString("SL_FORMAT") + ":", SwingConstants.RIGHT), cc.xy(3, y));
+            pb.add(formatLbl = createLabel(getResourceString("SL_FORMAT") + ":", SwingConstants.RIGHT), cc.xy(3, y));
             
             inner.add(formatCombo,   cc.xy(1, 1));   
             inner.add(formatMoreBtn, cc.xy(3, 1));
@@ -280,8 +285,8 @@ public class FieldItemPanel extends LocalizerBasePanel
             
             //String[] items = {noneStr, getResourceString("Generic"), getResourceString("External")};
             
-            //autoNumberCombo = new JComboBox(items);
-            //pb.add(autoNumLbl = new JLabel(getResourceString("SL_AUTONUM") + ":", SwingConstants.RIGHT), cc.xy(3, y));
+            //autoNumberCombo = createComboBox(items);
+            //pb.add(autoNumLbl = createLabel(getResourceString("SL_AUTONUM") + ":", SwingConstants.RIGHT), cc.xy(3, y));
             //pb.add(autoNumberCombo, cc.xy(5, y));   y += 2;
             
             ActionListener changed = new ActionListener() {
@@ -296,7 +301,7 @@ public class FieldItemPanel extends LocalizerBasePanel
             //autoNumberCombo.addActionListener(changed);
         }
         
-        pickListCBX = new JComboBox(new DefaultComboBoxModel());
+        pickListCBX = createComboBox(new DefaultComboBoxModel());
         pickListCBX.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
@@ -305,14 +310,13 @@ public class FieldItemPanel extends LocalizerBasePanel
                 hasFieldInfoChanged = true;
             }
         });
-        
-        pb.add(pickListLbl   = new JLabel(getResourceString("SL_PICKLIST") + ":", SwingConstants.RIGHT), cc.xy(3, y));
-        pb.add(pickListCBX,   cc.xy(5, y));   y += 2;
 
+        pb.add(pickListLbl   = createLabel(getResourceString("SL_PICKLIST") + ":", SwingConstants.RIGHT), cc.xy(3, y));
+        pb.add(pickListCBX,   cc.xy(5, y));   y += 2;
         
-        nxtBtn         = new JButton(getResourceString("SL_NEXT"));
-        nxtEmptyBtn    = new JButton(getResourceString("SL_NEXT_EMPTY"));
-        fldSpellChkBtn = new JButton(getResourceString("SL_SPELL_CHECK"));
+        nxtBtn         = createButton(getResourceString("SL_NEXT"));
+        nxtEmptyBtn    = createButton(getResourceString("SL_NEXT_EMPTY"));
+        fldSpellChkBtn = createButton(getResourceString("SL_SPELL_CHECK"));
         
         JPanel bbp = ButtonBarFactory.buildCenteredBar(new JButton[] {nxtEmptyBtn, nxtBtn, fldSpellChkBtn});
         bbp.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
@@ -1118,7 +1122,8 @@ public class FieldItemPanel extends LocalizerBasePanel
     protected void enableSpellCheck()
     {
         boolean ok = SchemaI18NService.getCurrentLocale().getLanguage().equals("en");
-        fldSpellChkBtn.setEnabled(ok && checker != null && spellCheckLoaded);
+        LocalizableItemIFace fld = getSelectedFieldItem();
+        fldSpellChkBtn.setEnabled(fld != null && ok && checker != null && spellCheckLoaded);
     }
 
     

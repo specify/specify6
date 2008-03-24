@@ -15,6 +15,7 @@
 package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UIHelper.createIconBtn;
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIRegistry.getTopWindow;
 
@@ -320,10 +321,10 @@ public class QueryConfigureDlg extends CustomDialog
             });
             
             int col = orderOnLeft ? 3 : 1;
-            outer.add(new JLabel(getResourceString(titleKey), SwingConstants.CENTER), cc.xy(col, 1));
+            outer.add(createLabel(getResourceString(titleKey), SwingConstants.CENTER), cc.xy(col, 1));
             JScrollPane sp = new JScrollPane(orderList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
             outer.add(sp,                     cc.xy(col, 3));
-            
+
             if (hideOrdering)
             {
                 PanelBuilder upDownPanel = new PanelBuilder(new FormLayout("p", "f:p:g, p, 2px, p, f:p:g"));        

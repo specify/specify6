@@ -85,7 +85,7 @@
                 </enableRules>
 
             <columnDef>p,2dlu,p,5dlu,p,2dlu,p</columnDef>
-            <rowDef auto="true" cell="p" sep="4dlu"/>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
 
             <rows>
                 <row>
@@ -142,7 +142,7 @@
             <desc><![CDATA[Formatting Preference Form.]]></desc>
             
             <columnDef>p,2px,p,2px,p:g,2px,p:g,6px,p,2px,p,2px,p</columnDef>
-            <rowDef auto="true" cell="p" sep="4dlu"/>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
                 <row>
@@ -169,9 +169,13 @@
                 <row>
                     <cell type="label" labelfor="fontNames" label="Form Font"/>
                     <cell type="field" uitype="combobox" id="fontNames" name="ui.formatting.fontNames" readonly="true" changesonly="true" colspan="5"/>
-                    <cell type="label" labelfor="fontSizes" label="Size"/>
+                    <cell type="label" id="fontSizesLabel" labelfor="fontSizes" label="Size"/>
                     <cell type="field" uitype="combobox" id="fontSizes" name="ui.formatting.fontSize" readonly="true" changesonly="true"/>
                     <cell type="field" uitype="dsptextfield" id="fontTest" name="fontTest" readonly="true"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="controlSizes" label="Control Size"/>
+                    <cell type="field" uitype="combobox" id="controlSizes" name="ui.formatting.controlSizes" readonly="true" changesonly="true" colspan="3"/>
                 </row>
                 <row>
                     <cell type="separator" label="Collection Object Icon" colspan="13"/>
@@ -242,7 +246,7 @@
             <desc><![CDATA[System Preference Form.]]></desc>
             
             <columnDef>p:g,2px,max(150px;p):g,280px,f:p:g</columnDef>
-            <rowDef auto="true" cell="p" sep="4dlu"/>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
                 <row>
@@ -309,7 +313,7 @@
             <desc><![CDATA[GoogleEarth Preference Form.]]></desc>
 
             <columnDef>p,2px,p,p:g,f:p:g</columnDef>
-            <rowDef auto="true" cell="p" sep="4dlu"/>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
 
             <rows>
                 <row>

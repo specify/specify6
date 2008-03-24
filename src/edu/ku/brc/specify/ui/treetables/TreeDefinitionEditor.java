@@ -6,6 +6,8 @@
  */
 package edu.ku.brc.specify.ui.treetables;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -23,7 +25,7 @@ import java.util.Set;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -42,10 +44,10 @@ import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.StaleObjectException;
-import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
@@ -189,17 +191,17 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 		titlePanel = new JPanel();
 		titlePanel.setLayout(new BoxLayout(titlePanel,BoxLayout.LINE_AXIS));
 		
-        defNameLabel = new JLabel();
+        defNameLabel = createLabel("");
         
         titlePanel.add(Box.createHorizontalGlue());
         titlePanel.add(defNameLabel);
         titlePanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 4, 0));
 
-        Icon editIcon = IconManager.getIcon("EditIcon", IconSize.Std16);
+        ImageIcon editIcon = IconManager.getIcon("EditIcon", IconSize.Std16);
         
 		if (isEditMode)
 		{
-    		//editDefButton = new JButton(editIcon);
+    		//editDefButton = createButton(editIcon);
 		    editDefButton = UIHelper.createIconBtn("EditIcon", "TTV_EDIT_TREDEF_TITLE", new ActionListener()
             {
                 public void actionPerformed(ActionEvent ae)
@@ -226,8 +228,8 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 	        editPanel = new JPanel();
 	        editPanel.setLayout(new BoxLayout(editPanel,BoxLayout.LINE_AXIS));
 	        
-            Icon delIcon = IconManager.getIcon("MinusSign", IconSize.Std16);
-    		deleteItemButton = new JButton("Delete", delIcon);
+            ImageIcon delIcon = IconManager.getIcon("MinusSign", IconSize.Std16);
+    		deleteItemButton = createButton("Delete", delIcon);
     		deleteItemButton.addActionListener(new ActionListener()
     		{
     			public void actionPerformed(ActionEvent ae)
@@ -235,8 +237,8 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
     				deleteItem(defItemsTable.getSelectedRow());
     			}
     		});
-            Icon newIcon = IconManager.getIcon("PlusSign", IconSize.Std16);
-            newItemButton = new JButton("New", newIcon);
+    		ImageIcon newIcon = IconManager.getIcon("PlusSign", IconSize.Std16);
+            newItemButton = createButton("New", newIcon);
             newItemButton.addActionListener(new ActionListener()
             {
                 public void actionPerformed(ActionEvent ae)
@@ -244,7 +246,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                     newItem(defItemsTable.getSelectedRow());
                 }
             });
-            editItemButton = new JButton("Edit", editIcon);
+            editItemButton = createButton("Edit", editIcon);
             editItemButton.addActionListener(new ActionListener()
             {
                 public void actionPerformed(ActionEvent ae)
@@ -492,7 +494,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                             message.append("<li>" + node);
                         }
                         message.append("</ul></html>");
-                        JLabel label = new JLabel();
+                        JLabel label = createLabel("");
                         label.setText(message.toString());
                         Window w = UIRegistry.getMostRecentWindow();
                         JFrame parent = null;
@@ -500,6 +502,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                         {
                             parent = (JFrame)w;
                         }
+
                         CustomDialog errorDialog = new CustomDialog(parent,getResourceString("Error"),true,CustomDialog.OK_BTN, new JScrollPane(label));
                         errorDialog.createUI();
                         errorDialog.setSize(650, 200);
@@ -751,7 +754,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                                 message.append("<li>" + node);
                             }
                             message.append("</ul></html>");
-                            JLabel label = new JLabel();
+                            JLabel label = createLabel("");
                             label.setText(message.toString());
                             Window w = UIRegistry.getMostRecentWindow();
                             JFrame parent = null;

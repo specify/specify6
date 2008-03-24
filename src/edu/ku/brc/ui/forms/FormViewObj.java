@@ -14,6 +14,9 @@
  */
 package edu.ku.brc.ui.forms;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createComboBox;
+import static edu.ku.brc.ui.UIHelper.setControlSize;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
@@ -362,7 +365,7 @@ public class FormViewObj implements Viewable,
             p.setOpaque(false);
             
             p.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
-            selectorCBX = new JComboBox(cbxList);
+            selectorCBX = createComboBox(cbxList);
             selectorCBX.setRenderer(new SelectorCellRenderer());
             p.add(selectorCBX, BorderLayout.WEST);
             mainComp.add(p, BorderLayout.NORTH);
@@ -439,7 +442,7 @@ public class FormViewObj implements Viewable,
         {
             if (!hideSaveBtn)
             {
-                saveControl = new JButton(UIRegistry.getResourceString("Search"), 
+                saveControl = createButton(UIRegistry.getResourceString("Search"), 
                         IconManager.getImage("Search", IconManager.IconSize.Std16));/*
                 {
                     public void setEnabled(boolean enabled)
@@ -624,7 +627,7 @@ public class FormViewObj implements Viewable,
      */
     protected void addSaveBtn()
     {
-        JButton saveBtn = new JButton(UIRegistry.getResourceString("Save"));/*
+        JButton saveBtn = createButton(UIRegistry.getResourceString("Save"));/*
         {
             public void setEnabled(boolean enabled)
             {
@@ -633,7 +636,7 @@ public class FormViewObj implements Viewable,
             }
         };*/
         saveBtn.setEnabled(false);
-        
+
         saveBtn.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
@@ -1376,17 +1379,20 @@ public class FormViewObj implements Viewable,
             
             String[] optionLabels;
             int      dlgOptions;
+            int      defaultRV;
             if (!isNewAndComplete || (formValidator != null && !formValidator.isFormValid()))
             {
                 dlgOptions = JOptionPane.YES_NO_OPTION;
                 optionLabels = new String[] {getResourceString("DiscardChangesBtn"), 
                                              getResourceString("Cancel")};
+                defaultRV = JOptionPane.NO_OPTION;
             } else
             {
                 dlgOptions = JOptionPane.YES_NO_CANCEL_OPTION;
                 optionLabels = new String[] {getResourceString("SaveChangesBtn"), 
                                              getResourceString("DiscardChangesBtn"), 
                                              getResourceString("Cancel")};
+                defaultRV = JOptionPane.CANCEL_OPTION;
             }
             
             int rv = JOptionPane.showOptionDialog(null,
@@ -1398,6 +1404,10 @@ public class FormViewObj implements Viewable,
                         optionLabels,
                         optionLabels[0]);
         
+            if (rv == JOptionPane.CLOSED_OPTION)
+            {
+                rv = defaultRV;
+            }
 
             if ( dlgOptions == JOptionPane.YES_NO_OPTION)
             {
@@ -2893,7 +2903,7 @@ public class FormViewObj implements Viewable,
             Font        boldFont = null;
             for (String idFor : labels.keySet())
             {
-                FVOFieldInfo     labelInfo = labels.get(idFor);
+                FVOFieldInfo  labelInfo = labels.get(idFor);
                 JLabel        label     = (JLabel)labelInfo.getComp();
                 FormCellLabel labelCell = (FormCellLabel)labelInfo.getFormCell();
                 
@@ -3183,7 +3193,7 @@ public class FormViewObj implements Viewable,
                 //enableNewBtn = mvParent.isTopLevel() || !mvParent.isTopLevel() ? mvParent.getMultiViewParent().getData() != null : false;
             }
             
-            //log.debug(view.getName()+"  enableNewBtn "+enableNewBtn+"  isNewlyCreatedDataObj "+isNewlyCreatedDataObj()+" ("+(enableNewBtn && (dataObj == null || !isNewlyCreatedDataObj()))+")");
+            log.debug(view.getName()+"  enableNewBtn "+enableNewBtn+"  isNewlyCreatedDataObj "+isNewlyCreatedDataObj()+" ("+(enableNewBtn && (dataObj == null || !isNewlyCreatedDataObj()))+")");
             
             boolean newBtnEnabled = enableNewBtn && (dataObj == null || !isNewlyCreatedDataObj());
             newRecBtn.setEnabled(newBtnEnabled); 
@@ -3209,6 +3219,11 @@ public class FormViewObj implements Viewable,
     protected void setDataObj(final Object dataObj, final boolean alreadyInTheList)
     {
         //log.debug("Setting DataObj["+dataObj+"]");
+        
+        // rods - Added 3/21/08 because switching from the Grid View
+        // back to the Form View causes the "+" button to be disabled and this
+        // is because it thinks it is a newly created object for some reason
+        isNewlyCreatedDataObj = false;
         
         // Convert the Set over to a List so the RecordController can be used
         Object data = dataObj;
@@ -4458,6 +4473,8 @@ public class FormViewObj implements Viewable,
     {
         int        titleAlignment  = builder.isLeftToRight() ? SwingConstants.LEFT : SwingConstants.RIGHT;
         JComponent titledSeparator = builder.getComponentFactory().createSeparator(title, titleAlignment);
+        setControlSize(titledSeparator);
+
         return titledSeparator;
     }
     

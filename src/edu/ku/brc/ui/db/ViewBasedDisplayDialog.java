@@ -315,7 +315,9 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
             BusinessRulesIFace br = fvo.getBusinessRules();
             if (br != null && fvo.getDataObj() != null)
             {
-                if (BusinessRulesIFace.STATUS.OK != br.processBusinessRules(parentDataObj, fvo.getDataObj()))
+                if (BusinessRulesIFace.STATUS.OK != br.processBusinessRules(parentDataObj, 
+                                                                            fvo.getDataObj(), 
+                                                                            viewBasedPanel.isEditMode()))
                 {
                     return;
                 }

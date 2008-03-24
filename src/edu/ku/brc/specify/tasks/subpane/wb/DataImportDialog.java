@@ -17,6 +17,12 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createCheckBox;
+import static edu.ku.brc.ui.UIHelper.createComboBox;
+import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.createRadioButton;
+import static edu.ku.brc.ui.UIHelper.createTextField;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Color;
@@ -94,23 +100,13 @@ import edu.ku.brc.ui.UIRegistry;
  * character sets, escape modes, etc.  Dialog provides a preview table
  * displaying how the data will appear when imported into a spreadsheet table.
  * 
+ * (This needs to be converted to CustomDialog)
+ * 
  * @author megkumin
  *
  * @code_status Complete
  *
  * Created Date: Mar 26, 2007
- *
- */
-/**
- * @author timbo
- *
- * @code_status Alpha
- *
- */
-/**
- * @author timbo
- *
- * @code_status Alpha
  *
  */
 @SuppressWarnings("serial")
@@ -299,9 +295,9 @@ public class DataImportDialog extends JDialog implements ActionListener
                 "p,10px" 		//buttongs
                 ), configPanel);// rows
 
-        JLabel fileInfo = new JLabel(getResourceString("FILE_PREVIEW") + " " + fileName);
+        JLabel fileInfo = createLabel(getResourceString("FILE_PREVIEW") + " " + fileName);
         JPanel buttonpanel = buildButtons();
-        containsHeaders = new JCheckBox(getResourceString("COLUMN_HEAD"));
+        containsHeaders = createCheckBox(getResourceString("COLUMN_HEAD"));
         containsHeaders.setSelected(true);
         containsHeaders.addItemListener(new CheckboxItemListener());
 
@@ -347,9 +343,9 @@ public class DataImportDialog extends JDialog implements ActionListener
                 "p,10px" 		//buttongs
                 ), configPanel);// rows
 
-        JLabel fileInfo = new JLabel(getResourceString("FILE_PREVIEW") + " " + fileName);
+        JLabel fileInfo = createLabel(getResourceString("FILE_PREVIEW") + " " + fileName);
         JPanel buttonpanel = buildButtons();
-        containsHeaders = new JCheckBox(getResourceString("COLUMN_HEAD"));
+        containsHeaders = createCheckBox(getResourceString("COLUMN_HEAD"));
         containsHeaders.setSelected(true);
         containsHeaders.addItemListener(new CheckboxItemListener());
           
@@ -373,9 +369,9 @@ public class DataImportDialog extends JDialog implements ActionListener
      */
     private JPanel buildButtons()
     {
-        cancelBtn = new JButton(getResourceString("Cancel"));
-        okBtn     = new JButton(getResourceString("OK"));
-        helpBtn   = new JButton(getResourceString("Help"));
+        cancelBtn = createButton(getResourceString("Cancel"));
+        okBtn     = createButton(getResourceString("OK"));
+        helpBtn   = createButton(getResourceString("Help"));
 
         cancelBtn.addActionListener(new ActionListener()
         {
@@ -450,23 +446,27 @@ public class DataImportDialog extends JDialog implements ActionListener
                 "p,4px,   p,4px,  p,4px,  p,4px");
         PanelBuilder builder = new PanelBuilder(formLayout, myPanel);
 
-        textQualLabel = new JLabel(getResourceString("TEXT_QUAL"));
+        textQualLabel = createLabel(getResourceString("TEXT_QUAL"));
         String[] qualifiers = { "\"", "\'", "{"+getResourceString("NONE")+"}" };
-        textQualCombo = new JComboBox(qualifiers);
+        textQualCombo = createComboBox(qualifiers);
         textQualCombo.setSelectedIndex(0);
         textQualCombo.addActionListener(this);
 
-        charSetLabel = new JLabel(getResourceString("CHAR_SET"));
+        charSetLabel = createLabel(getResourceString("CHAR_SET"));
         String[] charsets = { getResourceString("DEFAULT"), "US-ASCII", "ISO-8859-1", "UTF-8" };
-        charSetCombo = new JComboBox(charsets);
+        charSetCombo = createComboBox(charsets);
         charSetCombo.setSelectedIndex(0);
         charSetCombo.addActionListener(this);
         
-        escapeModeLabel = new JLabel(getResourceString("ESCAPE_MODE"));
+        escapeModeLabel = createLabel(getResourceString("ESCAPE_MODE"));
         String[] escapeModes = {getResourceString("BACKSLASH"), getResourceString("DOUBLED")};
-        escapeModeCombo = new JComboBox(escapeModes);
+        escapeModeCombo = createComboBox(escapeModes);
         escapeModeCombo.setSelectedIndex(0);
         escapeModeCombo.addActionListener(this);
+        
+        setContentPane(textQualCombo);
+        setContentPane(charSetCombo);
+        setContentPane(escapeModeCombo);
 
         builder.add(textQualLabel,    cc.xy(1, 1));
         builder.add(textQualCombo,    cc.xy(3, 1));     
@@ -539,28 +539,28 @@ public class DataImportDialog extends JDialog implements ActionListener
         //Color curColor = myPanel.getBackground();
         //Color newColor = curColor;//.brighter();
            
-        tab = new JRadioButton(getResourceString("TAB"));
+        tab = createRadioButton(getResourceString("TAB"));
         tab.addItemListener(new DelimButtonItemListener());
         //tab.setBackground(newColor);
         
-        space = new JRadioButton(getResourceString("SPACE"));
+        space = createRadioButton(getResourceString("SPACE"));
         space.addItemListener(new DelimButtonItemListener());
         //space.setBackground(newColor);
 
-        comma = new JRadioButton(getResourceString("COMMA"));
+        comma = createRadioButton(getResourceString("COMMA"));
         comma.addItemListener(new DelimButtonItemListener());
         comma.setSelected(true);
         //comma.setBackground(newColor);
         
-        semicolon = new JRadioButton(getResourceString("SEMICOLON"));
+        semicolon = createRadioButton(getResourceString("SEMICOLON"));
         semicolon.addItemListener(new DelimButtonItemListener());
         //semicolon.setBackground(newColor);
         
-        other = new JRadioButton(getResourceString("OTHER"));
+        other = createRadioButton(getResourceString("OTHER"));
         other.addItemListener(new DelimButtonItemListener());
         //other.setBackground(newColor);
         
-        otherText = new JTextField();
+        otherText = createTextField();
         otherText.addKeyListener(new CharFieldKeyAdapter());
         otherText.setColumns(1);
         otherText.setEnabled(false);
@@ -1019,11 +1019,11 @@ public class DataImportDialog extends JDialog implements ActionListener
         PanelBuilder    builder = new PanelBuilder(new FormLayout("p:g", "c:p:g"));
         CellConstraints cc      = new CellConstraints();
 
-        //builder.add(new JLabel(IconManager.getIcon("SpecifyLargeIcon")), cc.xy(1,1));
+        //builder.add(createLabel(IconManager.getIcon("SpecifyLargeIcon")), cc.xy(1,1));
         // XXX I18N 
         
         //The Specify 6 Workbench can only import 2000 rows of data.  The file you tried to import had more than that.  Please reduce the record account and try again.
-        builder.add(new JLabel("<html>"
+        builder.add(createLabel("<html>"
         		+"<p>The Specify 6 Workbench can only import "+WorkbenchTask.getMaxRows()+" rows of data."
         		//+"<br>"
         		+"<br>The file you tried to import had more than that."
@@ -1038,7 +1038,7 @@ public class DataImportDialog extends JDialog implements ActionListener
         //maxRowExceededDlg.setSize(Math.min(size.width, 300), size.height+20);
     	//maxRowExceededDlg.setVisible(true);
         hasTooManyRows = true;
-        
+
         //okBtn.setEnabled(false);   	
     }
     

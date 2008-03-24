@@ -16,6 +16,7 @@
 package edu.ku.brc.af.tasks.subpane;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIHelper.getInt;
 import static edu.ku.brc.ui.UIHelper.getString;
 
@@ -166,10 +167,7 @@ public class BarChartPane extends ChartPane
     public void resultsInError(final QueryResultsContainerIFace qrc)
     {
         //JOptionPane.showMessageDialog(this, getResourceString("ERROR_CREATNG_BARCHART"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); // XXX LOCALIZE
-        
-        JLabel lbl = new JLabel(getResourceString("ERROR_CREATNG_BARCHART"), SwingConstants.CENTER);
+        JLabel lbl = createLabel(getResourceString("ERROR_CREATNG_BARCHART"), SwingConstants.CENTER);
         addCompletedComp(lbl);
     }
-
-   
 }

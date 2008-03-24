@@ -6,6 +6,8 @@
      */
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -101,7 +103,7 @@ public class MatchHandler
 
         JPanel matchedPane = new JPanel(new BorderLayout());
         
-        JLabel matchedLbl = new JLabel(getResourceString("WB_UPLOAD_MATCHED_CELLS"));
+        JLabel matchedLbl = createLabel(getResourceString("WB_UPLOAD_MATCHED_CELLS"));
         matchedLbl.setFont(matchedLbl.getFont().deriveFont(Font.BOLD));        
         matchedLbl.setBorder(new EmptyBorder(3, 1, 3, 0));
         matchedPane.add(matchedLbl, BorderLayout.NORTH);
@@ -139,7 +141,7 @@ public class MatchHandler
         
         JTable matchedTbl = new JTable(matchedVec, headers);
         JScrollPane scrollPane = new JScrollPane(matchedTbl);
-        //JLabel corner = new JLabel(getResourceString("WB_ROW"));
+        //JLabel corner = createLabel(getResourceString("WB_ROW"));
         //corner.setHorizontalAlignment(SwingConstants.CENTER);
         JPanel corner = new JPanel(); 
         scrollPane.setCorner(ScrollPaneConstants.UPPER_LEFT_CORNER, corner);
@@ -159,8 +161,8 @@ public class MatchHandler
         
         // Calculate Row Height
         Component   cellRenderComp = renderer.getTableCellRendererComponent(matchedTbl, column.getHeaderValue(), false, false, -1, 0);
-        Font cellFont                   = cellRenderComp.getFont();
-        Border cellBorder                 = (Border)UIManager.getDefaults().get("TableHeader.cellBorder");
+        Font        cellFont       = cellRenderComp.getFont();
+        Border      cellBorder     = (Border)UIManager.getDefaults().get("TableHeader.cellBorder");
         Insets      insets         = cellBorder.getBorderInsets(matchedTbl.getTableHeader());
         FontMetrics metrics        = matchedTbl.getFontMetrics(cellFont);
 
@@ -170,7 +172,7 @@ public class MatchHandler
         
         Dimension dim  = new Dimension(rowLabelWidth, rowHeight);
           
-        JLabel lbl = new JLabel(Integer.toString(Uploader.getCurrentUpload().rowUploading+1));
+        JLabel lbl = createLabel(Integer.toString(Uploader.getCurrentUpload().rowUploading+1));
         lbl.setHorizontalAlignment(SwingConstants.CENTER);
         lbl.setPreferredSize(dim); 
         lbl.setBorder(cellBorder);
@@ -190,11 +192,11 @@ public class MatchHandler
         pane.add(matchedPane, BorderLayout.NORTH);
 
         JPanel matchesPane = new JPanel(new BorderLayout());
-        JLabel matchesLbl = new JLabel(getResourceString("WB_UPLOAD_DB_MATCHES"));
+        JLabel matchesLbl = createLabel(getResourceString("WB_UPLOAD_DB_MATCHES"));
         matchesLbl.setFont(matchedLbl.getFont().deriveFont(Font.BOLD));
         matchesLbl.setBorder(new EmptyBorder(8, 1, 3, 0));
         matchesPane.add(matchesLbl, BorderLayout.NORTH); 
-        
+
         Vector<Object> matchVec = new Vector<Object>();
 
         matchVec.addAll(matches);
@@ -214,7 +216,7 @@ public class MatchHandler
         
         pane.add(matchesPane, BorderLayout.CENTER);
         
-        JButton settingsBtn = new JButton(getResourceString("WB_UPLOAD_MATCH_SETTINGS_BTN"));
+        JButton settingsBtn = createButton(getResourceString("WB_UPLOAD_MATCH_SETTINGS_BTN"));
         settingsBtn.setActionCommand("SETTINGS");
         settingsBtn.setToolTipText(getResourceString("WB_UPLOAD_MATCH_SETTINGS_BTN_HINT"));
         settingsBtn.addActionListener(new ActionListener() {

@@ -9,6 +9,8 @@
  */
 package edu.ku.brc.ui.forms.validation;
 
+import static edu.ku.brc.ui.UIHelper.setControlSize;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
@@ -116,10 +118,12 @@ public class ValSpinner extends JSpinner implements UIValidatable, GetSetValueIF
     }
     
     /**
-     * Inits the control.
+     * Initializes the control.
      */
     protected void init()
     {
+        setControlSize(this);
+
         if (requiredfieldcolor == null)
         {
             requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");

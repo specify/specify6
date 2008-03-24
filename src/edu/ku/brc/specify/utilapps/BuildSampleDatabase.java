@@ -65,6 +65,12 @@ import static edu.ku.brc.specify.utilapps.DataBuilder.createWorkbench;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createWorkbenchDataItem;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createWorkbenchMappingItem;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createWorkbenchTemplate;
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createCheckBox;
+import static edu.ku.brc.ui.UIHelper.createComboBox;
+import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.createPasswordField;
+import static edu.ku.brc.ui.UIHelper.createTextField;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -96,7 +102,6 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -642,7 +647,7 @@ public class BuildSampleDatabase
         GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Geography");
         GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Chronos Stratigraphy");
         LithoStratTreeDef         lithoStratTreeDef = createLithoStratTreeDef("LithoStrat");
-        StorageTreeDef           locTreeDef        = createStorageTreeDef("Storage");
+        StorageTreeDef            locTreeDef        = createStorageTreeDef("Storage");
         
         lithoStratTreeDef.setRemarks("A simple super, group, formation, member, bed Litho Stratigraphy tree");
         
@@ -1442,18 +1447,20 @@ public class BuildSampleDatabase
         persist(userAgent);
         persist(user);
         
-        createLithoStratTreeDefItem(lithoStratTreeDef, "Earth",         0, false);
-        createLithoStratTreeDefItem(lithoStratTreeDef, "Super Group", 100, false);
-        createLithoStratTreeDefItem(lithoStratTreeDef, "Litho Group", 200, false);
-        createLithoStratTreeDefItem(lithoStratTreeDef, "Formation",   300, false);
-        createLithoStratTreeDefItem(lithoStratTreeDef, "Member",      400, false);
-        createLithoStratTreeDefItem(lithoStratTreeDef, "Bed",         500, true);
+        LithoStratTreeDefItem earth     = createLithoStratTreeDefItem(lithoStratTreeDef, "Earth", 0, false);
+        LithoStratTreeDefItem superGrp  = createLithoStratTreeDefItem(earth,     "Super Group", 100, false);
+        LithoStratTreeDefItem lithoGrp  = createLithoStratTreeDefItem(superGrp,  "Litho Group", 200, false);
+        LithoStratTreeDefItem formation = createLithoStratTreeDefItem(lithoGrp,  "Formation",   300, false);
+        LithoStratTreeDefItem member    = createLithoStratTreeDefItem(formation, "Member",      400, false);
+        @SuppressWarnings("unused")
+        LithoStratTreeDefItem bed       = createLithoStratTreeDefItem(member,    "Bed",         500, true);
         
         frame.setProcess(++createStep);
         
         CatalogNumberingScheme cns = createCatalogNumberingScheme("CatNo "+disciplineType.getTitle(), "", true);
         
         persist(cns);
+        persist(earth);
         
         ////////////////////////////////
         // Create Collection
@@ -1501,15 +1508,14 @@ public class BuildSampleDatabase
         commitTx();
         
         
-        LithoStrat earth = convertLithoStratFromCSV(lithoStratTreeDef);
-        if (earth == null)
+        LithoStrat earthLithoStrat = convertLithoStratFromCSV(lithoStratTreeDef);
+        if (earthLithoStrat == null)
         {
             //throw new RuntimeException("No Tree");
             startTx();
             List<Object> lithoStrats = createSimpleLithoStrat(lithoStratTreeDef);
             persist(lithoStrats);
             commitTx();
-            
         }
 
         
@@ -2237,7 +2243,7 @@ public class BuildSampleDatabase
             String member     = columns[5];
             String bed        = columns[6];
 
-            // create a new Geography object from the old data
+            // create a new Litho Stratigraphy object from the old data
             @SuppressWarnings("unused")
             LithoStrat newStrat = convertOldStratRecord(superGroup, lithoGroup, formation, member, bed, earth);
 
@@ -2350,11 +2356,10 @@ public class BuildSampleDatabase
     /**
      * @param nameArg
      * @param parentArg
-     * @param sessionArg
      * @return
      */
-    protected LithoStrat buildLithoStratLevel(String nameArg,
-                                              LithoStrat parentArg)
+    protected LithoStrat buildLithoStratLevel(final String nameArg,
+                                              final LithoStrat parentArg)
     {
         String name = nameArg;
         if (name == null)
@@ -6006,34 +6011,34 @@ public class BuildSampleDatabase
             driverList = DatabaseDriverInfo.getDriversList();
             int inx = Collections.binarySearch(driverList, new DatabaseDriverInfo(dbDriverName, null, null));
             
-            drivers     = new JComboBox(driverList);
+            drivers    = createComboBox(driverList);
             drivers.setSelectedIndex(inx);
             
             //Vector<DisciplineType> disciplinesList = DisciplineType.getDisciplineList();
-            disciplines     = new JComboBox(DisciplineType.getDisciplineList());
+            disciplines     = createComboBox(DisciplineType.getDisciplineList());
             disciplines.setSelectedItem(DisciplineType.getDiscipline("fish"));
             
-            databaseNameTxt = new JTextField(databaseName);
+            databaseNameTxt = createTextField(databaseName);
             
-            usernameTxtFld = new JTextField("rods");
-            passwdTxtFld   = new JPasswordField("rods");
+            usernameTxtFld = createTextField("rods");
+            passwdTxtFld   = createPasswordField("rods");
             
-            extraCollectionsChk = new JCheckBox("Create Extra Collections");
+            extraCollectionsChk = createCheckBox("Create Extra Collections");
             extraCollectionsChk.setSelected(true);
             
             PanelBuilder    builder    = new PanelBuilder(new FormLayout("p,2px,p:g", "p,4px,p,4px,p,4px,p,4px,p,4px,p:g,10px,p"));
             CellConstraints cc         = new CellConstraints();
-            builder.add(new JLabel("Username:", SwingConstants.RIGHT),      cc.xy(1,1));
+            builder.add(createLabel("Username:", SwingConstants.RIGHT),      cc.xy(1,1));
             builder.add(usernameTxtFld,                                     cc.xy(3,1));
-            builder.add(new JLabel("Password:", SwingConstants.RIGHT),      cc.xy(1,3));
+            builder.add(createLabel("Password:", SwingConstants.RIGHT),      cc.xy(1,3));
             builder.add(passwdTxtFld,                                       cc.xy(3,3));
-            builder.add(new JLabel("Database Name:", SwingConstants.RIGHT), cc.xy(1,5));
+            builder.add(createLabel("Database Name:", SwingConstants.RIGHT), cc.xy(1,5));
             builder.add(databaseNameTxt,                                    cc.xy(3,5));
-            builder.add(new JLabel("DisciplineType Name:", SwingConstants.RIGHT), cc.xy(1,7));
+            builder.add(createLabel("DisciplineType Name:", SwingConstants.RIGHT), cc.xy(1,7));
             builder.add(disciplines,                                        cc.xy(3,7));
-            builder.add(new JLabel("Driver:", SwingConstants.RIGHT),        cc.xy(1,9));
+            builder.add(createLabel("Driver:", SwingConstants.RIGHT),        cc.xy(1,9));
             builder.add(drivers,                                            cc.xy(3,9));
-            //builder.add(new JLabel("Driver:", SwingConstants.RIGHT),        cc.xy(1,11));
+            //builder.add(createLabel("Driver:", SwingConstants.RIGHT),        cc.xy(1,11));
             
             CollectionChoice[] choicesArray = {
                     new CollectionChoice(DisciplineType.STD_DISCIPLINES.fish, false, true),
@@ -6075,14 +6080,16 @@ public class BuildSampleDatabase
                 }
             }
             collChoicePanel = new ToggleButtonChooserPanel<CollectionChoice>(choices, ToggleButtonChooserPanel.Type.Checkbox);
+            collChoicePanel.setAddSelectAll(true);
+            collChoicePanel.setUseScrollPane(true);
             collChoicePanel.createUI();
             collChoicePanel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
             builder.add(collChoicePanel, cc.xywh(1,11,3,1));
             
             collChoicePanel.setSelectedObjects(choices);
             
-            final JButton okBtn     = new JButton("OK");
-            final JButton cancelBtn = new JButton("Cancel");
+            final JButton okBtn     = createButton("OK");
+            final JButton cancelBtn = createButton("Cancel");
             builder.add(ButtonBarFactory.buildOKCancelBar(okBtn, cancelBtn), cc.xywh(1,13,3,1));
             
             cancelBtn.addActionListener(new ActionListener() {

@@ -38,6 +38,7 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.ViewBasedDisplayPanel;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
@@ -112,7 +113,7 @@ public class EditorPropPanelOld extends JPanel
         
         if (addSaveBtn)
         {
-            saveBtn = new JButton("Accept");
+            saveBtn = UIHelper.createButton("Accept");
             saveBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {

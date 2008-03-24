@@ -14,6 +14,10 @@
  */
 package edu.ku.brc.specify.ui;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createCheckBox;
+import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.setControlSize;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -95,6 +99,7 @@ import edu.ku.brc.ui.forms.validation.ValidationListener;
 
 /**
  * Creates a dialog representing all the Preparation objects being returned for a loan.
+ * TODO: Convert to use CustomDialog
  * 
  * @author rods
  *
@@ -133,7 +138,7 @@ public class LoanReturnDlg extends JDialog
             
             session.attach(loan);
         
-            setTitle("Loan Return"); // I18N
+            setTitle(getResourceString("LOANRET_TITLE"));
             
             validator.addValidationListener(new ValidationListener() {
                 public void wasValidated(UIValidator val)
@@ -191,8 +196,8 @@ public class LoanReturnDlg extends JDialog
                 if (i > 0)
                 {
                     pbuilder.addSeparator("", cc.xy(1,y));
+                    y += 2;
                 }
-                y += 2;
                 
                 ColObjPanel panel = new ColObjPanel(session, this, co, colObjHash.get(co));
                 colObjPanels.add(panel);
@@ -200,22 +205,21 @@ public class LoanReturnDlg extends JDialog
                 pbuilder.add(panel, cc.xy(1,y));
                 y += 2;
                 i++;
-    
             }
             
-            JButton selectAllBtn = new JButton(getResourceString("SelectAll"));
-            okBtn = new JButton(getResourceString("OK"));
-            JButton cancel = new JButton(getResourceString("Cancel"));
+            JButton selectAllBtn = createButton(getResourceString("SelectAll"));
+            okBtn = createButton(getResourceString("OK"));
+            JButton cancel = createButton(getResourceString("Cancel"));
             
-            summaryLabel = new JLabel("");
+            summaryLabel = createLabel("");
             JPanel p = new JPanel(new BorderLayout());
             p.setBorder(BorderFactory.createEmptyBorder(5, 1, 5, 1));
             p.add(summaryLabel, BorderLayout.CENTER);
             
             JPanel agentPanel = new JPanel(new BorderLayout());
-            agentPanel.add(new JLabel("Agent:", SwingConstants.RIGHT), BorderLayout.WEST); // I18N
+            agentPanel.add(createLabel(getResourceString("LOANRET_AGENT") + ":", SwingConstants.RIGHT), BorderLayout.WEST);
             agentPanel.add(agentCBX = createAgentCombobox(), BorderLayout.CENTER);
-            p.add(agentPanel, BorderLayout.EAST); // I18N
+            p.add(agentPanel, BorderLayout.EAST);
             
             contentPanel.add(p, BorderLayout.NORTH);
             contentPanel.add(new JScrollPane(mainPanel, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER));
@@ -289,7 +293,7 @@ public class LoanReturnDlg extends JDialog
         }
         okBtn.setEnabled(count > 0 && agentCBX.getValue() != null);
 
-        summaryLabel.setText(String.format("%d items to be returned by", new Object[] {count})); // I18N
+        summaryLabel.setText(String.format(getResourceString("LOANRET_NUM_ITEMS_2B_RET_FMT"), count));
     }
     
     /**
@@ -302,7 +306,7 @@ public class LoanReturnDlg extends JDialog
                                                "", "", "", true,
                                                1, 1, 1, 1, "Changed", null, false);
         fcf.addProperty("name", "Agent");
-        fcf.addProperty("title", "Agent doing Return"); // I18N
+        fcf.addProperty("title", getResourceString("LOANRET_AGENT_DO_RET_TITLE"));
         return ViewFactory.createQueryComboBox(validator, fcf, true);
     }
     
@@ -418,8 +422,8 @@ public class LoanReturnDlg extends JDialog
             String descr = String.format("%s - %s", colObj.getIdentityTitle(), taxonName);
             descr = StringUtils.stripToEmpty(descr);
             
-            checkBox = new JCheckBox(descr);
-            pbuilder.add(new JLabel(descr), cc.xy(1,1));
+            checkBox = createCheckBox(descr);
+            pbuilder.add(createLabel(descr), cc.xy(1,1));
             checkBox.setSelected(true);
             
             JPanel outerPanel = new JPanel();
@@ -529,7 +533,7 @@ public class LoanReturnDlg extends JDialog
             PanelBuilder    pbuilder = new PanelBuilder(new FormLayout("max(120px;p),2px,max(50px;p),2px,p,2px,p,10px,p:g", "p,2px,p"), this);
             CellConstraints cc      = new CellConstraints();
             
-            pbuilder.add(label = new JLabel(prep.getPrepType().getName()), cc.xy(1,1));
+            pbuilder.add(label = createLabel(prep.getPrepType().getName()), cc.xy(1,1));
             label.setOpaque(false);
             
             boolean allReturned = false;
@@ -552,13 +556,15 @@ public class LoanReturnDlg extends JDialog
                     spinner = new JSpinner(model);
                     fixBGOfJSpinner(spinner);
                     pbuilder.add(spinner, cc.xy(3, 1));
+                    setControlSize(spinner);
                     
                     //String str = " of " + Integer.toString(quantityAvailable) + "  " + (quantityOut > 0 ? "(" + quantityOut + " on loan.)" : "");
-                    String fmtStr = String.format(" of %3d  ", new Object[] {quantityLoaned}); // TODO I18N
-                    pbuilder.add(label2 = new JLabel(fmtStr), cc.xy(5, 1));
+                    String fmtStr = String.format(getResourceString("LOANRET_OF_FORMAT")+"   ", new Object[] {quantityLoaned});
+                    pbuilder.add(label2 = createLabel(fmtStr), cc.xy(5, 1));
                     if (quantityOut > 0)
                     {
-                        fmtStr = quantityReturned == 0 ? "Nothing returned" : String.format("[%d returned]", new Object[] {quantityReturned}); // TODO I18N
+                        fmtStr = quantityReturned == 0 ? getResourceString("LOANRET_NOTHING_RET") : 
+                            String.format(getResourceString("LOANRET_NUM_ITEMS_RET_FMT"), quantityReturned);
                         prepInfoBtn = new LinkLabelBtn(this, fmtStr, IconManager.getIcon("InfoIcon"));
                         //prepInfoBtn.setCursor(new Cursor(Cursor.HAND_CURSOR));
                         pbuilder.add(prepInfoBtn, cc.xy(7, 1));
@@ -583,11 +589,11 @@ public class LoanReturnDlg extends JDialog
                         }
                     }
                         
-                    String fmtStr = lastReturnDate == null ? "All Returned" : // I18N
-                                 String.format("All Returned on %s", new Object[] {scrDateFormat.format(lastReturnDate)});
+                    String fmtStr = lastReturnDate == null ? getResourceString("LOANRET_ALL_RETURNED") :
+                                 String.format(getResourceString("LOANRET_ALL_RETURNED_ON_FMT"), 
+                                               scrDateFormat.format(lastReturnDate));
                     prepInfoBtn = new LinkLabelBtn(this, fmtStr, IconManager.getIcon("InfoIcon"));
                     pbuilder.add(prepInfoBtn, cc.xywh(3, 1, 7, 1));
-                    //pbuilder.add(label2 = new JLabel(fmtStr), cc.xywh(3, 1, 7, 1));
                     allReturned = true;
                 }
 
@@ -601,20 +607,20 @@ public class LoanReturnDlg extends JDialog
                 spinner = new JSpinner(model);
                 fixBGOfJSpinner(spinner);
                 pbuilder.add(spinner, cc.xy(3, 1));
-                pbuilder.add(label2 = new JLabel(" (Unknown Number Available)"), cc.xywh(5, 1, 2, 1)); // I18N
+                pbuilder.add(label2 = createLabel(" " + getResourceString("LOANRET_UNKNOWN_NUM_AVAIL")), cc.xywh(5, 1, 2, 1));
                 unknownQuantity = true;
                 maxValue = 1;
             }
 
             if (!allReturned)
             {
-                resolved = new JCheckBox("Resolved"); // I18N
+                resolved = createCheckBox(getResourceString("LOANRET_RESOLVED"));
                 resolved.setOpaque(false);
                 //resolved.setBackground(this.getBackground());
                 pbuilder.add(resolved, cc.xywh(9, 1, 1, 1));
 
                 remarks = new RemarksText();
-                pbuilder.add(remarks, cc.xywh(1, 3, 9, 1)); // I18N
+                pbuilder.add(remarks, cc.xywh(1, 3, 9, 1));
             }
             
             if (spinner != null)
@@ -880,7 +886,7 @@ public class LoanReturnDlg extends JDialog
     class RemarksText extends JTextField
     {
         protected Insets inner;
-        protected String bgStr     = "Remarks";  // I18N
+        protected String bgStr     = getResourceString("LOANRET_REMARKS");
         protected Point  pnt       = null;
         protected Color  textColor = new Color(0,0,0,64);
         

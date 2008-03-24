@@ -37,6 +37,8 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.ui.UIHelper;
+
 /**
  * Allows user to edit a properties file
  * 
@@ -81,8 +83,8 @@ public class AppPrefsEditor extends JPanel implements TableModelListener, ListSe
         table.setRowSelectionAllowed(true);
         table.setColumnSelectionAllowed(false);
         
-        addBtn    = new JButton("Add Property");
-        removeBtn = new JButton("Remove Property");
+        addBtn    = UIHelper.createButton("Add Property");
+        removeBtn = UIHelper.createButton("Remove Property");
         removeBtn.setEnabled(false);
         
         PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g,p,f:p:g", "p,10px"));

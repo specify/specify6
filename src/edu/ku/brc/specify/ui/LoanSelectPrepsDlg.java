@@ -14,6 +14,10 @@
  */
 package edu.ku.brc.specify.ui;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createCheckBox;
+import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.setControlSize;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -176,12 +180,12 @@ public class LoanSelectPrepsDlg extends JDialog
                 i++;
             }
         }
-        JButton selectAllBtn = new JButton(getResourceString("SelectAll"));
-        okBtn = new JButton(getResourceString("OK"));
-        JButton cancel = new JButton(getResourceString("Cancel"));
+        JButton selectAllBtn = createButton(getResourceString("SelectAll"));
+        okBtn = createButton(getResourceString("OK"));
+        JButton cancel = createButton(getResourceString("Cancel"));
         y += 2;
         
-        summaryLabel = new JLabel("");
+        summaryLabel = createLabel("");
         JPanel p = new JPanel(new BorderLayout());
         p.setBorder(BorderFactory.createEmptyBorder(5, 1, 5, 1));
         p.add(summaryLabel, BorderLayout.CENTER);
@@ -223,7 +227,7 @@ public class LoanSelectPrepsDlg extends JDialog
                 selectAllItems();
             }
         });
-        
+
         pack();
         
         Dimension size = getPreferredSize();
@@ -341,8 +345,8 @@ public class LoanSelectPrepsDlg extends JDialog
             String descr = String.format("%s - %s", colObj.getIdentityTitle(), taxonName);
             descr = StringUtils.stripToEmpty(descr);
             
-            pbuilder.add(checkBox = new JCheckBox(descr), cc.xy(1,1));
-            //builder.add(new JLabel(String.format("%6.0f", new Object[]{colObj.getCatalogNumber()})), cc.xy(1,1));
+            pbuilder.add(checkBox = createCheckBox(descr), cc.xy(1,1));
+            //builder.add(createLabel(String.format("%6.0f", new Object[]{colObj.getCatalogNumber()})), cc.xy(1,1));
             checkBox.setSelected(true);
             
             JPanel outerPanel = new JPanel();
@@ -458,7 +462,7 @@ public class LoanSelectPrepsDlg extends JDialog
             CellConstraints cc      = new CellConstraints();
             
             
-            pbuilder.add(label = new JLabel(prep.getPrepType().getName()), cc.xy(1,1));
+            pbuilder.add(label = createLabel(prep.getPrepType().getName()), cc.xy(1,1));
             label.setOpaque(false);
             
             if (prep.getCount() !=  null)
@@ -479,8 +483,8 @@ public class LoanSelectPrepsDlg extends JDialog
                     fixBGOfJSpinner(spinner);
                     pbuilder.add(spinner, cc.xy(3, 1));
                     //String str = " of " + Integer.toString(quantityAvailable) + "  " + (quantityOut > 0 ? "(" + quantityOut + " on loan.)" : "");
-                    String fmtStr = String.format(" of %3d  ", new Object[] {quantityAvailable}); // TODO I18N
-                    pbuilder.add(label2 = new JLabel(fmtStr), cc.xy(5, 1));
+                    String fmtStr = String.format(" of %3d  ", quantityAvailable); // TODO I18N
+                    pbuilder.add(label2 = createLabel(fmtStr), cc.xy(5, 1));
                     if (quantityOut > 0)
                     {
                         fmtStr = String.format("(%d on loan)", new Object[] {quantityOut}); // TODO I18N
@@ -492,7 +496,7 @@ public class LoanSelectPrepsDlg extends JDialog
                     
                 } else
                 {
-                    pbuilder.add(label2 = new JLabel("(None Available)"), cc.xywh(3, 1, 5, 1));// I18N
+                    pbuilder.add(label2 = createLabel("(None Available)"), cc.xywh(3, 1, 5, 1));// I18N
                 }
             } else
             {
@@ -503,7 +507,7 @@ public class LoanSelectPrepsDlg extends JDialog
                 spinner = new JSpinner(model);
                 fixBGOfJSpinner(spinner);
                 pbuilder.add(spinner, cc.xy(3, 1));
-                pbuilder.add(label2 = new JLabel(" (Unknown Number Available)"), cc.xywh(5, 1, 2, 1)); // I18N
+                pbuilder.add(label2 = createLabel(" (Unknown Number Available)"), cc.xywh(5, 1, 2, 1)); // I18N
                 unknownQuantity = true;
                 maxValue = 1;
             }
@@ -649,6 +653,7 @@ public class LoanSelectPrepsDlg extends JDialog
             super(label, imgIcon, SwingConstants.LEFT);
             setHorizontalTextPosition(SwingConstants.LEFT);
             this.al = al;
+            setControlSize(this);
             
             //setBorderPainted(false);
             //setBorder(BorderFactory.createEmptyBorder());

@@ -22,6 +22,7 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 
+import edu.ku.brc.ui.db.ERTICaptionInfo;
 import edu.ku.brc.ui.db.QueryForIdResultsIFace;
 
 

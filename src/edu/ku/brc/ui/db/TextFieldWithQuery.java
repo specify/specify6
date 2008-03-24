@@ -7,6 +7,9 @@
 
 package edu.ku.brc.ui.db;
 
+import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.setControlSize;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -36,7 +39,6 @@ import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -133,9 +135,9 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                               final String sqlTemplate)
     {
         super();
-        this.tableInfo      = tableInfo;
-        this.displayColumns = displayColumns != null ? displayColumns : keyColumn;
-        this.format         = format;
+        this.tableInfo          = tableInfo;
+        this.displayColumns     = displayColumns != null ? displayColumns : keyColumn;
+        this.format             = format;
         this.fieldFormatterName = fieldFormatterName;
         this.sqlTemplate        = sqlTemplate;
         
@@ -166,6 +168,8 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         setOpaque(false);
         
         textField = new JTextField(10);
+        setControlSize(textField);
+
         ImageIcon img = IconManager.getIcon("DropDownArrow", IconManager.IconSize.NonStd);
         dbBtn     = UIHelper.isMacOS() ? new MacGradiantBtn(img) : new JButton(img);
         dbBtn.setFocusable(false);
@@ -328,11 +332,14 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
      */
     protected void cbxKeyReleased(KeyEvent ev)
     {
-        //log.debug(ev.getKeyCode() +"  "+ KeyEvent.VK_TAB);
+        //log.debug(ev.getKeyCode() +"  "+ KeyEvent.VK_TAB+"   "+ KeyEvent.VK_CONTROL);
+        //log.debug(Integer.toHexString(ev.getKeyCode()) +"  "+ KeyEvent.VK_TAB+"  "+ KeyEvent.VK_CONTROL);
         if (ev.getKeyCode() == KeyEvent.VK_TAB || 
             ev.getKeyCode() == KeyEvent.VK_SHIFT || 
             ev.getKeyCode() == KeyEvent.VK_LEFT || 
-            ev.getKeyCode() == KeyEvent.VK_RIGHT)
+            ev.getKeyCode() == KeyEvent.VK_RIGHT || 
+            ev.getKeyCode() == KeyEvent.VK_CONTROL || 
+            ev.getKeyCode() == KeyEvent.VK_META)
         {
             return;
         }
@@ -342,7 +349,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         {
             currentText = uiFieldFormatter.formatOutBound(currentText).toString();
         } 
-        System.out.println(currentText);
+        //System.out.println(currentText);
         
         //log.debug("hasNewText "+hasNewText+"  "+currentText.length());
         if (currentText.length() == 0 || !hasNewText)
@@ -483,6 +490,8 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             if (addAddItem)
             {
                 JMenuItem mi = new JMenuItem(UIRegistry.getResourceString("TFWQ_ADD_LABEL"));
+                setControlSize(mi);
+
                 popupMenu.add(mi);
                 mi.addActionListener(al); 
             }
@@ -495,6 +504,8 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                     label = uiFieldFormatter.formatInBound(label).toString();
                 }
                 JMenuItem mi = new JMenuItem(label);
+                setControlSize(mi);
+
                 popupMenu.add(mi);
                 mi.addActionListener(al);
             }
@@ -615,7 +626,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 
                 sb.append(" WHERE ");
                 
-                System.err.println(sb.toString());
+                //System.err.println(sb.toString());
                 
                 String specialCols = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, true);
                 if (StringUtils.isNotEmpty(specialCols))
@@ -749,7 +760,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         
         final JList listBox = new JList(model);
         JPanel panel = new JPanel(new BorderLayout());
-        panel.add(new JLabel(UIRegistry.getResourceString("TFWQ_CHOOSE_LABEL"), SwingConstants.CENTER), BorderLayout.NORTH);
+        panel.add(createLabel(UIRegistry.getResourceString("TFWQ_CHOOSE_LABEL"), SwingConstants.CENTER), BorderLayout.NORTH);
         JScrollPane sp = new JScrollPane(listBox, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         panel.add(sp, BorderLayout.CENTER);
         panel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));

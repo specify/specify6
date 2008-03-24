@@ -7,6 +7,7 @@
 
 package edu.ku.brc.specify.plugins.latlon;
 
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.util.LatLonConverter.stripZeroes;
 
 import javax.swing.JLabel;
@@ -70,13 +71,12 @@ public class DDMMMMPanel extends DDDDPanel
         latitudeMM   = createTextField(8);
         longitudeMM  = createTextField(8);
 
-        builder.add(new JLabel(" "), cc.xy(4,1));
+        builder.add(createLabel(" "), cc.xy(4,1));
         builder.add(latitudeMM, cc.xy(5,1));
 
-        builder.add(new JLabel(" "), cc.xy(4,3));
+        builder.add(createLabel(" "), cc.xy(4,3));
         builder.add(longitudeMM, cc.xy(5,3));
 
-        
         return builder;
     }
     

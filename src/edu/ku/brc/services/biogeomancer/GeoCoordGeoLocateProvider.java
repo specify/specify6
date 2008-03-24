@@ -77,7 +77,7 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace
         log.info("Performing GeoLocate lookup of selected records");
         
         // create a progress bar dialog to show the network progress
-        final ProgressDialog progressDialog = new ProgressDialog("GEOLocate Progress", false, true); // I18N
+        final ProgressDialog progressDialog = new ProgressDialog(getResourceString("GEOLOC_PROGRESS"), false, true);
         progressDialog.getCloseBtn().setText(getResourceString("Cancel"));
         progressDialog.setModal(true);
         progressDialog.setProcess(0, items.size());
@@ -264,7 +264,7 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace
         // ask the user if they want to review the results
         String message = String.format(getResourceString(GEOLOCATE_RESULTS_VIEW_CONFIRM), String.valueOf(withResults.size()));
         int userChoice = JOptionPane.showConfirmDialog(UIRegistry.getTopWindow(), message,
-                "Continue?", JOptionPane.YES_NO_OPTION); // I18N
+                getResourceString("GEO_CONTINUE"), JOptionPane.YES_NO_OPTION);
         
         if (userChoice != JOptionPane.YES_OPTION)
         {
@@ -274,7 +274,8 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace
 
         // create the UI for displaying the BG results
         JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
-        GeoLocateResultsChooser bgResChooser = new GeoLocateResultsChooser(topFrame,"GEOLocate Results Chooser",withResults);
+        GeoLocateResultsChooser bgResChooser = new GeoLocateResultsChooser(topFrame, 
+                getResourceString("GEOLOC_RES_CHOOSER_TITLE"), withResults);
         
         List<GeorefResult> results = bgResChooser.getResultsChosen();
         

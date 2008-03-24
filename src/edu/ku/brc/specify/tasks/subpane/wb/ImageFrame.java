@@ -14,6 +14,9 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.createProgressBar;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -99,7 +102,7 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
 {
     private static final Logger log                        = Logger.getLogger(ImageFrame.class);
             
-    protected JProgressBar      progress                   = new JProgressBar();
+    protected JProgressBar      progress                   = createProgressBar();
     protected WorkbenchRow      row;
     protected WorkbenchPaneSS   wbPane;
     protected int               imageIndex                 = -1;
@@ -107,7 +110,7 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
     protected WorkbenchTask     workbenchTask;
 
     // the three things that are viewed in the main display area of the frame
-    protected JLabel            cardImageLabel             = new JLabel("", SwingConstants.CENTER);
+    protected JLabel            cardImageLabel             = createLabel("", SwingConstants.CENTER);
     protected JPanel            noCardImageMessagePanel;
     protected JPanel            noRowSelectedMessagePanel;
     
@@ -174,9 +177,9 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
         PanelBuilder    builder = new PanelBuilder(new FormLayout("f:p:g,c:p,f:p:g", "f:p:g,p,5px,p,f:p:g"));
         CellConstraints cc      = new CellConstraints();
         
-        loadImgBtn = new JButton(getResourceString("WB_LOAD_NEW_IMAGE"));
+        loadImgBtn = createButton(getResourceString("WB_LOAD_NEW_IMAGE"));
         
-        builder.add(new JLabel(getResourceString("WB_NO_IMAGE_ROW"), SwingConstants.CENTER), cc.xy(2, 2));
+        builder.add(createLabel(getResourceString("WB_NO_IMAGE_ROW"), SwingConstants.CENTER), cc.xy(2, 2));
         builder.add(loadImgBtn, cc.xy(2, 4));
         
         noCardImageMessagePanel = builder.getPanel();
@@ -184,8 +187,8 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
         noCardImageMessagePanel.setSize(minSize);
         
         builder = new PanelBuilder(new FormLayout("f:p:g,c:p,f:p:g", "f:p:g,c:p,f:p:g"));
-        builder.add(new JLabel(getResourceString("WB_NO_ROW_SELECTED"), SwingConstants.CENTER), cc.xy(2,2));
-        
+        builder.add(createLabel(getResourceString("WB_NO_ROW_SELECTED"), SwingConstants.CENTER), cc.xy(2,2));
+
         noRowSelectedMessagePanel = builder.getPanel();
         noRowSelectedMessagePanel.setPreferredSize(minSize);
         noRowSelectedMessagePanel.setSize(minSize);

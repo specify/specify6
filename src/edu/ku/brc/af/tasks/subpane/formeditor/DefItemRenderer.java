@@ -9,6 +9,8 @@
  */
 package edu.ku.brc.af.tasks.subpane.formeditor;
 
+import static edu.ku.brc.ui.UIHelper.createLabel;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 
@@ -40,9 +42,9 @@ public class DefItemRenderer implements ListCellRenderer
     {
         this.iconSize  = iconSize;
         this.blankIcon = IconManager.getIcon("BlankIcon", iconSize);
-        
+
         this.iconLabel = new JLabel(blankIcon);
-        this.label     = new JLabel("  ");
+        this.label     = createLabel("  ");
         
         panel = new JPanel(new BorderLayout());
         panel.add(iconLabel, BorderLayout.WEST);

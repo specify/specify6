@@ -15,8 +15,10 @@
 package edu.ku.brc.specify.tasks.subpane.wb;
 
 
+import static edu.ku.brc.ui.UIHelper.createButton;
 import static edu.ku.brc.ui.UIHelper.createDuplicateJGoodiesDef;
 import static edu.ku.brc.ui.UIHelper.createIconBtn;
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -322,8 +324,8 @@ public class WorkbenchPaneSS extends BaseSubPane
                 UIRegistry.enableCutCopyPaste(true);
             }
         });
-        
-        saveBtn = new JButton(getResourceString("Save"));
+
+        saveBtn = createButton(getResourceString("Save"));
         saveBtn.setToolTipText(String.format(getResourceString("WB_SAVE_DATASET_TT"), new Object[] {workbench.getName()}));
         saveBtn.setEnabled(false);
         saveBtn.addActionListener(new ActionListener()
@@ -610,7 +612,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         mapFrame = new JFrame();
         mapFrame.setIconImage( IconManager.getImage("AppIcon").getImage());
         mapFrame.setTitle(getResourceString("WB_GEO_REF_DATA_MAP"));
-        mapImageLabel = new JLabel();
+        mapImageLabel = createLabel("");
         mapImageLabel.setSize(500,500);
         mapFrame.add(mapImageLabel);
         mapFrame.setSize(500,500);
@@ -2728,7 +2730,7 @@ public class WorkbenchPaneSS extends BaseSubPane
             if (structureErrors.size() > 0) 
             { 
                 JPanel pane = new JPanel(new BorderLayout());
-                JLabel lbl = new JLabel(getResourceString("WB_UPLOAD_BAD_STRUCTURE_MSG") + ":");
+                JLabel lbl = createLabel(getResourceString("WB_UPLOAD_BAD_STRUCTURE_MSG") + ":");
                 lbl.setBorder(new EmptyBorder(3, 1, 2, 0));
                 pane.add(lbl, BorderLayout.NORTH);
                 JPanel lstPane = new JPanel(new BorderLayout());

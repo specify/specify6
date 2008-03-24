@@ -321,10 +321,10 @@ public class DropDownButton extends JPanel implements ChangeListener, PopupMenuL
                                          final PropertyChangeListener pcl,
                                          final boolean           overRideButtonBorder)
     {
-        JButton btn   = new JButton(label, icon);
+        JButton btn   = UIHelper.createButton(label, icon);
         btn.setOpaque(false);
         btn.addFocusListener(focusListener);
-        
+
         if (!overRideButtonBorder)
         {
             btn.setBorder(new EmptyBorder(3,6,3,4));

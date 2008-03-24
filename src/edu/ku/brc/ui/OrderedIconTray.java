@@ -72,16 +72,16 @@ public class OrderedIconTray extends IconTray implements ActionListener, ListSel
     
         toStartButton = new JButton(IconManager.getIcon("FirstRec", IconSize.NonStd));
         toStartButton.setSize(20,20);
-        toStartButton.setToolTipText("Move selection to first position");
+        toStartButton.setToolTipText("Move selection to first position"); // I18N
         moveLeftButton = new JButton(IconManager.getIcon("PrevRec", IconSize.NonStd));
         moveLeftButton.setSize(20,20);
-        moveLeftButton.setToolTipText("Move selection left one position");
+        moveLeftButton.setToolTipText("Move selection left one position");// I18N
         moveRightButton = new JButton(IconManager.getIcon("NextRec", IconSize.NonStd));
         moveRightButton.setSize(20,20);
-        moveRightButton.setToolTipText("Move selection right one position");
+        moveRightButton.setToolTipText("Move selection right one position");// I18N
         toEndButton = new JButton(IconManager.getIcon("LastRec", IconSize.NonStd));
         toEndButton.setSize(20,20);
-        toEndButton.setToolTipText("Move selection to last position");
+        toEndButton.setToolTipText("Move selection to last position");// I18N
         
         orderButtons = new JButton[4];
         orderButtons[0] = toStartButton;

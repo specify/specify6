@@ -15,6 +15,9 @@
 
 package edu.ku.brc.af.tasks.subpane;
 
+import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.createProgressBar;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 
@@ -91,14 +94,15 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
 
         if (buildProgressUI)
         {
-            progressBar = new JProgressBar();
+
+            progressBar = createProgressBar();
             progressBar.setIndeterminate(true);
             FormLayout      formLayout = new FormLayout("f:max(100px;p):g", "center:p:g, p, center:p:g");
             PanelBuilder    builder    = new PanelBuilder(formLayout);
             CellConstraints cc         = new CellConstraints();
     
             builder.add(progressBar, cc.xy(1,1));
-            builder.add(progressLabel = new JLabel("", SwingConstants.CENTER), cc.xy(1,3));
+            builder.add(progressLabel = createLabel("", SwingConstants.CENTER), cc.xy(1,3));
     
             PanelBuilder    builder2    = new PanelBuilder(new FormLayout("center:p:g", "center:p:g"));
             builder2.add(builder.getPanel(), cc.xy(1,1));

@@ -9,6 +9,8 @@
  */
 package edu.ku.brc.specify.tasks.subpane.qb;
 
+import static edu.ku.brc.ui.UIHelper.createLabel;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 
@@ -50,9 +52,9 @@ public class QryListRenderer implements ListCellRenderer
         this.blankIcon = IconManager.getIcon("BlankIcon", iconSize);
         
         this.iconLabel = new JLabel(blankIcon);
-        this.label     = new JLabel("  ");
+        this.label     = createLabel("  ");
         this.kidLabel  = new JLabel(blankIcon);
-        
+
         if (true)
         {
             panel = new JPanel(new BorderLayout());

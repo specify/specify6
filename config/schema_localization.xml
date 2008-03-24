@@ -2336,11 +2336,11 @@
       <item name="guid" type="java.lang.String">
         <names>
           <str language="en" country="" variant="">
-            <text>Guid</text>
+            <text>GUID</text>
             <version>0</version>
           </str>
           <str language="de" country="" variant="">
-            <text>Guid</text>
+            <text>GUID</text>
             <version>0</version>
           </str>
         </names>
@@ -8122,11 +8122,11 @@
       <item name="guid" type="java.lang.String">
         <names>
           <str language="en" country="" variant="">
-            <text>Guid</text>
+            <text>GUID</text>
             <version>0</version>
           </str>
           <str language="de" country="" variant="">
-            <text>Guid</text>
+            <text>GUID</text>
             <version>0</version>
           </str>
         </names>
@@ -16031,11 +16031,11 @@
       <item name="guid" type="java.lang.String">
         <names>
           <str language="de" country="" variant="">
-            <text>Guid</text>
+            <text>GUID</text>
             <version>0</version>
           </str>
           <str language="en" country="" variant="">
-            <text>Guid</text>
+            <text>GUID</text>
             <version>0</version>
           </str>
         </names>
@@ -18295,7 +18295,7 @@
       <item name="guid">
         <names>
           <str language="en">
-            <text>Guid</text>
+            <text>GUID</text>
             <version>0</version>
           </str>
         </names>
@@ -18504,11 +18504,11 @@
       <item name="guid" type="java.lang.String">
         <names>
           <str language="de" country="" variant="">
-            <text>Guid</text>
+            <text>GUID</text>
             <version>0</version>
           </str>
           <str language="en" country="" variant="">
-            <text>Guid</text>
+            <text>GUID</text>
             <version>0</version>
           </str>
         </names>
@@ -26619,11 +26619,11 @@
       <item name="guid" type="java.lang.String">
         <names>
           <str language="en" country="" variant="">
-            <text>Guid</text>
+            <text>GUID</text>
             <version>0</version>
           </str>
           <str language="de" country="" variant="">
-            <text>Guid</text>
+            <text>GUID</text>
             <version>0</version>
           </str>
         </names>
@@ -29757,7 +29757,7 @@
       <item name="guid" type="java.lang.String">
         <names>
           <str language="de" country="" variant="">
-            <text>Guid</text>
+            <text>GUID</text>
             <version>0</version>
           </str>
           <str language="en" country="" variant="">

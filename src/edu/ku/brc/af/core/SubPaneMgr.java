@@ -809,7 +809,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             if (subPane != null)
             {
                 //log.debug("stateChanged: new pane ["+subPane.getTitle()+"]");
-                // When the first the pane is added there is no notification via the listener so we nedd to do it here
+                // When the first the pane is added there is no notification via the listener so we need to do it here
                 // when items are added and there is already items then the listener gets notified.
                 if (currentPane != subPane)
                 {

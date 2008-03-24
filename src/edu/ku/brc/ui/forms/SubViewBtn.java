@@ -14,6 +14,8 @@
  */
 package edu.ku.brc.ui.forms;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Color;
@@ -148,7 +150,7 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
             x = 1;  
         }
         
-        subViewBtn = icon != null ? new JButton("...", icon) : new JButton(baseLabel);
+        subViewBtn = icon != null ? createButton("...", icon) : createButton(baseLabel);
         subViewBtn.addActionListener(new ActionListener() {
             //@Override
             public void actionPerformed(ActionEvent e)
@@ -157,8 +159,9 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
             }
         });
         subViewBtn.setEnabled(true);
+
         
-        label  = new JLabel("  ");
+        label  = createLabel("  ");
         label.setHorizontalAlignment(SwingConstants.CENTER);
         label.setOpaque(true);
         label.setBackground(Color.WHITE);

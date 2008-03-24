@@ -6,6 +6,8 @@
  */
 package edu.ku.brc.af.tasks.subpane.formeditor;
 
+import static edu.ku.brc.ui.UIHelper.createLabel;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -249,7 +251,7 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
         int x = 1;
         for (String label : labels)
         {
-            pb.add(new JLabel(label, SwingConstants.CENTER), cc.xy(x, 1));
+            pb.add(createLabel(label, SwingConstants.CENTER), cc.xy(x, 1));
             x += 2;
         }
         
@@ -294,13 +296,13 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
         x += 2;
         
         pb.add(saveControlPanel,     cc.xy(1, 5));
-        //pb.add(new JLabel(" "),     cc.xy(3, 5));
-        //pb.add(new JLabel(" "),     cc.xy(5, 5));
+        //pb.add(createLabel(" "),     cc.xy(3, 5));
+        //pb.add(createLabel(" "),     cc.xy(5, 5));
         pb.add(viewControlPanel,    cc.xy(7, 5));
         pb.add(altViewControlPanel, cc.xy(9, 5));
-        //pb.add(new JLabel(" "),     cc.xy(11, 5));
+        //pb.add(createLabel(" "),     cc.xy(11, 5));
         pb.add(viewDefControlPanel, cc.xy(13, 5));
-        
+
         pb.addSeparator("View Def Editor", cc.xywh(1, 7, 13, 1));
         
         add(pb.getPanel(), BorderLayout.NORTH);

@@ -15,6 +15,8 @@
 
 package edu.ku.brc.ui.dnd;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -47,8 +49,9 @@ import edu.ku.brc.ui.DndDeletableListCellRenderer;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
- * This dialoig enables the user to view the contents of the trash can. It can be used to send commands to have the items recovered.
+ * This dialog enables the user to view the contents of the trash can. It can be used to send commands to have the items recovered.
  *
+ *(This needs to be converted to CustomDialog).
  * @code_status Beta
  * 
  * @author rods
@@ -93,7 +96,7 @@ public class TrashCanDlg extends JDialog implements ActionListener, ListSelectio
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
         
-        JLabel label = new JLabel(getResourceString("DeletedItems"), SwingConstants.CENTER);
+        JLabel label = createLabel(getResourceString("DeletedItems"), SwingConstants.CENTER);
         panel.add(label, BorderLayout.NORTH);
 
         try
@@ -122,8 +125,8 @@ public class TrashCanDlg extends JDialog implements ActionListener, ListSelectio
             panel.add(listScroller, BorderLayout.CENTER);
             
             // Bottom Button UI
-            restoreBtn         = new JButton(getResourceString("Restore"));
-            okBtn             = new JButton(getResourceString("Close"));
+            restoreBtn         = createButton(getResourceString("Restore"));
+            okBtn             = createButton(getResourceString("Close"));
 
             restoreBtn.setEnabled(false);
             

@@ -17,6 +17,10 @@
  */
 package edu.ku.brc.ui;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createCheckBox;
+import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.createRadioButton;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Color;
@@ -29,11 +33,9 @@ import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JToggleButton;
 import javax.swing.ScrollPaneConstants;
@@ -136,13 +138,13 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
         JToggleButton togBtn;
         if (uiType == Type.Checkbox)
         {
-            togBtn = new JCheckBox(label);
+            togBtn = createCheckBox(label);
         } else
         {
-            togBtn = new JRadioButton(label);
+            togBtn = createRadioButton(label);
             group.add(togBtn);
         }
-        
+
         if (changeListener != null)
         {
             togBtn.addChangeListener(changeListener);
@@ -203,7 +205,7 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
         
         if (desc != null)
         {
-            JLabel lbl = new JLabel(getResourceString(desc), SwingConstants.CENTER);
+            JLabel lbl = createLabel(getResourceString(desc), SwingConstants.CENTER);
             panelBlder.add(lbl, cc.xy(1, y)); y += 2;
         }
 
@@ -276,8 +278,8 @@ public class ToggleButtonChooserPanel<T> extends JPanel implements ActionListene
         
         if (addSelectAll && uiType == Type.Checkbox)
         {
-            selectAllBtn   = new JButton(getResourceString("SelectAll"));
-            deselectAllBtn = new JButton(getResourceString("DeselectAll"));
+            selectAllBtn   = createButton(getResourceString("SelectAll"));
+            deselectAllBtn = createButton(getResourceString("DeselectAll"));
 
             selectAllBtn.addActionListener(this);
             deselectAllBtn.addActionListener(this);

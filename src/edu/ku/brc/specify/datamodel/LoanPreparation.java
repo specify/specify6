@@ -153,11 +153,13 @@ public class LoanPreparation extends CollectionMember implements java.io.Seriali
      *      * The total number of specimens  loaned (necessary for lots)
      */
     @Column(name = "Quantity", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getQuantity() {
-        return this.quantity;
+    public Integer getQuantity() 
+    {
+        return this.quantity == null ? 0 : this.quantity;
     }
     
-    public void setQuantity(Integer quantity) {
+    public void setQuantity(Integer quantity) 
+    {
         this.quantity = quantity;
     }
 
@@ -165,7 +167,8 @@ public class LoanPreparation extends CollectionMember implements java.io.Seriali
      *      * Description of loaned material (intended to be used for non-cataloged items, i.e. when PreparationID is null)
      */
     @Column(name = "DescriptionOfMaterial", unique = false, nullable = true, insertable = true, updatable = true)
-    public String getDescriptionOfMaterial() {
+    public String getDescriptionOfMaterial() 
+    {
         return this.descriptionOfMaterial;
     }
     
@@ -178,11 +181,13 @@ public class LoanPreparation extends CollectionMember implements java.io.Seriali
      */
     @Lob
     @Column(name = "OutComments", unique = false, nullable = true, insertable = true, updatable = true, length = 1024)
-    public String getOutComments() {
+    public String getOutComments() 
+    {
         return this.outComments;
     }
     
-    public void setOutComments(String outComments) {
+    public void setOutComments(String outComments) 
+    {
         this.outComments = outComments;
     }
 
@@ -221,11 +226,13 @@ public class LoanPreparation extends CollectionMember implements java.io.Seriali
      *      * Number of specimens returned, deaccessioned or otherwise accounted for. (necessary for Lots)
      */
     @Column(name = "QuantityResolved", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getQuantityResolved() {
-        return this.quantityResolved;
+    public Integer getQuantityResolved() 
+    {
+        return this.quantityResolved == null ? 0 : this.quantityResolved;
     }
     
-    public void setQuantityResolved(Integer quantityResolved) {
+    public void setQuantityResolved(Integer quantityResolved) 
+    {
         this.quantityResolved = quantityResolved;
     }
 
@@ -233,11 +240,13 @@ public class LoanPreparation extends CollectionMember implements java.io.Seriali
      *      * Number of specimens returned. (necessary for Lots)
      */
     @Column(name = "QuantityReturned", unique = false, nullable = true, insertable = true, updatable = true)
-    public Integer getQuantityReturned() {
-        return this.quantityReturned;
+    public Integer getQuantityReturned() 
+    {
+        return this.quantityReturned == null ? 0 : this.quantityReturned;
     }
     
-    public void setQuantityReturned(Integer quantityReturned) {
+    public void setQuantityReturned(Integer quantityReturned) 
+    {
         this.quantityReturned = quantityReturned;
     }
     
@@ -245,11 +254,13 @@ public class LoanPreparation extends CollectionMember implements java.io.Seriali
      *      * User definable
      */
     @Column(name="IsResolved",unique=false,nullable=false,insertable=true,updatable=true)
-    public Boolean getIsResolved() {
+    public Boolean getIsResolved() 
+    {
         return this.isResolved;
     }
     
-    public void setIsResolved(Boolean isResolved) {
+    public void setIsResolved(Boolean isResolved) 
+    {
         this.isResolved = isResolved;
     }
 

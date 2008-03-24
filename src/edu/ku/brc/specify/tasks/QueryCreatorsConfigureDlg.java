@@ -15,6 +15,7 @@
 package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UIHelper.createIconBtn;
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIRegistry.getTopWindow;
 
@@ -30,7 +31,6 @@ import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -399,7 +399,7 @@ public class QueryCreatorsConfigureDlg extends CustomDialog
             upDownPanel.add(orderDwnBtn,      cc.xy(1, 4));
             
             int col = orderOnLeft ? 3 : 1;
-            outer.add(new JLabel(getResourceString(titleKey), SwingConstants.CENTER), cc.xy(col, 1));
+            outer.add(createLabel(getResourceString(titleKey), SwingConstants.CENTER), cc.xy(col, 1));
             JScrollPane sp = new JScrollPane(orderList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
             outer.add(sp,                     cc.xy(col, 3));
             outer.add(arePanel,               cc.xy(col, 5));

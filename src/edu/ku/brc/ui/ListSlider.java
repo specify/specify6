@@ -184,10 +184,10 @@ public class ListSlider extends JPanel
 
         JPanel destinationPanel = getListPanel(destinationList, destinationListTitle);
 
-        addButton = new JButton(addString);
-        addAllButton = new JButton(addAllString);
-        removeButton = new JButton(removeString);
-        removeAllButton = new JButton(removeAllString);
+        addButton       = UIHelper.createButton(addString);
+        addAllButton    = UIHelper.createButton(addAllString);
+        removeButton    = UIHelper.createButton(removeString);
+        removeAllButton = UIHelper.createButton(removeAllString);
   
         AddListener addListener = new AddListener();
         addButton.addActionListener(addListener);

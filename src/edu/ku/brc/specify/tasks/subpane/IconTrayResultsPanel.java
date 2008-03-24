@@ -57,21 +57,41 @@ public class IconTrayResultsPanel extends IconTray implements ESResultsTablePane
     {
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace#hasResults()
+     */
+    public boolean hasResults()
+    {
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace#getListOfIds(boolean)
+     */
     public List<Integer> getListOfIds(boolean returnAll)
     {
         return Collections.singletonList(prevSelection.getId());
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace#getResults()
+     */
     public QueryForIdResultsIFace getResults()
     {
         return results;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace#getUIComponent()
+     */
     public Component getUIComponent()
     {
         return this;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace#initialize(edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace, edu.ku.brc.ui.db.QueryForIdResultsIFace)
+     */
     public void initialize(ExpressSearchResultsPaneIFace esResPane, QueryForIdResultsIFace esResults)
     {
         this.esrPane = esResPane;

@@ -15,6 +15,8 @@
 
 package edu.ku.brc.specify.tasks.subpane;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -110,7 +112,7 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
             PanelBuilder    builder    = new PanelBuilder(formLayout);
             CellConstraints cc         = new CellConstraints();
            
-            exeBtn = new JButton(getResourceString("Execute"));
+            exeBtn = createButton(getResourceString("Execute"));
             exeBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) 
                 {
@@ -118,13 +120,14 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
                 }
             });
 
-            builder.add(label = new JLabel("SQL:"), cc.xy(1,1));
+            builder.add(label = createLabel("SQL:"), cc.xy(1,1));
             builder.add(taScrollPane, cc.xy(3,1));
             builder.add(exeBtn, cc.xy(5,1));
             
             add(builder.getPanel(), BorderLayout.NORTH);
             
-            add(new JScrollPane(table), BorderLayout.CENTER);            
+            add(new JScrollPane(table), BorderLayout.CENTER); 
+
         }
         
         if (!hideBtnPanel)
@@ -133,9 +136,9 @@ public class SQLQueryPane extends BaseSubPane implements SQLExecutionListener
             PanelBuilder    builder    = new PanelBuilder(formLayout);
             CellConstraints cc         = new CellConstraints();
             
-            selectAllBtn   = new JButton(getResourceString("SelectAll"));
-            deselectAllBtn = new JButton(getResourceString("DeselectAll"));
-            saveToRSBtn    = new JButton(getResourceString("SaveToRecordSet"));
+            selectAllBtn   = createButton(getResourceString("SelectAll"));
+            deselectAllBtn = createButton(getResourceString("DeselectAll"));
+            saveToRSBtn    = createButton(getResourceString("SaveToRecordSet"));
             
             builder.add(selectAllBtn,   cc.xy(1,1));
             builder.add(deselectAllBtn, cc.xy(3,1));

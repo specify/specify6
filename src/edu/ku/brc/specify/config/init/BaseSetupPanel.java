@@ -9,14 +9,16 @@
  */
 package edu.ku.brc.specify.config.init;
 
+import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.createPasswordField;
+import static edu.ku.brc.ui.UIHelper.createTextField;
+
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Properties;
 
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.event.DocumentEvent;
@@ -106,8 +108,9 @@ public abstract class BaseSetupPanel extends JPanel
     {
         CellConstraints cc = new CellConstraints();
         
-        JTextField txt = isPassword ? new JPasswordField(15) : new JTextField(15);
-        builder.add(new JLabel(label+":", SwingConstants.RIGHT), cc.xy(1, row));
+        JTextField txt = isPassword ? createPasswordField(15) : createTextField(15);
+        
+        builder.add(createLabel(label+":", SwingConstants.RIGHT), cc.xy(1, row));
         builder.add(txt,                                         cc.xy(3, row));
         //txt.addFocusListener(this);
         //txt.addKeyListener(keyAdapter);

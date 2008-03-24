@@ -18,6 +18,7 @@
 package edu.ku.brc.specify.tools.schemalocale;
 
 import static edu.ku.brc.specify.utilapps.DataBuilder.createPickList;
+import static edu.ku.brc.ui.UIHelper.createComboBox;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -57,7 +58,7 @@ import edu.ku.brc.ui.UIHelper;
  */
 public class DisciplineBasedPanel extends JPanel implements LocalizableIOIFace, PropertyChangeListener
 {
-    protected JComboBox disciplineCBX = new JComboBox();
+    protected JComboBox disciplineCBX = createComboBox();
     protected JButton   addBtn;
     protected JButton   delBtn;
     

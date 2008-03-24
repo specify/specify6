@@ -14,6 +14,8 @@
  */
 package edu.ku.brc.specify.tasks;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
@@ -71,9 +73,9 @@ import edu.ku.brc.dbsupport.SQLExecutionListener;
 import edu.ku.brc.dbsupport.SQLExecutionProcessor;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.tasks.subpane.ESResultsSubPane;
+import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
 import edu.ku.brc.specify.tasks.subpane.ExpressTableResultsFromQuery;
-import edu.ku.brc.specify.tasks.subpane.qb.QBQueryForIdResultsHQL;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -537,15 +539,12 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         GridBagConstraints c = new GridBagConstraints();
 
         JPanel     searchPanel = new JPanel(gridbag);
-        JLabel     spacer      = new JLabel("  ");
+        JLabel     spacer      = createLabel("  ");
 
-        searchBtn = new JButton(getResourceString("Search"));
+        searchBtn = createButton(getResourceString("Search"));
         searchBtn.setToolTipText(getResourceString("ExpressSearchTT"));
         HelpMgr.setHelpID(searchBtn, "Express_Search");
         
-        //searchText  = new JTextField("[19510707 TO 19510711]", 10);//"beanii"
-        //searchText  = new JTextField("beanii", 15);
-                
         searchText = new JAutoCompTextField(15, PickListDBAdapterFactory.getInstance().create("ExpressSearch", true));
         searchText.setAskBeforeSave(false);
         HelpMgr.registerComponent(searchText, "Express_Search");
@@ -1021,15 +1020,21 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     /**
      * @param cmdAction
      */
-    protected void doSearchComplete(CommandAction cmdAction)
+    protected void doSearchComplete(final CommandAction cmdAction)
     {
         UIRegistry.getStatusBar().setIndeterminate(false);
         if (cmdAction.getData() instanceof JPAQuery)
         {
-            QueryForIdResultsIFace results = (QueryForIdResultsIFace)cmdAction.getProperty("QueryForIdResultsIFace");
+            QueryForIdResultsIFace   results = (QueryForIdResultsIFace)cmdAction.getProperty("QueryForIdResultsIFace");
+            ESResultsTablePanelIFace esrto   = (ESResultsTablePanelIFace)cmdAction.getProperty("ESResultsTablePanelIFace");
+            if (esrto != null && !esrto.hasResults())
+            {
+                UIRegistry.displayLocalizedStatusBarText("QB_NO_RESULTS");
+                return;
+            }
             
             //Only execute this block for QueryBuilder results...
-            if (queryResultsPane != null && results != null && results instanceof QBQueryForIdResultsHQL)
+            if (queryResultsPane != null && results != null && queryResultsPane.contains(results))
             {
                 int     rowCount = ((JPAQuery) cmdAction.getData()).getDataObjects().size();
                 boolean isError  = ((JPAQuery) cmdAction.getData()).isInError();
@@ -1055,10 +1060,12 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                         SubPaneMgr.getInstance().removePane(queryResultsPane, false);
                     }
                 }
+                
                 if (isError)
                 {
                     UIRegistry.getStatusBar().setErrorMessage(getResourceString("QB_RUN_ERROR"));
                 }
+                
                 else if (rowCount == 0)
                 {
                     UIRegistry.displayLocalizedStatusBarText("QB_NO_RESULTS");

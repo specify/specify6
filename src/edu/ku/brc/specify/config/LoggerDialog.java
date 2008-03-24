@@ -17,6 +17,9 @@
  */
 package edu.ku.brc.specify.config;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createComboBox;
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Dimension;
@@ -32,7 +35,6 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.WindowConstants;
@@ -96,12 +98,12 @@ public class LoggerDialog extends JDialog implements ActionListener
         CellConstraints cc      = new CellConstraints();
         
         // Bottom Button UI
-        cancelBtn = new JButton(getResourceString("Cancel"));
-        okBtn     = new JButton(getResourceString("OK"));
+        cancelBtn = createButton(getResourceString("Cancel"));
+        okBtn     = createButton(getResourceString("OK"));
         cnt = 1;
         for (LoggerInfo logInfo : loggers)
         {
-            builder.add(new JLabel(logInfo.getLogger().getName()), cc.xy(1, cnt));
+            builder.add(createLabel(logInfo.getLogger().getName()), cc.xy(1, cnt));
             builder.add(logInfo.getCbx(), cc.xy(3, cnt));
             cnt += 2;
         }
@@ -133,7 +135,7 @@ public class LoggerDialog extends JDialog implements ActionListener
             }
         });
         
-        setAllCBX = new JComboBox(levelsList);
+        setAllCBX = createComboBox(levelsList);
         setAllCBX.setSelectedIndex(-1);
         setAllCBX.addActionListener(new ActionListener() {
            public void actionPerformed(ActionEvent e)
@@ -154,12 +156,12 @@ public class LoggerDialog extends JDialog implements ActionListener
         JScrollPane  scroller   = new JScrollPane(builder.getPanel(), ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         PanelBuilder outerPanel = new PanelBuilder(new FormLayout("p,2px,p,p:g", "min(400px;p):g,5px,p,10px,p"));
         outerPanel.add(scroller, cc.xywh(1, 1, 4, 1));
-        outerPanel.add(new JLabel("Set All To:"), cc.xy(1, 3));
+        outerPanel.add(createLabel("Set All To:"), cc.xy(1, 3));
         outerPanel.add(setAllCBX, cc.xy(3, 3));
         outerPanel.add(btnBuilder.getPanel(), cc.xywh(1, 5, 4, 1));
         outerPanel.getPanel().setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
         setContentPane(outerPanel.getPanel());
-        
+
         setTitle("Configure Log Levels");
         
         //setLocationRelativeTo(UIRegistry.get(UIRegistry.FRAME));
@@ -210,7 +212,7 @@ public class LoggerDialog extends JDialog implements ActionListener
     protected JComboBox createCBX(final Level levelArg)
     {
         Level     level = levelArg;
-        JComboBox cbx   = new JComboBox(levelsList);
+        JComboBox cbx   = createComboBox(levelsList);
         
         if (level == null)
         {

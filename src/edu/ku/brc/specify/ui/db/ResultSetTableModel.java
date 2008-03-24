@@ -33,7 +33,6 @@ import javax.swing.table.AbstractTableModel;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
-import edu.ku.brc.af.core.expresssearch.ERTICaptionInfo;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.dbsupport.CustomQueryIFace;
 import edu.ku.brc.dbsupport.CustomQueryListener;
@@ -43,9 +42,11 @@ import edu.ku.brc.dbsupport.SQLExecutionListener;
 import edu.ku.brc.dbsupport.SQLExecutionProcessor;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
+import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DateWrapper;
+import edu.ku.brc.ui.db.ERTICaptionInfo;
 import edu.ku.brc.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.ui.forms.DataObjectSettable;
 import edu.ku.brc.ui.forms.DataObjectSettableFactory;
@@ -71,6 +72,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
     protected static int VISIBLE_ROWS = 10; // XXX Got get this from elsewhere
 
     // Data Members
+    protected ESResultsTablePanelIFace    parentERTP;
     protected Vector<Class<?>>            classNames  = new Vector<Class<?>>();
     protected Vector<String>              colNames    = new Vector<String>();
     protected int                         currentRow  = 0;
@@ -94,8 +96,10 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
      * Construct with a QueryForIdResultsIFace
      * @param results
      */
-    public ResultSetTableModel(final QueryForIdResultsIFace results)
+    public ResultSetTableModel(final ESResultsTablePanelIFace parentERTP,
+                               final QueryForIdResultsIFace results)
     {
+        this.parentERTP = parentERTP;
         this.results = results;
         
         captionInfo = results.getVisibleCaptionInfo();
@@ -133,6 +137,28 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
             SQLExecutionProcessor sqlProc = new SQLExecutionProcessor(this, results.getSQL(results.getSearchTerm(), ids));
             sqlProc.start();
         }
+    }
+    
+    /**
+     * Cleans up internal data members.
+     */
+    public void cleanUp()
+    {
+        parentERTP = null;
+        results    = null;
+        propertyListener = null;
+        
+        for (Vector<Object> list : cache)
+        {
+            list.clear(); 
+        }
+        cache.clear();
+        
+        if (ids != null)
+        {
+            ids.clear();
+        }
+        
     }
 
     /**
@@ -799,6 +825,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
         }
         CommandAction cmdAction = new CommandAction(ExpressSearchTask.EXPRESSSEARCH, "SearchComplete", customQuery);
         cmdAction.setProperty("QueryForIdResultsIFace", results);
+        cmdAction.setProperty("ESResultsTablePanelIFace", parentERTP);
         CommandDispatcher.dispatch(cmdAction);
     }
 

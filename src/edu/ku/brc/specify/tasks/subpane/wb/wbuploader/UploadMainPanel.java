@@ -9,6 +9,9 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.createProgressBar;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -274,22 +277,23 @@ public class UploadMainPanel extends JPanel
         setLayout(new FormLayout("3dlu:none, fill:50dlu:grow(0.30), 20dlu:none, fill:50dlu:grow(0.70), 5dlu:none, r:max(50dlu;pref), 3dlu:none", 
                 "2dlu:none, fill:m:none, 4dlu:none, t:m:none, 2dlu:none, fill:75dlu:grow, 5dlu:none"));
         
-        JLabel title = new JLabel(getResourceString("WB_UPLOAD_FORM_TITLE"));
+        JLabel title = createLabel(getResourceString("WB_UPLOAD_FORM_TITLE"));
         title.setFont(title.getFont().deriveFont(Font.BOLD));
         title.setHorizontalAlignment(SwingConstants.LEFT);
         add(title, cc.xywh(2,2,5,1));
         
         JPanel pPane = new JPanel(new FormLayout("fill:pref:grow, fill:pref:none", "center:m:grow"));
-        currOpProgress = new JProgressBar();
+        currOpProgress = createProgressBar();
+        
         pPane.add(currOpProgress, cc.xy(1, 1));
-        cancelBtn = new JButton(getResourceString("Cancel")); 
+        cancelBtn = createButton(getResourceString("Cancel")); 
         cancelBtn.setActionCommand(CANCEL_OPERATION);
         pPane.add(cancelBtn, cc.xy(2, 1));
         add(pPane, cc.xywh(4, 2, 3, 1));
 
         add(new JSeparator(SwingConstants.HORIZONTAL), cc.xywh(2,3,5,1));
         
-        uploadTblLbl = new JLabel(getResourceString("WB_UPLOAD_AFFECTED_TBLS_LIST"));
+        uploadTblLbl = createLabel(getResourceString("WB_UPLOAD_AFFECTED_TBLS_LIST"));
         add(uploadTblLbl, cc.xy(2, 4));
         
         
@@ -313,7 +317,7 @@ public class UploadMainPanel extends JPanel
         
         msgPane = new JPanel(new FormLayout("fill:m:grow", "fill:pref:grow, fill:m:grow"));
         
-        msgLbl  = new JLabel(getResourceString("WB_UPLOAD_MSG_LIST"));
+        msgLbl  = createLabel(getResourceString("WB_UPLOAD_MSG_LIST"));
         add(msgLbl, cc.xy(4, 4));
         
         msgList = new JList(new DefaultListModel());
@@ -324,26 +328,26 @@ public class UploadMainPanel extends JPanel
         validationErrorList = new JList(new DefaultListModel());
         validationErrorPanel.add(new JScrollPane(validationErrorList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER), 
                 BorderLayout.CENTER);
-        printBtn = new JButton(getResourceString("WB_UPLOAD_PRINT_MESSAGES_BTN")); 
+        printBtn = createButton(getResourceString("WB_UPLOAD_PRINT_MESSAGES_BTN")); 
         printBtn.setActionCommand(PRINT_INVALID);
         JPanel pbtnPane = new JPanel(new FormLayout("fill:m:grow, right:max(50dlu;pref)", "c:m"));
         pbtnPane.add(printBtn, cc.xy(2, 1));
         validationErrorPanel.add(pbtnPane, BorderLayout.SOUTH);
-        
+
         add(msgPane, cc.xy(4, 6));
                 
         JPanel btnPane = new JPanel(new FormLayout("f:max(50dlu;pref)", "c:m, c:m, c:m, c:m, c:m, c:m"));
-        validateContentBtn = new JButton(getResourceString("WB_UPLOAD_VALIDATE_CONTENT_BTN"));
+        validateContentBtn = createButton(getResourceString("WB_UPLOAD_VALIDATE_CONTENT_BTN"));
         validateContentBtn.setActionCommand(VALIDATE_CONTENT);
-        viewSettingsBtn = new JButton(getResourceString("WB_UPLOAD_SETTINGS_BTN")); 
+        viewSettingsBtn = createButton(getResourceString("WB_UPLOAD_SETTINGS_BTN")); 
         viewSettingsBtn.setActionCommand(VIEW_SETTINGS);
-        doUploadBtn     = new JButton(getResourceString("WB_UPLOAD_BTN"));
+        doUploadBtn     = createButton(getResourceString("WB_UPLOAD_BTN"));
         doUploadBtn.setActionCommand(DO_UPLOAD);
-        viewUploadBtn   = new JButton(getResourceString("WB_UPLOAD_VIEW_BTN"));
+        viewUploadBtn   = createButton(getResourceString("WB_UPLOAD_VIEW_BTN"));
         viewUploadBtn.setActionCommand(VIEW_UPLOAD);
-        closeBtn        = new JButton(getResourceString("Close")); 
+        closeBtn        = createButton(getResourceString("Close")); 
         closeBtn.setActionCommand(CLOSE_UI);
-        undoBtn         = new JButton(getResourceString("WB_UPLOAD_UNDO_BTN")); 
+        undoBtn         = createButton(getResourceString("WB_UPLOAD_UNDO_BTN")); 
         undoBtn.setActionCommand(UNDO_UPLOAD);
         btnPane.add(validateContentBtn, cc.xy(1, 1));
         btnPane.add(doUploadBtn, cc.xy(1,2));

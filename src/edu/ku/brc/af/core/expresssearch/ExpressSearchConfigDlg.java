@@ -14,6 +14,7 @@
  */
 package edu.ku.brc.af.core.expresssearch;
 
+import static edu.ku.brc.ui.UIHelper.createComboBox;
 import static edu.ku.brc.ui.UIHelper.createI18NLabel;
 import static edu.ku.brc.ui.UIHelper.createIconBtn;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
@@ -268,7 +269,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
         TableColumn col = searchFieldsTable.getColumnModel().getColumn(2);
         MyComboBoxEditor myCBXEditor = new MyComboBoxEditor(values);
         col.setCellEditor(myCBXEditor);
-        searchFieldsTable.setRowHeight(new JComboBox().getPreferredSize().height);
+        searchFieldsTable.setRowHeight(createComboBox().getPreferredSize().height);
         col.setCellRenderer(new MyComboBoxRenderer(values));
         
         orderUpBtn = createIconBtn("ReorderUp", "WB_MOVE_UP", new ActionListener()

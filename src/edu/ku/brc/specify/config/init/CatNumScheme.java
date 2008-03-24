@@ -9,6 +9,10 @@
  */
 package edu.ku.brc.specify.config.init;
 
+import static edu.ku.brc.ui.UIHelper.createCheckBox;
+import static edu.ku.brc.ui.UIHelper.createComboBox;
+import static edu.ku.brc.ui.UIHelper.createLabel;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Properties;
@@ -40,9 +44,9 @@ import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
  */
 public class CatNumScheme extends BaseSetupPanel
 {
-    protected JCheckBox isNumericChk    = new JCheckBox("Is Numeric Only?");
-    protected JComboBox catNumSchemeCBX = new JComboBox(new DefaultComboBoxModel());
-    protected JLabel    isNumericLbl    = new JLabel("");
+    protected JCheckBox isNumericChk    = createCheckBox("Is Numeric Only?");
+    protected JComboBox catNumSchemeCBX = createComboBox(new DefaultComboBoxModel());
+    protected JLabel    isNumericLbl    = createLabel("");
     
     public CatNumScheme(final JButton nextBtn)
     {
@@ -87,12 +91,13 @@ public class CatNumScheme extends BaseSetupPanel
 
         CellConstraints cc = new CellConstraints();
         PanelBuilder pb = new PanelBuilder(new FormLayout("p,4px,p,f:p:g", "p,4px,p,4px,p"), this);
-        pb.add(new JLabel("Choose a Catalog Numbering Format:"), cc.xywh(1, 1, 4, 1));
-        pb.add(new JLabel("Format:", SwingConstants.RIGHT), cc.xy(1, 3));
+        pb.add(createLabel("Choose a Catalog Numbering Format:"), cc.xywh(1, 1, 4, 1));
+        pb.add(createLabel("Format:", SwingConstants.RIGHT), cc.xy(1, 3));
         pb.add(catNumSchemeCBX, cc.xy(3, 3));
         
-        pb.add(new JLabel("Is Numeric:", SwingConstants.RIGHT), cc.xy(1, 5));
+        pb.add(createLabel("Is Numeric:", SwingConstants.RIGHT), cc.xy(1, 5));
         pb.add(isNumericLbl, cc.xy(3, 5));
+
     }
 
     /* (non-Javadoc)

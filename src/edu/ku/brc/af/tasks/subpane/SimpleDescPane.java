@@ -15,6 +15,8 @@
 
 package edu.ku.brc.af.tasks.subpane;
 
+import static edu.ku.brc.ui.UIHelper.createLabel;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -55,7 +57,7 @@ public class SimpleDescPane extends BaseSubPane
 
         setBackground(Color.WHITE);
 
-        JLabel label = new JLabel(desc, SwingConstants.CENTER);
+        JLabel label = createLabel(desc, SwingConstants.CENTER);
         add(label, BorderLayout.CENTER);
 
     }

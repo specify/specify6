@@ -15,6 +15,8 @@
 
 package edu.ku.brc.ui.forms;
 
+import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.setControlSize;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Color;
@@ -186,7 +188,7 @@ public class ResultSetController implements ValidationListener
         btnsHash.put(CommandType.Previous, prevBtn);
         btnsHash.put(CommandType.First, firstBtn);
 
-        recDisp  = new JLabel("  ");
+        recDisp  = createLabel("  ");
         recDisp.setHorizontalAlignment(SwingConstants.CENTER);
         recDisp.setOpaque(true);
         recDisp.setBackground(Color.WHITE);
@@ -225,7 +227,7 @@ public class ResultSetController implements ValidationListener
                     public void setEnabled(boolean enable)
                     {
                         //System.err.println(formValidator.getName() + " " + hashCode() + " "+enable);
-                        if (formValidator != null && formValidator.getName() != null && formValidator.getName().equals("Collection Object"))
+                        if (formValidator != null && formValidator.getName() != null && formValidator.getName().equals("Determination"))
                         {
                             int x = 0;
                             x++;
@@ -238,6 +240,8 @@ public class ResultSetController implements ValidationListener
                         super.setEnabled(enable);
                     }
                 };
+                setControlSize(newRecBtn);
+
                 ActionListener l = new ActionListener() {
                     public void actionPerformed(ActionEvent ae)
                     {

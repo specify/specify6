@@ -15,6 +15,8 @@
 
 package edu.ku.brc.specify.tasks.subpane;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -36,7 +38,6 @@ import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -56,6 +57,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.ServiceInfo;
+import edu.ku.brc.af.core.ServiceProviderIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.specify.ui.db.ResultSetTableModel;
@@ -115,7 +117,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
      * @param esrPane the parent
      * @param tableInfo the info describing the results
      * @param installServices indicates whether services should be installed
-     * @param isExpandedAtStartUp
+     * @param isExpandedAtStartUp enough said
      */
     public ESResultsTablePanel(final ExpressSearchResultsPaneIFace esrPane,
                                final QueryForIdResultsIFace    results,
@@ -192,11 +194,20 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         builder.add(showTopNumEntriesBtn, cc.xy(col,1));
         col += 2;
         
+        if (results instanceof ServiceProviderIFace)
+        {
+            List<ServiceInfo> additionalServices = ((ServiceProviderIFace)results).getServices();
+            if (additionalServices != null)
+            {
+                services.addAll(additionalServices);
+            }
+        }
+        
         if (installServices && services.size() > 0)
         {
             serviceBtns = new Hashtable<ServiceInfo, JButton>();
             
-            // install the btns on the banner with available services
+            // Install the buttons on the banner with available services
             for (ServiceInfo serviceInfo : services)
             {
                 GradiantButton btn = new GradiantButton(serviceInfo.getIcon(IconManager.IconSize.Std16)); // XXX PREF
@@ -272,7 +283,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         });
         
         
-        ResultSetTableModel rsm = new ResultSetTableModel(results);
+        ResultSetTableModel rsm = new ResultSetTableModel(this, results);
         rsm.setPropertyListener(this);
 
         table.setRowSelectionAllowed(true);
@@ -462,7 +473,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
      */
     public boolean hasResults()
     {
-        return hasResults;
+        return esrPane.hasResults();
     }
     
     /* (non-Javadoc)
@@ -470,6 +481,8 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
      */
     public void cleanUp()
     {
+        ((ResultSetTableModel)table.getModel()).cleanUp();
+        
         if (results != null)
         {
             results.cleanUp();
@@ -520,11 +533,11 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         PanelBuilder    builder    = new PanelBuilder(formLayout);
         CellConstraints cc         = new CellConstraints();
 
-        moreBtn = new JButton(String.format(getResourceString("MoreEntries"), new Object[] {(rowCount - topNumEntries)}));//(rowCount - topNumEntries)+" more...");
+        moreBtn = createButton(String.format(getResourceString("MoreEntries"), new Object[] {(rowCount - topNumEntries)}));//(rowCount - topNumEntries)+" more...");
         moreBtn.setCursor(handCursor);
 
         moreBtn.setBorderPainted(false);
-        builder.add(new JLabel(" "), cc.xy(1,1));
+        builder.add(createLabel(" "), cc.xy(1,1));
         builder.add(moreBtn, cc.xy(3,1));
 
         morePanel = builder.getPanel();

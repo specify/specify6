@@ -472,7 +472,7 @@ public class AutoCompletion extends PlainDocument
                 "Jorge", "Sergi" };// "TEster", "UJordi", "VJordina", "WJorge", "XSergi"};
         AutoCompCBXModel model = new AutoCompCBXModel(items);
         // the combo box (add/modify items if you like to)
-        final JComboBox comboBox = new JComboBox(model);
+        final JComboBox comboBox = createComboBox(model);
         enable(comboBox);
 
         // create and show a window containing the combo box

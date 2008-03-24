@@ -15,6 +15,7 @@
 package edu.ku.brc.specify.tasks.subpane.wb;
 
 import static edu.ku.brc.ui.UIHelper.createIconBtn;
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -377,8 +378,8 @@ public class TemplateEditor extends CustomDialog
         JPanel mainLayoutPanel = new JPanel();
         
         PanelBuilder labelsBldr = new PanelBuilder(new FormLayout("p, f:p:g, p", "p"));        
-        labelsBldr.add(new JLabel(mapListLeftLabel, SwingConstants.LEFT), cc.xy(1, 1));
-        labelsBldr.add(new JLabel(mapListRightLabel, SwingConstants.RIGHT), cc.xy(3, 1));
+        labelsBldr.add(createLabel(mapListLeftLabel, SwingConstants.LEFT), cc.xy(1, 1));
+        labelsBldr.add(createLabel(mapListRightLabel, SwingConstants.RIGHT), cc.xy(3, 1));
 
         PanelBuilder upDownPanel = new PanelBuilder(new FormLayout("p", "p,f:p:g, p, 2px, p, f:p:g"));        
         upDownPanel.add(dumpMappingBtn, cc.xy(1, 1));
@@ -398,8 +399,8 @@ public class TemplateEditor extends CustomDialog
         PanelBuilder    builder = new PanelBuilder(new FormLayout("f:max(200px;p):g, 5px, max(200px;p), 5px, p:g, 5px, f:max(250px;p):g, 2px, p", 
                                                                   "p, 2px, f:max(350px;p):g"), mainLayoutPanel);
         
-        builder.add(new JLabel(dataTypeLabel, SwingConstants.CENTER), cc.xy(1, 1));
-        builder.add(new JLabel(fieldsLabel,   SwingConstants.CENTER), cc.xy(3, 1));
+        builder.add(createLabel(dataTypeLabel, SwingConstants.CENTER), cc.xy(1, 1));
+        builder.add(createLabel(fieldsLabel,   SwingConstants.CENTER), cc.xy(3, 1));
         builder.add(labelsBldr.getPanel(),                            cc.xy(7, 1));
         
         builder.add(tableScrollPane, cc.xy(1, 3));
@@ -482,7 +483,7 @@ public class TemplateEditor extends CustomDialog
         }
         sb.append("</table><br>The Mappings have been copied to the clipboard for pasting into an email.<br><br></htm>");
         JPanel panel = new JPanel(new BorderLayout());
-        panel.add(new JLabel(sb.toString()), BorderLayout.CENTER);
+        panel.add(createLabel(sb.toString()), BorderLayout.CENTER);
         
         // Set into Clipboard
         StringSelection stsel  = new StringSelection(clipBrdTxt.toString());
@@ -1330,10 +1331,10 @@ public class TemplateEditor extends CustomDialog
             PanelBuilder    builder = new PanelBuilder(new FormLayout("2px,p,2px,150px, p:g, p, p:g, 150px,2px", "p:g"), this);
             CellConstraints cc      = new CellConstraints();
 
-            colFieldLabel = new JLabel(colInfo != null ? colInfo.getColTitle() : "", SwingConstants.RIGHT);
-            schemaLabel   = new JLabel(noMappingStr, SwingConstants.LEFT);
+            colFieldLabel = createLabel(colInfo != null ? colInfo.getColTitle() : "", SwingConstants.RIGHT);
+            schemaLabel   = createLabel(noMappingStr, SwingConstants.LEFT);
             arrowLabel    = new JLabel(IconManager.getIcon("Linked"));
-            
+   
             setFocusable(true);
             
             builder.add(iconLabel = new JLabel(mappingIcon), cc.xy(2,1));

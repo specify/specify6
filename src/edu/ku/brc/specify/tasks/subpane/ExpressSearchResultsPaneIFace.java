@@ -28,27 +28,32 @@ import edu.ku.brc.ui.db.QueryForIdResultsIFace;
 public interface ExpressSearchResultsPaneIFace
 {
     /**
-     * Add serach results box to UI
+     * Add serach results box to UI.
      * @param tableInfo the information about the table being added
      * @param hits the "hits" results of the search
      */
-    public void addSearchResults(final QueryForIdResultsIFace results);
+    public abstract void addSearchResults(final QueryForIdResultsIFace results);
 
     /**
      * Removes a table from the content pane
      * @param table the table of results to be removed
      */
-    public void removeTable(ESResultsTablePanelIFace table);
+    public abstract void removeTable(ESResultsTablePanelIFace table);
 
     /**
      * Adds a table to the content pane.
      * @param table the table of results to be added
      */
-    public void addTable(ESResultsTablePanelIFace table);
+    public abstract void addTable(ESResultsTablePanelIFace table);
 
     /**
      * Revalidate the scroll pane
      */
-    public void revalidateScroll();
+    public abstract void revalidateScroll();
+    
+    /**
+     * @return true if there are results, false if none were found.
+     */
+    public abstract boolean hasResults();
 
 }

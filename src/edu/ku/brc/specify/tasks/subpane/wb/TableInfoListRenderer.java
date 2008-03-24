@@ -6,6 +6,8 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
+import static edu.ku.brc.ui.UIHelper.createLabel;
+
 import java.awt.Component;
 
 import javax.swing.BorderFactory;
@@ -55,8 +57,8 @@ public class TableInfoListRenderer implements ListCellRenderer
         PanelBuilder builder = new PanelBuilder(new FormLayout(checkmarkIcon.getIconWidth()+"px,2px,f:p:g", "c:p"));
         CellConstraints cc = new CellConstraints();
 
-        builder.add(icon1 = new JLabel(), cc.xy(1, 1));
-        builder.add(label = new JLabel(), cc.xy(3, 1));
+        builder.add(icon1 = createLabel(""), cc.xy(1, 1));
+        builder.add(label = createLabel(""), cc.xy(3, 1));
         display = builder.getPanel();
         display.setBorder(BorderFactory.createEmptyBorder(2, 1, 2, 1));
         display.setOpaque(true);

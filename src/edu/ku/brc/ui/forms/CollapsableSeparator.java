@@ -27,6 +27,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * A collapsable panel where there is a "more" button that indicates whether the pane
@@ -63,6 +64,7 @@ public class CollapsableSeparator extends JPanel
         moreBtn        = new JCheckBox("", forwardImgIcon); // I18N
         moreBtn.setOpaque(false);
         moreBtn.setFocusable(false);
+        UIHelper.setControlSize(moreBtn);
         
         panelBldr.add(moreBtn, cc.xy(1,1));
         panelBldr.add(separator, cc.xy(3,1));

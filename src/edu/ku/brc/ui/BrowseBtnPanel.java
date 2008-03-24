@@ -14,6 +14,8 @@
  */
 package edu.ku.brc.ui;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.setControlSize;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -100,6 +102,9 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace, Document
                             final boolean doDirsOnly, 
                             final boolean isForInputArg)
     {
+        
+        setControlSize(this);
+
         PanelBuilder panelBuilder = new PanelBuilder(new FormLayout("f:p:g, 2dlu, r:p", "p"), this);
         CellConstraints cc = new CellConstraints();
 
@@ -109,7 +114,7 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace, Document
         }
         panelBuilder.add(textField, cc.xy(1,1));
 
-        browseBtn = new JButton(getResourceString("Browse"));
+        browseBtn = createButton(getResourceString("Browse"));
         browseBtn.addActionListener(new BrowseAction(textField, doDirsOnly, isForInputArg));
         panelBuilder.add(browseBtn, cc.xy(3,1));
 
@@ -160,6 +165,14 @@ public class BrowseBtnPanel extends JPanel implements GetSetValueIFace, Document
         return textField;
     }
 
+
+    /**
+     * @return the browseBtn
+     */
+    public JButton getBrowseBtn()
+    {
+        return browseBtn;
+    }
 
     /* (non-Javadoc)
      * @see java.awt.Component#setEnabled(boolean)

@@ -55,6 +55,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -359,7 +360,7 @@ public class DebugLoggerDialog extends CustomDialog
         public CheckRenderer()
         {
             setLayout(null);
-            add(check = new JCheckBox());
+            add(check = UIHelper.createCheckBox(""));
             add(label = new TreeLabel());
             check.setBackground(UIManager.getColor("Tree.textBackground"));
             label.setForeground(UIManager.getColor("Tree.textForeground"));

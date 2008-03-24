@@ -16,6 +16,9 @@
  */
 package edu.ku.brc.specify.tasks.subpane;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createPasswordField;
+import static edu.ku.brc.ui.UIHelper.createTextField;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -193,8 +196,8 @@ public class DbAdminPane extends BaseSubPane
 
     public JPanel buildAddRemoveUserButtons()
     {
-        addBtn = new JButton(getResourceString("Add"));
-        removeBtn = new JButton(getResourceString("Remove"));
+        addBtn = createButton(getResourceString("Add"));
+        removeBtn = createButton(getResourceString("Remove"));
 
         addBtn.addActionListener(new ActionListener()
         {
@@ -222,9 +225,9 @@ public class DbAdminPane extends BaseSubPane
 
     public void configureMainButtons()
     {
-        cancelBtn = new JButton(getResourceString("Cancel"));
-        okBtn = new JButton(getResourceString("OK"));
-        helpBtn = new JButton(getResourceString("Help"));
+        cancelBtn = createButton(getResourceString("Cancel"));
+        okBtn     = createButton(getResourceString("OK"));
+        helpBtn   = createButton(getResourceString("Help"));
 
         cancelBtn.addActionListener(new ActionListener()
         {
@@ -245,9 +248,9 @@ public class DbAdminPane extends BaseSubPane
 
     public void coinfgureUserAccoutFillInFormComponents()
     {
-        username = new JTextField(20);
-        password = new JPasswordField(20);
-        password2 = new JPasswordField(20);
+        username = createTextField(20);
+        password = createPasswordField(20);
+        password2 = createPasswordField(20);
 
         addFocusListenerForTextComp(username);
         addFocusListenerForTextComp(password);

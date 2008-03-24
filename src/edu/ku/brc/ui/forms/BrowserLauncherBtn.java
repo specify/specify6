@@ -7,6 +7,7 @@
 
 package edu.ku.brc.ui.forms;
 
+import static edu.ku.brc.ui.UIHelper.setControlSize;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.event.ActionEvent;
@@ -35,6 +36,7 @@ public class BrowserLauncherBtn extends JButton implements GetSetValueIFace
     public BrowserLauncherBtn(final String text)
     {
         super(text);
+        setControlSize(this);
         setEnabled(false);
     }
     

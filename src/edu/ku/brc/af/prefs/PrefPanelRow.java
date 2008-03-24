@@ -15,6 +15,8 @@
 
 package edu.ku.brc.af.prefs;
 
+import static edu.ku.brc.ui.UIHelper.createLabel;
+
 import java.awt.Dimension;
 
 import javax.swing.JLabel;
@@ -43,10 +45,9 @@ public class PrefPanelRow extends JPanel
      */
     public PrefPanelRow(final String titleStr)
     {
-        title = new JLabel(titleStr);
+        title = createLabel(titleStr);
         setLayout(layout = new PrefPanelRowLayoutManager(title));     
         add(title);
-        
     }
     
     /**

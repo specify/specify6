@@ -19,68 +19,55 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.BorderLayout;
 import java.awt.Frame;
 import java.awt.HeadlessException;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.AbstractListModel;
-import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListModel;
-import javax.swing.SwingConstants;
+import javax.swing.ScrollPaneConstants;
 
 import org.apache.log4j.Logger;
 
-import com.jgoodies.forms.builder.ButtonBarBuilder;
-
-import edu.ku.brc.dbsupport.DBTableIdMgr;
-import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
-import edu.ku.brc.specify.tasks.RecordSetTask;
-import edu.ku.brc.ui.IconListCellRenderer;
-import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.specify.ui.db.RecordSetListCellRenderer;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
- * Choose a record set from the a list from the database
- 
- * @code_status Unknown (auto-generated)
- **
+ * Choose a record set from the a list from the database.
+ * (TODO Must change over to use CustomDialog)
+ *
+ * @code_status Beta
+ *
  * @author rods
  *
  */
 @SuppressWarnings("serial")
-public class ChooseRecordSetDlg extends JDialog implements ActionListener
+public class ChooseRecordSetDlg extends CustomDialog
 {
     // Static Data Members
     private static final Logger log = Logger.getLogger(ChooseRecordSetDlg.class);
 
-
-    private ImageIcon icon = IconManager.getImage(RecordSetTask.RECORD_SET, IconManager.IconSize.Std16);
-
     // Data Members
-    protected JButton         cancelBtn;
-    protected JButton         okBtn;
-    protected JList           list;
-    protected List<RecordSet> recordSets;
+    protected JList           list       = null;
+    protected List<RecordSet> recordSets = null;
 
-    public ChooseRecordSetDlg(final Frame frame, final int tableId) throws HeadlessException
+    /**
+     * @param tableId
+     * @throws HeadlessException
+     */
+    public ChooseRecordSetDlg(final int tableId) throws HeadlessException
     {
-        super(frame, true);
-        createUI(tableId);
-        setLocationRelativeTo(UIRegistry.get(UIRegistry.FRAME));
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        super((Frame)UIRegistry.getTopWindow(), getResourceString("RECORDSET_CHOOSE"), true, OKCANCELHELP, null);
+        
+        initialize(tableId);
     }
 
     /**
@@ -88,95 +75,104 @@ public class ChooseRecordSetDlg extends JDialog implements ActionListener
      *
      */
     @SuppressWarnings("unchecked")
-    protected void createUI(final int tableId)
+    protected void initialize(final int tableId)
     {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
-
-        panel.add(new JLabel(getResourceString("RECORDSET_CHOOSE"), SwingConstants.CENTER), BorderLayout.NORTH);
-
+        DataProviderSessionIFace session = null;
         try
         {
-            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            session = DataProviderFactory.getInstance().createSession();
             if (tableId == -1)
             {
-               recordSets = session.getDataList(RecordSet.class);
+                recordSets = session.getDataList(RecordSet.class);
             } else
             {
                 recordSets = (List<RecordSet>)session.getDataList("from recordset in class RecordSet where recordset.dbTableId = " + tableId);
             }
-            session.close();
-
-            ListModel listModel = new AbstractListModel()
-            {
-                public int getSize() { return recordSets.size(); }
-                public Object getElementAt(int index) { return recordSets.get(index).getName(); }
-            };
-
-            if (recordSets.size() > 0)
-            {
-                DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(recordSets.get(0).getDbTableId());
-                if (tblInfo != null)
-                {
-                    ImageIcon rsIcon = tblInfo.getIcon(IconManager.IconSize.Std16);
-                    if (rsIcon != null)
-                    {
-                        icon = rsIcon;
-                    }
-                }
-            }
-            list = new JList(listModel);
-            list.setCellRenderer(new IconListCellRenderer(icon)); // icon comes from the base class (it's probably size 16)
-            list.setVisibleRowCount(10);
-            list.addMouseListener(new MouseAdapter() {
-                public void mouseClicked(MouseEvent e) {
-                    if (e.getClickCount() == 2) {
-                        okBtn.doClick(); //emulate button click
-                    }
-                }
-            });
-            JScrollPane listScroller = new JScrollPane(list);
-            panel.add(listScroller, BorderLayout.CENTER);
-
-            // Bottom Button UI
-            cancelBtn         = new JButton(getResourceString("Cancel"));
-            okBtn             = new JButton(getResourceString("OK"));
-
-            okBtn.addActionListener(this);
-            getRootPane().setDefaultButton(okBtn);
-
-            ButtonBarBuilder btnBuilder = new ButtonBarBuilder();
-            //btnBuilder.addGlue();
-             btnBuilder.addGriddedButtons(new JButton[] {cancelBtn, okBtn});
-
-            cancelBtn.addActionListener(new ActionListener()
-                    {  public void actionPerformed(ActionEvent ae) { setVisible(false);} });
-
-            panel.add(btnBuilder.getPanel(), BorderLayout.SOUTH);
 
         } catch (Exception ex)
         {
             log.error(ex);
+            ex.printStackTrace();
+            
+        } finally
+        {
+            if (session != null)
+            {
+                session.close();
+            }
         }
-
-        setContentPane(panel);
-        pack();
-        //setLocationRelativeTo(locationComp);
-
     }
+    
 
-    //Handle clicks on the Set and Cancel buttons.
-    public void actionPerformed(ActionEvent e)
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CustomDialog#createUI()
+     */
+    @Override
+    public void createUI()
     {
-        setVisible(false);
+        super.createUI();
+        
+        ListModel listModel = new AbstractListModel()
+        {
+            public int getSize() { return recordSets == null ? 0 : recordSets.size(); }
+            public Object getElementAt(int index) { return recordSets == null ? null : recordSets.get(index); }
+        };
+
+        list = new JList(listModel);
+        list.setCellRenderer(new RecordSetListCellRenderer());
+        list.setVisibleRowCount(10);
+        list.addMouseListener(new MouseAdapter() 
+        {
+            public void mouseClicked(MouseEvent e) 
+            {
+                if (e.getClickCount() == 2) 
+                {
+                    okBtn.doClick(); //emulate button click
+                }
+            }
+        });
+        
+        JScrollPane listScroller = new JScrollPane(list, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+        contentPanel = listScroller;
+        mainPanel.add(contentPanel, BorderLayout.CENTER);
+
+        pack();
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CustomDialog#cleanUp()
+     */
+    @Override
+    public void cleanUp()
+    {
+        super.cleanUp();
+        
+        if (recordSets != null)
+        {
+            recordSets.clear();
+        }
+    }
+
+    /**
+     * @param additionalTableId
+     * @param ids
+     */
+    public void addAdditionalObjectsAsRecordSets(final Vector<RecordSet> additionalRS)
+    {
+        if (recordSets == null)
+        {
+            recordSets = new Vector<RecordSet>();
+        }
+        recordSets.addAll(additionalRS);
+    }
+    
     /**
      * @return whether the list has any items
      */
     public boolean hasRecordSets()
     {
-        return list.getModel().getSize() > 0;
+        return recordSets != null && recordSets.size() > 0;
     }
 
     /**
@@ -193,10 +189,13 @@ public class ChooseRecordSetDlg extends JDialog implements ActionListener
      */
     public RecordSetIFace getSelectedRecordSet()
     {
-        int inx = list.getSelectedIndex();
-        if (inx != -1)
+        if (list != null)
         {
-            return recordSets.get(inx);
+            int inx = list.getSelectedIndex();
+            if (inx != -1)
+            {
+                return recordSets.get(inx);
+            }
         }
         return null;
     }

@@ -15,6 +15,8 @@
 
 package edu.ku.brc.ui.forms.validation;
 
+import static edu.ku.brc.ui.UIHelper.createComboBox;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -86,7 +88,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
      */
     public ValComboBox(boolean editable)
     {
-        comboBox = new JComboBox(new DefaultComboBoxModel());
+        comboBox = createComboBox(new DefaultComboBoxModel());
         init(editable);
     }
 
@@ -96,7 +98,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
      */
     public ValComboBox(ComboBoxModel arg0, boolean editable)
     {
-        comboBox = new JComboBox(arg0);
+        comboBox = createComboBox(arg0);
         init(editable);
     }
 
@@ -106,7 +108,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
      */
     public ValComboBox(Object[] arg0, boolean editable)
     {
-        comboBox = new JComboBox(arg0);
+        comboBox = createComboBox(arg0);
         init(editable);
     }
 
@@ -116,7 +118,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
      */
     public ValComboBox(Vector<?> arg0, boolean editable)
     {
-        comboBox = new JComboBox(arg0);
+        comboBox = createComboBox(arg0);
         init(editable);
     }
 
@@ -128,7 +130,7 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
     {
         if (adapter instanceof ComboBoxModel)
         {
-            comboBox = new JComboBox((ComboBoxModel)adapter);
+            comboBox = createComboBox((ComboBoxModel)adapter);
         } else
         {
             throw new RuntimeException("PickListDBAdapterIFace is not an instanceof ComboBoxModel and MUST BE!");
@@ -142,7 +144,6 @@ public class ValComboBox extends JPanel implements UIValidatable, ListDataListen
      */
     public void init(final boolean makeEditable)
     {
-
         if (makeEditable)
         {
             AutoCompletion.enable(comboBox);

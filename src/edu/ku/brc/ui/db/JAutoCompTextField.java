@@ -14,6 +14,7 @@
  */
 package edu.ku.brc.ui.db;
 
+import static edu.ku.brc.ui.UIHelper.setControlSize;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.awt.Dimension;
@@ -67,6 +68,7 @@ public class JAutoCompTextField extends JTextField
     public JAutoCompTextField()
     {
         super();
+        setControlSize(this);
     }
     
     /**
@@ -76,6 +78,7 @@ public class JAutoCompTextField extends JTextField
     public JAutoCompTextField(final String numCols)
     {
         super(numCols);       
+        setControlSize(this);
     }
     
     /**
@@ -85,6 +88,7 @@ public class JAutoCompTextField extends JTextField
     public JAutoCompTextField(final int numCols)
     {
         super(numCols);     
+        setControlSize(this);
     }
     
     /**
@@ -96,6 +100,7 @@ public class JAutoCompTextField extends JTextField
         super(numCols);
         dbAdapter = pickListDBAdapter;
         initAdapter();
+        setControlSize(this);
     }
    
     /**
@@ -106,6 +111,7 @@ public class JAutoCompTextField extends JTextField
     public JAutoCompTextField(final String text,final int numCols)
     {
         super(text, numCols);   
+        setControlSize(this);
     }
     
     /**
@@ -117,6 +123,7 @@ public class JAutoCompTextField extends JTextField
         super();
         this.dbAdapter = dbAdapter;
         initAdapter();
+        setControlSize(this);
     }
     
     /**
@@ -213,6 +220,7 @@ public class JAutoCompTextField extends JTextField
                             title.startsWith(txt))
                         {
                             JMenuItem mi = new JMenuItem(title);
+                            setControlSize(mi);
                             popupMenu.add(mi);
                             mi.addActionListener(al);
                         }

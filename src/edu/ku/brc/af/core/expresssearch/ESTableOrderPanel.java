@@ -18,6 +18,7 @@
 package edu.ku.brc.af.core.expresssearch;
 
 import static edu.ku.brc.ui.UIHelper.createIconBtn;
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.event.ActionEvent;
@@ -86,8 +87,8 @@ public class ESTableOrderPanel extends JPanel
             }
             
         });
-        
-        outer.add(new JLabel(getResourceString("ES_ORDER_RET_RES")), cc.xy(1,1));
+
+        outer.add(createLabel(getResourceString("ES_ORDER_RET_RES")), cc.xy(1,1));
         outer.add(orderTablesList, cc.xy(1,3));
         
         orderUpBtn = createIconBtn("ReorderUp", "ES_RES_MOVE_UP", new ActionListener()

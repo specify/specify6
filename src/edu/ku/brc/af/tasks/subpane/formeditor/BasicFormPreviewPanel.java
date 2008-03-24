@@ -251,7 +251,7 @@ public class BasicFormPreviewPanel extends JPanel
                 }
                 
                 case button:
-                    JButton btn = new JButton(cellField.getProperty("title"));
+                    JButton btn = createButton(cellField.getProperty("title"));
                     
                     compToAdd = btn;
                     break;
@@ -368,7 +368,7 @@ public class BasicFormPreviewPanel extends JPanel
         } else if (cell.getType() == FormCellIFace.CellType.command)
         {
             FormCellCommand cellCmd = (FormCellCommand)cell;
-            JButton btn  = new JButton(cellCmd.getLabel());
+            JButton btn  = createButton(cellCmd.getLabel());
             if (cellCmd.getCommandType().length() > 0)
             {
                 btn.addActionListener(new CommandActionWrapper(new CommandAction(cellCmd.getCommandType(), cellCmd.getAction(), "")));

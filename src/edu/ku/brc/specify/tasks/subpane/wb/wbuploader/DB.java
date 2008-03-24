@@ -3,6 +3,9 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
+import static edu.ku.brc.ui.UIHelper.createCheckBox;
+import static edu.ku.brc.ui.UIHelper.createLabel;
+
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.Frame;
@@ -170,14 +173,14 @@ public class DB
         public void viewBogus()
         {
             JPanel mainPane = new JPanel(new BorderLayout());
-            JLabel msg = new JLabel("Tables containing imported data");
+            JLabel msg = createLabel("Tables containing imported data"); // I18N ??
             msg.setFont(msg.getFont().deriveFont(Font.BOLD));
             mainPane.add(msg, BorderLayout.NORTH);
-            JCheckBox cb = new JCheckBox("show all fields");
+            JCheckBox cb = createCheckBox("show all fields"); // I1bN ??
             cb.addActionListener(this);
             mainPane.add(cb, BorderLayout.SOUTH);
             Vector<String> tblNames = new Vector<String>();
-            
+
             if (myStorages == null)
             {
                 for (Table t : schema.getTables())

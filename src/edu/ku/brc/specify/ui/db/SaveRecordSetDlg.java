@@ -14,6 +14,7 @@
  */
 package edu.ku.brc.specify.ui.db;
 
+import static edu.ku.brc.ui.UIHelper.*;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -35,7 +36,9 @@ import org.apache.log4j.Logger;
 import com.jgoodies.forms.builder.ButtonBarBuilder;
 
 /**
- * @code_status Unknown (auto-generated)
+ * (This needs to be converted to CustomDialog)
+ * 
+ * @code_status Alpha
  *
  * @author rods
  *
@@ -80,10 +83,10 @@ public class SaveRecordSetDlg extends JDialog
         JPanel namePanel = new JPanel(new BorderLayout());
         namePanel.setBorder(BorderFactory.createEmptyBorder(5,5,5,5));
         
-        namePanel.add(new JLabel(getResourceString("RecordSet_Name")+":", JLabel.RIGHT), BorderLayout.WEST);
-        JTextField nameTxtFld = new JTextField("");
+        namePanel.add(createLabel(getResourceString("RecordSet_Name")+":", JLabel.RIGHT), BorderLayout.WEST); // I18N
+        JTextField nameTxtFld = createTextField("");
         namePanel.add(nameTxtFld, BorderLayout.CENTER);
-        
+
         panel.add(namePanel, BorderLayout.NORTH);
 
         try
@@ -101,12 +104,12 @@ public class SaveRecordSetDlg extends JDialog
             panel.add(splitPane, BorderLayout.CENTER);
    
             // Bottom Button UI
-            selectAllBtn      = new JButton(getResourceString("SelectAll"));
-            deselectAllBtn    = new JButton(getResourceString("DeselectAll"));
-            addAllBtn         = new JButton(getResourceString("AddAll"));
-            addAllSelectedBtn = new JButton(getResourceString("AddAllSelected"));
-            cancelBtn         = new JButton(getResourceString("Cancel"));
-            okBtn             = new JButton(getResourceString("OK"));
+            selectAllBtn      = createButton(getResourceString("SelectAll"));
+            deselectAllBtn    = createButton(getResourceString("DeselectAll"));
+            addAllBtn         = createButton(getResourceString("AddAll"));
+            addAllSelectedBtn = createButton(getResourceString("AddAllSelected"));
+            cancelBtn         = createButton(getResourceString("Cancel"));
+            okBtn             = createButton(getResourceString("OK"));
 
             ButtonBarBuilder btnBuilder = new ButtonBarBuilder();
             //btnBuilder.addGlue();

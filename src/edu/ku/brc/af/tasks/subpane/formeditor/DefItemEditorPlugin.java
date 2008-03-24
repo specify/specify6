@@ -6,6 +6,9 @@
  */
 package edu.ku.brc.af.tasks.subpane.formeditor;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createLabel;
+
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -60,8 +63,8 @@ public class DefItemEditorPlugin extends JPanel implements GetSetValueIFace, UIP
         CellConstraints cc = new CellConstraints();
         PanelBuilder pb = new PanelBuilder(new FormLayout("p:g,4px,p", "p"), this);
 
-        label   = new JLabel("        ");
-        editBtn = new JButton("Edit");
+        label   = createLabel("        ");
+        editBtn = createButton("Edit");
         
         pb.add(label,   cc.xy(1, 1));
         pb.add(editBtn, cc.xy(3, 1));

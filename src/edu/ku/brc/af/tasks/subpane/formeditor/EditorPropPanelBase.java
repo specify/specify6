@@ -29,7 +29,6 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBRelationshipInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
@@ -38,10 +37,10 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.ViewBasedDisplayPanel;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
-import edu.ku.brc.ui.forms.persist.AltViewIFace;
 import edu.ku.brc.ui.forms.persist.FormCell;
 import edu.ku.brc.ui.forms.persist.FormCellField;
 import edu.ku.brc.ui.forms.persist.FormCellFieldIFace;
@@ -49,7 +48,6 @@ import edu.ku.brc.ui.forms.persist.FormCellIFace;
 import edu.ku.brc.ui.forms.persist.FormCellLabel;
 import edu.ku.brc.ui.forms.persist.FormRowIFace;
 import edu.ku.brc.ui.forms.persist.FormViewDef;
-import edu.ku.brc.ui.forms.persist.View;
 import edu.ku.brc.ui.forms.validation.FormValidator;
 import edu.ku.brc.ui.forms.validation.ValCheckBox;
 import edu.ku.brc.ui.forms.validation.ValComboBox;
@@ -111,7 +109,7 @@ public class EditorPropPanelBase extends JPanel
         
         if (addSaveBtn)
         {
-            saveBtn = new JButton("Accept");
+            saveBtn = UIHelper.createButton("Accept");
             saveBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {

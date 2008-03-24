@@ -15,6 +15,7 @@
 
 package edu.ku.brc.specify.tasks.subpane;
 
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -132,7 +133,7 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
         if (label == null)
         {
             removeAll();
-            label = new JLabel("", SwingConstants.CENTER);
+            label = createLabel("", SwingConstants.CENTER);
             add(label, BorderLayout.CENTER);
         }
         

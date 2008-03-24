@@ -9,12 +9,13 @@
  */
 package edu.ku.brc.specify.config.init;
 
+import static edu.ku.brc.ui.UIHelper.createLabel;
+
 import java.util.Hashtable;
 import java.util.Properties;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 import org.apache.commons.lang.StringUtils;
@@ -52,8 +53,8 @@ public class GenericFormPanel extends BaseSetupPanel
                                                UIHelper.createDuplicateJGoodiesDef("p", "2px", fields.length)+",p:g"), this);
         int row = 1;
         
-        builder.add(new JLabel(title), cc.xywh(1,row,3,1));row += 2;
-        
+        builder.add(createLabel(title), cc.xywh(1,row,3,1));row += 2;
+
         int i = 0;
         for (String fName : fields)
         {

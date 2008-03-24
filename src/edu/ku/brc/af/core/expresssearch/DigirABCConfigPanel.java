@@ -14,6 +14,7 @@
  */
 package edu.ku.brc.af.core.expresssearch;
 
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.event.ActionEvent;
@@ -121,10 +122,10 @@ public class DigirABCConfigPanel extends JPanel
         PanelBuilder    builder = new PanelBuilder(new FormLayout("p,2px,p", "p,2px,f:p:g"), this);
         CellConstraints cc      = new CellConstraints();
 
-        builder.add(new JLabel(getResourceString("AVAIL_TABLES"), SwingConstants.CENTER), cc.xy(1,1));
-        builder.add(new JLabel(getResourceString("FIELDNAME"), SwingConstants.CENTER), cc.xy(3,1));
+        builder.add(createLabel(getResourceString("AVAIL_TABLES"), SwingConstants.CENTER), cc.xy(1,1));
+        builder.add(createLabel(getResourceString("FIELDNAME"), SwingConstants.CENTER), cc.xy(3,1));
         builder.add(sp, cc.xy(1,3));
-        
+
         JScrollPane dspSp = new JScrollPane(displayList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         builder.add(dspSp, cc.xy(3, 3));
     }

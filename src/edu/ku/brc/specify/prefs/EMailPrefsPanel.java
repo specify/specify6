@@ -382,7 +382,7 @@ public class EMailPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
         panel.add(builder.getPanel(), BorderLayout.CENTER);
 
         builder = new PanelBuilder(new FormLayout("c:p:g", "c:p:g"));
-        closeCheckerBtn = new JButton(getResourceString("Close"));
+        closeCheckerBtn = UIHelper.createButton(getResourceString("Close"));
         builder.add(closeCheckerBtn, cc.xy(1,1));
         panel.add(builder.getPanel(), BorderLayout.SOUTH);
 
@@ -455,7 +455,7 @@ public class EMailPrefsPanel extends GenericPrefsPanel implements PrefsSavable, 
             if (!status)
             {
                 // XXX Get response error message from Helper and display it.
-                JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), "Error Sending EMail"); // XXX I18N
+                UIRegistry.showError("Error Sending EMail"); // XXX I18N
                 
             } else
             {

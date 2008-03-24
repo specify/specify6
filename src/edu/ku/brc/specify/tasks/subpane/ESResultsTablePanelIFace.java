@@ -71,6 +71,11 @@ public interface ESResultsTablePanelIFace extends PropertyChangeListener
     /**
      * Expand the view of results if it is appropriate.
      */
-    public void expandView();
+    public abstract void expandView();
+    
+    /**
+     * @return true if there are results, false if none were found.
+     */
+    public abstract boolean hasResults();
     
 }

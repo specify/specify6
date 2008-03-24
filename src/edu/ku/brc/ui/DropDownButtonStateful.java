@@ -15,6 +15,8 @@
 
 package edu.ku.brc.ui;
 
+import static edu.ku.brc.ui.UIHelper.setControlSize;
+
 import java.awt.CardLayout;
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -203,6 +205,7 @@ public class DropDownButtonStateful extends DropDownButton
         for (DropDownMenuInfo mi : menuInfoItems)
         {
             JMenuItem menuItem = new JMenuItem(mi.getLabel(), mi.getImageIcon());
+            setControlSize(menuItem);
             menuItem.addActionListener(menuAL);
             menus.add(menuItem);
             

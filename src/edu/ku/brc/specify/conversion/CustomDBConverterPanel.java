@@ -13,6 +13,13 @@
  */
 package edu.ku.brc.specify.conversion;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createCheckBox;
+import static edu.ku.brc.ui.UIHelper.createComboBox;
+import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.createPasswordField;
+import static edu.ku.brc.ui.UIHelper.createTextField;
+import static edu.ku.brc.ui.UIHelper.setControlSize;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Window;
@@ -34,7 +41,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -43,8 +49,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.JTextComponent;
@@ -53,23 +57,17 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
-import com.jgoodies.forms.debug.FormDebugPanel;
 import com.jgoodies.forms.factories.ButtonBarFactory;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.prefs.AppPreferences;
-import edu.ku.brc.dbsupport.DBConnection;
-import edu.ku.brc.dbsupport.DataProviderFactory;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.helpers.Encryption;
-import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.db.DatabaseLoginListener;
 import edu.ku.brc.ui.db.JEditComboBox;
 import edu.ku.brc.ui.db.PropertiesPickListAdapter;
 
@@ -214,7 +212,7 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
                           final int y)
     {
         int yy = y;
-        pb.add(new JLabel(label != null ? getResourceString(label) + ":" : " ",
+        pb.add(createLabel(label != null ? getResourceString(label) + ":" : " ",
                 SwingConstants.RIGHT), cc.xy(1, yy));
         pb.add(comp, cc.xy(3, yy));
         yy += 2;
@@ -238,7 +236,7 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
                           final int y)
     {
         int yy = y;
-        pb.add(new JLabel(label != null ? getResourceString(label) + ":" : " ",
+        pb.add(createLabel(label != null ? getResourceString(label) + ":" : " ",
                 SwingConstants.RIGHT), cc.xy(x, yy));
         pb.add(comp, cc.xy(x+2, yy));
         yy += 2;
@@ -256,17 +254,24 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
         PropertiesPickListAdapter dbDestPickList = new PropertiesPickListAdapter("convert.databasesDest");
         PropertiesPickListAdapter svDestPickList = new PropertiesPickListAdapter("convert.serversDest");
         
-        usernameSource = new JTextField(20);
-        passwordSource = new JPasswordField(20);
+        usernameSource = createTextField(20);
+        passwordSource = createPasswordField(20);
         
-        usernameDest = new JTextField(20);
-        passwordDest = new JPasswordField(20);
+        usernameDest = createTextField(20);
+        passwordDest = createPasswordField(20);
 
         databasesSource = new JEditComboBox(dbPickList);
-        serversSource = new JEditComboBox(svPickList);
+        serversSource   = new JEditComboBox(svPickList);
         
         databasesDest = new JEditComboBox(dbDestPickList);
-        serversDest = new JEditComboBox(svDestPickList);
+        serversDest   = new JEditComboBox(svDestPickList);
+        
+        setControlSize(passwordSource);
+        setControlSize(passwordDest);
+        setControlSize(databasesSource);
+        setControlSize(serversSource);
+        setControlSize(databasesDest);
+        setControlSize(serversDest);
         
         dbPickList.setComboBox(databasesSource);
         svPickList.setComboBox(serversSource);
@@ -274,38 +279,37 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
         dbDestPickList.setComboBox(databasesDest);
         svDestPickList.setComboBox(serversDest);
 
-       // autoLoginSourceCBX = new JCheckBox(getResourceString("autologin"));
-        rememberUsernameSourceCBX = new JCheckBox(getResourceString("rememberuser"));
-        rememberPasswordSourceCBX = new JCheckBox(getResourceString("rememberpassword"));
+       // autoLoginSourceCBX = createCheckBox(getResourceString("autologin"));
+        rememberUsernameSourceCBX = createCheckBox(getResourceString("rememberuser"));
+        rememberPasswordSourceCBX = createCheckBox(getResourceString("rememberpassword"));
         
-        autoLoginDestCBX = new JCheckBox(getResourceString("autologin"));
-        rememberUsernameDestCBX = new JCheckBox(getResourceString("rememberuser"));
-        rememberPasswordDestCBX = new JCheckBox(getResourceString("rememberpassword"));
+        autoLoginDestCBX = createCheckBox(getResourceString("autologin"));
+        rememberUsernameDestCBX = createCheckBox(getResourceString("rememberuser"));
+        rememberPasswordDestCBX = createCheckBox(getResourceString("rememberpassword"));
         
         statusBar = new JStatusBar();
         statusBar.setErrorIcon(IconManager.getIcon("Error",IconManager.IconSize.Std16));
 
-        cancelBtn = new JButton(getResourceString("Cancel"));
-        loginBtn = new JButton(getResourceString("Login"));
-        helpBtn = new JButton(getResourceString("Help"));
+        cancelBtn = createButton(getResourceString("Cancel"));
+        loginBtn  = createButton(getResourceString("Login"));
+        helpBtn   = createButton(getResourceString("Help"));
 
         forwardImgIcon = IconManager.getIcon("Forward");
         downImgIcon = IconManager.getIcon("Down");
-        //moreBtn = new JCheckBox("More", forwardImgIcon); // XXX I18N
+        //moreBtn = createCheckBox("More", forwardImgIcon); // XXX I18N
 
         // Extra
-        dbDrivers = DatabaseDriverInfo.getDriversList();
-        dbDriverCBX = new JComboBox(dbDrivers);
-        
-        dbDriverCBX2 = new JComboBox(dbDrivers);
+        dbDrivers    = DatabaseDriverInfo.getDriversList();
+        dbDriverCBX  = createComboBox(dbDrivers);
+        dbDriverCBX2 = createComboBox(dbDrivers);
         
         if (dbDrivers.size() > 0)
         {
             String selectedStr = AppPreferences.getLocalPrefs().get("convert.dbdriverSource_selected", "SQLServer");
             int inx = Collections.binarySearch(dbDrivers, new DatabaseDriverInfo(selectedStr, null, null));
             dbDriverCBX.setSelectedIndex(inx > -1 ? inx : -1);
-             selectedStr = AppPreferences.getLocalPrefs().get("convert.dbdriverDest_selected", "SQLServer");
-             inx = Collections.binarySearch(dbDrivers, new DatabaseDriverInfo(selectedStr, null, null));
+            selectedStr = AppPreferences.getLocalPrefs().get("convert.dbdriverDest_selected", "SQLServer");
+            inx = Collections.binarySearch(dbDrivers, new DatabaseDriverInfo(selectedStr, null, null));
             dbDriverCBX2.setSelectedIndex(inx > -1 ? inx : -1);
 
         } else
@@ -566,7 +570,7 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
         //formBuilder.add(extraPanelBlder.getPanel(), cc.xywh(1, y, 3, 1));
 
         PanelBuilder outerPanel = new PanelBuilder(new FormLayout("p,3dlu,p:g", "p,2dlu,p,2dlu,p"), this);
-        //JLabel icon = new JLabel(IconManager.getIcon("SpecifyLargeIcon"));
+        //JLabel icon = createLabel(IconManager.getIcon("SpecifyLargeIcon"));
         //icon.setBorder(BorderFactory.createEmptyBorder(2, 10, 2, 2));
 
         formBuilder.getPanel().setBorder(BorderFactory.createEmptyBorder(2, 5, 0, 5));
@@ -575,7 +579,7 @@ public class CustomDBConverterPanel extends JPanel  implements CustomDBConverter
         outerPanel.add(formBuilder.getPanel(), cc.xy(3, 1));
         outerPanel.add(ButtonBarFactory.buildOKCancelHelpBar(loginBtn, cancelBtn, helpBtn), cc.xywh(1, 3, 3, 1));
         outerPanel.add(statusBar, cc.xywh(1, 5, 3, 1));
-        
+
         updateUIControls();
     }
 

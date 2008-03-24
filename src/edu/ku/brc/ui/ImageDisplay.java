@@ -34,13 +34,9 @@ import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
 
-import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
@@ -316,7 +312,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 		return url;
 	}
 
-	public static void main(String[] args) throws InterruptedException
+	/*public static void main(String[] args) throws InterruptedException
 	{
 		ImageIcon icon = new ImageIcon("demo_files/beach.jpg");
 		final ImageDisplay id = new ImageDisplay(icon, true, true);
@@ -383,7 +379,7 @@ public class ImageDisplay extends JPanel implements GetSetValueIFace
 				id.setValue("http://www.google.com/images/logo_sm.gif", null);
 			}
 		});
-	}
+	}*/
 
 	//--------------------------------------------------------------
 	//-- Inner Class JPanel for displaying an image

@@ -587,9 +587,32 @@ public class InteractionsTask extends BaseTask
      * @param recordSet the recordset to use to create the loan
      */
     @SuppressWarnings("unchecked")
-    protected void createNewLoan(final InfoRequest infoRequest, final RecordSetIFace recordSet)
+    protected void createNewLoan(final InfoRequest infoRequest, final RecordSetIFace recordSetArg)
     {
-
+        RecordSetIFace recordSet = recordSetArg;
+        if (infoRequest == null && recordSet == null)
+        {
+            Vector<RecordSet> rsList = new Vector<RecordSet>();
+            for (NavBoxItemIFace nbi : infoRequestNavBox.getItems())
+            {
+                Object obj = nbi.getData();
+                if (obj instanceof CommandActionForDB)
+                {
+                    CommandActionForDB cmdAction = (CommandActionForDB)obj;
+                    int tableId = cmdAction.getTableId();
+                    int id      = cmdAction.getId();
+                    RecordSet rs = new RecordSet(nbi.getTitle(), tableId);
+                    rs.addItem(id);
+                    rsList.add(rs);
+                }
+            }
+            recordSet = askForRecordSet(CollectionObject.getClassTableId(), rsList);
+            if (recordSet == null)
+            {
+                return;
+            }
+        }
+        
         DBTableIdMgr.getInClause(recordSet);
 
         DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
@@ -1058,10 +1081,14 @@ public class InteractionsTask extends BaseTask
     
     /**
      * Starts process to return a loan.
+     * @param multiView the current form doing the return
+     * @param loan the loan being returned
      * @param agent the agent doing the return
      * @param returns the list of items being returned
      */
-    protected void doReturnLoan(final Agent  agent, 
+    protected void doReturnLoan(final MultiView            multiView,
+                                final Loan                 loan,
+                                final Agent                agent, 
                                 final List<LoanReturnInfo> returns)
     {
         final SwingWorker worker = new SwingWorker()
@@ -1077,7 +1104,7 @@ public class InteractionsTask extends BaseTask
                 {
                     session = DataProviderFactory.getInstance().createSession();
                     
-                    session.beginTransaction();
+                    //session.beginTransaction();
                     
                     for (LoanReturnInfo loanRetInfo : returns)
                     {   
@@ -1095,12 +1122,24 @@ public class InteractionsTask extends BaseTask
                         if (loanRetInfo.isResolved() != null)
                         {
                             loanRetInfo.getLoanPreparation().setIsResolved(loanRetInfo.isResolved());
-                            session.save(loanRetInfo.getLoanPreparation());
+                            //session.save(loanRetInfo.getLoanPreparation());
                         }
                         loanPrep.addReference(loanRetPrep, "loanReturnPreparations");
                         
+                        int quantity         = loanPrep.getQuantity();
+                        int quantityReturned = loanPrep.getQuantityReturned();
+                        int quantityResolved = loanPrep.getQuantityResolved();
+                        
+                        quantityReturned += loanRetInfo.getQuantity();
+                        
+                        if ((quantityResolved + quantityReturned) == quantity)
+                        {
+                            loanPrep.setIsResolved(true);
+                        }
+                        
                         session.save(loanRetPrep);
                         session.saveOrUpdate(loanPrep);
+                        session.saveOrUpdate(loan);
                     }
                     
                     session.commit();
@@ -1126,6 +1165,7 @@ public class InteractionsTask extends BaseTask
                 JStatusBar statusBar = UIRegistry.getStatusBar();
                 statusBar.setIndeterminate(false);
                 statusBar.setText("");
+                multiView.setData(loan);
             }
         };
         worker.start();
@@ -1172,7 +1212,7 @@ public class InteractionsTask extends BaseTask
                     List<LoanReturnInfo> returns = dlg.getLoanReturnInfo();
                     if (returns.size() > 0)
                     {
-                        doReturnLoan(dlg.getAgent(), returns);
+                        doReturnLoan(mv, loan, dlg.getAgent(), returns);
                     }
                 }
             }

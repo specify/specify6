@@ -9,6 +9,7 @@
  */
 package edu.ku.brc.specify.tools.schemalocale;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -50,10 +51,10 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class SchemaToolsDlg extends CustomDialog
 {
-    protected JButton      editSchemaBtn      = new JButton(getResourceString("SL_EDIT_SCHEMA"));
-    protected JButton      removeLocaleBtn    = new JButton(getResourceString("SL_REMOVE_SCHEMA_LOC"));
-    protected JButton      exportSchemaLocBtn = new JButton(getResourceString("SL_EXPORT_SCHEMA_LOC"));
-    protected JButton      importSchemaLocBtn = new JButton(getResourceString("SL_IMPORT_SCHEMA_LOC"));
+    protected JButton      editSchemaBtn      = createButton(getResourceString("SL_EDIT_SCHEMA"));
+    protected JButton      removeLocaleBtn    = createButton(getResourceString("SL_REMOVE_SCHEMA_LOC"));
+    protected JButton      exportSchemaLocBtn = createButton(getResourceString("SL_EXPORT_SCHEMA_LOC"));
+    protected JButton      importSchemaLocBtn = createButton(getResourceString("SL_IMPORT_SCHEMA_LOC"));
     protected JList        localeList;
     protected Byte         schemaType;
     protected DBTableIdMgr tableMgr;

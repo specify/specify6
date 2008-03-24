@@ -14,6 +14,7 @@
  */
 package edu.ku.brc.specify.tasks;
 
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Color;
@@ -1031,7 +1032,7 @@ protected boolean colsMatchByName(final WorkbenchTemplateMappingItem wbItem,
             PanelBuilder    builder = new PanelBuilder(new FormLayout("p:g", "c:p:g"));
             CellConstraints cc      = new CellConstraints();
 
-            builder.add(new JLabel("<html>"
+            builder.add(createLabel("<html>"
                     +"<p>" + getResourceString("WB_FILE_EXISTS")
                     +"<br><br>" + getResourceString("WB_OK_TO_OVERWRITE") + "<br>      "
                     +"</p></html>"), cc.xy(1,1)); 

@@ -1,5 +1,6 @@
 package edu.ku.brc.stats;
 
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -99,8 +100,8 @@ public class StatGroupTableFromQuery extends StatGroupTable implements SQLExecut
      */
     protected void addNoneAvailableMsg(final String msg)
     {
-        JLabel label = new JLabel(noResultsMsg != null ? noResultsMsg : getResourceString("NoneAvail"));
-        
+        JLabel label = createLabel(noResultsMsg != null ? noResultsMsg : getResourceString("NoneAvail"));
+
         if (useSeparator)
         {
             builder.getPanel().remove(scrollPane != null ? scrollPane : table);

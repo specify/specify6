@@ -9,6 +9,7 @@
  */
 package edu.ku.brc.af.tasks;
 
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -74,9 +75,9 @@ public class EditorTask extends BaseTask
         
         JList viewSetList = new JList(viewSetNames);
         
-        pb.add(new JLabel("Choose a ViewSet"), cc.xy(1,1));
+        pb.add(createLabel("Choose a ViewSet"), cc.xy(1,1));
         pb.add(viewSetList, cc.xy(1,3));
-        
+
         return pb.getPanel();
     }
     

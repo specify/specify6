@@ -17,6 +17,8 @@
  */
 package edu.ku.brc.ui.db;
 
+import static edu.ku.brc.ui.UIHelper.setControlSize;
+
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -52,6 +54,8 @@ public class TextFieldFromPickListTable extends JTextField implements GetSetValu
     {
         super();
         
+        setControlSize(this);
+
         //if (adapter.isTabledBased())
        // {
             this.adapter = adapter; 

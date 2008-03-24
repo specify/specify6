@@ -1,5 +1,7 @@
 package edu.ku.brc.specify.config;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createTextField;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
@@ -114,8 +116,8 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
      */
     protected void createUI()
     {
-        searchText = new JTextField(30);
-        searchBtn  = new JButton(getResourceString("Search"));
+        searchText = createTextField(30);
+        searchBtn  = createButton(getResourceString("Search"));
         ActionListener doQuery = new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
@@ -192,8 +194,8 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
         scrollPane.setPreferredSize(new Dimension(300,200));
 
         // Bottom Button UI
-        cancelBtn = new JButton(getResourceString("Cancel"));
-        okBtn = new JButton(getResourceString("OK"));
+        cancelBtn = createButton(getResourceString("Cancel"));
+        okBtn = createButton(getResourceString("OK"));
 
         okBtn.addActionListener(this);
         getRootPane().setDefaultButton(okBtn);
@@ -321,4 +323,11 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
        setVisible(false);
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace#hasResults()
+     */
+    public boolean hasResults()
+    {
+        return etrb.hasResults();
+    }
 }

@@ -14,6 +14,9 @@
  */
 package edu.ku.brc.af.prefs;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.createTextField;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
@@ -225,7 +228,7 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
         PanelBuilder    builder    = new PanelBuilder(new FormLayout("l:p, p:g, r:p:g", "p"));
         CellConstraints cc         = new CellConstraints();
 
-        JButton showAllBtn = new JButton(getResourceString("showall"));
+        JButton showAllBtn = createButton(getResourceString("showall"));
 
         builder.add(showAllBtn, cc.xy(1,1));
         if (addSearchUI)
@@ -389,11 +392,11 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
         GridBagConstraints c = new GridBagConstraints();
 
         JPanel     searchPanel = new JPanel(gridbag);
-        JLabel     spacer      = new JLabel(" ");
+        JLabel     spacer      = createLabel(" ");
 
-        searchBtn   = new JButton(getResourceString("Search"));
+        searchBtn   = createButton(getResourceString("Search"));
 
-        searchText  = new JTextField("", 10);
+        searchText  = createTextField("", 10);
         textBGColor = searchText.getBackground();
 
         searchText.setMinimumSize(new Dimension(50, searchText.getPreferredSize().height));

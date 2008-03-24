@@ -15,6 +15,8 @@
 
 package edu.ku.brc.ui.forms.validation;
 
+import static edu.ku.brc.ui.UIHelper.setControlSize;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -136,6 +138,8 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
      */
     protected void init()
     {
+        setControlSize(this);
+
         setDocument(new ValPlainTextDocument());
 
         bgColor = getBackground();

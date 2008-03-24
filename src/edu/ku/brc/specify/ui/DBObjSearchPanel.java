@@ -49,7 +49,6 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.AppContextMgr;
-import edu.ku.brc.af.core.expresssearch.ERTICaptionInfo;
 import edu.ku.brc.af.core.expresssearch.ExpressResultsTableInfo;
 import edu.ku.brc.af.core.expresssearch.ExpressSearchConfigCache;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
@@ -59,7 +58,9 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanel;
 import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.db.ERTICaptionInfo;
 import edu.ku.brc.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.ui.db.ViewBasedSearchQueryBuilderIFace;
 import edu.ku.brc.ui.forms.MultiView;
@@ -304,7 +305,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
      */
     protected void createSearchBtn()
     {
-        searchBtn  = new JButton(getResourceString("Search"));
+        searchBtn  = UIHelper.createButton(getResourceString("Search"));
         searchBtn.addActionListener(doQuery);
     }
     
@@ -589,6 +590,14 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
         scrollPane.revalidate();
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace#hasResults()
+     */
+    public boolean hasResults()
+    {
+        return etrb.hasResults();
+    }
+
     /**
      * @return
      */

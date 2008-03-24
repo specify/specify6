@@ -82,7 +82,7 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
             for (LoanPreparation loanPrep : loan.getLoanPreparations())
             {
                 Boolean isResolved = loanPrep.getIsResolved();
-                if (isResolved == null && isResolved != null && !isResolved)
+                if (isResolved == null || (isResolved != null && !isResolved))
                 {
                     allResolved = false;
                     break;
@@ -98,6 +98,9 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
                 if (allResolved)
                 {
                     ((JButton)comp).setText(UIRegistry.getResourceString("LOAN_ALL_PREPS_RETURNED"));
+                } else
+                {
+                    
                 }
             }
             

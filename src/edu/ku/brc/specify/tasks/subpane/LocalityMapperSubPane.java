@@ -15,6 +15,7 @@
 
 package edu.ku.brc.specify.tasks.subpane;
 
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Color;
@@ -101,7 +102,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
 
     protected LocalityMapper                  localityMapper  = new LocalityMapper();
     protected JLabel                          imageLabel      = new JLabel(getResourceString("LoadingImage"));
-    protected JLabel                          titleLabel      = new JLabel();
+    protected JLabel                          titleLabel      = createLabel("");
     protected MultiView                       multiView;
 
     protected List<CollectingEvent>           collectingEvents;
@@ -119,7 +120,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
     protected ResultSetController             recordSetController;
     protected ControlBarPanel                 controlPanel;
     protected JButton                         googleBtn;
-    protected CollectingEventKMLGenerator          kmlGen;
+    protected CollectingEventKMLGenerator     kmlGen;
     protected List<CollectingEvent>           colEvents;
     protected LocalityMapperSubPane           thisPane;
 
@@ -134,7 +135,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
                                  final List<CollectingEvent> colEvents)
     {
         super(name, task);
-        
+
         this.colEvents = colEvents;
         this.thisPane  = this;
 

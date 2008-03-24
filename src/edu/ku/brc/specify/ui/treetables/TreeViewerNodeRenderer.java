@@ -7,6 +7,7 @@
 
 package edu.ku.brc.specify.ui.treetables;
 
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BasicStroke;
@@ -26,7 +27,6 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import javax.swing.Icon;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
@@ -139,7 +139,7 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
         
         if ( !(value instanceof TreeNode))
         {
-            return new JLabel("Item must be an instance of TreeNode");
+            return createLabel("Item must be an instance of TreeNode");
         }
         
         if (firstTime)
@@ -147,7 +147,7 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
             firstTime = false;
             computeMissingColumnWidths(l.getGraphics());
         }
-        
+
         TreeNode node = (TreeNode)value;
         
         nodeUI.setNode(node);

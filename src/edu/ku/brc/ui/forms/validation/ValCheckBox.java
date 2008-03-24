@@ -17,6 +17,8 @@
  */
 package edu.ku.brc.ui.forms.validation;
 
+import static edu.ku.brc.ui.UIHelper.setControlSize;
+
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -62,7 +64,9 @@ public class ValCheckBox extends JCheckBox implements UIValidatable, GetSetValue
         super(label);
         this.isRequired = isRequired;
         this.isReadOnly = isReadOnly;
+        
         setOpaque(false);
+        setControlSize(this);
         
         if (isReadOnly)
         {

@@ -13,6 +13,7 @@
  */
 package edu.ku.brc.ui.db;
 
+import static edu.ku.brc.ui.UIHelper.*;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Component;
@@ -196,7 +197,7 @@ public class DatabaseLoginPanel extends JPanel
                           final int y)
     {
         int yy = y;
-        pb.add(new JLabel(label != null ? getResourceString(label) + ":" : " ",
+        pb.add(createLabel(label != null ? getResourceString(label) + ":" : " ",
                 SwingConstants.RIGHT), cc.xy(1, yy));
         pb.add(comp, cc.xy(3, yy));
         yy += 2;
@@ -215,32 +216,37 @@ public class DatabaseLoginPanel extends JPanel
         PropertiesPickListAdapter dbPickList = new PropertiesPickListAdapter("login.databases");
         PropertiesPickListAdapter svPickList = new PropertiesPickListAdapter("login.servers");
 
-        username = new JTextField(20);
-        password = new JPasswordField(20);
+        username = createTextField(20);
+        password = createPasswordField(20);
 
         databases = new JEditComboBox(dbPickList);
-        servers = new JEditComboBox(svPickList);
+        servers   = new JEditComboBox(svPickList);
         dbPickList.setComboBox(databases);
         svPickList.setComboBox(servers);
+        
+        setControlSize(password);
+        setControlSize(databases);
+        setControlSize(servers);
 
-        autoLoginCBX = new JCheckBox(getResourceString("autologin"));
-        rememberUsernameCBX = new JCheckBox(getResourceString("rememberuser"));
-        rememberPasswordCBX = new JCheckBox(getResourceString("rememberpassword"));
+        autoLoginCBX        = createCheckBox(getResourceString("autologin"));
+        rememberUsernameCBX = createCheckBox(getResourceString("rememberuser"));
+        rememberPasswordCBX = createCheckBox(getResourceString("rememberpassword"));
 
         statusBar = new JStatusBar();
         statusBar.setErrorIcon(IconManager.getIcon("Error",IconManager.IconSize.Std16));
 
-        cancelBtn = new JButton(getResourceString("Cancel"));
-        loginBtn = new JButton(getResourceString("Login"));
-        helpBtn = new JButton(getResourceString("Help"));
-
+        cancelBtn = createButton(getResourceString("Cancel"));
+        loginBtn  = createButton(getResourceString("Login"));
+        helpBtn   = createButton(getResourceString("Help"));
+        
         forwardImgIcon = IconManager.getIcon("Forward");
-        downImgIcon = IconManager.getIcon("Down");
-        moreBtn = new JCheckBox("More", forwardImgIcon); // XXX I18N
+        downImgIcon    = IconManager.getIcon("Down");
+        moreBtn        = new JCheckBox("More", forwardImgIcon); // XXX I18N
+        setControlSize(moreBtn);
 
         // Extra
         dbDrivers = DatabaseDriverInfo.getDriversList();
-        dbDriverCBX = new JComboBox(dbDrivers);
+        dbDriverCBX = createComboBox(dbDrivers);
         if (dbDrivers.size() > 0)
         {
             String selectedStr = AppPreferences.getLocalPrefs().get("login.dbdriver_selected", "MySQL");

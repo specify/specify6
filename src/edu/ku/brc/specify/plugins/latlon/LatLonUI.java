@@ -7,6 +7,9 @@
 
 package edu.ku.brc.specify.plugins.latlon;
 
+import static edu.ku.brc.ui.UIHelper.createComboBox;
+import static edu.ku.brc.ui.UIHelper.createLabel;
+
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Color;
@@ -40,9 +43,9 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.specify.datamodel.Locality;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.IconManager;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIPluginable;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.validation.UIValidatable;
 
 
@@ -153,7 +156,7 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
         }
         
         cardPanel      = new JPanel(cardLayout);
-        formatSelector = new JComboBox(formats);
+        formatSelector = createComboBox(formats);
         latLonPanes    = new JComponent[formats.length];
         
         formatSelector.addActionListener(new ActionListener() {
@@ -255,9 +258,9 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
         
         if (isViewMode)
         {
-            typeLabel   = new JLabel();
+            typeLabel   = createLabel(" ");
         }
-        
+
         PanelBuilder    topPane    = new PanelBuilder(new FormLayout("l:p, c:p:g", "p"));
         topPane.add(formatSelector,       cc.xy(1, 1));
         topPane.add(isViewMode ? typeLabel : botBtnBar.getPanel(), cc.xy(2, 1));

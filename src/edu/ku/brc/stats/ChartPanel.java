@@ -14,6 +14,9 @@
  */
 package edu.ku.brc.stats;
 
+import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.createProgressBar;
+
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
@@ -59,13 +62,13 @@ public class ChartPanel extends JPanel implements Chartable
      */
     public ChartPanel(final String startUpMsg)
     {
-        progressBar = new JProgressBar();
+        progressBar = createProgressBar();
         progressBar.setIndeterminate(true);
         PanelBuilder    builder    = new PanelBuilder(new FormLayout("max(100px;p):g", "center:p:g, center:p:g"));
         CellConstraints cc         = new CellConstraints();
 
         builder.add(progressBar,                  cc.xy(1,1));
-        builder.add(progressLabel = new JLabel(startUpMsg, JLabel.CENTER), cc.xy(1,2));
+        builder.add(progressLabel = createLabel(startUpMsg, JLabel.CENTER), cc.xy(1,2));
 
         PanelBuilder builder2  = new PanelBuilder(new FormLayout("p:g,p,p:g", "p:g,p,p:g"), this);
         builder2.add(builder.getPanel(), cc.xy(2,2));

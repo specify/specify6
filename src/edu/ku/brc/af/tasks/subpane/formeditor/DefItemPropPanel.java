@@ -9,13 +9,17 @@
  */
 package edu.ku.brc.af.tasks.subpane.formeditor;
 
+import static edu.ku.brc.ui.UIHelper.createCheckBox;
+import static edu.ku.brc.ui.UIHelper.createComboBox;
+import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.setControlSize;
+
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.SpinnerModel;
@@ -94,44 +98,46 @@ public class DefItemPropPanel extends JPanel
      */
     protected JPanel createPropertyPanel(final boolean isRow)
     {
-        alignCBX  = new JComboBox(isRow ? rowAlign : colAlign);
-        minMaxCBX = new JComboBox(minMax);
-        unitCBX   = new JComboBox(sizes);
+        alignCBX  = createComboBox(isRow ? rowAlign : colAlign);
+        minMaxCBX = createComboBox(minMax);
+        unitCBX   = createComboBox(sizes);
         
         SpinnerModel model = new SpinnerNumberModel(0, //initial value
                 0, //min
                 1024,   //max
                 10);               //step
         sizeSpinner = new JSpinner(model);
+
+        setControlSize(sizeSpinner);
         
-        growCB          = new JCheckBox("Should Grow");
-        preferredSizeCB = new JCheckBox("Use Preferred Size");
+        growCB          = createCheckBox("Should Grow");
+        preferredSizeCB = createCheckBox("Use Preferred Size");
         
         CellConstraints cc = new CellConstraints();
         PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,p:g", "p,2px,p,2px,p,2px,p,2px,p,2px,p,5px"));
         
         int y = 1;
-        pb.add(new JLabel("Min/Max:", SwingConstants.RIGHT), cc.xy(1, y));
+        pb.add(createLabel("Min/Max:", SwingConstants.RIGHT), cc.xy(1, y));
         pb.add(minMaxCBX, cc.xy(3,y));
         y += 2;
         
-        pb.add(new JLabel("Alignment:", SwingConstants.RIGHT), cc.xy(1, y));
+        pb.add(createLabel("Alignment:", SwingConstants.RIGHT), cc.xy(1, y));
         pb.add(alignCBX, cc.xy(3,y));
         y += 2;
         
-        pb.add(new JLabel(" ", SwingConstants.RIGHT), cc.xy(1, y));
+        pb.add(createLabel(" ", SwingConstants.RIGHT), cc.xy(1, y));
         pb.add(preferredSizeCB, cc.xy(3,y));
         y += 2;
         
-        pb.add(new JLabel("Size:", SwingConstants.RIGHT), cc.xy(1, y));
+        pb.add(createLabel("Size:", SwingConstants.RIGHT), cc.xy(1, y));
         pb.add(sizeSpinner, cc.xy(3,y));
         y += 2;
         
-        pb.add(new JLabel("Unit:", SwingConstants.RIGHT), cc.xy(1, y));
+        pb.add(createLabel("Unit:", SwingConstants.RIGHT), cc.xy(1, y));
         pb.add(unitCBX, cc.xy(3,y));
         y += 2;
         
-        pb.add(new JLabel("", SwingConstants.RIGHT), cc.xy(1, y));
+        pb.add(createLabel("", SwingConstants.RIGHT), cc.xy(1, y));
         pb.add(growCB, cc.xy(3,y));
         y += 2;
 
@@ -149,7 +155,7 @@ public class DefItemPropPanel extends JPanel
             }
             
         });
-        
+
         return pb.getPanel();
     }
     

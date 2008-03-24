@@ -15,6 +15,7 @@
 
 package edu.ku.brc.specify;
 
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -36,7 +37,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.NoSuchElementException;
@@ -94,7 +94,6 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.QueryExecutor;
-import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.DebugLoggerDialog;
@@ -103,7 +102,6 @@ import edu.ku.brc.specify.config.LoggerDialog;
 import edu.ku.brc.specify.config.ResourceImportExportDlg;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.AccessionAttachment;
-import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AgentAttachment;
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.CollectingEventAttachment;
@@ -122,7 +120,6 @@ import edu.ku.brc.specify.datamodel.PermitAttachment;
 import edu.ku.brc.specify.datamodel.PreparationAttachment;
 import edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
-import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.TaxonAttachment;
 import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
 import edu.ku.brc.specify.tests.SpecifyAppPrefs;
@@ -293,13 +290,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         // Adjust Default Swing UI Default Resources (Color, Fonts, etc) per Platform
         UIHelper.adjustUIDefaults();
         
-        if (UIHelper.isMacOS())
-        {
-            Font labelFont = (new JLabel()).getFont();
-            Font defaultFont = labelFont.deriveFont((float)labelFont.getSize()-2);
-            BaseTask.setToolbarBtnFont(defaultFont); // For ToolbarButtons
-            RolloverCommand.setDefaultFont(defaultFont);
-        }
+        setupDefaultFonts();
         
         // Insurance
         if (StringUtils.isEmpty(UIRegistry.getJavaDBPath()))
@@ -418,7 +409,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
 //        }
         
         // Setup base font AFTER setting Look and Feel
-        UIRegistry.setBaseFont((new JLabel()).getFont());
+        UIRegistry.setBaseFont((createLabel("")).getFont());
 
         log.info("Creating Database configuration ");
 
@@ -478,7 +469,6 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 });
             return;
         }
-        
  
         TaskMgr.readRegistry();
         
@@ -1355,7 +1345,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         JLabel iconLabel = new JLabel(IconManager.getIcon("SpecifyLargeIcon"));
         iconLabel.setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 8));
         panel.add(iconLabel, BorderLayout.WEST);
-        panel.add(new JLabel("<html>"+appName+" " + appVersion + 
+        panel.add(createLabel("<html>"+appName+" " + appVersion + 
                 "<br><br>Biodiversity Research Center<br>University of Kansas<br>Lawrence, KS  USA 66045<br><br>" + 
                 "www.specifysoftware.org<br>specify@ku.edu<br><br>" + 
                 "<p>The Specify Software Project is<br>"+
@@ -1368,6 +1358,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         CustomDialog aboutDlg = new CustomDialog(topFrame, getResourceString("About") + " " +appName, true, CustomDialog.OK_BTN, panel);
         aboutDlg.setOkLabel(getResourceString("Close"));
         UIHelper.centerAndShow(aboutDlg);
+
     }
 
     /**
@@ -1478,6 +1469,53 @@ public class Specify extends JPanel implements DatabaseLoginListener
         });
     }
     
+    /**
+     * @param appPRefs
+     */
+    protected void setupUIControlSize(final AppPreferences appPRefs)
+    {
+        String controlSize = AppPreferences.getRemote().get("ui.formatting.controlSizes", null);
+        if (StringUtils.isNotEmpty(controlSize))
+        {
+            try
+            {
+                UIHelper.setControlSize(UIHelper.CONTROLSIZE.valueOf(controlSize));
+                UIHelper.setControlSize(UIRegistry.getStatusBar().getProgressBar());
+                UIRegistry.setBaseFont((createLabel("")).getFont());
+                
+                setupDefaultFonts();
+                
+            } catch (Exception ex) {}
+        }
+    }
+    
+    /**
+     * 
+     */
+    protected void setupDefaultFonts()
+    {
+        //if (UIHelper.isMacOS())
+        {
+            Font labelFont = (createLabel("")).getFont();
+            log.debug("****** "+labelFont);
+            Font defaultFont;
+            if (!UIHelper.isMacOS())
+            {
+                defaultFont = labelFont;
+            } else
+            {
+                if (labelFont.getSize() == 13)
+                {
+                    defaultFont = labelFont.deriveFont((float)labelFont.getSize()-2);
+                } else
+                {
+                    defaultFont = labelFont;
+                }
+            }
+            BaseTask.setToolbarBtnFont(defaultFont); // For ToolbarButtons
+            RolloverCommand.setDefaultFont(defaultFont);
+        }
+    }
     
     /**
      * Restarts the app with a new or old database and user name and creates the core app UI.
@@ -1512,6 +1550,11 @@ public class Specify extends JPanel implements DatabaseLoginListener
         
         if (status == AppContextMgr.CONTEXT_STATUS.OK)
         {
+            if (UIHelper.isMacOS_10_5_X())
+            {
+                setupUIControlSize(AppPreferences.getRemote());
+            }
+            
             String iconName = AppPreferences.getRemote().get("ui.formatting.disciplineicon", "CollectionObject");
             IconManager.aliasImages(iconName,             // Source
                                     "collectionobject");  // Dest
@@ -1659,7 +1702,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         this.databaseName = databaseNameArg;
         this.userName     = userNameArg;
         
-        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        /*AppPreferences localPrefs = AppPreferences.getLocalPrefs();
         if (localPrefs.get("startup.lastname", null) != null)
         {
             String userNameStr  = AppPreferences.getLocalPrefs().get("startup.username",  null);
@@ -1739,7 +1782,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
             {
                 throw new RuntimeException("The user ["+userName+"] could  not be located as a Specify user.");
             }
-        }
+        }*/
         
         restartApp(window, databaseName, userName, false, firstTime);
         

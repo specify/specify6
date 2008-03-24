@@ -45,6 +45,7 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.IconManager;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.QueryForIdResultsIFace;
 
@@ -124,7 +125,7 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
         {
             explainPanel = new JPanel(new BorderLayout());
             explainPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 0, 0));
-            JButton btn = new JButton(UIRegistry.getResourceString("EXPRESSSEARCH_TELL_ME_MORE"), IconManager.getIcon("InfoIcon"));
+            JButton btn = UIHelper.createButton(UIRegistry.getResourceString("EXPRESSSEARCH_TELL_ME_MORE"), IconManager.getIcon("InfoIcon"));
             btn.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
             btn.setFocusable(false);
             btn.setForeground(Color.GRAY);
@@ -152,10 +153,8 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
         return false;
     }
 
-    /**
-     * Add search results box to UI.
-     * @param tableInfo the information about the table being added
-     * @param hits the "hits" results of the search
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace#addSearchResults(edu.ku.brc.ui.db.QueryForIdResultsIFace)
      */
     public void addSearchResults(final QueryForIdResultsIFace results)
     {
@@ -176,6 +175,14 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
         }
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace#hasResults()
+     */
+    public boolean hasResults()
+    {
+        return expTblResults.size() > 0;
+    }
+
     /**
      * Removes a table from the content pane.
      * @param expressTableResultsBase the table of results to be removed

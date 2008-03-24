@@ -14,6 +14,7 @@ import java.io.File;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
+import java.util.Vector;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
@@ -54,10 +55,12 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
     
     protected JComboBox    fontNames = null;
     protected JComboBox    fontSizes = null;
+    protected JComboBox    controlSizes = null;
     protected JTextField   testField = null;
     protected ValComboBox  disciplineCBX;
     protected ValComboBox  appIconCBX;
     protected String       newAppIconName = null;
+    protected Hashtable<String, UIHelper.CONTROLSIZE> controlSizesHash = new Hashtable<String, UIHelper.CONTROLSIZE>();
     
     /**
      * Constructor.
@@ -76,11 +79,18 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
         
         UIValidator.setIgnoreAllValidation(this, true);
         
-        ValComboBox fontNamesVCB = (ValComboBox)form.getCompById("fontNames");
-        ValComboBox fontSizesVCB = (ValComboBox)form.getCompById("fontSizes");
+        JLabel      fontNamesLabel = (JLabel)form.getLabelFor("fontNames");
+        ValComboBox fontNamesVCB   = (ValComboBox)form.getCompById("fontNames");
+        
+        JLabel      fontSizesLabel = (JLabel)form.getLabelFor("fontSizes");
+        ValComboBox fontSizesVCB   = (ValComboBox)form.getCompById("fontSizes");
+        
+        JLabel      controlSizesLabel = (JLabel)form.getLabelFor("controlSizes");
+        ValComboBox controlSizesVCB   = (ValComboBox)form.getCompById("controlSizes");
         
         fontNames = fontNamesVCB.getComboBox();
         fontSizes = fontSizesVCB.getComboBox();
+        controlSizes = controlSizesVCB.getComboBox();
         
         testField = (JTextField)form.getCompById("fontTest");
         if (testField != null)
@@ -88,39 +98,79 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
             testField.setText("This is a Test");
         }
         
-        Hashtable<String, String> namesUsed = new Hashtable<String, String>();
-        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        for (Font font : ge.getAllFonts())
+        if (UIHelper.isMacOS_10_5_X())
         {
-            if (namesUsed.get(font.getFamily()) == null)
-            {
-                fontNames.addItem(font.getFamily());
-                namesUsed.put(font.getFamily(), "X");
-            }
-        }
-        for (int i=6;i<22;i++)
-        {
-            fontSizes.addItem(Integer.toString(i));
-        }
-        
-        Font baseFont = UIRegistry.getBaseFont();
-        if (baseFont != null)
-        {
-            fontNames.setSelectedItem(baseFont.getFamily());
-            fontSizes.setSelectedItem(Integer.toString(baseFont.getSize()));
+            fontNamesLabel.setVisible(false);
+            fontNamesVCB.setVisible(false);
+            fontSizesLabel.setVisible(false);
+            fontSizesVCB.setVisible(false);
+            testField.setVisible(false);
             
-            if (testField != null)
+            int inx = -1;
+            int i   = 0;
+            Vector<String> controlSizeTitles = new Vector<String>();
+            for (UIHelper.CONTROLSIZE cs : UIHelper.CONTROLSIZE.values())
             {
-                ActionListener al = new ActionListener()
+                String title = getResourceString(cs.toString());
+                controlSizeTitles.add(title); 
+                controlSizesHash.put(title, cs);
+                controlSizes.addItem(title);
+                if (cs == UIHelper.getControlSize())
                 {
-                    public void actionPerformed(ActionEvent e)
+                    inx = i;
+                }
+                i++;
+            }
+            controlSizes.setSelectedIndex(inx);
+            
+            Font baseFont = UIRegistry.getBaseFont();
+            if (baseFont != null)
+            {
+                fontNames.addItem(baseFont.getFamily());
+                fontSizes.addItem(Integer.toString(baseFont.getSize()));
+                fontNames.setSelectedIndex(0);
+                fontSizes.setSelectedIndex(0);
+            }
+            
+        } else
+        {
+            controlSizesLabel.setVisible(false);
+            controlSizesVCB.setVisible(false);
+            
+            Hashtable<String, String> namesUsed = new Hashtable<String, String>();
+            GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            for (Font font : ge.getAllFonts())
+            {
+                if (namesUsed.get(font.getFamily()) == null)
+                {
+                    fontNames.addItem(font.getFamily());
+                    namesUsed.put(font.getFamily(), "X");
+                }
+            }
+            for (int i=6;i<22;i++)
+            {
+                fontSizes.addItem(Integer.toString(i));
+            }
+            
+            Font baseFont = UIRegistry.getBaseFont();
+            if (baseFont != null)
+            {
+                fontNames.setSelectedItem(baseFont.getFamily());
+                fontSizes.setSelectedItem(Integer.toString(baseFont.getSize()));
+                
+                if (testField != null)
+                {
+                    ActionListener al = new ActionListener()
                     {
-                        testField.setFont(new Font((String)fontNames.getSelectedItem(), Font.PLAIN, fontSizes.getSelectedIndex()+6)); 
-                        form.getUIComponent().validate();
-                    }
-                };
-                fontNames.addActionListener(al);
-                fontSizes.addActionListener(al);
+                        public void actionPerformed(ActionEvent e)
+                        {
+                            testField.setFont(new Font((String)fontNames.getSelectedItem(), Font.PLAIN, fontSizes.getSelectedIndex()+6)); 
+                            form.getUIComponent().validate();
+                        }
+                    };
+                    fontNames.addActionListener(al);
+                    fontSizes.addActionListener(al);
+                }
             }
         }
         
@@ -317,6 +367,15 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
                 changeHash.put("ui.formatting.disciplineicon", item.first);
             }
         }
+        
+        if (UIHelper.isMacOS_10_5_X())
+        {
+            changeHash.remove("fontSizes");
+            changeHash.remove("fontNames");
+        } else
+        {
+            changeHash.remove("controlSizes");
+        }
     }
 
     /* (non-Javadoc)
@@ -338,7 +397,16 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
                                         "collectionobject");  // Dest
             }
             
-            UIRegistry.setBaseFont(new Font((String)fontNames.getSelectedItem(), Font.PLAIN, fontSizes.getSelectedIndex()+6));
+            if (!UIHelper.isMacOS_10_5_X())
+            {
+                UIRegistry.setBaseFont(new Font((String)fontNames.getSelectedItem(), Font.PLAIN, fontSizes.getSelectedIndex()+6));
+            } else
+            {
+                String key = "ui.formatting.controlSizes";
+                UIHelper.setControlSize(controlSizesHash.get(controlSizes.getSelectedItem()));
+                AppPreferences.getRemote().put(key, controlSizesHash.get(controlSizes.getSelectedItem()).toString());
+                AppPreferences.getLocalPrefs().put(key, controlSizesHash.get(controlSizes.getSelectedItem()).toString());
+            }
         }
     }
 }

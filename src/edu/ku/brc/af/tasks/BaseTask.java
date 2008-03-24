@@ -16,7 +16,6 @@ package edu.ku.brc.af.tasks;
 
 import java.awt.Cursor;
 import java.awt.Font;
-import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -54,6 +53,7 @@ import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.tasks.RecordSetTask;
 import edu.ku.brc.specify.ui.ChooseRecordSetDlg;
@@ -913,7 +913,23 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      */
     public static RecordSetIFace askForRecordSet(final int tableId)
     {
-        ChooseRecordSetDlg dlg = new ChooseRecordSetDlg((Frame)UIRegistry.getTopWindow(), tableId);
+        return askForRecordSet(tableId, null);
+    }
+    
+    /**
+     * Displays UI that asks the user to select a predefined label.
+     * @param tableId the table id
+     * @return returns the selected RecordSet or null
+     */
+    public static RecordSetIFace askForRecordSet(final int tableId, 
+                                                 final Vector<RecordSet> additionalRS)
+    {
+        ChooseRecordSetDlg dlg = new ChooseRecordSetDlg(tableId);
+        if (additionalRS != null && additionalRS.size() > 0)
+        {
+            dlg.addAdditionalObjectsAsRecordSets(additionalRS);
+        }
+        
         if (dlg.hasRecordSets())
         {
             if (dlg.getRecordSets().size() == 1)

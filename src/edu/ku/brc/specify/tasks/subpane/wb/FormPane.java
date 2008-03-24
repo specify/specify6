@@ -284,7 +284,7 @@ public class FormPane extends JPanel implements ResultSetControllerListener,
     }
     
     /**
-     * For a given Object (usually from a MouseEvent) it determinaes if a selection of a control or label happened.
+     * For a given Object (usually from a MouseEvent) it determines if a selection of a control or label happened.
      * It also requests focus for the COntrol of the label.
      * @param obj the UI Object
      * @return the parent InputPanel

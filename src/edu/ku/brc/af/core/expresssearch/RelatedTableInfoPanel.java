@@ -17,6 +17,8 @@
  */
 package edu.ku.brc.af.core.expresssearch;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createCheckBox;
 import static edu.ku.brc.ui.UIHelper.createI18NLabel;
 
 import java.awt.Color;
@@ -105,7 +107,7 @@ public class RelatedTableInfoPanel extends JPanel
         pb.add(createI18NLabel("ES_RELATED_SEARCHES"), cc.xy(1, 1));
         pb.add(sp, cc.xywh(1, 3, 1, 6));
         
-        activeCBX = new JCheckBox("                      ");
+        activeCBX = createCheckBox("                      ");
         pb.add(activeLbl = createI18NLabel("ES_RELATED_ACTIVATE", SwingConstants.RIGHT), cc.xy(3, 3));
         pb.add(activeCBX, cc.xy(5, 3));
         
@@ -119,8 +121,8 @@ public class RelatedTableInfoPanel extends JPanel
         pb.add(sp, cc.xy(5, 5));
         
         PanelBuilder btnPB = new PanelBuilder(new FormLayout("p,f:p:g,p", "p"));
-        selectAllBtn = new JButton(UIRegistry.getResourceString("SelectAll"));
-        deselectAllBtn = new JButton(UIRegistry.getResourceString("DeselectAll"));
+        selectAllBtn   = createButton(UIRegistry.getResourceString("SelectAll"));
+        deselectAllBtn = createButton(UIRegistry.getResourceString("DeselectAll"));
         btnPB.add(selectAllBtn, cc.xy(1, 1));
         btnPB.add(deselectAllBtn, cc.xy(3, 1));
         pb.add(btnPB.getPanel(), cc.xy(1, 10));

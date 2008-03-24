@@ -7,6 +7,8 @@
 
 package edu.ku.brc.ui;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -20,7 +22,6 @@ import java.io.StringWriter;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -121,11 +122,13 @@ public class UnhandledExceptionDialog extends JDialog
             {
                 throwable.getCause().printStackTrace(pw);    
             }
+            createLabel("");
+
             stackTraceTA         = new JTextArea(strWriter.getBuffer().toString().replace("\t", "    "));
             stackTraceTA.setEditable(false);
             stackTraceScrollPane = new JScrollPane(stackTraceTA, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
             stackTraceTA.setRows(15);
-            builder.add(new JLabel("Stack Trace", SwingConstants.CENTER), cc.xyw(1, rowIndex, 3));
+            builder.add(createLabel("Stack Trace", SwingConstants.CENTER), cc.xyw(1, rowIndex, 3));
             rowIndex += 2;
             builder.add(stackTraceScrollPane, cc.xyw(1, rowIndex, 3));
             rowIndex += 2;
@@ -134,7 +137,7 @@ public class UnhandledExceptionDialog extends JDialog
         
 
         // Bottom Button UI
-        JButton okBtn = new JButton(getResourceString("OK"));
+        JButton okBtn = createButton(getResourceString("OK"));
         builder.add(okBtn, cc.xyw(3, rowIndex, 1));
 
         okBtn.addActionListener(new ActionListener() {

@@ -1,5 +1,6 @@
 package edu.ku.brc.specify.ui.treetables;
 
+import static edu.ku.brc.ui.UIHelper.*;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Component;
@@ -97,14 +98,14 @@ public class FindPanel extends JPanel implements TimingTarget
             
         });
         
-        findLabel = new JLabel(find + ": ");
-        entryField = new JTextField(32);
+        findLabel = createLabel(find + ": ");
+        entryField = createTextField(32);
         entryField.setMaximumSize(entryField.getPreferredSize());
-        findButton = new JButton(find);
+        findButton = createButton(find);
         findButton.setEnabled(false);
-        nextButton = new JButton(next);
+        nextButton = createButton(next);
         nextButton.setEnabled(false);
-        
+
         whereToggleButton = new MultiStateToggleButton(up,down,both);
         whereToggleButton.setStateIndex(0);
         

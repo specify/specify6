@@ -360,7 +360,7 @@
             <enableRules/>
 
             <columnDef>100px,2px,p,2px,100px:g,2px,p,2px,p,2px,p,p:g</columnDef>
-            <rowDef auto="true" cell="p" sep="2dlu"/>
+            <rowDef auto="true" cell="p" sep="1px"/>
 
             <rows>
                 <row>

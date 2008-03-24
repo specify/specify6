@@ -9,7 +9,10 @@
  */
 package edu.ku.brc.specify.tasks.subpane.qb;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createCheckBox;
 import static edu.ku.brc.ui.UIHelper.createIconBtn;
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -41,7 +44,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -65,7 +67,6 @@ import com.jgoodies.forms.layout.FormLayout;
 import edu.ku.brc.af.core.NavBoxLayoutManager;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
-import edu.ku.brc.af.core.expresssearch.ERTICaptionInfo;
 import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.dbsupport.DBFieldInfo;
@@ -93,6 +94,7 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.db.ERTICaptionInfo;
 
 /**
  * @author rod
@@ -192,7 +194,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     {
         removeAll();
 
-        saveBtn = new JButton(UIRegistry.getResourceString("QB_SAVE"));
+        saveBtn = createButton(UIRegistry.getResourceString("QB_SAVE"));
         saveBtn.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
@@ -279,12 +281,12 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         });
 
         contextPanel = new JPanel(new BorderLayout());
-        contextPanel.add(new JLabel("Search Context", SwingConstants.CENTER), BorderLayout.NORTH);
+        contextPanel.add(createLabel("Search Context", SwingConstants.CENTER), BorderLayout.NORTH);
         contextPanel.add(spt, BorderLayout.CENTER);
         contextPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
 
         JPanel schemaPanel = new JPanel(new BorderLayout());
-        schemaPanel.add(new JLabel(UIRegistry.getResourceString("QB_SEARCH_FIELDS")), BorderLayout.NORTH);
+        schemaPanel.add(createLabel(UIRegistry.getResourceString("QB_SEARCH_FIELDS")), BorderLayout.NORTH);
         schemaPanel.add(scrollPane, BorderLayout.CENTER);
 
         topPanel.add(contextPanel, BorderLayout.WEST);
@@ -299,8 +301,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         queryFieldsScroll.setBorder(null);
         add(queryFieldsScroll);
 
-        searchBtn = new JButton(UIRegistry.getResourceString("QB_SEARCH"));
-        final JCheckBox distinctChk = new JCheckBox(UIRegistry.getResourceString("QB_DISTINCT"), false);
+        searchBtn = createButton(UIRegistry.getResourceString("QB_SEARCH"));
+        final JCheckBox distinctChk = createCheckBox(UIRegistry.getResourceString("QB_DISTINCT"));
+        distinctChk.setSelected(false);
         PanelBuilder outer = new PanelBuilder(new FormLayout("f:p:g,p", "p"));
         PanelBuilder builder = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g,f:p:g,f:p:g", "p"));
         CellConstraints cc = new CellConstraints();

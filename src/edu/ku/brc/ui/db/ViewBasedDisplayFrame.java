@@ -204,7 +204,9 @@ public class ViewBasedDisplayFrame extends CustomFrame implements ViewBasedDispl
             BusinessRulesIFace br = fvo.getBusinessRules();
             if (br != null)
             {
-                if (BusinessRulesIFace.STATUS.OK != br.processBusinessRules(parentDataObj, fvo.getDataObj()))
+                if (BusinessRulesIFace.STATUS.OK != br.processBusinessRules(parentDataObj, 
+                                                                            fvo.getDataObj(),
+                                                                            viewBasedPanel.isEditMode()))
                 {
                     return;
                 }

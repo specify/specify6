@@ -152,8 +152,8 @@ public class DataModelClassGenerator extends JFrame
             }
         }
 
-        JButton processBtn = new JButton("Process");
-        JButton cancelBtn  = new JButton("Cancel");
+        JButton processBtn = UIHelper.createButton("Process");
+        JButton cancelBtn  = UIHelper.createButton("Cancel");
         
         processBtn.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
@@ -597,7 +597,7 @@ public class DataModelClassGenerator extends JFrame
             sizetxt       = new JTextField(type == DataType.String ? 5 : 15);
             if (type != DataType.Set)
             {
-                typeCBX = new JComboBox(new String[] {"Memo", "String"});
+                typeCBX = UIHelper.createComboBox(new String[] {"Memo", "String"});
                 typeCBX.setSelectedIndex(0);
             }
         }

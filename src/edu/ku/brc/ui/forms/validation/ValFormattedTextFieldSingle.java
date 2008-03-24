@@ -15,6 +15,8 @@
 
 package edu.ku.brc.ui.forms.validation;
 
+import static edu.ku.brc.ui.UIHelper.setControlSize;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -146,6 +148,8 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
      */
     protected void init(final UIFieldFormatterIFace formatter, final boolean isViewOnly)
     {
+        setControlSize(this);
+
         this.isViewOnly = isViewOnly;
         
         initColors();

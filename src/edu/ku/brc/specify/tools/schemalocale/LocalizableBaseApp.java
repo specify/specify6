@@ -9,6 +9,7 @@
  */
 package edu.ku.brc.specify.tools.schemalocale;
 
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -45,7 +46,7 @@ public class LocalizableBaseApp extends JFrame
         JLabel iconLabel = new JLabel(IconManager.getIcon("SpecifyLargeIcon"));
         iconLabel.setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 8));
         panel.add(iconLabel, BorderLayout.WEST);
-        panel.add(new JLabel("<html>"+appName+" " + appVersion + 
+        panel.add(createLabel("<html>"+appName+" " + appVersion + 
                 "<br><br>Biodiversity Research Center<br>University of Kansas<br>Lawrence, KS  USA 66045<br><br>" + 
                 "www.specifysoftware.org<br>specify@ku.edu<br><br>" + 
                 "<p>The Specify Software Project is<br>"+

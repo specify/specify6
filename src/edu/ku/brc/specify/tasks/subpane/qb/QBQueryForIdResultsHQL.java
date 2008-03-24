@@ -12,8 +12,10 @@ package edu.ku.brc.specify.tasks.subpane.qb;
 import java.awt.Color;
 import java.util.List;
 
-import edu.ku.brc.af.core.expresssearch.ERTICaptionInfo;
+import edu.ku.brc.af.core.ServiceInfo;
+import edu.ku.brc.af.core.ServiceProviderIFace;
 import edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL;
+import edu.ku.brc.ui.db.ERTICaptionInfo;
 
 /**
  * @author rod
@@ -23,7 +25,7 @@ import edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL;
  * Oct 18, 2007
  *
  */
-public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL
+public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements ServiceProviderIFace
 {
     protected String title;
     protected int    tableId;
@@ -100,6 +102,17 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL
     public int getTableId()
     {
         return tableId;
+    }
+
+    //--------------------------------------------------------------------
+    // ServiceProviderIFace Interface
+    //--------------------------------------------------------------------
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.ServiceProviderIFace#getServices()
+     */
+    public List<ServiceInfo> getServices()
+    {
+        return null;
     }
     
 }

@@ -14,6 +14,8 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
+import static edu.ku.brc.ui.UIHelper.*;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
@@ -107,10 +109,10 @@ public class InputPanel extends JPanel implements GhostActionable
         
         if (comp instanceof ValCheckBox)
         {
-            this.label = new JLabel("   ", SwingConstants.RIGHT);
+            this.label = createLabel("   ", SwingConstants.RIGHT);
         } else
         {
-            this.label = new JLabel(label+":", SwingConstants.RIGHT);
+            this.label = createLabel(label+":", SwingConstants.RIGHT);
         }
 
         this.label.setCursor(handCursor);

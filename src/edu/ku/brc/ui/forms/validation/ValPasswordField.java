@@ -14,6 +14,8 @@
  */
 
 package edu.ku.brc.ui.forms.validation;
+import static edu.ku.brc.ui.UIHelper.setControlSize;
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -96,6 +98,8 @@ public class ValPasswordField extends JPasswordField implements UIValidatable,
 
     public void init()
     {
+        setControlSize(this);
+
         bgColor = getBackground();
         if (valtextcolor == null || requiredfieldcolor == null)
         {

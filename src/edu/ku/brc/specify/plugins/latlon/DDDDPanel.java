@@ -7,6 +7,9 @@
 
 package edu.ku.brc.specify.plugins.latlon;
 
+import static edu.ku.brc.ui.UIHelper.createComboBox;
+import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.setControlSize;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Component;
@@ -129,6 +132,10 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
         {
             latitudeDirTxt  = new JTextField(2);
             longitudeDirTxt = new JTextField(2);
+            
+            setControlSize(latitudeDirTxt);
+            setControlSize(longitudeDirTxt);
+
             ViewFactory.changeTextFieldUIForDisplay(latitudeDirTxt, false);
             ViewFactory.changeTextFieldUIForDisplay(longitudeDirTxt, false);
             latDir = latitudeDirTxt;
@@ -140,14 +147,13 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
             lonDir = longitudeDir;
         }
 
-        builder.add(new JLabel("Latitude:", JLabel.RIGHT), cc.xy(1, 1));
+        builder.add(createLabel("Latitude:", JLabel.RIGHT), cc.xy(1, 1)); // I18N
         builder.add(latitudeDD, cc.xy(3, 1));
         builder.add(latDir, cc.xy(cbxIndex, 1));
         
-        builder.add(new JLabel("Longitude:", JLabel.RIGHT), cc.xy(1, 3));
+        builder.add(createLabel("Longitude:", JLabel.RIGHT), cc.xy(1, 3)); // I18N
         builder.add(longitudeDD, cc.xy(3, 3));
         builder.add(lonDir, cc.xy(cbxIndex, 3));
-        
      
         return builder;
     }
@@ -159,7 +165,7 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
      */
     public JComboBox createDirComboxbox(final boolean forNorthSouth)
     {
-        JComboBox cbx =  new JComboBox(forNorthSouth ? northSouth : eastWest );
+        JComboBox cbx =  createComboBox(forNorthSouth ? northSouth : eastWest );
         cbx.addItemListener(this);
         return cbx;
     }

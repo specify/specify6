@@ -13,8 +13,8 @@ import java.awt.Color;
 import java.util.List;
 import java.util.Vector;
 
-import edu.ku.brc.af.core.expresssearch.ERTICaptionInfo;
 import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.ui.db.ERTICaptionInfo;
 import edu.ku.brc.ui.db.QueryForIdResultsIFace;
 
 /**

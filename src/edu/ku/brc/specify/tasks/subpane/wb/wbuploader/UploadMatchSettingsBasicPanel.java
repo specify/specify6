@@ -6,6 +6,8 @@
      */
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createCheckBox;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.event.ActionEvent;
@@ -44,13 +46,13 @@ public class UploadMatchSettingsBasicPanel extends JPanel implements ActionListe
         modePanel = new ToggleButtonChooserPanel<String>(UploadMatchSetting.getModeTexts(), getResourceString("WB_MATCH_MODE_CAPTION"), 
                 ToggleButtonChooserPanel.Type.RadioButton);
         modePanel.createUI();
-        modePanel.setOkBtn(new JButton()); //needs an ok button for setSelectedObj() etc to work??
+        modePanel.setOkBtn(createButton("")); //needs an ok button for setSelectedObj() etc to work??
         add(modePanel);
-        rememberCheck = new JCheckBox(getResourceString("WB_UPLOAD_MATCH_REMEMBER_CAPTION"));
+        rememberCheck = createCheckBox(getResourceString("WB_UPLOAD_MATCH_REMEMBER_CAPTION"));
         add(rememberCheck);
-        matchBlanksCheck = new JCheckBox(getResourceString("WB_UPLOAD_MATCH_BLANKS_CAPTION"));
+        matchBlanksCheck = createCheckBox(getResourceString("WB_UPLOAD_MATCH_BLANKS_CAPTION"));
         add(matchBlanksCheck);
-        //advancedBtn = new JButton(getResourceString("WB_UPLOAD_ADVANCED_BTN"));
+        //advancedBtn = createButton(getResourceString("WB_UPLOAD_ADVANCED_BTN"));
         //add(advancedBtn);
     }
     

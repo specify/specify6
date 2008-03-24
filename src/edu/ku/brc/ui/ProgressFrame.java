@@ -14,6 +14,9 @@
  */
 package edu.ku.brc.ui;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createLabel;
+
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -62,18 +65,18 @@ public class ProgressFrame extends JFrame
 
         overallProgress = new JProgressBar();
         processProgress = new JProgressBar();
-        desc            = new JLabel("");
-        closeBtn        = new JButton("Cancel");
-        
+        desc            = createLabel("");
+        closeBtn        = createButton("Cancel");
+
         processProgress.setStringPainted(true);
  
         desc.setHorizontalAlignment(SwingConstants.CENTER);
         builder.add( desc, cc.xywh(1,1,3,1));
         
-        builder.add( new JLabel("Process:"), cc.xy(1,3));
+        builder.add( createLabel("Process:"), cc.xy(1,3)); // I18N
         builder.add( processProgress, cc.xy(3,3));
         
-        builder.add( new JLabel("Overall:"), cc.xy(1,5));
+        builder.add( createLabel("Overall:"), cc.xy(1,5)); // I18N
         builder.add( overallProgress, cc.xy(3,5));
         
         builder.add( closeBtn, cc.xy(1,7));

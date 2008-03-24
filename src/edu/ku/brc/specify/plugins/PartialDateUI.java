@@ -9,6 +9,8 @@
  */
 package edu.ku.brc.specify.plugins;
 
+import static edu.ku.brc.ui.UIHelper.createComboBox;
+
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -29,8 +31,8 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.ui.GetSetValueIFace;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.UIPluginable;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.DataObjectGettable;
 import edu.ku.brc.ui.forms.DataObjectGettableFactory;
 import edu.ku.brc.ui.forms.DataObjectSettable;
@@ -101,7 +103,7 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace, UIPlugina
         {
             labels[i] = UIRegistry.getResourceString(formatKeys[i]);
         }
-        formatSelector = new JComboBox(labels);
+        formatSelector = createComboBox(labels);
         formatSelector.setSelectedIndex(0);
         
         //setFormatter(UIFieldFormatter.PartialDateEnum.Full);

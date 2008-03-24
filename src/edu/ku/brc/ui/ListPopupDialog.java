@@ -1,8 +1,14 @@
-/**
- * 
+/*
+ * Copyright (C) 2007  The University of Kansas
+ *
+ * [INSERT KU-APPROVED LICENSE TEXT HERE]
+ *
  */
 package edu.ku.brc.ui;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createComboBox;
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -26,6 +32,7 @@ import javax.swing.ListCellRenderer;
 /**
  *
  * @code_status Beta
+ * 
  * @author jstewart
  */
 @SuppressWarnings("serial")
@@ -52,17 +59,17 @@ public class ListPopupDialog extends JDialog
 		this.options = new Vector<Object>(options);
 		
 		model      = new DefaultComboBoxModel(this.options);
-		optionList = new JComboBox(model);
+		optionList = createComboBox(model);
 		cbPanel    = new JPanel();
 		cbPanel.add(optionList);
 		add(cbPanel,BorderLayout.CENTER);
          
-        JLabel lbl = new JLabel(message);
-        
+        JLabel lbl = createLabel(message);
+
 		add(lbl,BorderLayout.NORTH);
 		
 		buttonPanel  = new JPanel(new FlowLayout());
-		cancelButton = new JButton(getResourceString("Cancel"));
+		cancelButton = createButton(getResourceString("Cancel"));
 
 		cancelButton.addActionListener(new ActionListener()
 		{
@@ -72,7 +79,7 @@ public class ListPopupDialog extends JDialog
 				callback.cancelled();
 			}
 		});
-		okButton = new JButton(getResourceString("OK"));
+		okButton = createButton(getResourceString("OK"));
 
 		okButton.addActionListener(new ActionListener()
 		{

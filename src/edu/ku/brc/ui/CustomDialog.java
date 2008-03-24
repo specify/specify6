@@ -13,6 +13,7 @@
  */
 package edu.ku.brc.ui;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -231,7 +232,7 @@ public class CustomDialog extends JDialog
         // Bottom Button UI
         if ((whichBtns & OK_BTN) == OK_BTN)
         {
-            okBtn = new JButton(StringUtils.isNotEmpty(okLabel) ? okLabel : getResourceString("OK"));
+            okBtn = createButton(StringUtils.isNotEmpty(okLabel) ? okLabel : getResourceString("OK"));
             okBtn.addActionListener(new ActionListener()
             {
                 public void actionPerformed(ActionEvent ae)
@@ -243,7 +244,7 @@ public class CustomDialog extends JDialog
         
         if ((whichBtns & CANCEL_BTN) == CANCEL_BTN)
         {
-            cancelBtn = new JButton(StringUtils.isNotEmpty(cancelLabel) ? cancelLabel : getResourceString("Cancel"));
+            cancelBtn = createButton(StringUtils.isNotEmpty(cancelLabel) ? cancelLabel : getResourceString("Cancel"));
             cancelBtn.addActionListener(new ActionListener()
             {
                 public void actionPerformed(ActionEvent ae)
@@ -255,7 +256,7 @@ public class CustomDialog extends JDialog
         
         if ((whichBtns & HELP_BTN) == HELP_BTN)
         {
-            helpBtn = new JButton(StringUtils.isNotEmpty(helpLabel) ? helpLabel : getResourceString("Help"));
+            helpBtn = createButton(StringUtils.isNotEmpty(helpLabel) ? helpLabel : getResourceString("Help"));
             if (StringUtils.isNotEmpty(helpContext))
             {
                 HelpMgr.registerComponent(helpBtn, helpContext);
@@ -273,7 +274,7 @@ public class CustomDialog extends JDialog
         
         if ((whichBtns & APPLY_BTN) == APPLY_BTN)
         {
-            applyBtn = new JButton(StringUtils.isNotEmpty(applyLabel) ? applyLabel : getResourceString("Apply"));
+            applyBtn = createButton(StringUtils.isNotEmpty(applyLabel) ? applyLabel : getResourceString("Apply"));
             applyBtn.addActionListener(new ActionListener()
             {
                 public void actionPerformed(ActionEvent ae)

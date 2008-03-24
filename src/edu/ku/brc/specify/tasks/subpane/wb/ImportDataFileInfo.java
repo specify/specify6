@@ -6,6 +6,7 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb;
 
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -92,7 +93,7 @@ public class ImportDataFileInfo
         if (importer.getTruncations().size() > 0)
         {
             JPanel mainPane = new JPanel(new BorderLayout());
-            JLabel msg = new JLabel(getResourceString("WB_TRUNCATIONS"));
+            JLabel msg = createLabel(getResourceString("WB_TRUNCATIONS"));
             msg.setFont(msg.getFont().deriveFont(Font.BOLD));
             mainPane.add(msg, BorderLayout.NORTH);
             String[] heads = new String[3];

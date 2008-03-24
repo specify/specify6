@@ -1075,19 +1075,52 @@ public class DataBuilder
         return lstd;
     }
 
+    public static LithoStratTreeDefItem createLithoStratTreeDefItem(final LithoStratTreeDefItem parent,
+                                                                    final String name,
+                                                                    final int rankId,
+                                                                    final boolean inFullName)
+    {
+        if (parent != null)
+        {
+            LithoStratTreeDef treeDef = parent.getTreeDef();
+            if (treeDef != null)
+            {
+                LithoStratTreeDefItem lstdi = new LithoStratTreeDefItem();
+                lstdi.initialize();
+                lstdi.setName(name);
+                lstdi.setRankId(rankId);
+                lstdi.setIsInFullName(inFullName);
+                
+                lstdi.setTreeDef(treeDef);
+                treeDef.getTreeDefItems().add(lstdi);
+                
+                parent.getChildren().add(lstdi);
+                lstdi.setParent(parent);
+                
+                return lstdi;
+            }
+            throw new RuntimeException("LithoStratTreeDef is null!");
+        }
+        throw new RuntimeException("Parent is null!");
+    }
+
     public static LithoStratTreeDefItem createLithoStratTreeDefItem(final LithoStratTreeDef treeDef,
                                                                     final String name,
                                                                     final int rankId,
                                                                     final boolean inFullName)
     {
-        LithoStratTreeDefItem lstdi = new LithoStratTreeDefItem();
-        lstdi.initialize();
-        lstdi.setName(name);
-        lstdi.setRankId(rankId);
-        lstdi.setIsInFullName(inFullName);
-        lstdi.setTreeDef(treeDef);
-        treeDef.getTreeDefItems().add(lstdi);
-        return lstdi;
+        if (treeDef != null)
+        {
+            LithoStratTreeDefItem lstdi = new LithoStratTreeDefItem();
+            lstdi.initialize();
+            lstdi.setName(name);
+            lstdi.setRankId(rankId);
+            lstdi.setIsInFullName(inFullName);
+            lstdi.setTreeDef(treeDef);
+            treeDef.getTreeDefItems().add(lstdi);
+            return lstdi;
+        }
+        throw new RuntimeException("LithoStratTreeDef is null!");
     }
 
 

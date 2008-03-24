@@ -6,6 +6,7 @@
  */
 package edu.ku.brc.specify.ui.treetables;
 
+import static edu.ku.brc.ui.UIHelper.*;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -539,7 +540,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         }
 
         // view manipulation buttons
-        JLabel viewLabel0 = new JLabel(getResourceString("View"));
+        JLabel viewLabel0 = createLabel(getResourceString("View"));
         viewLabel0.setSize(32,viewLabel0.getHeight());
         buttonPanel0.add(viewLabel0);
         viewLabel0.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -557,7 +558,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         // tree editing buttons
         if (isEditMode)
         {
-            JLabel editLabel0 = new JLabel(getResourceString("Edit"));
+            JLabel editLabel0 = createLabel(getResourceString("Edit"));
             editLabel0.setSize(32,editLabel0.getHeight());
             buttonPanel0.add(editLabel0);
             editLabel0.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -690,7 +691,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         }
         
         // view manipulation buttons
-        JLabel viewLabel1 = new JLabel("View");
+        JLabel viewLabel1 = createLabel("View");
         viewLabel1.setSize(32,viewLabel1.getHeight());
         buttonPanel1.add(viewLabel1);
         viewLabel1.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -708,7 +709,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         if (isEditMode)
         {
             // tree editing buttons
-            JLabel editLabel1 = new JLabel("Edit");
+            JLabel editLabel1 = createLabel("Edit");
             editLabel1.setSize(32,editLabel1.getHeight());
             buttonPanel1.add(editLabel1);
             editLabel1.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -720,7 +721,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
             deleteNode1.setAlignmentX(Component.CENTER_ALIGNMENT);
             buttonPanel1.add(Box.createVerticalGlue());
         }
-        
+
         buttonPanel1.add(syncViews1);
         syncViews1.setAlignmentX(Component.CENTER_ALIGNMENT);
         

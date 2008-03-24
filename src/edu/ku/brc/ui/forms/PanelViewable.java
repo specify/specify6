@@ -17,6 +17,8 @@
  */
 package edu.ku.brc.ui.forms;
 
+import static edu.ku.brc.ui.UIHelper.setControlSize;
+
 import java.awt.Component;
 
 import javax.swing.ImageIcon;
@@ -119,6 +121,7 @@ public class PanelViewable extends JPanel implements ViewBuilderIFace
     {
         int        titleAlignment  = builder.isLeftToRight() ? SwingConstants.LEFT : SwingConstants.RIGHT;
         JComponent titledSeparator = builder.getComponentFactory().createSeparator(title, titleAlignment);
+        setControlSize(titledSeparator);
         return titledSeparator;
     }
 

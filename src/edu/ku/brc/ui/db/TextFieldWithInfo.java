@@ -15,6 +15,7 @@
 
 package edu.ku.brc.ui.db;
 
+import static edu.ku.brc.ui.UIHelper.setControlSize;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
@@ -235,6 +236,8 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
      */
     public void init(final String objTitle)
     {
+        setControlSize(textField);
+        
         fieldNames = split(StringUtils.deleteWhitespace(keyName), ",");
 
         try

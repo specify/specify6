@@ -14,6 +14,9 @@
  */
 package edu.ku.brc.ui.forms;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.createProgressBar;
 import static edu.ku.brc.ui.forms.validation.UIValidator.parseValidationType;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 import static org.apache.commons.lang.StringUtils.split;
@@ -38,7 +41,6 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -127,8 +129,8 @@ public class ViewFactory
     protected static boolean          doFixLabels    = true;
 
     // transient - is valid only during a build process
-    protected MultiView               rootMultiView    = null; 
-
+    protected MultiView               rootMultiView    = null;
+    
     /**
      * Constructor.
      */
@@ -161,7 +163,7 @@ public class ViewFactory
     public JPanel createIconPanel(final JComponent comp)
     {
         JPanel  panel = new JPanel(new BorderLayout());
-        JButton btn   = new JButton("...");
+        JButton btn   = createButton("...");
         panel.add(btn, BorderLayout.WEST);
         panel.add(comp, BorderLayout.EAST);
         return panel;
@@ -269,7 +271,6 @@ public class ViewFactory
         {
             txtField = new ValTextField(cellField.getTxtCols());
         }
-        
         return txtField;
     }
 
@@ -421,7 +422,6 @@ public class ViewFactory
         textArea.setLineWrap(true);
         textArea.setWrapStyleWord(true);
 
-
         textArea.setEditable(!cellField.isReadOnly());
 
         return textArea;
@@ -498,6 +498,7 @@ public class ViewFactory
                 //}
             }
             cbx.setCellName(cellField.getName());
+            
             return cbx;
 
         }
@@ -555,7 +556,6 @@ public class ViewFactory
                 cbx.addFocusListener(dcn);
             }
         }
-
         return cbx;
     }
     
@@ -628,7 +628,7 @@ public class ViewFactory
                 textFieldInfo.setFrameTitle(cellField.getProperty("title"));
                 JTextField textField = textFieldInfo.getTextField();
                 textField.setColumns(cellField.getTxtCols());
-               
+                
                 changeTextFieldUIForDisplay(textField, false);
                 
             } else
@@ -931,7 +931,7 @@ public class ViewFactory
                 {
                     lStr = "<html>" + StringUtils.replace(lStr, LF, "<br>") + "</html>";
                 }
-                JLabel lbl = new JLabel(lStr, align);
+                JLabel lbl = createLabel(lStr, align);
                 labelsForHash.put(cellLabel.getLabelFor(), lbl);
                 bi.compToAdd =  lbl;
                 viewBldObj.addLabel(cellLabel, lbl);
@@ -1043,14 +1043,14 @@ public class ViewFactory
                     break;
                     
                 case label:
-                    JLabel label = new JLabel("", SwingConstants.LEFT);
+                    JLabel label = createLabel("", SwingConstants.LEFT);
                     bi.compToAdd = label;
                     break;
                     
                 case dsptextfield:
                     if (StringUtils.isEmpty(cellField.getPickListName()))
                     {
-                        JTextField text = new JTextField(cellField.getTxtCols());
+                        JTextField text = UIHelper.createTextField(cellField.getTxtCols());
                         changeTextFieldUIForDisplay(text, cellField.getPropertyAsBoolean("transparent", false));
                         bi.compToAdd = text;
                     } else
@@ -1072,7 +1072,8 @@ public class ViewFactory
 
                 
                 case url:
-                    bi.compToAdd = new BrowserLauncherBtn(cellField.getProperty("title"));
+                    BrowserLauncherBtn blb = new BrowserLauncherBtn(cellField.getProperty("title"));
+                    bi.compToAdd        = blb;
                     bi.doAddToValidator = false;
 
                     break;
@@ -1116,7 +1117,7 @@ public class ViewFactory
                 }                            
                  
                 case password:
-                    bi.compToAdd      = createPasswordField(validator, cellField, bi.isRequired);
+                    bi.compToAdd        = createPasswordField(validator, cellField, bi.isRequired);
                     bi.doAddToValidator = validator == null; // might already added to validator
                     break;
                 
@@ -1190,19 +1191,19 @@ public class ViewFactory
                         DataChangeNotifier dcn = validator.createDataChangeNotifer(cellField.getName(), colorChooser, null);
                         colorChooser.addPropertyChangeListener("setValue", dcn);
                     }
+                    //setControlSize(colorChooser);
                     bi.compToAdd = colorChooser;
 
                     break;
                 }
                 
                 case button:
-                    JButton btn = new JButton(cellField.getProperty("title"));
-                    
+                    JButton btn = createButton(cellField.getProperty("title"));
                     bi.compToAdd = btn;
                     break;
                     
                 case progress:
-                    bi.compToAdd = new JProgressBar(0, 100);
+                    bi.compToAdd = createProgressBar(0, 100);
                     break;
                 
                 case plugin:
@@ -1230,8 +1231,8 @@ public class ViewFactory
         {
             // still have compToAdd = null;
             FormCellSeparatorIFace fcs             = (FormCellSeparatorIFace)cell;
-            String            collapsableName = fcs.getCollapseCompName();
-            Component         sep             = viewBldObj.createSeparator(fcs.getLabel());
+            String                 collapsableName = fcs.getCollapseCompName();
+            Component              sep             = viewBldObj.createSeparator(fcs.getLabel());
             if (isNotEmpty(collapsableName))
             {
                 CollapsableSeparator collapseSep = new CollapsableSeparator(sep);
@@ -1251,7 +1252,7 @@ public class ViewFactory
         } else if (cell.getType() == FormCellIFace.CellType.command)
         {
             FormCellCommand cellCmd = (FormCellCommand)cell;
-            JButton btn  = new JButton(cellCmd.getLabel());
+            JButton btn  = createButton(cellCmd.getLabel());
             if (cellCmd.getCommandType().length() > 0)
             {
                 btn.addActionListener(new CommandActionWrapper(new CommandAction(cellCmd.getCommandType(), cellCmd.getAction(), "")));
@@ -1822,7 +1823,7 @@ public class ViewFactory
                 if (cell.getType() == FormCellIFace.CellType.command)
                 {
                     FormCellCommand cellCmd = (FormCellCommand)cell;
-                    JButton btn  = new JButton(cellCmd.getLabel());
+                    JButton btn  = createButton(cellCmd.getLabel());
                     if (cellCmd.getCommandType().length() > 0)
                     {
                         btn.addActionListener(new CommandActionWrapper(new CommandAction(cellCmd.getCommandType(), cellCmd.getAction(), "")));

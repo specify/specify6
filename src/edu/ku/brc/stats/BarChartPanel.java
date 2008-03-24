@@ -16,6 +16,7 @@
 package edu.ku.brc.stats;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIHelper.getInt;
 import static edu.ku.brc.ui.UIHelper.getString;
 
@@ -194,7 +195,7 @@ public class BarChartPanel extends ChartPanel implements QueryResultsListener, Q
     {
         //JOptionPane.showMessageDialog(this, getResourceString("ERROR_CREATNG_BARCHART"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); // XXX LOCALIZE
 
-        JLabel label = new JLabel(getResourceString("ERROR_CREATNG_BARCHART"), JLabel.CENTER);
+        JLabel label = createLabel(getResourceString("ERROR_CREATNG_BARCHART"), JLabel.CENTER);
         addCompletedComp(label);
     }
 

@@ -9,6 +9,8 @@
  */
 package edu.ku.brc.af.tasks.subpane;
 
+import static edu.ku.brc.ui.UIHelper.createLabel;
+
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -133,12 +135,12 @@ public class ViewViewSetEditorPanel extends JPanel
         JScrollPane asp  = new JScrollPane(altViewList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         JScrollPane vdsp = new JScrollPane(viewDefList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         
-        pb.add(new JLabel("Views"),     cc.xy(2, 1));
+        pb.add(createLabel("Views"),     cc.xy(2, 1));
         pb.add(vsp,                     cc.xy(2, 3));
         pb.add(viewBtnBar,              cc.xy(2, 5));
         
 
-        pb.add(new JLabel("Alt Views"), cc.xy(2, 7));
+        pb.add(createLabel("Alt Views"), cc.xy(2, 7));
         pb.add(asp,                     cc.xy(2, 9));
         pb.add(altViewBtnBar,           cc.xy(2, 11));
 
@@ -146,7 +148,7 @@ public class ViewViewSetEditorPanel extends JPanel
         
         pb.addSeparator("",             cc.xywh(1, 13, 5, 1));
         
-        pb.add(new JLabel("View Defs"), cc.xy(2, 15));
+        pb.add(createLabel("View Defs"), cc.xy(2, 15));
         pb.add(vdsp,                    cc.xy(2, 17));
         pb.add(viewDefBtnBar,           cc.xy(2, 19));
         

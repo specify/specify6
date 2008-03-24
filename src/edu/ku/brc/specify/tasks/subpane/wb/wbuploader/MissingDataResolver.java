@@ -9,6 +9,8 @@
  */
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createComboBox;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -551,7 +553,7 @@ public class MissingDataResolver implements ActionListener
             @Override
             public boolean isCellEditable(int row, int col)
             {
-                JComboBox jBox = new JComboBox(lists.get(row));
+                JComboBox jBox = createComboBox(lists.get(row));
                 jBox.addActionListener(myself);
 
                 uiTbl.setDefaultEditor(uiTbl.getColumnClass(col), new DefaultCellEditor(jBox));
@@ -563,22 +565,23 @@ public class MissingDataResolver implements ActionListener
     public JPanel getUI(boolean readOnly)
     {
         JPanel mainPane = new JPanel(new BorderLayout());
-        //JLabel msg = new JLabel(getResourceString("WB_UPLOAD_MISSING_DATA")); 
+        //JLabel msg = createLabel(getResourceString("WB_UPLOAD_MISSING_DATA")); 
         //msg.setFont(msg.getFont().deriveFont(Font.BOLD));
         //mainPane.add(msg, BorderLayout.NORTH);
         if (!readOnly)
         {
             CellConstraints cc = new CellConstraints();
             PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g,p", "p"));
-            JButton defBtn = new JButton(getResourceString("WB_UPLOAD_DEFAULTS_BTN")); 
+            JButton defBtn = createButton(getResourceString("WB_UPLOAD_DEFAULTS_BTN")); 
             defBtn.setActionCommand("DEFAULTS");
             defBtn.addActionListener(this);
             pb.add(defBtn, cc.xy(2,1));
             mainPane.add(pb.getPanel(), BorderLayout.SOUTH);
         }
+
         uiTbl = new JTable(bldModel(readOnly));
         uiTbl.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        uiTbl.setDefaultEditor(uiTbl.getColumnClass(3), new DefaultCellEditor(new JComboBox()));
+        uiTbl.setDefaultEditor(uiTbl.getColumnClass(3), new DefaultCellEditor(createComboBox()));
         uiTbl.addMouseListener(new MouseListener()
         {
             public void mouseClicked(MouseEvent me)

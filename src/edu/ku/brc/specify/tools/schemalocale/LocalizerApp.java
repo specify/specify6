@@ -32,14 +32,6 @@ import com.apple.eawt.ApplicationEvent;
  *
  * @code_status Alpha
  *
- * Sep 4, 2007
- *
- */
-/**
- * @author rod
- *
- * @code_status Alpha
- *
  * Oct 3, 2007
  *
  */
@@ -336,6 +328,7 @@ public class LocalizerApp extends LocalizableBaseApp
                     int  inx     = -1;
                     int  len     = 0;
                     char endChar = ' ';
+                    // Search the line of code for one of the resource keys
                     for (int i=0;i<reskeys.length;i++)
                     {
                         inx = line.indexOf(reskeys[i]);
@@ -346,6 +339,7 @@ public class LocalizerApp extends LocalizableBaseApp
                             break;
                         }
                     }
+                    
                     
                     while (inx > -1)
                     {
@@ -361,6 +355,7 @@ public class LocalizerApp extends LocalizableBaseApp
                             System.out.println(file.getAbsolutePath());
                             firstTime = false;
                         }
+                        
                         for (String nm : keyNamesList)
                         {
                             if (nameHash.get(nm) == null)
@@ -382,10 +377,6 @@ public class LocalizerApp extends LocalizableBaseApp
                                 endChar = termChar[i];
                                 break;
                             }
-                        }
-                        if (inx > -1)
-                        {
-                            int x = 0;
                         }
                     } // while
                     lineNum++;

@@ -15,6 +15,9 @@
  * 
  */
 package edu.ku.brc.ui;
+import static edu.ku.brc.ui.UIHelper.createCheckBox;
+import static edu.ku.brc.ui.UIHelper.createLabel;
+
 import java.awt.Container;
 
 import javax.swing.JCheckBox;
@@ -58,9 +61,9 @@ public class PopupDlgContent
 	public PopupDlgContent(final String messageStr, String doNotAgainMessage)
 	{
 		super();
-        
-        message  = new JLabel(messageStr);
-        checkbox = new JCheckBox(doNotAgainMessage);
+
+        message  = createLabel(messageStr);
+        checkbox = createCheckBox(doNotAgainMessage);
 		values   = new Object[] {message, checkbox};
         
 	}
@@ -72,7 +75,7 @@ public class PopupDlgContent
 	public PopupDlgContent(final Container displayableComponent)
 	{
 		super();
-		checkbox = new JCheckBox(UIRegistry.getResourceString("DONT_ASK_AGAIN"));
+		checkbox = createCheckBox(UIRegistry.getResourceString("DONT_ASK_AGAIN"));
 		values   = new Object[] {displayableComponent, checkbox};
 	}	
 

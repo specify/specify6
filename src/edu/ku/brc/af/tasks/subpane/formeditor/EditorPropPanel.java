@@ -52,7 +52,6 @@ import edu.ku.brc.ui.forms.persist.FormCellLabel;
 import edu.ku.brc.ui.forms.persist.FormRowIFace;
 import edu.ku.brc.ui.forms.persist.FormViewDef;
 import edu.ku.brc.ui.forms.persist.ViewDefIFace;
-import edu.ku.brc.ui.forms.persist.ViewLoader;
 import edu.ku.brc.ui.forms.validation.FormValidator;
 import edu.ku.brc.ui.forms.validation.ValCheckBox;
 import edu.ku.brc.ui.forms.validation.ValComboBox;
@@ -117,7 +116,7 @@ public class EditorPropPanel extends JPanel
         
         if (addSaveBtn)
         {
-            saveBtn = new JButton("Accept");
+            saveBtn = UIHelper.createButton("Accept");
             saveBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {

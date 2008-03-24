@@ -15,6 +15,8 @@
 
 package edu.ku.brc.specify.ui;
 
+import static edu.ku.brc.ui.UIHelper.createLabel;
+
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.Dimension;
@@ -58,7 +60,7 @@ public class PropertyViewer extends JPanel
         super(new BorderLayout());
         
         JPanel panel = new JPanel(new BorderLayout());
-        panel.add(titleLabel = new JLabel(), BorderLayout.NORTH);
+        panel.add(titleLabel = createLabel(""), BorderLayout.NORTH);
         panel.add(groupContainer = new JPanel(cardLayout), BorderLayout.NORTH);
         panel.setMinimumSize(new Dimension(300,300));
 

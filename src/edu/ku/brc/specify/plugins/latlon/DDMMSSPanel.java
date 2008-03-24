@@ -6,6 +6,7 @@
  */
 
 package edu.ku.brc.specify.plugins.latlon;
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.util.LatLonConverter.stripZeroes;
 
 import javax.swing.JLabel;
@@ -56,10 +57,10 @@ public class DDMMSSPanel extends DDMMMMPanel
         longitudeMM.setColumns(3);
         
         CellConstraints cc = new CellConstraints();
-        builder.add(new JLabel(" : "), cc.xy(6,1));
+        builder.add(createLabel(" : "), cc.xy(6,1));
         builder.add(latitudeSS, cc.xy(7,1));
 
-        builder.add(new JLabel(" : "), cc.xy(6,3));
+        builder.add(createLabel(" : "), cc.xy(6,3));
         builder.add(longitudeSS, cc.xy(7,3));
     }
 

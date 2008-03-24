@@ -16,6 +16,10 @@
  */
 package edu.ku.brc.ui.tmanfe;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createCheckBox;
+import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.createTextField;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Insets;
@@ -88,8 +92,8 @@ public class SearchReplacePanel extends JPanel
     private JButton                  replaceButton;
     private JButton                  replaceAllButton;   
     private int                      textFieldLength         = 10;
-    private JTextField               findField               = new JTextField();
-    private JTextField               replaceField            = new JTextField();
+    private JTextField               findField               = createTextField();
+    private JTextField               replaceField            = createTextField();
     private JCheckBox                matchCaseButton;
     private JCheckBox                wrapSearchButton;
     private JLabel                   statusInfo;
@@ -207,13 +211,13 @@ public class SearchReplacePanel extends JPanel
         replaceField.setColumns(textFieldLength);
         replaceField.addKeyListener(new FindReplaceTextFieldKeyAdapter());
         
-        replaceButton = new JButton(getResourceString("SS_SR_REPLACE"));
+        replaceButton = createButton(getResourceString("SS_SR_REPLACE"));
         //replaceButton.setEnabled(false);
         //replaceButton.setMargin(new Insets(0, 0, 0, 0));
         replaceButton.addActionListener(replaceAction);
         
   
-        replaceAllButton = new JButton(getResourceString("SS_SR_REPLACEALL"));
+        replaceAllButton = createButton(getResourceString("SS_SR_REPLACEALL"));
         //replaceAllButton.setEnabled(false);
         //replaceAllButton.setMargin(new Insets(0, 0, 0, 0));
         replaceAllButton.addActionListener(replaceAction);
@@ -230,7 +234,7 @@ public class SearchReplacePanel extends JPanel
         builder.add(replaceButton,         cc.xy(7,3));
         builder.add(replaceAllButton,      cc.xy(9,3));
         
-        statusInfo = new JLabel("");
+        statusInfo = createLabel("");
         builder.add(statusInfo,          cc.xywh(11,3, 4,1));
     }
     
@@ -266,19 +270,19 @@ public class SearchReplacePanel extends JPanel
      */
     private void createFindPanel()
     {
-        cancelButton = new JButton(hideFindPanelAction);
+        cancelButton = createButton(hideFindPanelAction);
         cancelButton.setIcon(IconManager.getIcon("Close"));
         cancelButton.setMargin(new Insets(0, 0, 0, 0));
         cancelButton.setBorder(null);
         
-        findLabel = new JLabel(getResourceString("SS_SR_FIND") + ": ", SwingConstants.RIGHT);
+        findLabel = createLabel(getResourceString("SS_SR_FIND") + ": ", SwingConstants.RIGHT);
 
-        nextButton = new JButton(getResourceString("SS_SR_NEXT"));//, new ImageIcon(Specify.class.getResource("images/down.png")));
+        nextButton = createButton(getResourceString("SS_SR_NEXT"));//, new ImageIcon(Specify.class.getResource("images/down.png")));
         nextButton.setEnabled(false);
         UIHelper.setMnemonic(previousButton, "SS_SR_NEXT_MNEU");
         nextButton.addActionListener(searchAction);
 
-        previousButton = new JButton(getResourceString("SS_SR_PREVIOUS"));//, new ImageIcon(Specify.class.getResource("images/up.png")));
+        previousButton = createButton(getResourceString("SS_SR_PREVIOUS"));//, new ImageIcon(Specify.class.getResource("images/up.png")));
         previousButton.setEnabled(false);
         UIHelper.setMnemonic(previousButton, "SS_SR_PREVIOUS_MNEU");
 
@@ -297,7 +301,7 @@ public class SearchReplacePanel extends JPanel
         //replaceField.setColumns(textFieldLength);
         //replaceField.addKeyListener(new InputFieldKeyAdapter());
 
-        matchCaseButton = new JCheckBox(getResourceString("SS_SR_MATCHCASE"));
+        matchCaseButton = createCheckBox(getResourceString("SS_SR_MATCHCASE"));
         matchCaseButton.addItemListener(new ItemListener()
         {
             public void itemStateChanged(ItemEvent e)
@@ -305,7 +309,7 @@ public class SearchReplacePanel extends JPanel
             }
         });
 
-        wrapSearchButton = new JCheckBox(getResourceString("SS_SR_WRAP"));
+        wrapSearchButton = createCheckBox(getResourceString("SS_SR_WRAP"));
         wrapSearchButton.addItemListener(new ItemListener()
         {
             public void itemStateChanged(ItemEvent e)
@@ -322,7 +326,7 @@ public class SearchReplacePanel extends JPanel
         builder.add(matchCaseButton,     cc.xy(11,1));
         builder.add(wrapSearchButton,    cc.xy(13,1));
         
-       // statusInfo = new JLabel("");
+       // statusInfo = createLabel("");
        // builder.add(statusInfo,          cc.xy(15,1));
     }
 

@@ -16,6 +16,8 @@ import javax.swing.JOptionPane;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Collector;
+import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.BaseBusRules;
 
 /**
@@ -79,9 +81,10 @@ public class CollectorBusRules extends BaseBusRules
      * @see edu.ku.brc.ui.forms.BaseBusRules#processBusinessRules(java.lang.Object, java.lang.Object)
      */
     @Override
-    public STATUS processBusinessRules(final Object parentDataObj, final Object dataObj)
+    public STATUS processBusinessRules(final Object parentDataObj, final Object dataObj, final boolean isEdit)
     {
-        if (parentDataObj instanceof CollectingEvent &&
+        if (!isEdit &&
+            parentDataObj instanceof CollectingEvent &&
             dataObj instanceof Collector)
         {
             CollectingEvent ce = (CollectingEvent)parentDataObj;
@@ -91,14 +94,13 @@ public class CollectorBusRules extends BaseBusRules
             {
                if (collector.getAgent().getAgentId().equals(col.getAgent().getAgentId())) 
                {
-                   String msg = String.format(getResourceString("CE_DUPLICATE_COLLECTORS"), col.getIdentityTitle());
-                   JOptionPane.showMessageDialog(null, getResourceString(msg), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); 
+                   UIRegistry.showError(String.format(getResourceString("CE_DUPLICATE_COLLECTORS"), col.getIdentityTitle()));
                    return STATUS.Error;
                }
             }
         }
         
-        return super.processBusinessRules(parentDataObj, dataObj);
+        return super.processBusinessRules(parentDataObj, dataObj, isEdit);
     }
 
 }

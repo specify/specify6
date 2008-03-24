@@ -14,6 +14,10 @@
  */
 package edu.ku.brc.ui;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.createProgressBar;
+
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -59,26 +63,27 @@ public class ProgressDialog extends JDialog
         CellConstraints cc         = new CellConstraints();
 
         int y = 1;
-        overallProgress = new JProgressBar();
-        desc            = new JLabel("");
+        overallProgress = createProgressBar();
+        desc            = createLabel("");
         desc.setHorizontalAlignment(SwingConstants.CENTER);
         builder.add( desc, cc.xywh(1,y,3,1)); y += 2;
         
         processProgress = new JProgressBar();
         processProgress.setStringPainted(true);
-        builder.add( new JLabel("Process:"), cc.xy(1,y));
+        builder.add( createLabel("Process:"), cc.xy(1,y)); // I18N
         builder.add( processProgress, cc.xy(3,y));y += 2;
          
         if (includeBothBars)
         {
-            builder.add( new JLabel("Overall:"), cc.xy(1,y));
+            builder.add( createLabel("Overall:"), cc.xy(1,y)); // I18N
             builder.add( overallProgress, cc.xy(3,y));y += 2;
             overallProgress.setIndeterminate(true);
         }
+        createLabel("");
 
         if (includeClose)
         {
-            closeBtn = new JButton(UIRegistry.getResourceString("Cancel"));
+            closeBtn = createButton(UIRegistry.getResourceString("Cancel"));
             builder.add( closeBtn, cc.xy(1,y));y += 2;
         }
         

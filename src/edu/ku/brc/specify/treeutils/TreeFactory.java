@@ -389,7 +389,7 @@ public class TreeFactory
             
         } else if (clazz.equals(LithoStrat.class))
         {
-            sb.append("SELECT count(*) FROM CollectionObject AS co INNER JOIN co.paleoContext AS pc INNER JOIN pc.lithoStrat as ls WHERE ls.collectionMemberId = COLMEMID AND ls.nodeNumber > %d AND ls.highestChildNodeNumber <= %d");
+            sb.append("SELECT count(*) FROM CollectionObject AS co INNER JOIN co.paleoContext AS pc INNER JOIN pc.lithoStrat as ls WHERE pc.collectionMemberId = COLMEMID AND ls.nodeNumber > %d AND ls.highestChildNodeNumber <= %d");
         }
         
         if (sb.length() > 0)

@@ -9,6 +9,7 @@
  */
 package edu.ku.brc.specify.tasks.subpane.qb;
 
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Color;
@@ -470,7 +471,7 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
         comparators = getComparatorList(fieldQRI);
         iconLabel = new JLabel(icon);
         iconLabel.addFocusListener(focusListener);
-        fieldLabel = new JLabel(fieldQRI != null ? fieldQRI.getTitle() : "WXYZ");
+        fieldLabel = createLabel(fieldQRI != null ? fieldQRI.getTitle() : "WXYZ");
         fieldLabel.addFocusListener(focusListener);
         isNotCheckbox = createCheckBox("isNotCheckbox");
         isNotCheckbox.addFocusListener(focusListener);
@@ -581,11 +582,11 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
         int[]    labelWidths = new int[labelStrs.length];
         for (int i=0;i<labels.length;i++)
         {
-            labels[i] = new JLabel(labelStrs[i], SwingConstants.CENTER);
+            labels[i] = createLabel(labelStrs[i], SwingConstants.CENTER);
             labelWidths[i] = Math.max(widths[i], labels[i].getPreferredSize().width);
             //System.out.println(labelStrs[i]+"  "+labelWidths[i]);
         }
-        
+
         for (int i=0;i<labels.length;i++)
         {
             sb.append(i == 0 ? "" : ",");

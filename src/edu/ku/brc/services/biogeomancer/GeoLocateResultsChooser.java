@@ -39,7 +39,8 @@ public class GeoLocateResultsChooser extends CustomDialog
                                    final String title, 
                                    final List<Pair<GeoCoordDataIFace, GeorefResultSet>> rowsAndResults)
     {
-        super(parent,title,true,CustomDialog.OKCANCELAPPLYHELP,null);
+        super(parent, title, true, CustomDialog.OKCANCELAPPLYHELP, null);
+        
         this.rowsAndResults = rowsAndResults;
         this.hasBeenShown   = false;
         this.baseTitle      = title;

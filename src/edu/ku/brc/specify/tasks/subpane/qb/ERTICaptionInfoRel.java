@@ -11,10 +11,10 @@ package edu.ku.brc.specify.tasks.subpane.qb;
 
 import java.util.Collection;
 
-import edu.ku.brc.af.core.expresssearch.ERTICaptionInfo;
 import edu.ku.brc.dbsupport.DBRelationshipInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.ui.db.ERTICaptionInfo;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.ui.forms.formatters.DataObjSwitchFormatter;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;

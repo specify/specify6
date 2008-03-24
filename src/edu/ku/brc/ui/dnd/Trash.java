@@ -15,6 +15,7 @@
 
 package edu.ku.brc.ui.dnd;
 
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Color;
@@ -43,7 +44,6 @@ import java.util.Vector;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
@@ -121,9 +121,9 @@ public class Trash extends JComponent implements GhostActionable
         hints         = UIHelper.createTextRenderingHints();
         
         //titleFont     = new Font(Font.SANS_SERIF, Font.PLAIN, 11); // XXX Java 6.0
-        titleFont     = new Font(new JLabel().getFont().getFamily(), Font.PLAIN, 11);
+        titleFont     = new Font(createLabel("").getFont().getFamily(), Font.PLAIN, 11);
         titleColor    = new Color(0,0,0,190);
-        
+
         createMouseInputAdapter();
         
         // XXX RELEASE - Disabled for stand-alone Workbench

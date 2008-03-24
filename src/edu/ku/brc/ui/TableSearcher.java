@@ -4,9 +4,6 @@
 package edu.ku.brc.ui;
 
 import javax.swing.JTable;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
-import javax.swing.table.TableModel;
 
 import org.apache.log4j.Logger;
 

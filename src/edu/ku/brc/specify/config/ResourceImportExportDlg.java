@@ -6,6 +6,9 @@
  */
 package edu.ku.brc.specify.config;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createComboBox;
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -24,7 +27,6 @@ import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
@@ -98,7 +100,7 @@ public class ResourceImportExportDlg extends CustomDialog
         
         CellConstraints cc = new CellConstraints();
         
-        levelCBX = new JComboBox();
+        levelCBX = createComboBox();
         
         SpecifyAppContextMgr context = (SpecifyAppContextMgr)AppContextMgr.getInstance();
         dirs = context.getSpAppResourceList();
@@ -113,22 +115,22 @@ public class ResourceImportExportDlg extends CustomDialog
         tabbedPane = new JTabbedPane();
         
         PanelBuilder viewPanel = new PanelBuilder(new FormLayout("p,10px,p", "p,2px,p"));
-        viewPanel.add(new JLabel(getResourceString("RIE_VIEWSETS"), SwingConstants.CENTER),   cc.xy(1,1));
+        viewPanel.add(createLabel(getResourceString("RIE_VIEWSETS"), SwingConstants.CENTER),   cc.xy(1,1));
         viewSetsList = new JList(viewSetsModel);
         JScrollPane sp = new JScrollPane(viewSetsList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         viewPanel.add(sp, cc.xy(1,3));
         
-        viewPanel.add(new JLabel(getResourceString("RIE_VIEWS"), SwingConstants.CENTER),   cc.xy(3,1));
+        viewPanel.add(createLabel(getResourceString("RIE_VIEWS"), SwingConstants.CENTER),   cc.xy(3,1));
         viewsList = new JList(viewsModel);
         sp = new JScrollPane(viewsList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         viewPanel.add(sp, cc.xy(3,3));
         
         PanelBuilder resPanel = new PanelBuilder(new FormLayout("p,10px,p", "p,2px,p"));
-        resPanel.add(new JLabel(getResourceString("RIE_OTHER_RES"), SwingConstants.CENTER), cc.xy(1,1));
+        resPanel.add(createLabel(getResourceString("RIE_OTHER_RES"), SwingConstants.CENTER), cc.xy(1,1));
         resList   = new JList(resModel);
         sp = new JScrollPane(resList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         resPanel.add(sp, cc.xy(1,3));
-        
+
         tabbedPane.addTab(getResourceString("RIE_VIEWSETS"), viewPanel.getPanel());
         tabbedPane.addTab(getResourceString("RIE_OTHER_RES"), resPanel.getPanel());
         
@@ -136,8 +138,8 @@ public class ResourceImportExportDlg extends CustomDialog
         pb.add(centerPB.getPanel(), cc.xy(1,1));
         pb.add(tabbedPane,          cc.xy(1,3));
         
-        exportBtn = new JButton(getResourceString("RIE_EXPORT"));
-        importBtn = new JButton(getResourceString("RIE_IMPORT"));
+        exportBtn = createButton(getResourceString("RIE_EXPORT"));
+        importBtn = createButton(getResourceString("RIE_IMPORT"));
         PanelBuilder btnPB = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g,p,f:p:g", "p"));
         btnPB.add(exportBtn, cc.xy(2,1));
         btnPB.add(importBtn, cc.xy(4,1));

@@ -21,12 +21,13 @@ import java.awt.Color;
 import java.util.List;
 import java.util.Vector;
 
-import edu.ku.brc.af.core.expresssearch.ERTICaptionInfo;
 
 
 /**
  * This interface is used to describe to the results "renderer" what it should display. It is used to both display
- * results and it can be used to run a new query from a list of Ids to create a set of results.
+ * results and it can be used to run a new query from a list of Ids to create a set of results. 
+ * Any class implementing this interface may also consider implementing ServiceProviderIFace if it 
+ * needs to provide additional services.
  * 
  * @author rods
  *

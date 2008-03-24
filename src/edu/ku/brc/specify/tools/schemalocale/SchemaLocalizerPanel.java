@@ -6,6 +6,10 @@
  */
 package edu.ku.brc.specify.tools.schemalocale;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createCheckBox;
+import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.createTextField;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.event.ActionEvent;
@@ -79,10 +83,10 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
     // LocalizableContainerIFace Tables
     protected JList                     tablesList;
     protected JTextArea                 tblDescText   = new JTextArea();
-    protected JTextField                tblNameText   = new JTextField();
+    protected JTextField                tblNameText   = createTextField();
     protected JLabel                    tblDescLbl;
     protected JLabel                    tblNameLbl;
-    protected JCheckBox                 tblHideChk  = new JCheckBox(getResourceString("SL_TABLE_HIDE_CHK"));
+    protected JCheckBox                 tblHideChk  = createCheckBox(getResourceString("SL_TABLE_HIDE_CHK"));
     protected boolean                   hasTableInfoChanged  = false;
     
     protected LocalizableItemIFace      prevTable = null;
@@ -130,7 +134,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         CellConstraints cc = new CellConstraints();
         
         // LocalizableContainerIFace Section Layout
-        tblSpellChkBtn               = new JButton("Spell Check");
+        tblSpellChkBtn               = createButton("Spell Check");
         JPanel      tpbbp            = ButtonBarFactory.buildCenteredBar(new JButton[] {tblSpellChkBtn});
         JScrollPane sp               = new JScrollPane(tblDescText, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         tblDescText.setRows(4);
@@ -148,7 +152,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
                                                                   (useDisciplines ? ",2px,p" : "")
                                                                   ));
         
-        topInner.add(tblDescLbl = new JLabel(nameStr, SwingConstants.RIGHT), cc.xy(1, y));
+        topInner.add(tblDescLbl = createLabel(nameStr, SwingConstants.RIGHT), cc.xy(1, y));
         topInner.add(tblNameText, cc.xy(3, y)); y += 2;
         
         if (includeHiddenUI)
@@ -156,9 +160,9 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
             topInner.add(tblHideChk, cc.xy(3, y)); y += 2;
         }
         
-        topInner.add(tblNameLbl = new JLabel(descStr, SwingConstants.RIGHT), cc.xy(1, y)); 
+        topInner.add(tblNameLbl = createLabel(descStr, SwingConstants.RIGHT), cc.xy(1, y)); 
         topInner.add(sp,    cc.xy(3, y));   y += 2;
-        
+
         topInner.add(tpbbp, cc.xywh(1, y, 3, 1));
 
         

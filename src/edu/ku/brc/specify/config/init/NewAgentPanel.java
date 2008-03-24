@@ -9,10 +9,11 @@
  */
 package edu.ku.brc.specify.config.init;
 
+import static edu.ku.brc.ui.UIHelper.createLabel;
+
 import java.util.Properties;
 
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JTextField;
 
 import org.apache.commons.lang.StringUtils;
@@ -53,8 +54,8 @@ public class NewAgentPanel extends BaseSetupPanel
         PanelBuilder builder = new PanelBuilder(new FormLayout("p,2px,p,f:p:g", "p,5px," + UIHelper.createDuplicateJGoodiesDef("p", "2px", 3)+",p:g"), this);
         int row = 1;
         
-        builder.add(new JLabel(header), cc.xywh(1,row,3,1));row += 2;
-        
+        builder.add(createLabel(header), cc.xywh(1,row,3,1));row += 2;
+
         firstNameTxt    = createField(builder, "First Name", row);row += 2;
         lastNameTxt     = createField(builder, "Last Name",  row);row += 2;
         emailTxt        = createField(builder, "EMail",      row);row += 2;

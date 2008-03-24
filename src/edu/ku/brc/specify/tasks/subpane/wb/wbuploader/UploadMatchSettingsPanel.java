@@ -6,6 +6,9 @@
      */
 package edu.ku.brc.specify.tasks.subpane.wb.wbuploader;
 
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createComboBox;
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -135,11 +138,11 @@ public class UploadMatchSettingsPanel extends JPanel implements ActionListener
                         JComboBox jBox;
                         if (col == 1)
                         {
-                            jBox = new JComboBox(modeTexts);
+                            jBox = createComboBox(modeTexts);
                         }
                         else
                         {
-                            jBox = new JComboBox(boolTexts);
+                            jBox = createComboBox(boolTexts);
                         }
                         jBox.addActionListener(myself);
                         tblTbl.setDefaultEditor(tblTbl.getColumnClass(col), new DefaultCellEditor(
@@ -155,13 +158,13 @@ public class UploadMatchSettingsPanel extends JPanel implements ActionListener
         JScrollPane sp = new JScrollPane(tblTbl, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         add(sp, BorderLayout.CENTER);
         
-        caption = new JLabel(getResourceString("WB_UPLOAD_MATCH_SETTINGS") + ":");
+        caption = createLabel(getResourceString("WB_UPLOAD_MATCH_SETTINGS") + ":");
         caption.setFont(caption.getFont().deriveFont(Font.BOLD));
         add(caption, BorderLayout.NORTH);
-        
+
         if (showApplyBtn)
         {
-            applyBtn = new JButton(getResourceString("Apply"));
+            applyBtn = createButton(getResourceString("Apply"));
             applyBtn.setActionCommand("APPLY");
             applyBtn.addActionListener(this);
             add(applyBtn, BorderLayout.SOUTH);
