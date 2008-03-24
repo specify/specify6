@@ -6073,7 +6073,8 @@ public class BuildSampleDatabase
                     disp != DisciplineType.STD_DISCIPLINES.fish)
                 {
                     DisciplineType dType = DisciplineType.getDiscipline(disp);
-                    if (XMLHelper.getConfigDir(dType.getName()+ File.separator + "taxon_init.xml").exists())
+                    File file = XMLHelper.getConfigDir(dType.getName()+ File.separator + "taxon_init.xml");
+                    if (file != null && file.exists())
                     {
                         choices.add(new CollectionChoice(disp, false, true));
                     }
