@@ -175,6 +175,14 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         showTopNumEntriesBtn.setCursor(handCursor);
 
         List<ServiceInfo> services = installServices ? ContextMgr.checkForServices(results.getTableId()) : null;
+        if (results instanceof ServiceProviderIFace)
+        {
+            List<ServiceInfo> additionalServices = ((ServiceProviderIFace)results).getServices();
+            if (additionalServices != null)
+            {
+                services.addAll(additionalServices);
+            }
+        }
 
         //System.out.println("["+tableInfo.getTableId()+"]["+services.size()+"]");
         StringBuffer colDef = new StringBuffer("p,0px,p:g,0px,p,0px,p,0px,");
@@ -193,16 +201,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
 
         builder.add(showTopNumEntriesBtn, cc.xy(col,1));
         col += 2;
-        
-        if (results instanceof ServiceProviderIFace)
-        {
-            List<ServiceInfo> additionalServices = ((ServiceProviderIFace)results).getServices();
-            if (additionalServices != null)
-            {
-                services.addAll(additionalServices);
-            }
-        }
-        
+                
         if (installServices && services.size() > 0)
         {
             serviceBtns = new Hashtable<ServiceInfo, JButton>();
