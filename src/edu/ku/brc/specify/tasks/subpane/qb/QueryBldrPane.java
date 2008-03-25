@@ -589,14 +589,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 }
             }
 
-            
-            TableTree tt = qfi.getFieldQRI().getTableTree();
-            if (qfi.getFieldQRI() instanceof RelQRI)
-            {
-                //Treating the RelQRI as just another field of the parent in this case.
-                //Don't think it is necessary to worry about the related table.
-                tt = tt.getParent();
-            }
             String criteria = qfi.getCriteriaFormula(tableAbbreviator);
             boolean isDisplayOnly = StringUtils.isEmpty(criteria);
             if (!isDisplayOnly)
