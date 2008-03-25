@@ -19,6 +19,8 @@ import it.businesslogic.ireport.gui.MainFrame;
 
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -27,15 +29,15 @@ import java.util.Vector;
 
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
-import javax.swing.LookAndFeel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 
 import net.sf.jasperreports.engine.JRDataSource;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.dom4j.Element;
+import org.dom4j.tree.FlyweightCDATA;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
@@ -54,6 +56,7 @@ import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
@@ -680,6 +683,47 @@ public class ReportsBaseTask extends BaseTask
 
     }
     
+    protected void updateIReportConfig()
+    {
+        Element root = XMLHelper.readDOMFromConfigDir("ireportconfig.xml");
+        List<?> props = root.selectNodes("/iReportProperties/iReportProperty");
+        boolean writeIt = true;
+        for (Object propObj : props)
+        {
+            Element prop = (Element)propObj;
+            if (prop.attributeValue("name").equals("LookAndFeel"))
+            {
+                System.out.println(prop.getText());
+                if (prop.getText().equals(UIManager.getLookAndFeel().getID()))
+                {
+                    writeIt = false;
+                }
+                else
+                {
+                    prop.clearContent();
+                    //List<? extends Object> content = prop.content();
+                    //content.add(new FlyweightCDATA(UIManager.getLookAndFeel().getID()));
+                    prop.add(new FlyweightCDATA(UIManager.getLookAndFeel().getID()));
+                    
+                }
+                System.out.println(prop.getText());
+                break;
+            }
+        }
+        if (writeIt)
+        {
+            try
+            {
+                FileWriter out = new FileWriter(XMLHelper.getConfigDirPath("ireportconfig.xml"));
+                root.getDocument().write(out);
+                out.close();
+            }
+            catch (IOException ex)
+            {
+                throw new RuntimeException(ex);
+            }
+        }
+    }
     /**
      * Open the IReport editor.
      * @param cmdAction the command to be processed
@@ -708,17 +752,14 @@ public class ReportsBaseTask extends BaseTask
             repRes = AppContextMgr.getInstance().getResource((String)repAction.getProperty("name")); 
         }
         
-        //XXX
-        //better to use iReport config file to deal with laf issue?
-        final LookAndFeel laf = UIManager.getLookAndFeel();
         if (iReportMainFrame == null)
         {
             try
             {
                 MainFrame.reportClassLoader.rescanLibDirectory();
                 Thread.currentThread().setContextClassLoader( MainFrame.reportClassLoader );
-                Map<?,?> args = MainFrameSpecify.getArgs();
-                iReportMainFrame = new MainFrameSpecify(args);
+                updateIReportConfig();
+                iReportMainFrame = new MainFrameSpecify(MainFrameSpecify.getArgs());
             }
             catch (Exception e)
             {
@@ -735,13 +776,6 @@ public class ReportsBaseTask extends BaseTask
              public void run()
              {
                  iReportMainFrame.setVisible(true);
-                 try
-                 {
-                     UIManager.setLookAndFeel(laf);
-                 } catch (UnsupportedLookAndFeelException e)
-                 {
-                     log.error(e);
-                 }
              }
         });
     }

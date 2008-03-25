@@ -33,6 +33,7 @@ import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceConnection;
 import edu.ku.brc.ui.ChooseFromListDlg;
@@ -111,8 +112,9 @@ public class MainFrameSpecify extends MainFrame
     public static Map<String, String> getArgs()
     {
         Map<String, String> map = new HashMap<String, String>();
-        // "noPlaf" prevents iReport from setting it's preferred theme (which infected all of Specify). (Or used to prevent it anyway)
-        //This may be irrelevant now since Specify's lookandfeel is being reset after the MainFreme is made visible.
+        map.put("config-file", XMLHelper.getConfigDirPath("ireportconfig.xml"));
+        // "noPlaf" prevents iReport from setting it's preferred theme. Don't think we need to worry
+        //about the theme since laf changes should be prevented by settings in ireportconfig.xml
         map.put("noPlaf", "true");
         return map;
     }
