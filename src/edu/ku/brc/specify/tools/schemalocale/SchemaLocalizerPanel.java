@@ -177,14 +177,14 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         tblNameText.addKeyListener(new LengthWatcher(64));
         
         // data obj formatter control
-        dataObjFmtLbl = createLabel("Display Format:", SwingConstants.RIGHT);
+        dataObjFmtLbl = createLabel(getResourceString("DOF_DISPLAY_FORMAT")+":", SwingConstants.RIGHT);
         dataObjFmtCbo = createComboBox();
         dataObjFmtBtn = createButton("...");
         fillFormatterCombo();
         addFormatterActionListener();
 
         // aggregator controls
-        aggregatorLbl = createLabel("Aggregation:", SwingConstants.RIGHT);
+        aggregatorLbl = createLabel(getResourceString("DOA_AGGREGATION")+":", SwingConstants.RIGHT);
         aggregatorCbo = createComboBox();
         aggregatorBtn = createButton("...");
         fillAggregatorCombo();
@@ -859,7 +859,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
             String text = tc.getText();
             if (text.length() > maxLength)
             {
-                statusBar.setErrorMessage("The text has exceed the maximum number of characters: "+maxLength);
+                statusBar.setErrorMessage(getResourceString("SL_MAX_LENGTH_ERROR")+": "+maxLength);
                 
                 SwingUtilities.invokeLater(new Runnable() {
                     public void run()

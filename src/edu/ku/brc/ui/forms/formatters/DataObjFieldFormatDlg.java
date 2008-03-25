@@ -84,7 +84,7 @@ public class DataObjFieldFormatDlg extends CustomDialog
     					  		 int                   initialFormatSelectionIndex) 
     	throws HeadlessException
     {
-        super(frame, getResourceString("FFE_DLG_TITLE"), true, OKCANCELHELP, null); //I18N 
+        super(frame, getResourceString("DOF_DLG_TITLE"), true, OKCANCELHELP, null); //I18N 
         this.tableInfo = tableInfo;
         this.initialFormatSelectionIndex = initialFormatSelectionIndex;
     }
@@ -115,8 +115,7 @@ public class DataObjFieldFormatDlg extends CustomDialog
         JLabel tableTitleLbl = createLabel(getResourceString("FFE_TABLE") + ": " + 
         		tableInfo.getTitle(), SwingConstants.LEFT); 
 
-        JLabel helpLbl = createLabel("Define how records of this table are to be shown " +
-        		"in a compact manner", SwingConstants.LEFT);
+        JLabel helpLbl = createLabel(getResourceString("DOF_HELP"), SwingConstants.LEFT);
 
         // list of existing formats
         DefaultListModel listModel = new DefaultListModel();
@@ -130,7 +129,7 @@ public class DataObjFieldFormatDlg extends CustomDialog
         	listModel.addElement(format);
         }
         // add "New" string as last entry
-        listModel.addElement("New");
+        listModel.addElement(getResourceString("DOF_NEW"));
         
         formatList = createList(listModel);
         formatList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -158,8 +157,8 @@ public class DataObjFieldFormatDlg extends CustomDialog
         deletePB.add(deleteBtn);
         
         // radio buttons (single/multiple/external object display formats
-        singleDisplayBtn = createRadioButton("Single display format");
-        multipleDisplayBtn = createRadioButton("Display depends on value of field:");
+        singleDisplayBtn = createRadioButton(getResourceString("DOF_SINGLE"));
+        multipleDisplayBtn = createRadioButton(getResourceString("DOF_MULTIPLE")+":");
         singleDisplayBtn.setSelected(true);
         
         ButtonGroup displayTypeGrp = new ButtonGroup();
@@ -196,7 +195,7 @@ public class DataObjFieldFormatDlg extends CustomDialog
         pb.add(tableTitleLbl,  cc.xyw(2, y, 3)); y += 2;
         pb.add(helpLbl,        cc.xyw(2, y, 3)); y += 2;
         
-        pb.add(createLabel("Display Formats:", SwingConstants.LEFT), cc.xy(2, y)); y += 1; 
+        pb.add(createLabel(getResourceString("DOF_DISPLAY_FORMATS")+":", SwingConstants.LEFT), cc.xy(2, y)); y += 1; 
         int y2 = y; // align 3rd column with this row 
         pb.add(new JScrollPane(formatList), cc.xy(2,y)); y += 2;
 

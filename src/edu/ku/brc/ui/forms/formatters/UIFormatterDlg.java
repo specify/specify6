@@ -434,7 +434,7 @@ public class UIFormatterDlg extends CustomDialog
         DefaultListModel listModel = new DefaultListModel();
 
         // add blank format, i.e, none
-        listModel.addElement("None"); 
+        listModel.addElement(getResourceString("None")); 
         // add available formatters
         for (UIFieldFormatterIFace format : fmtrs)
         {
@@ -485,7 +485,7 @@ public class UIFormatterDlg extends CustomDialog
         int y2 = y; // align formatting legend key with row marked by y2 (see below)
         pb.add(samplePanel, cc.xy(2, y)); y += 2;  
 
-        pb.add(createLabel("Type Format Pattern:", SwingConstants.LEFT), cc.xy(2,y)); y += 1; 
+        pb.add(createLabel(getResourceString("FFE_TYPE_PATTERN")+":", SwingConstants.LEFT), cc.xy(2,y)); y += 1; 
         pb.add(formatTF, cc.xy(2,y)); y += 1;
         pb.add(byYearCB, cc.xy(2,y)); y += 2;
         

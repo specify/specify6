@@ -84,9 +84,9 @@ public class DataObjFieldFormatMultiplePanelBuilder extends DataObjFieldFormatPa
 
 		// tool bar (which hosts the add and delete buttons)
 		PanelBuilder deletePB = new PanelBuilder(new FormLayout("p,p,p", "p"));
-		addRowBtn = createButton(getResourceString("Add"));
-		delRowBtn = createButton(getResourceString("Delete"));
-		resetRowBtn = createButton(getResourceString("Reset"));
+		addRowBtn = createButton(getResourceString("DOF_ADD"));
+		delRowBtn = createButton(getResourceString("DOF_DELETE"));
+		resetRowBtn = createButton(getResourceString("DOF_RESET"));
 		deletePB.add(addRowBtn, cc.xy(1, 1));
 		deletePB.add(delRowBtn, cc.xy(2, 1));
 		deletePB.add(resetRowBtn, cc.xy(3, 1));
@@ -202,8 +202,8 @@ public class DataObjFieldFormatMultiplePanelBuilder extends DataObjFieldFormatPa
 				return (column != 1);
 			}
 		};
-		model.addColumn("Field Value");
-		model.addColumn("Display Format");
+		model.addColumn(getResourceString("DOF_FIELD_VALUE"));
+		model.addColumn(getResourceString("DOF_DISPLAY_FORMAT"));
 		model.addColumn("");
 
 		return model;

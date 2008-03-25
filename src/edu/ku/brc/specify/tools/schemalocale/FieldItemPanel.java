@@ -286,7 +286,10 @@ public class FieldItemPanel extends LocalizerBasePanel
                 			fieldInfo, 
                 			formatCombo.getSelectedIndex()); // MUST BE MODAL!
                 	dlg.setVisible(true);
-                	setSelectedFieldFormatter(dlg.getSelectedFormat());
+            		if (dlg.getBtnPressed() == dlg.OK_BTN)
+            		{
+            			setSelectedFieldFormatter(dlg.getSelectedFormat());
+            		}
                 }
             });
             
@@ -512,10 +515,10 @@ public class FieldItemPanel extends LocalizerBasePanel
         DBFieldInfo                 precision = tableInfo.getFieldByName(fieldInfo.getName()+"Precision");
         if (precision != null)
         {
-            cbxModel.addElement("Partial Date"); // I18N
+            cbxModel.addElement(getResourceString("SL_PARTIAL_DATE"));
         } else
         {
-            cbxModel.addElement("Date");
+            cbxModel.addElement(getResourceString("SL_DATE"));
         }
         formatCombo.setSelectedIndex(0);
         formatCombo.setEnabled(false);
@@ -1061,7 +1064,7 @@ public class FieldItemPanel extends LocalizerBasePanel
                         fieldLengthLbl.setEnabled(StringUtils.isNotEmpty(lenStr));
                         fieldLengthTxt.setEnabled(StringUtils.isNotEmpty(lenStr));
                         
-                        fieldReqTxt.setText(getResourceString(fi.isRequired() ? "Yes" : "No"));
+                        fieldReqTxt.setText(getResourceString(fi.isRequired() ? getResourceString("SL_YES") : getResourceString("SL_NO")));
 
                     } else
                     {
@@ -1077,13 +1080,13 @@ public class FieldItemPanel extends LocalizerBasePanel
                             {
                                 title = DBRelationshipInfo.RelationshipType.OneToMany.toString();
                             }
-                            fieldTypeTxt.setText(title +" to "+getNameDescStrForCurrLocale(currContainer));
+                            fieldTypeTxt.setText(title +" "+getResourceString("SL_TO")+" "+getNameDescStrForCurrLocale(currContainer));
                             fieldTypeLbl.setEnabled(true);
                             
                             fieldLengthTxt.setText(" ");
                             fieldLengthLbl.setEnabled(false);
                             fieldLengthTxt.setEnabled(false);
-                            fieldReqTxt.setText(getResourceString(ri.isRequired() ? "Yes" : "No"));
+                            fieldReqTxt.setText(getResourceString(ri.isRequired() ? getResourceString("SL_YES") : getResourceString("SL_NO")));
                         }
                     }
                 }
@@ -1159,7 +1162,7 @@ public class FieldItemPanel extends LocalizerBasePanel
             {
                 if (statusBar != null)
                 {                
-                    statusBar.setErrorMessage("The text has exceed the maximum number of characters: "+maxLength);
+                    statusBar.setErrorMessage(getResourceString("SL_MAX_LENGTH_ERROR")+": "+maxLength);
                 }
                 
                 SwingUtilities.invokeLater(new Runnable() {

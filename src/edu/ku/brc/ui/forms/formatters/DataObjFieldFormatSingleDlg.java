@@ -44,7 +44,7 @@ public class DataObjFieldFormatSingleDlg extends CustomDialog
     								   DataObjDataFieldFormatIFace formatter)
     	throws HeadlessException
     {
-        super(frame, getResourceString("FFE_DLG_TITLE"), true, OKCANCELHELP, null); //I18N 
+        super(frame, getResourceString("DOF_DLG_TITLE"), true, OKCANCELHELP, null); //I18N 
         this.tableInfo = tableInfo;
         this.formatter = formatter;
     }

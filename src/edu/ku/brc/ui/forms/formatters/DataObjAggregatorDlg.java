@@ -81,7 +81,7 @@ public class DataObjAggregatorDlg extends CustomDialog {
     					  		int                   initialFormatSelectionIndex) 
     	throws HeadlessException
     {
-        super(frame, getResourceString("FFE_DLG_TITLE"), true, OKCANCELHELP, null); //I18N 
+        super(frame, getResourceString("DOA_DLG_TITLE"), true, OKCANCELHELP, null); //I18N 
         this.tableInfo = tableInfo;
         this.aggDlgFrame = frame;  // save it for when another dialog is created
     }
@@ -112,9 +112,7 @@ public class DataObjAggregatorDlg extends CustomDialog {
         JLabel tableTitleLbl = createLabel(getResourceString("FFE_TABLE") + ": " + 
         		tableInfo.getTitle(), SwingConstants.LEFT); 
 
-        JLabel helpLbl = createLabel("<html><p>Define how multiple records of this table " +
-        		"that participate <br />in one-to-many and many-to-many relationships " +
-        		"are to be shown in a compact manner</p></html>", SwingConstants.LEFT);
+        JLabel helpLbl = createLabel(getResourceString("DOA_HELP"), SwingConstants.LEFT);
 
         // list of existing formats
         DefaultListModel listModel = new DefaultListModel();
@@ -128,7 +126,7 @@ public class DataObjAggregatorDlg extends CustomDialog {
         	listModel.addElement(agg);
         }
         // add "New" string as last entry
-        listModel.addElement("New");
+        listModel.addElement(getResourceString("DOA_NEW"));
         
         aggragatorList = createList(listModel);
         aggragatorList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -196,27 +194,30 @@ public class DataObjAggregatorDlg extends CustomDialog {
         countText  = createTextField(10); 
 
         // checkbox
-        defaultCheck = createCheckBox("Default");
+        defaultCheck = createCheckBox(getResourceString("DOA_DEFAULT"));
         addEditorListeners();
         
         int yr = 2; // leave blank on top
-        rightPB.add(createLabel("Display:"), cc.xy(1, yr)); 
-        rightPB.add(displayPB.getPanel(),   cc.xy(3, yr)); 
+        rightPB.add(createLabel(getResourceString("DOA_DISPLAY")+":"), cc.xy(1, yr)); 
+        rightPB.add(displayPB.getPanel(), cc.xy(3, yr)); 
         yr += 2;
         
-        rightPB.add(createLabel("Separator:"), cc.xy(1, yr)); 
-        rightPB.add(sepText,                  cc.xy(3, yr)); 
+        rightPB.add(createLabel(getResourceString("DOA_SEP")+":"), cc.xy(1, yr)); 
+        rightPB.add(sepText, cc.xy(3, yr)); 
         yr += 2;
 
-        rightPB.add(createLabel("Ending:"), cc.xy(1, yr));
-        rightPB.add(endingText,            cc.xy(3, yr)); 
+        rightPB.add(createLabel(getResourceString("DOA_ENDING")+":"), cc.xy(1, yr));
+        rightPB.add(endingText, cc.xy(3, yr)); 
         yr += 2;
 
-        rightPB.add(createLabel("Sort by:"), cc.xy(1, yr)); 
-        rightPB.add(fieldOrderCbo,          cc.xy(3, yr)); 
+        rightPB.add(createLabel(getResourceString("DOA_SORT_BY")+":"), cc.xy(1, yr)); 
+        rightPB.add(fieldOrderCbo, cc.xy(3, yr)); 
         yr += 2;
 
-        rightPB.add(countText,    cc.xy(3, yr)); yr += 2;
+        rightPB.add(createLabel(getResourceString("DOA_COUNT")+":"), cc.xy(1, yr)); 
+        rightPB.add(countText, cc.xy(3, yr)); 
+        yr += 2;
+        
         rightPB.add(defaultCheck, cc.xy(3, yr)); yr += 2;
         
         // lay out components on main panel        
@@ -224,7 +225,7 @@ public class DataObjAggregatorDlg extends CustomDialog {
         pb.add(tableTitleLbl,  cc.xyw(2, y, 3)); y += 2;
         pb.add(helpLbl,        cc.xyw(2, y, 3)); y += 2;
         
-        pb.add(createLabel("Display Formats:", SwingConstants.LEFT), cc.xy(2, y)); y += 1; 
+        pb.add(createLabel(getResourceString("DOA_DISPLAY_FORMATS")+":", SwingConstants.LEFT), cc.xy(2, y)); y += 1; 
         int y2 = y; // align 3rd column with this row 
         pb.add(new JScrollPane(aggragatorList), cc.xy(2,y)); y += 2;
 
