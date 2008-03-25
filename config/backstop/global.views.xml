@@ -958,6 +958,10 @@
             <rowDef auto="true" cell="p" sep="2dlu"/>
             <rows>
                 <row>
+                    <cell type="label" labelfor="8" label="Type of Reference"/>
+                    <cell type="field" id="8" name="referenceWorkType" uitype="combobox" picklist="ReferenceWorkType" colspan="10"/>
+                </row>
+                <row>
                     <cell type="label" labelfor="1" label="Title"/>
                     <cell type="field" id="1" name="title" uitype="text" cols="50" colspan="10"/>
                 </row>
