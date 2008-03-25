@@ -4,7 +4,7 @@
     <views>
         
         <view name="Attributes"
-            class="edu.ku.brc.specify.datamodel.CollectionObjectAttributes"
+            class="edu.ku.brc.specify.datamodel.CollectionObjectAttribute"
             resourcelabels="false">
             <desc><![CDATA[Collection Object Attributes SubForm]]></desc>
             <altviews>
@@ -80,7 +80,7 @@
         <viewdef
             type="form"
             name="Attributes"
-            class="edu.ku.brc.specify.datamodel.CollectionObjectAttributes"
+            class="edu.ku.brc.specify.datamodel.CollectionObjectAttribute"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             
@@ -165,10 +165,10 @@
                     <cell type="subview" viewname="Preparation" id="8" name="preparations" defaulttype="table" colspan="16"/>
                 </row>
                 <row>
-                    <cell type="separator" label="Attributes" collapse="collectionObjectAttributes" colspan="16"/>
+                    <cell type="separator" label="Attributes" collapse="collectionObjectAttribute" colspan="16"/>
                 </row>
                 <row>
-                   <cell type="subview" viewname="Attributes" id="19" name="collectionObjectAttributes" colspan="16"/> 
+                   <cell type="subview" viewname="Attributes" id="19" name="collectionObjectAttribute" colspan="16"/> 
                 </row>
                 <row>
                     <cell type="separator" label="Attachments" colspan="16"/>
