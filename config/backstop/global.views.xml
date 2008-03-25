@@ -48,6 +48,7 @@
 
         <view name="Address"
             class="edu.ku.brc.specify.datamodel.Address"
+             busrules="edu.ku.brc.specify.datamodel.busrules.AddressBusRules"
             resourcelabels="false">
             <desc><![CDATA[Address subform within the Accession form.]]></desc>
             <altviews>

@@ -332,8 +332,9 @@ public class Address extends CollectionMember implements java.io.Serializable {
      *      * Is the agent currently located at this address?
      */
     @Column(name="IsPrimary",unique=false,nullable=true,insertable=true,updatable=true)
-    public Boolean getIsPrimary() {
-        return this.isPrimary;
+    public Boolean getIsPrimary() 
+    {
+        return this.isPrimary == null ? false : this.isPrimary;
     }
 
     public void setIsPrimary(Boolean isPrimary) {
