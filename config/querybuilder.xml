@@ -16,7 +16,7 @@
     </table>
 
     <table name="Agent">
-        <table name="Address"/>
+        <table name="Address" field="addresses"/>
         <table name="AgentAttachment" field="agentAttachments">
             <alias name="Attachment"/>
         </table>

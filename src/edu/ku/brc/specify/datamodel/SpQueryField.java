@@ -385,7 +385,7 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
         fieldName      = null;
         isNot          = null;
         isDisplay      = null;
-        isPrompt       = true;
+        isPrompt       = null;
         operStart      = null;
         operEnd        = null;
         startValue     = null;

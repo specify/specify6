@@ -48,4 +48,8 @@ public interface QueryFieldPanelContainerIFace
      * @return field with index.
      */
     QueryFieldPanel getField(int index);
+    /**
+     * @return true if container contains prompts
+     */
+    boolean isPromptMode();
 }

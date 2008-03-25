@@ -97,6 +97,7 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
     protected JComboBox        criteriaList; 
     protected MultiStateIconButon sortCheckbox;
     protected JCheckBox        isDisplayedCkbx;
+    protected JCheckBox        isPromptCkbx;
     
     protected FieldQRI         fieldQRI;
     protected SpQueryField     queryField = null;
@@ -105,12 +106,7 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
     
     protected QueryFieldPanel  thisItem;
     
-    //protected String[] labelStrs   = {" ", "Field", "Not", "Operator", "Criteria", "Sort", "Display", " ", " "};
-    protected String[]                      labelStrs             = { " ",
-            UIRegistry.getResourceString("QB_FIELD"), UIRegistry.getResourceString("QB_NOT"),
-            UIRegistry.getResourceString("QB_OPERATOR"),
-            UIRegistry.getResourceString("QB_CRITERIA"), UIRegistry.getResourceString("QB_SORT"),
-            UIRegistry.getResourceString("QB_DISPLAY"), " ", " " };
+    protected String[] labelStrs;
     protected String[] comparators;
     
     public static final DataFlavor    QUERY_FLD_PANE_FLAVOR = new DataFlavor(DroppableTaskPane.class, "QueryFldPane");
@@ -136,8 +132,26 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
                            final String        columnDefStr,
                            final JButton       saveBtn,
                            final SpQueryField  queryField)
-    {
+    {        
         this.ownerQuery = ownerQuery;
+        if (this.ownerQuery.isPromptMode())
+        {
+            labelStrs = new String[]{ " ",
+                    UIRegistry.getResourceString("QB_FIELD"), UIRegistry.getResourceString("QB_NOT"),
+                    UIRegistry.getResourceString("QB_OPERATOR"),
+                    UIRegistry.getResourceString("QB_CRITERIA"), UIRegistry.getResourceString("QB_SORT"),
+                    //UIRegistry.getResourceString("QB_DISPLAY"), getResourceString("QB_PROMPT"), 
+                    //" ", " " 
+                    };
+        }
+        else
+        {
+            labelStrs = new String[]{ " ",
+                    UIRegistry.getResourceString("QB_FIELD"), UIRegistry.getResourceString("QB_NOT"),
+                    UIRegistry.getResourceString("QB_OPERATOR"),
+                    UIRegistry.getResourceString("QB_CRITERIA"), UIRegistry.getResourceString("QB_SORT"),
+                    UIRegistry.getResourceString("QB_DISPLAY"), getResourceString("QB_PROMPT"), " ", " " };
+        }
         this.fieldQRI      = fieldQRI;
         this.columnDefStr  = columnDefStr;
         
@@ -166,9 +180,10 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
     
     public void updateQueryField()
     {
-        if (queryField != null)
+        if (queryField != null && !ownerQuery.isPromptMode())
         {
             queryField.setIsDisplay(isDisplayedCkbx.isSelected());
+            queryField.setIsPrompt(isPromptCkbx.isSelected());
             queryField.setIsNot(isNotCheckbox.isSelected());
             if (validator.hasChanged() && queryField.getSpQueryFieldId() != null)
             {
@@ -180,7 +195,6 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
             queryField.setStartValue(criteria.getText());
             queryField.setColumnAlias(this.getLabel());
             queryField.setContextTableIdent(fieldQRI.getTableInfo().getTableId());
-            queryField.setIsPrompt(true); //for now...
             queryField.setIsRelFld(fieldQRI instanceof RelQRI);
             
             Vector<Integer> idList = new Vector<Integer>();
@@ -202,7 +216,7 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
             
         } else
         {
-            log.error("QueryField is null!");
+            log.error("QueryField is null or ownerQuery is prompt only. Unable to update database object.");
         }
     }
     
@@ -229,7 +243,11 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
                 operatorCBX.setSelectedIndex(queryField.getOperStart());
                 criteria.setText(queryField.getStartValue());
                 sortCheckbox.setState(queryField.getSortType());
-                isDisplayedCkbx.setSelected(queryField.getIsDisplay());
+                if (!ownerQuery.isPromptMode())
+                {
+                    isDisplayedCkbx.setSelected(queryField.getIsDisplay());
+                    isPromptCkbx.setSelected(queryField.getIsPrompt());
+                }
                 validator.setHasChanged(false);
                 
             } else
@@ -489,13 +507,24 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
         sortCheckbox.addActionListener(dcn);
         // sortCheckbox.setMargin(new Insets(2,2,2,2));
         // sortCheckbox.setBorder(BorderFactory.createLineBorder(new Color(225,225,225)));
-        isDisplayedCkbx = createCheckBox("isDisplayedCkbx");
-        isDisplayedCkbx.addFocusListener(focusListener);
-        closeBtn = new JLabel(IconManager.getIcon("Close"));
+        if (!this.ownerQuery.isPromptMode())
+        {
+            isDisplayedCkbx = createCheckBox("isDisplayedCkbx");
+            isDisplayedCkbx.addFocusListener(focusListener);
+            isPromptCkbx = createCheckBox("isPromptCkbx");
+            isPromptCkbx.addFocusListener(focusListener);
+            closeBtn = new JLabel(IconManager.getIcon("Close"));
+        }
+        else
+        {
+            isDisplayedCkbx = null;
+            this.isPromptCkbx = null;
+            this.closeBtn = null;
+        }
 
-        // 0 1 2 3 4 5 6 7
+        // 0 1 2 3 4 5 6 7 8
         JComponent[] comps = { iconLabel, fieldLabel, isNotCheckbox, operatorCBX, criteria,
-                sortCheckbox, isDisplayedCkbx, closeBtn, null };
+                sortCheckbox, isDisplayedCkbx, isPromptCkbx, closeBtn, null };
 
         StringBuilder sb = new StringBuilder();
         if (columnDefStr == null)
@@ -503,7 +532,7 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
             for (int i = 0; i < comps.length; i++)
             {
                 sb.append(i == 0 ? "" : ",");
-                if (i == 2 || i == 3 || i == 6)
+                if (i == 2 || i == 3 || i == 6 || i == 7)
                     sb.append("c:");
                 sb.append("p");
                 if (i == 4)
@@ -534,25 +563,31 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
             icon = IconManager.getIcon(fieldQRI.getTableInfo().getTitle(), iconSize);
             setIcon(icon);
         }
-        isDisplayedCkbx.setSelected(true);
-        
-        closeBtn.addMouseListener(new MouseAdapter()
+        if (!ownerQuery.isPromptMode())
         {
-            @Override
-            public void mousePressed(MouseEvent e)
+            isDisplayedCkbx.setSelected(true);
+            isPromptCkbx.setSelected(true);
+            closeBtn.addMouseListener(new MouseAdapter()
             {
-                ownerQuery.removeQueryFieldItem((QueryFieldPanel) ((JComponent) e.getSource())
-                        .getParent());
-            }
-        });
+                @Override
+                public void mousePressed(MouseEvent e)
+                {
+                    ownerQuery.removeQueryFieldItem((QueryFieldPanel) ((JComponent) e.getSource())
+                            .getParent());
+                }
+            });
+        }
 
         //for now
         boolean isRel = fieldQRI != null && fieldQRI instanceof RelQRI;
         isNotCheckbox.setEnabled(!isRel);
         operatorCBX.setEnabled(!isRel);
         criteria.setEnabled(!isRel);
-        isDisplayedCkbx.setEnabled(!isRel);
-        
+        if (!ownerQuery.isPromptMode())
+        {
+            isDisplayedCkbx.setEnabled(!isRel);
+            isPromptCkbx.setEnabled(!isRel);
+        }
         validate();
         doLayout();
 
@@ -590,7 +625,7 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
         for (int i=0;i<labels.length;i++)
         {
             sb.append(i == 0 ? "" : ",");
-            if (i == 2 || i == 3 || i == 6) sb.append("c:");
+            if (i == 2 || i == 3 || i == 6 || i == 7) sb.append("c:");
             sb.append("max(");
             sb.append(labelWidths[i]);
             sb.append(";p)");
@@ -669,7 +704,7 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
     
     public boolean isForDisplay()
     {
-        return isDisplayedCkbx.isSelected();
+        return ownerQuery.isPromptMode() || isDisplayedCkbx.isSelected();
     }
 
     /* (non-Javadoc)

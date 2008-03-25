@@ -111,4 +111,15 @@ public class QueryParameterPanel extends JPanel implements QueryFieldPanelContai
     {
         this.columnDefStr = columnDefStr;
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.qb.QueryFieldPanelContainerIFace#isPromptMode()
+     */
+    //@Override
+    public boolean isPromptMode()
+    {
+        return true;
+    }
+    
+    
 }

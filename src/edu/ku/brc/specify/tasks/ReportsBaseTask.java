@@ -719,16 +719,16 @@ public class ReportsBaseTask extends BaseTask
                 Thread.currentThread().setContextClassLoader( MainFrame.reportClassLoader );
                 Map<?,?> args = MainFrameSpecify.getArgs();
                 iReportMainFrame = new MainFrameSpecify(args);
-                if (repRes != null)
-                {
-                    iReportMainFrame.openReportFromResource(repRes);
-                }
             }
             catch (Exception e)
             {
                 e.printStackTrace();
                 throw new RuntimeException(e);
             }
+        }
+        if (repRes != null)
+        {
+            iReportMainFrame.openReportFromResource(repRes);
         }
         SwingUtilities.invokeLater( new Runnable()
         {

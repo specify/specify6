@@ -95,6 +95,7 @@ import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.ERTICaptionInfo;
+import edu.ku.brc.util.Pair;
 
 /**
  * @author rod
@@ -557,7 +558,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 
         StringBuilder fromStr = new StringBuilder();
         TableAbbreviator tableAbbreviator = new TableAbbreviator();
-        processTree(root, fromStr, 0, tableAbbreviator, tblTree);
+        List<Pair<DBTableInfo,String>> fromTbls = new LinkedList<Pair<DBTableInfo,String>>();
+        processTree(root, fromStr, fromTbls, 0, tableAbbreviator, tblTree);
 
         StringBuilder sqlStr = new StringBuilder();
         sqlStr.append("select ");
@@ -572,7 +574,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             fieldsStr.append(rootTable.getTableInfo().getIdFieldName());
         }
 
-        SortedSet<String> checkedForSpecialColumns = new TreeSet<String>();
         for (QueryFieldPanel qfi : qfps)
         {
             if (qfi.isForDisplay())
@@ -596,21 +597,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 //Don't think it is necessary to worry about the related table.
                 tt = tt.getParent();
             }
-            String alias = tableAbbreviator.getAbbreviation(tt);
-            if (!checkedForSpecialColumns.contains(alias))  
-            {
-                String specialColumnWhere = QueryAdjusterForDomain.getInstance().getSpecialColumns(
-                        qfi.getFieldQRI().getTableInfo(), true, true/*XXX should only use left join when necessary*/, alias);
-                checkedForSpecialColumns.add(alias);
-                if (StringUtils.isNotEmpty(specialColumnWhere))
-                {
-                    if (criteriaStr.length() > 0)
-                    {
-                        criteriaStr.append(" AND ");
-                    }
-                    criteriaStr.append(specialColumnWhere);
-                }
-            }
             String criteria = qfi.getCriteriaFormula(tableAbbreviator);
             boolean isDisplayOnly = StringUtils.isEmpty(criteria);
             if (!isDisplayOnly)
@@ -627,6 +613,22 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         sqlStr.append(" from ");
         sqlStr.append(fromStr);
 
+        //Add extra where's for system fields for each table in the from clause...
+        for (Pair<DBTableInfo, String> fromTbl : fromTbls)
+        {
+            String specialColumnWhere = QueryAdjusterForDomain.getInstance().getSpecialColumns(
+                    fromTbl.getFirst(), true, true/*XXX should only use left join when necessary*/, fromTbl.getSecond());
+            if (StringUtils.isNotEmpty(specialColumnWhere))
+            {
+                if (criteriaStr.length() > 0)
+                {
+                    criteriaStr.append(" AND ");
+                }
+                criteriaStr.append(specialColumnWhere);
+            }
+        }
+        //...done adding system whereses
+        
         if (criteriaStr.length() > 0)
         {
             sqlStr.append(" where ");
@@ -656,31 +658,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     {
         String hql = buildHQL(rootTable, distinct, queryFieldItems, tableTree);    
         processSQL(queryFieldItems, hql, rootTable.getTableInfo(), distinct);
-        
-        //doReport(rootTable, true /* XXX need to use true to workaround probs with added key column when not distinct*/);
-        
-//        DataProviderSessionIFace session = DataProviderFactory.getInstance()
-//        .createSession();
-//        try
-//        {
-//            SpReport report = session.getData(SpReport.class, "name", "RunRunRun",
-//                    DataProviderSessionIFace.CompareType.Equals);
-//            if (report == null)
-//            {
-//                throw new Exception("Unable to load report " + "RunRunRun");
-//            }
-//            runReport(report);
-//        }
-//        catch (Exception e)
-//        {
-//            e.printStackTrace();
-//            throw new RuntimeException(e);
-//        }
-//        finally
-//        {
-//            session.close();
-//        }
-        
     }
 
     protected void doReport(final TableQRI rootTable, boolean distinct)
@@ -747,7 +724,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * @param sqlStr
      * @param level
      */
-    protected static void processTree(final ProcessNode parent, final StringBuilder sqlStr, final int level, 
+    protected static void processTree(final ProcessNode parent, final StringBuilder sqlStr, final List<Pair<DBTableInfo,String>> fromTbls,
+                               final int level, 
                                final TableAbbreviator tableAbbreviator, final TableTree tblTree)
     {
         BaseQRI qri = parent.getQri();
@@ -756,11 +734,13 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             if (qri instanceof TableQRI)
             {
                 TableTree tt = qri.getTableTree();
+                String alias = tableAbbreviator.getAbbreviation(tt);
+                fromTbls.add(new Pair<DBTableInfo, String>(tt.getTableInfo(), alias));
                 if (level == 1)
                 {
                     sqlStr.append(tt.getName());
                     sqlStr.append(' ');
-                    sqlStr.append(tableAbbreviator.getAbbreviation(tt));
+                    sqlStr.append(alias);
                     sqlStr.append(' ');
 
                 }
@@ -773,14 +753,14 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     sqlStr.append('.');
                     sqlStr.append(tt.getField());
                     sqlStr.append(' ');
-                    sqlStr.append(tableAbbreviator.getAbbreviation(tt));
+                    sqlStr.append(alias);
                     sqlStr.append(' ');
                 }
             }
         }
         for (ProcessNode kid : parent.getKids())
         {
-            processTree(kid, sqlStr, level + 1, tableAbbreviator, tblTree);
+            processTree(kid, sqlStr, fromTbls, level + 1, tableAbbreviator, tblTree);
         }
     }
 
@@ -939,7 +919,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         final Hashtable<String, TableTree> ttHash = QueryBldrPane.buildTableTreeHash(tblTree);
         QueryParameterPanel qpp = new QueryParameterPanel();
         qpp.setQuery(report.getQuery(), tblTree, ttHash);
-        CustomDialog cd = new CustomDialog((Frame)UIRegistry.getTopWindow(), "Testing", true, qpp);
+        CustomDialog cd = new CustomDialog((Frame)UIRegistry.getTopWindow(), UIRegistry.getResourceString("QB_GET_REPORT_CONTENTS_TITLE"), true, qpp);
         UIHelper.centerAndShow(cd);
         if (!cd.isCancelled()) //what about x box?
         {
@@ -958,7 +938,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             {
                 qfps.add(qpp.getField(f));
             }
-            //XXX selectDistinct hard-coded to true?? see doSearch()
+            //XXX selectDistinct hard-coded to true?? Only necessary because when not true, the RecordKey is
+            //included in the query for queries with a TableContext and causes problems with the creation
+            //of the JR data source.
             String sql = QueryBldrPane.buildHQL(rootQRI, 
                     true, 
                     qfps, 
@@ -1179,14 +1161,21 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         {
             for (int f = 0; f < tblQRI.getFields(); f++)
             {
-                model.addElement(tblQRI.getField(f));
+                if (!tblQRI.getField(f).getFieldInfo().isHidden())
+                {
+                    model.addElement(tblQRI.getField(f));
+                }
             }
             for (int k = 0; k < tblQRI.getTableTree().getKids(); k++)
             {
-                boolean addIt = true;
+                boolean addIt;
                 if (tblQRI.getTableTree().getKid(k).isAlias())
                 {
                     addIt = fixAliases(tblQRI.getTableTree().getKid(k), tableTreeHash);
+                }
+                else
+                {
+                    addIt = !tblQRI.getTableTree().getKid(k).getTableInfo().isHidden();
                 }
                 if (addIt)
                 {
@@ -1199,8 +1188,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     /**
      * @param aliasTbl
      * @param tblInfo
-     * @return true if aliasTbl should be displayed in the fields list for the current
-     *         context.
+     * @return true if aliasTbl should be displayed in the fields list for the current context.
      */
     protected static boolean tblIsDisplayable(final TableTree aliasTbl, final DBTableInfo tblInfo)
     {
@@ -1809,11 +1797,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                                     final TableTree parentTT)
     {
         String tableName = XMLHelper.getAttr(parent, "name", null);
-        if (tableName.equals("CollectionObject") || tableName.equals("Taxon"))
-        {
-            int x = 0;
-            x++;
-        }
         DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByShortClassName(tableName);
         if (!tableInfo.isHidden())
         {
@@ -1915,7 +1898,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             TableTree tt = hash.get(tbl.getName());
             if (tt != null)
             {
-                if (tblIsDisplayable(tbl, tt.getTableInfo()))
+                if (!tt.getTableInfo().isHidden() && tblIsDisplayable(tbl, tt.getTableInfo()))
                 {
                     tbl.clearKids();
                     try
@@ -2169,6 +2152,17 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     {
         searchBtn.setEnabled(queryFieldItems.size() > 0);
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.qb.QueryFieldPanelContainerIFace#isPromptMode()
+     */
+    //@Override
+    public boolean isPromptMode()
+    {
+        return false;
+    }
+    
+    
 }
 
 
