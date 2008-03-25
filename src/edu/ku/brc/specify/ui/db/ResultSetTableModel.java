@@ -759,7 +759,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
         List<?> list      = jpaQuery.getDataObjects();
         List<ERTICaptionInfo> captions = results.getVisibleCaptionInfo();
         
-        log.debug("Results size: "+list.size());
+        //log.debug("Results size: "+list.size());
         
         if (ids == null)
         {

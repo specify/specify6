@@ -598,7 +598,7 @@ public class Attachment extends DataModelObjBase implements Serializable
         {
             thumbFile = File.createTempFile("sp6_thumb_", null);
             thumbFile.deleteOnExit();
-            thumbnailGen.generateThumbnail(origFilename, thumbFile.getAbsolutePath());
+            thumbnailGen.generateThumbnail(origFilename, thumbFile.getAbsolutePath(), false);
         }
         catch (IOException e)
         {

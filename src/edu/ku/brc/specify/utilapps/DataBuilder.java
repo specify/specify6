@@ -397,11 +397,17 @@ public class DataBuilder
      * @param collectors
      * @return
      */
-    public static CollectingEvent createCollectingEvent(final Locality locality, final Collector[] collectors)
+    public static CollectingEvent createCollectingEvent(final Locality locality, 
+                                                        final Calendar startDate,
+                                                        final String stationFieldNumber,
+                                                        final Collector[] collectors)
     {
         CollectingEvent colEv = new CollectingEvent();
         colEv.initialize();
 
+        colEv.setStartDate(startDate);
+        colEv.setStationFieldNumber(stationFieldNumber);
+        
         HashSet<Collector> collectorSet = new HashSet<Collector>();
         if (collectors != null)
         {
@@ -1509,19 +1515,19 @@ public class DataBuilder
         return collection;
     }
 
-    public static CollectingEvent createCollectingEvent(final String stationFieldNumber,
-                                                        final String method,
-                                                        final String verbatimDate,
+    public static CollectingEvent createCollectingEvent(final String   stationFieldNumber,
+                                                        final String   method,
+                                                        final String   verbatimDate,
                                                         final Calendar startDate,
-                                                        final Short startDatePrecision,
-                                                        final String startDateVerbatim,
+                                                        final Short    startDatePrecision,
+                                                        final String   startDateVerbatim,
                                                         final Calendar endDate,
-                                                        final Short endDatePrecision,
-                                                        final String endDateVerbatim,
-                                                        final Short startTime,
-                                                        final Short endTime,
-                                                        final String verbatimLocality,
-                                                        final Integer groupPermittedToView,
+                                                        final Short    endDatePrecision,
+                                                        final String   endDateVerbatim,
+                                                        final Short    startTime,
+                                                        final Short    endTime,
+                                                        final String   verbatimLocality,
+                                                        final Integer  groupPermittedToView,
                                                         final Locality locality)
     {
         CollectingEvent collectingevent = new CollectingEvent();

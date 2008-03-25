@@ -945,7 +945,9 @@ public class ViewFactory
         {
             FormCellField cellField = (FormCellField)cell;
             
-            if (childInfo == null)
+            if (childInfo == null && 
+                cellField.getName() != null && 
+                cellField.getName().indexOf('.') == -1)
             {
                log.debug("No DBChild "+cellField.getName()); 
             }

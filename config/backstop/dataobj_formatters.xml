@@ -245,6 +245,18 @@
     </format>
 
     <format
+        name="CollectingEventSFN"
+        class="edu.ku.brc.specify.datamodel.CollectingEvent"
+        default="false"
+        >
+        <switch single="true">
+            <fields>
+                <field>stationFieldNumber</field>
+            </fields>
+        </switch>
+    </format>
+
+    <format
         name="Storage"
         class="edu.ku.brc.specify.datamodel.Storage"
         default="true"

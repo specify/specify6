@@ -197,6 +197,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         this.tableInfo             = tableInfo;
         this.keyName               = keyName;
         this.dataObjFormatterName  = dataObjFormatterName;
+        this.frameTitle            = tableInfo.getTitle();
         
         textWithQuery = new TextFieldWithQuery(tableInfo, 
                                                keyFieldName, 
@@ -650,7 +651,10 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     public void setFrameTitle(final String frameTitle)
     {
-        this.frameTitle = frameTitle;
+        if (StringUtils.isNotEmpty(frameTitle))
+        {
+            this.frameTitle = frameTitle;
+        }
     }
 
     /**

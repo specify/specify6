@@ -254,6 +254,9 @@ public class BuildSampleDatabase
     protected DeterminationStatus notCurrent   = null;
     protected DeterminationStatus incorrect    = null;
     protected DeterminationStatus oldDet       = null;
+    
+    protected int                 stationFieldNumberCounter = 100;
+    protected String              STATION_FIELD_FORMAT = "RS%03d";
 
     
     /**
@@ -575,10 +578,12 @@ public class BuildSampleDatabase
         Collector collectorMeg = createCollector(agents.get(2), 1);
         Collector collectorRod = createCollector(agents.get(3), 2);
         
-        CollectingEvent ce2 = createCollectingEvent(farmpond, new Collector[]{collectorMeg, collectorRod});
+        String stationFieldNumber = String.format(STATION_FIELD_FORMAT, stationFieldNumberCounter++);
         calendar.set(year, mon, 22, 06, 12, 00);
-        ce2.setStartDate(calendar);
+        CollectingEvent ce2 = createCollectingEvent(farmpond, calendar, stationFieldNumber, new Collector[]{collectorMeg, collectorRod});
+
         ce2.setStartDateVerbatim("22 Apr "+year+", 6:12 AM");
+        
         calendar.set(year, mon, 22, 07, 31, 00);
         ce2.setEndDate(calendar);
         ce2.setEndDateVerbatim("22 Apr "+year+", 7:31 AM");
@@ -936,9 +941,9 @@ public class BuildSampleDatabase
         Collector collectorMitch = createCollector(agents.get(7), 2);
         Collector collectorJim = createCollector(agents.get(2), 1);
         
-        CollectingEvent ce1 = createCollectingEvent(forestStream, new Collector[]{collectorMitch, collectorJim});
         calendar.set(1994, 4, 21, 11, 56, 00);
-        ce1.setStartDate(calendar);
+        String stationFieldNumber = String.format(STATION_FIELD_FORMAT, stationFieldNumberCounter++);
+        CollectingEvent ce1 = createCollectingEvent(forestStream, calendar, stationFieldNumber, new Collector[]{collectorMitch, collectorJim});
         ce1.setStartDateVerbatim("21 Apr 1994, 11:56 AM");
         calendar.set(1994, 4, 21, 13, 03, 00);
         ce1.setEndDate(calendar);
@@ -956,9 +961,9 @@ public class BuildSampleDatabase
 
         Collector collectorMeg = createCollector(agents.get(2), 1);
         Collector collectorRod = createCollector(agents.get(3), 2);
-        CollectingEvent ce2 = createCollectingEvent(farmpond, new Collector[]{collectorMeg, collectorRod});
+        stationFieldNumber = String.format(STATION_FIELD_FORMAT, stationFieldNumberCounter++);
         calendar.set(1994, 4, 22, 06, 12, 00);
-        ce2.setStartDate(calendar);
+        CollectingEvent ce2 = createCollectingEvent(farmpond, calendar, stationFieldNumber, new Collector[]{collectorMeg, collectorRod});
         ce2.setStartDateVerbatim("22 Apr 1994, 6:12 AM");
         calendar.set(1994, 4, 22, 07, 31, 00);
         ce2.setEndDate(calendar);
@@ -1714,9 +1719,9 @@ public class BuildSampleDatabase
         Collector collectorMitch = createCollector(agents.get(7), 2);
         Collector collectorJim = createCollector(agents.get(2), 1);
         
-        CollectingEvent ce1 = createCollectingEvent(forestStream, new Collector[]{collectorMitch, collectorJim});
+        String stationFieldNumber = String.format(STATION_FIELD_FORMAT, stationFieldNumberCounter++);
         calendar.set(1994, 4, 21, 11, 56, 00);
-        ce1.setStartDate(calendar);
+        CollectingEvent ce1 = createCollectingEvent(forestStream, calendar, stationFieldNumber, new Collector[]{collectorMitch, collectorJim});
         ce1.setStartDateVerbatim("21 Apr 1994, 11:56 AM");
         calendar.set(1994, 4, 21, 13, 03, 00);
         ce1.setEndDate(calendar);
@@ -1734,9 +1739,9 @@ public class BuildSampleDatabase
 
         Collector collectorMeg = createCollector(agents.get(2), 1);
         Collector collectorRod = createCollector(agents.get(3), 2);
-        CollectingEvent ce2 = createCollectingEvent(farmpond, new Collector[]{collectorMeg, collectorRod});
+        stationFieldNumber = String.format(STATION_FIELD_FORMAT, stationFieldNumberCounter++);
         calendar.set(1994, 4, 22, 06, 12, 00);
-        ce2.setStartDate(calendar);
+        CollectingEvent ce2 = createCollectingEvent(farmpond, calendar, stationFieldNumber, new Collector[]{collectorMeg, collectorRod});
         ce2.setStartDateVerbatim("22 Apr 1994, 6:12 AM");
         calendar.set(1994, 4, 22, 07, 31, 00);
         ce2.setEndDate(calendar);
@@ -2715,9 +2720,9 @@ public class BuildSampleDatabase
         Collector collectorMitch = createCollector(agents.get(7), 2);
         Collector collectorJim = createCollector(agents.get(2), 1);
         
-        CollectingEvent ce1 = createCollectingEvent(forestStream, new Collector[]{collectorMitch, collectorJim});
         calendar.set(1994, 4, 21, 11, 56, 00);
-        ce1.setStartDate(calendar);
+        String stationFieldNumber = String.format(STATION_FIELD_FORMAT, stationFieldNumberCounter++);
+        CollectingEvent ce1 = createCollectingEvent(forestStream, calendar, stationFieldNumber, new Collector[]{collectorMitch, collectorJim});
         ce1.setStartDateVerbatim("21 Apr 1994, 11:56 AM");
         calendar.set(1994, 4, 21, 13, 03, 00);
         ce1.setEndDate(calendar);
@@ -2735,9 +2740,9 @@ public class BuildSampleDatabase
 
         Collector collectorMeg = createCollector(agents.get(2), 1);
         Collector collectorRod = createCollector(agents.get(3), 2);
-        CollectingEvent ce2 = createCollectingEvent(farmpond, new Collector[]{collectorMeg, collectorRod});
         calendar.set(1994, 4, 22, 06, 12, 00);
-        ce2.setStartDate(calendar);
+        stationFieldNumber = String.format(STATION_FIELD_FORMAT, stationFieldNumberCounter++);
+        CollectingEvent ce2 = createCollectingEvent(farmpond, calendar, stationFieldNumber, new Collector[]{collectorMeg, collectorRod});
         ce2.setStartDateVerbatim("22 Apr 1994, 6:12 AM");
         calendar.set(1994, 4, 22, 07, 31, 00);
         ce2.setEndDate(calendar);
@@ -3745,12 +3750,13 @@ public class BuildSampleDatabase
         ////////////////////////////////
         // collecting events (collectors, collecting trip)
         ////////////////////////////////
+
         log.info("Creating collecting events, collectors and a collecting trip");
         Collector collectorMitch = createCollector(agents.get(8), 2);
         Collector collectorJim = createCollector(agents.get(1), 1);
-        CollectingEvent ce1 = createCollectingEvent(forestStream, new Collector[]{collectorMitch,collectorJim});
         calendar.set(1993, 3, 19, 11, 56, 00);
-        ce1.setStartDate(calendar);
+        String stationFieldNumber = String.format(STATION_FIELD_FORMAT, stationFieldNumberCounter++);
+        CollectingEvent ce1 = createCollectingEvent(forestStream, calendar, stationFieldNumber, new Collector[]{collectorMitch,collectorJim});
         ce1.setStartDateVerbatim("19 Mar 1993, 11:56 AM");
         calendar.set(1993, 3, 19, 13, 03, 00);
         ce1.setEndDate(calendar);
@@ -3767,9 +3773,9 @@ public class BuildSampleDatabase
 
         Collector collectorMeg = createCollector(agents.get(2), 1);
         Collector collectorRod = createCollector(agents.get(3), 2);
-        CollectingEvent ce2 = createCollectingEvent(farmpond, new Collector[]{collectorMeg,collectorRod});
         calendar.set(1993, 3, 20, 06, 12, 00);
-        ce2.setStartDate(calendar);
+        stationFieldNumber = String.format(STATION_FIELD_FORMAT, stationFieldNumberCounter++);
+        CollectingEvent ce2 = createCollectingEvent(farmpond, calendar, stationFieldNumber, new Collector[]{collectorMeg,collectorRod});
         ce2.setStartDateVerbatim("20 Mar 1993, 6:12 AM");
         calendar.set(1993, 3, 20, 07, 31, 00);
         ce2.setEndDate(calendar);

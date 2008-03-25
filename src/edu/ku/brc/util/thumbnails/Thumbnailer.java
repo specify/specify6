@@ -114,7 +114,9 @@ public class Thumbnailer
 	 * @param outputFile the output file for the generated thumbnail
 	 * @throws IOException an exception occured while generating the thumbnail or no generator was registered for the given MIME type
 	 */
-	public void generateThumbnail(String originalFile, String outputFile) throws IOException
+	public void generateThumbnail(final String originalFile, 
+	                              final String outputFile,
+	                              final boolean doHighQuality) throws IOException
 	{
         // get the system MIME type mapper
         MimetypesFileTypeMap mimeMap = (MimetypesFileTypeMap)FileTypeMap.getDefaultFileTypeMap();
@@ -128,7 +130,7 @@ public class Thumbnailer
 		ThumbnailGenerator generator = mimeTypeToGeneratorMap.get(mimeType);
 		if(generator!=null)
 		{
-            generator.generateThumbnail(originalFile, outputFile);
+            generator.generateThumbnail(originalFile, outputFile, doHighQuality);
             return;
 		}
         

@@ -70,43 +70,43 @@ public class DisciplineBasedContainer extends SpLocaleContainer implements Clone
      * @param disciplineType
      * @return
      */
-    public Set<SpLocaleContainerItem> getDisciplineItems(final String discipline)
+    public Set<SpLocaleContainerItem> getDisciplineItems(final String disciplineArg)
     {
         if (disciplineHashItems == null)
         {
             disciplineHashItems = new Hashtable<String, Set<SpLocaleContainerItem>>();
         }
         
-        if (disciplineHashItems.get(discipline) == null)
+        if (disciplineHashItems.get(disciplineArg) == null)
         {
             HashSet<SpLocaleContainerItem> dispHash = new HashSet<SpLocaleContainerItem>();
-            disciplineHashItems.put(discipline, dispHash);
+            disciplineHashItems.put(disciplineArg, dispHash);
             return dispHash;
         }
         
-        return disciplineHashItems.get(discipline);
+        return disciplineHashItems.get(disciplineArg);
     }
     
     /**
      * @param disciplineType
      * @param item
      */
-    public void add(final String discipline, final SpLocaleContainerItem item)
+    public void add(final String disciplineArg, final SpLocaleContainerItem item)
     {
         Set<SpLocaleContainerItem>  dispSet;
         if (disciplineHashItems == null)
         {
             disciplineHashItems = new Hashtable<String, Set<SpLocaleContainerItem>>();
             dispSet             = new HashSet<SpLocaleContainerItem>();
-            disciplineHashItems.put(discipline, dispSet);
+            disciplineHashItems.put(disciplineArg, dispSet);
 
         } else
         {
-            dispSet = disciplineHashItems.get(discipline);
+            dispSet = disciplineHashItems.get(disciplineArg);
             if (dispSet == null)
             {
                 dispSet = new HashSet<SpLocaleContainerItem>();
-                disciplineHashItems.put(discipline, dispSet);
+                disciplineHashItems.put(disciplineArg, dispSet);
             }
         }
         
@@ -116,18 +116,18 @@ public class DisciplineBasedContainer extends SpLocaleContainer implements Clone
     /**
      * @param disciplineType
      */
-    public void remove(final String discipline)
+    public void remove(final String disciplineArg)
     {
         if (disciplineHashItems != null)
         {  
-            Set<SpLocaleContainerItem> dispSet = disciplineHashItems.get(discipline);
+            Set<SpLocaleContainerItem> dispSet = disciplineHashItems.get(disciplineArg);
             if (dispSet != null)
             {
-                dispSet.remove(discipline);
+                dispSet.remove(disciplineArg);
                 
             } else
             {
-                log.error("dispSet can't be null for disciplineType["+discipline+"]");
+                log.error("dispSet can't be null for disciplineType["+disciplineArg+"]");
             }
             
         } else
@@ -139,9 +139,9 @@ public class DisciplineBasedContainer extends SpLocaleContainer implements Clone
     /**
      * @param disciplineType
      */
-    public void merge(final String discipline)
+    public void merge(final String disciplineArg)
     {
-        Set<SpLocaleContainerItem> dispSet = disciplineHashItems.get(discipline);
+        Set<SpLocaleContainerItem> dispSet = disciplineHashItems.get(disciplineArg);
         for (SpLocaleContainerItem item : new Vector<SpLocaleContainerItem>(items))
         {
             for (SpLocaleContainerItem dispItem : dispSet)

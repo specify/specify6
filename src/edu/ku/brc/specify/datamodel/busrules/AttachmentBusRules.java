@@ -111,7 +111,9 @@ public class AttachmentBusRules extends BaseBusRules
         {
             thumbFile = File.createTempFile("sp6_thumb_", null);
             thumbFile.deleteOnExit();
-            thumbnailGen.generateThumbnail(attachment.getOrigFilename(), thumbFile.getAbsolutePath());
+            thumbnailGen.generateThumbnail(attachment.getOrigFilename(), 
+                                           thumbFile.getAbsolutePath(),
+                                           false);
         }
         catch (IOException e)
         {

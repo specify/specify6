@@ -326,6 +326,11 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
         setCardImage(new File(imgFilePath));
     }
     
+    /**
+     * @param imageFile
+     * @return
+     * @throws IOException
+     */
     public synchronized byte[] readAndScaleCardImage(final File imageFile) throws IOException
     {
         if (imageFile == null)
@@ -352,7 +357,7 @@ public class WorkbenchRow implements java.io.Serializable, Comparable<WorkbenchR
 
             if (scale)
             {
-                imgBytes = GraphicsUtils.scaleImage(img, this.maxHeight, this.maxWidth, true);
+                imgBytes = GraphicsUtils.scaleImage(img, this.maxHeight, this.maxWidth, true, false);
             }
             else
             {

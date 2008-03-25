@@ -209,11 +209,12 @@ public class GraphicsUtils
     public static ImageIcon scaleImageToIconImage(final BufferedImage img, 
                                                   final int maxHeight, 
                                                   final int maxWidth, 
-                                                  final boolean preserveAspectRatio) throws IOException
+                                                  final boolean preserveAspectRatio,
+                                                  final boolean doHighQuality) throws IOException
     {
         
         
-        byte[] bytes = scaleImage(img, maxHeight, maxWidth, preserveAspectRatio);
+        byte[] bytes = scaleImage(img, maxHeight, maxWidth, preserveAspectRatio, doHighQuality);
         if (bytes != null && bytes.length > 0)
         {
             return new ImageIcon(bytes);
@@ -231,12 +232,16 @@ public class GraphicsUtils
      * @return the byte array of the scaled image
      * @throws IOException an error occurred while loading the input bytes as a BufferedImage or while encoding the output as a JPEG
      */
-    public static byte[] scaleImage(byte[] imgData, int maxHeight, int maxWidth, boolean preserveAspectRatio) throws IOException
+    public static byte[] scaleImage(final byte[] imgData, 
+                                    final int maxHeight, 
+                                    final int maxWidth, 
+                                    final boolean preserveAspectRatio,
+                                    final boolean doHighQuality) throws IOException
     {
         ByteArrayInputStream inputStr = new ByteArrayInputStream(imgData);
         BufferedImage orig = ImageIO.read(inputStr);
         
-        return scaleImage(orig, maxHeight, maxWidth, preserveAspectRatio);
+        return scaleImage(orig, maxHeight, maxWidth, preserveAspectRatio, doHighQuality);
     }
     
     /**
@@ -244,33 +249,45 @@ public class GraphicsUtils
      * @param maxHeight the max height of the scaled image
      * @param maxWidth the max width of the scaled image
      * @param preserveAspectRatio if true, the scaling preserves the aspect ratio of the original image
+     * @param doHighQuality do higher quality thumbnail (slow)
      * @return the byte array of the scaled image
      * @throws IOException an error occurred while encoding the result as a JPEG image
      */
-    public static byte[] scaleImage(BufferedImage orig, int maxHeight, int maxWidth, boolean preserveAspectRatio) throws IOException
+    public static byte[] scaleImage(final BufferedImage orig, 
+                                    final int maxHeight, 
+                                    final int maxWidth, 
+                                    final boolean preserveAspectRatio,
+                                    boolean doHighQuality) throws IOException
     {
-        int targetW = maxWidth;
-        int targetH = maxHeight;
-
-        if (preserveAspectRatio)
+        BufferedImage scaled;
+        if (true)
         {
-            int origWidth = orig.getWidth();
-            int origHeight = orig.getHeight();
-            
-            double origRatio   = (double)origWidth/(double)origHeight;
-            double scaledRatio = (double)maxWidth/(double)maxHeight;
-            
-            if ( origRatio > scaledRatio )
+            int targetW = maxWidth;
+            int targetH = maxHeight;
+    
+            if (preserveAspectRatio)
             {
-                targetH = (int)(targetW / origRatio);
+                int origWidth = orig.getWidth();
+                int origHeight = orig.getHeight();
+                
+                double origRatio   = (double)origWidth/(double)origHeight;
+                double scaledRatio = (double)maxWidth/(double)maxHeight;
+                
+                if ( origRatio > scaledRatio )
+                {
+                    targetH = (int)(targetW / origRatio);
+                }
+                else
+                {
+                    targetW = (int)(targetH * origRatio);
+                }
             }
-            else
-            {
-                targetW = (int)(targetH * origRatio);
-            }
+    
+            scaled = getScaledInstance(orig, targetW, targetH, doHighQuality);
+        } else
+        {
+            scaled = generateScaledImage(orig, RenderingHints.VALUE_INTERPOLATION_BILINEAR, Math.max(maxHeight, maxWidth));
         }
-
-        BufferedImage scaled = getScaledInstance(orig, targetW, targetH, RenderingHints.VALUE_INTERPOLATION_BILINEAR, true);
 
         ByteArrayOutputStream output = new ByteArrayOutputStream(8192);
         
@@ -281,6 +298,38 @@ public class GraphicsUtils
 
         return outputBytes;
     }
+    
+    /**
+     * @param bufImg
+     * @param size
+     * @return
+     */
+    public static BufferedImage generateScaledImage(final BufferedImage bufImg, 
+                                                    final Object hintsArg,
+                                                    final int size)
+    {
+        BufferedImage sourceImage = bufImg;
+        int srcWidth  = sourceImage.getWidth();
+        int srcHeight = sourceImage.getHeight();
+        
+        double longSideForSource = (double) Math.max(srcWidth, srcHeight);
+        double longSideForDest   = (double) size;
+        
+        double multiplier = longSideForDest / longSideForSource;
+        int destWidth = (int) (srcWidth * multiplier);
+        int destHeight = (int) (srcHeight * multiplier);
+
+        BufferedImage destImage = null;
+        
+        destImage = new BufferedImage(destWidth, destHeight, BufferedImage.TYPE_INT_RGB);
+        Graphics2D graphics2D = destImage.createGraphics();
+        graphics2D.drawImage(sourceImage, 0, 0, destWidth, destHeight, null);
+        graphics2D.dispose();
+            
+            
+        return destImage;
+    }
+
     
     /**
      * Convenience method that returns a scaled instance of the
@@ -306,61 +355,32 @@ public class GraphicsUtils
      *    the {@code BILINEAR} hint is specified)
      * @return a scaled version of the original {@code BufferedImage}
      */
-    public static BufferedImage getScaledInstance(BufferedImage img, int targetWidth, int targetHeight, Object hint,
-            boolean higherQuality)
+    public static BufferedImage getScaledInstance(final BufferedImage img, 
+                                                  final int targetWidth, 
+                                                  final int targetHeight,
+                                                  final boolean higherQuality)
     {
-        int type = (img.getTransparency() == Transparency.OPAQUE) ? BufferedImage.TYPE_INT_RGB
-                : BufferedImage.TYPE_INT_ARGB;
+        int type = (img.getTransparency() == Transparency.OPAQUE) ? BufferedImage.TYPE_INT_RGB : BufferedImage.TYPE_INT_ARGB;
         BufferedImage ret = img;
-        int w, h;
+
+        BufferedImage tmp = new BufferedImage(targetWidth, targetHeight, type);
+        Graphics2D g2 = tmp.createGraphics();
         if (higherQuality)
         {
-            // Use multi-step technique: start with original size, then
-            // scale down in multiple passes with drawImage()
-            // until the target size is reached
-            w = img.getWidth();
-            h = img.getHeight();
+            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
         }
-        else
-        {
-            // Use one-step technique: scale directly from original
-            // size to target size with a single drawImage() call
-            w = targetWidth;
-            h = targetHeight;
-        }
-
-        do
-        {
-            if (higherQuality && w > targetWidth)
-            {
-                w /= 2;
-                if (w < targetWidth)
-                {
-                    w = targetWidth;
-                }
-            }
-
-            if (higherQuality && h > targetHeight)
-            {
-                h /= 2;
-                if (h < targetHeight)
-                {
-                    h = targetHeight;
-                }
-            }
-
-            BufferedImage tmp = new BufferedImage(w, h, type);
-            Graphics2D g2 = tmp.createGraphics();
-            g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, hint);
-            g2.drawImage(ret, 0, 0, w, h, null);
-            g2.dispose();
-
-            ret = tmp;
-        } while (w != targetWidth || h != targetHeight);
+        g2.drawImage(ret, 0, 0, targetWidth, targetHeight, null);
+        g2.dispose();
 
         return ret;
     }
     
+    /**
+     * @param fm
+     * @param text
+     * @param availableWidth
+     * @return
+     */
     public static String clipString(FontMetrics fm, String text, int availableWidth)
     {
         // first see if the string needs clipping at all
@@ -428,6 +448,11 @@ public class GraphicsUtils
     }
 
     
+    /**
+     * @param name
+     * @param imgIcon
+     * @return
+     */
     public static String uuencodeImage(final String name, final ImageIcon imgIcon)
     {
         try
@@ -455,6 +480,11 @@ public class GraphicsUtils
         return "";
     }
     
+    /**
+     * @param name
+     * @param str
+     * @return
+     */
     public static ImageIcon uudecodeImage(final String name, final String str)
     {
         try

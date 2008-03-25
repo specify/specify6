@@ -6,6 +6,7 @@
     </typesearch>
     <typesearch tableid="97"  name="CatalogNumberingScheme" searchfield="schemeName"      displaycols="schemeName"         format="%s"     dataobjformatter=""/>
     <typesearch tableid="1"   name="CollectionObject"       searchfield="catalogNumber"   displaycols="catalogNumber"      uifieldformatter="CatalogNumber" dataobjformatter="CollectionObject"/>
+    <typesearch tableid="10"  name="CollectingEvent"        searchfield="stationFieldNumber" displaycols="stationFieldNumber" format="%s" dataobjformatter="CollectingEventSFN"/>
     <typesearch tableid="26"  name="Discipline"             searchfield="name"            displaycols="name"               format="%s"     dataobjformatter=""/>
     <typesearch tableid="3"   name="Geography"              searchfield="name"            displaycols="fullName"           format="%s"     dataobjformatter="Geography"/>
     <typesearch tableid="46"  name="GeologicTimePeriod"     searchfield="name"            displaycols="fullName"           format="%s"     dataobjformatter=""/>

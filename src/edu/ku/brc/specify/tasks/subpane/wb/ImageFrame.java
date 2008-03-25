@@ -829,7 +829,7 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
         {
             File orig = new File(rowImage.getCardImageFullPath());
             byte[] origData = FileUtils.readFileToByteArray(orig);
-            byte[] thumbData = thumbnailer.generateThumbnail(origData);
+            byte[] thumbData = thumbnailer.generateThumbnail(origData, true);
             return new ImageIcon(thumbData);
         }
         return null;

@@ -57,8 +57,11 @@ public interface ThumbnailGenerator
 	 * Create a thumbnail for the given original, placing the output in the given output file.
 	 *
 	 * @param originalFile the path to the original
-	 * @param thumbnailFile the path to the output thumbnail
+     * @param thumbnailFile the path to the output thumbnail
+     * @param doHighQuality true creates a high quality thumbnail (slow), false a low resolution thumbnail (fast)
 	 * @throws IOException if any IO errors occur during generation or storing the output
 	 */
-	public void generateThumbnail(String originalFile, String thumbnailFile) throws IOException;
+	public void generateThumbnail(String originalFile, 
+	                              String thumbnailFile,
+	                              boolean doHighQuality) throws IOException;
 }

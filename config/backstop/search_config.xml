@@ -635,5 +635,18 @@
             </detailView>
         </table>
         
+        <table id="117" tableid="10" name="CollectingEventSearch" priority="1" color="30, 144, 255">
+            <detailView icon="CollectionObject">
+                <sql>
+                    <![CDATA[SELECT CollectingEventID, StationFieldNumber, StartDate FROM collectingevent WHERE CollectionMemberID = COLMEMID AND (%s)]]>
+                </sql>
+                <captions>
+                    <caption tableid="10" col="CollectingEventID" visible="false"/>
+                    <caption tableid="10" col="StationFieldNumber"/>
+                    <caption tableid="10" col="StartDate" formatter="Date"/>
+                </captions>
+            </detailView>
+        </table>
+        
     </generic>
 </searches>

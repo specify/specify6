@@ -446,7 +446,7 @@ public class ResultSetController implements ValidationListener
         {
             isNewAndValid = !isNewObj || (isNewObj && formValidator.isFormValid());
         }*/
-        System.err.println("isNewObj "+isNewObj+" isNewAndValid "+isNewAndValid);
+        //System.err.println("isNewObj "+isNewObj+" isNewAndValid "+isNewAndValid);
         
         
         firstBtn.setEnabled(currentInx > 0 && isNewAndValid);

@@ -26,6 +26,8 @@ import org.apache.log4j.Logger;
 import org.dom4j.Element;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.ui.UIRegistry;
@@ -99,20 +101,21 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
                     Element fileElement = (Element) i.next();
                     String  type        = getAttr(fileElement, "type", "display");
                     String  name        = getAttr(fileElement, "name", null);
-                    DialogInfo di = new DialogInfo(type.equals("display") ? null : getAttr(fileElement, "viewset", null),
+                    boolean isDisplay   = type.equals("display");
+                    
+                    DialogInfo di = new DialogInfo(isDisplay ? null : getAttr(fileElement, "viewset", null),
                                                     getAttr(fileElement, "view", null),
                                                     name,
-                                                    getAttr(fileElement, "title", null),
                                                     getAttr(fileElement, "class", null),
                                                     getAttr(fileElement, "idfield", null),
                                                     getAttr(fileElement, "helpcontext", ""));
 
-                    if (type.equalsIgnoreCase("search"))
-                    {
-                        searchDialogs.put(name, di);
-                    } else
+                    if (isDisplay)
                     {
                         dialogs.put(name, di);
+                    } else
+                    {
+                        searchDialogs.put(name, di);
                     }
                 }
             } else
@@ -141,13 +144,20 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
         DialogInfo info =  instance.searchDialogs.get(name);
         if (info != null)
         {
+            String title = "";
+            DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(info.getClassName());
+            if (ti != null)
+            {
+                title = ti.getTitle() + " " + UIRegistry.getResourceString("Search");
+            }
+            
             if (parent instanceof Frame)
             {
                 return new DBObjSearchDialog((Frame)parent,
                         info.getViewSetName(),
                         info.getViewName(),
                         info.getSearchName(),
-                        UIRegistry.getResourceString(info.getTitle()),
+                        title,
                         info.getClassName(),
                         info.getIdFieldName(),
                         info.getHelpContext()
@@ -158,7 +168,7 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
                     info.getViewSetName(),
                     info.getViewName(),
                     info.getSearchName(),
-                    UIRegistry.getResourceString(info.getTitle()),
+                    title,
                     info.getClassName(),
                     info.getIdFieldName(),
                     info.getHelpContext()
@@ -260,7 +270,6 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
         protected String viewSetName;
         protected String viewName;
         protected String searchName;
-        protected String title;
         protected String className;
         protected String idFieldName;
         protected String helpContext;
@@ -268,7 +277,6 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
         public DialogInfo(String viewSetName,
                           String viewName,
                           String dialogName,
-                          String title,
                           String className,
                           String idFieldName,
                           String helpContext)
@@ -277,7 +285,6 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
             this.viewSetName = viewSetName;
             this.viewName    = viewName;
             this.searchName  = dialogName;
-            this.title       = title;
             this.className   = className;
             this.idFieldName = idFieldName;
             this.helpContext = helpContext;
@@ -301,11 +308,6 @@ public class DBObjDialogFactory implements ViewBasedDialogFactoryIFace
         public String getSearchName()
         {
             return searchName;
-        }
-
-        public String getTitle()
-        {
-            return title;
         }
 
         public String getViewSetName()

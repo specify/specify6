@@ -70,6 +70,17 @@
         </view>
         
         <view 
+            name="CollectingEventSearch"
+            class="edu.ku.brc.specify.datamodel.CollectingEvent"
+            usedefbusrule="false"
+            resourcelabels="false">
+            <desc><![CDATA[The CollectionObject Search Form]]></desc>
+            <altviews>
+                <altview name="CollectingEventSearch" viewdef="CollectingEventSearch" label="Edit" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+        
+        <view 
             name="LocalitySearch"
             class="edu.ku.brc.specify.datamodel.Locality"
             usedefbusrule="false"
@@ -286,6 +297,33 @@ Good: <cell type="field" name="FieldNum" ...>
                 <row>
                     <cell type="label" labelfor="1" label="Catalog Number"/>
                     <cell type="field" id="1" name="CatalogNumber" uitype="text" formatter="CatalogNumber"/>
+                </row>
+            </rows>
+        </viewdef>        
+        
+        <viewdef type="form"
+            name="CollectingEventSearch"
+            class="edu.ku.brc.specify.datamodel.CollectingEvent"
+            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            
+            <desc><![CDATA[The CollectingEvent Search Form]]></desc>
+            <enableRules/>
+            
+            <columnDef>p,3dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="separator" label="Collecting Event" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="StartDate" uitype="text" formatter="Date"/>
+                </row>
+               <row>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="StationFieldNumber" uitype="text"/>
                 </row>
             </rows>
         </viewdef>        

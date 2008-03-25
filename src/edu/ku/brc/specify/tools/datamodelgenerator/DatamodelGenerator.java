@@ -198,6 +198,7 @@ public class DatamodelGenerator
     
     /**
      * @param tableName
+     * @param fieldName
      * @return
      */
     protected Name getFieldNameDesc(final String tableName, final String fieldName)
@@ -239,12 +240,11 @@ public class DatamodelGenerator
             Element fdElement = (Element)element.selectSingleNode("display");
             if (fdElement != null)
             {
-                return new Display(fdElement.attributeValue("objtitle"), 
-                                        fdElement.attributeValue("view"), 
-                                        fdElement.attributeValue("dataobjformatter"), 
-                                        fdElement.attributeValue("uiformatter"), 
-                                        fdElement.attributeValue("searchdlg"), 
-                                        fdElement.attributeValue("newobjdlg"));
+                return new Display(fdElement.attributeValue("view"), 
+                                   fdElement.attributeValue("dataobjformatter"), 
+                                   fdElement.attributeValue("uiformatter"), 
+                                   fdElement.attributeValue("searchdlg"), 
+                                   fdElement.attributeValue("newobjdlg"));
             }
         }
         return null;

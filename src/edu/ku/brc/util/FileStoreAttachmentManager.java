@@ -134,7 +134,7 @@ public class FileStoreAttachmentManager implements AttachmentManagerIface
         FileUtils.copyFile(attachmentFile, origFile);
         
         // copy the thumbnail, if any, into the storage system
-        if (thumbnail!=null)
+        if (thumbnail != null)
         {
             File thumbFile = new File(baseDirectory + File.separator + "thumbnails" + File.separator + attachLoc);
             FileUtils.copyFile(thumbnail, thumbFile);

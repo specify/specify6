@@ -217,7 +217,7 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                 {
                     LocalizableJListItem item = new LocalizableJListItem(cont.getName(), cont.getId(), null);
                     tableDisplayItems.add(item);
-                    System.out.println("["+cont.getName()+"]");
+                    //System.out.println("["+cont.getName()+"]");
                     tableDisplayItemsHash.put(cont.getName(), item);
                     
                     tableHash.put(cont.getName(), cont);

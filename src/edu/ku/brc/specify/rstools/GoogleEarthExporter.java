@@ -10,7 +10,6 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
@@ -527,7 +526,7 @@ public class GoogleEarthExporter implements RecordSetToolsIFace
                 Graphics g = bimage.createGraphics();
                 g.drawImage(icon.getImage(), 0, 0, null);
                 g.dispose();
-                BufferedImage scaledBI = GraphicsUtils.getScaledInstance(bimage, 16, 16, RenderingHints.VALUE_INTERPOLATION_BILINEAR, true);
+                BufferedImage scaledBI = GraphicsUtils.getScaledInstance(bimage, 16, 16, true);
                 iconTmpFile = File.createTempFile("sp6-export-icon-scaled", ".png");
                 ImageIO.write(scaledBI, "PNG", iconTmpFile);
             }

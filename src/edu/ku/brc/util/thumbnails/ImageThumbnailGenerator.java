@@ -81,10 +81,12 @@ public class ImageThumbnailGenerator implements ThumbnailGenerator
      * Creates a thumbnail of the given image bytes.
      * 
      * @param originalImageData the bytes of the input file
+     * @param doHighQuality higher quality thumbnail (slower)
      * @return the bytes of the output file
      * @throws IOException if any IO errors occur during generation or storing the output
      */
-    public byte[] generateThumbnail(byte[] originalImageData) throws IOException
+    public byte[] generateThumbnail(final byte[] originalImageData,
+                                    final boolean doHighQuality) throws IOException
     {
         ByteArrayInputStream inputStr = new ByteArrayInputStream(originalImageData);
         BufferedImage orig = ImageIO.read(inputStr);
@@ -95,17 +97,19 @@ public class ImageThumbnailGenerator implements ThumbnailGenerator
             return originalImageData;
         }
         
-        byte[] scaledImgData = GraphicsUtils.scaleImage(orig, maxHeight, maxWidth, true);
+        byte[] scaledImgData = GraphicsUtils.scaleImage(orig, maxHeight, maxWidth, true, doHighQuality);
         return scaledImgData;
     }
 	
 	/* (non-Javadoc)
-	 * @see edu.ku.brc.util.thumbnails.ThumbnailGenerator#generateThumbnail(java.lang.String, java.lang.String)
+	 * @see edu.ku.brc.util.thumbnails.ThumbnailGenerator#generateThumbnail(java.lang.String, java.lang.String, boolean)
 	 */
-	public void generateThumbnail(String originalFile, String thumbnailFile) throws IOException
+	public void generateThumbnail(String originalFile, 
+	                              String thumbnailFile,
+	                              boolean doHighQuality) throws IOException
 	{
         byte[] origData = FileUtils.readFileToByteArray(new File(originalFile));
-        byte[] thumb = generateThumbnail(origData);
+        byte[] thumb    = generateThumbnail(origData, doHighQuality);
         FileUtils.writeByteArrayToFile(new File(thumbnailFile), thumb);
 	}
 

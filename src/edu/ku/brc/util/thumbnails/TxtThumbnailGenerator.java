@@ -24,8 +24,9 @@ public class TxtThumbnailGenerator implements ThumbnailGenerator
 	 * @see edu.ku.brc.util.thumbnails.ThumbnailGenerator#generateThumbnail(java.lang.String, java.lang.String)
 	 * @param originalFile
 	 * @param thumbnailFile
+     * @param doHighQuality true creates a high quality thumbnail (slow), false a low resolution thumbnail (fast)
 	 */
-	public void generateThumbnail(String originalFile, String thumbnailFile)
+	public void generateThumbnail(String originalFile, String thumbnailFile, boolean doHighQuality)
 	{
 		System.out.println("Not yet implemented");
 	}

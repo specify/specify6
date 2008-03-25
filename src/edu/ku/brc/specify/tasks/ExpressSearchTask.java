@@ -360,7 +360,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                             throw new RuntimeException("Shouldn't have got here!");
                         }
                         Integer displayOrder = SearchConfigService.getInstance().getSearchConfig().getOrderForRelatedQueryId(erti.getId());
-                        log.debug("ExpressSearchResults erti.getId()["+erti.getId()+"] joinColTableId["+joinColTableId+"] displayOrder["+displayOrder+"]");
+                        //log.debug("ExpressSearchResults erti.getId()["+erti.getId()+"] joinColTableId["+joinColTableId+"] displayOrder["+displayOrder+"]");
                         results = new QueryForIdResultsSQL(erti.getId(), joinColTableId, erti, displayOrder, searchTerm);
                         resultsForJoinsHash.put(erti.getId(), results);
                     }

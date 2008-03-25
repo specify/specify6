@@ -201,7 +201,7 @@ public class SQLExecutionProcessor
                 
                 dbStatement = dbConnection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
 
-                //log.debug("SQL ["+sqlStr+"]");
+                log.debug("SQL ["+sqlStr+"]");
                 if (sqlStr.trim().toLowerCase().startsWith("select"))
                 {
                     ResultSet rs = dbStatement.executeQuery(sqlStr);

@@ -118,7 +118,7 @@ public class AttachmentIconMapper implements ObjectIconMapper
                         thumbFile = File.createTempFile("sp6_thumb_", null);
                         thumbFile.deleteOnExit();
                         log.debug("Generating thumb for " + a.getOrigFilename());
-                        thumbnailGen.generateThumbnail(origFilename, thumbFile.getAbsolutePath());
+                        thumbnailGen.generateThumbnail(origFilename, thumbFile.getAbsolutePath(), false);
                         log.debug("Done generating thumb for " + a.getOrigFilename());
                     }
                     catch (IOException e)

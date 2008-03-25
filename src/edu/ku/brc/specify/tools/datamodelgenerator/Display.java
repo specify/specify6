@@ -14,17 +14,15 @@ package edu.ku.brc.specify.tools.datamodelgenerator;
  */
 public class Display
 {
-    protected String objtitle; 
     protected String view; 
     protected String dataobjformatter; 
     protected String uiformatter;
     protected String searchdlg;
     protected String newobjdlg;
     
-    public Display(String objtitle, String view, String dataobjformatter, String uiformatter, String searchdlg, String newobjdlg)
+    public Display(String view, String dataobjformatter, String uiformatter, String searchdlg, String newobjdlg)
     {
         super();
-        this.objtitle = objtitle;
         this.view = view;
         this.dataobjformatter = dataobjformatter;
         this.uiformatter = uiformatter;
@@ -40,11 +38,6 @@ public class Display
     public String getNewobjdlg()
     {
         return newobjdlg;
-    }
-
-    public String getObjtitle()
-    {
-        return objtitle;
     }
 
     public String getSearchdlg()
