@@ -75,6 +75,16 @@
       <picklistitem title="Receiver" value="Receiver"/>
     </items>
   </picklist>
+  <picklist name="ReferenceWorkType" issystem="true" type="0" readonly="true" sizelimit="6">
+    <items>
+      <picklistitem title="Book" value="0"/>
+      <picklistitem title="Electronic Media" value="1"/>
+      <picklistitem title="Paper" value="2"/>
+      <picklistitem title="Technical Report" value="3"/>
+      <picklistitem title="Thesis" value="4"/>
+      <picklistitem title="Section in Book" value="5"/>
+    </items>
+  </picklist>
   <picklist name="TaxonLabelFormatter" issystem="true" type="0" readonly="false" sizelimit="500">
     <items>
       <picklistitem title="%G %S" value="%G %S"/>
