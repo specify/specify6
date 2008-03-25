@@ -17,20 +17,20 @@ package edu.ku.brc.ui.forms.formatters;
 
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
 
+import java.io.File;
 import java.security.AccessController;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.Formatter;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
@@ -74,11 +74,15 @@ public class DataObjFieldFormatMgr
     
     protected Hashtable<String, Class<?>>                 typeHash        = new Hashtable<String, Class<?>>();
     
+    protected String                                      localFileName   = null;
+    
     /**
      * Protected Constructor
      */
     protected DataObjFieldFormatMgr()
     {
+        localFileName = "backstop"+File.separator+"dataobj_formatters.xml";
+        
         Object[] initTypeData = {"string", String.class, 
                                  "int",     Integer.class, 
                                  "float",   Float.class, 
@@ -101,8 +105,9 @@ public class DataObjFieldFormatMgr
         if (mgr != null)
         {
             return mgr.getResourceAsDOM("DataObjFormatters");
+            
         }
-        return null;
+        return XMLHelper.readDOMFromConfigDir(localFileName);
     }
 
     /**
@@ -348,6 +353,7 @@ public class DataObjFieldFormatMgr
 				return o1.getName().compareTo(o2.getName());
 			}
 		});
+		
 		for (DataObjSwitchFormatter format : formatVector)
 		{
     		format.toXML(sb);
@@ -373,16 +379,30 @@ public class DataObjFieldFormatMgr
 		sb.append("\n\n</formatters>\n");
 
 		// save resource back to database
-        AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromDir("Collection", "DataObjFormatters");
-        if (escAppRes != null)
-        {
-            escAppRes.setDataAsString(sb.toString());
-            AppContextMgr.getInstance().saveResource(escAppRes);
-           
-        } else
-        {
-            AppContextMgr.getInstance().putResourceAsXML("DataObjFormatters", sb.toString());    
-        }
+		if (AppContextMgr.getInstance() != null)
+		{
+            AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromDir("Collection", "DataObjFormatters");
+            if (escAppRes != null)
+            {
+                escAppRes.setDataAsString(sb.toString());
+                AppContextMgr.getInstance().saveResource(escAppRes);
+               
+            } else
+            {
+                AppContextMgr.getInstance().putResourceAsXML("DataObjFormatters", sb.toString());    
+            }
+		} else
+		{
+		    File outFile = XMLHelper.getConfigDir(localFileName);
+		    try
+		    {
+		        FileUtils.writeStringToFile(outFile, sb.toString());
+		        
+		    } catch (Exception ex)
+		    {
+		        ex.printStackTrace();
+		    }
+		}
     }
     
     /**
