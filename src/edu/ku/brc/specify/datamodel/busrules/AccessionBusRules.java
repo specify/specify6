@@ -188,16 +188,30 @@ public class AccessionBusRules extends AttachmentOwnerBaseBusRules
             // If the accession has not changed then we shouldn't check for duplicates
             if (checkAccessionNumberForDuplicates)
             {
-                DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-                List <?> accessionNumbers        = session.getDataList(Accession.class, "accessionNumber", accessionNumber);
-                if (accessionNumbers.size() > 0)
+                DataProviderSessionIFace session = null;
+                try
                 {
-                    reasonList.add(UIRegistry.getResourceString("ACCESSION_IN_USE"));
-                } else
+                    session = DataProviderFactory.getInstance().createSession();
+                    List <?> accessionNumbers        = session.getDataList(Accession.class, "accessionNumber", accessionNumber);
+                    if (accessionNumbers.size() > 0)
+                    {
+                        reasonList.add(UIRegistry.getResourceString("ACCESSION_IN_USE"));
+                    } else
+                    {
+                        return STATUS.OK;
+                    }
+                    
+                } catch (Exception ex)
                 {
-                    return STATUS.OK;
+                    ex.printStackTrace();
+                    
+                } finally
+                {
+                    if (session != null)
+                    {
+                        session.close();
+                    }
                 }
-                session.close();
                 
             } else
             {
