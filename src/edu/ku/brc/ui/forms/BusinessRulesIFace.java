@@ -99,6 +99,11 @@ public interface BusinessRulesIFace
     public abstract List<String> getWarningsAndErrors();
     
     /**
+     * @return all the warning and error messages as a string
+     */
+    public abstract String getMessagesAsString();
+    
+    /**
      * Asks if the object can be deleted.
      * 
      * @param dataObj the data object in question

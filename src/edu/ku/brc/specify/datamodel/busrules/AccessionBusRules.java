@@ -147,7 +147,7 @@ public class AccessionBusRules extends AttachmentOwnerBaseBusRules
             }
         }
         
-        
+        // Let's check Accession for duplicates 
         String accessionNumber = accession.getAccessionNumber();
         if (StringUtils.isNotEmpty(accessionNumber))
         {

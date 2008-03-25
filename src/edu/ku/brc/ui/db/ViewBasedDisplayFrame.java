@@ -26,6 +26,7 @@ import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.CustomFrame;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
@@ -208,6 +209,7 @@ public class ViewBasedDisplayFrame extends CustomFrame implements ViewBasedDispl
                                                                             fvo.getDataObj(),
                                                                             viewBasedPanel.isEditMode()))
                 {
+                    UIRegistry.showError(br.getMessagesAsString());
                     return;
                 }
             }

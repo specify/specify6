@@ -1866,13 +1866,7 @@ public class FormViewObj implements Viewable,
                 //log.debug("saveObject checking businessrules for [" + (dataObjArg != null ? dataObjArg.getClass(): "null") + "]");
                 if (businessRules != null && businessRules.processBusinessRules(dataObjArg) == BusinessRulesIFace.STATUS.Error)
                 {
-                    StringBuilder strBuf = new StringBuilder();
-                    for (String s : businessRules.getWarningsAndErrors())
-                    {
-                        strBuf.append(s);
-                        strBuf.append("\n");
-                    }
-                    JOptionPane.showMessageDialog(null, strBuf, getResourceString("Error"), JOptionPane.ERROR_MESSAGE); 
+                    UIRegistry.showError(businessRules.getMessagesAsString());
                     return null;
                 }
                 

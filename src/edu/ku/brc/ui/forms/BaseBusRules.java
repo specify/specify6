@@ -71,14 +71,14 @@ public abstract class BaseBusRules implements BusinessRulesIFace
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#beforeFormFill(edu.ku.brc.ui.forms.Viewable)
      */
     //@Overrided
-    public void beforeFormFill(final Viewable viewable)
+    public void beforeFormFill(final Viewable viewableArg)
     {
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#fillForm(java.lang.Object, edu.ku.brc.ui.forms.Viewable)
      */
-    public void afterFillForm(final Object dataObj, final Viewable viewable)
+    public void afterFillForm(final Object dataObj, final Viewable viewableArg)
     {
     }
     
@@ -92,7 +92,7 @@ public abstract class BaseBusRules implements BusinessRulesIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#shouldCreateDataForField(java.lang.String)
      */
-    public boolean shouldCreateSubViewData(String fieldName)
+    public boolean shouldCreateSubViewData(final String fieldName)
     {
         return false;
     }
@@ -118,6 +118,20 @@ public abstract class BaseBusRules implements BusinessRulesIFace
     public List<String> getWarningsAndErrors()
     {
         return reasonList;
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#getMessagesAsString()
+     */
+    public String getMessagesAsString()
+    {
+        StringBuilder strBuf = new StringBuilder();
+        for (String s : getWarningsAndErrors())
+        {
+            strBuf.append(s);
+            strBuf.append("\n");
+        }
+        return strBuf.toString();
     }
 
     /**

@@ -21,6 +21,7 @@ import java.awt.Frame;
 import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.FormViewObj;
@@ -319,6 +320,7 @@ public class ViewBasedDisplayDialog extends CustomDialog implements ViewBasedDis
                                                                             fvo.getDataObj(), 
                                                                             viewBasedPanel.isEditMode()))
                 {
+                    UIRegistry.showError(br.getMessagesAsString());
                     return;
                 }
             }
