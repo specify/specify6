@@ -18,15 +18,17 @@
       <picklistitem title="trap" value="trap"/>
     </items>
   </picklist>
-  <picklist name="Sex" issystem="true" type="0" readonly="true" sizelimit="3">
+  <picklist name="Sex" issystem="true" type="0" readonly="true" sizelimit="4">
     <items>
       <picklistitem title="unknown" value="unknown"/>
       <picklistitem title="male" value="male"/>
       <picklistitem title="female" value="female"/>
+      <picklistitem title="both" value="both"/>
     </items>
   </picklist>
   <picklist name="Stage" issystem="true" type="0" readonly="true" sizelimit="8">
     <items>
+      <picklistitem title="No data" value="No data"/>
       <picklistitem title="adult" value="adult"/>
       <picklistitem title="egg" value="egg"/>
       <picklistitem title="embryo" value="embryo"/>
