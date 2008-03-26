@@ -71,13 +71,13 @@
     		        <cell type="label" label="Botany" icon="CollectionObject" recordobj="true" colspan="16"/>
     		    </row>
     			<row>
-    			    <cell type="label" labelfor="1" label="Cat Num"/>
+    			    <cell type="label" labelfor="1"/>
     			    <cell type="field" id="1" name="catalogNumber" uitype="formattedtext"/>
 
                     <cell type="label" labelfor="2" label="Collection"/>
     			    <cell type="field" id="2" name="collection.collectionName" uitype="dsptextfield"/>
 
-                    <cell type="label" labelfor="5" label=" Catalog Date"/>
+                    <cell type="label" labelfor="5"/>
     			    <cell type="field" id="5" name="catalogedDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
     			    <!-- <cell type="field" id="5" name="this" uitype="plugin" initialize="name=PartialDateUI;dateField=catalogedDate;dateTypeField=text1" default="today"/> -->
     			
@@ -252,7 +252,7 @@
                     <cell type="label" labelfor="3" label="Determiner"/>
                     <cell type="field" id="3" name="determiner" uitype="querycbx" initialize="name=Agent;title=Determiner Agent" isrequired="true"/>
                     
-                    <cell type="label" labelfor="4" label="Type Status"/>
+                    <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="typeStatusName" uitype="combobox" picklist="TypeStatus"/>
                     
                 <!--    <cell type="label" labelfor="5" label="Date"/>
@@ -262,7 +262,7 @@
                 </row>
                 
                 <row>
-                    <cell type="label" labelfor="6" label="Remarks"/>
+                    <cell type="label" labelfor="6"/>
                     <cell type="field" id="6" name="remarks" uitype="textarea" colspan="14" cols="50"/>
                 </row>
             </rows>
