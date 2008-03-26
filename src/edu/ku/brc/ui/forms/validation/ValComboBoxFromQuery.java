@@ -288,7 +288,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         }
         if (editBtn != null)
         {
-            editBtn.setEnabled(enabled && dataObj != null);
+            editBtn.setEnabled(enabled && (dataObj != null || textWithQuery.getSelectedId() != null));
         }
         if (createBtn != null)
         {
@@ -1007,6 +1007,11 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         valueHasChanged();
         validateState();
         
+        if (editBtn != null)
+        {
+            editBtn.setEnabled(dataObj != null || textWithQuery.getSelectedId() != null);
+        }
+        
         if (listSelectionListeners != null)
         {
             for (ListSelectionListener l : listSelectionListeners)
@@ -1042,7 +1047,6 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     public Object getValue()
     {
-        Object  value = null;
         Integer id    = textWithQuery.getSelectedId();
         
         if (dataObj != null && id != null && dataObj.getId().intValue() == id.intValue())
@@ -1052,14 +1056,16 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         
         if (id != null)
         {
-            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            DataProviderSessionIFace session = null;
             try
             {
+                session = DataProviderFactory.getInstance().createSession();
                 log.debug(tableInfo.getClassObj()+" " +tableInfo.getIdFieldName()+" " +id);
                 List<?> list = session.getDataList(tableInfo.getClassObj(), tableInfo.getIdFieldName(), id, DataProviderSessionIFace.CompareType.Restriction);
                 if (list.size() != 0)
                 {
-                    value = list.get(0);
+                    dataObj = (FormDataObjIFace)list.get(0);
+                    
                 } else
                 {
                     log.error("**** Can't find the Object "+tableInfo.getClassObj()+" with ID: "+id);
@@ -1067,18 +1073,18 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                 
             } catch (Exception ex)
             {
-                //ex.printStackTrace();
+                ex.printStackTrace();
             } finally 
             {
-                session.close();    
+                if (session != null)
+                {
+                    session.close();
+                }
             }
 
-        } else
-        {
-            return dataObj;
         }
 
-        return value;
+        return dataObj;
     }
 
     //-------------------------------------------------
