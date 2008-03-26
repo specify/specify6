@@ -473,7 +473,7 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="1" label="Permit"/>
-                    <cell type="field" id="1" name="permit" uitype="querycbx" initialize="name=Permit;title=Permit" isrequired="true"/>
+                    <cell type="field" id="1" name="permit" uitype="querycbx" initialize="name=Permit" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="2" label="Remarks"/>
@@ -505,7 +505,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="7" label="Agent"/>
-                    <cell type="field" id="7" name="agent" uitype="querycbx" initialize="name=Agent;title=Agent" colspan="4"/>
+                    <cell type="field" id="7" name="agent" uitype="querycbx" initialize="name=Agent" colspan="4"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="8" label="Appraisal Value"/>
@@ -541,7 +541,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="4" label="Locality"/>
-                    <cell type="field" id="4" name="locality" uitype="querycbx" initialize="name=Locality;title=Locality" colspan="10"/>
+                    <cell type="field" id="4" name="locality" uitype="querycbx" initialize="name=Locality" colspan="10"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="6" label="Remarks"/>
@@ -752,7 +752,7 @@
                 </row>
                 <row> 
                     <cell type="label" labelfor="3" label="Collection Object"/>
-                    <cell type="field" id="3" name="collectionObject" uitype="querycbx" initialize="name=CollectionObject;title=Collection Object" isrequired="true"/>
+                    <cell type="field" id="3" name="collectionObject" uitype="querycbx" initialize="name=CollectionObject" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="2" label="Description"/>
@@ -825,7 +825,7 @@
             <rows>
                 <row>
                     <cell type="label" labelfor="1" label="Agent"/>
-                    <cell type="field" id="1" name="agent" uitype="querycbx" initialize="name=Agent;title=Agent" isrequired="true"/>
+                    <cell type="field" id="1" name="agent" uitype="querycbx" initialize="name=Agent" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="3" label="Remarks"/>
@@ -861,14 +861,14 @@
     		<rows>
     			<row>
     			    <cell type="label" labelfor="1" label="Taxon"/>
-    			    <cell type="field" id="1" name="taxon" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=true" colspan="5"/>
+    			    <cell type="field" id="1" name="taxon" uitype="querycbx" initialize="name=Taxon;editbtn=false;newbtn=true" colspan="5"/>
     			    
     			    <cell type="label" labelfor="2" label="Status"/>
     			    <cell type="field" id="2" name="status" uitype="combobox" picklist="DeterminationStatus" isrequired="true"/>
     			</row>
     			<row>
                     <cell type="label" labelfor="3" label="Determiner"/>
-    			    <cell type="field" id="3" name="determiner" uitype="querycbx" initialize="name=Agent;title=Determiner Agent" isrequired="true"/>
+    			    <cell type="field" id="3" name="determiner" uitype="querycbx" initialize="name=Agent" isrequired="true"/>
 
                     <cell type="label" labelfor="4" label="Type"/>
     			    <cell type="field" id="4" name="typeStatusName" uitype="text"/>
@@ -910,7 +910,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="8" label="Agent"/>
-                    <cell type="field" id="8" name="ownerAgent" uitype="querycbx" initialize="name=Agent;title=Agent"/>
+                    <cell type="field" id="8" name="ownerAgent" uitype="querycbx" initialize="name=Agent"/>
 
                     <cell type="label" labelfor="3" label="Location"/>
                     <cell type="field" id="3" name="location" uitype="text"/>
@@ -964,7 +964,7 @@
                     <cell type="field" id="3" name="scanDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
 
                     <cell type="label" labelfor="7" label="Agent"/>
-                    <cell type="field" id="7" name="Agent" uitype="querycbx" initialize="name=Agent;title=Agent"/>
+                    <cell type="field" id="7" name="Agent" uitype="querycbx" initialize="name=Agent"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="1" label="Description"/>
@@ -1138,7 +1138,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="4" label="Geography"/>
-                    <cell type="field" id="4" name="geography" uitype="querycbx" initialize="name=Geography;title=Geography" isrequired="true" colspan="10"/>
+                    <cell type="field" id="4" name="geography" uitype="querycbx" initialize="name=Geography" isrequired="true" colspan="10"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="5" label="Lat/Lon"/>
@@ -1206,7 +1206,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="7" label="Geography"/>
-                    <cell type="field" id="7" name="geography" uitype="querycbx" initialize="name=Geography;title=Geography" isrequired="true"/>
+                    <cell type="field" id="7" name="geography" uitype="querycbx" initialize="name=Geography" isrequired="true"/>
                 </row>
             </rows>
         </viewdef>
@@ -1280,10 +1280,10 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="3" label="Issued By"/>
-                    <cell type="field" id="3" name="issuedBy" uitype="querycbx" initialize="name=Agent;title=Issued By Agent" isrequired="true"/>
+                    <cell type="field" id="3" name="issuedBy" uitype="querycbx" initialize="name=Agent" isrequired="true"/>
 
                     <cell type="label" labelfor="4" label="Issued To"/>
-                    <cell type="field" id="4" name="issuedTo" uitype="querycbx" initialize="name=Agent;title=Issued To Agent" isrequired="true"/>
+                    <cell type="field" id="4" name="issuedTo" uitype="querycbx" initialize="name=Agent" isrequired="true"/>
                 </row>
 
                 <row>
@@ -1335,10 +1335,10 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="4" label="Issued By"/>
-                    <cell type="field" id="4" name="issuedBy" uitype="querycbx" initialize="name=Agent;title=Issuer Agent" isrequired="true"/>
+                    <cell type="field" id="4" name="issuedBy" uitype="querycbx" initialize="name=Agent" isrequired="true"/>
 
                     <cell type="label" labelfor="5" label="Issued To"/>
-                    <cell type="field" id="5" name="issuedTo" uitype="querycbx" initialize="name=Agent;title=Issuee Agent" isrequired="true"/>
+                    <cell type="field" id="5" name="issuedTo" uitype="querycbx" initialize="name=Agent" isrequired="true"/>
                 </row>
 
                 <row>
@@ -1388,7 +1388,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="10" label="Project Agent"/>
-                    <cell type="field" id="10" name="agent" uitype="querycbx" initialize="name=Agent;title=Agent"/>
+                    <cell type="field" id="10" name="agent" uitype="querycbx" initialize="name=Agent"/>
                 </row>   
                 
                 <row>
@@ -1451,7 +1451,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="6" label="Requester"/>
-                    <cell type="field" id="6" name="agent" uitype="querycbx" initialize="name=Agent;title=Requester" isrequired="true"/>
+                    <cell type="field" id="6" name="agent" uitype="querycbx" initialize="name=Agent" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="3" label="Remarks"/>
@@ -1552,7 +1552,7 @@
     			    <cell type="field" id="1" name="preparedDate" uitype="formattedtext" uifieldformatter="Date" isrequired="true" default="today"/>
 
     			    <cell type="label" labelfor="2" label="Prepared By"/>
-    			    <cell type="field" id="2" name="preparedByAgent" uitype="querycbx" initialize="name=Agent;title=Prepared By Agent" isrequired="true"/>
+    			    <cell type="field" id="2" name="preparedByAgent" uitype="querycbx" initialize="name=Agent" isrequired="true"/>
     			</row>
     			<row>
                     <cell type="label" labelfor="3" label="Count"/>
@@ -1598,9 +1598,9 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="7" label="Shipped By"/>
-                    <cell type="field" id="7" name="shippedBy" uitype="querycbx" initialize="name=Agent;title=Agent" isrequired="true"/>
+                    <cell type="field" id="7" name="shippedBy" uitype="querycbx" initialize="name=Agent" isrequired="true"/>
                     <cell type="label" labelfor="8" label="Shipped To"/>
-                    <cell type="field" id="8" name="shippedTo" uitype="querycbx" initialize="name=Agent;title=Agent" isrequired="true"/>
+                    <cell type="field" id="8" name="shippedTo" uitype="querycbx" initialize="name=Agent" isrequired="true"/>
                 </row>
             </rows>
         </viewdef>
@@ -1646,7 +1646,7 @@
                         <cell type="field" id="2" name="chronosStrat" uitype="text" cols="20"/>
                     -->              
                     <cell type="label" labelfor="3" label="LithoStrat"/>
-                    <cell type="field" id="3" name="lithoStrat" uitype="querycbx" initialize="name=LithoStrat;title=LithoStrat"/> 
+                    <cell type="field" id="3" name="lithoStrat" uitype="querycbx" initialize="name=LithoStrat"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="4" label="Remarks"/>
