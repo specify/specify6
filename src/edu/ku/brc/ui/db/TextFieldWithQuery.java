@@ -471,14 +471,22 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 {
                     isPopupShowing  = false;
                     ignoreFocusLost = false;
-                    //popupFromBtn    = false;
+                    
+                    if (selectedId == null)
+                    {
+                        textField.setText("");
+                    }
                 }
 
                 public void popupMenuWillBecomeInvisible(PopupMenuEvent e)
                 {
                     isPopupShowing  = false;
                     ignoreFocusLost = false;
-                    //popupFromBtn    = false;
+                    
+                    if (selectedId == null)
+                    {
+                        textField.setText("");
+                    }
                 }
 
                 public void popupMenuWillBecomeVisible(PopupMenuEvent e)
@@ -664,7 +672,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         List<?> dataObjList =  customQuery.getDataObjects();
         if (dataObjList == null || dataObjList.size() == 0)
         {
-            textField.setText("");
+            //textField.setText("");
             
             if (addAddItem)
             {
