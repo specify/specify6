@@ -246,7 +246,7 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
                 if (!ownerQuery.isPromptMode())
                 {
                     isDisplayedCkbx.setSelected(queryField.getIsDisplay());
-                    isPromptCkbx.setSelected(queryField.getIsPrompt());
+                    isPromptCkbx.setSelected(queryField.getIsPrompt() == null ? false : queryField.getIsPrompt());
                 }
                 validator.setHasChanged(false);
                 

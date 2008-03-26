@@ -128,7 +128,7 @@
         <table name="TaxonCitation" field="taxonCitations">
            	<alias name="ReferenceWork"/>
         </table>
-        <table name="CommonName" field="commonNames">
+        <table name="CommonNameTx" field="commonNames">
            	<alias name="ReferenceWork"/>
         </table>
         <table name="Determination" field="determinations" title="Determinations">
