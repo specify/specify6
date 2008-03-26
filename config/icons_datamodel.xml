@@ -134,23 +134,23 @@
     <icon name="LocalityCitation"       alias="citation"/>
     <icon name="TaxonCitation"          alias="citation"/>
     
-    <icon name="collectingeventattributes"  alias="attribute"/>
-    <icon name="preparationattributes"      alias="attribute"/>
-  	<icon name="collectionobjectattributes" alias="attribute"/>
+    <icon name="collectingeventattribute"  alias="attribute"/>
+    <icon name="preparationattribute"      alias="attribute"/>
+  	<icon name="collectionobjectattribute" alias="attribute"/>
     
-    <icon name="CollectingEventAttributes"  alias="attribute"/>
-    <icon name="PreparationAttributes"      alias="attribute"/>
-  	<icon name="CollectionobjectAttributes" alias="attribute"/>
+    <icon name="CollectingEventAttribute"  alias="attribute"/>
+    <icon name="PreparationAttribute"      alias="attribute"/>
+  	<icon name="CollectionobjectAttribute" alias="attribute"/>
     
     
     <icon name="Accession Agent"        alias="accessionagent"/>
     <icon name="Collecting Event"       alias="collectingevent"/>
     <icon name="Collecting Trip"        alias="collectingtrip"/>
     <icon name="Collection Object"      alias="collectionobject"/>
-    <icon name="Collection Object Attributes" alias="attribute"/>
+    <icon name="Collection Object Attribute" alias="attribute"/>
     <icon name="Container"              alias="container"/>
-    <icon name="Collecting Event Attributes" alias="attribute"/>
-    <icon name="Preparation Attributes" alias="attribute"/>
+    <icon name="Collecting Event Attribute" alias="attribute"/>
+    <icon name="Preparation Attribute" alias="attribute"/>
     <icon name="Preparation Type"       alias="preptype"/>
     <icon name="Repository Agreement"   alias="repositoryagreement"/>
     <icon name="RepositoryAgreement"   alias="repositoryagreement"/>

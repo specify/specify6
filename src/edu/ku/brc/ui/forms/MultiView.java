@@ -916,6 +916,14 @@ public class MultiView extends JPanel
     }
 
     /**
+     * @param dObj
+     */
+    public void setDataIntoParent(final Object dObj)
+    {
+        this.data = dObj;
+    }
+    
+    /**
      * Sets the Data Object into the View.
      * @param data the data object
      */

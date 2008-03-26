@@ -914,11 +914,6 @@ public class DataEntryTask extends BaseTask
                 
                 if (colObj.getCollectingEvent() == null)
                 {
-                    CollectingEvent ce = new CollectingEvent();
-                    ce.initialize();
-                    colObj.setCollectingEvent(ce);
-                    ce.getCollectionObjects().add(colObj);
-                    
                     Agent agent = Agent.getUserAgent();
                     if (agent != null)
                     {

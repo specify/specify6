@@ -36,6 +36,7 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -99,8 +100,8 @@ public class CollectingEvent extends CollectionMember implements AttachmentOwner
     protected Locality              locality;
     protected CollectingTrip        collectingTrip;
     
-    protected CollectingEventAttributes         collectingEventAttributes;      // Specify 5 Attributes table
-    protected Set<CollectingEventAttr>          collectingEventAttrs; // Generic Expandable Attributes
+    protected CollectingEventAttribute          collectingEventAttribute;      // Specify 5 Attributes table
+    protected Set<CollectingEventAttr>          collectingEventAttrs;          // Generic Expandable Attributes
     protected Set<CollectingEventAttachment>    collectingEventAttachments;
 
 
@@ -114,7 +115,8 @@ public class CollectingEvent extends CollectionMember implements AttachmentOwner
     }
     
     /** constructor with id */
-    public CollectingEvent(Integer collectingEventId) {
+    public CollectingEvent(Integer collectingEventId) 
+    {
         this.collectingEventId = collectingEventId;
     }
    
@@ -144,7 +146,7 @@ public class CollectingEvent extends CollectionMember implements AttachmentOwner
         collectors = new HashSet<Collector>();
         locality = null;
         
-        collectingEventAttributes    = null;
+        collectingEventAttribute     = null;
         collectingEventAttrs         = new HashSet<CollectingEventAttr>();
         collectingEventAttachments   = new HashSet<CollectingEventAttachment>();
     }
@@ -491,16 +493,17 @@ public class CollectingEvent extends CollectionMember implements AttachmentOwner
         this.collectingTrip = collectingTrip;
     }
 
-    @ManyToOne
-    @JoinColumn(name = "CollectingEventAttributesID")
-    public CollectingEventAttributes getCollectingEventAttributes()
+    @ManyToOne(cascade = {javax.persistence.CascadeType.ALL}, fetch = FetchType.LAZY)
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @JoinColumn(name = "CollectingEventAttributeID")
+    public CollectingEventAttribute getCollectingEventAttribute()
     {
-        return collectingEventAttributes;
+        return collectingEventAttribute;
     }
 
-    public void setCollectingEventAttributes(CollectingEventAttributes collectingEventAttributes)
+    public void setCollectingEventAttribute(CollectingEventAttribute collectingEventAttribute)
     {
-        this.collectingEventAttributes = collectingEventAttributes;
+        this.collectingEventAttribute = collectingEventAttribute;
     }
     
     @OneToMany(mappedBy = "collectingEvent")
@@ -572,7 +575,7 @@ public class CollectingEvent extends CollectionMember implements AttachmentOwner
         //obj.collectionObjects = new HashSet<CollectionObject>();
         //obj.collectors = new HashSet<Collector>();
         
-        //obj.collectingEventAttributes    = null;
+        //obj.collectingEventAttribute    = null;
         //obj.collectingEventAttrs         = new HashSet<CollectingEventAttr>();
         //obj.collectingEventAttachments   = new HashSet<CollectingEventAttachment>();
         

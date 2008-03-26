@@ -23,8 +23,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 /**
@@ -38,13 +36,13 @@ import org.hibernate.annotations.Index;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
-@Table(name = "preparationattributes")
-@org.hibernate.annotations.Table(appliesTo="preparationattributes", indexes =
+@Table(name = "preparationattribute")
+@org.hibernate.annotations.Table(appliesTo="preparationattribute", indexes =
     {   @Index (name="PrepAttrsColMemIDX", columnNames={"CollectionMemberID"})
     })
-public class PreparationAttributes extends CollectionMember
+public class PreparationAttribute extends CollectionMember
 {
-    protected Integer preparationAttributesId;
+    protected Integer preparationAttributeId;
     protected Date attrDate;
     protected String text22;  // preparationType
     protected String text23;  // containerType
@@ -99,7 +97,7 @@ public class PreparationAttributes extends CollectionMember
     public void initialize()
     {
         super.init();
-        preparationAttributesId = null;
+        preparationAttributeId = null;
         attrDate = null;
         text24 = null;
         text3 = null;
@@ -143,14 +141,14 @@ public class PreparationAttributes extends CollectionMember
     }
 
     /**
-     * @return the preparationAttributesId
+     * @return the preparationAttributeId
      */
     @Id
     @GeneratedValue
-    @Column(name = "PreparationAttributesID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Integer getPreparationAttributesId()
+    @Column(name = "PreparationAttributeID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Integer getPreparationAttributeId()
     {
-        return preparationAttributesId;
+        return preparationAttributeId;
     }
     
     /* (non-Javadoc)
@@ -160,14 +158,13 @@ public class PreparationAttributes extends CollectionMember
     @Override
     public Integer getId()
     {
-        return this.preparationAttributesId;
+        return this.preparationAttributeId;
     }
     
     /**
      * @return the preparations
      */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "preparationAttributes")
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "preparationAttribute")
     public Set<Preparation> getPreparations()
     {
         return preparations;
@@ -656,11 +653,11 @@ public class PreparationAttributes extends CollectionMember
     }
 
     /**
-     * @param preparationAttributesId the preparationAttributesId to set
+     * @param preparationAttributeId the preparationAttributeId to set
      */
-    public void setPreparationAttributesId(Integer preparationAttributesId)
+    public void setPreparationAttributeId(Integer preparationAttributeId)
     {
-        this.preparationAttributesId = preparationAttributesId;
+        this.preparationAttributeId = preparationAttributeId;
     }
 
     /**
@@ -894,7 +891,7 @@ public class PreparationAttributes extends CollectionMember
     @Override
     public Class<?> getDataClass()
     {
-        return PreparationAttributes.class;
+        return PreparationAttribute.class;
     }
 
     /* (non-Javadoc)

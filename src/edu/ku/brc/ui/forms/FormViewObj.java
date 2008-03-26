@@ -1581,6 +1581,7 @@ public class FormViewObj implements Viewable,
             obj = FormHelper.createAndNewDataObj(view.getClassName());
         }
         
+        boolean isManyToOne  = false;
         if (parentDataObj instanceof FormDataObjIFace)
         {
             boolean isASingleObj = false;
@@ -1596,6 +1597,7 @@ public class FormViewObj implements Viewable,
                         // not sure this is right anymore - rods 03/14/08
                         //isASingleObj = true;
                         doSetIntoAndValidate = true;
+                        isManyToOne = true;
                         
                     } else if (ri.getType() == DBRelationshipInfo.RelationshipType.ZeroOrOne)
                     {
@@ -1619,16 +1621,6 @@ public class FormViewObj implements Viewable,
             FormHelper.addToParent(parentDataObj, obj);
         }
         
-        if (businessRules != null)
-        {
-            businessRules.addChildrenToNewDataObjects(obj);
-        }
-        
-        if (carryFwdDataObj == null && dataObj != null)
-        {
-            carryFwdDataObj = dataObj;
-        }
-
         if (doCarryForward && carryFwdDataObj != null  && carryFwdInfo != null)
         {
             // We don't need a Session when we are not cloning sets.
@@ -1657,6 +1649,18 @@ public class FormViewObj implements Viewable,
                 }
             }
         }
+        
+        if (businessRules != null)
+        {
+            businessRules.addChildrenToNewDataObjects(obj);
+        }
+        
+        if (carryFwdDataObj == null && dataObj != null)
+        {
+            carryFwdDataObj = dataObj;
+        }
+
+
         
         if (formValidator != null && formValidator.hasChanged())
         {
@@ -1766,6 +1770,11 @@ public class FormViewObj implements Viewable,
                     mvParent.getTopLevel().getCurrentValidator().updateSaveUIEnabledState();
                 }
             }
+        }
+        
+        if (isManyToOne)
+        {
+            mvParent.setDataIntoParent(dataObj);
         }
         
         if (mvParent.isTopLevel())

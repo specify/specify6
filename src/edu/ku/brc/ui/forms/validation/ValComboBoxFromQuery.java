@@ -978,6 +978,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             if (e.getSource() instanceof JMenuItem)
             {
                 itemLabel = ((JMenuItem)e.getSource()).getText().toString();
+                this.dataObj = null;
                 
             } else if (e.getSource() instanceof JList)
             {
@@ -985,6 +986,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                 if (listBox.getSelectedIndex() > -1)
                 {
                     itemLabel = listBox.getSelectedValue().toString();
+                    this.dataObj = null;
                 } else
                 {
                     return;

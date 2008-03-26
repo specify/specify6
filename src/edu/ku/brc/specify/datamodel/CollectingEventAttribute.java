@@ -22,8 +22,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 /**
@@ -37,14 +35,14 @@ import org.hibernate.annotations.Index;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
-@Table(name = "collectingeventattributes")
-@org.hibernate.annotations.Table(appliesTo="collectingeventattr", indexes =
+@Table(name = "collectingeventattribute")
+@org.hibernate.annotations.Table(appliesTo="collectingeventattribute", indexes =
     {   
         @Index (name="COLEVATSColMemIDX", columnNames={"CollectionMemberID"})
     })
-public class CollectingEventAttributes extends CollectionMember
+public class CollectingEventAttribute extends CollectionMember
 {
-    protected Integer collectingEventAttributesId;
+    protected Integer collectingEventAttributeId;
     
     protected Float number1;
     protected Float number2;
@@ -90,15 +88,15 @@ public class CollectingEventAttributes extends CollectionMember
 
     // Constructors
     /** default constructor */
-    public CollectingEventAttributes()
+    public CollectingEventAttribute()
     {
         // do nothing
     }
 
     /** constructor with id */
-    public CollectingEventAttributes(Integer collectingEventAttributesId) 
+    public CollectingEventAttribute(Integer collectingEventAttributeId) 
     {
-        this.collectingEventAttributesId = collectingEventAttributesId;
+        this.collectingEventAttributeId = collectingEventAttributeId;
     }
     
     @Column(name = "Number9", unique = false, nullable = true, insertable = true, updatable = true)
@@ -115,14 +113,13 @@ public class CollectingEventAttributes extends CollectionMember
 
     @Id
     @GeneratedValue
-    @Column(name = "CollectingEventAttributesID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Integer getCollectingEventAttributesId()
+    @Column(name = "CollectingEventAttributeID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Integer getCollectingEventAttributeId()
     {
-        return collectingEventAttributesId;
+        return collectingEventAttributeId;
     }
     
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collectingEventAttributes")
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collectingEventAttribute")
     public Set<CollectingEvent> getCollectingEvents() {
         return this.collectingEvents;
     }
@@ -338,7 +335,7 @@ public class CollectingEventAttributes extends CollectionMember
     public void initialize()
     {
         super.init();
-        collectingEventAttributesId = null;
+        collectingEventAttributeId = null;
         number9 = null;
         number10 = null;
         number11 = null;
@@ -389,9 +386,9 @@ public class CollectingEventAttributes extends CollectionMember
         this.text16 = text16;
     }
 
-    public void setCollectingEventAttributesId(Integer collectingEventAttributesId)
+    public void setCollectingEventAttributeId(Integer collectingEventAttributeId)
     {
-        this.collectingEventAttributesId = collectingEventAttributesId;
+        this.collectingEventAttributeId = collectingEventAttributeId;
     }
 
     public void setCollectingEvents(Set<CollectingEvent> collectingEvents) 
@@ -578,7 +575,7 @@ public class CollectingEventAttributes extends CollectionMember
     @Override
     public Class<?> getDataClass()
     {
-        return CollectingEventAttributes.class;
+        return CollectingEventAttribute.class;
     }
 
     /* (non-Javadoc)
@@ -588,7 +585,7 @@ public class CollectingEventAttributes extends CollectionMember
     @Override
     public Integer getId()
     {
-        return this.collectingEventAttributesId;
+        return this.collectingEventAttributeId;
     }
     
     /**

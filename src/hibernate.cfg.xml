@@ -64,11 +64,11 @@
 		<mapping class="edu.ku.brc.specify.datamodel.CollectionObject"/>
 		<mapping class="edu.ku.brc.specify.datamodel.CollectionObjectAttachment"/>
 		<mapping class="edu.ku.brc.specify.datamodel.CollectionObjectAttr"/>
-		<mapping class="edu.ku.brc.specify.datamodel.CollectingEventAttributes"/>
+		<mapping class="edu.ku.brc.specify.datamodel.CollectingEventAttribute"/>
 		<mapping class="edu.ku.brc.specify.datamodel.CollectionRelType"/>
 		<mapping class="edu.ku.brc.specify.datamodel.CollectionRelationship"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Collector"/>
-		<mapping class="edu.ku.brc.specify.datamodel.CollectionObjectAttributes"/>
+		<mapping class="edu.ku.brc.specify.datamodel.CollectionObjectAttribute"/>
 		<mapping class="edu.ku.brc.specify.datamodel.CommonNameTx"/>
 		<mapping class="edu.ku.brc.specify.datamodel.ConservDescription"/>
 		<mapping class="edu.ku.brc.specify.datamodel.ConservDescriptionAttachment"/>
@@ -129,7 +129,7 @@
 		<mapping class="edu.ku.brc.specify.datamodel.PickListItem"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Preparation"/>
 		<mapping class="edu.ku.brc.specify.datamodel.PreparationAttachment"/>
-		<mapping class="edu.ku.brc.specify.datamodel.PreparationAttributes"/>
+		<mapping class="edu.ku.brc.specify.datamodel.PreparationAttribute"/>
 		<mapping class="edu.ku.brc.specify.datamodel.PreparationAttr"/>
 		<mapping class="edu.ku.brc.specify.datamodel.PrepType"/>
 		<mapping class="edu.ku.brc.specify.datamodel.Project"/>

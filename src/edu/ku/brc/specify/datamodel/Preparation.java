@@ -98,7 +98,7 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
     protected Storage                     storage;
     protected Set<DeaccessionPreparation> deaccessionPreparations;
 
-    protected PreparationAttributes       preparationAttributes;   // Specify 5 Attributes table
+    protected PreparationAttribute        preparationAttribute;    // Specify 5 Attributes table
     protected Set<PreparationAttr>        preparationAttrs;        // Generic Expandable Attributes
     protected Set<PreparationAttachment>  preparationAttachments;
     
@@ -150,7 +150,7 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
         storage = null;
         deaccessionPreparations = new HashSet<DeaccessionPreparation>();
         
-        preparationAttributes  = null;
+        preparationAttribute   = null;
         preparationAttrs       = new HashSet<PreparationAttr>();
         preparationAttachments = new HashSet<PreparationAttachment>();
     }
@@ -551,14 +551,15 @@ public class Preparation extends CollectionMember implements AttachmentOwnerIFac
    /**
    *
    */
-   @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-   @JoinColumn(name = "PreparationAttributesID", unique = false, nullable = true, insertable = true, updatable = true)
-   public PreparationAttributes getPreparationAttributes() {
-       return this.preparationAttributes;
+   @ManyToOne(cascade = {javax.persistence.CascadeType.ALL}, fetch = FetchType.LAZY)
+   @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+   @JoinColumn(name = "PreparationAttributeID", unique = false, nullable = true, insertable = true, updatable = true)
+   public PreparationAttribute getPreparationAttribute() {
+       return this.preparationAttribute;
    }
 
-   public void setPreparationAttributes(PreparationAttributes preparationAttributes) {
-       this.preparationAttributes = preparationAttributes;
+   public void setPreparationAttribute(PreparationAttribute preparationAttribute) {
+       this.preparationAttribute = preparationAttribute;
    }
 
     /* (non-Javadoc)

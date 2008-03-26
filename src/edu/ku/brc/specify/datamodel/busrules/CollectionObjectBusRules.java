@@ -34,7 +34,6 @@ import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace;
-import edu.ku.brc.ui.forms.Viewable;
 
 /**
  * @author rods
@@ -137,29 +136,29 @@ public class CollectionObjectBusRules extends AttachmentOwnerBaseBusRules
         CollectionObject colObj = (CollectionObject)newDataObj;
         if (Collection.getCurrentCollection().getIsEmbeddedCollectingEvent())
         {
-            CollectingEvent ce = new CollectingEvent();
-            ce.initialize();
-            colObj.addReference(ce, "collectingEvent");
+            // Carry Forward may have already added 
+            // some values so we need to check to make sure
+            // before adding new ones automatically.
+            if (colObj.getCollectingEvent() == null)
+            {
+                CollectingEvent ce = new CollectingEvent();
+                ce.initialize();
+                colObj.addReference(ce, "collectingEvent");
+            }
             
-            Preparation prep = new Preparation();
-            prep.initialize();
-            prep.setCount(1);
-            prep.setPrepType(getDefaultPrepType());
-            prep.setPreparedDate(Calendar.getInstance());
-            colObj.addReference(prep, "preparations");
-            prep.setPreparedByAgent(getDefaultPreparedByAgent());
+            if (colObj.getPreparations().size() == 0)
+            {
+                Preparation prep = new Preparation();
+                prep.initialize();
+                prep.setCount(1);
+                prep.setPrepType(getDefaultPrepType());
+                prep.setPreparedDate(Calendar.getInstance());
+                colObj.addReference(prep, "preparations");
+                prep.setPreparedByAgent(getDefaultPreparedByAgent());
+            }
         }
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#beforeFormFill(edu.ku.brc.ui.forms.Viewable)
-     */
-    @Override
-    public void beforeFormFill(Viewable viewableArg)
-    {
-        super.beforeFormFill(viewableArg);
-    }
-    
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToDelete(java.lang.Object, edu.ku.brc.dbsupport.DataProviderSessionIFace, edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace)
      */

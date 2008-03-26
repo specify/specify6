@@ -22,8 +22,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 /**
@@ -37,14 +35,14 @@ import org.hibernate.annotations.Index;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
-@Table(name = "collectionobjectattributes")
-@org.hibernate.annotations.Table(appliesTo="collectionobjectattributes", indexes =
+@Table(name = "collectionobjectattribute")
+@org.hibernate.annotations.Table(appliesTo="collectionobjectattribute", indexes =
     {   
         @Index (name="COLOBJATTRSColMemIDX", columnNames={"CollectionMemberID"})
     })
-public class CollectionObjectAttributes extends CollectionMember
+public class CollectionObjectAttribute extends CollectionMember
 {
-    protected Integer collectionObjectAttributesId;
+    protected Integer collectionObjectAttributeId;
     protected String text10;
     protected String text11;
     protected String text12;
@@ -114,15 +112,15 @@ public class CollectionObjectAttributes extends CollectionMember
     // Constructors
 
     /** default constructor */
-    public CollectionObjectAttributes()
+    public CollectionObjectAttribute()
     {
         // do nothing
     }
 
     /** constructor with id */
-    public CollectionObjectAttributes(Integer collectionObjectAttributesId) 
+    public CollectionObjectAttribute(Integer collectionObjectAttributeId) 
     {
-        this.collectionObjectAttributesId = collectionObjectAttributesId;
+        this.collectionObjectAttributeId = collectionObjectAttributeId;
     }
 
     // Initializer
@@ -130,7 +128,7 @@ public class CollectionObjectAttributes extends CollectionMember
     public void initialize()
     {
         super.init();
-        collectionObjectAttributesId = null;
+        collectionObjectAttributeId = null;
         text10 = null;
         text11 = null;
         text12 = null;
@@ -201,10 +199,10 @@ public class CollectionObjectAttributes extends CollectionMember
 
     @Id
     @GeneratedValue
-    @Column(name = "CollectionObjectAttributesID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Integer getCollectionObjectAttributesId()
+    @Column(name = "CollectionObjectAttributeID", unique = false, nullable = false, insertable = true, updatable = true)
+    public Integer getCollectionObjectAttributeId()
     {
-        return collectionObjectAttributesId;
+        return collectionObjectAttributeId;
     }
 
     /* (non-Javadoc)
@@ -214,10 +212,10 @@ public class CollectionObjectAttributes extends CollectionMember
     @Override
     public Integer getId()
     {
-        return this.collectionObjectAttributesId;
+        return this.collectionObjectAttributeId;
     }
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collectionObjectAttributes")
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "collectionObjectAttribute")
     public Set<CollectionObject> getCollectionObjects()
     {
         return collectionObjects;
@@ -619,9 +617,9 @@ public class CollectionObjectAttributes extends CollectionMember
         this.collectionObjects = collectionObjects;
     }
 
-    public void setCollectionObjectAttributesId(Integer collectionObjectAttributesId)
+    public void setCollectionObjectAttributeId(Integer collectionObjectAttributeId)
     {
-        this.collectionObjectAttributesId = collectionObjectAttributesId;
+        this.collectionObjectAttributeId = collectionObjectAttributeId;
     }
 
     public void setText14(String text14)
@@ -946,7 +944,7 @@ public class CollectionObjectAttributes extends CollectionMember
     @Override
     public Class<?> getDataClass()
     {
-        return CollectionObjectAttributes.class;
+        return CollectionObjectAttribute.class;
     }
 
     /* (non-Javadoc)

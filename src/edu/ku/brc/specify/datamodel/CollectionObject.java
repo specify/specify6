@@ -135,8 +135,8 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     protected Container                     container;
     protected Container                     containerOwner;
     protected Appraisal                     appraisal;
-    protected CollectionObjectAttributes    collectionObjectAttributes;      // Specify 5 Attributes table
-    protected Set<CollectionObjectAttr>     collectionObjectAttrs; // Generic Expandable Attributes
+    protected CollectionObjectAttribute     collectionObjectAttribute; // Specify 5 Attributes table
+    protected Set<CollectionObjectAttr>     collectionObjectAttrs;      // Generic Expandable Attributes
     protected Set<CollectionRelationship>   leftSideRels;
     protected Set<CollectionRelationship>   rightSideRels;
     protected PaleoContext                  paleoContext;
@@ -782,16 +782,17 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     /**
      *
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "ColObjAttributesID", unique = false, nullable = true, insertable = true, updatable = true)
-    public CollectionObjectAttributes getCollectionObjectAttributes() 
+    @ManyToOne(cascade = {javax.persistence.CascadeType.ALL}, fetch = FetchType.LAZY)
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    @JoinColumn(name = "CollectionObjectAttributeID", unique = false, nullable = true, insertable = true, updatable = true)
+    public CollectionObjectAttribute getCollectionObjectAttribute() 
     {
-        return this.collectionObjectAttributes;
+        return this.collectionObjectAttribute;
     }
 
-    public void setCollectionObjectAttributes(CollectionObjectAttributes colObjAttributes) 
+    public void setCollectionObjectAttribute(CollectionObjectAttribute colObjAttribute) 
     {
-        this.collectionObjectAttributes = colObjAttributes;
+        this.collectionObjectAttribute = colObjAttribute;
     }
 
     /**

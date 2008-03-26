@@ -1,553 +1,419 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<formatters xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<formatters>
+  <format name="Accession" class="edu.ku.brc.specify.datamodel.Accession" default="true">
+    <switch single="true">
+      <fields>
+        <field>accessionNumber</field>
+      </fields>
+    </switch>
+  </format>
 
-    <format
-        name="Agent"
-        class="edu.ku.brc.specify.datamodel.Agent"
-        default="true"
-        >
-        <switch single="false" field="agentType">
-            <fields value="0">
-                <field>lastName</field>
-            </fields>
-            <fields value="1">
-                <field>lastName</field>
-                <field sep=", " >firstName</field>
-            </fields>
-            <fields value="2">
-                <field>lastName</field>
-            </fields>
-            <fields value="3">
-                <field>lastName</field>
-            </fields>
-        </switch>
-    </format>
-    
-    <format
-        name="CollectionObject"
-        class="edu.ku.brc.specify.datamodel.CollectionObject"
-        default="true"
-        >
-        <switch single="true">
-            <fields>
-                <field uifieldformatter="CatalogNumber">catalogNumber</field>
-            </fields>
-        </switch>
-    </format>
-    
-    <format
-        name="Division"
-        class="edu.ku.brc.specify.datamodel.Division"
-        default="true"
-        >
-        <switch single="true">
-            <fields>
-                <field>title</field>
-            </fields>
-        </switch>
-    </format>
+  <format name="Accession.1" class="edu.ku.brc.specify.datamodel.Accession">
+    <switch single="true">
+      <fields>
+        <field>accessionCondition</field>
+        <field sep=", ">accessionNumber</field>
+      </fields>
+    </switch>
+  </format>
 
-    <format
-        name="Permit"
-        class="edu.ku.brc.specify.datamodel.Permit"
-        default="true"
-        >
-        <switch single="true">
-            <fields>
-                <field>permitNumber</field>
-            </fields>
-        </switch>
-    </format>
-    
-    <format
-        name="Accession"
-        class="edu.ku.brc.specify.datamodel.Accession"
-        default="true"
-        >
-        <switch single="true">
-            <fields>
-                <field>accessionNumber</field>
-            </fields>
-        </switch>
-    </format>
-    
-    <format
-        name="AccessionAuthorization"
-        class="edu.ku.brc.specify.datamodel.AccessionAuthorization"
-        default="true"
-        >
-        <switch single="true">
-            <fields>
-                <field>permit.permitNumber</field>
-            </fields>
-        </switch>
-    </format>
-    
-    <format
-        name="AccessionAgent"
-        class="edu.ku.brc.specify.datamodel.AccessionAgent"
-        default="true"
-        >
-        <switch single="true">
-            <fields>
-                <field formatter="Agent">agent</field>
-                <field sep=" - ">role</field>
-            </fields>
-        </switch>
-    </format>
-    
-    <format
-        name="Geography"
-        class="edu.ku.brc.specify.datamodel.Geography"
-        default="true"
-        >
-        <switch single="true">
-            <fields>
-                <field>fullName</field>
-            </fields>
-        </switch>
-    </format>
-    
-    <format
-        name="Taxon"
-        class="edu.ku.brc.specify.datamodel.Taxon"
-        default="true"
-        >
-        <switch single="true">
-            <fields>
-                <field>fullName</field>
-            </fields>
-        </switch>
-    </format>
-    
-    <format
-        name="PrepType"
-        class="edu.ku.brc.specify.datamodel.PrepType"
-        default="true"
-        >
-        <switch single="true">
-            <fields>
-                <field>name</field>
-            </fields>
-        </switch>
-    </format>
-    
-    <format
-        name="DeterminationStatus"
-        class="edu.ku.brc.specify.datamodel.DeterminationStatus"
-        default="true"
-        >
-        <switch single="true">
-            <fields>
-                <field>name</field>
-            </fields>
-        </switch>
-    </format>
-    
-    <format
-        name="DataType"
-        class="edu.ku.brc.specify.datamodel.DataType"
-        default="true"
-        >
-        <switch single="true">
-            <fields>
-                <field>name</field>
-            </fields>
-        </switch>
-    </format>
-    
-    <format
-        name="Preparation"
-        class="edu.ku.brc.specify.datamodel.Preparation"
-        default="true"
-        >
-        <switch single="true">
-            <fields>
-                <field formatter="PrepType">prepType</field>
-                <field sep=" - "  format="%d" type="int">count</field>
-            </fields>
-        </switch>
-    </format>
-    
-    <format
-        name="LoanPreparation"
-        class="edu.ku.brc.specify.datamodel.LoanPreparation"
-        default="true"
-        >
-        <switch single="true">
-            <fields>
-                <field formatter="PrepType">preparation.prepType</field>
-                <field sep=" - "  format="%d" type="int">quantity</field>
-            </fields>
-        </switch>
-    </format>
-    
-    <format
-        name="LoanReturnPreparation"
-        class="edu.ku.brc.specify.datamodel.LoanReturnPreparation"
-        default="true"
-        >
-        <switch single="true">
-            <fields>
-                <field formatter="PrepType">loanPreparation.preparation.prepType</field>
-                <field sep=" - "  format="%d" type="int">quantity</field>
-            </fields>
-        </switch>
-    </format>
-    
-    <format
-        name="Determination"
-        class="edu.ku.brc.specify.datamodel.Determination"
-        default="true"
-        >
-        <switch single="true">
-            <fields>
-                <field>taxon.fullName</field>
-                <field sep=" - ">status.name</field>
-            </fields>
-        </switch>
-    </format>
-    
-    <format
-        name="Collector"
-        class="edu.ku.brc.specify.datamodel.Collector"
-        default="true"
-        >
-        <switch single="true">
-            <fields>
-                <field formatter="Agent">agent</field>
-            </fields>
-        </switch>
-    </format>
-    
-    <format
-        name="LoanAgent"
-        class="edu.ku.brc.specify.datamodel.LoanAgent"
-        default="true"
-        >
-        <switch single="true">
-            <fields>
-                <field formatter="Agent">agent</field>
-            </fields>
-        </switch>
-    </format>
-    
-    <format
-        name="CollectingEvent"
-        class="edu.ku.brc.specify.datamodel.CollectingEvent"
-        default="true"
-        >
-        <switch single="true">
-            <fields>
-                <field>startDate</field>
-            </fields>
-        </switch>
-    </format>
+  <format name="Accession.2" class="edu.ku.brc.specify.datamodel.Accession">
+    <switch single="true">
+      <fields>
+        <field>accessionCondition</field>
+        <field sep=", ">accessionNumber</field>
+        <field>dateAccessioned</field>
+      </fields>
+    </switch>
+  </format>
 
-    <format
-        name="CollectingEventSFN"
-        class="edu.ku.brc.specify.datamodel.CollectingEvent"
-        default="false"
-        >
-        <switch single="true">
-            <fields>
-                <field>stationFieldNumber</field>
-            </fields>
-        </switch>
-    </format>
+  <format name="AccessionAgent" class="edu.ku.brc.specify.datamodel.AccessionAgent" default="true">
+    <switch single="true">
+      <fields>
+        <field>agent</field>
+        <field sep=" - ">role</field>
+      </fields>
+    </switch>
+  </format>
 
-    <format
-        name="Storage"
-        class="edu.ku.brc.specify.datamodel.Storage"
-        default="true"
-        >
-        <switch single="true">
-            <fields>
-                <field>fullName</field>
-            </fields>
-        </switch>
-    </format>
+  <format name="AccessionAuthorization" class="edu.ku.brc.specify.datamodel.AccessionAuthorization" default="true">
+    <switch single="true">
+      <fields>
+        <field>permit.permitNumber</field>
+      </fields>
+    </switch>
+  </format>
 
-    <format
-        name="LithoStrat"
-        class="edu.ku.brc.specify.datamodel.LithoStrat"
-        default="true"
-        >
-        <switch single="true">
-            <fields>
-                <field>fullName</field>
-            </fields>
-        </switch>
-    </format>
+  <format name="Agent" class="edu.ku.brc.specify.datamodel.Agent" default="true">
+    <switch single="false" field="agentType">
+      <fields value="0">
+        <field>lastName</field>
+      </fields>
+      <fields value="1">
+        <field>lastName</field>
+        <field sep=", ">firstName</field>
+      </fields>
+      <fields value="2">
+        <field>lastName</field>
+      </fields>
+      <fields value="3">
+        <field>lastName</field>
+      </fields>
+    </switch>
+  </format>
 
-    <format
-        name="LithoStratTreeDef"
-        class="edu.ku.brc.specify.datamodel.LithoStratTreeDef"
-        default="true"
-        >
-        <switch single="true">
-            <fields>
-                <field>name</field>
-            </fields>
-        </switch>
-    </format>
+  <format name="CatalogNumberingScheme" class="edu.ku.brc.specify.datamodel.CatalogNumberingScheme" default="true">
+    <switch single="true">
+      <fields>
+        <field>schemeName</field>
+      </fields>
+    </switch>
+  </format>
 
-    <format
-        name="LithoStratTreeDefItem"
-        class="edu.ku.brc.specify.datamodel.LithoStratTreeDefItem"
-        default="true"
-        >
-        <switch single="true">
-            <fields>
-                <field>name</field>
-            </fields>
-        </switch>
-    </format>
+  <format name="CollectingEvent" class="edu.ku.brc.specify.datamodel.CollectingEvent" default="true">
+    <switch single="true">
+      <fields>
+        <field>startDate</field>
+      </fields>
+    </switch>
+  </format>
 
-   <format
-        name="GeographyTreeDef"
-        class="edu.ku.brc.specify.datamodel.GeographyTreeDef"
-        default="true"
-        >
-        <switch single="true">
-            <fields>
-                <field>name</field>
-            </fields>
-        </switch>
-    </format>
+  <format name="CollectingEventSFN" class="edu.ku.brc.specify.datamodel.CollectingEvent">
+    <switch single="true">
+      <fields>
+        <field>stationFieldNumber</field>
+      </fields>
+    </switch>
+  </format>
 
-    <format
-        name="GeographyTreeDefItem"
-        class="edu.ku.brc.specify.datamodel.GeographyTreeDefItem"
-        default="true"
-        >
-        <switch single="true">
-            <fields>
-                <field>name</field>
-            </fields>
-        </switch>
-    </format>
+  <format name="CollectionObject" class="edu.ku.brc.specify.datamodel.CollectionObject" default="true">
+    <switch single="true">
+      <fields>
+        <field uifieldformatter="CatalogNumber">catalogNumber</field>
+      </fields>
+    </switch>
+  </format>
 
-   <format
-        name="StorageTreeDef"
-        class="edu.ku.brc.specify.datamodel.StorageTreeDef"
-        default="true"
-        >
-        <switch single="true">
-            <fields>
-                <field>name</field>
-            </fields>
-        </switch>
-    </format>
+  <format name="Collector" class="edu.ku.brc.specify.datamodel.Collector" default="true">
+    <switch single="true">
+      <fields>
+        <field>agent</field>
+      </fields>
+    </switch>
+  </format>
 
-    <format
-        name="StorageTreeDefItem"
-        class="edu.ku.brc.specify.datamodel.StorageTreeDefItem"
-        default="true"
-        >
-        <switch single="true">
-            <fields>
-                <field>name</field>
-            </fields>
-        </switch>
-    </format>
+  <format name="DataType" class="edu.ku.brc.specify.datamodel.DataType" default="true">
+    <switch single="true">
+      <fields>
+        <field>name</field>
+      </fields>
+    </switch>
+  </format>
 
-   <format
-        name="TaxonTreeDef"
-        class="edu.ku.brc.specify.datamodel.TaxonTreeDef"
-        default="true"
-        >
-        <switch single="true">
-            <fields>
-                <field>name</field>
-            </fields>
-        </switch>
-    </format>
+  <format name="Determination" class="edu.ku.brc.specify.datamodel.Determination" default="true">
+    <switch single="true">
+      <fields>
+        <field>taxon.fullName</field>
+        <field sep=" - ">status.name</field>
+      </fields>
+    </switch>
+  </format>
 
-    <format
-        name="TaxonTreeDefItem"
-        class="edu.ku.brc.specify.datamodel.TaxonTreeDefItem"
-        default="true"
-        >
-        <switch single="true">
-            <fields>
-                <field>name</field>
-            </fields>
-        </switch>
-    </format>
+  <format name="DeterminationStatus" class="edu.ku.brc.specify.datamodel.DeterminationStatus" default="true">
+    <switch single="true">
+      <fields>
+        <field>name</field>
+      </fields>
+    </switch>
+  </format>
 
-    <format
-        name="TaxonCitation"
-        class="edu.ku.brc.specify.datamodel.TaxonCitation"
-        default="true"
-        >
-        <switch single="true">
-            <fields>
-                <field formatter="ReferenceWork">referenceWork</field>
-            </fields>
-        </switch>
-    </format>
+  <format name="Discipline" class="edu.ku.brc.specify.datamodel.Discipline" default="true">
+    <switch single="true">
+      <fields>
+        <field>name</field>
+      </fields>
+    </switch>
+  </format>
 
-   <format
-        name="ReferenceWork"
-        class="edu.ku.brc.specify.datamodel.ReferenceWork"
-        default="true"
-        >
-        <switch single="true">
-            <fields>
-                <field>title</field>
-            </fields>
-        </switch>
-    </format>
+  <format name="Division" class="edu.ku.brc.specify.datamodel.Division" default="true">
+    <switch single="true">
+      <fields>
+        <field>title</field>
+      </fields>
+    </switch>
+  </format>
 
-   <format
-        name="Journal"
-        class="edu.ku.brc.specify.datamodel.Journal"
-        default="true"
-        >
-        <switch single="true">
-            <fields>
-                <field>journalName</field>
-            </fields>
-        </switch>
-    </format>
+  <format name="Geography" class="edu.ku.brc.specify.datamodel.Geography" default="true">
+    <switch single="true">
+      <fields>
+        <field>fullName</field>
+      </fields>
+    </switch>
+  </format>
 
-    <format
-        name="LocalityLatitude"
-        class="edu.ku.brc.specify.datamodel.Locality"
-        default="true"
-        >
-        <switch single="true">
-            <external class="edu.ku.brc.specify.ui.LocalityLatLonFormatter">
-                <param name="type">Latitude</param>
-                <param name="dir">symbol</param>
-                <param name="format">DDDDDD</param>
-                <param name="which">1</param>
-            </external>
-        </switch>
-    </format>
-    
-    <format
-        name="LocalityLongitude"
-        class="edu.ku.brc.specify.datamodel.Locality"
-        default="true"
-        >
-        <switch single="true">
-            <external class="edu.ku.brc.specify.ui.LocalityLatLonFormatter">
-                <param name="type">Longitude</param>
-                <param name="dir">symbol</param>
-                <param name="format">DDDDDD</param>
-                <param name="which">1</param>
-            </external>
-        </switch>
-    </format>
-    
-    <format
-        name="Locality"
-        class="edu.ku.brc.specify.datamodel.Locality"
-        default="true"
-        >
-        <switch single="true">
-            <fields>
-                <field>localityName</field>
-            </fields>
-        </switch>
-    </format>
-    
-    <format
-        name="Discipline"
-        class="edu.ku.brc.specify.datamodel.Discipline"
-        default="true"
-        >
-        <switch single="true">
-            <fields>
-                <field>name</field>
-            </fields>
-        </switch>
-    </format>
-    
-    <format
-        name="GeologicTimePeriodTreeDef"
-        class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef"
-        default="true"
-        >
-        <switch single="true">
-            <fields>
-                <field>name</field>
-            </fields>
-        </switch>
-    </format>
-    
-    <format
-        name="CatalogNumberingScheme"
-        class="edu.ku.brc.specify.datamodel.CatalogNumberingScheme"
-        default="true"
-        >
-        <switch single="true">
-            <fields>
-                <field>schemeName</field>
-            </fields>
-        </switch>
-    </format>
-    
-    <format
-        name="Shipment"
-        class="edu.ku.brc.specify.datamodel.Shipment"
-        default="true"
-        >
-        <switch single="true">
-            <fields>
-                <field>shipmentDate</field>
-                <field sep=" - ">shipmentNumber</field>
-                <field sep=" - ">shipmentMethod</field>
-            </fields>
-        </switch>
-    </format>
-    
-    
-    <aggregators>
-        <aggregator name="AccessionAuthorization" 
-            class="edu.ku.brc.specify.datamodel.AccessionAuthorization"
-            separator="; " 
-            count="" ending="" 
-            format="AccessionAuthorization" 
-            default="true"/>
-        
-        <aggregator name="AccessionAgent"
-                    class="edu.ku.brc.specify.datamodel.AccessionAgent" 
-                    separator="; " 
-                    count="" 
-                    ending="" 
-                    format="AccessionAgent" 
-                    default="true"/>   
-        
-        <aggregator name="Preparation"
-                    class="edu.ku.brc.specify.datamodel.Preparation" 
-                    separator="; " 
-                    count="" 
-                    ending="" 
-                    format="Preparation" 
-                    default="true"/>   
-        
-        <aggregator name="Determination"
-                    class="edu.ku.brc.specify.datamodel.Determination" 
-                    separator="; " 
-                    count="1" 
-                    ending="" 
-                    format="Determination" 
-                    default="true"/>   
-        
-        <aggregator name="Collector"
-                    class="edu.ku.brc.specify.datamodel.Collector" 
-                    separator="; " 
-                    count="" 
-                    ending="" 
-                    format="Collector" 
-                    default="true"
-                    orderfieldname="orderNumber"/>   
-    </aggregators>
-    
-     
+  <format name="GeographyTreeDef" class="edu.ku.brc.specify.datamodel.GeographyTreeDef" default="true">
+    <switch single="true">
+      <fields>
+        <field>name</field>
+      </fields>
+    </switch>
+  </format>
+
+  <format name="GeographyTreeDefItem" class="edu.ku.brc.specify.datamodel.GeographyTreeDefItem" default="true">
+    <switch single="true">
+      <fields>
+        <field>name</field>
+      </fields>
+    </switch>
+  </format>
+
+  <format name="GeologicTimePeriodTreeDef" class="edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef" default="true">
+    <switch single="true">
+      <fields>
+        <field>name</field>
+      </fields>
+    </switch>
+  </format>
+
+  <format name="Journal" class="edu.ku.brc.specify.datamodel.Journal" default="true">
+    <switch single="true">
+      <fields>
+        <field>journalName</field>
+      </fields>
+    </switch>
+  </format>
+
+  <format name="LithoStrat" class="edu.ku.brc.specify.datamodel.LithoStrat" default="true">
+    <switch single="true">
+      <fields>
+        <field>fullName</field>
+      </fields>
+    </switch>
+  </format>
+
+  <format name="LithoStratTreeDef" class="edu.ku.brc.specify.datamodel.LithoStratTreeDef" default="true">
+    <switch single="true">
+      <fields>
+        <field>name</field>
+      </fields>
+    </switch>
+  </format>
+
+  <format name="LithoStratTreeDefItem" class="edu.ku.brc.specify.datamodel.LithoStratTreeDefItem" default="true">
+    <switch single="true">
+      <fields>
+        <field>name</field>
+      </fields>
+    </switch>
+  </format>
+
+  <format name="LoanAgent" class="edu.ku.brc.specify.datamodel.LoanAgent" default="true">
+    <switch single="true">
+      <fields>
+        <field>agent</field>
+      </fields>
+    </switch>
+  </format>
+
+  <format name="LoanPreparation" class="edu.ku.brc.specify.datamodel.LoanPreparation" default="true">
+    <switch single="true">
+      <fields>
+        <field>preparation.prepType</field>
+        <field type="java.lang.Integer" format="%d" sep=" - ">quantity</field>
+      </fields>
+    </switch>
+  </format>
+
+  <format name="LoanReturnPreparation" class="edu.ku.brc.specify.datamodel.LoanReturnPreparation" default="true">
+    <switch single="true">
+      <fields>
+        <field>loanPreparation.preparation.prepType</field>
+        <field type="java.lang.Integer" format="%d" sep=" - ">quantity</field>
+      </fields>
+    </switch>
+  </format>
+
+  <format name="Locality" class="edu.ku.brc.specify.datamodel.Locality" default="true">
+    <switch single="true">
+      <fields>
+        <field>localityName</field>
+      </fields>
+    </switch>
+  </format>
+
+  <format name="LocalityLatitude" class="edu.ku.brc.specify.datamodel.Locality" default="true">
+    <switch single="true">
+      <external class="edu.ku.brc.specify.ui.LocalityLatLonFormatter">
+        <param name="type">Latitude</param>
+        <param name="dir">symbol</param>
+        <param name="dir">DDDDDD</param>
+        <param name="which">1</param>
+      </external>
+    </switch>
+  </format>
+
+  <format name="LocalityLongitude" class="edu.ku.brc.specify.datamodel.Locality" default="true">
+    <switch single="true">
+      <external class="edu.ku.brc.specify.ui.LocalityLatLonFormatter">
+        <param name="type">Longitude</param>
+        <param name="dir">symbol</param>
+        <param name="dir">DDDDDD</param>
+        <param name="which">1</param>
+      </external>
+    </switch>
+  </format>
+
+  <format name="Permit" class="edu.ku.brc.specify.datamodel.Permit" default="true">
+    <switch single="true">
+      <fields>
+        <field>permitNumber</field>
+      </fields>
+    </switch>
+  </format>
+
+  <format name="PrepType" class="edu.ku.brc.specify.datamodel.PrepType" default="true">
+    <switch single="true">
+      <fields>
+        <field>name</field>
+      </fields>
+    </switch>
+  </format>
+
+  <format name="Preparation" class="edu.ku.brc.specify.datamodel.Preparation" default="true">
+    <switch single="true">
+      <fields>
+        <field>prepType</field>
+        <field type="java.lang.Integer" format="%d" sep=" - ">count</field>
+      </fields>
+    </switch>
+  </format>
+
+  <format name="ReferenceWork" class="edu.ku.brc.specify.datamodel.ReferenceWork" default="true">
+    <switch single="true">
+      <fields>
+        <field>title</field>
+      </fields>
+    </switch>
+  </format>
+
+  <format name="Shipment" class="edu.ku.brc.specify.datamodel.Shipment" default="true">
+    <switch single="true">
+      <fields>
+        <field>shipmentDate</field>
+        <field sep=" - ">shipmentNumber</field>
+        <field sep=" - ">shipmentMethod</field>
+      </fields>
+    </switch>
+  </format>
+
+  <format name="Storage" class="edu.ku.brc.specify.datamodel.Storage" default="true">
+    <switch single="true">
+      <fields>
+        <field>fullName</field>
+      </fields>
+    </switch>
+  </format>
+
+  <format name="StorageTreeDef" class="edu.ku.brc.specify.datamodel.StorageTreeDef" default="true">
+    <switch single="true">
+      <fields>
+        <field>name</field>
+      </fields>
+    </switch>
+  </format>
+
+  <format name="StorageTreeDefItem" class="edu.ku.brc.specify.datamodel.StorageTreeDefItem" default="true">
+    <switch single="true">
+      <fields>
+        <field>name</field>
+      </fields>
+    </switch>
+  </format>
+
+  <format name="Taxon" class="edu.ku.brc.specify.datamodel.Taxon" default="true">
+    <switch single="true">
+      <fields>
+        <field>fullName</field>
+      </fields>
+    </switch>
+  </format>
+
+  <format name="TaxonCitation" class="edu.ku.brc.specify.datamodel.TaxonCitation" default="true">
+    <switch single="true">
+      <fields>
+        <field>referenceWork</field>
+      </fields>
+    </switch>
+  </format>
+
+  <format name="TaxonTreeDef" class="edu.ku.brc.specify.datamodel.TaxonTreeDef" default="true">
+    <switch single="true">
+      <fields>
+        <field>name</field>
+      </fields>
+    </switch>
+  </format>
+
+  <format name="TaxonTreeDefItem" class="edu.ku.brc.specify.datamodel.TaxonTreeDefItem" default="true">
+    <switch single="true">
+      <fields>
+        <field>name</field>
+      </fields>
+    </switch>
+  </format>
+
+  <aggregators>
+    <aggregator name="AccessionAgent"
+                class="edu.ku.brc.specify.datamodel.AccessionAgent"
+                default="true"
+                separator="; "
+               
+                count="null"
+                formatName="AccessionAgent"
+               
+               />
+
+    <aggregator name="AccessionAuthorization"
+                class="edu.ku.brc.specify.datamodel.AccessionAuthorization"
+                default="true"
+                separator="; "
+               
+                count="null"
+                formatName="AccessionAuthorization"
+               
+               />
+
+    <aggregator name="Collector"
+                class="edu.ku.brc.specify.datamodel.Collector"
+                default="true"
+                separator="; "
+               
+                count="null"
+                formatName="Collector"
+                orderFieldName="orderNumber"
+               />
+
+    <aggregator name="Determination"
+                class="edu.ku.brc.specify.datamodel.Determination"
+                default="true"
+                separator="; "
+               
+                count="1"
+                formatName="Determination"
+               
+               />
+
+    <aggregator name="Preparation"
+                class="edu.ku.brc.specify.datamodel.Preparation"
+                default="true"
+                separator="; "
+               
+                count="null"
+                formatName="Preparation"
+               
+               />
+
+  </aggregators>
+
+
 </formatters>
-
-

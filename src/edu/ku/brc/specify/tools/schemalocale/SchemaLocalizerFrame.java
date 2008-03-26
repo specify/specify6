@@ -447,6 +447,8 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
                 {
                     e.printStackTrace();
                 }
+                
+                UIFieldFormatterMgr.setDoingLocal(true);
 
                 System.setProperty(SchemaI18NService.factoryName, "edu.ku.brc.specify.config.SpecifySchemaI18NService");    // Needed for Localization and Schema
                 System.setProperty(UIFieldFormatterMgr.factoryName, "edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr");    // Needed for CatalogNumbering
