@@ -177,7 +177,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         List<ServiceInfo> services = installServices ? ContextMgr.checkForServices(results.getTableId()) : null;
         if (results instanceof ServiceProviderIFace)
         {
-            List<ServiceInfo> additionalServices = ((ServiceProviderIFace)results).getServices();
+            List<ServiceInfo> additionalServices = ((ServiceProviderIFace)results).getServices(this);
             if (additionalServices != null)
             {
                 services.addAll(additionalServices);
@@ -751,7 +751,10 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
             SwingUtilities.invokeLater(new Runnable() {
                 public void run()
                 {
-                    cmd.setData(getRecordSet(false));
+                    if (cmd.getData() == null)
+                    {
+                        cmd.setData(getRecordSet(false));
+                    }
                     cmd.addProperties(props);
                     CommandDispatcher.dispatch(cmd);
 

@@ -34,6 +34,7 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.JTable;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -66,9 +67,15 @@ import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpQuery;
+import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanel;
 import edu.ku.brc.specify.tasks.subpane.SQLQueryPane;
+import edu.ku.brc.specify.tasks.subpane.qb.QBLiveJRDataSource;
+import edu.ku.brc.specify.tasks.subpane.qb.QBResultReportServiceCmdData;
 import edu.ku.brc.specify.tasks.subpane.qb.QueryBldrPane;
+import edu.ku.brc.specify.ui.db.ResultSetTableModel;
+import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DataFlavorTableExt;
@@ -98,6 +105,7 @@ public class QueryTask extends BaseTask
     // Static Data Members
     public static final String QUERY      = "Query";
     public static final String SAVE_QUERY = "Save";
+    public static final String QUERY_RESULTS_REPORT = "QueryResultsReport";
     
     public static final DataFlavor QUERY_FLAVOR = new DataFlavor(QueryTask.class, QUERY);
     
@@ -989,7 +997,7 @@ public class QueryTask extends BaseTask
             }
         } catch (Exception ex)
         {
-            // Error dialog01
+            throw new RuntimeException(ex);
             
         }
         finally
@@ -1192,6 +1200,48 @@ public class QueryTask extends BaseTask
             RecordSet recordSet = (RecordSet)cmdAction.getData();
             deleteQuery(recordSet);
             deleteQueryFromUI(null, recordSet);
+        }
+        if (cmdAction.isAction(QUERY_RESULTS_REPORT))
+        {
+            if (cmdAction.getData() instanceof QBResultReportServiceCmdData)
+            {
+               QBResultReportServiceCmdData srvData = (QBResultReportServiceCmdData)cmdAction.getData();
+               JTable dataTbl = ((ESResultsTablePanel)srvData.getData()).getTable();
+               ResultSetTableModel rsm = (ResultSetTableModel)dataTbl.getModel();
+               QBLiveJRDataSource src = new QBLiveJRDataSource(rsm, srvData.getInfo().getVisibleCaptionInfo());
+               final CommandAction cmd = new CommandAction(ReportsBaseTask.REPORTS,
+                       ReportsBaseTask.PRINT_REPORT, src);
+               cmd.setProperty("title", srvData.getInfo().getTitle());
+               String fileName = null;
+               List<SpReport> reps = new Vector<SpReport>(srvData.getInfo().getReports());
+               if (reps.size() == 0)
+               {
+                   log.error("no reports for query. Should't have gotten here.");
+               }
+               else if (reps.size() == 1)
+               {
+                   fileName = reps.get(0).getName() + ".jrxml";
+               }
+               else
+               {
+                   ChooseFromListDlg<SpReport> dlg = new ChooseFromListDlg<SpReport>((Frame) UIRegistry
+                           .getTopWindow(), UIRegistry.getResourceString("REP_CHOOSE_SP_REPORT"),
+                           reps);
+                   dlg.setVisible(true);
+                   if (dlg.isCancelled()) { return; }
+                   fileName = dlg.getSelectedObject().getName() + ".jrxml";
+                   dlg.dispose();
+               }
+               if (fileName == null) { return; }
+
+               cmd.setProperty("file", fileName);
+               CommandDispatcher.dispatch(cmd);
+            }
+            else
+            {
+                //blow up
+                throw new RuntimeException("Invalid data for QueryResultsReport command.");
+            }
         }
     }
 

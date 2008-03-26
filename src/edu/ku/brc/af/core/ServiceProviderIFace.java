@@ -28,5 +28,5 @@ public interface ServiceProviderIFace
     /**
      * @return additional services that should be loaded.
      */
-    public abstract List<ServiceInfo> getServices();
+    public abstract List<ServiceInfo> getServices(final Object serviceConsumer);
 }

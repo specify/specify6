@@ -242,6 +242,24 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
         return "N/A";
     }
 
+    
+    /**
+     * Gets the 'raw' value of the row col.
+     * @param rowArg the row of the cell to be gotten
+     * @param colArg the column of the cell to be gotten
+     */
+    public Object getCacheValueAt(final int row, final int column)
+    {
+        if (row > -1 && row < cache.size())
+        {
+            Vector<Object> rowArray = cache.get(row);
+            if (column > -1 && column < rowArray.size())
+            {
+                return rowArray.get(column);
+            }
+        }
+        return "No Data";
+    }
     /**
      * Gets the value of the row col.
      * @param rowArg the row of the cell to be gotten

@@ -363,6 +363,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         tableList.setSelectedIndex(-1);
         if (query != null)
         {
+            query.forceLoad(true); 
             Short tblId = query.getContextTableId();
             if (tblId != null)
             {
@@ -756,6 +757,23 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
     }
 
+    /**
+     * @param fldName
+     * @return fldName formatted for use as a field in a JasperReports data source or
+     *  JasperReports data connection.
+     */
+    public static String fixFldNameForJR(final String fldName)
+    {
+        //not totally sure this is necessary.
+        //other transformations may eventually be necessary.
+        return fldName.replaceAll(" ", "_");
+    }
+    
+    /**
+     * @param queryFieldItemsArg
+     * @param fixLabels
+     * @return ERTICaptionInfo for the visible columns returned by a query.
+     */
     protected static List<ERTICaptionInfo> getColumnInfo(final Vector<QueryFieldPanel> queryFieldItemsArg, final boolean fixLabels)
     {
         List<ERTICaptionInfo> result = new Vector<ERTICaptionInfo>();
@@ -777,7 +795,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 String lbl = qfp.getLabel();
                 if (fixLabels)
                 {
-                    lbl = lbl.replaceAll(" ", "_");
+                    lbl = fixFldNameForJR(lbl);
                 }
                 ERTICaptionInfo erti;
                 if (qfp.getFieldQRI() instanceof RelQRI)
@@ -796,6 +814,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         return result;
     }
     
+    /**
+     * @param queryName
+     * @param fixLabels
+     * @return ERTICaptionInfo for the visible columns returned by query queryName.
+     */
     public static List<ERTICaptionInfo> getColumnInfo(final String queryName, final boolean fixLabels)
     {
         DataProviderSessionIFace session = DataProviderFactory.getInstance()
@@ -821,6 +844,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
     }
     
+    /**
+     * @param queryFields
+     * @param fixLabels
+     * @return ERTICaptionInfo for the visible columns represented in an SpQuery's queryFields.
+     */
     protected static List<ERTICaptionInfo> getColumnInfoSp(final Set<SpQueryField> queryFields, final boolean fixLabels)
     {
         List<ERTICaptionInfo> result = new Vector<ERTICaptionInfo>();
@@ -858,6 +886,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         return result;
     }
 
+    /**
+     * @return list reports that use this.query as a data source.
+     */
     protected List<SpReport> getReports()
     {
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
@@ -873,6 +904,14 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
     }
     
+    
+    /**
+     * @param queryFieldItemsArg
+     * @param sql
+     * 
+     * Launches a report (if one exists) for this.query.
+     * 
+     */
     protected void processReport(final Vector<QueryFieldPanel> queryFieldItemsArg, final String sql)
     {
         QBJRDataSource src = new QBJRDataSource(sql, getColumnInfo(queryFieldItemsArg, true));
@@ -905,6 +944,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         CommandDispatcher.dispatch(cmd);
     }
     
+    /**
+     * @param report
+     * 
+     * Loads and runs the query that acts as data source for report. Then runs report.
+     */
     public static void runReport(final SpReport report)
     {
         final TableTree tblTree = readTables();
@@ -970,6 +1014,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         
         qri.setSQL(sql);
         qri.setCaptions(captions);
+        qri.setReports(this.query.getReports());
         qri.setExpanded(true);
 
         CommandAction cmdAction = new CommandAction("Express_Search", "HQL", qri);
