@@ -84,8 +84,8 @@
     			    <cell type="subview" viewname="Determination" id="6" name="determinations" colspan="12" rows="5" initialize="noscrollbars=true;border=line;bordercolor=150,150,150;"/>
     			</row>
    			    <row>
-                 <cell type="label" labelfor="7" label="Coll Event"/>
-    			 <cell type="field" id="7" name="collectingEvent" uitype="querycbx" initialize="name=CollectingEvent;title=Collecting Event"/>
+                 <cell type="label" labelfor="7" label="Collecting Event"/>
+    			 <cell type="field" id="7" name="collectingEvent" uitype="querycbx" initialize="name=CollectingEvent;title=Collecting Event" colspan="12"/>
     		    </row>  	
     			<row>
     			    <cell type="separator" label="Preparations" collapse="preparations" colspan="12"/>
