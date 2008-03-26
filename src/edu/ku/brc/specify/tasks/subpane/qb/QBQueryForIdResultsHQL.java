@@ -37,6 +37,8 @@ import edu.ku.brc.ui.db.ERTICaptionInfo;
  */
 public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements ServiceProviderIFace
 {
+    protected static final int QBQIdRHQLTblId = -123;
+    
     protected String title;
     protected int    tableId;
     protected String iconName;
@@ -152,9 +154,12 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
         {
             toolTip = UIRegistry.getResourceString("QB_RESULTS_REPORT_TT");
         }
-            
+        
+        //Since only query results pane is shown at a time, can remove services from previous runs without messing anything else up.
+        ContextMgr.removeServicesByTaskAndTable(ContextMgr.getTaskByClass(QueryTask.class), QBQIdRHQLTblId);    
+        
         result.add(new ServiceInfo("QB_RESULT_REPORT_SERVICE", 
-                -1, 
+                QBQIdRHQLTblId, 
                 new CommandAction(QueryTask.QUERY, QueryTask.QUERY_RESULTS_REPORT, 
                         new QBResultReportServiceCmdData(this, data)),
                 ContextMgr.getTaskByClass(QueryTask.class),
