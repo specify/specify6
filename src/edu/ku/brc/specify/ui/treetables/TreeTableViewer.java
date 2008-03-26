@@ -997,7 +997,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
         // if this node has children, ask the user if it is okay to delete multiple nodes
         if (numNodesToDelete > 1)
         {
-            String msg = String.format("TTV_CONFIRM_DELETE", numNodesToDelete);
+            String msg = String.format(getResourceString("TTV_CONFIRM_DELETE"), numNodesToDelete);
             userChoice = JOptionPane.showConfirmDialog(this, msg, 
                     getResourceString("TTV_CONFIRM_DELETE_TITLE"), 
                     JOptionPane.OK_CANCEL_OPTION,
