@@ -39,4 +39,12 @@
       <picklistitem title="skeleton" value="skeleton"/>
     </items>
   </picklist>
+<picklist name="Age" issystem="true" type="0" readonly="true" sizelimit="5">
+    <items>
+      <picklistitem title="No data" value="No data"/>
+      <picklistitem title="adult" value="adult"/>
+      <picklistitem title="juvenile" value="juvenile"/>
+    </items>
+  </picklist>
+
 </list>
