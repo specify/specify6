@@ -96,7 +96,7 @@
     		        <cell type="field" id="12" name="description" uitype="combobox" picklist="Age" colspan="1"/>
     		        
     		        <cell type="label" labelfor="14" label="Sex"/>
-    		        <cell type="field" id="14" name="text2" uitype="combobox" initialize="data=Female,Male" colspan="1"/>
+    		        <cell type="field" id="14" name="text2" uitype="combobox" picklist="BiologicalSex" colspan="1"/>
     		        
     		        <cell type="label" labelfor="15" label="Mass"/>
     		        <cell type="field" id="15" name="text1" uitype="text" colspan="1"/>
