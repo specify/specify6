@@ -265,9 +265,6 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         MenuItemDesc treeSubMenuMI = new MenuItemDesc(subMenu, "AdvMenu");
         menus.add(treeSubMenuMI);
         
-        showTreeMenuItem = new JMenuItem(getResourceString("TTV_SHOW_TREE_MENU_ITEM"));
-        showTreeMenuItem.addActionListener(createALForTreeEditing(false));
-        
         // XXX SECURITY - Check to see if they can edit
         boolean canEdit = true;
         if (canEdit)
@@ -278,6 +275,10 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         {
             editTreeMenuItem = null;
         }
+        
+        showTreeMenuItem = new JMenuItem(getResourceString("TTV_SHOW_TREE_MENU_ITEM"));
+        showTreeMenuItem.addActionListener(createALForTreeEditing(false));
+        
         
         // XXX SECURITY - Check to see if they can edit the tree def
         editDefMenuItem = new JMenuItem(getResourceString("TTV_EDIT_DEF_MENU_ITEM"));
