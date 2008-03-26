@@ -762,7 +762,7 @@ public class LoanReturnDlg extends JDialog
                     view.getViewSetName(),
                     "Loan",
                     null,
-                    getResourceString("LOAN_REVIEW"),
+                    getResourceString("IAT_LOAN_REVIEW"),
                     getResourceString("Close"),
                     null, // className,
                     null, // idFieldName,
