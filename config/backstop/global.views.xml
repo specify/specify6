@@ -500,7 +500,7 @@
                     <cell type="field" id="1" name="agent" uitype="querycbx" initialize="name=Agent;title=Agent" isrequired="true"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="3" label="Remarks"/>
+                    <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="remarks" uitype="textarea" colspan="2" cols="40"/>
                 </row>
                 
@@ -528,27 +528,27 @@
                     <cell type="field" id="0" name="type" uitype="combobox" ignore="true"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="1" label="Title"/>
+                    <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="title" uitype="combobox" initialize="data=Asst. Director, Curator, Mr., Mrs., Ms., Dr."/> <!-- Needs to be a PickList -->
                 </row>
                 <row>
-                    <cell type="label" labelfor="3" label="Last Name"/>
+                    <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="lastName" uitype="text" cols="20"  isrequired="true"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="4" label="Middle Initial"/>
+                    <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="middleInitial" uitype="text" cols="3"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="5" label="First Name"/>
+                    <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="firstName" uitype="text" cols="20" isrequired="true"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="7" label="E-mail"/>
+                    <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="email" uitype="text" cols="32"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="8" label="Abbreviation"/>
+                    <cell type="label" labelfor="8"/>
                     <cell type="field" id="8" name="abbreviation" uitype="text" cols="20"/>
                 </row>
                 <row>
