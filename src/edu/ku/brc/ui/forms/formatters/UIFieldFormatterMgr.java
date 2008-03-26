@@ -14,6 +14,7 @@
  */
 package edu.ku.brc.ui.forms.formatters;
 
+import java.io.File;
 import java.math.BigDecimal;
 import java.security.AccessController;
 import java.text.SimpleDateFormat;
@@ -23,7 +24,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
@@ -31,6 +31,7 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
@@ -542,16 +543,29 @@ public class UIFieldFormatterMgr
     	}
 		sb.append("\n</formats>\n");
 
-        AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromDir("Collection", "UIFormatters");
-        if (escAppRes != null)
-        {
-            escAppRes.setDataAsString(sb.toString());
-            AppContextMgr.getInstance().saveResource(escAppRes);
-           
-        } else
-        {
-            AppContextMgr.getInstance().putResourceAsXML("UIFormatters", sb.toString());    
-        }
+		if (doingLocal)
+		{
+		    File outputFile = XMLHelper.getConfigDir("backstop/uiformatters.xml");
+		    try
+		    {
+		        FileUtils.writeStringToFile(outputFile, sb.toString());
+		    } catch (Exception ex)
+		    {
+		        ex.printStackTrace();
+		    }
+		} else
+		{
+            AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromDir("Collection", "UIFormatters");
+            if (escAppRes != null)
+            {
+                escAppRes.setDataAsString(sb.toString());
+                AppContextMgr.getInstance().saveResource(escAppRes);
+               
+            } else
+            {
+                AppContextMgr.getInstance().putResourceAsXML("UIFormatters", sb.toString());    
+            }
+		}
     }
     
     /**
