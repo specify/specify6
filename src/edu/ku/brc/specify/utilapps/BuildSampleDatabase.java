@@ -258,10 +258,10 @@ public class BuildSampleDatabase
     protected int                 stationFieldNumberCounter = 100;
     protected String              STATION_FIELD_FORMAT = "RS%03d";
     
-    protected int                 NUM_LOCALTIES = 10000;
-    protected int                 NUM_COLOBJS   = 10000;
+    protected int                 NUM_LOCALTIES = 50000;
+    protected int                 NUM_COLOBJS   = 50000;
     
-    protected boolean             doHugeBotany = false;
+    protected boolean             doHugeBotany = true;
     
     /**
      * 
@@ -5008,7 +5008,7 @@ public class BuildSampleDatabase
         
         if (isChoosen(DisciplineType.STD_DISCIPLINES.botany, false))
         {
-            if (doHugeBotany)
+            if (!doHugeBotany)
             {
                 createSingleBotanyCollection(DisciplineType.getDiscipline("botany"), institution, user);
             } else
