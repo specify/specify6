@@ -511,7 +511,7 @@
         >
         <switch single="true">
             <external class="edu.ku.brc.specify.ui.CollectingEventDataObjFmt">
-            <param name="format">#FN#, #DT#</param>
+            <!-- <param name="format">#FN#, #DT#</param> -->
             </external>
         </switch>
     </format>

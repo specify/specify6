@@ -1092,7 +1092,7 @@ public class InteractionsTask extends BaseTask
                 {
                     session = DataProviderFactory.getInstance().createSession();
                     
-                    //session.beginTransaction();
+                    session.beginTransaction();
                     
                     for (LoanReturnInfo loanRetInfo : returns)
                     {   
@@ -1107,16 +1107,16 @@ public class InteractionsTask extends BaseTask
                         loanRetPrep.setQuantity(loanRetInfo.getQuantity());
                         loanRetPrep.setRemarks(loanRetInfo.getRemarks());
                         
-                        if (loanRetInfo.isResolved() != null)
-                        {
-                            loanRetInfo.getLoanPreparation().setIsResolved(loanRetInfo.isResolved());
-                            //session.save(loanRetInfo.getLoanPreparation());
-                        }
-                        loanPrep.addReference(loanRetPrep, "loanReturnPreparations");
-                        
                         int quantity         = loanPrep.getQuantity();
                         int quantityReturned = loanPrep.getQuantityReturned();
                         int quantityResolved = loanPrep.getQuantityResolved();
+                        
+                        if (loanRetInfo.isResolved() != null)
+                        {
+                            loanPrep.setIsResolved(loanRetInfo.isResolved());
+                            loanPrep.setQuantityReturned(quantityReturned + loanRetInfo.getQuantity());
+                        }
+                        loanPrep.addReference(loanRetPrep, "loanReturnPreparations");
                         
                         quantityReturned += loanRetInfo.getQuantity();
                         
