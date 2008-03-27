@@ -27,12 +27,15 @@
         
         <view name="Determination"
             class="edu.ku.brc.specify.datamodel.Determination"
+            busrules="edu.ku.brc.specify.datamodel.busrules.DeterminationBusRules"
             resourcelabels="false">
             <desc><![CDATA[Subform within the Collection Object form.]]></desc>
             <altviews>
-                <altview name="Determination View" viewdef="Determination" label="View" mode="view" validated="false"/>
-                <altview name="Determination Edit" viewdef="Determination" label="Edit" mode="edit" validated="true" default="true"/>
-            </altviews>
+                <altview name="Determination View"       viewdef="Determination" label="View" mode="view"/>
+                <altview name="Determination Edit"       viewdef="Determination" label="Edit" mode="edit" default="true"/>
+                <altview name="Determination Table View" viewdef="Determination Table" label="Grid" mode="view"/>
+                <altview name="Determination Table Edit" viewdef="Determination Table" label="Grid" mode="edit"/>
+            </altviews> 
         </view>
         
         <view name="Permit"
@@ -600,8 +603,8 @@
         </viewdef>
 
         <viewdef
-            type="form"
             name="Determination"
+            type="form"
             class="edu.ku.brc.specify.datamodel.Determination"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
@@ -609,16 +612,11 @@
             <desc><![CDATA[Determination subform for Collection Object form.]]></desc>
             <enableRules/>
             
-            <columnDef>120px,3dlu,p,3dlu,100px,3dlu,p,3dlu,60px,3dlu,p,p:g</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p:g,2dlu</rowDef>
+            <columnDef>90px,2px,p,2px,p,2px,p,2px,p,2px,p,2px,p,2px,p,p:g</columnDef>
             
+            <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
                 <row>
-                    <!--
-                        <cell type="label" labelfor="1" label="Taxon"/>
-                        <cell type="field" id="1" name="taxon" uitype="plugin" initialize="name=FishBase;name=Taxon;title=Taxon" colspan="5"/>
-                    -->
-                    
                     <cell type="label" labelfor="1" label="Taxon"/>
                     <cell type="field" id="1" name="taxon" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=true" colspan="5"/>
                     
@@ -626,25 +624,26 @@
                     <cell type="field" id="2" name="status" uitype="combobox" picklist="DeterminationStatus" isrequired="true"/>
                 </row>
                 <row>
-                    
                     <cell type="label" labelfor="3" label="Determiner"/>
                     <cell type="field" id="3" name="determiner" uitype="querycbx" initialize="name=Agent;title=Determiner Agent" isrequired="true"/>
                     
-                    <cell type="label" labelfor="4" label="Confidence"/>
-                    <cell type="field" id="4" name="confidence" uitype="text"/>
+                    <cell type="label" labelfor="4"/>
+                    <cell type="field" id="4" name="typeStatusName" uitype="text"/>
                     
-                    <cell type="label" labelfor="5" label="Date"/>
-                    <cell type="field" id="5" name="determinedDate" isrequired="true" uitype="formattedtext" uifieldformatter="Date"/>
+                    <cell type="label" labelfor="5"/>
+                    <cell type="field" id="5" name="determinedDate" isrequired="true" uitype="formattedtext" uifieldformatter="Date" default="today"/>
+                    
+                    <cell type="field" id="7" name="yesNo1" uitype="checkbox" label="In Question"/>
                 </row>
                 
                 <row>
-                    <cell type="label" labelfor="6" label="Remarks"/>
-                    <cell type="field" id="6" name="remarks" uitype="textarea" colspan="9" cols="50"/>
+                    <cell type="label" labelfor="6"/>
+                    <cell type="field" id="6" name="remarks" uitype="textarea" colspan="14" cols="50"/>
                 </row>
             </rows>
-        </viewdef>
+        </viewdef> 
         
-        <viewdef
+         <viewdef
             type="form"
             name="Locality"
             class="edu.ku.brc.specify.datamodel.Locality"
@@ -652,34 +651,64 @@
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             
             <desc><![CDATA[Locality]]></desc>
-            <columnDef>p,3dlu,p,10px,p,3dlu,p</columnDef>
-            <rowDef>p,2dlu,p,2dlu,p,2dlu,p,2dlu,p,2dlu,p</rowDef>
+            <columnDef>p,2px,p,5px,p,2px,p,5px,p,2px,p,p:g</columnDef>
+            <rowDef auto="true" cell="p" sep="2dlu"/>
             
             <rows>
                 <row>
-                    <cell type="separator" label="Locality Information" colspan="7"/>
+                    <cell type="separator" label="Locality Information" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="4" label="Lat/Lon"/>
-                    <cell type="field" id="4" name="this" uitype="plugin" initialize="name=LatLonUI" colspan="4"/>                    
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="localityName" uitype="text" isrequired="true" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="6" label="Name"/>
-                    <cell type="field" id="6" name="localityName" uitype="text" colspan="5"/>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="namedPlace" uitype="text" colspan="5"/>
+                    <cell type="label" labelfor="2"/>
+                    <cell type="field" id="2" name="relationToNamedPlace" uitype="text"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="1" label="Datum"/>
-                    <cell type="field" id="1" name="datum" uitype="text" cols="20"/>
-                    <cell type="label" labelfor="2" label="Elevation Method"/>
-                    <cell type="field" id="2" name="elevationMethod" uitype="text" cols="20"/>
+                    <cell type="label" labelfor="4" label="Geography"/>
+                    <cell type="field" id="4" name="geography" uitype="querycbx" initialize="name=Geography;title=Geography" isrequired="true" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="7" label="Geography"/>
-                    <cell type="field" id="7" name="geography" uitype="querycbx" initialize="name=Geography;title=Geography" isrequired="true"/>
+                    <cell type="label" labelfor="5" label="Lat/Lon"/>
+                    <cell type="field" id="5" name="this" uitype="plugin" initialize="name=LatLonUI" colspan="10"/>
+                </row>
+                <row>
+                    <cell type="separator" label="Elevation" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="6"/>
+                    <cell type="field" id="6" name="minElevation" uitype="text" cols="20"/>
+                    <cell type="label" labelfor="7"/>
+                    <cell type="field" id="7" name="maxElevation" uitype="text" cols="20"/>
+                    <cell type="label" labelfor="8"/>
+                    <cell type="field" id="8" name="elevationMethod" uitype="text" cols="1"/>
+                </row>
+                <row>
+                    <cell type="separator" label="Tools" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="panel" id="outerPanel" name="outerPanel" coldef="p,f:p:g,p,f:p:g,p,f:p:g" rowdef="p" colspan="12">
+                        <rows>
+                            <row>
+                                <cell type="label" label=" "/>
+                                <cell type="field" id="23" name="this" uitype="plugin" initialize="name=LocalityGeoRef;title=Geo Ref" colspan="1"/>
+                                <cell type="field" id="24" name="this" uitype="plugin" initialize="name=LocalityGoogleEarth;title=Google Earth" colspan="1"/>
+                            </row>
+                        </rows>
+                    </cell>
+                </row>
+                <row>
+                    <cell type="separator" label="Attachments" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="localityAttachments" colspan="12" initialize="btn=true;icon=LocalityAttachment"/>
                 </row>
             </rows>
-        </viewdef>
-        
+        </viewdef>       
         
         <viewdef
             type="form"
@@ -699,10 +728,10 @@
                     <cell type="label" label="Permit" icon="Permit" recordobj="true" colspan="12"/>                    
                 </row>
                 <row>
-                    <cell type="label" labelfor="1" label="Number"/>
+                    <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="permitNumber" uitype="text" isrequired="true"/>
                     
-                    <cell type="label" labelfor="2" label="Type"/>
+                    <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="type" uitype="combobox" picklist="PermitType" isrequired="true"/>
                 </row>
                 <row>
@@ -714,23 +743,23 @@
                 </row>
                 
                 <row>
-                    <cell type="label" labelfor="5" label="Date Issued"/>
+                    <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="issuedDate" uitype="formattedtext" uifieldformatter="Date"/>
                     
-                    <cell type="label" labelfor="6" label="Date Renewed"/>
+                    <cell type="label" labelfor="6"/>
                     <cell type="field" id="6" name="renewalDate" uitype="formattedtext" uifieldformatter="Date"/>
                 </row>
                 
                 <row>
-                    <cell type="label" labelfor="7" label="Start Date"/>
+                    <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="startDate" uitype="formattedtext" uifieldformatter="Date"/>
                     
-                    <cell type="label" labelfor="8" label="End Date"/>
+                    <cell type="label" labelfor="8"/>
                     <cell type="field" id="8" name="endDate" uitype="formattedtext" uifieldformatter="Date"/>
                 </row>
                 
                 <row>
-                    <cell type="label" labelfor="9" label="Remarks"/>
+                    <cell type="label" labelfor="9"/>
                     <cell type="field" id="9" name="remarks" uitype="textarea" colspan="10"/>
                 </row>
                 <!--
@@ -755,39 +784,39 @@
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="1" label=""/>
-                    <cell type="field" id="1" name="isPrimary" uitype="checkbox" label="Is Primary Address"/>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="isPrimary" uitype="checkbox"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="2" label="Address"/>
+                    <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="address" uitype="text" cols="50" colspan="5" isrequired="true"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="3" label="Address"/>
+                    <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="address2" uitype="text" cols="50" colspan="5"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="4" label="City" isrequired="true"/>
+                    <cell type="label" labelfor="4" isrequired="true"/>
                     <cell type="field" id="4" name="city" uitype="text" cols="20"/>
-                    <cell type="label" labelfor="5" label="State" isrequired="true"/>
+                    <cell type="label" labelfor="5" isrequired="true"/>
                     <cell type="field" id="5" name="state" uitype="text" cols="15"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="6" label="Postal Code"/>
+                    <cell type="label" labelfor="6"/>
                     <cell type="field" id="6" name="postalCode" uitype="text" cols="11" isrequired="true"/>
-                    <cell type="label" labelfor="7" label="Country"/>
+                    <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="country" uitype="text" cols="20" isrequired="true"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="8" label="Phone (Work)"/>
+                    <cell type="label" labelfor="8"/>
                     <cell type="field" id="8" name="phone1" uitype="text" cols="15"/>
-                    <cell type="label" labelfor="9" label="Phone (Cell)"/>
+                    <cell type="label" labelfor="9"/>
                     <cell type="field" id="9" name="phone2" uitype="text" cols="15"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="10" label="FAX"/>
+                    <cell type="label" labelfor="10"/>
                     <cell type="field" id="10" name="fax" uitype="text" cols="15"/>
-                    <cell type="label" labelfor="11" label="Room/Building"/>
+                    <cell type="label" labelfor="11"/>
                     <cell type="field" id="11" name="roomOrBuilding" uitype="text" cols="30"/>
                 </row>
             </rows>
@@ -864,7 +893,7 @@
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="1" label="Original Filename"/>
+                    <cell type="label" labelfor="1" label="Original File Name"/>
                     <cell type="field" id="1" name="origFilename" uitype="browse" cols="50" colspan="1"/>
                 </row>
                 <row>
@@ -933,9 +962,9 @@
             <rowDef auto="true" cell="p" sep="2dlu"/>
             <rows>
                 <row>
-                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="journalName" uitype="text"/>
-                    <cell type="label" labelfor="2" label="Abbreviation"/>
+                    <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="journalAbbreviation" uitype="text" cols="3"/>
                 </row>
                 <row>
@@ -958,35 +987,35 @@
             <rowDef auto="true" cell="p" sep="2dlu"/>
             <rows>
                 <row>
-                    <cell type="label" labelfor="8" label="Type of Reference"/>
+                    <cell type="label" labelfor="8"/>
                     <cell type="field" id="8" name="referenceWorkType" uitype="combobox" picklist="ReferenceWorkType" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="1" label="Title"/>
+                    <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="title" uitype="text" cols="50" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="2" label="Publisher"/>
+                    <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="publisher" uitype="text" cols="50" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="3" label="Place Of Publication"/>
+                    <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="placeOfPublication" uitype="text" cols="50" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="4" label="Work Date"/>
+                    <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="workDate" uitype="text" cols="10"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="5" label="Volume"/>
+                    <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="volume" uitype="text" cols="10"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="6" label="Pages"/>
+                    <cell type="label" labelfor="6"/>
                     <cell type="field" id="6" name="pages" uitype="text"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="7" label="Library #"/>
+                    <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="libraryNumber" uitype="text"/>
                 </row>
             </rows>
@@ -1007,7 +1036,7 @@
                     <cell type="field" id="1" name="name" uitype="text" cols="50" isrequired="true"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="2" label="Remarks"/>
+                    <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="remarks" uitype="textarea" cols="40"/>
                 </row>
             </rows>
@@ -1086,7 +1115,7 @@
             <rowDef auto="true" cell="p" sep="2dlu"/>
             <rows>
                 <row>
-                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="name" uitype="text" cols="50" isrequired="true"/>
                 </row>
             </rows>
@@ -1114,7 +1143,7 @@
                 	<cell type="label" label="Taxon" icon="Taxon" recordobj="true" colspan="5"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="name" label="Name"/>
+                    <cell type="label" labelfor="name"/>
                     <cell type="field" id="name" uitype="text" cols="16" name="name" isrequired="true"/>
                     <!--<cell type="field" id="WebLink" name="this" uitype="plugin" initialize="name=WebLinkLauncherButton;url=http://www.fishbase.org/Summary/speciesSummary.php?genusname=$genusName$&amp;speciesname=$speciesName$;label=FishBase"/>-->
                     <!--<cell type="field" id="WebLink" name="this" uitype="plugin" initialize="name=WebLinkLauncherButton;url=http://www.ncbi.nlm.nih.gov/sites/gquery?term=$genusName$%20$speciesName$;label=NCBI"/> -->
@@ -1146,7 +1175,7 @@
                 </row>
                 -->
                 <row>
-                    <cell type="label" labelfor="commonName" label="Common Name"/>
+                    <cell type="label" labelfor="commonName"/>
                     <cell type="field" id="commonName" uitype="text" name="commonName" colspan="3"/>
                 </row>
                 <!-- 
@@ -1164,7 +1193,7 @@
                 </row>
                  -->
                 <row>
-                	<cell type="label" labelfor="isAccepted" label="Is Accepted?"/>
+                	<cell type="label" labelfor="isAccepted"/>
                 	<cell type="field" id="isAccepted" uitype="checkbox" name="isAccepted" default="true" isrequired="true" colspan="3"/>
                 </row>
                 <row>
@@ -1172,7 +1201,7 @@
                 	<cell type="field" id="acceptedParent" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false" name="acceptedParent" colspan="3"/>
                 </row>
                 <row>
-                	<cell type="label" labelfor="isHybrid" label="Is Hybrid?"/>
+                	<cell type="label" labelfor="isHybrid"/>
                 	<cell type="field" id="isHybrid" uitype="checkbox" name="isHybrid" default="false" isrequired="true" colspan="3"/>
                 </row>
                 <row>
@@ -1221,11 +1250,11 @@
                 	<cell type="label" label="Geography" icon="Geography" recordobj="true" colspan="3"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="name" label="Name"/>
+                    <cell type="label" labelfor="name"/>
                     <cell type="field" id="name" uitype="text" cols="16" name="name" isrequired="true"/> 
                 </row>
                 <row>
-                    <cell type="label" labelfor="remarks" label="Remarks"/>
+                    <cell type="label" labelfor="remarks"/>
                     <cell type="field" id="remarks" uitype="textarea" name="remarks"/>
                 </row>
                 <row>
@@ -1237,7 +1266,7 @@
                 	<cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem"/>
                 </row>
                 <row>
-                	<cell type="label" labelfor="isAccepted" label="Is Accepted?"/>
+                	<cell type="label" labelfor="isAccepted"/>
                 	<cell type="field" id="isAccepted" uitype="checkbox" name="isAccepted" default="true" isrequired="true"/>
                 </row>
                 <row>
@@ -1272,11 +1301,11 @@
                 	<cell type="label" label="Storage" icon="Storage" recordobj="true" colspan="3"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="name" label="Name"/>
+                    <cell type="label" labelfor="name"/>
                     <cell type="field" id="name" uitype="text" cols="16" name="name" isrequired="true"/> 
                 </row>
                 <row>
-                    <cell type="label" labelfor="remarks" label="Remarks"/>
+                    <cell type="label" labelfor="remarks"/>
                     <cell type="field" id="remarks" uitype="textarea" name="remarks"/>
                 </row>
                 <row>
@@ -1315,11 +1344,11 @@
                 	<cell type="label" label="GeologicTimePeriod" icon="GeologicTimePeriod" recordobj="true" colspan="7"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="name" label="Name"/>
+                    <cell type="label" labelfor="name"/>
                     <cell type="field" id="name" uitype="text" cols="16" name="name" colspan="5" isrequired="true"/> 
                 </row>
                 <row>
-                    <cell type="label" labelfor="remarks" label="Remarks"/>
+                    <cell type="label" labelfor="remarks"/>
                     <cell type="field" id="remarks" uitype="textarea" name="remarks" colspan="5"/>
                 </row>
                 <row>
@@ -1331,15 +1360,15 @@
                 	<cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem" colspan="5"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="startPeriod" label="Start Period"/>
+                    <cell type="label" labelfor="startPeriod"/>
                 	<cell type="field" id="startPeriod" uitype="text" name="startPeriod"/>
-                    <cell type="label" labelfor="startUncertainty" label="Start Uncertainty"/>
+                    <cell type="label" labelfor="startUncertainty"/>
                 	<cell type="field" id="startUncertainty" uitype="text" name="startUncertainty"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="endPeriod" label="End Period"/>
+                    <cell type="label" labelfor="endPeriod"/>
                 	<cell type="field" id="endPeriod" uitype="text" name="endPeriod"/>
-                    <cell type="label" labelfor="endUncertainty" label="End Uncertainty"/>
+                    <cell type="label" labelfor="endUncertainty"/>
                 	<cell type="field" id="endUncertainty" uitype="text" name="endUncertainty"/>
                 </row>
                 <row>
@@ -1370,11 +1399,11 @@
                 	<cell type="label" label="LithoStrat" icon="LithoStrat" recordobj="true" colspan="7"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="name" label="Name"/>
+                    <cell type="label" labelfor="name"/>
                     <cell type="field" id="name" uitype="text" cols="16" name="name" colspan="5" isrequired="true"/> 
                 </row>
                 <row>
-                    <cell type="label" labelfor="remarks" label="Remarks"/>
+                    <cell type="label" labelfor="remarks/>
                     <cell type="field" id="remarks" uitype="textarea" name="remarks" colspan="5"/>
                 </row>
                 <row>
@@ -1403,11 +1432,11 @@
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="fullName" label="Name"/>
+                    <cell type="label" labelfor="fullName"/>
                     <cell type="field" id="fullName" uitype="text" cols="16" name="fullName"/> 
                 </row>
                 <row>
-                    <cell type="label" labelfor="commonName" label="Common Name"/>
+                    <cell type="label" labelfor="commonName"/>
                     <cell type="field" id="commonName" uitype="text" name="commonName"/>
                 </row>
             </rows>
@@ -1428,7 +1457,7 @@
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="fullName" label="Name"/>
+                    <cell type="label" labelfor="fullName"/>
                     <cell type="field" id="fullName" uitype="text" cols="16" name="fullName"/> 
                 </row>
             </rows>
@@ -1449,7 +1478,7 @@
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="fullName" label="Name"/>
+                    <cell type="label" labelfor="fullName"/>
                     <cell type="field" id="fullName" uitype="text" cols="16" name="fullName"/> 
                 </row>
             </rows>
@@ -1470,7 +1499,7 @@
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="fullName" label="Name"/>
+                    <cell type="label" labelfor="fullName"/>
                     <cell type="field" id="fullName" uitype="text" cols="16" name="fullName"/> 
                 </row>
             </rows>
@@ -1533,19 +1562,19 @@
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="name" uitype="text" cols="16" isrequired="true"/> 
                 </row>
                 <row>
-                    <cell type="label" labelfor="2" label="Remarks"/>
+                    <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="remarks" uitype="textarea"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="3" label="In Full Name?"/>
+                    <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" uitype="checkbox" name="isInFullName"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="4" label="Is Enforced?"/>
+                    <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" uitype="checkbox" name="isEnforced"/>
                 </row>
                 <!--
@@ -1605,19 +1634,19 @@
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="name" uitype="text" cols="16" isrequired="true"/> 
                 </row>
                 <row>
-                    <cell type="label" labelfor="2" label="Remarks"/>
+                    <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="remarks" uitype="textarea"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="3" label="In Full Name?"/>
+                    <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" uitype="checkbox" name="isInFullName"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="4" label="Is Enforced?"/>
+                    <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" uitype="checkbox" name="isEnforced"/>
                 </row>
                 <!--
@@ -1677,19 +1706,19 @@
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="name" uitype="text" cols="16" isrequired="true"/> 
                 </row>
                 <row>
-                    <cell type="label" labelfor="2" label="Remarks"/>
+                    <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="remarks" uitype="textarea"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="3" label="In Full Name?"/>
+                    <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" uitype="checkbox" name="isInFullName"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="4" label="Is Enforced?"/>
+                    <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" uitype="checkbox" name="isEnforced"/>
                 </row>
                 <!--
@@ -1749,19 +1778,19 @@
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="name" uitype="text" cols="16" isrequired="true"/> 
                 </row>
                 <row>
-                    <cell type="label" labelfor="2" label="Remarks"/>
+                    <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="remarks" uitype="textarea"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="3" label="In Full Name?"/>
+                    <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" uitype="checkbox" name="isInFullName"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="4" label="Is Enforced?"/>
+                    <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" uitype="checkbox" name="isEnforced"/>
                 </row>
                 <!--
@@ -1821,19 +1850,19 @@
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="1" label="Name"/>
+                    <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="name" uitype="text" cols="16" isrequired="true"/> 
                 </row>
                 <row>
-                    <cell type="label" labelfor="2" label="Remarks"/>
+                    <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="remarks" uitype="textarea"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="3" label="In Full Name?"/>
+                    <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" uitype="checkbox" name="isInFullName"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="4" label="Is Enforced?"/>
+                    <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" uitype="checkbox" name="isEnforced"/>
                 </row>
                 <!--
