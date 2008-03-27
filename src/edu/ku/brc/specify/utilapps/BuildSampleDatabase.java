@@ -223,7 +223,7 @@ import edu.ku.brc.util.thumbnails.Thumbnailer;
  * 
  * @code_status Beta
  * 
- * @author jstewart
+ * @author rods
  */
 public class BuildSampleDatabase
 {
@@ -257,7 +257,11 @@ public class BuildSampleDatabase
     
     protected int                 stationFieldNumberCounter = 100;
     protected String              STATION_FIELD_FORMAT = "RS%03d";
-
+    
+    protected int                 NUM_LOCALTIES = 10000;
+    protected int                 NUM_COLOBJS   = 10000;
+    
+    protected boolean             doHugeBotany = false;
     
     /**
      * 
@@ -1376,6 +1380,401 @@ public class BuildSampleDatabase
         
         frame.setProcess(++createStep);
         
+
+        // done
+        log.info("Done creating Botany disciplineType database: " + disciplineType.getTitle());
+        return dataObjects;
+    }
+    /**
+     * Creates a single disciplineType collection.
+     * @param disciplineName the name of the Discipline to use
+     * @param disciplineName the disciplineType name
+     * @return the entire list of DB object to be persisted
+     */
+    public List<Object> createHugeBotanyCollection(final DisciplineType disciplineType,
+                                                     final Institution    institution,
+                                                     final SpecifyUser    user)
+    {
+        frame.setProcess(0, 16);
+        frame.setDesc("Creating Botany...");
+        
+        int createStep = 0;
+        
+        startTx();
+
+        DataType         dataType = createDataType(disciplineType.getTitle());
+        persist(dataType);
+        
+        Division       division   = createDivision(institution, disciplineType.getName(), "Botany", "BT", "Botany");
+        
+        // create tree defs (later we will make the def items and nodes)
+        TaxonTreeDef              taxonTreeDef      = createTaxonTreeDef("Taxon");
+        GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Geography");
+        GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Chronos Stratigraphy");
+        LithoStratTreeDef         lithoStratTreeDef = createLithoStratTreeDef("LithoStrat");
+        StorageTreeDef            locTreeDef        = createStorageTreeDef("Storage");
+        
+        lithoStratTreeDef.setRemarks("A simple super, group, formation, member, bed Litho Stratigraphy tree");
+        
+        Discipline discipline = createDiscipline(division, disciplineType.getName(), disciplineType.getTitle(), 
+                                                             dataType, taxonTreeDef, geoTreeDef, gtpTreeDef, 
+                                                             locTreeDef, lithoStratTreeDef);
+        Discipline.setCurrentDiscipline(discipline);
+        
+        persist(division);
+        persist(discipline);
+
+        loadSchemaLocalization(discipline, SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
+
+        ////////////////////////////////
+        // Create the really high-level stuff
+        ////////////////////////////////
+        String           title            = initPrefs.getProperty("useragent.title",    "Mr.");
+        String           firstName        = initPrefs.getProperty("useragent.firstname", "Rod");
+        String           lastName         = initPrefs.getProperty("useragent.lastname", "Spears");
+        String           midInit          = initPrefs.getProperty("useragent.midinit", "C");
+        String           abbrev           = initPrefs.getProperty("useragent.abbrev", "rs");
+        String           email            = initPrefs.getProperty("useragent.email", "rods@ku.edu");
+        String           userType         = initPrefs.getProperty("useragent.usertype", "CollectionManager");
+        
+        System.out.println("----- User Agent -----");
+        System.out.println("Title:     "+title);
+        System.out.println("FirstName: "+firstName);
+        System.out.println("LastName:  "+lastName);
+        System.out.println("MidInit:   "+midInit);
+        System.out.println("Abbrev:    "+abbrev);
+        System.out.println("Email:     "+email);
+        System.out.println("UserType:  "+userType);
+        
+        Agent userAgent = createAgent(title, firstName, midInit, lastName, abbrev, email);
+        
+        discipline.addReference(userAgent, "agents");
+        user.addReference(userAgent, "agents");
+        
+        persist(discipline);
+        persist(userAgent);
+        persist(user);
+        
+        frame.setProcess(++createStep);
+        
+        CatalogNumberingScheme cns = createCatalogNumberingScheme("CatalogNumber For Plants", "", true);
+        
+        persist(cns);
+        
+        ////////////////////////////////
+        // Create Collection
+        ////////////////////////////////
+        log.info("Creating a Collection");
+        Collection collection = createCollection("KUBOT", "Botany", cns, discipline);
+        persist(collection);
+        
+        Collection.setCurrentCollection(collection);
+
+        commitTx();
+        
+        frame.setProcess(++createStep);
+        
+        startTx();
+        
+        //DBTableIdMgr schema = new DBTableIdMgr(false);
+        //schema.initialize(new File(XMLHelper.getConfigDirPath("specify_datamodel.xml")));
+        //loadSchemaLocalization(discipline, SpLocaleContainer, schema);
+        
+        SpecifyUser.setCurrentUser(user);
+        user.addReference(userAgent, "agents");
+        
+        persist(user);
+
+        Journal journal = createJournalsAndReferenceWork();
+        
+        frame.setProcess(++createStep);
+        
+        ////////////////////////////////
+        // build the tree def items and nodes
+        ////////////////////////////////
+        List<Object> taxa        = createSimpleBotanyTaxonTree(taxonTreeDef);
+        List<Object> geos        = createSimpleGeography(geoTreeDef);
+        List<Object> locs        = createSimpleStorage(locTreeDef);
+        List<Object> gtps        = createSimpleGeologicTimePeriod(gtpTreeDef);
+        List<Object> lithoStrats = createSimpleLithoStrat(lithoStratTreeDef);
+        
+        persist(journal);
+        persist(taxa);
+        persist(geos);
+        persist(locs);
+        persist(gtps);
+        persist(lithoStrats);
+        commitTx();
+        
+        startTx();
+        frame.setProcess(++createStep);
+        
+        ////////////////////////////////
+        // picklists
+        ////////////////////////////////
+
+        log.info("Creating picklists");
+        frame.setDesc("Creating PickLists...");
+        //frame.setProcess(++createStep);
+        
+        createPickLists(null);
+        createPickLists(discipline);
+        
+        Vector<Object> dataObjects = new Vector<Object>();
+        
+        standardQueries(dataObjects, userAgent);
+        persist(dataObjects);
+        dataObjects.clear();
+        
+        //BldrPickList colMethods = createPickLists();
+        
+        persist(dataObjects);
+        dataObjects.clear();
+        
+        commitTx();
+        
+        startTx();
+        
+        frame.setProcess(++createStep);
+        
+        ////////////////////////////////
+        // localities
+        ////////////////////////////////
+        String POINT = "Point";
+        
+        frame.setDesc("Creating localities");
+        log.info("Creating localities");
+        frame.setProcess(0, NUM_LOCALTIES);
+        Vector<Locality> localities = new Vector<Locality>();
+        for (int i=0;i<NUM_LOCALTIES;i++)
+        {
+            Locality locality = createLocality("Unnamed forest stream pond", (Geography)geos.get(12));
+            locality.setLatLongType(POINT);
+            locality.setOriginalLatLongUnit(0);
+            locality.setLat1text("38.925467 deg N");
+            locality.setLatitude1(new BigDecimal(38.925467));
+            locality.setLong1text("94.984867 deg W");
+            locality.setLongitude1(new BigDecimal(-94.984867));
+            persist(locality);
+            
+            localities.add(locality);
+            
+            if ((i+1) % 10 == 0)
+            {
+                commitTx();
+                startTx(); 
+                frame.setProcess(i);
+            }
+        }
+        
+        commitTx();
+        
+        startTx();
+        
+        frame.setProcess(++createStep);
+        
+        ////////////////////////////////
+        // agents and addresses
+        ////////////////////////////////
+        log.info("Creating agents and addresses");
+        
+        List<Agent>    agents      = new Vector<Agent>();
+        
+        lastName = userAgent.getLastName();
+        Agent steveBoyd = createAgent("Mr.", "Steve", "D", "Boyd", "jb", "jb@net.edu");
+        if (!lastName.equals("Cooper")) agents.add(createAgent("Mr.", "Peter", "D", "Cooper", "ds", "ds@whitehouse.gov"));
+        if (!lastName.equals("Peck")) agents.add(createAgent("Mr.", "David", "H", "Peck", "rb", "beach@net.edu"));
+        if (!lastName.equals("Appleton")) agents.add(createAgent("Mrs.", "Sally", "H", "Appleton", "jm", "jm@net.edu"));
+        if (!lastName.equals("Brown")) agents.add(createAgent("Mr.", "Taylor", "C", "Brown", "kcs", "taylor.brown@ku.edu"));
+        if (!lastName.equals("Boyd")) agents.add(steveBoyd);
+        if (!lastName.equals("Thomas")) agents.add(createAgent("Mr", "James", "X", "Thomas", "dxt", ""));
+        if (!lastName.equals("Peterson")) agents.add(createAgent("Mr.", "Pete", "A", "Peterson", "jb", ""));
+        if (!lastName.equals("Guttenburg")) agents.add(createAgent("Mr.", "Mitch", "A", "Guttenburg", "jb", ""));
+        if (!lastName.equals("Ford")) agents.add(createAgent("Mr.", "Daniel", "A", "Ford", "mas", "mas@ku.edu"));
+        agents.add(userAgent);
+        
+        Agent ku = new Agent();
+        ku.initialize();
+        ku.setAbbreviation("KU");
+        ku.setAgentType(Agent.ORG);
+        ku.setLastName("University of Kansas");
+        ku.setEmail("webadmin@ku.edu");
+        ku.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        ku.getDisciplines().add(Discipline.getCurrentDiscipline());
+        Discipline.getCurrentDiscipline().getAgents().add(ku);
+        
+        agents.add(ku);
+        agents.get(0).setOrganization(ku);
+        agents.get(1).setOrganization(ku);
+        agents.get(2).setOrganization(ku);
+        agents.get(3).setOrganization(ku);
+        agents.get(8).setOrganization(ku);
+        
+        Agent otherAgent = new Agent();
+        otherAgent.initialize();
+        otherAgent.setAbbreviation("O");
+        otherAgent.setAgentType(Agent.OTHER);
+        otherAgent.setLastName("The Other Guys");
+        otherAgent.setEmail("other@other.com");
+        otherAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+        otherAgent.getDisciplines().add(Discipline.getCurrentDiscipline());
+        Discipline.getCurrentDiscipline().getAgents().add(otherAgent);
+        agents.add(otherAgent);
+        
+        commitTx();
+
+        List<GroupPerson> gpList = new ArrayList<GroupPerson>();
+        if (true)
+        {
+            startTx();
+            Agent gm1 = createAgent("Mr.", "John", "A", "Lyon", "jal", "jal@group.edu");
+            Agent gm2 = createAgent("Mr.", "Dave", "D", "Jones", "ddj", "ddj@group.edu");
+            persist(gm1);
+            persist(gm2);
+            commitTx();
+            
+            Agent groupAgent = new Agent();
+            groupAgent.initialize();
+            groupAgent.setAbbreviation("GRP");
+            groupAgent.setAgentType(Agent.GROUP);
+            groupAgent.setLastName("The Group");
+            groupAgent.setEmail("group@group.com");
+            groupAgent.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
+            groupAgent.getDisciplines().add(Discipline.getCurrentDiscipline());
+            Discipline.getCurrentDiscipline().getAgents().add(groupAgent);
+            
+            agents.add(groupAgent);
+            
+            gpList.add(createGroupPerson(groupAgent, gm1, 0));
+            gpList.add(createGroupPerson(groupAgent, gm2, 1));
+        }
+
+        startTx();
+        
+        List<AgentVariant> agentVariants = new Vector<AgentVariant>();
+        agentVariants.add(createAgentVariant(AgentVariant.VARIANT, "James Variant #1", steveBoyd));
+        agentVariants.add(createAgentVariant(AgentVariant.VERNACULAR, "James VERNACULAR #1", steveBoyd));
+     
+        List<Address> addrs = new Vector<Address>();
+        addrs.add(createAddress(agents.get(1), "1600 Pennsylvania Avenue NW", null, "Washington", "DC", "USA", "20500"));
+        addrs.add(createAddress(agents.get(1), "??? Mississippi", null, "Lawrence", "KS", "USA", "66045"));
+        addrs.add(createAddress(agents.get(2), "1 Main St", "", "Lenexa", "KS", "USA", "66071"));
+        addrs.add(createAddress(agents.get(3), "13355 Inverness", "Bldg #3", "Lawrence", "KS", "USA", "66047"));
+        addrs.add(createAddress(agents.get(4), "Natural History Museum", "Cromwell Rd", "London", null, "UK", "SW7 5BD"));
+        addrs.add(createAddress(agents.get(6), "1212 Apple Street", null, "Chicago", "IL", "USA", "01010"));
+        addrs.add(createAddress(agents.get(8), "11911 Oak Ln", null, "Orion", "KS", "USA", "66061"));
+        addrs.add(createAddress(ku, null, null, "Lawrence", "KS", "USA", "66045"));
+        
+        // User Agent Address
+        addrs.add(createAddress(userAgent, "1214 East Street", null, "Grinnell", "IA", "USA", "56060"));
+        userAgent.setDivision(division);
+                
+        persist(agents);
+        persist(agentVariants);
+        persist(gpList);
+        commitTx();
+        
+        startTx();
+        ////////////////////////////////
+        // Determination Status (Must be done here)
+        ////////////////////////////////
+        log.info("Creating determinations status");
+        current    = createDeterminationStatus(discipline, "Current",    "", DeterminationStatus.CURRENT);
+        notCurrent = createDeterminationStatus(discipline, "Not current","", DeterminationStatus.NOTCURRENT);
+        incorrect  = createDeterminationStatus(discipline, "Incorrect",  "", DeterminationStatus.USERDEFINED);
+        oldDet     = createDeterminationStatus(discipline, "Old Determination","", DeterminationStatus.OLDDETERMINATION);
+        
+        persist(current);
+        persist(notCurrent);
+        persist(incorrect);
+        persist(oldDet);
+        
+        persist(dataObjects);
+        dataObjects.clear();
+        
+        commitTx();
+        
+        startTx();
+        
+        ////////////////////////////////
+        // collection objects
+        ////////////////////////////////
+        log.info("Creating collection objects");
+
+        Calendar[] catDates = new Calendar[300];
+        for (int i=0;i<catDates.length;i++)
+        {
+            catDates[i] = Calendar.getInstance();
+            int year = 1980 + (int)(rand.nextDouble() * 20.0);
+            catDates[i].set(year, 01, 12 + i);
+        }
+        
+        Vector<PrepType> prepTypesForSaving = loadPrepTypes();
+        dataObjects.addAll(prepTypesForSaving);
+        
+        persist(dataObjects);
+        dataObjects.clear();
+        
+        frame.setProcess(++createStep);
+        
+        commitTx();
+        
+        PrepType pressed = prepTypesForSaving.get(0);
+
+        
+        startTx();
+
+        frame.setProcess(0, NUM_COLOBJS);
+        
+        
+        frame.setDesc("Creating Collection Objects");
+        int catNo = 100;
+        for (int i=0;i<NUM_COLOBJS;i++)
+        {
+            int years20 = (int)(rand.nextDouble() * 20.0);
+            int years10 = (int)(rand.nextDouble() * 10.0);
+            int years50 = (int)(rand.nextDouble() * 50.0);
+            
+            Calendar recent = Calendar.getInstance();
+            recent.set(1950+years20+years10, 10, 27, 13, 44, 00);
+            Calendar longAgo = Calendar.getInstance();
+            longAgo.set(1900+years50, 01, 29, 8, 12, 00);
+            Calendar whileBack = Calendar.getInstance(); 
+            whileBack.set(1960+years20, 7, 4, 9, 33, 12);
+
+            String catNumStr = String.format("%09d", catNo);
+            
+            int inx       = (int)(rand.nextDouble() * localities.size());
+            int agentInx  = (int)(rand.nextDouble() * agents.size());
+            int agentInx2 = (int)(rand.nextDouble() * agents.size());
+            int calInx    = (int)(rand.nextDouble() * catDates.length);
+            
+            CollectingEvent  ce = createFakeCollectingEvent(agents, localities.get(inx));
+            CollectionObject co = createCollectionObject(catNumStr, "RSC"+Integer.toString(catNo), agents.get(agentInx), collection,  1, ce, catDates[calInx], "BuildSampleDatabase");
+            Determination    dt = createDetermination(co, getRandomAgent(agents), getRandomTaxon(TaxonTreeDef.SPECIES, taxa), current, recent);
+            
+            Calendar prepDate = Calendar.getInstance();
+            Preparation prep = createPreparation(pressed, agents.get(agentInx2), co, (Storage)locs.get(7), rand.nextInt(20)+1, prepDate);
+
+            persist(ce);
+            persist(co);
+            persist(dt);
+            persist(prep);
+            
+            if ((i+1) % 10 == 0)
+            {
+                commitTx();
+                startTx();
+                
+                frame.setProcess(i);
+            }
+            catNo++;
+        }
+
+        commitTx();
+        
+        frame.setProcess(++createStep);
+
 
         // done
         log.info("Done creating Botany disciplineType database: " + disciplineType.getTitle());
@@ -4609,7 +5008,13 @@ public class BuildSampleDatabase
         
         if (isChoosen(DisciplineType.STD_DISCIPLINES.botany, false))
         {
-            createSingleBotanyCollection(DisciplineType.getDiscipline("botany"), institution, user);
+            if (doHugeBotany)
+            {
+                createSingleBotanyCollection(DisciplineType.getDiscipline("botany"), institution, user);
+            } else
+            {
+                createHugeBotanyCollection(DisciplineType.getDiscipline("botany"), institution, user);
+            }
             done = true;
         }
         
