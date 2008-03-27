@@ -1381,9 +1381,9 @@
                     <cell type="separator" label="Project" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="5" label="Project Name"/>
+                    <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="projectName" uitype="text" isrequired="true"/>
-                    <cell type="label" labelfor="6" label="Project Number"/>
+                    <cell type="label" labelfor="6"/>
                     <cell type="field" id="6" name="projectNumber" uitype="text"/>
                 </row>
                 <row>
@@ -1392,27 +1392,27 @@
                 </row>   
                 
                 <row>
-                    <cell type="label" labelfor="4" label="Project Description"/>
+                    <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="projectDescription" uitype="textarea" colspan="10" rows="3"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="8" label="Start Date"/>
+                    <cell type="label" labelfor="8"/>
                     <cell type="field" id="8" name="startDate" uitype="formattedtext" uifieldformatter="Date" default="today" />                   
-                    <cell type="label" labelfor="1" label="End Date"/>
+                    <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="endDate" uitype="formattedtext"  uifieldformatter="Date" default="today"/>
                 </row>
                 <row>                   
-                    <cell type="label" labelfor="9" label="URL"/>
+                    <cell type="label" labelfor="9"/>
                     <cell type="field" id="9" name="url" uitype="text"/>
                     
-                    <cell type="label" labelfor="2" label="Grant Agency"/>
+                    <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="grantAgency" uitype="text"/>
                     
-                    <cell type="label" labelfor="3" label="Grant Number"/>
+                    <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="grantNumber" uitype="text"/>
                 </row>               
                 <row>
-                    <cell type="label" labelfor="7" label="Remarks"/>
+                    <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="remarks" uitype="textarea" colspan="10" rows="3"/>
                 </row>
                 <row>
