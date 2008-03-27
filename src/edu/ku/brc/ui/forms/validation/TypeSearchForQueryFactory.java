@@ -107,7 +107,8 @@ public class TypeSearchForQueryFactory
      * @param name the name of the ValComboBoxFromQuery to return
      * @return a ValComboBoxFromQuery by name
      */
-    public static TextFieldWithInfo getTextFieldWithInfo(final String name)
+    public static TextFieldWithInfo getTextFieldWithInfo(final String name,
+                                                         final String dataObjFormatterNameArg)
     {
         TypeSearchInfo typeSearchInfo = instance.hash.get(name);
         if (typeSearchInfo != null)
@@ -115,13 +116,12 @@ public class TypeSearchForQueryFactory
             DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(typeSearchInfo.getTableId());
             if (tblInfo != null)
             {
-    
                 return new TextFieldWithInfo(tblInfo.getClassName(),
                                              tblInfo.getIdFieldName(),
                                              typeSearchInfo.getSearchFieldName(),
                                              typeSearchInfo.getFormat(),
                                              typeSearchInfo.getUiFieldFormatterName(),
-                                             typeSearchInfo.getDataObjFormatterName(),
+                                             dataObjFormatterNameArg,
                                              tblInfo.getNewObjDialog(),
                                              tblInfo.getTitle());
     
@@ -158,7 +158,9 @@ public class TypeSearchForQueryFactory
      * @param name the name of the ValComboBoxFromQuery to return
      * @return a ValComboBoxFromQuery by name
      */
-    public static ValComboBoxFromQuery createValComboBoxFromQuery(final String name, final int btnOpts)
+    public static ValComboBoxFromQuery createValComboBoxFromQuery(final String name, 
+                                                                  final int btnOpts,
+                                                                  final String dataObjFormatterNameArg)
     {
         TypeSearchInfo typeSearchInfo = instance.hash.get(name);
         if (typeSearchInfo != null)
@@ -172,7 +174,7 @@ public class TypeSearchForQueryFactory
                                                 typeSearchInfo.getSearchFieldName(),
                                                 typeSearchInfo.getFormat(),
                                                 typeSearchInfo.getUiFieldFormatterName(),
-                                                typeSearchInfo.getDataObjFormatterName(),
+                                                dataObjFormatterNameArg,
                                                 typeSearchInfo.getSqlTemplate(),
                                                 btnOpts);
 

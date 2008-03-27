@@ -230,15 +230,6 @@ public class InteractionsTask extends BaseTask
             addCommand(actionsNavBox, InfoRequestName, InfoRequestName, "InfoRequest", new int[] {ExchangeIn.getClassTableId(), ExchangeOut.getClassTableId(), CollectionObject.getClassTableId(), InfoRequest.getClassTableId()});
             addCommand(actionsNavBox, OPEN_FORM_CMD_ACT, "INTER_OPEN", name, new int[] {ExchangeIn.getClassTableId(), ExchangeOut.getClassTableId(), CollectionObject.getClassTableId(), InfoRequest.getClassTableId()});
             
-            
-            // These need to be loaded as Resources
-            //navBox = new NavBox(getResourceString(ReportsTask.REPORTS));
-            //navBox.add(NavBox.createBtn(getResourceString("All_Overdue_Loans_Report"), ReportsTask.REPORTS, IconManager.IconSize.Std16));
-            //navBox.add(NavBox.createBtn(getResourceString("All_Open_Loans_Report"), ReportsTask.REPORTS, IconManager.IconSize.Std16));
-            //navBox.add(NavBox.createBtn(getResourceString("All_Loans_Report"), ReportsTask.REPORTS, IconManager.IconSize.Std16));
-            //addToNavBoxAndRegisterAsDroppable(navBox, NavBox.createBtn(getResourceString(PRINT_LOAN),  ReportsTask.REPORTS, IconManager.IconSize.Std16, new NavBoxAction(INTERACTIONS, PRINT_LOAN, this)), null);
-            //navBoxes.addElement(navBox);
-            
             // Then add
             if (commands != null)
             {
@@ -261,14 +252,11 @@ public class InteractionsTask extends BaseTask
                     String tableIdStr = tcd.getParams().getProperty("tableid");
                     if (tableIdStr != null)
                     {
-                        //addToNavBoxAndRegisterAsDroppable(navBox, NavBox.createBtn(tcd.getName(), "Loan", IconManager.IconSize.Std16, new NavBoxAction(tcd, this)), tcd.getParams());
-                        
                         CommandAction cmdAction = new CommandAction(INTERACTIONS, PRINT_LOAN, Loan.getClassTableId());
                         cmdAction.addStringProperties(tcd.getParams());
                         NavBoxItemIFace nbi = makeDnDNavBtn(actionsNavBox, tcd.getName(), "Reports", cmdAction, null, true, false);
                         RolloverCommand roc = (NavBoxButton)nbi;
                         invoiceList.add(nbi);// true means make it draggable
-                        //setUpDraggable(nbi, new DataFlavor[]{Trash.TRASH_FLAVOR, INFOREQUEST_FLAVOR}, new NavBoxAction("", ""));
                         roc.addDragDataFlavor(INFOREQUEST_FLAVOR);
                         roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
                         

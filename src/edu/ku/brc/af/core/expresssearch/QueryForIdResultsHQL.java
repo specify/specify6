@@ -181,7 +181,7 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
     //@Override
     public String getTitle()
     {
-        return searchTableConfig.getTableInfo().getClassObj().getSimpleName();
+        return searchTableConfig.getTableInfo().getTitle();
     }
 
     /* (non-Javadoc)

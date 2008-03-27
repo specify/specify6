@@ -58,7 +58,7 @@ import org.hibernate.annotations.Index;
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "repositoryagreement")
 @org.hibernate.annotations.Table(appliesTo="repositoryagreement", indexes =
-    {   @Index (name="RefWrkNumberIDX", columnNames={"number"}),
+    {   @Index (name="RefWrkNumberIDX", columnNames={"RepositoryAgreementNumber"}),
         @Index (name="RefWrkStartDate", columnNames={"StartDate"})
     })
 public class RepositoryAgreement extends DataModelObjBase implements AttachmentOwnerIFace<RepositoryAgreementAttachment>, java.io.Serializable 
@@ -67,7 +67,7 @@ public class RepositoryAgreement extends DataModelObjBase implements AttachmentO
     // Fields
 
     protected Integer                     repositoryAgreementId;
-    protected String                      number;
+    protected String                      repositoryAgreementNumber;
     protected String                      status;
     protected Calendar                    startDate;
     protected Calendar                    endDate;
@@ -110,7 +110,7 @@ public class RepositoryAgreement extends DataModelObjBase implements AttachmentO
     {
         super.init();
         repositoryAgreementId = null;
-        number = null;
+        repositoryAgreementNumber = null;
         status = null;
         startDate = null;
         endDate = null;
@@ -173,13 +173,13 @@ public class RepositoryAgreement extends DataModelObjBase implements AttachmentO
     /**
      *
      */
-    @Column(name = "Number", unique = false, nullable = false, insertable = true, updatable = true, length = 60)
-    public String getNumber() {
-        return this.number;
+    @Column(name = "RepositoryAgreementNumber", unique = false, nullable = false, insertable = true, updatable = true, length = 60)
+    public String getRepositoryAgreementNumber() {
+        return this.repositoryAgreementNumber;
     }
 
-    public void setNumber(String number) {
-        this.number = number;
+    public void setRepositoryAgreementNumber(String number) {
+        this.repositoryAgreementNumber = number;
     }
 
     /**

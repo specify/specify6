@@ -98,7 +98,7 @@ public class AccessionBusRules extends AttachmentOwnerBaseBusRules
      * @see edu.ku.brc.ui.forms.BaseBusRules#afterFillForm(java.lang.Object, edu.ku.brc.ui.forms.Viewable)
      */
     @Override
-    public void afterFillForm(final Object dataObj, final Viewable viewable)
+    public void afterFillForm(final Object dataObj, final Viewable viewableArg)
     {
         super.afterFillForm(dataObj, viewable);
         

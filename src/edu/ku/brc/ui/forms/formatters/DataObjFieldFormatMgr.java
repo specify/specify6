@@ -184,7 +184,7 @@ public class DataObjFieldFormatMgr
                                 for (Object param : paramElements)
                                 {
                                     String nameStr = getAttr((Element)param, "name", null);
-                                    String val     = StringUtils.deleteWhitespace(((Element)param).getTextTrim());
+                                    String val     = ((Element)param).getTextTrim();
                                     if (StringUtils.isNotEmpty(nameStr) && StringUtils.isNotEmpty(val))
                                     {
                                         props.put(nameStr, val);

@@ -504,6 +504,17 @@
         </switch>
     </format>
     
+    <format
+        name="CollectingEventDetail"
+        class="edu.ku.brc.specify.datamodel.CollectingEvent"
+        default="false"
+        >
+        <switch single="true">
+            <external class="edu.ku.brc.specify.ui.CollectingEventDataObjFmt">
+            <param name="format">#FN#, #DT#</param>
+            </external>
+        </switch>
+    </format>
     
     <aggregators>
         <aggregator name="AccessionAuthorization" 

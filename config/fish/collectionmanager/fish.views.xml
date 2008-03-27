@@ -77,7 +77,7 @@
     			    <!-- <cell type="field" id="5" name="this" uitype="plugin" initialize="name=PartialDateUI;dateField=catalogedDate;dateTypeField=text1" default="today"/> -->
     			</row>
      			<row>
-    				<cell type="separator" label="Determination" collapse="determinations" colspan="12"/>
+    				<cell type="separator" label="Determinations" collapse="determinations" colspan="12"/>
     			</row>
 
     			<row>
@@ -85,7 +85,7 @@
     			</row>
    			    <row>
                  <cell type="label" labelfor="7" label="Collecting Event"/>
-    			 <cell type="field" id="7" name="collectingEvent" uitype="querycbx" initialize="name=CollectingEvent;title=Collecting Event" colspan="12"/>
+    			 <cell type="field" id="7" name="collectingEvent" uitype="querycbx" formatname="CollectingEventDetail" initialize="name=CollectingEvent" colspan="12"/>
     		    </row>  	
     			<row>
     			    <cell type="separator" label="Preparations" collapse="preparations" colspan="12"/>

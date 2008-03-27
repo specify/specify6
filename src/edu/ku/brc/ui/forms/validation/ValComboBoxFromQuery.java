@@ -41,6 +41,8 @@ import javax.swing.JButton;
 import javax.swing.JList;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
@@ -534,7 +536,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             }
             
             frame.getMultiView().getDataFromUI();
-            refreshUIFromData();
+            refreshUIFromData(true);
         }
     }
 
@@ -741,8 +743,9 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
 
     /**
      * Updates the UI from the data value (assume the data has changed but OK if it hasn't).
+     * @param useSession indicates it should create a session
      */
-    public void refreshUIFromData()
+    private void refreshUIFromData(final boolean useSession)
     {
         if (this.dataObj != null)
         {
@@ -776,14 +779,39 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
                 }
             } else
             {
-                newVal = DataObjFieldFormatMgr.format(this.dataObj, dataObjFormatterName);
+                DataProviderSessionIFace session = null;
+                try
+                {
+                    session = DataProviderFactory.getInstance().createSession();
+                    newVal = DataObjFieldFormatMgr.format(this.dataObj, dataObjFormatterName);
+                    
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                } finally
+                {
+                    if (session != null)
+                    {
+                        session.close();
+                    }
+                }
             }
 
             if (newVal != null)
             {
                 valState = UIValidatable.ErrorType.Valid;
-                textWithQuery.getTextField().setText(newVal.toString());
-                textWithQuery.getTextField().setCaretPosition(0);
+                final JTextField tf = textWithQuery.getTextField();
+                tf.setText(newVal.toString());
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run()
+                    {
+                        tf.setSelectionStart(-1);
+                        tf.setSelectionEnd(-1);
+                        tf.setCaretPosition(0);                        
+                    }
+                    
+                });
+
                 textWithQuery.setSelectedId(dataObj.getId());
                 
                 if (editBtn != null)
@@ -979,6 +1007,8 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             {
                 itemLabel = ((JMenuItem)e.getSource()).getText().toString();
                 this.dataObj = null;
+                getValue();
+                refreshUIFromData(true);
                 
             } else if (e.getSource() instanceof JList)
             {
@@ -1034,7 +1064,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         if (value == null || value instanceof FormDataObjIFace)
         {
             dataObj = (FormDataObjIFace)value;
-            refreshUIFromData();
+            refreshUIFromData(false);
             
         } else
         {
@@ -1117,19 +1147,19 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             getTextField().getDocument().addDocumentListener(this);
             getTextField().addFocusListener(new FocusAdapter() {
                 @Override
-                public void focusGained(FocusEvent arg0)
+                public void focusGained(FocusEvent e)
                 {
                     log.debug("focusGained");
                     localHasFocus = true;
-                    super.focusGained(arg0);
+                    super.focusGained(e);
                 }
 
                 @Override
-                public void focusLost(FocusEvent arg0)
+                public void focusLost(FocusEvent e)
                 {
                     log.debug("focusLost");
                     localHasFocus = false;
-                    super.focusLost(arg0);
+                    super.focusLost(e);
                 }
             });
         }

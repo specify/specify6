@@ -197,7 +197,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 int len = textField.getText().length();
                 if (len > 0)
                 {
-                    textField.setCaretPosition(len);
+                    textField.setCaretPosition(0);
                     textField.selectAll();
                 }
                 
@@ -225,6 +225,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                         }
                     }
                 }
+                textField.setCaretPosition(0);
                 super.focusLost(arg0);
             }
             

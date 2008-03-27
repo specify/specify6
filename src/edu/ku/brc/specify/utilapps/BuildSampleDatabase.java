@@ -1006,7 +1006,7 @@ public class BuildSampleDatabase
         RepositoryAgreement repoAg = new RepositoryAgreement();
         repoAg.initialize();
         repoAg.setDivision(division);
-        repoAg.setNumber("KU-1990-01");
+        repoAg.setRepositoryAgreementNumber("KU-1990-01");
         repoAg.setOriginator(ku);
         Calendar received = Calendar.getInstance();
         received.set(1992, 2, 10);
@@ -1784,7 +1784,7 @@ public class BuildSampleDatabase
         RepositoryAgreement repoAg = new RepositoryAgreement();
         repoAg.initialize();
         repoAg.setDivision(division);
-        repoAg.setNumber("KU-1979-01");
+        repoAg.setRepositoryAgreementNumber("KU-1979-01");
         repoAg.setOriginator(ku);
         Calendar received = Calendar.getInstance();
         received.set(1992, 2, 10);
@@ -2786,7 +2786,7 @@ public class BuildSampleDatabase
         RepositoryAgreement repoAg = new RepositoryAgreement();
         repoAg.initialize();
         repoAg.setDivision(division);
-        repoAg.setNumber("KU-"+disciplineType.getAbbrev()+"-01");
+        repoAg.setRepositoryAgreementNumber("KU-"+disciplineType.getAbbrev()+"-01");
         repoAg.setOriginator(ku);
         Calendar received = Calendar.getInstance();
         received.set(1992, 2, 10);
@@ -3818,7 +3818,7 @@ public class BuildSampleDatabase
         RepositoryAgreement repoAg = new RepositoryAgreement();
         repoAg.initialize();
         repoAg.setDivision(division);
-        repoAg.setNumber("KU-1992-01");
+        repoAg.setRepositoryAgreementNumber("KU-1992-01");
         repoAg.setOriginator(ku);
         Calendar received = Calendar.getInstance();
         received.set(1992, 2, 10);

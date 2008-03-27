@@ -38,13 +38,13 @@ public class FormCellSubView extends FormCell implements FormCellSubViewIFace
     protected String  defaultAltViewType;
     protected String  funcModes = null;
     
-    protected int     xCoord  = 0;
-    protected int     yCoord  = 0;
-    protected int     width   = 0;
-    protected int     height  = 0;
+    //protected int     xCoord  = 0;
+    //protected int     yCoord  = 0;
+    //protected int     width   = 0;
+    //protected int     height  = 0;
     
     // For Table/Grid SubViews
-    protected int    tableRows = 5;
+    protected int    tableRows = 3;
     
     protected List<Modes> modesList = null;
     

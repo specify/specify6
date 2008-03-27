@@ -485,7 +485,8 @@ public class ViewFactory
             btnOpts |= cellField.getPropertyAsBoolean("newbtn", true) ? ValComboBoxFromQuery.CREATE_NEW_BTN : 0;
             btnOpts |= cellField.getPropertyAsBoolean("searchbtn", true) ? ValComboBoxFromQuery.CREATE_SEARCH_BTN : 0;
 
-            ValComboBoxFromQuery cbx = TypeSearchForQueryFactory.createValComboBoxFromQuery(cbxName, btnOpts);
+            
+            ValComboBoxFromQuery cbx = TypeSearchForQueryFactory.createValComboBoxFromQuery(cbxName, btnOpts, cellField.getFormatName());
             cbx.setRequired(isRequired);
             if (validator != null)// && (cellField.isRequired() || isNotEmpty(cellField.getValidationRule())))
             {
@@ -621,7 +622,7 @@ public class ViewFactory
         String            txtName = cellField.getProperty("name");
         if (isNotEmpty(txtName))
         {
-            textFieldInfo = TypeSearchForQueryFactory.getTextFieldWithInfo(txtName);
+            textFieldInfo = TypeSearchForQueryFactory.getTextFieldWithInfo(txtName, cellField.getFormatName());
             if (textFieldInfo != null)
             {
                 textFieldInfo.setMultiView(parent);
@@ -958,7 +959,7 @@ public class ViewFactory
             
             FormCellField.FieldType uiType = cellField.getUiType();
             
-            // Check to see if there is a picklist and get it if there is
+            // Check to see if there is a PickList and get it if there is
             PickListDBAdapterIFace adapter = null;
             
             String pickListName = cellField.getPickListName();
@@ -1234,7 +1235,21 @@ public class ViewFactory
             // still have compToAdd = null;
             FormCellSeparatorIFace fcs             = (FormCellSeparatorIFace)cell;
             String                 collapsableName = fcs.getCollapseCompName();
-            Component              sep             = viewBldObj.createSeparator(fcs.getLabel());
+            
+            String label = fcs.getLabel();
+            if (StringUtils.isEmpty(label) || label.equals("##"))
+            {
+                String className = fcs.getProperty("forclass");
+                if (StringUtils.isNotEmpty(className))
+                {
+                    DBTableInfo ti = DBTableIdMgr.getInstance().getByShortClassName(className);
+                    if (ti != null)
+                    {
+                        label = ti.getTitle();
+                    }
+                }
+            }
+            Component sep = viewBldObj.createSeparator(label);
             if (isNotEmpty(collapsableName))
             {
                 CollapsableSeparator collapseSep = new CollapsableSeparator(sep);
@@ -1400,7 +1415,7 @@ public class ViewFactory
                             
                             parent.addChildMV(multiView);
                             
-                            log.debug("["+cell.getType()+"] ["+cell.getName()+"] col: "+bi.colInx+" row: "+rowInx+" colspan: "+cell.getColspan()+" rowspan: "+cell.getRowspan());
+                            //log.debug("["+cell.getType()+"] ["+cell.getName()+"] col: "+bi.colInx+" row: "+rowInx+" colspan: "+cell.getColspan()+" rowspan: "+cell.getRowspan());
                             viewBldObj.addSubView(cellSubView, multiView, bi.colInx, rowInx, cellSubView.getColspan(), 1);
                             viewBldObj.closeSubView(cellSubView);
                             

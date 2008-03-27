@@ -60,7 +60,6 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Agent;
-import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.PrepType;
@@ -566,7 +565,7 @@ public class DataEntryTask extends BaseTask
                 config(xstream);
                 
                 String           xmlStr    = null;
-                AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromDir("Personal", resourceName);
+                AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromDir(SpecifyAppContextMgr.PERSONALDIR, resourceName);
                 if (escAppRes != null)
                 {
                     xmlStr = escAppRes.getDataAsString();
@@ -574,7 +573,7 @@ public class DataEntryTask extends BaseTask
                 } else
                 {
                     // Get the default resource by name and copy it to a new User Area Resource
-                    AppResourceIFace newAppRes = AppContextMgr.getInstance().copyToDirAppRes("Personal", resourceName);
+                    AppResourceIFace newAppRes = AppContextMgr.getInstance().copyToDirAppRes(SpecifyAppContextMgr.PERSONALDIR, resourceName);
                     if (newAppRes != null)
                     {
                         // Save it in the User Area
@@ -825,11 +824,7 @@ public class DataEntryTask extends BaseTask
             XStream xstream = new XStream();
             config(xstream);
             
-            //AppResourceIFace appRes = AppContextMgr.getInstance().getResource("DataEntryTaskInit");
-            //appRes.setDataAsString(xstream.toXML(dataEntryXML));
-            //((SpecifyAppContextMgr)AppContextMgr.getInstance()).saveResource(appRes);
-            
-            AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromDir("Personal", resourceName);
+            AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromDir(SpecifyAppContextMgr.PERSONALDIR, resourceName);
             if (escAppRes != null)
             {
                 escAppRes.setDataAsString(xstream.toXML(dataEntryXML));

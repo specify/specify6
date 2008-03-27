@@ -330,6 +330,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     
                     List<Collection> list = new Vector<Collection>();
                     list.addAll(collectionHash.values());
+                    Collections.sort(list);
+                    
                     int selectColInx = -1;
                     if (collection != null)
                     {

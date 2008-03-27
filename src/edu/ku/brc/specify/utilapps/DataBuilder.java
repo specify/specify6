@@ -2189,7 +2189,7 @@ public class DataBuilder
         RepositoryAgreement repositoryagreement = new RepositoryAgreement();
         repositoryagreement.initialize();
         repositoryagreement.setDivision(division);
-        repositoryagreement.setNumber(number);
+        repositoryagreement.setRepositoryAgreementNumber(number);
         repositoryagreement.setDateReceived(dateReceived);
         repositoryagreement.setTimestampCreated(new Timestamp(System.currentTimeMillis()));
         repositoryagreement.setStartDate(startDate);

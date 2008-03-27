@@ -123,14 +123,6 @@ public class LocalityLatLonFormatter implements DataObjDataFieldFormatIFace
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.formatters.DataObjDataFieldFormatIFace#getClassObj()
-     */
-    public Class<?> getClassObj()
-    {
-        return Locality.class;
-    }
-
-    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.DataObjDataFieldFormatIFace#getDataClass()
      */
     public Class<?> getDataClass()
@@ -138,6 +130,9 @@ public class LocalityLatLonFormatter implements DataObjDataFieldFormatIFace
         return Locality.class;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.DataObjDataFieldFormatIFace#getName()
+     */
     public String getName()
     {
         return name;

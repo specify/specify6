@@ -503,6 +503,9 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
         return collectionName;
     }
     
+    /* (non-Javadoc)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
     public int compareTo(Collection obj)
     {
         return collectionName.compareTo(obj.collectionName);

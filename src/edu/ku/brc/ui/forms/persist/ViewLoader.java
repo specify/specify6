@@ -66,7 +66,7 @@ import edu.ku.brc.ui.forms.validation.TypeSearchForQueryFactory;
  */
 public class ViewLoader
 {
-    public static final int DEFAULT_ROWS         = 5;
+    public static final int DEFAULT_ROWS         = 3;
     public static final int DEFAULT_COLS         = 10;
     public static final int DEFAULT_SUBVIEW_ROWS = 5;
     
@@ -232,22 +232,22 @@ public class ViewLoader
         String   resLabels         = getAttr(element, RESOURCELABELS, "false");
         boolean  useResourceLabels = resLabels.equals("true");
         
-        if (StringUtils.isEmpty(name))
+        if (isEmpty(name))
         {
             throw new RuntimeException("name is null.");
         }
 
-        if (StringUtils.isEmpty(className))
+        if (isEmpty(className))
         {
             throw new RuntimeException("className is null. name["+name+"]");
         }
 
-        if (StringUtils.isEmpty(gettableClassName))
+        if (isEmpty(gettableClassName))
         {
             throw new RuntimeException("gettableClassName Name is null.name["+name+"] classname["+className+"]");
         }
 
-        if (StringUtils.isEmpty(settableClassName))
+        if (isEmpty(settableClassName))
         {
             //throw new RuntimeException("settableClassName Name is null.name["+name+"] classname["+className+"] settableClassName["+settableClassName+"]");
         }
@@ -614,7 +614,7 @@ public class ViewLoader
                                                                      getAttr(cellElement, "icon", null),
                                                                      getAttr(cellElement, "recordobj", false), 
                                                                      colspan));
-                            String initialize = getAttr(cellElement, "initialize", "");
+                            String initialize = getAttr(cellElement, "initialize", null);
                             if (StringUtils.isNotEmpty(initialize))
                             {
                                 cell.setProperties(UIHelper.parseProperties(initialize));
@@ -628,6 +628,11 @@ public class ViewLoader
                                                                          getLabel(cellElement), 
                                                                          getAttr(cellElement, "collapse", ""),
                                                                          colspan));
+                            String initialize = getAttr(cellElement, "initialize", null);
+                            if (StringUtils.isNotEmpty(initialize))
+                            {
+                                cell.setProperties(UIHelper.parseProperties(initialize));
+                            }
                             break;
                         }
                         
@@ -654,7 +659,7 @@ public class ViewLoader
                             
                             Properties properties = UIHelper.parseProperties(initialize);
                             
-                            if (StringUtils.isEmpty(uitypeStr))
+                            if (isEmpty(uitypeStr))
                             {
                                 // XXX DEBUG ONLY PLease REMOVE LATER
                                 //log.debug("***************************************************************************");
@@ -678,7 +683,7 @@ public class ViewLoader
                                     dspUITypeStr = getAttr(cellElement, "dspuitype", "textfieldinfo");
                                     
                                     String fmtName = TypeSearchForQueryFactory.etDataObjFormatterName(properties.getProperty("name"));
-                                    if (isNotEmpty(fmtName))
+                                    if (isEmpty(formatName) && isNotEmpty(fmtName))
                                     {
                                         formatName = fmtName;
                                     }
@@ -826,7 +831,7 @@ public class ViewLoader
                             Properties properties = UIHelper.parseProperties(getAttr(cellElement, "initialize", null));
 
                             String svViewSetName = cellElement.attributeValue("viewsetname");
-                            if (StringUtils.isEmpty(svViewSetName))
+                            if (isEmpty(svViewSetName))
                             {
                                 svViewSetName = null;
                             }
@@ -850,7 +855,7 @@ public class ViewLoader
                         case iconview:
                         {
                             String vsName = cellElement.attributeValue("viewsetname");
-                            if (StringUtils.isEmpty(vsName))
+                            if (isEmpty(vsName))
                             {
                                 vsName = instance.viewSetName;
                             }
