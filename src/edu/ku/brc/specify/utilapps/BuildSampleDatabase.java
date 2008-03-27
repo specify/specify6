@@ -261,7 +261,7 @@ public class BuildSampleDatabase
     protected int                 NUM_LOCALTIES = 50000;
     protected int                 NUM_COLOBJS   = 50000;
     
-    protected boolean             doHugeBotany = true;
+    protected boolean             doHugeBotany = false;
     
     /**
      * 
