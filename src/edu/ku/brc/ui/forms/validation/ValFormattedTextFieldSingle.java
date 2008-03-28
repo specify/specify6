@@ -804,9 +804,9 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             } else if (field.getType() == UIFieldFormatterField.FieldType.numeric)
             {
                 // we really need to check to make sure this is a Double, Float or BigDecimal
-                String s = StringUtils.remove(str, ".");
-                s = StringUtils.remove(str, "-");
-                return StringUtils.isNumeric(s);
+                String s = StringUtils.remove(str, '.');
+                s = StringUtils.remove(str, '.');
+                return s.length() == 0 || StringUtils.isNumericSpace(s);
 
             }
             return true;
