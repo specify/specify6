@@ -1639,19 +1639,18 @@
             
             <rows>
                 <row>
-                    <!--               <cell type="label" labelfor="1" label="BioStrat"/>
-                        <cell type="field" id="1" name="bioStrat" uitype="text" cols="20"/> 
-                        <cell type="field" id="1" name="bioStrat" uitype="querycbx" initialize="name=Accession;title=Accession" isrequired="false"/>
-                        
-                        <cell type="label" labelfor="2" label="ChronosStrat"/>
-                        <cell type="field" id="2" name="chronosStrat" uitype="text" cols="20"/>
-                    -->              
+                    <cell type="label" labelfor="2" label="ChronosStrat"/>
+                    <cell type="field" id="2" name="chronosStrat" uitype="querycbx" initialize="name=GeologicTimePeriod" isrequired="false" />
+                    <cell type="label" labelfor="1" label="BioStrat"/>
+                    <cell type="field" id="1" name="bioStrat" uitype="querycbx" initialize="name=BioStrat;displaydlg=BioStratDisplay;searchdlg=BioStratSearch" isrequired="false"/>
+                </row>
+                <row>
                     <cell type="label" labelfor="3" label="LithoStrat"/>
                     <cell type="field" id="3" name="lithoStrat" uitype="querycbx" initialize="name=LithoStrat"/> 
                 </row>
                 <row>
                     <cell type="label" labelfor="4" label="Remarks"/>
-                    <cell type="field" id="4" name="text1" uitype="text"/>                    
+                    <cell type="field" id="4" name="text1" uitype="text" colspan="10"/>                    
                 </row>
             </rows>
         </viewdef>

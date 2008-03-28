@@ -144,8 +144,10 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     protected boolean            hasFocus    = false;
 
 
-    protected ViewBasedDisplayIFace frame      = null;
-    protected MultiView             multiView  = null;
+    protected ViewBasedDisplayIFace frame          = null;
+    protected MultiView             multiView      = null;
+    protected String                searchDlgName  = null;  // Overrides what is in the TableInfo
+    protected String                displayDlgName = null;  // Overrides what is in the TableInfo
 
     protected List<FocusListener>   focusListeners = new ArrayList<FocusListener>();
     protected Vector<ListSelectionListener> listSelectionListeners = null;
@@ -303,6 +305,24 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     }
     
     /**
+     * @param searchDlgName the searchDlgName to set
+     */
+    public void setSearchDlgName(String searchDlgName)
+    {
+        this.searchDlgName = searchDlgName;
+    }
+
+
+    /**
+     * @param displayDlgName the displayDlgName to set
+     */
+    public void setDisplayDlgName(String displayDlgName)
+    {
+        this.displayDlgName = displayDlgName;
+    }
+
+
+    /**
      * Helper to create a button.
      * @param iconName the name of the icon (not localized)
      * @param tooltipKey the name of the tooltip (not localized)
@@ -427,7 +447,10 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     protected void displaySearchDialog()
     {
-        ViewBasedSearchDialogIFace dlg = UIRegistry.getViewbasedFactory().createSearchDialog(UIHelper.getWindow(searchBtn), tableInfo.getSearchDialog());
+        String dlgName = StringUtils.isNotEmpty(searchDlgName) ? searchDlgName : tableInfo.getSearchDialog();
+        
+        ViewBasedSearchDialogIFace dlg = UIRegistry.getViewbasedFactory().
+                                createSearchDialog(UIHelper.getWindow(searchBtn), dlgName);
         dlg.setMultipleSelection(false);
         if (builder != null)
         {
@@ -546,9 +569,10 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
      */
     protected void createEditFrame(final boolean isNewObject)
     {
+        String dlgName = StringUtils.isNotEmpty(displayDlgName) ? displayDlgName : tableInfo.getNewObjDialog();
         String closeBtnTitle = getResourceString("Save");
         frame = UIRegistry.getViewbasedFactory().createDisplay(UIHelper.getWindow(this),
-                                                                   tableInfo.getNewObjDialog(),
+                                                                   dlgName,
                                                                    frameTitle,
                                                                    closeBtnTitle,
                                                                    true,   // false means View Mode
@@ -1059,7 +1083,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.GetSetValueIFace#setValue(java.lang.Object, java.lang.String)
      */
-    public void setValue(Object value, String defaultValue)
+    public void setValue(final Object value, final String defaultValue)
     {
         if (value == null || value instanceof FormDataObjIFace)
         {
@@ -1068,7 +1092,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             
         } else
         {
-            throw new RuntimeException("Data is does not extend FormDataObjIFace "+ value);
+            throw new RuntimeException("Data does not extend FormDataObjIFace ["+ value + "] " + (value != null ? value.getClass() : ""));
         }
     }
 

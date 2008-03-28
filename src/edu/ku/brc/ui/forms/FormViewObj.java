@@ -2908,7 +2908,6 @@ public class FormViewObj implements Viewable,
             {
                 FVOFieldInfo  labelInfo = labels.get(idFor);
                 JLabel        label     = (JLabel)labelInfo.getComp();
-                FormCellLabel labelCell = (FormCellLabel)labelInfo.getFormCell();
                 
                 FormViewObj.FVOFieldInfo fieldInfo = controlsById.get(idFor);
                 if (fieldInfo.getFormCell().getType() == FormCellIFace.CellType.field)
@@ -2925,12 +2924,44 @@ public class FormViewObj implements Viewable,
                         label.setFont(boldFont);
                     }
                     
-                    if (labelCell.isDerived() && fi != null)
+                    if (cell.isDerived() && fi != null)
                     {
                         String title = fi.getTitle();
                         if (StringUtils.isNotEmpty(title))
                         {
                             label.setText(title + (StringUtils.isNotEmpty(title) ? ":" : ""));
+                        }
+                    }
+                }
+            }
+            
+            for (FVOFieldInfo fieldInfo : controlsByName.values())
+            {
+                if (fieldInfo.getFormCell().getType() == FormCellIFace.CellType.field)
+                {
+                    FormCellField cell = (FormCellField)fieldInfo.getFormCell();
+                    
+                    if (cell.getUiType() == FormCellFieldIFace.FieldType.checkbox)
+                    {
+                        DBFieldInfo fi  = ti.getFieldByName(fieldInfo.getFormCell().getName());
+                        JCheckBox   cbx = (JCheckBox)fieldInfo.getComp();
+                        
+                        if (isEditting && (cell.isRequired() || (fi != null && fi.isRequired())))
+                        {
+                            if (boldFont == null)
+                            {
+                                boldFont = cbx.getFont().deriveFont(Font.BOLD);
+                            }
+                            cbx.setFont(boldFont);
+                        }
+                        
+                        if (cell.isDerived() && fi != null)
+                        {
+                            String title = fi.getTitle();
+                            if (StringUtils.isNotEmpty(title))
+                            {
+                                cbx.setText(title);
+                            }
                         }
                     }
                 }
@@ -3618,7 +3649,7 @@ public class FormViewObj implements Viewable,
         
         if (weHaveData)
         {
-            //log.debug("########################### weHaveData!" + dataObj);
+            //log.debug("*************************** weHaveData!" + dataObj);
             
             Object[] defaultDataArray = new Object[1]; // needed for setting the default value
             

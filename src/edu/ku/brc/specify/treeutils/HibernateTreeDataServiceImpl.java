@@ -615,31 +615,40 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         String className = mergedParent.getClass().getName();
         TreeDefIface<T,D,I> def = mergedParent.getDefinition();
 
-        String updateNodeNumbersQueryStr = "UPDATE " + className + " SET nodeNumber=nodeNumber+1 WHERE nodeNumber>:parentNN AND definition=:def";
-        QueryIFace fixNodeNumQuery = session.createQuery(updateNodeNumbersQueryStr);
-        fixNodeNumQuery.setParameter("parentNN", parentNN);
-        fixNodeNumQuery.setParameter("def", def);
-        fixNodeNumQuery.executeUpdate();
-
-        String updateHighChildQueryStr = "UPDATE " + className + " SET highestChildNodeNumber=highestChildNodeNumber+1 WHERE highestChildNodeNumber>=:parentNN AND definition=:def";
-        QueryIFace fixHighChildQuery = session.createQuery(updateHighChildQueryStr);
-        fixHighChildQuery.setParameter("parentNN", parentNN);
-        fixHighChildQuery.setParameter("def", def);
-        fixHighChildQuery.executeUpdate();
-
-        // now set the initial values of the nodeNumber and highestChildNodeNumber fields for the new node
-        int newChildNN = parentNN+1;
-        String setChildNNQueryStr = "UPDATE " + className + " SET nodeNumber=:newChildNN WHERE nodeNumber IS NULL AND parentID=:parentID";
-        QueryIFace setChildNNQuery = session.createQuery(setChildNNQueryStr);
-        setChildNNQuery.setParameter("newChildNN", newChildNN);
-        setChildNNQuery.setParameter("parentID", parent.getTreeId());
-        setChildNNQuery.executeUpdate();
-
-        String setChildHCQueryStr = "UPDATE " + className + " SET highestChildNodeNumber=:newChildNN WHERE highestChildNodeNumber IS NULL AND parentID=:parentID";
-        QueryIFace setChildHCQuery = session.createQuery(setChildHCQueryStr);
-        setChildHCQuery.setParameter("newChildNN", newChildNN);
-        setChildHCQuery.setParameter("parentID", parent.getTreeId());
-        setChildHCQuery.executeUpdate();
+        try
+        {
+            System.err.println(parentNN+"  "+def.getName()+"  "+def.getTreeDefId());
+            
+            String updateNodeNumbersQueryStr = "UPDATE " + className + " SET nodeNumber=nodeNumber+1 WHERE nodeNumber>:parentNN AND definition=:def";
+            QueryIFace fixNodeNumQuery = session.createQuery(updateNodeNumbersQueryStr);
+            fixNodeNumQuery.setParameter("parentNN", parentNN);
+            fixNodeNumQuery.setParameter("def", def);
+            fixNodeNumQuery.executeUpdate();
+    
+            String updateHighChildQueryStr = "UPDATE " + className + " SET highestChildNodeNumber=highestChildNodeNumber+1 WHERE highestChildNodeNumber>=:parentNN AND definition=:def";
+            QueryIFace fixHighChildQuery = session.createQuery(updateHighChildQueryStr);
+            fixHighChildQuery.setParameter("parentNN", parentNN);
+            fixHighChildQuery.setParameter("def", def);
+            fixHighChildQuery.executeUpdate();
+    
+            // now set the initial values of the nodeNumber and highestChildNodeNumber fields for the new node
+            int newChildNN = parentNN+1;
+            String setChildNNQueryStr = "UPDATE " + className + " SET nodeNumber=:newChildNN WHERE nodeNumber IS NULL AND parentID=:parentID";
+            QueryIFace setChildNNQuery = session.createQuery(setChildNNQueryStr);
+            setChildNNQuery.setParameter("newChildNN", newChildNN);
+            setChildNNQuery.setParameter("parentID", parent.getTreeId());
+            setChildNNQuery.executeUpdate();
+    
+            String setChildHCQueryStr = "UPDATE " + className + " SET highestChildNodeNumber=:newChildNN WHERE highestChildNodeNumber IS NULL AND parentID=:parentID";
+            QueryIFace setChildHCQuery = session.createQuery(setChildHCQueryStr);
+            setChildHCQuery.setParameter("newChildNN", newChildNN);
+            setChildHCQuery.setParameter("parentID", parent.getTreeId());
+            setChildHCQuery.executeUpdate();
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
 
         return true;
     }

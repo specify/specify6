@@ -158,6 +158,14 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
     }
 
     /**
+     * @param displayInfoDialogName the displayInfoDialogName to set
+     */
+    public void setDisplayInfoDialogName(String displayInfoDialogName)
+    {
+        this.displayInfoDialogName = displayInfoDialogName;
+    }
+
+    /**
      * Creates a Dialog (non-modl) that will display detail information
      * for the object in the text field.
      */

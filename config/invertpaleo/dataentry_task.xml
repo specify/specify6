@@ -13,7 +13,6 @@
 	    
 	    <view sidebar="true"  name="Agent"              view="Agent"              iconname="Agent"              tooltip=""/>    
 	    <view sidebar="true"  name="Geography"          view="Geography"          iconname="Geography"          tooltip=""/> 
-	    <view sidebar="true"  name="GeologicTimePeriod" view="GeologicTimePeriod" iconname="GeologicTimePeriod" tooltip=""/> 
 	    <view sidebar="false" name="Loan"               view="Loan"               iconname="Loan"               tooltip=""/>    
 	    <view sidebar="true"  name="Locality"           view="Locality"           iconname="Locality"           tooltip=""/> 
 	</std>

@@ -1244,12 +1244,7 @@ public class DatamodelGenerator
     protected void adjustRelsForZeroToOne(final Table tbl)
     {
         String shortTableName = StringUtils.substringAfterLast(tbl.getName(), ".");
-        System.out.println(shortTableName);
-        if (shortTableName.equals("CollectionObject"))
-        {
-            setRelToZeroToOne(tbl.getRelationships(), "paleoContext");
-            
-        } else if (shortTableName.equals("Locality"))
+        if (shortTableName.equals("Locality"))
         {
             setRelToZeroToOne(tbl.getRelationships(), "localityDetails");
             setRelToZeroToOne(tbl.getRelationships(), "geoCoordDetails");

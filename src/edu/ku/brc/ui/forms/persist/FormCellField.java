@@ -64,6 +64,9 @@ public final class FormCellField extends FormCell implements FormCellFieldIFace
     protected boolean  isDSPTextField = false;
     protected boolean  isEditOnCreate = false;
     
+    // Transient
+    protected boolean   isDerived = false;
+    
     /**
      * Constructor
      * @param type type of cell
@@ -461,6 +464,22 @@ public final class FormCellField extends FormCell implements FormCellFieldIFace
         this.isEditOnCreate = isEditOnCreate;
     }
     
+    /**
+     * @return the isDerived
+     */
+    public boolean isDerived()
+    {
+        return isDerived;
+    }
+
+    /**
+     * @param isDerived the isDerived to set
+     */
+    public void setDerived(boolean isDerived)
+    {
+        this.isDerived = isDerived;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.FormCellFieldIFace#clone()
      */

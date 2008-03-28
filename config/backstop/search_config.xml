@@ -528,7 +528,7 @@
         <table id="109" tableid="58" name="StorageSearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
-                    <![CDATA[SELECT StorageID, FullName FROM location WHERE StorageTreeDefItemID = STORTREEDEFID AND (%s)]]>
+                    <![CDATA[SELECT StorageID, FullName FROM location WHERE StorageTreeDefID = STORTREEDEFID AND (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="58" col="StorageID" visible="false"/>
@@ -540,7 +540,7 @@
         <table id="110" tableid="46" name="GeologicTimePeriodSearch" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
-                    <![CDATA[SELECT GeologicTimePeriodID, FullName FROM geologictimeperiod WHERE GeologicTimePeriodTreeDefItemID = GTPTREEDEFID AND (%s)]]>
+                    <![CDATA[SELECT GeologicTimePeriodID, FullName FROM geologictimeperiod WHERE GeologicTimePeriodTreeDefID = GTPTREEDEFID AND (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="46" col="GeologicTimePeriodID" visible="false"/>
@@ -552,7 +552,7 @@
         <table id="111" tableid="100" name="LithoStrat" priority="1" color="30, 144, 255">
             <detailView icon="">
                 <sql>
-                    <![CDATA[SELECT LithoStratID, FullName FROM lithostrat WHERE LithoStratTreeDefItemID = LITHOTREEDEFID AND (%s)]]>
+                    <![CDATA[SELECT LithoStratID, FullName FROM lithostrat WHERE LithoStratTreeDefID = LITHOTREEDEFID AND (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="100" col="LithoStratID" visible="false"/>
@@ -644,6 +644,18 @@
                     <caption tableid="10" col="CollectingEventID" visible="false"/>
                     <caption tableid="10" col="StationFieldNumber"/>
                     <caption tableid="10" col="StartDate" formatter="Date"/>
+                </captions>
+            </detailView>
+        </table>
+        
+        <table id="118" tableid="46" name="BioStratSearch" priority="1" color="30, 144, 255">
+            <detailView icon="">
+                <sql>
+                    <![CDATA[SELECT GeologicTimePeriodID, FullName FROM geologictimeperiod WHERE GeologicTimePeriodTreeDefID = GTPTREEDEFID AND geologictimeperiod.IsBioStrat = 1 AND (%s)]]>
+                </sql>
+                <captions>
+                    <caption tableid="46" col="GeologicTimePeriodID" visible="false"/>
+                    <caption tableid="46" col="FullName" key="Name"/>
                 </captions>
             </detailView>
         </table>

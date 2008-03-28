@@ -7,17 +7,10 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
-
-import org.apache.log4j.Logger;
-
-import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDefItem;
-import edu.ku.brc.specify.datamodel.Treeable;
-import edu.ku.brc.specify.treeutils.TreeDataService;
-import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 
 /**
  * A business rules class that handles various safety checking and housekeeping tasks
@@ -30,7 +23,7 @@ import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 public class GeologicTimePeriodBusRules extends BaseTreeBusRules<GeologicTimePeriod, GeologicTimePeriodTreeDef, GeologicTimePeriodTreeDefItem>
 {
     
-    private static final Logger log = Logger.getLogger(GeologicTimePeriodBusRules.class);
+    //private static final Logger log = Logger.getLogger(GeologicTimePeriodBusRules.class);
     
     /**
      * Constructor.
@@ -55,8 +48,6 @@ public class GeologicTimePeriodBusRules extends BaseTreeBusRules<GeologicTimePer
     {
         String[] relationships = 
         {
-                "paleocontext",       "BioStratID",
-                "paleocontext",       "ChronosStratID",
                 "geologictimeperiod", "AcceptedID"
         };
 
@@ -141,7 +132,7 @@ public class GeologicTimePeriodBusRules extends BaseTreeBusRules<GeologicTimePer
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#afterSaveCommit(java.lang.Object)
      */
-    @SuppressWarnings("unchecked")
+    /*@SuppressWarnings("unchecked")
     @Override
     public boolean beforeSaveCommit(final Object dataObj, final DataProviderSessionIFace session) throws Exception
     {
@@ -191,5 +182,5 @@ public class GeologicTimePeriodBusRules extends BaseTreeBusRules<GeologicTimePer
         }
         
         return success;
-    }
+    }*/
 }

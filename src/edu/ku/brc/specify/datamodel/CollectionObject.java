@@ -894,7 +894,8 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     /**
      *
      */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = {javax.persistence.CascadeType.ALL}, fetch = FetchType.LAZY)
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
     @JoinColumn(name = "PaleoContextID", unique = false, nullable = true, insertable = true, updatable = true)
     public PaleoContext getPaleoContext()
     {

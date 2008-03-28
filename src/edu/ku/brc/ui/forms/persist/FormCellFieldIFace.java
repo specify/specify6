@@ -212,6 +212,13 @@ public interface FormCellFieldIFace extends FormCellIFace
      */
     public abstract boolean isEditOnCreate();
     
+    
+    /**
+     * Whether the label is derived from the schema localization.
+     * @return true if derived, false if static text
+     */
+    public abstract boolean isDerived();
+    
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.persist.FormCell#clone()
      */

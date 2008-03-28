@@ -210,6 +210,9 @@
 	                <param name="title" type="string" required="true" default="">
 	                    <desc>Human readable Title string for the dialog that shows the detailed information. Or the I18N key.</desc>
 	                </param>
+	                <param name="displaydlg" type="string" required="false" default="">
+	                    <desc>Overrides the view name in the schema for display the full detail of a data object.</desc>
+	                </param>
                 </params>
             </subcontrol>
             
@@ -221,6 +224,12 @@
 	                </param>        
 	                <param name="title" type="string" required="true" default="">
 	                    <desc>Human readable Title string for the dialog that shows the detailed information. Or the I18N key.</desc>
+	                </param>
+	                <param name="displaydlg" type="string" required="false" default="">
+	                    <desc>Overrides the view name in the schema for display the full detail of a data object.</desc>
+	                </param>
+	                <param name="searchdlg" type="string" required="false" default="">
+	                    <desc>Overrides the view name in the schema for the search dialog.</desc>
 	                </param>
                 </params>
             </subcontrol>

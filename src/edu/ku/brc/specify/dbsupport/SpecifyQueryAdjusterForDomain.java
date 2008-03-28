@@ -20,6 +20,7 @@ import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Geography;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
+import edu.ku.brc.specify.datamodel.GeologicTimePeriod;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.LithoStrat;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
@@ -93,7 +94,7 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                 fld = isHQL ? "definition" : "GeographyTreeDefID";
                 criterion = GEOTREEDEFID;
                 
-            } else if (tableInfo.getTableId() == GeologicTimePeriodTreeDef.getClassTableId())
+            } else if (tableInfo.getTableId() == GeologicTimePeriod.getClassTableId())
             {
                 fld = isHQL ? "definition" : "GeologicTimePeriodTreeDefID"; 
                 criterion = GTPTREEDEFID;

@@ -324,8 +324,8 @@ public class TreeHelper
     
     public static void initializeRelatedObjects(GeologicTimePeriod gtp)
     {
-        gtp.getBioStratsPaleoContext().size();
-        gtp.getChronosStratsPaleoContext().size();
+        //gtp.getBioStratsPaleoContext().size();
+        //gtp.getChronosStratsPaleoContext().size();
     }
     
     public static void initializeRelatedObjects(Geography geo)

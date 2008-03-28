@@ -71,12 +71,12 @@ public interface FormCellLabelIFace extends FormCellSeparatorIFace
     /**
      * @return the isDerived
      */
-    public boolean isDerived();
+    public abstract boolean isDerived();
 
     /**
      * @param isDerived the isDerived to set
      */
-    public void setDerived(boolean isDerived);
+    public abstract void setDerived(boolean isDerived);
 
     //public abstract Object clone() throws CloneNotSupportedException;
 

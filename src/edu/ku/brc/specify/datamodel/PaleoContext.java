@@ -31,8 +31,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 /**
@@ -284,7 +282,6 @@ public class PaleoContext extends CollectionMember
      *
      */
     @OneToMany(cascade={}, fetch=FetchType.LAZY, mappedBy="paleoContext")
-    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
     public Set<CollectionObject> getCollectionObjects() 
     {
         return this.collectionObjects;

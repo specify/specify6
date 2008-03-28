@@ -484,10 +484,12 @@ public class ViewFactory
             btnOpts |= cellField.getPropertyAsBoolean("editbtn", true) ? ValComboBoxFromQuery.CREATE_EDIT_BTN : 0;
             btnOpts |= cellField.getPropertyAsBoolean("newbtn", true) ? ValComboBoxFromQuery.CREATE_NEW_BTN : 0;
             btnOpts |= cellField.getPropertyAsBoolean("searchbtn", true) ? ValComboBoxFromQuery.CREATE_SEARCH_BTN : 0;
-
             
             ValComboBoxFromQuery cbx = TypeSearchForQueryFactory.createValComboBoxFromQuery(cbxName, btnOpts, cellField.getFormatName());
             cbx.setRequired(isRequired);
+            cbx.setSearchDlgName(cellField.getProperty("searchdlg"));
+            cbx.setDisplayDlgName(cellField.getProperty("displaydlg"));
+            
             if (validator != null)// && (cellField.isRequired() || isNotEmpty(cellField.getValidationRule())))
             {
                 DataChangeNotifier dcn = validator.hookupComponent(cbx, cellField.getIdent(), parseValidationType(cellField.getValidationType()), cellField.getValidationRule(), false);
@@ -629,6 +631,13 @@ public class ViewFactory
                 textFieldInfo.setFrameTitle(cellField.getProperty("title"));
                 JTextField textField = textFieldInfo.getTextField();
                 textField.setColumns(cellField.getTxtCols());
+                
+                // Overrides the defined in the TableInfo
+                String displayInfoDialogName = cellField.getProperty("displaydlg");
+                if (StringUtils.isNotEmpty(displayInfoDialogName))
+                {
+                    textFieldInfo.setDisplayInfoDialogName(displayInfoDialogName);
+                }
                 
                 changeTextFieldUIForDisplay(textField, false);
                 
@@ -1088,7 +1097,13 @@ public class ViewFactory
                     
                 case checkbox:
                 {
-                    ValCheckBox checkbox = new ValCheckBox(cellField.getLabel(), 
+                    String lblStr = cellField.getLabel();
+                    if (lblStr.equals("##"))
+                    {
+                        bi.isDerivedLabel = true;
+                        cellField.setDerived(true);
+                    }
+                    ValCheckBox checkbox = new ValCheckBox(lblStr, 
                                                            bi.isRequired, 
                                                            cellField.isReadOnly() || mode == AltViewIFace.CreationMode.VIEW);
                     if (validator != null)

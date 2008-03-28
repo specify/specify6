@@ -103,6 +103,17 @@
         </view>
         
         <view 
+            name="BioStratSearch"
+            class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
+            usedefbusrule="false"
+            resourcelabels="false">
+            <desc><![CDATA[The GeologicTimePeriod Search Form]]></desc>
+            <altviews>
+                <altview name="BioStratSearch" viewdef="BioStratSearch" label="Edit" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+                
+        <view 
             name="DisciplineSearch"
             class="edu.ku.brc.specify.datamodel.Discipline"
             usedefbusrule="false"
@@ -580,8 +591,28 @@ Good: <cell type="field" name="FieldNum" ...>
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="Name" label="Name"/>
-                    <cell type="field" id="Name" name="geologictimeperiod.Name" isrequired="true" uitype="text"/>
+                    <cell type="label" labelfor="FullName" label="Full Name"/>
+                    <cell type="field" id="FullName" name="FullName" isrequired="true" uitype="text"/>
+                </row>
+            </rows>
+        </viewdef>
+        
+        <viewdef type="form"
+            name="BioStratSearch"
+            class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
+            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            
+            <desc><![CDATA[The BioStrat Search Form]]></desc>
+            <enableRules/>
+            
+            <columnDef>p,3dlu,p</columnDef>
+            <rowDef>p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="FullName" label="Full Name"/>
+                    <cell type="field" id="FullName" name="FullName" isrequired="true" uitype="text"/>
                 </row>
             </rows>
         </viewdef>

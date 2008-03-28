@@ -1,9 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+ 
+	NOTE: This HQL and if you add in your own query you must prefix all the field names with the table abbreviations.
+	Also, you should/must use the table abbreviations that are defined in the specify_schema.xml
+	
+	PLEASE KEEP THEM IN ALPHABETICAL ORDER!
+ -->
 <typesearches>
     <typesearch tableid="7"   name="Accession"              searchfield="accessionNumber" displaycols="accessionNumber"    format="%s"     dataobjformatter=""/>
     <typesearch tableid="5"   name="Agent"                  searchfield="ag.lastName"        displaycols="ag.lastName,ag.firstName" format="%s, %s" dataobjformatter="Agent">
         SELECT %s1 FROM Agent ag JOIN ag.disciplines as dsp WHERE dsp.disciplineId = DSPLNID AND %s2
     </typesearch>
+    <typesearch tableid="46"  name="BioStrat"               searchfield="gtp.name"        displaycols="gtp.fullName"       format="%s"     dataobjformatter="">
+        SELECT %s1 FROM GeologicTimePeriod gtp JOIN gtp.definition as gtpd WHERE gtpd.geologicTimePeriodTreeDefId = GTPTREEDEFID AND gtp.isBioStrat = 1 AND %s2
+    </typesearch>
+    <typesearch tableid="46"  name="ChronosStrat"           searchfield="name"            displaycols="fullName"           format="%s"     dataobjformatter=""/>
     <typesearch tableid="97"  name="CatalogNumberingScheme" searchfield="schemeName"      displaycols="schemeName"         format="%s"     dataobjformatter=""/>
     <typesearch tableid="1"   name="CollectionObject"       searchfield="catalogNumber"   displaycols="catalogNumber"      uifieldformatter="CatalogNumber" dataobjformatter="CollectionObject"/>
     <typesearch tableid="10"  name="CollectingEvent"        searchfield="stationFieldNumber" displaycols="stationFieldNumber" format="%s" dataobjformatter="CollectingEventSFN"/>
