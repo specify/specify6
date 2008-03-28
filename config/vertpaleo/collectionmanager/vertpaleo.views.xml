@@ -90,7 +90,7 @@
     
 	    
     		    <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectionObjectAttachments" colspan="12" initialize="btn=true;icon=CollectionObject"/>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectionObjectAttachments" colspan="12" initialize="btn=true;icon=CollectionObjectAttachment"/>
                 </row>
     			<row>
     				<cell type="separator" label="" colspan="12"/>

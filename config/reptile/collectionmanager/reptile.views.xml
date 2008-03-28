@@ -174,7 +174,7 @@
                     <cell type="separator" label="Attachments" colspan="16"/>
                 </row>
                 <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectionObjectAttachments" colspan="16" initialize="btn=true;icon=CollectionObject"/>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectionObjectAttachments" colspan="16" initialize="btn=true;icon=CollectionObjectAttachment"/>
                 </row>
                 <row>
                     <cell type="separator" label="" colspan="16"/>
