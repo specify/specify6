@@ -102,7 +102,7 @@
     		        <cell type="label" label="Bird" icon="CollectionObject" recordobj="true" colspan="12"/>
     		    </row>
     			<row>
-    			    <cell type="label" labelfor="1" label="Cat Num"/>
+    			    <cell type="label" labelfor="1"/>
     			    <cell type="field" id="1" name="catalogNumber" uitype="formattedtext"/>
 
                     <cell type="label" labelfor="2" label="Collection"/>
@@ -119,7 +119,7 @@
     		        <cell type="label" labelfor="4" label="Cataloger"/>
     		        <cell type="field" id="4" name="cataloger" uitype="querycbx" initialize="name=Agent;title=Catalog Agent;editoncreate=true" isrequired="true"/>
     		        
-    		        <cell type="label" labelfor="5" label="Date"/>
+    		        <cell type="label" labelfor="5"/>
     		        <cell type="field" id="5" name="catalogedDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
     		    </row>
      			<row>
@@ -284,7 +284,7 @@
                 </row>
                 
                 <row>
-                    <cell type="label" labelfor="6" label="Remarks"/>
+                    <cell type="label" labelfor="6"/>
                     <cell type="field" id="6" name="remarks" uitype="textarea" colspan="14" cols="50"/>
                 </row>
             </rows>
@@ -338,7 +338,7 @@
                     <cell type="separator" label="Locality Information" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="3" label="Name"/>
+                    <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="localityName" uitype="text" isrequired="true" colspan="10"/>
                 </row>
                 <row>
@@ -354,7 +354,7 @@
                     <cell type="field" id="5" name="this" uitype="plugin" initialize="name=LatLonUI" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="10" label="LatLongMethod"/>
+                    <cell type="label" labelfor="10"/>
                     <cell type="field" id="10" name="latLongMethod" uitype="combobox" picklist="LatLongMethod"/>
                 </row>
                 <row>
@@ -410,17 +410,17 @@
 			       <cell type="field" id="7" name="prepType" uitype="combobox" picklist="Preparation" isrequired="true"/>
 			   </row>
     			<row>
-                    <cell type="label" labelfor="1" label="Prepared Date"/>
+                    <cell type="label" labelfor="1"/>
     			    <cell type="field" id="1" name="preparedDate" uitype="formattedtext" uifieldformatter="Date" isrequired="true" default="today"/>
 
     			    <cell type="label" labelfor="2" label="Prepared By"/>
     			    <cell type="field" id="2" name="preparedByAgent" uitype="querycbx" initialize="name=Agent;title=Prepared By Agent" isrequired="true"/>
     			</row>
     			<row>
-                    <cell type="label" labelfor="3" label="Count"/>
+                    <cell type="label" labelfor="3" />
     			    <cell type="field" id="3" name="count" uitype="text" isrequired="true"/>
 
-                    <cell type="label" labelfor="4" label="Storage"/>
+                    <cell type="label" labelfor="4"/>
     			    <cell type="field" id="4" name="storageLocation" uitype="text" cols="20"/>
     			</row>
     		    <row>
