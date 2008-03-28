@@ -1407,7 +1407,7 @@
                     <cell type="field" id="name" uitype="text" cols="16" name="name" colspan="5" isrequired="true"/> 
                 </row>
                 <row>
-                    <cell type="label" labelfor="remarks/>
+                    <cell type="label" labelfor="remarks"/>
                     <cell type="field" id="remarks" uitype="textarea" name="remarks" colspan="5"/>
                 </row>
                 <row>
