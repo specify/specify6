@@ -143,20 +143,20 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
     }
     
     /**
-     * @param formatter
+     * @param formatterArg
      * @param isViewOnly
      */
-    protected void init(final UIFieldFormatterIFace formatter, final boolean isViewOnly)
+    protected void init(final UIFieldFormatterIFace formatterArg, final boolean isViewOnlyArg)
     {
         setControlSize(this);
 
-        this.isViewOnly = isViewOnly;
+        this.isViewOnly = isViewOnlyArg;
         
         initColors();
         
         inner = getInsets();
         
-        setFormatterInternal(formatter);
+        setFormatterInternal(formatterArg);
         
         addMouseListener(new MouseAdapter() {
 
@@ -194,7 +194,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
 
         if (!isViewOnly) // NOTE: This is checking the method argument NOT the class member!
         {
-            if (!formatter.isUserInputNeeded())
+            if (!formatterArg.isUserInputNeeded())
             {
                 ViewFactory.changeTextFieldUIForDisplay(this, false);
                 //bgStr = "";

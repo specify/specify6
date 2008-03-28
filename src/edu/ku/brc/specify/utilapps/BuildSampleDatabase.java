@@ -1546,6 +1546,7 @@ public class BuildSampleDatabase
         log.info("Creating localities");
         frame.setProcess(0, NUM_LOCALTIES);
         Vector<Locality> localities = new Vector<Locality>();
+        Vector<Object> evictList = new Vector<Object>();
         for (int i=0;i<NUM_LOCALTIES;i++)
         {
             Locality locality = createLocality("Unnamed forest stream pond", (Geography)geos.get(12));
@@ -1557,11 +1558,18 @@ public class BuildSampleDatabase
             locality.setLongitude1(new BigDecimal(-94.984867));
             persist(locality);
             
+            evictList.add(locality);
+            
             localities.add(locality);
             
             if ((i+1) % 10 == 0)
             {
                 commitTx();
+                for (Object obj : evictList)
+                {
+                    session.evict(obj);
+                }
+                evictList.clear();
                 startTx(); 
                 frame.setProcess(i);
             }
@@ -1726,6 +1734,7 @@ public class BuildSampleDatabase
 
         frame.setProcess(0, NUM_COLOBJS);
         
+        evictList.clear();
         
         frame.setDesc("Creating Collection Objects");
         int catNo = 100;
@@ -1761,9 +1770,19 @@ public class BuildSampleDatabase
             persist(dt);
             persist(prep);
             
+            evictList.add(ce);
+            evictList.add(co);
+            evictList.add(dt);
+            evictList.add(prep);
+            
             if ((i+1) % 10 == 0)
             {
                 commitTx();
+                for (Object obj : evictList)
+                {
+                    session.evict(obj);
+                }
+                evictList.clear();
                 startTx();
                 
                 frame.setProcess(i);
@@ -4912,7 +4931,7 @@ public class BuildSampleDatabase
         
         if (true)
         {
-            List<Taxon> taxa2 = HibernateUtil.getCurrentSession().createQuery("SELECT t FROM Taxon t WHERE t.name = 'Ammocrypta'").list();
+            List<Taxon> taxa2 = session.createQuery("SELECT t FROM Taxon t WHERE t.name = 'Ammocrypta'").list();
             List<ReferenceWork> rwList = new Vector<ReferenceWork>();
 
             startTx();

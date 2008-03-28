@@ -96,5 +96,8 @@ public interface DataObjDataFieldFormatIFace
      */
     public abstract void toXML(StringBuilder sb);
     
+    /**
+     * Tells it to set up the Table and Field Info.
+     */
     public void setTableAndFieldInfo(); 
 }
