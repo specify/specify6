@@ -8,6 +8,8 @@ package edu.ku.brc.specify.tools.IReportSpecify;
 
 import it.businesslogic.ireport.Report;
 import edu.ku.brc.af.core.AppResourceIFace;
+import edu.ku.brc.specify.datamodel.SpReport;
+import edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceConnection;
 
 /**
  * @author timbo
@@ -18,35 +20,97 @@ import edu.ku.brc.af.core.AppResourceIFace;
  */
 public class ReportSpecify extends Report
 {
-    //i am assuming the name of a resource is sufficient as a unique id for a single login??
-    //Probably could just store ref to AppResourceIFace??
-    private String spAppResourceId;
-
-    public ReportSpecify(final AppResourceIFace res)
+    protected AppResourceIFace appResource = null;
+    protected QBJRDataSourceConnection connection = null;
+    protected SpReport spReport = null;
+    
+    /**
+     * 
+     */
+    public ReportSpecify()
     {
         super();
-        if (res != null)
+    }
+    /**
+     * @param appResource
+     */
+    public ReportSpecify(final AppResourceIFace appResource)
+    {
+        super();
+        this.appResource = appResource;
+    }
+
+    /**
+     * @param spReport
+     */
+    public ReportSpecify(final SpReport spReport)
+    {
+        super();
+        this.spReport = spReport;
+        if (this.spReport != null)
         {
-            setAppResourceId(res.getName());
+            this.appResource = this.spReport.getAppResource();
         }
-        else
+    }
+    
+    /**
+     * @param appResource the appResouce to set
+     */
+    public void setAppResource(final AppResourceIFace appResource)
+    {
+        this.appResource = appResource;
+    }
+
+    /**
+     * @return the appResource
+     */
+    public AppResourceIFace getAppResource()
+    {
+        return appResource;
+    }
+
+    /**
+     * @return the connection
+     */
+    public QBJRDataSourceConnection getConnection()
+    {
+        return connection;
+    }
+    /**
+     * @param connection the connection to set
+     */
+    public void setConnection(QBJRDataSourceConnection connection)
+    {
+        this.connection = connection;
+    }
+    /**
+     * @return the spReport
+     */
+    public SpReport getSpReport()
+    {
+        return spReport;
+    }
+
+    /**
+     * @param spReport the spReport to set
+     */
+    public void setSpReport(SpReport spReport)
+    {
+        this.spReport = spReport;
+    }
+    
+    /**
+     * @param appResource
+     * @return true if this.appResource matches appResource.
+     * 
+     * Merely matching names for now.
+     */
+    public boolean resourceMatch(final AppResourceIFace appRes)
+    {
+        if (appResource != null)
         {
-            setAppResourceId(null);
+            return appResource.getName().equals(appRes.getName());
         }
-    }
-
-    public void setAppResourceId(final String id)
-    {
-        spAppResourceId = id;
-    }
-
-    public String getSpAppResourceId()
-    {
-        return spAppResourceId;
-    }
-
-    public boolean resourceMatch(final AppResourceIFace res)
-    {
-        return res.getName().equals(getSpAppResourceId());
+        return false;
     }
 }

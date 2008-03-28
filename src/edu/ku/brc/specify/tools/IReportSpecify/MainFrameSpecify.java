@@ -15,6 +15,7 @@ import it.businesslogic.ireport.gui.JReportFrame;
 import it.businesslogic.ireport.gui.MainFrame;
 import it.businesslogic.ireport.gui.ReportPropertiesFrame;
 
+import java.awt.Frame;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -27,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
@@ -34,9 +36,14 @@ import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.datamodel.SpQuery;
+import edu.ku.brc.specify.datamodel.SpReport;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceConnection;
 import edu.ku.brc.ui.ChooseFromListDlg;
+import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -66,14 +73,35 @@ public class MainFrameSpecify extends MainFrame
         addSpQBConns();
     }
 
+    /**
+     * adds JR data connections for specify queries.
+     */
     protected void addSpQBConns()
     {
-        for (String qName : getQueryNames())
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        try
         {
-            addSpQBConn(qName);
+            List<SpQuery> qs = session.getDataList(SpQuery.class);
+            for (SpQuery q : qs)
+            {
+                addSpQBConn(q);
+            }
         }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        finally
+        {
+            session.close();
+        }
+        
     }
     
+    /**
+     * @return a list of names of specify queries.
+     */
     protected List<String> getQueryNames()
     {
         List<String> result = new LinkedList<String>();
@@ -98,10 +126,16 @@ public class MainFrameSpecify extends MainFrame
         }
     }
     
+    /**
+     * @param q
+     * 
+     * creates and adds a JR data connection for q
+     * 
+     */
     @SuppressWarnings("unchecked")  //iReport doesn't parameterize generics.
-    protected void addSpQBConn(final String qName)
+    protected void addSpQBConn(final SpQuery q)
     {
-        QBJRDataSourceConnection newq = new QBJRDataSourceConnection(qName);
+        QBJRDataSourceConnection newq = new QBJRDataSourceConnection(q);
         newq.loadProperties(null);
         this.getConnections().add(newq);
     }
@@ -134,20 +168,31 @@ public class MainFrameSpecify extends MainFrame
     @Override
     public void save(JReportFrame jrf)
     {
-        AppResourceIFace rep = getResForFrame(jrf);
-        if (rep != null)
+        AppResourceIFace appRes = getAppResForFrame(jrf);
+        if (appRes != null)
         {
+            ReportSpecify rep = (ReportSpecify)jrf.getReport();
             ByteArrayOutputStream xmlOut = new ByteArrayOutputStream();
-            ReportWriter rw = new ReportWriter(jrf.getReport());
+            ReportWriter rw = new ReportWriter(rep);
             rw.writeToOutputStream(xmlOut);
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
             try
             {
-                rep.setDataAsString(xmlOut.toString());
-                rep.setDescription("New Name");
-                session.saveOrUpdate(rep);
-                session.flush();
-
+                appRes.setDataAsString(xmlOut.toString());
+                AppContextMgr.getInstance().saveResource(appRes);
+                
+                if (rep.getSpReport() == null)
+                {
+                    SpReport spRep = new SpReport();
+                    spRep.initialize();
+                    spRep.setName(appRes.getName());
+                    spRep.setAppResource((SpAppResource)appRes);
+                    spRep.setQuery(rep.getConnection().getQuery());
+                    spRep.setSpecifyUser(SpecifyUser.getCurrentUser());
+                    session.beginTransaction();
+                    session.save(spRep);
+                    session.commit();
+                }               
             } catch (Exception ex)
             {
                 log.error(ex);
@@ -170,24 +215,60 @@ public class MainFrameSpecify extends MainFrame
      *            iReport frame interface for a report
      * @return
      */
-    private AppResourceIFace getResForFrame(JReportFrame jrf)
+    private AppResourceIFace getAppResForFrame(final JReportFrame jrf)
     {
-        List<AppResourceIFace> iFaces = AppContextMgr.getInstance().getResourceByMimeType(
-                "jrxml/label");
-        if (iFaces.size() > 0)
+        AppResourceIFace result = (AppContextMgr.getInstance().getResourceFromDir("Collection", jrf.getName()));
+        if (result != null)
+            return result;
+        return createAppResForFrame(jrf);
+    }
+
+    /**
+     * @param jrf
+     * @return
+     */
+    private AppResourceIFace createAppResForFrame(final JReportFrame jrf)
+    {
+        //XXX - which Dir???
+        //XXX - what level???
+        AppResourceIFace result = AppContextMgr.getInstance().createAppResourceForDir("Collection");
+        result.setName(jrf.getReport().getName());
+        result.setDescription(result.getName());
+        result.setLevel((short)3); 
+
+        RepResourcePropsPanel propPanel = new RepResourcePropsPanel((ReportSpecify)jrf.getReport(), result);
+        CustomDialog cd = new CustomDialog((Frame)UIRegistry.getTopWindow(), 
+                UIRegistry.getResourceString("REP_PROPS_DLG_TITLE"),
+                true,
+                propPanel);
+        UIHelper.centerAndShow(cd);
+        if (!cd.isCancelled())
         {
-            for (int i = 0; i < iFaces.size(); i++)
+            result.setName(propPanel.getNameTxt().getText());
+            jrf.getReport().setName(result.getName());
+            result.setDescription(propPanel.getTitleTxt().getText());
+            result.setLevel(Short.valueOf(propPanel.getLevelTxt().getText()));
+            String metaDataStr = "tableid=-1;";
+            if (propPanel.getTypeCombo().getSelectedIndex() == 0)
             {
-                if (jrf.getReport() instanceof ReportSpecify)
-                {
-                    if (((ReportSpecify) (jrf.getReport())).resourceMatch(iFaces.get(i))) { return iFaces
-                            .get(i); }
-                }
+                metaDataStr += "reporttype=Report";
+                result.setMimeType("jrxml/report"); 
             }
+            else
+            {
+                metaDataStr += "reporttype=Label";
+                result.setMimeType("jrxml/label"); 
+            }
+            if (StringUtils.isNotEmpty(result.getMetaData()))
+            {
+                metaDataStr = metaDataStr + ";" + result.getMetaData();
+            }
+            result.setMetaData(metaDataStr);
+            return result;
         }
         return null;
     }
-
+    
     @Override
     public void saveAs(JReportFrame jrf)
     {
@@ -344,14 +425,13 @@ public class MainFrameSpecify extends MainFrame
         }
     }
 
-    private ReportSpecify makeNewReport(final String connectionName)
+    private ReportSpecify makeNewReport(final QBJRDataSourceConnection connection)
     {
-        ReportSpecify report = new ReportSpecify(null);
-        QBJRDataSourceConnection conn = new QBJRDataSourceConnection(connectionName);    
-        conn.loadProperties(null);
-        for (int f=0; f < conn.getFields(); f++)
+        ReportSpecify report = new ReportSpecify();
+        report.setConnection(connection);
+        for (int f=0; f < connection.getFields(); f++)
         {
-            QBJRDataSourceConnection.QBJRFieldDef fDef = conn.getField(f);
+            QBJRDataSourceConnection.QBJRFieldDef fDef = connection.getField(f);
             report.addField(new JRField(fDef.getFldName(), fDef.getFldClass().getName()));
         }
         return report;
@@ -368,7 +448,17 @@ public class MainFrameSpecify extends MainFrame
     @Override
     public Report newWizard()
     {
-        ChooseFromListDlg<String> dlg = new ChooseFromListDlg<String>(this, UIRegistry.getResourceString("REP_CHOOSE_SP_QUERY"), getQueryNames());
+        List<QBJRDataSourceConnection> spConns = new Vector<QBJRDataSourceConnection>();
+        for (Object conn : this.getConnections())
+        {
+            if (conn instanceof QBJRDataSourceConnection)
+            {
+                spConns.add((QBJRDataSourceConnection)conn);
+            }
+        }
+        ChooseFromListDlg<QBJRDataSourceConnection> dlg = new ChooseFromListDlg<QBJRDataSourceConnection>(this, 
+                UIRegistry.getResourceString("REP_CHOOSE_SP_QUERY"), 
+                spConns);
         dlg.setVisible(true);
         if (dlg.isCancelled())
         {
@@ -387,6 +477,10 @@ public class MainFrameSpecify extends MainFrame
         return result;
     }
     
+    /**
+     * @param report
+     * @return true if properties were gotten and set.
+     */
     protected boolean getReportProperties(final Report report)
     {
         ReportPropertiesFrame rpf = new ReportPropertiesFrame(this,true);
@@ -427,5 +521,4 @@ public class MainFrameSpecify extends MainFrame
         }
         return false;
     }
-
 }

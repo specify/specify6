@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import net.sf.jasperreports.engine.JRDataSource;
+import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.ERTICaptionInfo;
 
@@ -35,20 +36,39 @@ import edu.ku.brc.ui.db.ERTICaptionInfo;
 public class QBJRDataSourceConnection extends IReportConnection
 //public class QBJRDataSourceConnection extends JRDataSourceProviderConnection
 {
-    protected String queryName = null; //apparently iReport has it's own uses for the
+    protected final String queryName; //apparently iReport has it's own uses for the
                                       //name prop(s) so need to declare a new var.
+    protected final SpQuery query;
+    
     protected final List<QBJRFieldDef> fields = new ArrayList<QBJRFieldDef>();
     
-    public QBJRDataSourceConnection()
+//    public QBJRDataSourceConnection()
+//    {
+//        //emptiness
+//    }
+    
+    /**
+     * @param query (query.forceLoad(false) should have already been executed)
+     */
+    public QBJRDataSourceConnection(final SpQuery query)
     {
-        //emptiness
+        super();
+        this.setName(query.getName());
+        this.queryName = query.getName();
+        this.query = query;
     }
     
+    /**
+     * @param queryName
+     * 
+     * probably should do without this constructor.
+     */
     public QBJRDataSourceConnection(final String queryName)
     {
         super();
         this.setName(queryName);
         this.queryName = queryName;
+        this.query = null;
     }
     
     /* (non-Javadoc)
@@ -69,7 +89,16 @@ public class QBJRDataSourceConnection extends IReportConnection
         if (queryName != null)
         {
             fields.clear();
-            for (ERTICaptionInfo col : QueryBldrPane.getColumnInfo(queryName, true))
+            List<ERTICaptionInfo> cols;
+            if (query == null)
+            {
+                cols = QueryBldrPane.getColumnInfo(queryName, true);
+            }
+            else
+            {
+                cols = QueryBldrPane.getColumnInfoSp(query.getFields(), true);
+            }
+            for (ERTICaptionInfo col : cols)
             {
                 fields.add(new QBJRFieldDef(col.getColLabel(), col.getColClass()));
             }
@@ -154,4 +183,14 @@ public class QBJRDataSourceConnection extends IReportConnection
     {
         return UIRegistry.getResourceString("SPECIFY_REPORT_CONNECTION");
     }
+
+    /**
+     * @return the query
+     */
+    public SpQuery getQuery()
+    {
+        return query;
+    }
+    
+    
 }

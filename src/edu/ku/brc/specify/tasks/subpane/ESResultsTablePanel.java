@@ -751,7 +751,8 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
             SwingUtilities.invokeLater(new Runnable() {
                 public void run()
                 {
-                    if (cmd.getData() == null)
+                    boolean setCmdData = cmd.getData() == null;
+                    if (setCmdData)
                     {
                         cmd.setData(getRecordSet(false));
                     }
@@ -761,7 +762,10 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
                     // always reset the consumed flag and set the data to null
                     // so the command can be used again
                     cmd.setConsumed(false);
-                    cmd.setData(null);
+                    if (setCmdData)
+                    {
+                        cmd.setData(null);
+                    }
                 }
             });
         }

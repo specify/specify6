@@ -849,7 +849,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * @param fixLabels
      * @return ERTICaptionInfo for the visible columns represented in an SpQuery's queryFields.
      */
-    protected static List<ERTICaptionInfo> getColumnInfoSp(final Set<SpQueryField> queryFields, final boolean fixLabels)
+    public static List<ERTICaptionInfo> getColumnInfoSp(final Set<SpQueryField> queryFields, final boolean fixLabels)
     {
         List<ERTICaptionInfo> result = new Vector<ERTICaptionInfo>();
         for (SpQueryField qf : queryFields)

@@ -185,8 +185,6 @@ public class ReportsBaseTask extends BaseTask
                     }
 
                 }
-                
-                
                 navBoxes.add(navBox);
             }
         }
@@ -693,7 +691,6 @@ public class ReportsBaseTask extends BaseTask
             Element prop = (Element)propObj;
             if (prop.attributeValue("name").equals("LookAndFeel"))
             {
-                System.out.println(prop.getText());
                 if (prop.getText().equals(UIManager.getLookAndFeel().getID()))
                 {
                     writeIt = false;
@@ -706,7 +703,6 @@ public class ReportsBaseTask extends BaseTask
                     prop.add(new FlyweightCDATA(UIManager.getLookAndFeel().getID()));
                     
                 }
-                System.out.println(prop.getText());
                 break;
             }
         }

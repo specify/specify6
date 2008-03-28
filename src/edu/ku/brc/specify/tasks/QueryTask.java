@@ -1229,7 +1229,7 @@ public class QueryTask extends BaseTask
                            reps);
                    dlg.setVisible(true);
                    if (dlg.isCancelled()) { return; }
-                   fileName = dlg.getSelectedObject().getName() + ".jrxml";
+                   fileName = dlg.getSelectedObject().getName();// + ".jrxml";
                    dlg.dispose();
                }
                if (fileName == null) { return; }
