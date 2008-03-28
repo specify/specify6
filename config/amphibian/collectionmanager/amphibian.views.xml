@@ -124,13 +124,13 @@
                     <cell type="label" label="Amphibian" icon="CollectionObject" recordobj="true" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="1" label="Cat Num"/>
+                    <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="catalogNumber" uitype="formattedtext"/>
                     
                     <cell type="label" labelfor="2" label="Collection"/>
                     <cell type="field" id="2" name="collection.collectionName" uitype="dsptextfield"/>
                     
-                    <cell type="label" labelfor="14" label="Field No"/>
+                    <cell type="label" labelfor="14"/>
                     <cell type="field" id="14" name="fieldNumber" uitype="text"/>
                     
                 </row>
@@ -309,17 +309,17 @@
                     <cell type="label" labelfor="3" label="Determiner"/>
                     <cell type="field" id="3" name="determiner" uitype="querycbx" initialize="name=Agent;title=Determiner Agent" isrequired="true"/>
                     
-                    <cell type="label" labelfor="4" label="Type"/>
+                    <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="typeStatusName" uitype="text"/>
                     
-                    <cell type="label" labelfor="5" label="Date"/>
+                    <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="determinedDate" isrequired="true" uitype="formattedtext" uifieldformatter="Date" default="today"/>
                     
                     <cell type="field" id="7" name="yesNo1" uitype="checkbox" label="In Question"/>
                 </row>
                 
                 <row>
-                    <cell type="label" labelfor="6" label="Remarks"/>
+                    <cell type="label" labelfor="6"/>
                     <cell type="field" id="6" name="remarks" uitype="textarea" colspan="14" cols="50"/>
                 </row>
             </rows>
@@ -341,13 +341,13 @@
                     <cell type="separator" label="Locality Information" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="3" label="Name"/>
+                    <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="localityName" uitype="text" isrequired="true" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="1" label="Named Place"/>
+                    <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="namedPlace" uitype="text" colspan="5"/>
-                    <cell type="label" labelfor="2" label="Realtion To"/>
+                    <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="relationToNamedPlace" uitype="text"/>
                 </row>
                 <row>
@@ -362,11 +362,11 @@
                     <cell type="separator" label="Elevation" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="6" label="Min"/>
+                    <cell type="label" labelfor="6"/>
                     <cell type="field" id="6" name="minElevation" uitype="text" cols="20"/>
-                    <cell type="label" labelfor="7" label="Max"/>
+                    <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="maxElevation" uitype="text" cols="20"/>
-                    <cell type="label" labelfor="8" label="Method"/>
+                    <cell type="label" labelfor="8"/>
                     <cell type="field" id="8" name="elevationMethod" uitype="text" cols="1"/>
                 </row>
                 <row>
