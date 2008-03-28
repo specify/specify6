@@ -33,8 +33,10 @@
             <altviews>
                 <altview name="Determination View"       viewdef="Determination" label="View" mode="view"/>
                 <altview name="Determination Edit"       viewdef="Determination" label="Edit" mode="edit" default="true"/>
+                <!-- 
                 <altview name="Determination Table View" viewdef="Determination Table" label="Grid" mode="view"/>
                 <altview name="Determination Table Edit" viewdef="Determination Table" label="Grid" mode="edit"/>
+                 -->
             </altviews> 
         </view>
         

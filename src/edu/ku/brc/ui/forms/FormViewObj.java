@@ -86,6 +86,7 @@ import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBInfoBase;
 import edu.ku.brc.dbsupport.DBRelationshipInfo;
+import edu.ku.brc.dbsupport.DBTableChildIFace;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -122,6 +123,7 @@ import edu.ku.brc.ui.forms.persist.FormCellField;
 import edu.ku.brc.ui.forms.persist.FormCellFieldIFace;
 import edu.ku.brc.ui.forms.persist.FormCellIFace;
 import edu.ku.brc.ui.forms.persist.FormCellLabel;
+import edu.ku.brc.ui.forms.persist.FormCellLabelIFace;
 import edu.ku.brc.ui.forms.persist.FormCellSubView;
 import edu.ku.brc.ui.forms.persist.FormCellSubViewIFace;
 import edu.ku.brc.ui.forms.persist.FormViewDef;
@@ -2906,16 +2908,16 @@ public class FormViewObj implements Viewable,
             Font        boldFont = null;
             for (String idFor : labels.keySet())
             {
-                FVOFieldInfo  labelInfo = labels.get(idFor);
-                JLabel        label     = (JLabel)labelInfo.getComp();
+                FVOFieldInfo       labelInfo = labels.get(idFor);
+                JLabel             label     = (JLabel)labelInfo.getComp();
+                FormCellLabelIFace lblCell   = (FormCellLabelIFace)labelInfo.getFormCell();
                 
                 FormViewObj.FVOFieldInfo fieldInfo = controlsById.get(idFor);
                 if (fieldInfo.getFormCell().getType() == FormCellIFace.CellType.field)
                 {
-                    FormCellField cell = (FormCellField)fieldInfo.getFormCell();
-                    DBFieldInfo   fi   = ti.getFieldByName(fieldInfo.getFormCell().getName());
-                    
-                    if (isEditting && (cell.isRequired() || (fi != null && fi.isRequired())))
+                    FormCellField     cell     = (FormCellField)fieldInfo.getFormCell();
+                    DBTableChildIFace tblChild = ti.getItemByName(fieldInfo.getFormCell().getName());
+                    if (isEditting && (cell.isRequired() || (tblChild != null && tblChild.isRequired())))
                     {
                         if (boldFont == null)
                         {
@@ -2924,9 +2926,9 @@ public class FormViewObj implements Viewable,
                         label.setFont(boldFont);
                     }
                     
-                    if (cell.isDerived() && fi != null)
+                    if (lblCell.isDerived() && tblChild != null)
                     {
-                        String title = fi.getTitle();
+                        String title = tblChild.getTitle();
                         if (StringUtils.isNotEmpty(title))
                         {
                             label.setText(title + (StringUtils.isNotEmpty(title) ? ":" : ""));

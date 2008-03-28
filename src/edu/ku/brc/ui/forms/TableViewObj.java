@@ -73,6 +73,7 @@ import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBRelationshipInfo;
+import edu.ku.brc.dbsupport.DBTableChildIFace;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -95,6 +96,7 @@ import edu.ku.brc.ui.forms.persist.FormCellField;
 import edu.ku.brc.ui.forms.persist.FormCellFieldIFace;
 import edu.ku.brc.ui.forms.persist.FormCellIFace;
 import edu.ku.brc.ui.forms.persist.FormCellLabel;
+import edu.ku.brc.ui.forms.persist.FormCellLabelIFace;
 import edu.ku.brc.ui.forms.persist.FormCellSubView;
 import edu.ku.brc.ui.forms.persist.FormCellSubViewIFace;
 import edu.ku.brc.ui.forms.persist.FormViewDef;
@@ -1380,26 +1382,26 @@ public class TableViewObj implements Viewable,
 
     /**
      * Adds a control by name so it can be looked up later.
-     * @param formCell the FormCell def that describe the cell
+     * @param formCellLabel the FormCell def that describe the cell
      * @param label the the label to be added
      */
 
-    public void addLabel(final FormCellLabel formCell, final JLabel label)
+    public void addLabel(final FormCellLabel formCellLabel, final JLabel label)
     {
         if (skipControls > 0)
         {
             return;
         }
-        if (formCell != null && StringUtils.isNotEmpty(formCell.getLabelFor()))
+        if (formCellLabel != null && StringUtils.isNotEmpty(formCellLabel.getLabelFor()))
         {
-            String fullCompName = appendName(formCell.getLabelFor());
+            String fullCompName = appendName(formCellLabel.getLabelFor());
             ColumnInfo colInfo = controlsById.get(fullCompName);
             if (colInfo == null)
             {
-                colInfo = new ColumnInfo(getParentClassName(), formCell, fullCompName, null, null);
+                colInfo = new ColumnInfo(getParentClassName(), formCellLabel, fullCompName, null, null);
                 controlsById.put(fullCompName, colInfo);
             }
-            colInfo.setLabel(formCell.getLabel());
+            colInfo.setLabel(formCellLabel.getLabel());
             
         }
      }
@@ -1624,12 +1626,25 @@ public class TableViewObj implements Viewable,
         {
             for (ColumnInfo colInfo : controlsById.values())
             {
-                if (colInfo.getLabel().equals("##"))
+                DBTableChildIFace tblChild = ti.getItemByName(colInfo.getFormCell().getName());
+                
+                FormCellLabelIFace formCellLabel = colInfo.getFormCellLabel();
+                if (formCellLabel != null)
+                {
+                    if (formCellLabel.isDerived() && tblChild != null)
+                    {
+                        String title = tblChild.getTitle();
+                        if (StringUtils.isNotEmpty(title))
+                        {
+                            colInfo.setLabel(title);
+                        }
+                    }
+                } else if (colInfo.getLabel().equals("##"))
                 {
                     FormCellIFace formCell = colInfo.getFormCell();
                     if (formCell.getType() == FormCellIFace.CellType.field)
                     {
-                        DBFieldInfo   fi   = ti.getFieldByName(formCell.getName());
+                        DBFieldInfo fi = ti.getFieldByName(formCell.getName());
                         if (fi != null)
                         {
                             colInfo.setLabel(fi.getTitle());
@@ -1794,26 +1809,35 @@ public class TableViewObj implements Viewable,
      */
     class ColumnInfo
     {
-        protected FormCellIFace formCell;
-        protected String      parentClassName;
-        protected String      fullCompName;
-        protected String      label;
-        protected Component   comp;
-        protected JScrollPane scrollPane;
-        protected String[]    fieldNames;
-        protected boolean     isSet;
-        protected String      dataObjFormatName = null;
-        protected boolean     hasDataObjFormatter = false;
+        protected FormCellIFace      formCell;
+        protected FormCellLabelIFace formCellLabel;
+        protected String             parentClassName;
+        protected String             fullCompName;
+        protected String             label;
+        protected Component          comp;
+        protected JScrollPane        scrollPane;
+        protected String[]           fieldNames;
+        protected boolean            isSet;
+        protected String             dataObjFormatName = null;
+        protected boolean            hasDataObjFormatter = false;
         
         protected PickListDBAdapterIFace adaptor = null;
 
-        public ColumnInfo(String        parentClassName,
-                          FormCellIFace formCell, 
-                          String        fullCompName, 
-                          Component     comp, 
-                          JScrollPane   scrollPane)
+        public ColumnInfo(final String        parentClassName,
+                          final FormCellIFace formCell, 
+                          final String        fullCompName, 
+                          final Component     comp, 
+                          final JScrollPane   scrollPane)
         {
-            this.formCell       = formCell;
+            if (formCell instanceof FormCellLabelIFace)
+            {
+                this.formCell = null;
+                this.formCellLabel = (FormCellLabelIFace)formCell;
+            } else
+            {
+                this.formCell      = formCell;
+                this.formCellLabel = null;
+            }
             this.parentClassName = parentClassName;
             this.fullCompName   = fullCompName;
             this.comp           = comp;
@@ -1840,7 +1864,8 @@ public class TableViewObj implements Viewable,
 
         protected void checkForSet()
         {
-            if (StringUtils.isNotEmpty(formCell.getName()))
+            String name = formCell != null ? formCell.getName() : formCellLabel.getName();
+            if (StringUtils.isNotEmpty(name))
             {
                 DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(parentClassName);
                 if (tblInfo != null)
@@ -1855,7 +1880,6 @@ public class TableViewObj implements Viewable,
         {
             return fieldNames;
         }
-
 
         public String getFullCompName()
         {
@@ -1908,11 +1932,25 @@ public class TableViewObj implements Viewable,
             return formCell;
         }
 
-        public void setFormCell(FormCellIFace formCell)
+        public void setFormCell(final FormCellIFace formCell)
         {
-            this.formCell = formCell;
+            if (formCell instanceof FormCellLabelIFace)
+            {
+                this.formCellLabel = (FormCellLabelIFace)formCell;
+            } else
+            {
+                this.formCell = formCell;
+            }
             checkForDataObjFormatter();
             checkForSet();
+        }
+
+        /**
+         * @return the formCellLabel
+         */
+        public FormCellLabelIFace getFormCellLabel()
+        {
+            return formCellLabel;
         }
 
         public String getDataObjFormatName()

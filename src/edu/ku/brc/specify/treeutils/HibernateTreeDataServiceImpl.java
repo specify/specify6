@@ -617,8 +617,6 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
 
         try
         {
-            System.err.println(parentNN+"  "+def.getName()+"  "+def.getTreeDefId());
-            
             String updateNodeNumbersQueryStr = "UPDATE " + className + " SET nodeNumber=nodeNumber+1 WHERE nodeNumber>:parentNN AND definition=:def";
             QueryIFace fixNodeNumQuery = session.createQuery(updateNodeNumbersQueryStr);
             fixNodeNumQuery.setParameter("parentNN", parentNN);
