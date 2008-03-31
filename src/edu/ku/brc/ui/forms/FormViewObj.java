@@ -1549,7 +1549,7 @@ public class FormViewObj implements Viewable,
         
         boolean doSetIntoAndValidate = doSetIntoAndValidateArg;
         
-        if (list != null && !list.isEmpty())//rsController != null && rsController.getCurrentIndex() == 0)
+        if (list != null && !list.isEmpty())
         {
             getDataFromUI();
         }
@@ -1861,6 +1861,8 @@ public class FormViewObj implements Viewable,
         boolean tryAgain         = false;
         int     numTries         = 0;
         
+        Vector<Object> deletedItems = mvParent != null ? mvParent.getDeletedItems() : null;
+
         Object dObj = null;
         do
         {
@@ -1885,53 +1887,34 @@ public class FormViewObj implements Viewable,
                 //FormHelper.updateLastEdittedInfo(dataObjArg);
                 traverseToSetModified(getMVParent());
                 
-                if (numTries == 1)
+                session.beginTransaction();
+                
+                if (numTries == 1 && deletedItems != null)
                 {
-                    // Delete the cached Items
-                    Vector<Object> deletedItems = mvParent != null ? mvParent.getDeletedItems() : null;
-                    if (deletedItems != null)
+                    for (Object obj : deletedItems)
                     {
-                        session.beginTransaction();
-                        for (Object obj : deletedItems)
+                        BusinessRulesIFace delBusRules = DBTableIdMgr.getInstance().getBusinessRule(obj);
+                        // notify the business rules object that a deletion is going to happen
+                        if (delBusRules != null)
                         {
-                            BusinessRulesIFace delBusRules = DBTableIdMgr.getInstance().getBusinessRule(obj);
-                            // notify the business rules object that a deletion is going to happen
-                            if (delBusRules != null)
-                            {
-                                delBusRules.beforeDelete(obj, session);
-                            }
-                            session.delete(obj);
+                            delBusRules.beforeDelete(obj, session);
                         }
-                        for (Object obj : deletedItems)
+                        session.delete(obj);
+                    }
+                    for (Object obj : deletedItems)
+                    {
+                        BusinessRulesIFace delBusRules = DBTableIdMgr.getInstance().getBusinessRule(obj);
+                        // notify the business rules object that a deletion is going to be committed
+                        if (delBusRules != null)
                         {
-                            BusinessRulesIFace delBusRules = DBTableIdMgr.getInstance().getBusinessRule(obj);
-                            // notify the business rules object that a deletion is going to be committed
-                            if (delBusRules != null)
+                            if (!delBusRules.beforeDeleteCommit(obj, session))
                             {
-                                if (!delBusRules.beforeDeleteCommit(obj, session))
-                                {
-                                    throw new Exception("Business rules processing failed");
-                                }
+                                throw new Exception("Business rules processing failed");
                             }
                         }
-                        session.commit();
-                        session.flush();
-
-                        // notify the business rules object that a deletion has occured
-                        for (Object obj: deletedItems)
-                        {
-                            BusinessRulesIFace delBusRules = DBTableIdMgr.getInstance().getBusinessRule(obj);
-                            if (delBusRules != null)
-                            {
-                                delBusRules.afterDeleteCommit(obj);
-                            }
-                        }
-                        
-                        deletedItems.clear();
                     }
                 }
     
-                session.beginTransaction();
     
                 if (businessRules != null)
                 {
@@ -1955,6 +1938,20 @@ public class FormViewObj implements Viewable,
                 }
                 session.commit();
                 session.flush();
+                
+                if (numTries == 1 && deletedItems != null)
+                {
+                    // notify the business rules object that a deletion has occurred
+                    for (Object obj: deletedItems)
+                    {
+                        BusinessRulesIFace delBusRules = DBTableIdMgr.getInstance().getBusinessRule(obj);
+                        if (delBusRules != null)
+                        {
+                            delBusRules.afterDeleteCommit(obj);
+                        }
+                    }
+                    deletedItems.clear();
+                }
                 
                 tryAgain = false;
                 
@@ -3231,7 +3228,9 @@ public class FormViewObj implements Viewable,
             
             //log.debug(view.getName()+"  enableNewBtn "+enableNewBtn+"  isNewlyCreatedDataObj "+isNewlyCreatedDataObj()+" ("+(enableNewBtn && (dataObj == null || !isNewlyCreatedDataObj()))+")");
             
-            boolean newBtnEnabled = enableNewBtn && (dataObj == null || !isNewlyCreatedDataObj());
+            // 03/27/08 - rods - Add isSingle check for SubForms that hold a single Object
+            boolean isSingle = rsController == null && origDataSet == null;
+            boolean newBtnEnabled = enableNewBtn && (dataObj == null || (!isNewlyCreatedDataObj() && !isSingle));
             newRecBtn.setEnabled(newBtnEnabled); 
             
             if (switcherUI != null)
