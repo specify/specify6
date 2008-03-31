@@ -322,7 +322,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
             
         } else
         {
-            String sqlSnipet = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, isHQL); // false means SQL
+            String sqlSnipet = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, isHQL, false, tableInfo.getAbbrev()); 
             if (sqlSnipet != null)
             {
                 sqlStr.append(sqlSnipet);
