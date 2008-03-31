@@ -2910,7 +2910,12 @@ public class FormViewObj implements Viewable,
                 FormCellLabelIFace lblCell   = (FormCellLabelIFace)labelInfo.getFormCell();
                 
                 FormViewObj.FVOFieldInfo fieldInfo = controlsById.get(idFor);
-                if (fieldInfo.getFormCell().getType() == FormCellIFace.CellType.field)
+                if (fieldInfo == null)
+                {
+                    UIRegistry.showError("Setting Label -Form control with id["+idFor+"] is not in the form or subform.");
+                    continue;
+                }
+                if (fieldInfo.getFormCell() != null && fieldInfo.getFormCell().getType() == FormCellIFace.CellType.field)
                 {
                     FormCellField     cell     = (FormCellField)fieldInfo.getFormCell();
                     DBTableChildIFace tblChild = ti.getItemByName(fieldInfo.getFormCell().getName());
@@ -4992,7 +4997,7 @@ public class FormViewObj implements Viewable,
         
         // used by CarryForwardSetup
         protected String        label = null; 
-        protected DBInfoBase    fieldInfo;;
+        protected DBInfoBase    fieldInfo;
         
         public FVOFieldInfo(FormCellIFace formCell, Component comp, JScrollPane scrollPane, int insertPos)
         {
