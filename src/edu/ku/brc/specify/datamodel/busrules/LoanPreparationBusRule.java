@@ -31,7 +31,7 @@ public class LoanPreparationBusRule extends BaseBusRules
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#fillForm(java.lang.Object, edu.ku.brc.ui.forms.Viewable)
      */
-    public void afterFillForm(Object dataObj, Viewable viewable)
+    public void afterFillForm(Object dataObj, Viewable viewableArg)
     {
         
     }

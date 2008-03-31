@@ -132,7 +132,7 @@ public class LoanSelectPrepsDlg extends JDialog
                 }
             }
         }
-        String rowDef = UIHelper.createDuplicateJGoodiesDef("p", "1px,p,4px", (cntColObj*2)-1) + ",10px,p";
+        String rowDef = UIHelper.createDuplicateJGoodiesDef("p", "1px,p,4px", (colObjs.size()*2)-1) + ",10px,p";
         PanelBuilder    pbuilder = new PanelBuilder(new FormLayout("f:p:g", rowDef), mainPanel);
         CellConstraints cc      = new CellConstraints();
         

@@ -466,7 +466,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
      * @return the bioStratsPaleoContext
      */
     @OneToMany(mappedBy = "bioStrat")
-    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    @Cascade( {CascadeType.ALL })
     public Set<PaleoContext> getBioStratsPaleoContext()
     {
         return bioStratsPaleoContext;
@@ -487,7 +487,7 @@ public class GeologicTimePeriod extends DataModelObjBase implements java.io.Seri
      * @return the chronosStratsPaleoContext
      */
     @OneToMany(mappedBy = "chronosStrat")
-    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
+    @Cascade( {CascadeType.ALL} )
     public Set<PaleoContext> getChronosStratsPaleoContext()
     {
         return chronosStratsPaleoContext;

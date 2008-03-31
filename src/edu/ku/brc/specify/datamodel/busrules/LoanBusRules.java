@@ -23,11 +23,17 @@ package edu.ku.brc.specify.datamodel.busrules;
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Calendar;
 
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JTextField;
 
+import org.apache.commons.lang.StringUtils;
+
+import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.Accession;
@@ -35,11 +41,13 @@ import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Shipment;
+import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.validation.ValFormattedTextField;
+import edu.ku.brc.ui.forms.validation.ValFormattedTextFieldSingle;
 
 /**
  * Business rules for validating a Loan.
@@ -76,6 +84,29 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
             if (comp instanceof JCheckBox)
             {
                 ((JCheckBox)comp).setVisible(isEdit);
+            }
+            
+            comp = formViewObj.getControlByName("isClosed");
+            if (comp instanceof JCheckBox)
+            {
+                if (((JCheckBox)comp).isSelected())
+                {
+                    ((JCheckBox)comp).addActionListener(new ActionListener() {
+                        public void actionPerformed(ActionEvent arg0)
+                        {
+                            Component dateComp = formViewObj.getControlByName("loanDate");
+                            if (dateComp != null && dateComp instanceof ValFormattedTextFieldSingle)
+                            {
+                                ValFormattedTextFieldSingle loanDateComp = (ValFormattedTextFieldSingle)dateComp;
+                                if (StringUtils.isEmpty(loanDateComp.getText()))
+                                {
+                                    DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
+                                    loanDateComp.setText(scrDateFormat.format(Calendar.getInstance()));
+                                }
+                            }
+                        }
+                    });
+                }
             }
             
             boolean allResolved = true;
