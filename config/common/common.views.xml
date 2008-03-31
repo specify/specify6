@@ -376,7 +376,7 @@
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="type" uitype="combobox" picklist="AccessionType" isrequired="true"/>
                     
-                    <cell type="label" labelfor="4" label="Division"/>
+                    <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="division" uitype="combobox" picklist="Division" isrequired="true"/>
                     
                 </row>
@@ -497,7 +497,7 @@
                 <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="appraisalDate" uitype="formattedtext" isrequired="true" uifieldformatter="Date" default="today"/>
-                    <cell type="label" labelfor="2" label="Appraisal Number"/>
+                    <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="appraisalNumber" uitype="text"/>
 
                     <cell type="label" labelfor="4"/>
@@ -627,15 +627,15 @@
     		        <cell type="label" icon="Agent" recordobj="true" colspan="5"/>
     		    </row>
                 <row>
-                    <cell type="label" labelfor="3" label="Last Name"/>
+                    <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="agent.lastName" uitype="text" cols="20"  isrequired="true" colspan="3"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="5" label="First Name"/>
+                    <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="agent.firstName" uitype="text" cols="20" isrequired="true" colspan="3"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="7" label="Email"/>
+                    <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="agent.email" uitype="text" cols="32"/>
                     <cell type="field" id="mailto" name="agent" uitype="plugin" initialize="name=WebLinkLauncherButton;url=mailto:$email$;label=Send Mail"/>
                 </row>
@@ -1387,7 +1387,7 @@
                     <cell type="field" id="6" name="projectNumber" uitype="text"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="10" label="Project Agent"/>
+                    <cell type="label" labelfor="10"/>
                     <cell type="field" id="10" name="agent" uitype="querycbx" initialize="name=Agent"/>
                 </row>   
                 
@@ -1441,21 +1441,21 @@
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="7" label="Number"/>
+                    <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="number" uitype="formattedtext" uifieldformatter="InfoRequestNumber" isrequired="true"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="1" label="Request Date"/>
+                    <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="requestDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
-                    <cell type="label" labelfor="2" label="Reply Date"/>
+                    <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="replyDate" uitype="formattedtext" uifieldformatter="Date"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="6" label="Requester"/>
+                    <cell type="label" labelfor="6"/>
                     <cell type="field" id="6" name="agent" uitype="querycbx" initialize="name=Agent" isrequired="true"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="3" label="Remarks"/>
+                    <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="remarks" uitype="textarea" cols="40" colspan="6"/>
                 </row>
                 <row>
@@ -1488,33 +1488,33 @@
                     <cell type="field" id="3" name="accession" uitype="querycbx" initialize="name=Accession;title=Accession"/>
                     -->
                     
-                    <cell type="label" labelfor="1" label="Date"/>
+                    <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="catalogedDate" uitype="formattedtext" uifieldformatter="Date"/>
                     
-                    <cell type="label" labelfor="2" label="Catalog Number" uitype="text"/>
+                    <cell type="label" labelfor="2" uitype="text"/>
                     <cell type="field" id="2" name="catalogNumber" uitype="formattedtext" uifieldformatter="CatalogNumber"/>
                                       
-                    <cell type="label" labelfor="3" label="Field No"/>
+                    <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="fieldNumber" uitype="text"/>
                     
                     <!--
-                    <cell type="label" labelfor="4" label="Cataloger"/>
+                    <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="cataloger" uitype="querycbx" initialize="name=Agent;title=Catalog Agent"/>
                     -->
                     
-                    <cell type="label" labelfor="5" label="Determination"/>
+                    <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="determinations" uitype="text"/>
                     
-                    <cell type="label" labelfor="6" label="Locality"/>
+                    <cell type="label" labelfor="6"/>
                     <cell type="field" id="6" name="collectingEvent.locality.localityName" uitype="text"/>
                     
-                    <cell type="label" labelfor="7" label="Latitude"/>
+                    <cell type="label" labelfor="7" />
                     <cell type="field" id="7" name="collectingEvent.locality.latitude1" uitype="text"/>
                     
-                    <cell type="label" labelfor="8" label="Longitude"/>
+                    <cell type="label" labelfor="8"/>
                     <cell type="field" id="8" name="collectingEvent.locality.longitude1" uitype="text"/>
                     
-                    <cell type="label" labelfor="9" label="Preparations"/>
+                    <cell type="label" labelfor="9"/>
                     <cell type="field" id="9" name="preparations" uitype="text"/>
                 </row>
             </rows>
@@ -1545,14 +1545,14 @@
 
     		<rows>
 			   <row>
-                   <cell type="label" labelfor="7" label="Prep Method" />
+                   <cell type="label" labelfor="7"/>
 			       <cell type="field" id="7" name="prepType" uitype="combobox" picklist="PrepType" isrequired="true"/>
 			   </row>
     			<row>
                     <cell type="label" labelfor="1"/>
     			    <cell type="field" id="1" name="preparedDate" uitype="formattedtext" uifieldformatter="Date" isrequired="true" default="today"/>
 
-    			    <cell type="label" labelfor="2" label="Prepared By"/>
+    			    <cell type="label" labelfor="2"/>
     			    <cell type="field" id="2" name="preparedByAgent" uitype="querycbx" initialize="name=Agent" isrequired="true"/>
     			</row>
     			<row>
@@ -1580,27 +1580,27 @@
             <rowDef auto="true" cell="p" sep="2dlu"/>
             <rows>
                 <row>
-                    <cell type="label" labelfor="1" label="Date"/>
+                    <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="shipmentDate" uitype="formattedtext" uifieldformatter="Date" isrequired="true" default="today"/>
-                    <cell type="label" labelfor="2" label="Number"/>
+                    <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="shipmentNumber" uitype="dsptextfield"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="3" label="Method"/>
+                    <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="shipmentMethod"  uitype="combobox" picklist="ShipmentMethod" isrequired="true"/>
-                    <cell type="label" labelfor="4" label="Number of Packages"/>
+                    <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="numberOfPackages" uitype="text"  isrequired="true" default="1"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="5" label="Weight"/>
+                    <cell type="label" labelfor="5"/>
                     <cell type="field" id="5" name="weight" uitype="text"/>
-                    <cell type="label" labelfor="6" label="Insured For Amount"/>
+                    <cell type="label" labelfor="6"/>
                     <cell type="field" id="6" name="insuredForAmount" uitype="text"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="7" label="Shipment By"/>
+                    <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="shippedBy" uitype="querycbx" initialize="name=Agent" isrequired="true"/>
-                    <cell type="label" labelfor="8" label="Shipped To"/>
+                    <cell type="label" labelfor="8"/>
                     <cell type="field" id="8" name="shippedTo" uitype="querycbx" initialize="name=Agent" isrequired="true"/>
                 </row>
             </rows>
@@ -1639,17 +1639,17 @@
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="2" label="ChronosStrat"/>
+                    <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="chronosStrat" uitype="querycbx" initialize="name=GeologicTimePeriod" isrequired="false" />
-                    <cell type="label" labelfor="1" label="BioStrat"/>
+                    <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="bioStrat" uitype="querycbx" initialize="name=BioStrat;displaydlg=BioStratDisplay;searchdlg=BioStratSearch" isrequired="false"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="3" label="LithoStrat"/>
+                    <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="lithoStrat" uitype="querycbx" initialize="name=LithoStrat"/> 
                 </row>
                 <row>
-                    <cell type="label" labelfor="4" label="Remarks"/>
+                    <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="text1" uitype="text" colspan="10"/>                    
                 </row>
             </rows>

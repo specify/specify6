@@ -133,16 +133,16 @@
                     <cell type="label" label="Reptile" icon="CollectionObject" recordobj="true" colspan="16"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="1" label="Cat Num"/>
+                    <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="catalogNumber" uitype="formattedtext"/>
                     
-                    <cell type="label" labelfor="2" label="Collection"/>
+                    <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="collection.collectionName" uitype="dsptextfield"/>
                     
-                    <cell type="label" labelfor="4" label="Field No"/>
+                    <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="fieldNumber" uitype="text"/>
                     
-                    <cell type="label" labelfor="3" label="Accession #"/>
+                    <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="accession" uitype="querycbx" initialize="name=Accession;title=Accession" isrequired="false"/>
                 </row>
                 <row>
@@ -181,10 +181,10 @@
                 </row>
                 
                 <row>
-                    <cell type="label" labelfor="10" label="Edited By"/>
+                    <cell type="label" labelfor="10"/>
                     <cell type="field" id="10" name="modifiedByAgent" uitype="label" readonly="true"  uifieldformatter="Agent"/>
                     
-                    <cell type="label" labelfor="11" label="Last Edited"/>
+                    <cell type="label" labelfor="11"/>
                     <cell type="field" id="11" name="timestampModified" uitype="label" readonly="true" cols="20" colspan="2"/>
                 </row>
                 
@@ -207,24 +207,24 @@
                     <cell type="label" label="Collecting Event" icon="CollectingEvent" recordobj="true" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="2" label="CollectionDate"/>
+                    <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="startDate" uitype="formattedtext" uifieldformatter="Date"/>
-                    <cell type="label" labelfor="1" label="Verbatim Date"/>
+                    <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="verbatimDate" uitype="text"/>
-                    <cell type="label" labelfor="3" label="Method"/>
+                    <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="method" uitype="combobox" dspuitype="dsptextfield" picklist="CollectingMethod"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="4" label="Locality"/>
+                    <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="locality" uitype="querycbx" initialize="name=Locality;title=Locality" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="6" label="Remarks"/>
+                    <cell type="label" labelfor="6"/>
                     <cell type="field" id="6" name="remarks" uitype="textarea" colspan="10" cols="50"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="5" label="Collectors"/>
-                    <cell type="subview" viewname="Collectors" id="8" name="collectors" colspan="10"/>
+                    <cell type="label" labelfor="5"/>
+                    <cell type="subview" viewname="Collectors" id="5" name="collectors" colspan="10"/>
                 </row>
                 <row>
                     <cell type="separator" label="Attachments" collapse="collectingEventAttachments" colspan="12"/>
@@ -256,20 +256,20 @@
                 <row>
                     <cell type="label" labelfor="1" label="Site No"/>
                     <cell type="field" id="1" name="stationFieldNumber" uitype="text"/>
-                    <cell type="label" labelfor="2" label="Collection Date"/>
+                    <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="startDate" uitype="formattedtext" uifieldformatter="Date"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="4" label="Locality"/>
+                    <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="locality" uitype="querycbx" initialize="name=Locality;title=Locality" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="6" label="Remarks"/>
+                    <cell type="label" labelfor="6"/>
                     <cell type="field" id="6" name="remarks" uitype="textarea" colspan="10" cols="50"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="5" label="Collectors"/>
-                    <cell type="subview" viewname="Collectors" id="8" name="collectors" colspan="10"/>
+                    <cell type="label" labelfor="5"/>
+                    <cell type="subview" viewname="Collectors" id="5" name="collectors" colspan="10"/>
                 </row>
             </rows>
         </viewdef>
@@ -300,23 +300,23 @@
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
                 <row>
-                    <cell type="label" labelfor="1" label="Taxon"/>
+                    <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="taxon" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=true" colspan="5"/>
                     
-                    <cell type="label" labelfor="2" label="Status"/>
+                    <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="status" uitype="combobox" picklist="DeterminationStatus" isrequired="true"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="3" label="Determiner"/>
+                    <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="determiner" uitype="querycbx" initialize="name=Agent;title=Determiner Agent" isrequired="true"/>
                     
-                    <cell type="label" labelfor="4" label="Type Status"/>
+                    <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="typeStatusName" uitype="combobox" picklist="TypeStatus"/>
                     
                 </row>
                 
                 <row>
-                    <cell type="label" labelfor="6" label="Remarks"/>
+                    <cell type="label" labelfor="6"/>
                     <cell type="field" id="6" name="remarks" uitype="textarea" colspan="14" cols="50"/>
                 </row>
             </rows>
@@ -347,21 +347,21 @@
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="7" label="Prep Method"/>
+                    <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="prepType" uitype="combobox" picklist="CollObjPrepMeth" isrequired="true"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="1" label="Prepared Date"/>
+                    <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="preparedDate" uitype="formattedtext" uifieldformatter="Date" isrequired="true" default="today"/>
                     
-                    <cell type="label" labelfor="2" label="Prepared By"/>
+                    <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="preparedByAgent" uitype="querycbx" initialize="name=Agent;title=Prepared By Agent" isrequired="true"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="3" label="Count"/>
+                    <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="count" uitype="text" isrequired="true"/>
                     
-                    <cell type="label" labelfor="4" label="Storage"/>
+                    <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="storageLocation" uitype="text" cols="20"/>
                 </row>
                 <row>

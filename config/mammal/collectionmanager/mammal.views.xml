@@ -74,17 +74,17 @@
     			    <cell type="label" labelfor="1"/>
     			    <cell type="field" id="1" name="catalogNumber" uitype="formattedtext"/>
 
-                    <cell type="label" labelfor="2" label="Collection"/>
+                    <cell type="label" labelfor="2"/>
     			    <cell type="field" id="2" name="collection.collectionName" uitype="dsptextfield"/>
 
                     <cell type="label" labelfor="19" label="Collector No"/>
     			    <cell type="field" id="19" name="fieldNumber" uitype="text"/>
     			</row>
     			<row>
-                 <cell type="label" labelfor="3" label="Accession #"/>
+                 <cell type="label" labelfor="3"/>
     			 <cell type="field" id="3" name="accession" uitype="querycbx" initialize="name=Accession;title=Accession" isrequired="false"/>
 
-                 <cell type="label" labelfor="4" label="Cataloger"/>
+                 <cell type="label" labelfor="4"/>
     			    <cell type="field" id="4" name="cataloger" uitype="querycbx" initialize="name=Agent;title=Catalog Agent;editoncreate=true" isrequired="true"/>
 
                     <cell type="label" labelfor="5"/>
@@ -140,7 +140,7 @@
                     <cell type="label" labelfor="10"/>
     			    <cell type="field" id="10" name="modifiedByAgent" uitype="label" readonly="true"  uifieldformatter="Agent"/>
 
-                    <cell type="label" labelfor="11" label="Last Edited"/>
+                    <cell type="label" labelfor="11"/>
     			    <cell type="field" id="11" name="timestampModified" uitype="label" readonly="true" cols="20" colspan="2"/>
     			</row>
     			
@@ -163,13 +163,13 @@
                     <cell type="label" label="Collecting Event" icon="CollectingEvent" recordobj="true" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="2" label="Collection Date" />
+                    <cell type="label" labelfor="2" />
                     <cell type="field" id="2" name="startDate" uitype="formattedtext" uifieldformatter="Date"/>
-                    <cell type="label" labelfor="3" label="Verbatim Date"/>
+                    <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="verbatimDate" uitype="text"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="4" label="Locality"/>
+                    <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="locality" uitype="querycbx" initialize="name=Locality;title=Locality" colspan="10"/>
                 </row>
                 <row>
@@ -177,8 +177,8 @@
                     <cell type="field" id="6" name="remarks" uitype="textarea" colspan="10" cols="50"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="5" label="Collectors"/>
-                    <cell type="subview" viewname="Collectors" id="8" name="collectors" colspan="10"/>
+                    <cell type="label" labelfor="5"/>
+                    <cell type="subview" viewname="Collectors" id="5" name="collectors" colspan="10"/>
                 </row>
                 <row>
                     <cell type="separator" label="Attachments" collapse="collectingEventAttachments" colspan="12"/>
@@ -208,7 +208,7 @@
             
             <rows>
                 <row>
-                    <cell type="label" labelfor="4" label="Locality"/>
+                    <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="locality" uitype="querycbx" initialize="name=Locality;title=Locality" colspan="10"/>
                 </row>
                 <row>
@@ -216,8 +216,8 @@
                     <cell type="field" id="6" name="remarks" uitype="textarea" colspan="10" cols="50"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="5" label="Collectors"/>
-                    <cell type="subview" viewname="Collectors" id="8" name="collectors" colspan="10"/>
+                    <cell type="label" labelfor="5"/>
+                    <cell type="subview" viewname="Collectors" id="5" name="collectors" colspan="10"/>
                 </row>
             </rows>
         </viewdef>
@@ -248,14 +248,14 @@
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
                 <row>
-                    <cell type="label" labelfor="1" label="Taxon"/>
+                    <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="taxon" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=true" colspan="5"/>
                     
-                    <cell type="label" labelfor="2" label="Status"/>
+                    <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="status" uitype="combobox" picklist="DeterminationStatus" isrequired="true"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="3" label="Determiner"/>
+                    <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="determiner" uitype="querycbx" initialize="name=Agent;title=Determiner Agent" isrequired="true"/>
                     
                     <cell type="label" labelfor="5"/>
