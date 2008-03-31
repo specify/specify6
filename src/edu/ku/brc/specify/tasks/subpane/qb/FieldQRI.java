@@ -136,4 +136,12 @@ public class FieldQRI extends BaseQRI
     }
     
     
+    /**
+     * @return true if the schema field represented by this object has been hidden.
+     */
+    public boolean isFieldHidden()
+    {
+        return getFieldInfo().isHidden();
+    }
+    
 }

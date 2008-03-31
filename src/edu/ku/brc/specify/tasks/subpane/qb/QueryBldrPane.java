@@ -1198,7 +1198,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         {
             for (int f = 0; f < tblQRI.getFields(); f++)
             {
-                if (!tblQRI.getField(f).getFieldInfo().isHidden())
+                if (!tblQRI.getField(f).isFieldHidden())
                 {
                     model.addElement(tblQRI.getField(f));
                 }

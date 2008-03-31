@@ -144,4 +144,16 @@ public class TreeLevelQRI extends FieldQRI
             super("No TreeDefItem for " + String.valueOf(rankId));
         }
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.qb.FieldQRI#isFieldHidden()
+     */
+    @Override
+    public boolean isFieldHidden()
+    {
+        //this object wouldn't have been created if it was hidden (not in the tree def).
+        return false;
+    }
+    
+    
 }
