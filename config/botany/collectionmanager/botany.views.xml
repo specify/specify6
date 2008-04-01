@@ -75,7 +75,7 @@
     			    <cell type="field" id="1" name="catalogNumber" uitype="formattedtext"/>
 
                     <cell type="label" labelfor="2"/>
-    			    <cell type="field" id="2" name="collection.collectionName" uitype="dsptextfield"/>
+    			    <cell type="field" id="2" name="collection" uitype="dsptextfield"/>
 
                     <cell type="label" labelfor="5"/>
     			    <cell type="field" id="5" name="catalogedDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
