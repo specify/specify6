@@ -4,6 +4,7 @@
     <views>
         <view name="Agent"
             class="edu.ku.brc.specify.datamodel.Agent"
+            busrules="edu.ku.brc.specify.datamodel.busrules.AgentBusRules"
             isinternal="false"
             resourcelabels="false">
             <desc><![CDATA[Agent subform within the AccessionAgent form.]]></desc>
@@ -42,6 +43,7 @@
         
         <view name="Permit"
             class="edu.ku.brc.specify.datamodel.Permit"
+            busrules="edu.ku.brc.specify.datamodel.busrules.PermitBusRules"
             isinternal="false"
             resourcelabels="false">
             <desc><![CDATA[Permit subform within the Accession form.]]></desc>
@@ -64,6 +66,7 @@
         
         <view name="Loan"
         	class="edu.ku.brc.specify.datamodel.Loan"
+            busrules="edu.ku.brc.specify.datamodel.busrules.LoanBusRules"
         	resourcelabels="false">
         	<desc><![CDATA[Loan display form]]></desc>
         	<altviews>
@@ -74,6 +77,7 @@
 		
         <view name="AttachmentsIconView"
               class="edu.ku.brc.specify.datamodel.Attachment"
+              busrules="edu.ku.brc.specify.datamodel.busrules.AttachmentBusRules"
               resourcelabels="false">
             <desc><![CDATA[The Attachments Icon View.]]></desc>
             <altviews>
@@ -84,6 +88,7 @@
         
         <view name="CollectorsIconView"
             class="edu.ku.brc.specify.datamodel.Collector"
+            busrules="edu.ku.brc.specify.datamodel.busrules.CollectorBusRules"
             resourcelabels="false">
             <desc><![CDATA[The Attachments Icon View.]]></desc>
             <altviews>
@@ -95,6 +100,7 @@
         
         <view name="Locality"
             class="edu.ku.brc.specify.datamodel.Locality"
+            busrules="edu.ku.brc.specify.datamodel.busrules.LocalityBusRules"
             isinternal="false"
             resourcelabels="false">
             <desc><![CDATA[Locality form.]]></desc>
@@ -106,6 +112,7 @@
 
         <view name="AttachmentsForm"
             class="edu.ku.brc.specify.datamodel.Attachment"
+            busrules="edu.ku.brc.specify.datamodel.busrules.AttachmentBusRules"
             resourcelabels="false">
             <desc><![CDATA[The Attachments Form.]]></desc>
             <altviews>
@@ -116,6 +123,7 @@
         
         <view name="Collector"
             class="edu.ku.brc.specify.datamodel.Collector"
+            busrules="edu.ku.brc.specify.datamodel.busrules.CollectorBusRules"
             resourcelabels="false">
             <desc><![CDATA[The Collectors Form.]]></desc>
             <altviews>
@@ -126,6 +134,7 @@
         
         <view name="PrepType"
             class="edu.ku.brc.specify.datamodel.PrepType"
+            busrules="edu.ku.brc.specify.datamodel.busrules.PrepTypeBusRules"
             resourcelabels="false">
             <desc><![CDATA[The PrepType Form.]]></desc>
             <altviews>
@@ -136,6 +145,7 @@
         
         <view name="DeterminationStatus"
             class="edu.ku.brc.specify.datamodel.DeterminationStatus"
+            busrules="edu.ku.brc.specify.datamodel.busrules.DeterminationStatusBusRules"
             resourcelabels="false">
             <desc><![CDATA[The PrepType Form.]]></desc>
             <altviews>
@@ -207,6 +217,7 @@
   
         <view name="Taxon"
             class="edu.ku.brc.specify.datamodel.Taxon"
+            busrules="edu.ku.brc.specify.datamodel.busrules.TaxonBusRules"
             isinternal="false"
             resourcelabels="false">
             <desc><![CDATA[Taxon data entry form.]]></desc>
@@ -218,6 +229,7 @@
         
         <view name="TaxonSubform"
             class="edu.ku.brc.specify.datamodel.Taxon"
+            busrules="edu.ku.brc.specify.datamodel.busrules.TaxonBusRules"
             resourcelabels="false">
             <desc><![CDATA[Taxon data entry form.]]></desc>
             <altviews>
@@ -230,6 +242,7 @@
         
         <view name="Geography"
             class="edu.ku.brc.specify.datamodel.Geography"
+            busrules="edu.ku.brc.specify.datamodel.busrules.GeographyBusRules"
             isinternal="false"
             resourcelabels="false">
             <desc><![CDATA[Geography data entry form.]]></desc>
@@ -241,6 +254,7 @@
         
         <view name="GeographySubform"
             class="edu.ku.brc.specify.datamodel.Geography"
+            busrules="edu.ku.brc.specify.datamodel.busrules.GeographyBusRules"
             resourcelabels="false">
             <desc><![CDATA[Geography data entry form.]]></desc>
             <altviews>
@@ -253,6 +267,7 @@
         
         <view name="Storage"
             class="edu.ku.brc.specify.datamodel.Storage"
+            busrules="edu.ku.brc.specify.datamodel.busrules.StorageBusRules"
             isinternal="false"
             resourcelabels="false">
             <desc><![CDATA[Storage data entry form.]]></desc>
@@ -264,6 +279,7 @@
         
         <view name="StorageSubform"
             class="edu.ku.brc.specify.datamodel.Storage"
+            busrules="edu.ku.brc.specify.datamodel.busrules.StorageBusRules"
             resourcelabels="false">
             <desc><![CDATA[Storage data entry form.]]></desc>
             <altviews>
@@ -276,6 +292,7 @@
         
         <view name="GeologicTimePeriod"
             class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
+            busrules="edu.ku.brc.specify.datamodel.busrules.GeologicTimePeriodBusRules"
             isinternal="false"
             resourcelabels="false">
             <desc><![CDATA[GeologicTimePeriod data entry form.]]></desc>
@@ -287,6 +304,7 @@
         
         <view name="GeologicTimePeriodSubform"
             class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
+            busrules="edu.ku.brc.specify.datamodel.busrules.GeologicTimePeriodBusRules"
             resourcelabels="false">
             <desc><![CDATA[GeologicTimePeriod data entry form.]]></desc>
             <altviews>
@@ -299,6 +317,7 @@
         
         <view name="LithoStrat"
             class="edu.ku.brc.specify.datamodel.LithoStrat"
+            busrules="edu.ku.brc.specify.datamodel.busrules.LithoStratBusRules"
             isinternal="false"
             resourcelabels="false">
             <desc><![CDATA[LithoStrat data entry form.]]></desc>
