@@ -17,6 +17,7 @@ package edu.ku.brc.specify.tasks;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.datatransfer.DataFlavor;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -24,8 +25,6 @@ import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.NavBox;
-import edu.ku.brc.af.core.NavBoxAction;
-import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
@@ -35,6 +34,7 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
+import edu.ku.brc.util.Pair;
 
 /**
  * This task will enable a user to create, and view reports.
@@ -57,7 +57,9 @@ public class ReportsTask extends ReportsBaseTask
         name          = "Reports";
         title         = getResourceString(name);
         defaultFlavor = new DataFlavor(ReportsBaseTask.class, name);
-        mimeType      = REPORTS_MIME;
+        navMimeDefs     = new ArrayList<Pair<String,String>>(2);
+        navMimeDefs.add(new Pair<String,String>(name, REPORTS_MIME));
+        navMimeDefs.add(new Pair<String,String>("Labels", LABELS_MIME));
 
         setIcon(this.name);
     }
@@ -94,7 +96,6 @@ public class ReportsTask extends ReportsBaseTask
         roc = (RolloverCommand)makeDnDNavBtn(actionNavBox, getResourceString("ReportRunner"), name, 
                 getResourceString("RUN_REPORT_TT"), 
                 new CommandAction(REPORTS, RUN_REPORT, SpReport.getClassTableId()), null, true, false);// true means make it draggable
-        //roc.addDropDataFlavor(spReportFlavor);
         roc.addDropDataFlavor(runReportFlavor);
         roc.addDragDataFlavor(runReportFlavor);
    }

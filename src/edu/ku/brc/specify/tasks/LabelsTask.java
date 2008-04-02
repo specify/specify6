@@ -19,6 +19,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import java.awt.Component;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.print.PrinterException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
@@ -38,6 +39,7 @@ import edu.ku.brc.specify.tasks.subpane.LabelsPane;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
+import edu.ku.brc.util.Pair;
 
 /**
  * A task to manage Labels and response to Label Commands.
@@ -60,9 +62,10 @@ public class LabelsTask extends ReportsBaseTask
         name          = "Labels";
         title         = getResourceString(name);
         defaultFlavor = new DataFlavor(ReportsBaseTask.class, name);
-        mimeType      = LABELS_MIME;
+        navMimeDefs     = new ArrayList<Pair<String,String>>(2);
+        navMimeDefs.add(new Pair<String,String>("Labels", LABELS_MIME));
         reportHintKey = "LABEL_TT";
-
+        
         setIcon(this.name);
     }
 
@@ -86,6 +89,7 @@ public class LabelsTask extends ReportsBaseTask
     @Override
     public void initialize()
     {
+        isVisible = false;
         if (!isInitialized)
         {
             super.initialize();
@@ -223,7 +227,7 @@ public class LabelsTask extends ReportsBaseTask
             } else
             {
                 String mimeTypeStr = (String)cmdAction.getProperty("mimetype");
-                if (StringUtils.isNotEmpty(mimeTypeStr) && mimeTypeStr.equals(mimeType))
+                if (StringUtils.isNotEmpty(mimeTypeStr) && mimeTypeStr.equals(navMimeDefs.get(0).getSecond()))
                 {
                     super.doCommand(cmdAction);
                 }

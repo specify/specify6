@@ -20,6 +20,7 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
@@ -402,6 +403,27 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
             NavBoxMgr.getInstance().repaint();
             UIRegistry.forceTopFrameRepaint();
         }
+    }
+    
+    /**
+     * Removes NavBoxItemIFace from any NavBox.
+     * @param btnTitle
+     * @return true if a Btn was removed.
+     */
+    protected boolean deleteDnDBtn(final String btnTitle)
+    {
+        for (NavBoxIFace navBox : navBoxes)
+        {
+            for (NavBoxItemIFace nbi : navBox.getItems())
+            {
+                if (nbi.getTitle().equals(btnTitle))
+                {
+                    deleteDnDBtn(navBox, nbi);
+                    return true;
+                }
+            }
+        }
+        return false;
     }
     
     /**
@@ -1067,14 +1089,64 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     //--------------------------------------------------------------
 
     /**
-     * Creates Command Items for a mime type in the AppResources XML.
+     * Gets Command Items for a mime type in the AppResources XML and adds them to commands list.
      * @param mimeType the MimeType to use
      * @param classTableId the Table Id
      */
     protected void addAppResourcesToCommandsByMimeType(final String mimeType, 
                                                        final String reportType,
+                                                       final String defaultIcon,
                                                        final Integer classTableId)
     {
+            List<TaskCommandDef> cmds = getAppResourceCommandsByMimeType(mimeType, reportType, defaultIcon, classTableId);
+            if (cmds.size() > 0)
+            {
+                if (commands == null)
+                {
+                    throw new RuntimeException("this should never have happened.");
+                }
+                commands.addAll(cmds);
+            }
+         
+//        for (AppResourceIFace ap : AppContextMgr.getInstance().getResourceByMimeType(mimeType))
+//        {
+//            Properties params = ap.getMetaDataMap();
+//            
+//            String tableid = params.getProperty("tableid");
+//            String rptType = params.getProperty("reporttype");
+//            
+//            if (StringUtils.isNotEmpty(tableid) && 
+//               (classTableId == null || (Integer.parseInt(tableid) == classTableId.intValue())) &&
+//               StringUtils.isEmpty(reportType) || (StringUtils.isNotEmpty(rptType) && reportType.equals(rptType)))
+//            {
+//                params.put("name", ap.getName());
+//                params.put("title", ap.getDescription());
+//                params.put("file", ap.getName());
+//                params.put("mimetype", mimeType);
+//                
+//                //log.debug("["+ap.getDescription()+"]["+ap.getName()+"]");
+//                
+//                String iconName = params.getProperty("icon");
+//                if (StringUtils.isEmpty(iconName))
+//                {
+//                    iconName = name;
+//                }                        
+//                commands.add(new TaskCommandDef(ap.getDescription(), iconName, params));
+//            }
+//        }
+    }
+
+    /**
+     * Creates Command Items for a mime type in the AppResources XML.
+     * @param mimeType the MimeType to use
+     * @param classTableId the Table Id
+     */
+    protected List<TaskCommandDef> getAppResourceCommandsByMimeType(final String mimeType, 
+                                                       final String reportType,
+                                                       final String defaultIcon,
+                                                       final Integer classTableId)
+    {
+        List<TaskCommandDef> result = new LinkedList<TaskCommandDef>();
         for (AppResourceIFace ap : AppContextMgr.getInstance().getResourceByMimeType(mimeType))
         {
             Properties params = ap.getMetaDataMap();
@@ -1096,11 +1168,12 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
                 String iconName = params.getProperty("icon");
                 if (StringUtils.isEmpty(iconName))
                 {
-                    iconName = name;
+                    iconName = defaultIcon;
                 }                        
-                commands.add(new TaskCommandDef(ap.getDescription(), iconName, params));
+                result.add(new TaskCommandDef(ap.getDescription(), iconName, params));
             }
         }
+        return result;
     }
 
     /**

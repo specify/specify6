@@ -47,6 +47,7 @@ import edu.ku.brc.af.core.NavBox;
 import edu.ku.brc.af.core.NavBoxAction;
 import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.NavBoxItemIFace;
+import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskCommandDef;
@@ -56,8 +57,11 @@ import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
+import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.RecordSet;
+import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
 import edu.ku.brc.specify.tasks.subpane.LabelsPane;
@@ -74,6 +78,8 @@ import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.GhostActionableDropManager;
 import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
+import edu.ku.brc.ui.dnd.Trash;
+import edu.ku.brc.util.Pair;
 
 /**
  * A task to manage Labels and response to Label Commands.
@@ -98,17 +104,21 @@ public class ReportsBaseTask extends BaseTask
     public static final String PRINT_REPORT        = "RPT.PrintReport";
     public static final String OPEN_EDITOR         = "RPT.OpenEditor";
     public static final String RUN_REPORT          = "RPT.RunReport";
+    public static final String REFRESH             = "RPT.Refresh";
 
     // Data Members
     protected DataFlavor              defaultFlavor    = null;
     protected DataFlavor              spReportFlavor   = new DataFlavor(SpReport.class, "SpReport");
     protected DataFlavor              runReportFlavor  = new DataFlavor(SpReport.class, RUN_REPORT);
     protected DataFlavor              editReportFlavor = new DataFlavor(SpReport.class, OPEN_EDITOR);  
-    protected String                  mimeType         = null;
+    //protected String[]                mimeTypes        = null;
+    //protected String[]                navBoxNames      = null;
+    protected List<Pair<String,String>>   navMimeDefs      = null;
     protected Vector<NavBoxIFace>     extendedNavBoxes = new Vector<NavBoxIFace>();
     protected Vector<NavBoxItemIFace> reportsList      = new Vector<NavBoxItemIFace>();
     protected NavBox                  actionNavBox     = null;
-    
+    protected NavBox                  reportsNavBox    = null;
+    protected NavBox                  labelsNavBox     = null;
     protected String                  reportHintKey    = "REPORT_TT";
 
     // temp data
@@ -139,7 +149,7 @@ public class ReportsBaseTask extends BaseTask
         CommandDispatcher.register(RecordSetTask.RECORD_SET, this);
         CommandDispatcher.register(APP_CMD_TYPE, this);
         
-        RecordSetTask.addDroppableDataFlavor(defaultFlavor);
+        //RecordSetTask.addDroppableDataFlavor(defaultFlavor);
         
         // Create and add the Actions NavBox first so it is at the top at the top
         actionNavBox = new NavBox(getResourceString("Actions"));
@@ -163,33 +173,60 @@ public class ReportsBaseTask extends BaseTask
 
             if (isVisible)
             {
-
-                NavBox navBox = new NavBox(name);
-                
-                addAppResourcesToCommandsByMimeType(mimeType, "Report", null); // no particular table at the moment
-                
-                // Then add
-                if (commands != null)
-                {
-                    for (TaskCommandDef tcd : commands)
-                    {
-                        // XXX won't be needed when we start validating the XML
-                        String tableIdStr = tcd.getParams().getProperty("tableid");
-                        if (tableIdStr != null)
-                        {
-                            makeROCForCommand(tcd, navBox);
-                        } else
-                        {
-                            log.error("Interaction Command is missing the table id");
-                        }
-                    }
-
-                }
-                navBoxes.add(navBox);
+                addROCs();
             }
         }
     }
 
+    protected void addROCs()
+    {
+        for (Pair<String, String> navMime : navMimeDefs)
+        {
+            NavBox navBox;
+            if (navMime.getSecond().equals(REPORTS_MIME))
+            {
+                if (reportsNavBox == null)
+                {
+                    reportsNavBox = new NavBox(navMime.getFirst());
+                }
+                navBox = reportsNavBox;
+            }
+            else if (navMime.getSecond().equals(LABELS_MIME))
+            {
+                if (labelsNavBox == null)
+                {
+                    labelsNavBox = new NavBox(navMime.getFirst());
+                }
+                navBox = labelsNavBox;
+            }
+            else
+            {
+                navBox = new NavBox(navMime.getFirst());
+            }
+            
+            // no particular table at the moment
+            List<TaskCommandDef> cmds = getAppResourceCommandsByMimeType(navMime
+                    .getSecond(), "Report", navMime.getFirst(), null);
+
+            // Then add
+            for (TaskCommandDef tcd : cmds)
+            {
+                // XXX won't be needed when we start validating the XML
+                String tableIdStr = tcd.getParams().getProperty("tableid");
+                if (tableIdStr != null)
+                {
+                    makeROCForCommand(tcd, navBox);
+                }
+                else
+                {
+                    log.error("Interaction Command is missing the table id");
+                }
+            }
+            navBoxes.add(navBox);
+            commands.addAll(cmds); //currently commands is always already initialized by TaskMgr.
+        }        
+    }
+    
     protected RolloverCommand makeROCForCommand(final TaskCommandDef tcd, final NavBox navBox)
     {
         CommandAction cmdAction = new CommandAction(REPORTS, PRINT_REPORT, tcd.getParams().getProperty("tableid"));
@@ -200,6 +237,7 @@ public class ReportsBaseTask extends BaseTask
         //Rough
         //See if there is an SpReport record for the resource.
         String resourceName = cmdAction.getProperties().getProperty("name").replace(".jrxml", "");
+        RecordSet repRS = null;
         if (resourceName != null)
         {
             DataProviderSessionIFace session = DataProviderFactory.getInstance()
@@ -209,9 +247,10 @@ public class ReportsBaseTask extends BaseTask
                 SpReport rep = (SpReport)session.getData("from SpReport where name = '" + resourceName + "'");
                 if (rep != null)
                 {
-                    RecordSet     rs  = new RecordSet(resourceName, SpReport.getClassTableId());
-                    rs.addItem(rep.getId());
-                    cmdAction.setProperty("spreport", rs);
+                    rep.forceLoad();
+                    repRS  = new RecordSet(rep.getAppResource().getDescription(), SpReport.getClassTableId());
+                    repRS.addItem(rep.getId());
+                    cmdAction.setProperty("spreport", repRS);
                 }
             }
             finally
@@ -220,23 +259,32 @@ public class ReportsBaseTask extends BaseTask
             }
         }
         
+        CommandAction delCmd = null;
+        if (repRS != null)
+        {
+            delCmd = new CommandAction(REPORTS, DELETE_CMD_ACT, repRS);
+        }
         
         NavBoxItemIFace nbi = makeDnDNavBtn(navBox, 
                                             tcd.getName(), 
                                             tcd.getIconName(), 
                                             cmdAction, 
-                                            null, 
+                                            delCmd, 
                                             true,  // true means make it draggable
                                             true); // true means add sorted
         reportsList.add(nbi);
         
         //XXX work out appResource/SpReport details...
         RolloverCommand roc = (RolloverCommand)nbi;
-        roc.addDropDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
-        roc.addDragDataFlavor(defaultFlavor);
+        //roc.addDropDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
+        
+        //roc.addDragDataFlavor(defaultFlavor);
+        
         if (cmdAction.getProperties().get("spreport") != null)
         {
             roc.addDragDataFlavor(spReportFlavor);
+            roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
+            
             roc.addDropDataFlavor(runReportFlavor);
             roc.addDropDataFlavor(editReportFlavor);
         }
@@ -678,7 +726,117 @@ public class ReportsBaseTask extends BaseTask
         {
             runReport(cmdAction);
         }
+        else if (cmdAction.isAction(REFRESH))
+        {
+            refreshCommands();
+        } else if (cmdAction.isAction(DELETE_CMD_ACT))
+        {
+            RecordSetIFace recordSet = null;
+            if (cmdAction.getData() instanceof RecordSet)
+            {
+                recordSet = (RecordSetIFace)cmdAction.getData();
+                
+            } else if (cmdAction.getData() instanceof RolloverCommand)
+            {
+                RolloverCommand roc = (RolloverCommand)cmdAction.getData();
+                if (roc.getData() instanceof RecordSet)
+                {
+                    recordSet = (RecordSetIFace)roc.getData();
+                }
+            }
+            if (recordSet != null)
+            {
+                int option = JOptionPane.showOptionDialog(UIRegistry.getMostRecentWindow(), 
+                        String.format(UIRegistry.getResourceString("REP_CONFIRM_DELETE"), recordSet.getName()),
+                        UIRegistry.getResourceString("REP_CONFIRM_DELETE_TITLE"), 
+                        JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, JOptionPane.NO_OPTION); // I18N
+                
+                if (option == JOptionPane.YES_OPTION)
+                {
+                    deleteReportAndResource(recordSet);
+                    deleteReportFromUI(recordSet);
+                }
+            }
+        }
+    }
+    
+    /**
+     * @param recordSet
+     */
+    protected void deleteReportAndResource(final RecordSetIFace recordSet)
+    {
+        RecordSetItemIFace item = recordSet.getOnlyItem();
+        if (item == null)
+        {
+            return;
+        }
+        Object id = item.getRecordId();
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        SpAppResource resource = null;
+        boolean transOpen = false;
+        try
+        {
+            SpReport rep = (SpReport)session.getData("from SpReport where id = " + id);
+            if (rep != null)
+            {
+                resource = rep.getAppResource();
+                session.beginTransaction();
+                transOpen = true;
+                session.delete(rep);
+                session.commit();
+                transOpen = false;
+            }
+        }
+        catch (Exception e)
+        {
+            if (transOpen)
+            {
+                session.rollback();
+            }
+            throw new RuntimeException(e);
+        }
+        finally
+        {
+            session.close();
+        }
+        if (resource != null)
+        {
+            ((SpecifyAppContextMgr)AppContextMgr.getInstance()).removeAppResourceSp(resource.getSpAppResourceDir(), resource);
+        }
+    }
+    
+    /**
+     * @param recordSet
+     */
+    protected void deleteReportFromUI(final RecordSetIFace recordSet)
+    {
+        deleteDnDBtn(recordSet.getName());
+    }
+    
+    protected void refreshCommands()
+    {
+        commands.clear();
+        reportsList.clear();
+        reportsNavBox.clear();
+        labelsNavBox.clear();
+        addROCs();
 
+        //The rest of this was copied from RecordSetTask.saveNewRecordSet
+        
+        // XXX this is pathetic and needs to be generized
+        reportsNavBox.invalidate();
+        reportsNavBox.setSize(reportsNavBox.getPreferredSize());
+        reportsNavBox.doLayout();
+        reportsNavBox.repaint();
+        labelsNavBox.invalidate();
+        labelsNavBox.setSize(reportsNavBox.getPreferredSize());
+        labelsNavBox.doLayout();
+        labelsNavBox.repaint();
+        
+        NavBoxMgr.getInstance().invalidate();
+        NavBoxMgr.getInstance().doLayout();
+        NavBoxMgr.getInstance().repaint();
+        UIRegistry.forceTopFrameRepaint();
     }
     
     protected void updateIReportConfig()
@@ -763,6 +921,7 @@ public class ReportsBaseTask extends BaseTask
                 throw new RuntimeException(e);
             }
         }
+        iReportMainFrame.refreshSpQBConnections();
         if (repRes != null)
         {
             iReportMainFrame.openReportFromResource(repRes);
@@ -873,7 +1032,7 @@ public class ReportsBaseTask extends BaseTask
         
         if (toRun != null)
         {
-            QueryBldrPane.runReport(toRun);
+            QueryBldrPane.runReport(toRun, repAction.getPropertyAsString("title"));
         }
     }
     
@@ -924,7 +1083,13 @@ public class ReportsBaseTask extends BaseTask
             
         } else if (cmdAction.isType(APP_CMD_TYPE) && cmdAction.isAction(APP_RESTART_ACT))
         {
-            isInitialized = false;
+            if (isInitialized)
+            {
+                reportsList.clear();
+                reportsNavBox.clear();
+                labelsNavBox.clear();
+                isInitialized = false;
+            }
             this.initialize();
             ContextMgr.removeServicesByTask(this);
         }

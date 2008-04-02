@@ -40,8 +40,12 @@ import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.tasks.ReportsBaseTask;
+import edu.ku.brc.specify.tasks.ReportsTask;
 import edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceConnection;
 import edu.ku.brc.ui.ChooseFromListDlg;
+import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
@@ -70,9 +74,13 @@ public class MainFrameSpecify extends MainFrame
         super(args);
         setNoExit(true);
         setEmbeddedIreport(true);
-        addSpQBConns();
     }
 
+    public void refreshSpQBConnections()
+    {
+        this.getConnections().clear();
+        addSpQBConns();
+    }
     /**
      * adds JR data connections for specify queries.
      */
@@ -201,6 +209,7 @@ public class MainFrameSpecify extends MainFrame
             {
                 session.close();
             }
+            CommandDispatcher.dispatch(new CommandAction(ReportsBaseTask.REPORTS, ReportsBaseTask.REFRESH, null));
         }
         else
         {
@@ -256,7 +265,7 @@ public class MainFrameSpecify extends MainFrame
             }
             else
             {
-                metaDataStr += "reporttype=Label";
+                metaDataStr += "reporttype=Report";
                 result.setMimeType("jrxml/label"); 
             }
             if (StringUtils.isNotEmpty(result.getMetaData()))

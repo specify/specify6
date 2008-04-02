@@ -75,8 +75,10 @@ import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpQueryField;
 import edu.ku.brc.specify.datamodel.SpReport;
@@ -441,12 +443,23 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         setQueryIntoUI();
     }
 
+    /**
+     * @param rootTable
+     * @param distinct
+     * @param qfps
+     * @param tblTree
+     * @param keysToRetrieve
+     * @return
+     */
     protected static String buildHQL(final TableQRI rootTable, boolean distinct, final Vector<QueryFieldPanel> qfps,
-                              final TableTree tblTree)
+                              final TableTree tblTree, final RecordSet keysToRetrieve)
     {
         if (qfps.size() == 0)
             return null;
-
+        
+        if (keysToRetrieve != null && keysToRetrieve.getNumItems() == 0)
+            return null;
+        
         StringBuilder fieldsStr = new StringBuilder();
         Vector<BaseQRI> list = new Vector<BaseQRI>();
         StringBuilder criteriaStr = new StringBuilder();
@@ -590,15 +603,18 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 }
             }
 
-            String criteria = qfi.getCriteriaFormula(tableAbbreviator);
-            boolean isDisplayOnly = StringUtils.isEmpty(criteria);
-            if (!isDisplayOnly)
+            if (keysToRetrieve == null)
             {
-                if (!isDisplayOnly && criteriaStr.length() > 0)
+                String criteria = qfi.getCriteriaFormula(tableAbbreviator);
+                boolean isDisplayOnly = StringUtils.isEmpty(criteria);
+                if (!isDisplayOnly)
                 {
-                    criteriaStr.append(" AND ");
+                    if (!isDisplayOnly && criteriaStr.length() > 0)
+                    {
+                        criteriaStr.append(" AND ");
+                    }
+                    criteriaStr.append(criteria);
                 }
-                criteriaStr.append(criteria);
             }
         }
         sqlStr.append(fieldsStr);
@@ -606,21 +622,45 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         sqlStr.append(" from ");
         sqlStr.append(fromStr);
 
-        //Add extra where's for system fields for each table in the from clause...
-        for (Pair<DBTableInfo, String> fromTbl : fromTbls)
+        if (keysToRetrieve != null)
         {
-            String specialColumnWhere = QueryAdjusterForDomain.getInstance().getSpecialColumns(
-                    fromTbl.getFirst(), true, true/*XXX should only use left join when necessary*/, fromTbl.getSecond());
-            if (StringUtils.isNotEmpty(specialColumnWhere))
+            criteriaStr.append("where id in(");
+            boolean comma = false;
+            for (RecordSetItemIFace item : keysToRetrieve.getRecordSetItems())
             {
-                if (criteriaStr.length() > 0)
+                if (comma)
                 {
-                    criteriaStr.append(" AND ");
+                    criteriaStr.append(",");
                 }
-                criteriaStr.append(specialColumnWhere);
+                else
+                {
+                    comma = true;
+                }
+                criteriaStr.append(item.getRecordId());
             }
+            criteriaStr.append(")");
         }
-        //...done adding system whereses
+        else
+        {
+            //Assuming that this not necessary when keysToRetrieve is non-null because
+            //the keys will already been filtered properly. (???)
+            // Add extra where's for system fields for each table in the from clause...
+            for (Pair<DBTableInfo, String> fromTbl : fromTbls)
+            {
+                String specialColumnWhere = QueryAdjusterForDomain.getInstance().getSpecialColumns(
+                        fromTbl.getFirst(), true,
+                        true/* XXX should only use left join when necessary */, fromTbl.getSecond());
+                if (StringUtils.isNotEmpty(specialColumnWhere))
+                {
+                    if (criteriaStr.length() > 0)
+                    {
+                        criteriaStr.append(" AND ");
+                    }
+                    criteriaStr.append(specialColumnWhere);
+                }
+            }
+            //...done adding system whereses
+        }
         
         if (criteriaStr.length() > 0)
         {
@@ -649,13 +689,13 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      */
     protected void doSearch(final TableQRI rootTable, boolean distinct)
     {
-        String hql = buildHQL(rootTable, distinct, queryFieldItems, tableTree);    
+        String hql = buildHQL(rootTable, distinct, queryFieldItems, tableTree, null);    
         processSQL(queryFieldItems, hql, rootTable.getTableInfo(), distinct);
     }
 
     protected void doReport(final TableQRI rootTable, boolean distinct)
     {
-        processReport(queryFieldItems, buildHQL(rootTable, distinct, queryFieldItems, tableTree));
+        processReport(queryFieldItems, buildHQL(rootTable, distinct, queryFieldItems, tableTree, null));
     }
     
     /**
@@ -949,7 +989,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * 
      * Loads and runs the query that acts as data source for report. Then runs report.
      */
-    public static void runReport(final SpReport report)
+    public static void runReport(final SpReport report, final String title)
     {
         final TableTree tblTree = readTables();
         final Hashtable<String, TableTree> ttHash = QueryBldrPane.buildTableTreeHash(tblTree);
@@ -980,13 +1020,13 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             String sql = QueryBldrPane.buildHQL(rootQRI, 
                     true, 
                     qfps, 
-                    tblTree);
+                    tblTree, null);
             QBJRDataSource src = new QBJRDataSource(sql, getColumnInfo(qfps, true));
             final CommandAction cmd = new CommandAction(ReportsBaseTask.REPORTS,
                     ReportsBaseTask.PRINT_REPORT, src);
-            cmd.setProperty("title", report.getQuery().getName()); //probably don't want to do this.
-            String fileName = report.getName() + ".jrxml";  //probably??
-            cmd.setProperty("file", fileName);
+            //cmd.setProperty("title", report.getQuery().getName()); //probably don't want to do this.
+            cmd.setProperty("title", title); 
+            cmd.setProperty("file", report.getName());
             CommandDispatcher.dispatch(cmd);
         }
         cd.dispose();

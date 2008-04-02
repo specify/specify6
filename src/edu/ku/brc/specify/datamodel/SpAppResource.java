@@ -270,10 +270,7 @@ public class SpAppResource extends DataModelObjBase implements java.io.Serializa
      */
     public void setMetaData(String metaData)
     {
-        if (StringUtils.isNotEmpty(this.metaData) && metaDataHash != null)
-        {
-            metaDataHash.clear();
-        }
+        metaDataHash = null;
         this.metaData = metaData;
     }
     

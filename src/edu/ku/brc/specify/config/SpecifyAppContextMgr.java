@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Vector;
 
 import org.apache.commons.io.FilenameUtils;
@@ -1377,20 +1378,23 @@ public class SpecifyAppContextMgr extends AppContextMgr
         {
             SpAppResource appRes = (SpAppResource)appResource;
             
-            if (!appResDir.getSpPersistedAppResources().contains(appRes))
-            {
-                return false;
-            }
+            boolean updateDir = appResDir.getSpPersistedAppResources().contains(appRes);
             
             DataProviderSessionIFace session = null;
             try
             {
                 session = DataProviderFactory.getInstance().createSession();
                 session.beginTransaction();
-                appResDir.getSpPersistedAppResources().remove(appRes);
-                appResDir.getSpAppResources().remove(appRes);
+                if (updateDir)
+                {
+                    appResDir.getSpPersistedAppResources().remove(appRes);
+                    appResDir.getSpAppResources().remove(appRes);
+                }
                 session.delete(appResource);
-                session.saveOrUpdate(appResDir);
+                if (updateDir)
+                {
+                    session.saveOrUpdate(appResDir);
+                }
                 session.commit();
                 
                 return true;
@@ -1414,11 +1418,23 @@ public class SpecifyAppContextMgr extends AppContextMgr
         return false;
     }
 
+    public boolean removeAppResourceSp(final SpAppResourceDir appResDir,
+                                       final AppResourceIFace appResource)
+    {
+        for (Map.Entry<String, SpAppResourceDir> entry : spAppResourceHash.entrySet())
+        {
+            if (appResDir.getId().equals(entry.getValue().getId()))
+            {
+                return removeAppResource(entry.getKey(), appResource);
+            }
+        }
+        return false;
+    }
 
 
-    //----------------------------------------------------------------
-    //-- Inner Classes
-    //----------------------------------------------------------------
+    // ----------------------------------------------------------------
+    // -- Inner Classes
+    // ----------------------------------------------------------------
     class AppResourceMgr
     {
         protected File locationDir;
