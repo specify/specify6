@@ -37,6 +37,7 @@ public class DBRelationshipInfo extends DBInfoBase implements DBTableChildIFace
     protected String           className;
     protected String           colName;
     protected String           otherSide;
+    protected String           joinTable;
     protected boolean          isRequired;
     protected boolean          isUpdatable;
     
@@ -47,6 +48,7 @@ public class DBRelationshipInfo extends DBInfoBase implements DBTableChildIFace
                               final String className, 
                               final String colName, 
                               final String otherSide, 
+                              final String joinTable, 
                               final boolean isRequired, 
                               final boolean isUpdatable)
     {
@@ -103,6 +105,14 @@ public class DBRelationshipInfo extends DBInfoBase implements DBTableChildIFace
     public String getOtherSide()
     {
         return otherSide;
+    }
+
+    /**
+     * @return the joinTable
+     */
+    public String getJoinTable()
+    {
+        return joinTable;
     }
 
     /**

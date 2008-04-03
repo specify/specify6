@@ -189,6 +189,7 @@ public class DBTableIdMgr
                                                             irNode.attributeValue("classname"),
                                                             irNode.attributeValue("columnname"),
                                                             irNode.attributeValue("othersidename"),
+                                                            irNode.attributeValue("jointable"),
                                                             getAttr(irNode, "required", false),
                                                             getAttr(irNode, "updatable", false));
                         tblInfo.getRelationships().add(tblRel);

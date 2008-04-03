@@ -9,6 +9,7 @@
 		<attribute name="othersidename" property="otherSideName"/>
 		<attribute name="updatable" property="updatable"/>
 		<attribute name="required" property="required"/>
+		<attribute name="jointable" property="joinTableName"/>
 		<addDefaults/>
 	</element>
 </info>

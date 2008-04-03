@@ -794,7 +794,7 @@ public class DatamodelGenerator
                         {
                             othersideName = getRightSideForManyToMany(classObj, typeClass, getFieldNameFromMethod(method));
                         }
-
+                        
                         javax.persistence.JoinColumn join = method.isAnnotationPresent(javax.persistence.JoinColumn.class) ? (javax.persistence.JoinColumn)method.getAnnotation(javax.persistence.JoinColumn.class) : null;
                         Relationship rel = createRelationsip(method, "many-to-many", join, othersideName, join != null ? !join.nullable() : false);
                         table.addRelationship(rel);
@@ -803,6 +803,13 @@ public class DatamodelGenerator
                             rel.setDesc(getFieldDesc(tableName, rel.getRelationshipName()));
                             rel.setNameDesc(getFieldNameDesc(tableName, rel.getRelationshipName()));
                         }
+                        
+                        javax.persistence.JoinTable joinTable = method.getAnnotation(javax.persistence.JoinTable.class);
+                        if (joinTable != null)
+                        {
+                            rel.setJoinTableName(joinTable.name());
+                        }
+
                         
                     } else if (method.isAnnotationPresent(javax.persistence.OneToMany.class))
                     {

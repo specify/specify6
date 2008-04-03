@@ -18,6 +18,7 @@ public class Relationship implements Comparable<Relationship>
     protected Table    classObj;
     protected String   columnName;
     protected String   relationshipName;
+    protected String   joinTableName;
     
     protected String   otherSideName;
     protected boolean  isRequired;
@@ -134,6 +135,16 @@ public class Relationship implements Comparable<Relationship>
     public String getOtherSideName()
     {
         return otherSideName;
+    }
+
+    public String getJoinTableName()
+    {
+        return joinTableName;
+    }
+
+    public void setJoinTableName(String joinTableName)
+    {
+        this.joinTableName = joinTableName;
     }
 
     /**
