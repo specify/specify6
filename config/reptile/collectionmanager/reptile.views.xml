@@ -16,6 +16,7 @@
             
         <view name="CollectingEvent"
             class="edu.ku.brc.specify.datamodel.CollectingEvent"
+            busrules="edu.ku.brc.specify.datamodel.busrules.CollectingEventBusRules"
             isinternal="false"
             resourcelabels="false">
             <desc><![CDATA[CollectingEvent Form]]></desc>
@@ -27,6 +28,7 @@
         
         <view name="CollectingEventSub"
             class="edu.ku.brc.specify.datamodel.CollectingEvent"
+            busrules="edu.ku.brc.specify.datamodel.busrules.CollectingEventBusRules"
             resourcelabels="false">
             <desc><![CDATA[CollectingEvent Form]]></desc>
             <altviews>
@@ -37,6 +39,7 @@
         
         <view name="CollectionObject"
             class="edu.ku.brc.specify.datamodel.CollectionObject"
+            busrules="edu.ku.brc.specify.datamodel.busrules.CollectionObjectBusRules"
             isinternal="false"
             resourcelabels="false"
             >
@@ -62,6 +65,7 @@
         
         <view name="Preparation"
             class="edu.ku.brc.specify.datamodel.Preparation"
+            busrules="edu.ku.brc.specify.datamodel.busrules.PreparationBusRules"
             resourcelabels="false">
             <desc><![CDATA[Subform within the Preparation form.]]></desc>
             <altviews>
@@ -224,7 +228,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="5"/>
-                    <cell type="subview" viewname="Collectors" id="5" name="collectors" colspan="10"/>
+                    <cell type="subview" viewname="Collectors" id="8" name="collectors" colspan="10"/>
                 </row>
                 <row>
                     <cell type="separator" label="Attachments" collapse="collectingEventAttachments" colspan="12"/>
@@ -269,7 +273,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="5"/>
-                    <cell type="subview" viewname="Collectors" id="5" name="collectors" colspan="10"/>
+                    <cell type="subview" viewname="Collectors" id="8" name="collectors" colspan="10"/>
                 </row>
             </rows>
         </viewdef>
