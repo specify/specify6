@@ -28,7 +28,8 @@
     <file level="3" mimetype="jrxml/report" name="upload_problem_report.jrxml" description="Upload Report" file="upload_problem_report.jrxml" 
         metadata="type=Report;action=PrintUploadProblemReport;reporttype=Report;icon=Labels16"/>
 
+	<!-- 
     <file level="3" mimetype="jrxml/report" name="RunRunRun.jrxml" description="RunRunRun" file="RunRunRun.jrxml" 
         metadata="tableid=10;type=Report;action=RunReport;reporttype=Report;icon=Labels16"/>
-        
+    -->
 </files>
