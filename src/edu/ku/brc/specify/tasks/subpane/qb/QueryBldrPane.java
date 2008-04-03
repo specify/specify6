@@ -150,7 +150,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     
     protected Hashtable<String, Boolean>                     fieldsToSkipHash = new Hashtable<String, Boolean>();
     protected QryListRenderer                                qryRenderer      = new QryListRenderer(
-                                                                                      IconManager.IconSize.Std16);
+                                                                                      IconManager.STD_ICON_SIZE);
     protected int                                            listCellHeight;
 
     protected TableTree                                      tableTree;

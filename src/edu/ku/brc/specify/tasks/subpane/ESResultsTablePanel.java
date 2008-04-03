@@ -209,7 +209,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
             // Install the buttons on the banner with available services
             for (ServiceInfo serviceInfo : services)
             {
-                GradiantButton btn = new GradiantButton(serviceInfo.getIcon(IconManager.IconSize.Std16)); // XXX PREF
+                GradiantButton btn = new GradiantButton(serviceInfo.getIcon(IconManager.STD_ICON_SIZE)); // XXX PREF
                 btn.setToolTipText(serviceInfo.getTooltip());
                 btn.setForeground(bannerColor);
                 builder.add(btn, cc.xy(col,1));

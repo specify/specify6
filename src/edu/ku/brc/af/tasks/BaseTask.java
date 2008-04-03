@@ -182,7 +182,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      */
     protected void setIcon(final String iconName)
     {
-        this.icon = IconManager.getIcon(iconName, IconManager.IconSize.Std16);
+        this.icon = IconManager.getIcon(iconName, IconManager.STD_ICON_SIZE);
     }
 
     /**
@@ -336,7 +336,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
                                             final int           position,
                                             final boolean       addSorted)
     {
-        NavBoxItemIFace nb = NavBox.createBtn(labelText, iconName, IconManager.IconSize.Std16);
+        NavBoxItemIFace nb = NavBox.createBtn(labelText, iconName, IconManager.STD_ICON_SIZE);
         if (StringUtils.isNotEmpty(toolTip))
         {
             ((RolloverCommand)nb).setToolTip(toolTip);

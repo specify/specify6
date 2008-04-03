@@ -370,7 +370,7 @@ public class LocalityMapperSubPane extends BaseSubPane implements LocalityMapper
         controlPanel.setRecordSetController(recordSetController);
         controlPanel.setBackground(Color.WHITE);
 
-        googleBtn = new JButton(IconManager.getIcon("GoogleEarth", IconManager.IconSize.Std16));
+        googleBtn = new JButton(IconManager.getIcon("GoogleEarth", IconManager.STD_ICON_SIZE));
         googleBtn.setMargin(new Insets(1,1,1,1));
         googleBtn.setBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1));
         googleBtn.setSize(new Dimension(18,18));

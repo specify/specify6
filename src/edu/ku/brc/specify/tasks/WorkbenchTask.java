@@ -305,7 +305,7 @@ public class WorkbenchTask extends BaseTask
                 }
                 
                 CommandAction cmdAction = new CommandAction(WORKBENCH, WB_BARCHART, Workbench.getClassTableId());
-                cmdAction.getProperties().put("icon", IconManager.getIcon("Bar_Chart", IconManager.IconSize.Std16));
+                cmdAction.getProperties().put("icon", IconManager.getIcon("Bar_Chart", IconManager.STD_ICON_SIZE));
                 
                 roc = (RolloverCommand)makeDnDNavBtn(reportsNavBox, getResourceString("CHART"), "Bar_Chart", cmdAction, null, true, false);
                 enableNavBoxList.add((NavBoxItemIFace)roc);
@@ -314,7 +314,7 @@ public class WorkbenchTask extends BaseTask
                 roc.setToolTip(getResourceString("WB_BARCHART_TT"));
 
                 cmdAction = new CommandAction(WORKBENCH, WB_TOP10_REPORT, Workbench.getClassTableId());
-                cmdAction.getProperties().put("icon", IconManager.getIcon("Pie_Chart", IconManager.IconSize.Std16));
+                cmdAction.getProperties().put("icon", IconManager.getIcon("Pie_Chart", IconManager.STD_ICON_SIZE));
 
                 roc = (RolloverCommand)makeDnDNavBtn(reportsNavBox, getResourceString("WB_TOP10"), "Pie_Chart", cmdAction, null, true, false);
                 enableNavBoxList.add((NavBoxItemIFace)roc);// true means make it draggable

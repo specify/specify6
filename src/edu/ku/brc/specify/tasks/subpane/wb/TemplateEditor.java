@@ -190,7 +190,7 @@ public class TemplateEditor extends CustomDialog
         {
             if (StringUtils.isNotEmpty(ti.toString()))
             {
-                TableInfo tableInfo = new TableInfo(ti, IconManager.IconSize.Std16);
+                TableInfo tableInfo = new TableInfo(ti, IconManager.STD_ICON_SIZE);
                 tableInfoList.add(tableInfo); 
                 
                 Vector<FieldInfo> fldList = new Vector<FieldInfo>();

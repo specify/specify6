@@ -122,7 +122,7 @@ public class StatsTask extends BaseTask
                         action = new DisplayAction(boxName);
                     }
     
-                    navBox.add(NavBox.createBtn(boxTitle, type, IconManager.IconSize.Std16, action));
+                    navBox.add(NavBox.createBtn(boxTitle, type, IconManager.STD_ICON_SIZE, action));
                }
                navBoxes.add(navBox);
             }

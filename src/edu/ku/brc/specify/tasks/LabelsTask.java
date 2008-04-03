@@ -78,8 +78,8 @@ public class LabelsTask extends ReportsBaseTask
     {
         super.preInitialize();
         
-        actionNavBox.add(NavBox.createBtnWithTT(getResourceString("Create_New_Label"), name, getResourceString("CREATE_LABEL_TT"), IconManager.IconSize.Std16, null));
-        actionNavBox.add(NavBox.createBtnWithTT(getResourceString("LabelEditor"),  "EditIcon", getResourceString("EDIT_LABEL_TT"), IconManager.IconSize.Std16, new NavBoxAction(name, OPEN_EDITOR))); // I18N
+        actionNavBox.add(NavBox.createBtnWithTT(getResourceString("Create_New_Label"), name, getResourceString("CREATE_LABEL_TT"), IconManager.STD_ICON_SIZE, null));
+        actionNavBox.add(NavBox.createBtnWithTT(getResourceString("LabelEditor"),  "EditIcon", getResourceString("EDIT_LABEL_TT"), IconManager.STD_ICON_SIZE, new NavBoxAction(name, OPEN_EDITOR))); // I18N
 
     }
 

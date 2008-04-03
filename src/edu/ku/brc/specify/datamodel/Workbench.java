@@ -621,7 +621,8 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
             {
                 String fieldName = item.getFieldName();
                 String caption = item.getCaption();
-                if (fieldName.equalsIgnoreCase(fieldNameOrCaption) || caption.equalsIgnoreCase(fieldNameOrCaption))
+                if (fieldName.equalsIgnoreCase(fieldNameOrCaption) || 
+                    caption.equalsIgnoreCase(fieldNameOrCaption))
                 {
                     return item.getViewOrder();
                 }

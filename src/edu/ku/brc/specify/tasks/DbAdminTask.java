@@ -78,9 +78,9 @@ public class DbAdminTask extends BaseTask
             
             // Temporary
              NavBox navBox = new NavBox(getResourceString("Actions"));
-             navBox.add(NavBox.createBtn(getResourceString(NEW_USER),  name, IconManager.IconSize.Std16, new NavBoxAction(DB_ADMIN, NEW_USER)));
+             navBox.add(NavBox.createBtn(getResourceString(NEW_USER),  name, IconManager.STD_ICON_SIZE, new NavBoxAction(DB_ADMIN, NEW_USER)));
              navBoxes.add(navBox);
-             navBox.add(NavBox.createBtn(getResourceString(NEW_GROUP),  name, IconManager.IconSize.Std16, new NavBoxAction(DB_ADMIN, NEW_GROUP)));
+             navBox.add(NavBox.createBtn(getResourceString(NEW_GROUP),  name, IconManager.STD_ICON_SIZE, new NavBoxAction(DB_ADMIN, NEW_GROUP)));
               navBoxes.add(navBox);
         }
     }

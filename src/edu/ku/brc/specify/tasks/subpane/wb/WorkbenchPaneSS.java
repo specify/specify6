@@ -1986,7 +1986,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     {
         // look for the locality fields
         int localityTableId = DBTableIdMgr.getInstance().getIdByClassName(Locality.class.getName());
-        if (workbench.getColumnIndex(localityTableId, "localityName") == -1 ||
+        if (workbench.getColumnIndex(localityTableId, "localityName") == -1 || // I18N
             workbench.getColumnIndex(localityTableId, "latitude1") == -1 ||
             workbench.getColumnIndex(localityTableId, "longitude1") == -1)
         {
@@ -1995,7 +1995,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         // look for the geography fields
         int geographyTableId = DBTableIdMgr.getInstance().getIdByClassName(Geography.class.getName());
-        if (workbench.getColumnIndex(geographyTableId, "Country") == -1 ||
+        if (workbench.getColumnIndex(geographyTableId, "Country") == -1 || // I18N
             workbench.getColumnIndex(geographyTableId, "State") == -1 ||
             workbench.getColumnIndex(geographyTableId, "County") == -1)
         {

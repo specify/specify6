@@ -85,7 +85,7 @@ public class ReportsTask extends ReportsBaseTask
     {
         super.preInitialize();
         
-        actionNavBox.add(NavBox.createBtnWithTT(getResourceString("Create_New_Report"), name, getResourceString("CREATE_REPORT_TT"), IconManager.IconSize.Std16, null));
+        actionNavBox.add(NavBox.createBtnWithTT(getResourceString("Create_New_Report"), name, getResourceString("CREATE_REPORT_TT"), IconManager.STD_ICON_SIZE, null));
         
         RolloverCommand roc = (RolloverCommand)makeDnDNavBtn(actionNavBox, getResourceString("ReportEditor"), "EditIcon", 
                 getResourceString("EDIT_REPORT_TT"), 

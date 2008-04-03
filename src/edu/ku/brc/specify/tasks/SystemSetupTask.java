@@ -124,7 +124,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
     {
         final DBTableInfo ti = DBTableIdMgr.getInstance().getInfoById(tableId);
         sysNavBox.add(NavBox.createBtnWithTT(ti.getTitle(), ti.getShortClassName(), 
-                "", IconManager.IconSize.Std16, new ActionListener() {
+                "", IconManager.STD_ICON_SIZE, new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
                 startEditor(ti.getClassObj(), SYSTEMSETUPTASK, ti.getShortClassName());
@@ -149,7 +149,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             createSysNavBtn(sysNavBox, DeterminationStatus.getClassTableId());
             createSysNavBtn(sysNavBox, edu.ku.brc.specify.datamodel.Collection.getClassTableId());
             
-            sysNavBox.add(NavBox.createBtnWithTT(getResourceString("PL_NEWPICKLIST"), "PickList", "", IconManager.IconSize.Std16, new ActionListener() {
+            sysNavBox.add(NavBox.createBtnWithTT(getResourceString("PL_NEWPICKLIST"), "PickList", "", IconManager.STD_ICON_SIZE, new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
                     startEditor(edu.ku.brc.specify.datamodel.PickList.class, "PickList", null, name, "PickList");
@@ -209,7 +209,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
         RolloverCommand roc;
         if (pickList.getIsSystem())
         {
-            roc = (RolloverCommand)NavBox.createBtnWithTT(nameStr, "PickList", "", IconManager.IconSize.Std16, new ActionListener() {
+            roc = (RolloverCommand)NavBox.createBtnWithTT(nameStr, "PickList", "", IconManager.STD_ICON_SIZE, new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
                     startEditor(edu.ku.brc.specify.datamodel.PickList.class, "name", nameStr, name, "PickList");

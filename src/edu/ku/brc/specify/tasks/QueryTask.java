@@ -579,13 +579,13 @@ public class QueryTask extends BaseTask
                 NavBoxItemIFace nbi = NavBox.createBtnWithTT(getResourceString("QY_OTHER_QUERIES"),
                         name, 
                         getResourceString("QY_OTHER_QUERIES_TT"), 
-                        IconManager.IconSize.Std16, new ActionListener() 
-                {
+                        IconManager.STD_ICON_SIZE, new ActionListener() 
+                        {
                             public void actionPerformed(ActionEvent e)
                             {
                                 showOtherViewsDlg();
                             }
-                });
+                        });
                     
                 navBox.add(nbi);
             }
@@ -684,7 +684,7 @@ public class QueryTask extends BaseTask
             NavBoxItemIFace nbi = NavBox.createBtnWithTT(getResourceString("QY_EXTRA_QUERIES"),
                                                          name, 
                                                          getResourceString("QY_EXTRA_QUERIES_TT"), 
-                                                         IconManager.IconSize.Std16, new ActionListener() {
+                                                         IconManager.STD_ICON_SIZE, new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
                     showMiscViewsDlg();
@@ -814,7 +814,7 @@ public class QueryTask extends BaseTask
                 tableInfo.getTitle()), 
                 name, 
                 getResourceString("QB_CREATE_NEWQUERY_TT"), 
-                IconManager.IconSize.Std16, new ActionListener() 
+                IconManager.STD_ICON_SIZE, new ActionListener() 
         {
             public void actionPerformed(ActionEvent e)
             {
@@ -919,7 +919,7 @@ public class QueryTask extends BaseTask
         DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getTableId());
         if (tblInfo != null)
         {
-            ImageIcon rsIcon = tblInfo.getIcon(IconManager.IconSize.Std16);
+            ImageIcon rsIcon = tblInfo.getIcon(IconManager.STD_ICON_SIZE);
             if (rsIcon != null)
             {
                 nbi.setIcon(rsIcon);

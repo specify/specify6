@@ -204,9 +204,9 @@ public class UploadMainPanel extends JPanel
                     if (column == 0)
                     {
                         ImageIcon icon = IconManager.getIcon(ti.getIconName(),
-                                IconManager.IconSize.Std16);
+                                IconManager.STD_ICON_SIZE);
                         setIcon(icon != null ? icon : IconManager.getIcon("Blank",
-                                IconManager.IconSize.Std16));
+                                IconManager.STD_ICON_SIZE));
                     }
                     else
                     {

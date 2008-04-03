@@ -154,7 +154,7 @@ public class DataEntryTask extends BaseTask
 
             // No Series Processing
             //NavBox navBox = new NavBox(getResourceString("Actions"));
-            //navBox.add(NavBox.createBtn(getResourceString("Series_Processing"), name, IconManager.IconSize.Std16));
+            //navBox.add(NavBox.createBtn(getResourceString("Series_Processing"), name, IconManager.STD_ICON_SIZE));
             //navBoxes.add(navBox);
            
             navBoxes.add(viewsNavBox);
@@ -412,7 +412,7 @@ public class DataEntryTask extends BaseTask
         {
             boolean isColObj = dev.getName().equals("Collection Object");
             
-            ImageIcon iconImage = IconManager.getIcon(dev.getIconName(), IconManager.IconSize.Std16);
+            ImageIcon iconImage = IconManager.getIcon(dev.getIconName(), IconManager.STD_ICON_SIZE);
             if (iconImage != null)
             {
                 String iconName = dev.getView();
@@ -450,7 +450,7 @@ public class DataEntryTask extends BaseTask
                         
                         NavBoxAction nba = new NavBoxAction(cmdAction);
                         
-                        NavBoxItemIFace nbi = NavBox.createBtnWithTT(dev.getName(), dev.getIconName(), dev.getToolTip(), IconManager.IconSize.Std16, nba);
+                        NavBoxItemIFace nbi = NavBox.createBtnWithTT(dev.getName(), dev.getIconName(), dev.getToolTip(), IconManager.STD_ICON_SIZE, nba);
                         if (nbi instanceof NavBoxButton)
                         {
                             NavBoxButton nbb = (NavBoxButton)nbi;

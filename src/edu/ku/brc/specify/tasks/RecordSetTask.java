@@ -169,7 +169,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
         DBTableInfo tblInfo = DBTableIdMgr.getInstance().getInfoById(recordSet.getDbTableId());
         if (tblInfo != null)
         {
-            ImageIcon rsIcon = tblInfo.getIcon(IconManager.IconSize.Std16);
+            ImageIcon rsIcon = tblInfo.getIcon(IconManager.STD_ICON_SIZE);
             if (rsIcon != null)
             {
                 nbi.setIcon(rsIcon);
