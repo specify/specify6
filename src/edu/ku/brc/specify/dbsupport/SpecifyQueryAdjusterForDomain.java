@@ -77,8 +77,15 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
             
             if (tableInfo.getFieldByName("collectionMemberId") != null)
             {
-                fld = "collectionMemberId";
+                fld = isHQL ? "collectionMemberId" : "CollectionMemberId";
                 criterion = COLMEMID;
+                
+
+            } else if (tableInfo.getRelationshipByName("discipline") != null)
+            {
+                prefix = "dsp.";
+                fld = isHQL ? "disciplineId" : "DisciplineID";
+                criterion = DSPLNID;
                 
             } else if (tableInfo.getTableId() == DeterminationStatus.getClassTableId())
             {
@@ -114,6 +121,11 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
             {
                 fld = isHQL ? "definition" : "TaxonTreeDefID"; 
                 criterion = TAXTREEDEFID;
+                
+            } else if (tableInfo.getTableId() == Locality.getClassTableId())
+            {
+                fld = isHQL ? "discipline" : "DisciplineID";
+                criterion = DSPLNID;
                 
             } else if (tableInfo.getTableId() == Locality.getClassTableId())
             {
@@ -189,10 +201,16 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
             if (isHQL)
             {
                 return "JOIN ag.disciplines as dsp";
-            } else
-            {
-                return "INNER JOIN agent_discpline ON agent.AgentID = agent_discpline.AgentID";
             }
+            return "INNER JOIN agent_discpline ON agent.AgentID = agent_discpline.AgentID";
+            
+        } else if (tableInfo.getRelationshipByName("discipline") != null)
+        {
+            if (isHQL)
+            {
+                return "JOIN "+tableInfo.getAbbrev()+".discipline as dsp";
+            }
+            return "INNER JOIN discpline as dsp ON "+tableInfo.getName()+".DisciplineID = discpline.DisciplineID";
         }
         return super.getJoinClause(tableInfo, isHQL);
     }
