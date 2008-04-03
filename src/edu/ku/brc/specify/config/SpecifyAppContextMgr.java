@@ -1372,38 +1372,32 @@ public class SpecifyAppContextMgr extends AppContextMgr
         {
             return false;
         }
-        
+        SpAppResource appRes = (SpAppResource)appResource;
         SpAppResourceDir appResDir = spAppResourceHash.get(appResDirName);
         if (appResDir != null)
         {
-            SpAppResource appRes = (SpAppResource)appResource;
-            
-            boolean updateDir = appResDir.getSpPersistedAppResources().contains(appRes);
+            if (!appResDir.containsResource(appRes, true))
+            {
+                return false;
+            }
             
             DataProviderSessionIFace session = null;
             try
             {
                 session = DataProviderFactory.getInstance().createSession();
                 session.beginTransaction();
-                if (updateDir)
-                {
-                    appResDir.getSpPersistedAppResources().remove(appRes);
-                    appResDir.getSpAppResources().remove(appRes);
-                }
-                session.delete(appResource);
-                if (updateDir)
-                {
-                    session.saveOrUpdate(appResDir);
-                }
+                appResDir.getSpPersistedAppResources().remove(appRes);
+                appResDir.getSpAppResources().remove(appRes);
+                session.saveOrUpdate(appResDir);
+                session.evict(appResDir);
+                session.delete(appRes);
                 session.commit();
-                
                 return true;
-                
             } catch (Exception ex)
             {
                 session.rollback();
                 log.error(ex);
-                
+                return false;
             } finally 
             {
                 if (session != null)
@@ -1411,10 +1405,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     session.close();
                 }
             }
-        } else
-        {
-            log.error("Couldn't find AppResDir with name["+appResDirName+"]");
-        }
+        }   
+        log.error("Couldn't find AppResDir with name["+appResDirName+"]");
         return false;
     }
 

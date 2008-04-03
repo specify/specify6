@@ -604,4 +604,26 @@ public class SpAppResource extends DataModelObjBase implements java.io.Serializa
         }
         return super.getTimestampModified();
     }
+
+    /* (non-Javadoc)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (!getClass().equals(obj.getClass()))
+        {
+            return false;
+        }
+        SpAppResource app = (SpAppResource)obj;
+        if (!(getId() != null && app.getId() != null))
+        {
+            return false;
+        }
+        int id1 = getId();
+        int id2 = app.getId();
+        return id1 == id2;
+    }
+    
+    
 }

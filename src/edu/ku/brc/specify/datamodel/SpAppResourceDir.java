@@ -455,5 +455,29 @@ public class SpAppResourceDir extends DataModelObjBase implements java.io.Serial
         return SpAppResourceDir.class;
     }
     
-
+    /**
+     * @param appRes
+     * @param checkPersistentOnly
+     * @return true if this directory contains appRes.
+     */
+    public boolean containsResource(final SpAppResource appRes, final boolean checkPersistentOnly)
+    {
+        Set<SpAppResource> appResSet;
+        if (checkPersistentOnly)
+        {
+            appResSet = getSpPersistedAppResources();
+        }
+        else
+        {
+            appResSet = getSpAppResources();
+        }
+        for (SpAppResource item : appResSet)
+        {
+            if (item.equals(appRes))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
 }
