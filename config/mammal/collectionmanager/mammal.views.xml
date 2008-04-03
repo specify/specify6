@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <viewset name="Mammal Views" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-
+    
     <views>
         <view name="CollectingEvent"
             class="edu.ku.brc.specify.datamodel.CollectingEvent"
+            busrules="edu.ku.brc.specify.datamodel.busrules.CollectingEventBusRules"
             isinternal="false"
             resourcelabels="false">
             <desc><![CDATA[CollectingEvent Form]]></desc>
             <altviews>
                 <altview name="CollectingEvent View" viewdef="CollectingEvent" label="View" mode="view" default="true"/>
                 <altview name="CollectingEvent Edit" viewdef="CollectingEvent" label="Edit" mode="edit"/>
-           </altviews>
+            </altviews>
         </view>
         
         <view name="CollectingEventSub"
             class="edu.ku.brc.specify.datamodel.CollectingEvent"
+            busrules="edu.ku.brc.specify.datamodel.busrules.CollectingEventBusRules"
             isinternal="false"
             resourcelabels="false">
             <desc><![CDATA[CollectingEvent Form]]></desc>
@@ -26,6 +28,7 @@
         
         <view name="CollectionObject"
             class="edu.ku.brc.specify.datamodel.CollectionObject"
+            busrules="edu.ku.brc.specify.datamodel.busrules.CollectionObjectBusRules"
             isinternal="false"
             resourcelabels="false"
             >
@@ -50,110 +53,110 @@
         </view>
         
     </views>
-
-
-    <viewdefs>
     
+    
+    <viewdefs>
+        
         <viewdef
             type="form"
             name="Collection Object"
             class="edu.ku.brc.specify.datamodel.CollectionObject"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
-
+            
             <desc><![CDATA[The Collection Object form.]]></desc>
             <enableRules/>
-
+            
             <columnDef>90px,2px,p,2px,100px,2px,p,2px,p,2px,p,p:g,p,p</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
-    		<rows>
-    		    <row>
-    		        <cell type="label" label="Mammals" icon="CollectionObject" recordobj="true" colspan="12"/>
-    		    </row>
-    			<row>
-    			    <cell type="label" labelfor="1"/>
-    			    <cell type="field" id="1" name="catalogNumber" uitype="formattedtext"/>
-
+            <rows>
+                <row>
+                    <cell type="label" label="Mammals" icon="CollectionObject" recordobj="true" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="catalogNumber" uitype="formattedtext"/>
+                    
                     <cell type="label" labelfor="2"/>
-    			    <cell type="field" id="2" name="collection" uitype="dsptextfield"/>
-
-                    <cell type="label" labelfor="19" label="Collector No"/>
-    			    <cell type="field" id="19" name="fieldNumber" uitype="text"/>
-    			</row>
-    			<row>
-                 <cell type="label" labelfor="3"/>
-    			 <cell type="field" id="3" name="accession" uitype="querycbx" initialize="name=Accession;title=Accession" isrequired="false"/>
-
-                 <cell type="label" labelfor="4"/>
-    			    <cell type="field" id="4" name="cataloger" uitype="querycbx" initialize="name=Agent;title=Catalog Agent;editoncreate=true" isrequired="true"/>
-
+                    <cell type="field" id="2" name="collection.collectionName" uitype="dsptextfield"/>
+                    
+                    <cell type="label" labelfor="19"/>
+                    <cell type="field" id="19" name="fieldNumber" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="accession" uitype="querycbx" initialize="name=Accession;title=Accession" isrequired="false"/>
+                    
+                    <cell type="label" labelfor="4"/>
+                    <cell type="field" id="4" name="cataloger" uitype="querycbx" initialize="name=Agent;title=Catalog Agent;editoncreate=true" isrequired="true"/>
+                    
                     <cell type="label" labelfor="5"/>
-    			    <cell type="field" id="5" name="catalogedDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
-    			    <!-- <cell type="field" id="5" name="this" uitype="plugin" initialize="name=PartialDateUI;dateField=catalogedDate;dateTypeField=text1" default="today"/> -->
-    			</row>
-     			 <row>
-    		        <cell type="label" labelfor="12" label="Age"/>
-    		        <cell type="field" id="12" name="description" uitype="combobox" picklist="Age" colspan="1"/>
-    		        
-    		        <cell type="label" labelfor="14" label="Sex"/>
-    		        <cell type="field" id="14" name="text2" uitype="combobox" picklist="BiologicalSex" colspan="1"/>
-    		        
-    		        <cell type="label" labelfor="15" label="Mass"/>
-    		        <cell type="field" id="15" name="text1" uitype="text" colspan="1"/>
-    		    </row>
-    		    <row>
-    		        <cell type="label" labelfor="13" label="Specimen\nRemarks"/>
-    		        <cell type="field" id="13" name="remarks" uitype="textarea" colspan="12" rows="3"/>
-    		    </row>
-
-			<row>
-    				<cell type="separator" label="Determination" collapse="determinations" colspan="12"/>
-    			</row>
-
-    			<row>
-    			    <cell type="subview" viewname="Determination" id="6" name="determinations" colspan="12" rows="5"/>
-    			</row>
-   			    <row>
-    				<cell type="separator" label="Collecting Event" collapse="collectingEvent" colspan="12"/>
-    			</row>
- 	
-    		    <row>
-    		        <cell type="subview" viewname="CollectingEventSub" id="7" name="collectingEvent" colspan="12"/>
-    		    </row>
-
-			<row>
-    			    <cell type="separator" label="Preparations" collapse="preparations" colspan="12"/>
-    			</row>
-    			<row>
-    			    <cell type="subview" viewname="Preparation" id="8" name="preparations" defaulttype="table" colspan="12"/>
-    			</row>
-    
-	    
-    		    <row>
+                    <cell type="field" id="5" name="catalogedDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
+                    <!-- <cell type="field" id="5" name="this" uitype="plugin" initialize="name=PartialDateUI;dateField=catalogedDate;dateTypeField=text1" default="today"/> -->
+                </row>
+                <row>
+                    <cell type="label" labelfor="12" label="Age"/>
+                    <cell type="field" id="12" name="description" uitype="combobox" picklist="Age" colspan="1"/>
+                    
+                    <cell type="label" labelfor="14" label="Sex"/>
+                    <cell type="field" id="14" name="text2" uitype="combobox" picklist="BiologicalSex" colspan="1"/>
+                    
+                    <cell type="label" labelfor="15" label="Mass"/>
+                    <cell type="field" id="15" name="text1" uitype="text" colspan="1"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="13" label="Specimen\nRemarks"/>
+                    <cell type="field" id="13" name="remarks" uitype="textarea" colspan="12" rows="3"/>
+                </row>
+                
+                <row>
+                    <cell type="separator" label="Determination" collapse="determinations" colspan="12"/>
+                </row>
+                
+                <row>
+                    <cell type="subview" viewname="Determination" id="6" name="determinations" colspan="12" rows="5"/>
+                </row>
+                <row>
+                    <cell type="separator" label="Collecting Event" collapse="collectingEvent" colspan="12"/>
+                </row>
+                
+                <row>
+                    <cell type="subview" viewname="CollectingEventSub" id="7" name="collectingEvent" colspan="12"/>
+                </row>
+                
+                <row>
+                    <cell type="separator" label="Preparations" collapse="preparations" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="subview" viewname="Preparation" id="8" name="preparations" defaulttype="table" colspan="12"/>
+                </row>
+                
+                
+                <row>
                     <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectionObjectAttachments" colspan="12" initialize="btn=true;icon=CollectionObjectAttachment"/>
                 </row>
-    			<row>
-    				<cell type="separator" label="" colspan="12"/>
-    			</row>
-    			
-    			<row>
+                <row>
+                    <cell type="separator" label="" colspan="12"/>
+                </row>
+                
+                <row>
                     <cell type="label" labelfor="10"/>
-    			    <cell type="field" id="10" name="modifiedByAgent" uitype="label" readonly="true"  uifieldformatter="Agent"/>
-
+                    <cell type="field" id="10" name="modifiedByAgent" uitype="label" readonly="true"  uifieldformatter="Agent"/>
+                    
                     <cell type="label" labelfor="11"/>
-    			    <cell type="field" id="11" name="timestampModified" uitype="label" readonly="true" cols="20" colspan="2"/>
-    			</row>
-    			
-    		</rows>
-    	</viewdef>
-
+                    <cell type="field" id="11" name="timestampModified" uitype="label" readonly="true" cols="20" colspan="2"/>
+                </row>
+                
+            </rows>
+        </viewdef>
+        
         <viewdef
             type="form"
             name="CollectingEvent"
             class="edu.ku.brc.specify.datamodel.CollectingEvent"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
-
+            
             <desc><![CDATA[Collecting Event]]></desc>
             <columnDef>p,2px,p,5px,p,2px,p,5px,p,2px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
@@ -163,7 +166,7 @@
                     <cell type="label" label="Collecting Event" icon="CollectingEvent" recordobj="true" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="2" />
+                    <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="startDate" uitype="formattedtext" uifieldformatter="Date"/>
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="verbatimDate" uitype="text"/>
@@ -178,7 +181,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="5"/>
-                    <cell type="subview" viewname="Collectors" id="5" name="collectors" colspan="10"/>
+                    <cell type="subview" viewname="Collectors" id="8" name="collectors" colspan="10"/>
                 </row>
                 <row>
                     <cell type="separator" label="Attachments" collapse="collectingEventAttachments" colspan="12"/>
@@ -187,10 +190,10 @@
                     <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectingEventAttachments" colspan="12" initialize="btn=true;icon=CollectingEvent"/>
                 </row>
                 <!--
-                <row>
+                    <row>
                     <cell type="label" labelfor="7" label="Geography"/>
                     <cell type="field" id="7" name="geography" uitype="querycbx" initialize="name=Geography;title=Geography" isrequired="true"/>
-                </row>
+                    </row>
                 -->
             </rows>
         </viewdef>
@@ -217,7 +220,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="5"/>
-                    <cell type="subview" viewname="Collectors" id="5" name="collectors" colspan="10"/>
+                    <cell type="subview" viewname="Collectors" id="8" name="collectors" colspan="10"/>
                 </row>
             </rows>
         </viewdef>
@@ -268,7 +271,7 @@
                 </row>
             </rows>
         </viewdef>
-
+        
         
     </viewdefs>
 </viewset>
