@@ -620,7 +620,7 @@ public class DataEntryTask extends BaseTask
             NavBoxItemIFace nbi = NavBox.createBtnWithTT(getResourceString("DET_MISC_FORMS"),
                                                          name, 
                                                          getResourceString("DET_CHOOSE_TT"), 
-                                                         IconManager.IconSize.Std16, createMiscActionListener());
+                                                         IconManager.STD_ICON_SIZE, createMiscActionListener());
             
             NavBoxButton roc = (NavBoxButton)nbi;
             for (DataEntryView dev : miscList)
