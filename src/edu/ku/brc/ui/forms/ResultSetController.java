@@ -67,7 +67,7 @@ import edu.ku.brc.ui.forms.validation.ValidationListener;
  */
 public class ResultSetController implements ValidationListener
 {
-    protected static Border enabledBorder  = BorderFactory.createLineBorder(Color.BLACK);
+    protected static Border enabledBorder  = BorderFactory.createLineBorder(new Color(64,64,64));
     protected static Border disabledBorder = BorderFactory.createLineBorder(Color.GRAY.brighter());
     
     protected static Color  enabledTxtBG   = Color.WHITE;
@@ -194,6 +194,7 @@ public class ResultSetController implements ValidationListener
         recDisp.setOpaque(true);
         recDisp.setBackground(Color.WHITE);
         recDisp.setBorder(enabledBorder);
+        recDisp.setFont(recDisp.getFont().deriveFont(recDisp.getFont().getSize2D()-2));
 
         
         nextBtn  = UIHelper.createIconBtn("NextRec", null, null);
