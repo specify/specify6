@@ -265,7 +265,11 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
 
         } else
         {
-            Font font = new Font("Courier", Font.PLAIN, 12);
+            JTextField txt = new JTextField();
+            
+            Font txtFont = txt.getFont();
+            
+            Font font = new Font("Courier", Font.PLAIN, txtFont.getSize());
             
             BufferedImage bi = new BufferedImage(1,1, BufferedImage.TYPE_INT_RGB);
             Graphics2D g = bi.createGraphics();
@@ -273,7 +277,6 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
             FontMetrics fm = g.getFontMetrics(font);
             g.dispose();
             
-            JTextField txt = new JTextField();
             Insets ins = txt.getBorder().getBorderInsets(txt);
             int baseWidth = ins.left + ins.right;
             
