@@ -604,7 +604,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         if (sql == null)
         {
             StringBuilder sb = new StringBuilder();
-            if (QueryAdjusterForDomain.getInstance().isUerInputNotInjectable(newEntryStr))
+            if (QueryAdjusterForDomain.getInstance().isUserInputNotInjectable(newEntryStr))
             {
                 sb.append("SELECT ");
                 if (isForCount)

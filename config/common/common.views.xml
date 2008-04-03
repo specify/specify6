@@ -41,6 +41,7 @@
             class="edu.ku.brc.specify.datamodel.Appraisal"
             busrules="edu.ku.brc.specify.datamodel.busrules.AppraisalBusRules"
             isinternal="false"
+             busrules="edu.ku.brc.specify.datamodel.busrules.AppraisalBusRules"
             resourcelabels="false">
             <desc><![CDATA[The appraisal subform.]]></desc>
             <altviews>

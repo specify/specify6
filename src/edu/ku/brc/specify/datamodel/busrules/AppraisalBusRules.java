@@ -17,14 +17,17 @@ import edu.ku.brc.ui.forms.FormDataObjIFace;
 /**
  * @author rod
  *
- * @code_status Alpha
+ * @code_status Beta
  *
  * Feb 11, 2008
  *
  */
 public class AppraisalBusRules extends BaseBusRules
 {
-
+    
+    /**
+     * 
+     */
     public AppraisalBusRules()
     {
         super(Appraisal.class);
@@ -72,6 +75,23 @@ public class AppraisalBusRules extends BaseBusRules
             super.okToDelete(dataObj, session, deletable);
         }
     }
-
-
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#processBusiessRules(java.lang.Object)
+     */
+    public STATUS processBusinessRules(final Object dataObj)
+    {
+        reasonList.clear();
+        
+        if (!(dataObj instanceof Appraisal))
+        {
+            return STATUS.Error;
+        }
+        
+        STATUS duplicateNumberStatus = isCheckDuplicateNumberOK("appraisalNumber", 
+                                                                (FormDataObjIFace)dataObj, 
+                                                                Appraisal.class, 
+                                                                "appraisalId");
+        return duplicateNumberStatus;
+    }
 }

@@ -193,7 +193,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         String searchTerm = searchText.getText();
         if (isNotEmpty(searchTerm))
         {
-            if (QueryAdjusterForDomain.getInstance().isUerInputNotInjectable(searchTerm.toLowerCase()))
+            if (QueryAdjusterForDomain.getInstance().isUserInputNotInjectable(searchTerm.toLowerCase()))
             {
                 ESResultsSubPane expressSearchPane = new ESResultsSubPane(searchTerm, this, true);
                 doQuery(searchText, null, badSearchColor, expressSearchPane);

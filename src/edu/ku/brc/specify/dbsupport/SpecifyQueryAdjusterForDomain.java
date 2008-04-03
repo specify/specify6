@@ -62,10 +62,6 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
         // no op
     }
 
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain#getSpecialColumns(edu.ku.brc.dbsupport.DBTableInfo, boolean)
-     */
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain#getSpecialColumns(edu.ku.brc.dbsupport.DBTableInfo, boolean, boolean, java.lang.String)
      */

@@ -587,7 +587,7 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
 
             // Now get the setter for an object and set the value they typed into the combobox and place it in
             // the first field name
-            DataObjectSettable ds = DataObjectSettableFactory.get(tableInfo.getClassObj().getName(), "edu.ku.brc.ui.forms.DataSetterForObj");
+            DataObjectSettable ds = DataObjectSettableFactory.get(tableInfo.getClassObj().getName(), FormHelper.DATA_OBJ_SETTER);
             if (ds != null)
             {
                 log.error("ID: "+textWithQuery.getSelectedId());

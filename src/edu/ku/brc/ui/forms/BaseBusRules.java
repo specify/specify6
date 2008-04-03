@@ -24,12 +24,16 @@ import java.util.List;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBRelationshipInfo;
+import edu.ku.brc.dbsupport.DBTableChildIFace;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author rod
@@ -39,8 +43,10 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
  * Feb 14, 2008
  *
  */
-public abstract class BaseBusRules implements BusinessRulesIFace
+public class BaseBusRules implements BusinessRulesIFace
 {
+    private static final Logger  log   = Logger.getLogger(BaseBusRules.class);
+    
     protected Viewable     viewable    = null;
     protected FormViewObj  formViewObj = null;
     protected List<String> reasonList  = new Vector<String>();
@@ -71,14 +77,14 @@ public abstract class BaseBusRules implements BusinessRulesIFace
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#beforeFormFill(edu.ku.brc.ui.forms.Viewable)
      */
     //@Overrided
-    public void beforeFormFill(final Viewable viewableArg)
+    public void beforeFormFill()
     {
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#fillForm(java.lang.Object, edu.ku.brc.ui.forms.Viewable)
      */
-    public void afterFillForm(final Object dataObj, final Viewable viewableArg)
+    public void afterFillForm(final Object dataObj)
     {
     }
     
@@ -393,7 +399,10 @@ public abstract class BaseBusRules implements BusinessRulesIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#okToDelete(java.lang.Object)
      */
-    public abstract boolean okToEnableDelete(final Object dataObj);
+    public boolean okToEnableDelete(final Object dataObj)
+    {
+        return false;
+    }
     
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.BusinessRulesIFace#afterSave(java.lang.Object)
@@ -451,6 +460,121 @@ public abstract class BaseBusRules implements BusinessRulesIFace
     {
         // do nothing
         return true;
+    }
+    
+    /**
+     * Uses a generic strin from the resource bundle to create an error message using the localized name of the field.
+     * @param msgKey the key of the message
+     * @param fieldName the field name
+     * @param dataClass the class for which the field name belongs too.
+     * @return
+     */
+    protected String getErrorMsg(final String msgKey, final String fieldName, final Class<?> dataClass)
+    {
+        String      title = "Number"; // this should never happen so I am not localizing it
+        DBTableInfo ti    = DBTableIdMgr.getInstance().getByClassName(dataClass.getName());
+        if (ti != null)
+        {
+            DBTableChildIFace ci = ti.getItemByName(fieldName);
+            if (ci != null)
+            {
+                title = ci.getTitle();
+            }
+        }
+        return String.format(UIRegistry.getResourceString(msgKey), title);
+    }
+
+    /**
+     * Helper method for checking for a duplicate number in a field that is unique.
+     * @param numFieldName the name of the field to be checked
+     * @param dataObj the data object containing the number
+     * @param dataClass the class of the object beng checked
+     * @param primaryFieldName the primary key field
+     * @param numberMissingKey the localization key for the error message
+     * @param numberInUseKey  the localization key for the error message
+     * @return whether it is ok or in error
+     */
+    protected STATUS isCheckDuplicateNumberOK(final String           numFieldName, 
+                                              final FormDataObjIFace dataObj,
+                                              final Class<?>         dataClass,
+                                              final String           primaryFieldName)
+    {
+        String number = (String)FormHelper.getValue(dataObj, numFieldName);
+        
+        // Let's check Appraisal for duplicates 
+        if (StringUtils.isNotEmpty(number))
+        {
+            // Start by checking to see if the Appraisal Number has changed
+            boolean checkNumberForDuplicates = true;
+            Integer id = dataObj.getId();
+            if (id != null)
+            {
+                DataProviderSessionIFace session = null;
+                try
+                {
+                    session = DataProviderFactory.getInstance().createSession();
+                    List<?> dataObjs = session.getDataList(dataClass, primaryFieldName, id);
+                    if (dataObjs.size() == 1)
+                    {
+                        FormDataObjIFace existingDataObj = (FormDataObjIFace)dataObjs.get(0);
+                        String           oldNumber       = (String)FormHelper.getValue(existingDataObj, numFieldName);
+                        
+                        if (oldNumber.equals(number))
+                        {
+                            checkNumberForDuplicates = false;
+                        }
+                    }
+                } catch (Exception ex)
+                {
+                    log.error(ex);
+                    
+                } finally
+                {
+                    if (session != null)
+                    {
+                        session.close();
+                    }
+                }
+            }
+            
+            // If the Id is null then it is a new permit, if not then we are editing the appraisal
+            //
+            // If the appraisal has not changed then we shouldn't check for duplicates
+            if (checkNumberForDuplicates)
+            {
+                DataProviderSessionIFace session = null;
+                try
+                {
+                    session = DataProviderFactory.getInstance().createSession();
+                    List <?> appraisalNumbers = session.getDataList(dataClass, numFieldName, number);
+                    if (appraisalNumbers.size() > 0)
+                    {
+                        reasonList.add(getErrorMsg("GENERIC_NUMBER_IN_USE", numFieldName, dataClass));
+                        
+                    } else
+                    {
+                        return STATUS.OK;
+                    }
+                    
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                    
+                } finally
+                {
+                    if (session != null)
+                    {
+                        session.close();
+                    }
+                }
+            }
+            
+        } else
+        {
+            reasonList.add(getErrorMsg("GENERIC_NUMBER_MISSING", numFieldName, dataClass));
+        }
+
+        return STATUS.Error;
     }
 
     /* (non-Javadoc)

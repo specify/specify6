@@ -221,16 +221,4 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
         retVal = super.beforeSaveCommit(dataObj, session);
         return retVal;
     }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.busrules.BaseTreeBusRules#afterFillForm(java.lang.Object, edu.ku.brc.ui.forms.Viewable)
-     */
-    @Override
-    public void afterFillForm(Object dataObj, Viewable viewable)
-    {
-        super.afterFillForm(dataObj, viewable);
-
-    }
-    
-    
 }

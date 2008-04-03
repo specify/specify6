@@ -35,7 +35,6 @@ import edu.ku.brc.ui.forms.BaseBusRules;
 import edu.ku.brc.ui.forms.BusinessRulesOkDeleteIFace;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
-import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.ui.forms.formatters.DataObjSwitchFormatter;
 import edu.ku.brc.ui.forms.validation.ValCheckBox;
@@ -315,23 +314,21 @@ public class PickListBusRules extends BaseBusRules
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#afterFillForm(java.lang.Object, edu.ku.brc.ui.forms.Viewable)
+     * @see edu.ku.brc.ui.forms.BaseBusRules#afterFillForm(java.lang.Object)
      */
     @Override
-    public void afterFillForm(final Object dataObj, final Viewable viewableArg)
+    public void afterFillForm(final Object dataObj)
     {
-        super.afterFillForm(dataObj, viewable);
+        super.afterFillForm(dataObj);
         
         PickList    pickList = (PickList)dataObj;
-        FormViewObj fvo      = (FormViewObj)viewableArg;
-        
         if (pickList != null)
         {
-            ValComboBox typesCBX       = (ValComboBox)fvo.getControlByName("typesCBX");
-            ValComboBox tablesCBX      = (ValComboBox)fvo.getControlByName("tablesCBX");
-            ValComboBox formatterCBX   = (ValComboBox)fvo.getControlByName("formatterCBX");
-            ValComboBox fieldsCBX      = (ValComboBox)fvo.getControlByName("fieldsCBX");
-            ValSpinner  sizeLimitSp    = (ValSpinner)fvo.getControlByName("sizeLimit");
+            ValComboBox typesCBX       = (ValComboBox)formViewObj.getControlByName("typesCBX");
+            ValComboBox tablesCBX      = (ValComboBox)formViewObj.getControlByName("tablesCBX");
+            ValComboBox formatterCBX   = (ValComboBox)formViewObj.getControlByName("formatterCBX");
+            ValComboBox fieldsCBX      = (ValComboBox)formViewObj.getControlByName("fieldsCBX");
+            ValSpinner  sizeLimitSp    = (ValSpinner)formViewObj.getControlByName("sizeLimit");
             
             int typeIndex = pickList.getType();
             typesCBX.getComboBox().setSelectedIndex(typeIndex);
@@ -364,23 +361,9 @@ public class PickListBusRules extends BaseBusRules
                 sizeLimitSp.setEnabled(typeIndex == 0);
             }
             
-            typeSelected(fvo);
+            typeSelected(formViewObj);
         }
     }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#beforeFormFill(edu.ku.brc.ui.forms.Viewable)
-     */
-    @Override
-    public void beforeFormFill(Viewable viewableArg)
-    {
-        // TODO Auto-generated method stub
-        super.beforeFormFill(viewable);
-        
-        //adjustForm((FormViewObj)viewable);
-    }
-
-
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#formShutdown()
@@ -391,8 +374,6 @@ public class PickListBusRules extends BaseBusRules
         // TODO Auto-generated method stub
         super.formShutdown();
     }
-
-
 
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToEnableDelete(java.lang.Object)

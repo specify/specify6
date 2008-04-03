@@ -37,6 +37,7 @@ import edu.ku.brc.ui.forms.DataObjectGettable;
 import edu.ku.brc.ui.forms.DataObjectGettableFactory;
 import edu.ku.brc.ui.forms.DataObjectSettable;
 import edu.ku.brc.ui.forms.DataObjectSettableFactory;
+import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatter;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
@@ -170,12 +171,12 @@ public class PartialDateUI extends JPanel implements GetSetValueIFace, UIPlugina
         
         if (getter == null)
         {
-            getter = DataObjectGettableFactory.get(dataObj.getClass().getName(), "edu.ku.brc.ui.forms.DataGetterForObj");
+            getter = DataObjectGettableFactory.get(dataObj.getClass().getName(), FormHelper.DATA_OBJ_GETTER);
         }
 
         if (setter == null)
         {
-            setter = DataObjectSettableFactory.get(dataObj.getClass().getName(), "edu.ku.brc.ui.forms.DataSetterForObj");
+            setter = DataObjectSettableFactory.get(dataObj.getClass().getName(), FormHelper.DATA_OBJ_SETTER);
         }
 
         if (value == null)

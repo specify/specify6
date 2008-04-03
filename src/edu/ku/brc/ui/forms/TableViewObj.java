@@ -1626,8 +1626,20 @@ public class TableViewObj implements Viewable,
         {
             for (ColumnInfo colInfo : controlsById.values())
             {
-                DBTableChildIFace tblChild = ti.getItemByName(colInfo.getFormCell().getName());
+                String fieldName = colInfo.getFormCell().getName();
                 
+                DBTableChildIFace derivedCI = null;
+                if (fieldName.indexOf(".") > -1)
+                {
+                    derivedCI = FormHelper.getChildInfoFromPath(fieldName, ti);
+                    if (derivedCI == null)
+                    {
+                        UIRegistry.showError("The name 'path' ["+fieldName+"] was not valid.");
+                        continue; 
+                    }
+                }
+            
+                DBTableChildIFace  tblChild = derivedCI != null ? derivedCI : ti.getItemByName(fieldName);
                 FormCellLabelIFace formCellLabel = colInfo.getFormCellLabel();
                 if (formCellLabel != null)
                 {

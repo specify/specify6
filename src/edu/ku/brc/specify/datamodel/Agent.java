@@ -46,10 +46,13 @@ import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 
 /**
@@ -321,7 +324,14 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
         return this.agentType;
     }
 
-    public void setAgentType(Byte agentType) {
+    public void setAgentType(Byte agentType) 
+    {
+        if (agentType == -1)
+        {
+            int x = 0;
+            x++;
+        }
+    
         this.agentType = agentType;
     }
 
@@ -1273,13 +1283,20 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     public String getIdentityTitle()
     {
         // XXX I wonder if we should be using the formatter here?
-        if (lastName != null)
+        if (StringUtils.isNotEmpty(lastName))
         {
-            if (firstName != null)
+            if (StringUtils.isNotEmpty(firstName))
             {
                 return lastName + ", " + firstName;
             }
             return lastName;
+            
+        }
+        
+        if (StringUtils.isEmpty(lastName))
+        {
+            DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(Agent.class.getName());
+            return ti.getTitle();
         }
         
         return super.getIdentityTitle();

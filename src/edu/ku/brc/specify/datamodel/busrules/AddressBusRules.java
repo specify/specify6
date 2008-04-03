@@ -21,7 +21,6 @@ import edu.ku.brc.specify.datamodel.Address;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.BaseBusRules;
-import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.validation.ValCheckBox;
 
 /**
@@ -47,12 +46,12 @@ public class AddressBusRules extends BaseBusRules
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.BaseBusRules#afterFillForm(java.lang.Object, edu.ku.brc.ui.forms.Viewable)
+     * @see edu.ku.brc.ui.forms.BaseBusRules#afterFillForm(java.lang.Object)
      */
     @Override
-    public void afterFillForm(Object dataObj, Viewable viewableArg)
+    public void afterFillForm(Object dataObj)
     {
-        super.afterFillForm(dataObj, viewableArg);
+        super.afterFillForm(dataObj);
         
         if (formViewObj.getDataObj() instanceof Address)
         {

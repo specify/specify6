@@ -51,7 +51,7 @@ public class SearchQueryBuilder<T> implements ViewBasedSearchQueryBuilderIFace
     public String buildSQL(String searchText)
     {
         String queryStr = "";
-        if (QueryAdjusterForDomain.getInstance().isUerInputNotInjectable(searchText))
+        if (QueryAdjusterForDomain.getInstance().isUserInputNotInjectable(searchText))
         {
             int disciplineID = Discipline.getCurrentDiscipline().getId();
 

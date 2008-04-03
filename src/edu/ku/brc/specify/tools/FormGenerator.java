@@ -35,6 +35,7 @@ import edu.ku.brc.specify.datamodel.SpUIView;
 import edu.ku.brc.specify.datamodel.SpUIViewDef;
 import edu.ku.brc.specify.datamodel.SpUIViewSet;
 import edu.ku.brc.specify.datamodel.SpViewSetObj;
+import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.persist.AltViewIFace;
 import edu.ku.brc.ui.forms.persist.FormCellFieldIFace;
 import edu.ku.brc.ui.forms.persist.ViewDefIFace;
@@ -111,8 +112,8 @@ public class FormGenerator
             viewDef.setDescription("Form For "+tName);
             viewDef.setType(ViewDefIFace.ViewType.form);
             viewDef.setDataClassName(ti.getClassName());
-            viewDef.setSettableName("edu.ku.brc.ui.forms.DataSetterForObj");
-            viewDef.setGettableName("edu.ku.brc.ui.forms.DataGetterForObj");
+            viewDef.setSettableName(FormHelper.DATA_OBJ_SETTER);
+            viewDef.setGettableName(FormHelper.DATA_OBJ_GETTER);
             
             altViewView.setViewDef(viewDef);
             altViewEdit.setViewDef(viewDef);

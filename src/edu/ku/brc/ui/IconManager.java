@@ -57,9 +57,9 @@ public class IconManager extends Component
     public enum IconSize {
         Std32(32, false, false),
         Std24(24, false, false),
+        Std20(20, false, false),
         Std16(16, false, false),
        
-        
         Std8(8, false, false),
         Std32Fade(32, true, false),
         Std24Fade(24, true, false),
@@ -98,6 +98,8 @@ public class IconManager extends Component
         public void setBlackWhite(boolean bw) { blackWhite = bw; }
 
     }
+    
+    public static final    IconSize    STD_ICON_SIZE = IconSize.Std20;
 
     protected static final String      relativePath = "images/";
     protected static final IconManager instance     = new IconManager();

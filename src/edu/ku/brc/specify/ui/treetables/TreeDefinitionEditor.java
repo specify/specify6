@@ -6,7 +6,6 @@
  */
 package edu.ku.brc.specify.ui.treetables;
 
-import static edu.ku.brc.ui.UIHelper.createButton;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
@@ -25,7 +24,6 @@ import java.util.Set;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -39,6 +37,10 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.apache.log4j.Logger;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
@@ -56,12 +58,11 @@ import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.treeutils.TreeDataService;
 import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 import edu.ku.brc.specify.treeutils.TreeFactory;
+import edu.ku.brc.ui.AddRemoveEditPanel;
 import edu.ku.brc.ui.CustomDialog;
-import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
@@ -94,9 +95,9 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 	//////////////
 	
 	// panels
-	protected JPanel titlePanel;
-	protected JPanel editPanel;
-	
+	protected JPanel             titlePanel;
+	protected AddRemoveEditPanel editPanel = null;
+
 	// main user interaction widget
 	protected JTable defItemsTable;
 	protected TreeDefEditorTableModel<T,D,I> tableModel;
@@ -107,11 +108,6 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 	
 	protected JStatusBar statusBar;
 	
-	// south panel widgets
-	protected JButton deleteItemButton;
-	protected JButton newItemButton;
-    protected JButton editItemButton;
-    
     protected boolean isEditMode;
 	
 	/**
@@ -197,8 +193,6 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         titlePanel.add(defNameLabel);
         titlePanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 4, 0));
 
-        ImageIcon editIcon = IconManager.getIcon("EditIcon", IconSize.Std16);
-        
 		if (isEditMode)
 		{
     		//editDefButton = createButton(editIcon);
@@ -225,47 +219,31 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 		if (isEditMode)
         {
 	        // create south panel
-	        editPanel = new JPanel();
-	        editPanel.setLayout(new BoxLayout(editPanel,BoxLayout.LINE_AXIS));
-	        
-            ImageIcon delIcon = IconManager.getIcon("MinusSign", IconSize.Std16);
-    		deleteItemButton = createButton("Delete", delIcon);
-    		deleteItemButton.addActionListener(new ActionListener()
+    		ActionListener deleteAction = new ActionListener()
     		{
     			public void actionPerformed(ActionEvent ae)
     			{
     				deleteItem(defItemsTable.getSelectedRow());
     			}
-    		});
-    		ImageIcon newIcon = IconManager.getIcon("PlusSign", IconSize.Std16);
-            newItemButton = createButton("New", newIcon);
-            newItemButton.addActionListener(new ActionListener()
+    		};
+            ActionListener newItemAction = new ActionListener()
             {
                 public void actionPerformed(ActionEvent ae)
                 {
                     newItem(defItemsTable.getSelectedRow());
                 }
-            });
-            editItemButton = createButton("Edit", editIcon);
-            editItemButton.addActionListener(new ActionListener()
+            };
+            
+            ActionListener editItemAction = new ActionListener()
             {
                 public void actionPerformed(ActionEvent ae)
                 {
                     editTreeDefItem(defItemsTable.getSelectedRow());
                 }
-            });
+            };
 		
-    		// add south panel widgets
-    		editPanel.add(Box.createHorizontalGlue());
-    		editPanel.add(deleteItemButton);
-            editPanel.add(Box.createRigidArea(horizSpacer));
-            editPanel.add(newItemButton);
-            editPanel.add(Box.createRigidArea(horizSpacer));
-            editPanel.add(editItemButton);
-            
-        } else
-        {
-            editPanel = null;
+            editPanel = new AddRemoveEditPanel(newItemAction, deleteAction, editItemAction,
+                                               "TTV_NEW_TDI", "TTV_DEL_TDI", "TTV_EDIT_TDI");
         }
 	}
     
@@ -315,9 +293,10 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 		// Only add selection listener if the botton panel is there for editing
 		if (editPanel != null)
 		{
+		    PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g,p,10px", "p"));
+		    pb.add(editPanel, new CellConstraints().xy(2, 1));
+		    add(pb.getPanel(), BorderLayout.SOUTH);
 	        addSelectionListener();
-	        
-		    this.add(editPanel,BorderLayout.SOUTH);
 		}
 		
 		repaint();
@@ -350,23 +329,23 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
             
             if (selectionIndex ==- 1)
             {
-                deleteItemButton.setEnabled(false);
-                newItemButton.setEnabled(false);
-                editItemButton.setEnabled(false);
+                editPanel.getDelBtn().setEnabled(false);
+                editPanel.getAddBtn().setEnabled(false);
+                editPanel.getEditBtn().setEnabled(false);
             }
             else
             {
                 // if there are no business rules associated with this item, we assume it is open for deletion
                 if (businessRules == null || businessRules.okToEnableDelete(tableModel.get(selectionIndex)))
                 {
-                    deleteItemButton.setEnabled(true);
+                    editPanel.getDelBtn().setEnabled(true);
                 }
                 else
                 {
-                    deleteItemButton.setEnabled(false);
+                    editPanel.getDelBtn().setEnabled(false);
                 }
-                newItemButton.setEnabled(true);
-                editItemButton.setEnabled(true);
+                editPanel.getAddBtn().setEnabled(true);
+                editPanel.getEditBtn().setEnabled(true);
             }
         }
     }
@@ -757,12 +736,12 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                             JLabel label = createLabel("");
                             label.setText(message.toString());
                             Window w = UIRegistry.getMostRecentWindow();
-                            JFrame parent = null;
+                            JFrame frameParent = null;
                             if (w instanceof JFrame)
                             {
-                                parent = (JFrame)w;
+                                frameParent = (JFrame)w;
                             }
-                            CustomDialog errorDialog = new CustomDialog(parent,getResourceString("Error"),true,CustomDialog.OK_BTN, new JScrollPane(label));
+                            CustomDialog errorDialog = new CustomDialog(frameParent,getResourceString("Error"),true,CustomDialog.OK_BTN, new JScrollPane(label));
                             errorDialog.createUI();
                             errorDialog.setSize(650, 200);
                             errorDialog.setVisible(true);
@@ -1084,7 +1063,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         final D def = (D)tmpSession.load(treeDef.getClass(), treeDef.getTreeDefId());
         if (def == null)
         {
-            statusBar.setErrorMessage("The tree currently being displayed has been deleted by another user.  It must now be closed.");
+            statusBar.setErrorMessage("The tree currently being displayed has been deleted by another user.  It must now be closed."); // I18N
             SwingUtilities.invokeLater(new Runnable()
             {
                 public void run()
@@ -1100,16 +1079,16 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         // TODO: double check these choices
         // gather all the info needed to create a form in a dialog
         Pair<String,String> formsNames = TreeFactory.getAppropriateFormsetAndViewNames(treeDef);
-        Frame parentFrame = (Frame)UIRegistry.get(UIRegistry.FRAME);
-        String viewSetName = formsNames.first;
-        String viewName = formsNames.second;
-        String displayName = "NODE_EDIT_DISPLAY_NAME";
-        boolean isEdit = true;
-        String closeBtnText = (isEdit) ? getResourceString("Save") : getResourceString("Close");
-        String className = def.getClass().getName();
+        Frame   parentFrame  = (Frame)UIRegistry.get(UIRegistry.FRAME);
+        String  viewSetName  = formsNames.first;
+        String  viewName     = formsNames.second;
+        String  displayName  = "NODE_EDIT_DISPLAY_NAME";
+        boolean isEdit       = true;
+        String  closeBtnText = (isEdit) ? getResourceString("Save") : getResourceString("Close");
+        String  className    = def.getClass().getName();
         DBTableInfo nodeTableInfo = DBTableIdMgr.getInstance().getInfoById(((DataModelObjBase)def).getTableId());
-        String idFieldName = nodeTableInfo.getIdFieldName();
-        int options = MultiView.HIDE_SAVE_BTN;
+        String  idFieldName  = nodeTableInfo.getIdFieldName();
+        int     options      = MultiView.HIDE_SAVE_BTN;
         
         // create the form dialog
         String title = getResourceString("TreeDefEditDialogTitle");

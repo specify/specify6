@@ -41,7 +41,6 @@ import edu.ku.brc.specify.treeutils.TreeHelper;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.forms.BaseBusRules;
 import edu.ku.brc.ui.forms.FormViewObj;
-import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.persist.AltViewIFace.CreationMode;
 import edu.ku.brc.ui.forms.validation.UIValidator;
 import edu.ku.brc.ui.forms.validation.ValComboBox;
@@ -342,11 +341,11 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
 
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.BaseBusRules#afterFillForm(java.lang.Object, edu.ku.brc.ui.forms.Viewable)
+     * @see edu.ku.brc.ui.forms.BaseBusRules#afterFillForm(java.lang.Object)
      */
     @SuppressWarnings("unchecked")
     @Override
-    public void afterFillForm(Object dataObj, Viewable viewable)
+    public void afterFillForm(final Object dataObj)
     {
         if (formViewObj.getAltView().getMode() != CreationMode.EDIT)
         {
@@ -625,13 +624,12 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#afterDeleteCommit(java.lang.Object)
+     * @see edu.ku.brc.ui.forms.BaseBusRules#afterDeleteCommit(java.lang.Object)
      */
     @SuppressWarnings("unchecked")
     @Override
-    public boolean beforeDeleteCommit(Object dataObj, DataProviderSessionIFace session) throws Exception
+    public void afterDeleteCommit(Object dataObj)
     {
-        boolean result = true;
         if (dataObj instanceof Treeable)
         {
             // NOTE: the instanceof check can't check against 'T' since T isn't a class
@@ -652,8 +650,23 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
                 TreeDataService<T,D,I> dataServ = TreeDataServiceFactory.createService();
                 //apparently a refresh() is necessary. node can hold obsolete values otherwise.
                 //Possibly needs to be done for all business rules??
-                session.refresh(node);
-                result = dataServ.updateNodeNumbersAfterNodeDeletion(node,session);
+                DataProviderSessionIFace session = null;
+                try
+                {
+                    session = DataProviderFactory.getInstance().createSession();
+                    session.refresh(node);
+                    dataServ.updateNodeNumbersAfterNodeDeletion(node,session);
+                    
+                } catch (Exception ex)
+                {
+                    
+                } finally
+                {
+                    if (session != null)
+                    {
+                        session.close();
+                    }
+                }
                 
             }
             else
@@ -661,9 +674,8 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
                 node.getDefinition().setNodeNumbersAreUpToDate(false);
             }
         }
-        return result;
     }
-    
+
     /**
      * Handles the {@link #beforeSave(Object)} method if the passed in {@link Object}
      * is an instance of {@link TreeDefItemIface}.  The real work of this method is to

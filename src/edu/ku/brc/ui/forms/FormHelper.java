@@ -19,6 +19,10 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.dbsupport.DBRelationshipInfo;
+import edu.ku.brc.dbsupport.DBTableChildIFace;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -35,6 +39,9 @@ public final class FormHelper
     private static final Logger log = Logger.getLogger(FormHelper.class);
     
     private static String currentUserEditStr = "";
+    
+    public static final String DATA_OBJ_SETTER = "edu.ku.brc.ui.forms.DataSetterForObj";
+    public static final String DATA_OBJ_GETTER = "edu.ku.brc.ui.forms.DataGetterForObj";
 
     /**
      * XXX This needs to be moved! This references the specify packge
@@ -65,7 +72,7 @@ public final class FormHelper
             
             try
             {
-                DataObjectSettable setter  = DataObjectSettableFactory.get(dataObj.getClass().getName(), "edu.ku.brc.ui.forms.DataSetterForObj");
+                DataObjectSettable setter  = DataObjectSettableFactory.get(dataObj.getClass().getName(), DATA_OBJ_SETTER);
                 if (setter != null)
                 {
                     boolean foundOne = false;
@@ -362,5 +369,92 @@ public final class FormHelper
                 setter.setFieldValue(dataObj, fieldNames, newData);
             }
         }
+    }
+    
+    /**
+     * Helper for setting a value on an object.
+     * @param dataObj the parent data object
+     * @param fieldName the name of the field to get a value of
+     * @return the value of the field
+     */
+    public static Object getValue(final FormDataObjIFace dataObj, final String fieldName)
+    {
+        if (dataObj != null)
+        {
+            DataObjectGettable getter = DataObjectGettableFactory.get(dataObj.getDataClass().getName(), FormHelper.DATA_OBJ_GETTER);
+            if (getter != null)
+            {
+                return getter.getFieldValue(dataObj, fieldName);
+            }
+            throw new RuntimeException("Could get a getter for FormDataObjIFace ["+dataObj.getDataClass().getName()+"]");
+        }
+        return null;
+    }
+    
+    /**
+     * Helper for setting a value.
+     * @param dataObj the data object to have a field set
+     * @param fieldName the field to be set
+     * @param value the value to be set
+     */
+    public static void setValue(final FormDataObjIFace dataObj, final String fieldName, final Object value)
+    {
+        if (dataObj != null)
+        {
+            DataObjectSettable setter = DataObjectSettableFactory.get(dataObj.getDataClass().getName(), FormHelper.DATA_OBJ_SETTER);
+            if (setter != null)
+            {
+                setter.setFieldValue(dataObj, fieldName, value);
+                
+            } else
+            {
+                throw new RuntimeException("Could get a setter for FormDataObjIFace ["+dataObj.getDataClass().getName()+"]");
+            }
+        }
+    }
+    
+    /**
+     * This helper method is used for when a field name is using 'dot' notation i.e. agent.lastName. It will 
+     * walk the DBTableInfo schema and find the DBTableChildIFace object for the field or relationship
+     * at the end of the path.
+     * @param fieldName the full path field name
+     * @param tblInfo the current table (the table of the first item in the path)
+     * @return the DBTableChildIFace object or null if there was an error in the path.
+     */
+    public static DBTableChildIFace getChildInfoFromPath(final String fieldName, final DBTableInfo tblInfo)
+    {
+        String[]    names      = StringUtils.split(fieldName, '.');
+        DBTableInfo curTblInfo = tblInfo;
+        int         cnt        = 0;
+        for (String name : names)
+        {
+            DBTableChildIFace item = curTblInfo.getItemByName(name);
+            if (item == null)
+            {
+                return null;
+            }
+            
+            if (cnt == names.length-1)
+            {
+                return item;
+                
+            } else if (item instanceof DBRelationshipInfo)
+            {
+                DBRelationshipInfo rel = (DBRelationshipInfo)item;
+                DBTableInfo nxtTbl = DBTableIdMgr.getInstance().getByClassName(rel.getClassName());
+                if (nxtTbl != null)
+                {
+                    curTblInfo = nxtTbl;
+                } else
+                {
+                    return null;
+                }
+            } else
+            {
+                return null;
+            }
+            cnt++;
+        }
+        return null;
     }
 }

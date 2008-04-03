@@ -418,7 +418,7 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
                     String valStr = value.toString();
                     if (valStr.length() > 0)
                     {
-                        if (qafd.isUerInputNotInjectable(valStr))
+                        if (qafd.isUserInputNotInjectable(valStr))
                         {
                             if (cnt > 0)
                             {

@@ -50,6 +50,7 @@ import edu.ku.brc.ui.db.ERTICaptionInfo;
 import edu.ku.brc.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.ui.forms.DataObjectSettable;
 import edu.ku.brc.ui.forms.DataObjectSettableFactory;
+import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.formatters.DataObjAggregator;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.ui.forms.formatters.DataObjSwitchFormatter;
@@ -510,13 +511,13 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                          aggList         = new Vector<Object>();
                          aggListRecycler = new Stack<Object>();
                          aggCaption      = caption;
-                         aggSetter       = DataObjectSettableFactory.get(aggCaption.getAggClass().getName(), "edu.ku.brc.ui.forms.DataSetterForObj");
+                         aggSetter       = DataObjectSettableFactory.get(aggCaption.getAggClass().getName(), FormHelper.DATA_OBJ_SETTER);
                          
                          // Now check to see if we are aggregating the this type of object or a child object of this object
                          // For example Collectors use an Agent as part of the aggregation
                          if (aggCaption.getSubClass() != null)
                          {
-                             dataSetter = DataObjectSettableFactory.get(aggCaption.getSubClass().getName(), "edu.ku.brc.ui.forms.DataSetterForObj");
+                             dataSetter = DataObjectSettableFactory.get(aggCaption.getSubClass().getName(), FormHelper.DATA_OBJ_SETTER);
                          } else
                          {
                              dataSetter = aggSetter;

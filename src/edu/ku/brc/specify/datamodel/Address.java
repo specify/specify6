@@ -49,7 +49,6 @@ import javax.persistence.Transient;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
-import org.hibernate.annotations.Index;
 
 /**
 
@@ -58,11 +57,7 @@ import org.hibernate.annotations.Index;
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "address")
-@org.hibernate.annotations.Table(appliesTo="address", indexes =
-    {   
-        @Index (name="AddrColMemIDX", columnNames={"CollectionMemberID"})
-    })
-public class Address extends CollectionMember implements java.io.Serializable {
+public class Address extends DataModelObjBase implements java.io.Serializable {
 
     // Fields
 

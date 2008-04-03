@@ -36,9 +36,7 @@ import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Shipment;
 import edu.ku.brc.ui.forms.BaseBusRules;
 import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
-import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
-import edu.ku.brc.ui.forms.Viewable;
 
 /**
  * Business rules for validating a Loan.
@@ -59,12 +57,11 @@ public class ShipmentBusRules extends BaseBusRules
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#fillForm(java.lang.Object, edu.ku.brc.ui.forms.Viewable)
+     * @see edu.ku.brc.ui.forms.BaseBusRules#afterFillForm(java.lang.Object)
      */
     @Override
-    public void afterFillForm(Object dataObj, Viewable viewable)
+    public void afterFillForm(Object dataObj)
     {
-        FormViewObj formViewObj = (FormViewObj)viewable;
         if (formViewObj != null && formViewObj.getDataObj() instanceof Shipment)
         {
             MultiView mvParent = formViewObj.getMVParent();

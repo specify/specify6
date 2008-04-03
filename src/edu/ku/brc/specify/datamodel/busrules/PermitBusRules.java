@@ -21,15 +21,8 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
 import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
-
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-
-import edu.ku.brc.dbsupport.DataProviderFactory;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.specify.datamodel.Permit;
+import edu.ku.brc.ui.forms.FormDataObjIFace;
 
 /**
  *
@@ -40,8 +33,6 @@ import edu.ku.brc.specify.datamodel.Permit;
  */
 public class PermitBusRules extends AttachmentOwnerBaseBusRules
 {  
-    private static final Logger  log = Logger.getLogger(PermitBusRules.class);
-    
     /**
      * Constructor.
      */
@@ -62,82 +53,12 @@ public class PermitBusRules extends AttachmentOwnerBaseBusRules
             return STATUS.Error;
         }
         
-        Permit permit = (Permit)dataObj;
-        
-        String permitNum = permit.getPermitNumber();
-        if (StringUtils.isNotEmpty(permitNum))
-        {
-            // Start by checking to see if the permit number has changed
-            boolean checkPermitNumberForDuplicates = true;
-            Integer id = permit.getPermitId();
-            if (id != null)
-            {
-                DataProviderSessionIFace session = null;
-                try
-                {
-                    session = DataProviderFactory.getInstance().createSession();
-                    List<?>                  permits = session.getDataList(Permit.class, "permitId", id);
-                    if (permits.size() == 1)
-                    {
-                        Permit oldPermit = (Permit)permits.get(0);
-                        String oldPermitNumber = oldPermit.getPermitNumber();
-                        if (oldPermitNumber.equals(permit.getPermitNumber()))
-                        {
-                            checkPermitNumberForDuplicates = false;
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    log.error(ex);
-                } finally
-                {
-                    if (session != null)
-                    {
-                        session.close();
-                    }
-                }
-            }
-            
-            // If the Id is null then it is a new permit, if not then we are editting the permit
-            //
-            // If the permit has not changed then we shouldn't check for duplicates
-            if (checkPermitNumberForDuplicates)
-            {
-                DataProviderSessionIFace session = null;
-                try
-                {
-                    session = DataProviderFactory.getInstance().createSession();
-                    List<?> permitNumbers = session.getDataList(Permit.class, "permitNumber", permitNum);
-                    if (permitNumbers.size() > 0)
-                    {
-                        reasonList.add(getLocalizedMessage("PERMIT_NUM_IN_USE", permitNum));
-                    } else
-                    {
-                        return STATUS.OK;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    log.error(ex);
-                } finally
-                {
-                    if (session != null)
-                    {
-                        session.close();
-                    }
-                }
-            } else
-            {
-                return STATUS.OK;
-            }
-            
-        } else
-        {
-            reasonList.add(getLocalizedMessage("PERMIT_NUM_MISSING"));
-        }
+        STATUS duplicateNumberStatus = isCheckDuplicateNumberOK("permitNumber", 
+                                                                (FormDataObjIFace)dataObj, 
+                                                                Permit.class, 
+                                                                "permitId");
 
-        return STATUS.Error;
+        return duplicateNumberStatus;
     }
     
     /* (non-Javadoc)

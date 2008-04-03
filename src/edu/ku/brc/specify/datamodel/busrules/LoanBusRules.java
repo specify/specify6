@@ -44,8 +44,8 @@ import edu.ku.brc.specify.datamodel.Shipment;
 import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
+import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.MultiView;
-import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.validation.ValFormattedTextField;
 import edu.ku.brc.ui.forms.validation.ValFormattedTextFieldSingle;
 
@@ -68,10 +68,10 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
     }
     
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#fillForm(java.lang.Object, edu.ku.brc.ui.forms.Viewable)
+     * @see edu.ku.brc.ui.forms.BaseBusRules#afterFillForm(java.lang.Object)
      */
     @Override
-    public void afterFillForm(final Object dataObj, final Viewable viewableArg)
+    public void afterFillForm(final Object dataObj)
     {
         if (formViewObj != null && formViewObj.getDataObj() instanceof Loan)
         {
@@ -230,7 +230,13 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
             }     
         }
         */  
-        return STATUS.OK;
+        
+        STATUS duplicateNumberStatus = isCheckDuplicateNumberOK("loanNumber", 
+                                                                (FormDataObjIFace)dataObj, 
+                                                                Loan.class, 
+                                                                "loanId");
+        
+        return duplicateNumberStatus;
     }
     
     /* (non-Javadoc)

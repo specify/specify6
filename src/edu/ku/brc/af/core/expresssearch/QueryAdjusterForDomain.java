@@ -134,7 +134,7 @@ public class QueryAdjusterForDomain
      * @param userInputStr user entered string
      * @return true is ok, false if problematic
      */
-    public boolean isUerInputNotInjectable(final String userInputStr)
+    public boolean isUserInputNotInjectable(final String userInputStr)
     {
         if (isNotEmpty(userInputStr))
         {

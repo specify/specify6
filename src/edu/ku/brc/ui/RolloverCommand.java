@@ -80,9 +80,11 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
     protected static Color           hoverColor  = new Color(0, 0, 150, 100);
     protected static Color           dropColor   = new Color(255, 140, 0, 100);
     
-    protected static final int       ICON_TEXT_GAP = 4;
-    protected static ImageIcon       hoverImg      = null;
-    protected static Font            defaultFont   = null;
+    protected static final int       ICON_TEXT_GAP  = 4;
+    protected static ImageIcon       hoverImg       = null;
+    protected static Font            defaultFont    = null;
+    protected static int             vertGap        = 0;      // the Old Default was 2
+    protected static boolean         useEmptyBorder = false;
     
     protected JTextField             txtFld      = null;
     protected JLabel                 iconLabel;
@@ -137,7 +139,11 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
     public RolloverCommand(final String label, final ImageIcon imgIcon)
     {
 
-        setBorder(new EmptyBorder(new Insets(1,1,1,1)));
+        if (useEmptyBorder)
+        {
+            setBorder(new EmptyBorder(new Insets(1,1,1,1)));
+        }
+        
         setLayout(new BorderLayout());
 
         this.imgIcon = imgIcon;
@@ -239,6 +245,9 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
         return label;
     }
     
+    /**
+     * @param label
+     */
     public void setLabelText(final String label)
     {
         if (label != null && !label.equals(this.label))
@@ -282,7 +291,7 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
                 preferredSize.width  = ins.left + ins.right + insets.left + insets.right +
                                        Math.max((label != null ? fm.stringWidth(label) : 0), (imgIcon != null ? (imgIcon.getIconWidth() + 2) : 0));
                 preferredSize.height = ins.top + ins.bottom + insets.top + insets.bottom +
-                                       (label != null ? fm.getHeight() : 0) + (imgIcon != null ? (imgIcon.getIconHeight() + 2) : 0);
+                                       (label != null ? fm.getHeight() : 0) + (imgIcon != null ? (imgIcon.getIconHeight() + vertGap) : 0);
             } else
             {
                 preferredSize.width  = ins.left + ins.right + insets.left + insets.right + ICON_TEXT_GAP + 
@@ -309,6 +318,16 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
     public static void setDefaultFont(Font defaultFont)
     {
         RolloverCommand.defaultFont = defaultFont;
+    }
+
+    public static void setVertGap(int vertGap)
+    {
+        RolloverCommand.vertGap = vertGap;
+    }
+
+    public static void setUseEmptyBorder(boolean useEmptyBorder)
+    {
+        RolloverCommand.useEmptyBorder = useEmptyBorder;
     }
 
     /**
@@ -498,6 +517,10 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
                 }
                 g.setColor(color);
                 
+                if (!useEmptyBorder)
+                {
+                    insets.set(1, 1, 1, 1);
+                }
                 //g.drawRect(insets.left, insets.top, size.width-insets.right-insets.left, size.height-insets.bottom-insets.top);
                 Graphics2D g2d = (Graphics2D)g;
                 g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);

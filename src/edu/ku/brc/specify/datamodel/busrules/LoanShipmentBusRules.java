@@ -21,7 +21,6 @@ import edu.ku.brc.specify.datamodel.Shipment;
 import edu.ku.brc.ui.forms.BaseBusRules;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
-import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.validation.ValFormattedTextField;
 
 /**
@@ -38,14 +37,13 @@ public class LoanShipmentBusRules extends BaseBusRules
     private static final Logger log = Logger.getLogger(LoanShipmentBusRules.class);
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#fillForm(java.lang.Object, edu.ku.brc.ui.forms.Viewable)
+     * @see edu.ku.brc.ui.forms.BaseBusRules#afterFillForm(java.lang.Object)
      */
     @Override
-    public void afterFillForm(final Object dataObj, final Viewable viewable)
+    public void afterFillForm(final Object dataObj)
     {
         if (viewable instanceof FormViewObj)
         {
-            FormViewObj formViewObj = (FormViewObj)viewable;
             if (formViewObj.getDataObj() instanceof Shipment)
             {
                 

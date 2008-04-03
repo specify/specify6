@@ -57,8 +57,8 @@ public class CarryForwardInfo
         this.formViewObj = formViewObj;
         this.formViewDef = formViewDef;
         
-        getter  = DataObjectGettableFactory.get(classObj.getName(), "edu.ku.brc.ui.forms.DataGetterForObj");
-        setter  = DataObjectSettableFactory.get(classObj.getName(), "edu.ku.brc.ui.forms.DataSetterForObj");
+        getter  = DataObjectGettableFactory.get(classObj.getName(), FormHelper.DATA_OBJ_GETTER);
+        setter  = DataObjectSettableFactory.get(classObj.getName(), FormHelper.DATA_OBJ_SETTER);
     }
     
     /**

@@ -34,7 +34,6 @@ import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.ui.GetSetValueIFace;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.BaseBusRules;
-import edu.ku.brc.ui.forms.Viewable;
 
 /**
  * Business Rules for DeterminationStatus.
@@ -158,12 +157,12 @@ public class DeterminationStatusBusRules extends BaseBusRules
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#afterFillForm(java.lang.Object, edu.ku.brc.ui.forms.Viewable)
+     * @see edu.ku.brc.ui.forms.BaseBusRules#afterFillForm(java.lang.Object)
      */
     @Override
-    public void afterFillForm(final Object dataObj, final Viewable viewableArg)
+    public void afterFillForm(final Object dataObj)
     {
-        super.afterFillForm(dataObj, viewable);
+        super.afterFillForm(dataObj);
         
         if (formViewObj.getDataObj() instanceof DeterminationStatus)
         {

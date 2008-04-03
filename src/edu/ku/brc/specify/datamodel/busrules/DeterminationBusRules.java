@@ -28,7 +28,6 @@ import edu.ku.brc.specify.datamodel.DeterminationStatus;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.ui.forms.BaseBusRules;
-import edu.ku.brc.ui.forms.Viewable;
 import edu.ku.brc.ui.forms.validation.ValComboBox;
 
 /**
@@ -37,6 +36,14 @@ import edu.ku.brc.ui.forms.validation.ValComboBox;
  * @code_status Alpha
  *
  * Created Date: Nov 29, 2007
+ *
+ */
+/**
+ * @author rod
+ *
+ * @code_status Alpha
+ *
+ * Apr 1, 2008
  *
  */
 public class DeterminationBusRules extends BaseBusRules
@@ -48,19 +55,19 @@ public class DeterminationBusRules extends BaseBusRules
     protected boolean        ignoreSelection = false;
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#beforeFormFill(edu.ku.brc.ui.forms.Viewable)
+     * @see edu.ku.brc.ui.forms.BaseBusRules#beforeFormFill()
      */
     @Override
-    public void beforeFormFill(final Viewable viewableArg)
+    public void beforeFormFill()
     {
         determination = null;
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#fillForm(java.lang.Object, edu.ku.brc.ui.forms.Viewable)
+     * @see edu.ku.brc.ui.forms.BaseBusRules#afterFillForm(java.lang.Object)
      */
     @Override
-    public void afterFillForm(final Object dataObj, final Viewable viewableArg)
+    public void afterFillForm(final Object dataObj)
     {
         determination = null;
         

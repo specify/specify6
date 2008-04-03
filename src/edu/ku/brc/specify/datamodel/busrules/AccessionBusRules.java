@@ -25,13 +25,8 @@ import static edu.ku.brc.ui.UIRegistry.getLocalizedMessage;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Hashtable;
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.dbsupport.DBConnection;
-import edu.ku.brc.dbsupport.DataProviderFactory;
-import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAgent;
@@ -41,8 +36,8 @@ import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.DraggableRecordIdentifier;
+import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.FormViewObj;
-import edu.ku.brc.ui.forms.Viewable;
 
 /**
  * Business Rules for validating a Accession.
@@ -95,12 +90,12 @@ public class AccessionBusRules extends AttachmentOwnerBaseBusRules
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.BaseBusRules#afterFillForm(java.lang.Object, edu.ku.brc.ui.forms.Viewable)
+     * @see edu.ku.brc.ui.forms.BaseBusRules#afterFillForm(java.lang.Object)
      */
     @Override
-    public void afterFillForm(final Object dataObj, final Viewable viewableArg)
+    public void afterFillForm(final Object dataObj)
     {
-        super.afterFillForm(dataObj, viewable);
+        super.afterFillForm(dataObj);
         
         if (!(viewable instanceof FormViewObj))
         {
@@ -147,83 +142,12 @@ public class AccessionBusRules extends AttachmentOwnerBaseBusRules
             }
         }
         
-        // Let's check Accession for duplicates 
-        String accessionNumber = accession.getAccessionNumber();
-        if (StringUtils.isNotEmpty(accessionNumber))
-        {
-            // Start by checking to see if the permit number has changed
-            boolean checkAccessionNumberForDuplicates = true;
-            Integer id = accession.getAccessionId();
-            if (id != null)
-            {
-                DataProviderSessionIFace session = null;
-                try
-                {
-                    session = DataProviderFactory.getInstance().createSession();
-                    List<?> accessions = session.getDataList(Accession.class, "accessionId", id);
-                    if (accessions.size() == 1)
-                    {
-                        Accession oldAccession       = (Accession)accessions.get(0);
-                        String    oldAccessionNumber = oldAccession.getAccessionNumber();
-                        if (oldAccessionNumber.equals(accession.getAccessionNumber()))
-                        {
-                            checkAccessionNumberForDuplicates = false;
-                        }
-                    }
-                } catch (Exception ex)
-                {
-                    log.error(ex);
-                    
-                } finally
-                {
-                    if (session != null)
-                    {
-                        session.close();
-                    }
-                }
-            }
-            
-            // If the Id is null then it is a new permit, if not then we are editting the accession
-            //
-            // If the accession has not changed then we shouldn't check for duplicates
-            if (checkAccessionNumberForDuplicates)
-            {
-                DataProviderSessionIFace session = null;
-                try
-                {
-                    session = DataProviderFactory.getInstance().createSession();
-                    List <?> accessionNumbers        = session.getDataList(Accession.class, "accessionNumber", accessionNumber);
-                    if (accessionNumbers.size() > 0)
-                    {
-                        reasonList.add(UIRegistry.getResourceString("ACCESSION_IN_USE"));
-                    } else
-                    {
-                        return STATUS.OK;
-                    }
-                    
-                } catch (Exception ex)
-                {
-                    ex.printStackTrace();
-                    
-                } finally
-                {
-                    if (session != null)
-                    {
-                        session.close();
-                    }
-                }
-                
-            } else
-            {
-                return STATUS.OK;
-            }
-            
-        } else
-        {
-            reasonList.add(UIRegistry.getResourceString("ACCESSION_NUM_MISSING"));
-        }
-
-        return STATUS.Error;
+        STATUS duplicateNumberStatus = isCheckDuplicateNumberOK("accessionNumber", 
+                (FormDataObjIFace)dataObj, 
+                Accession.class, 
+                "accessionId");
+        
+        return duplicateNumberStatus;
     }
     
     /* (non-Javadoc)

@@ -1553,6 +1553,9 @@ public class FormViewObj implements Viewable,
         {
             getDataFromUI();
         }
+        
+        Object oldDataObj = dataObj;
+        dataObj = null;
     
         UIValidator.setIgnoreAllValidation(this, true);
         for (FVOFieldInfo fieldInfo : controlsById.values())
@@ -1657,9 +1660,9 @@ public class FormViewObj implements Viewable,
             businessRules.addChildrenToNewDataObjects(obj);
         }
         
-        if (carryFwdDataObj == null && dataObj != null)
+        if (carryFwdDataObj == null && oldDataObj != null)
         {
-            carryFwdDataObj = dataObj;
+            carryFwdDataObj = oldDataObj;
         }
 
 
@@ -1848,6 +1851,34 @@ public class FormViewObj implements Viewable,
         return saveObject();
     }
     
+    private BusinessRulesIFace recurseProcessBR(final MultiView mv)
+    {
+        FormViewObj fvo = mv.getCurrentViewAsFormViewObj();
+        if (fvo != null)
+        {
+            Object             fvoDataObj = fvo.getCurrentDataObj();
+            BusinessRulesIFace busRules   = fvo.getBusinessRules();
+            if (busRules != null && fvoDataObj != null)
+            {
+                BusinessRulesIFace.STATUS status = busRules.processBusinessRules(fvoDataObj);
+                if (status != BusinessRulesIFace.STATUS.OK && status != BusinessRulesIFace.STATUS.None)
+                {
+                    return busRules;
+                }
+            }
+        }
+        
+        for (MultiView childMV : mv.getKids())
+        {
+            BusinessRulesIFace brInError = recurseProcessBR(childMV);
+            if (brInError != null)
+            {
+                return brInError;
+            }
+        }
+        return null;
+    }
+    
     /**
      * This method enables us to loop when there is a duplicate key
      * @param dataObj the data object to be saved
@@ -1877,9 +1908,11 @@ public class FormViewObj implements Viewable,
                 traverseToGetDataFromForms(mvParent);
                 
                 //log.debug("saveObject checking businessrules for [" + (dataObjArg != null ? dataObjArg.getClass(): "null") + "]");
-                if (businessRules != null && businessRules.processBusinessRules(dataObjArg) == BusinessRulesIFace.STATUS.Error)
+                //if (businessRules != null && businessRules.processBusinessRules(dataObjArg) == BusinessRulesIFace.STATUS.Error)
+                BusinessRulesIFace busRuleInError = recurseProcessBR(mvParent);
+                if (busRuleInError != null)
                 {
-                    UIRegistry.showError(businessRules.getMessagesAsString());
+                    UIRegistry.showError(busRuleInError.getMessagesAsString());
                     return null;
                 }
                 
@@ -2375,7 +2408,7 @@ public class FormViewObj implements Viewable,
             return;
         }
         
-        // This should happen
+        // This shouldn't happen
         if (session != null)
         {
             session.close();
@@ -2400,7 +2433,7 @@ public class FormViewObj implements Viewable,
 
             try
             {
-                // Clear the items in the "deleted" cahe because they will be deleted anyway.
+                // Clear the items in the "deleted" cache because they will be deleted anyway.
                 if (mvParent != null && mvParent.getDeletedItems() != null)
                 {
                     mvParent.getDeletedItems().clear();
@@ -2915,10 +2948,24 @@ public class FormViewObj implements Viewable,
                     UIRegistry.showError("Setting Label -Form control with id["+idFor+"] is not in the form or subform.");
                     continue;
                 }
+                
                 if (fieldInfo.getFormCell() != null && fieldInfo.getFormCell().getType() == FormCellIFace.CellType.field)
                 {
-                    FormCellField     cell     = (FormCellField)fieldInfo.getFormCell();
-                    DBTableChildIFace tblChild = ti.getItemByName(fieldInfo.getFormCell().getName());
+                    FormCellField     cell      = (FormCellField)fieldInfo.getFormCell();
+                    String            fieldName = fieldInfo.getFormCell().getName();
+                    DBTableChildIFace derivedCI = null;
+                    
+                    if (fieldName.indexOf(".") > -1)
+                    {
+                        derivedCI = FormHelper.getChildInfoFromPath(fieldName, ti);
+                        if (derivedCI == null)
+                        {
+                            UIRegistry.showError("The name 'path' ["+fieldName+"] was not valid.");
+                            continue; 
+                        }
+                    }
+                
+                    DBTableChildIFace tblChild = derivedCI != null ? derivedCI : ti.getItemByName(fieldInfo.getFormCell().getName());
                     if (isEditting && (cell.isRequired() || (tblChild != null && tblChild.isRequired())))
                     {
                         if (boldFont == null)
@@ -3177,6 +3224,12 @@ public class FormViewObj implements Viewable,
      */
     protected void updateControllerUI()
     {
+        
+        if (rsController != null)
+        {
+            rsController.updateUI();
+        }
+        
         //log.debug("----------------- "+formViewDef.getName()+"----------------- ");
         if (delRecBtn != null)
         {
@@ -3243,11 +3296,7 @@ public class FormViewObj implements Viewable,
                 switcherUI.setEnabled(enableNewBtn);
             }
         }
-        
-        if (rsController != null)
-        {
-            rsController.updateUI();
-        }
+
         
         if (srchRecBtn != null)
         {
@@ -3526,7 +3575,7 @@ public class FormViewObj implements Viewable,
     {
         if (businessRules != null)
         {
-            businessRules.beforeFormFill(this);
+            businessRules.beforeFormFill();
         }
         
         if (dataObj != null && dataObj instanceof FormDataObjIFace && ((FormDataObjIFace)dataObj).getId() != null)
@@ -3838,7 +3887,7 @@ public class FormViewObj implements Viewable,
         
         if (businessRules != null)
         {
-            businessRules.afterFillForm(dataObj, this);
+            businessRules.afterFillForm(dataObj);
         }
 
 

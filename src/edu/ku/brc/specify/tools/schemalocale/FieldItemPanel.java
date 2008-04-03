@@ -75,6 +75,7 @@ import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.PickListIFace;
@@ -286,7 +287,7 @@ public class FieldItemPanel extends LocalizerBasePanel
                 			fieldInfo, 
                 			formatCombo.getSelectedIndex()); // MUST BE MODAL!
                 	dlg.setVisible(true);
-            		if (dlg.getBtnPressed() == dlg.OK_BTN)
+            		if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
             		{
             			setSelectedFieldFormatter(dlg.getSelectedFormat());
             		}
@@ -994,15 +995,17 @@ public class FieldItemPanel extends LocalizerBasePanel
                 pickLists = localizableIO.getPickLists(dsciplineName);
             }
             
-            DBRelationshipInfo.RelationshipType relType = relInfo != null ? relInfo.getType() : null;
-            String                              typeStr = fieldInfo != null ? fieldInfo.getType() : null;
-            
             if (pickLists != null)
             {
+                DBRelationshipInfo.RelationshipType relType = relInfo != null ? relInfo.getType() : null;
+                
+                String  typeStr  = fieldInfo != null ? fieldInfo.getType() : null;
+                boolean isString = typeStr != null && (typeStr.equals("java.lang.String") || typeStr.equals("string"));
+                
                 int selectedIndex = -1;
                 DefaultComboBoxModel plCbxModel = (DefaultComboBoxModel)pickListCBX.getModel();
                 
-                if (typeStr != null && typeStr.equals("string"))
+                if (isString)
                 {
                     plCbxModel.removeAllElements();
                     int inx = 0;
@@ -1012,7 +1015,8 @@ public class FieldItemPanel extends LocalizerBasePanel
                             pl.getType() == PickListIFace.PL_TABLE_FIELD)
                         {
                             plCbxModel.addElement(pl);
-                            if (StringUtils.isNotEmpty(fld.getPickListName()) && fld.getPickListName().equals(pl.getName()))
+                            String plName = fld.getPickListName();
+                            if (StringUtils.isNotEmpty(plName) && plName.equals(pl.getName()))
                             {
                                 selectedIndex = inx;
                             }
@@ -1028,7 +1032,8 @@ public class FieldItemPanel extends LocalizerBasePanel
                         if (pl.getType() == PickListIFace.PL_WHOLE_TABLE)
                         {
                             plCbxModel.addElement(pl);
-                            if (StringUtils.isNotEmpty(fld.getPickListName()) && fld.getPickListName().equals(pl.getName()))
+                            String plName = fld.getPickListName();
+                            if (StringUtils.isNotEmpty(plName) && plName.equals(pl.getName()))
                             {
                                 selectedIndex = inx;
                             }
@@ -1036,7 +1041,7 @@ public class FieldItemPanel extends LocalizerBasePanel
                         inx++;
                     }
                 }
-                pickListCBX.setEnabled((typeStr != null && typeStr.equals("string")) || relType != null);
+                pickListCBX.setEnabled(isString || relType != null);
                 pickListCBX.setSelectedIndex(selectedIndex);
             } else
             {
@@ -1051,8 +1056,8 @@ public class FieldItemPanel extends LocalizerBasePanel
                     DBFieldInfo fi = ti.getFieldByName(fld.getName());
                     if (fi != null)
                     {
-                        String ts = fi.getType();
-                        typeStr = ts.indexOf('.') > -1 ? StringUtils.substringAfterLast(fi.getType(), ".") : ts;
+                        String ts      = fi.getType();
+                        String typeStr = ts.indexOf('.') > -1 ? StringUtils.substringAfterLast(fi.getType(), ".") : ts;
                         fieldTypeTxt.setText(typeStr);
                         
                         String lenStr = fi.getLength() != -1 ? Integer.toString(fi.getLength()) : " ";

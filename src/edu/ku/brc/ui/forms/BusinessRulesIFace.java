@@ -45,18 +45,15 @@ public interface BusinessRulesIFace
     
     /**
      * Notification a form is about to be filled in with data.
-     * 
-     * @param viewable the viewable that recieved the dataObject (using getDataOject would return the same object)
      */
-    public abstract void beforeFormFill(Viewable viewable);
+    public abstract void beforeFormFill();
     
     /**
      * Notification a form was just filled with data.
      * 
      * @param dataObj the data object that went into the form
-     * @param viewable the viewable that recieved the dataObject (using getDataOject would return the same object)
      */
-    public abstract void afterFillForm(Object dataObj, Viewable viewable);
+    public abstract void afterFillForm(Object dataObj);
     
     /**
      * This enables a new data object to be populated with any children objects before being
@@ -76,7 +73,7 @@ public interface BusinessRulesIFace
     /**
      * Processes the business rules for the data object.
      * 
-     * @param dataObj the data object for rthe rules to be processed on.
+     * @param dataObj the data object for the rules to be processed on.
      * @return the result status after processing the busniess rules.
      */
     public abstract STATUS processBusinessRules(Object dataObj);

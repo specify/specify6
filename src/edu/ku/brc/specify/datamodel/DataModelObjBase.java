@@ -47,14 +47,13 @@ import edu.ku.brc.ui.forms.DataObjectGettableFactory;
 import edu.ku.brc.ui.forms.DataObjectSettable;
 import edu.ku.brc.ui.forms.DataObjectSettableFactory;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
+import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 
 @MappedSuperclass
 public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
 {
     private static final Logger log = Logger.getLogger(DataModelObjBase.class);
-    
-    private static final String DATASETTEROBJ = "edu.ku.brc.ui.forms.DataSetterForObj";
     
     protected PropertyChangeSupport changes;
     
@@ -373,7 +372,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
                 parentPath[i] = fieldNames[i];
             }
             // Now go get the 'true' parent of the incoming reference by walk the hierarchy
-            DataObjectGettable getter = DataObjectGettableFactory.get(getClass().getName(), "edu.ku.brc.ui.forms.DataGetterForObj");
+            DataObjectGettable getter = DataObjectGettableFactory.get(getClass().getName(), FormHelper.DATA_OBJ_GETTER);
             Object[] values = UIHelper.getFieldValues(parentPath, this, getter);
             parentDataObject = (FormDataObjIFace)values[parentPath.length-1];
             
@@ -404,7 +403,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
                                 addToCollection(ref, otherSide, parentDataObject);
                             } else
                             {
-                                DataObjectSettable setter = DataObjectSettableFactory.get(ref.getClass().getName(), DATASETTEROBJ);
+                                DataObjectSettable setter = DataObjectSettableFactory.get(ref.getClass().getName(), FormHelper.DATA_OBJ_SETTER);
                                 setter.setFieldValue(ref, otherSide, parentDataObject);
                             }
                         }
@@ -415,7 +414,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
                         {
                             addToCollection(ref, otherSide, parentDataObject);
                         }
-                        DataObjectSettable setter = DataObjectSettableFactory.get(ref.getClass().getName(), DATASETTEROBJ);
+                        DataObjectSettable setter = DataObjectSettableFactory.get(ref.getClass().getName(), FormHelper.DATA_OBJ_SETTER);
                         setter.setFieldValue(parentDataObject, fldName, ref);
                     }
                 } else
@@ -492,14 +491,14 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
                             }
                             // else
                             //{
-                              //DataObjectSettable setter = DataObjectSettableFactory.get(ref.getClass().getName(), DATASETTEROBJ);
+                              //DataObjectSettable setter = DataObjectSettableFactory.get(ref.getClass().getName(), FormHelper.DATA_OBJ_SETTER);
                               //setter.setFieldValue(ref, otherSide, null);
                             //}
                         }
         
                     } else
                     {
-                        DataObjectSettable setter = DataObjectSettableFactory.get(ref.getClass().getName(), DATASETTEROBJ);
+                        DataObjectSettable setter = DataObjectSettableFactory.get(ref.getClass().getName(), FormHelper.DATA_OBJ_SETTER);
                         setter.setFieldValue(parentDataObject, fldName, null);
                         // in this case, most likely, the Collection isn't even loaded since the parent object probably isn't visible in a form
                         // calling removeFromCollection() would trigger a LazyInstantiationException

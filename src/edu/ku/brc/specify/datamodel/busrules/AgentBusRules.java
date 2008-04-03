@@ -55,12 +55,10 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
     protected Hashtable<FormViewObj, Agent> formToAgentHash = new Hashtable<FormViewObj, Agent>();
     
     protected Component    typeComp  = null;
+    protected boolean      ignoreSet = false;
     
     protected JLabel       lastLabel;
-    protected JLabel       middleLabel;
-    
     protected JTextField   lastNameText;
-    protected JTextField   middleText;
     
     protected String[]     typeTitles;
     
@@ -92,9 +90,7 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
         {
             typeComp       = formViewObj.getCompById("0");
             lastLabel      = formViewObj.getLabelFor("3");
-            middleLabel    = formViewObj.getLabelFor("4");
             lastNameText   = (JTextField)formViewObj.getCompById("3");
-            middleText     = (JTextField)formViewObj.getCompById("4");
             
             if (typeComp instanceof ValComboBox)
             {
@@ -102,7 +98,10 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
                 typeCBX.getComboBox().addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e)
                     {
-                        fixUpTypeCBX((JComboBox)e.getSource());
+                        if (!ignoreSet)
+                        {
+                            fixUpTypeCBX((JComboBox)e.getSource());
+                        }
                     }
                 });
                 
@@ -128,9 +127,7 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
         
         typeComp       = null;
         lastLabel      = null;
-        middleLabel    = null;
         lastNameText   = null;
-        middleText     = null;
     }
 
     /* (non-Javadoc)
@@ -206,15 +203,11 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
         
         enableFieldAndLabel("1", isPerson, doSetOtherValues ? agent.getTitle() : null);           // Title
         enableFieldAndLabel("5", isPerson, doSetOtherValues ? agent.getFirstName() : null);       // First Name
+        enableFieldAndLabel("4", isPerson, doSetOtherValues ? agent.getMiddleInitial() : null);       // First Name
         
         // Last Name
         String lbl = UIRegistry.getResourceString(isPerson ? "AG_LASTNAME" : "AG_NAME");
         lastLabel.setText(lbl + ":");
-        
-        // Middle Name or Abbrev
-        lbl = UIRegistry.getResourceString(isPerson ? "AG_MID_NAME" : "AG_ABBREV");
-        middleLabel.setText(lbl + ":");
-        middleText.setText(isPerson ? agent.getMiddleInitial() : agent.getAbbreviation());
         
         // Agent Variants
         boolean useAgentVariant = AppPreferences.getRemote().getBoolean("Agent.Use.Variants."+Discipline.getCurrentDiscipline().getName(),
@@ -270,10 +263,10 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.BaseBusRules#afterFillForm(java.lang.Object, edu.ku.brc.ui.forms.Viewable)
+     * @see edu.ku.brc.ui.forms.BaseBusRules#afterFillForm(java.lang.Object)
      */
     @Override
-    public void afterFillForm(final Object dataObj, final Viewable viewable)
+    public void afterFillForm(final Object dataObj)
     {
         if (!(viewable instanceof FormViewObj) || !(dataObj instanceof Agent))
         {
@@ -290,7 +283,9 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
             ValComboBox typeCBX = (ValComboBox)typeComp;
             if (typeCBX != null)
             {
+                ignoreSet = true;
                 typeCBX.getComboBox().setSelectedIndex(agentType == null ? Agent.PERSON : agentType);
+                ignoreSet = false;
             }
             
         } else
@@ -318,7 +313,7 @@ public class AgentBusRules extends AttachmentOwnerBaseBusRules
             Integer id = dbObj.getId();
             if (id == null)
             {
-                isOK = false;
+                isOK = true;
                 
             } else
             {

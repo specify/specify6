@@ -101,8 +101,7 @@ public class NavBox extends JPanel implements NavBoxIFace
         if (scrollable)
         {
             itemsPanel = new JPanel();
-            //itemsPanel.setLayout(new BoxLayout(itemsPanel, BoxLayout.PAGE_AXIS));
-            itemsPanel.setLayout(new NavBoxLayoutManager(0,1));
+            itemsPanel.setLayout(new NavBoxLayoutManager(0, 0));
 
             itemsPanel.setBorder(null);
             itemsPanel.setBackground(Color.WHITE);

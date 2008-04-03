@@ -38,15 +38,15 @@ public class NavBoxLayoutManager implements LayoutManager2
     private Vector<Component> comps         = new Vector<Component>();
     private Dimension         preferredSize = new Dimension();
     private Dimension         minimumSize   = new Dimension();
-    private int               borderPadding = 2;
-    private int               ySeparation   = 5;
+    private int               borderPadding;
+    private int               ySeparation;
 
     /**
-     * Contructs a layout manager for layting out NavBoxes. It lays out all the NavBoxes vertically
+     * Constructs a layout manager for laying out NavBoxes. It lays out all the NavBoxes vertically
      * and uses the 'ySeparator' as the spacing in between the boxes. It uses borderPadding as a 'margin'
-     * aroound all the boxes.
+     * around all the boxes.
      * @param borderPadding the margin around the boxes
-     * @param ySeparation the vertical separation inbetween the boxes.
+     * @param ySeparation the vertical separation in between the boxes.
      */
     public NavBoxLayoutManager(final int borderPadding, final int ySeparation)
     {
