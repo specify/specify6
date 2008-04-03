@@ -16,6 +16,7 @@
 
         <view name="CollectingEvent"
             class="edu.ku.brc.specify.datamodel.CollectingEvent"
+            busrules="edu.ku.brc.specify.datamodel.busrules.CollectingEventBusRules"
             resourcelabels="false">
             <desc><![CDATA[CollectingEvent Form]]></desc>
             <altviews>
@@ -26,6 +27,7 @@
         
         <view name="CollectingEventSub"
             class="edu.ku.brc.specify.datamodel.CollectingEvent"
+            busrules="edu.ku.brc.specify.datamodel.busrules.CollectingEventBusRules"
             resourcelabels="false">
             <desc><![CDATA[CollectingEvent SubForm]]></desc>
             <altviews>
@@ -36,6 +38,7 @@
         
         <view name="CollectionObject"
             class="edu.ku.brc.specify.datamodel.CollectionObject"
+            busrules="edu.ku.brc.specify.datamodel.busrules.CollectionObjectBusRules"
             resourcelabels="false"
             >
             <desc><![CDATA[The Collection Object form.]]></desc>
@@ -60,6 +63,7 @@
         
         <view name="Locality"
             class="edu.ku.brc.specify.datamodel.Locality"
+            busrules="edu.ku.brc.specify.datamodel.busrules.LocalityBusRules"
             resourcelabels="false">
             <desc><![CDATA[Locality form.]]></desc>
             <altviews>
