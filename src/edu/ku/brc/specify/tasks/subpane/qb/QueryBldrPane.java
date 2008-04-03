@@ -779,7 +779,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 }
                 else
                 {
-                    
                     sqlStr.append(getJoin(parent));
 
                     sqlStr.append(tableAbbreviator.getAbbreviation(tt.getParent()));
@@ -788,6 +787,13 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     sqlStr.append(' ');
                     sqlStr.append(alias);
                     sqlStr.append(' ');
+                    
+                }
+                
+                String extraJoin = QueryAdjusterForDomain.getInstance().getJoinClause(tt.getTableInfo(), true, alias);
+                if (StringUtils.isNotEmpty(extraJoin))
+                {
+                    sqlStr.append(extraJoin + " ");
                 }
             }
         }

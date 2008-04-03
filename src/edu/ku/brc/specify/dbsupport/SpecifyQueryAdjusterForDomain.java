@@ -83,7 +83,14 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
 
             } else if (tableInfo.getRelationshipByName("discipline") != null)
             {
-                prefix = "dsp.";
+                if (prefix.equals(""))
+                {
+                    prefix = "dsp.";
+                }
+                else
+                {
+                    prefix = "dsp" + prefix;
+                }
                 fld = isHQL ? "disciplineId" : "DisciplineID";
                 criterion = DSPLNID;
                 
@@ -194,13 +201,26 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
      * @see edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain#getJoinClause(edu.ku.brc.dbsupport.DBTableInfo, boolean)
      */
     @Override
-    public String getJoinClause(DBTableInfo tableInfo, boolean isHQL)
+    public String getJoinClause(DBTableInfo tableInfo, boolean isHQL, final String aliasArg)
     {
+        String alias;
+        if (aliasArg == null)
+        {
+            alias = tableInfo.getAbbrev();
+        }
+        else
+        {
+            alias = aliasArg;
+        }
         if (tableInfo.getTableId() == Agent.getClassTableId())
         {
             if (isHQL)
             {
-                return "JOIN ag.disciplines as dsp";
+                return "JOIN " + alias + ".disciplines as dsp" + (aliasArg == null ? "" : alias);
+            }
+            if (aliasArg != null)
+            {
+                throw new RuntimeException("SpecifyQueryAdjuster.getJoinClause does not work for SQL with non-null alias.");
             }
             return "INNER JOIN agent_discpline ON agent.AgentID = agent_discpline.AgentID";
             
@@ -208,11 +228,34 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
         {
             if (isHQL)
             {
-                return "JOIN "+tableInfo.getAbbrev()+".discipline as dsp";
+                return "JOIN "+ alias +".discipline as dsp" + (aliasArg == null ? "" : alias);
+            }
+            if (aliasArg != null)
+            {
+                throw new RuntimeException("SpecifyQueryAdjuster.getJoinClause does not work for SQL with non-null alias.");
             }
             return "INNER JOIN discpline as dsp ON "+tableInfo.getName()+".DisciplineID = discpline.DisciplineID";
         }
-        return super.getJoinClause(tableInfo, isHQL);
+        return super.getJoinClause(tableInfo, isHQL, alias);
+
+
+//        if (tableInfo.getTableId() == Agent.getClassTableId())
+//        {
+//            if (isHQL)
+//            {
+//                return "JOIN ag.disciplines as dsp";
+//            }
+//            return "INNER JOIN agent_discpline ON agent.AgentID = agent_discpline.AgentID";
+//            
+//        } else if (tableInfo.getRelationshipByName("discipline") != null)
+//        {
+//            if (isHQL)
+//            {
+//                return "JOIN "+tableInfo.getAbbrev()+".discipline as dsp";
+//            }
+//            return "INNER JOIN discpline as dsp ON "+tableInfo.getName()+".DisciplineID = discpline.DisciplineID";
+//        }
+//        return super.getJoinClause(tableInfo, isHQL);
     }
 
 
