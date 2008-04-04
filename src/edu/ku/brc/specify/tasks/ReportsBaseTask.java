@@ -70,6 +70,7 @@ import edu.ku.brc.specify.tools.IReportSpecify.MainFrameSpecify;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.DataFlavorTableExt;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
@@ -238,6 +239,7 @@ public class ReportsBaseTask extends BaseTask
         //See if there is an SpReport record for the resource.
         String resourceName = cmdAction.getProperties().getProperty("name").replace(".jrxml", "");
         RecordSet repRS = null;
+        Integer tblContext = null;
         if (resourceName != null)
         {
             DataProviderSessionIFace session = DataProviderFactory.getInstance()
@@ -248,6 +250,10 @@ public class ReportsBaseTask extends BaseTask
                 if (rep != null)
                 {
                     rep.forceLoad();
+                    if (rep.getQuery().getContextTableId() != -1)
+                    {
+                        tblContext = new Integer(rep.getQuery().getContextTableId());
+                    }
                     repRS  = new RecordSet(rep.getAppResource().getDescription(), SpReport.getClassTableId());
                     repRS.addItem(rep.getId());
                     cmdAction.setProperty("spreport", repRS);
@@ -276,7 +282,7 @@ public class ReportsBaseTask extends BaseTask
         
         //XXX work out appResource/SpReport details...
         RolloverCommand roc = (RolloverCommand)nbi;
-        //roc.addDropDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
+        roc.addDropDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
         
         //roc.addDragDataFlavor(defaultFlavor);
         
@@ -287,6 +293,10 @@ public class ReportsBaseTask extends BaseTask
             
             roc.addDropDataFlavor(runReportFlavor);
             roc.addDropDataFlavor(editReportFlavor);
+            if (tblContext != null)
+            {
+                roc.addDropDataFlavor(new DataFlavorTableExt(ReportsBaseTask.class, "RECORD_SET", tblContext));
+            }
         }
         roc.setToolTip(getResourceString(reportHintKey));
         roc.setEnabled(true);
@@ -712,6 +722,10 @@ public class ReportsBaseTask extends BaseTask
             {
                 openIReportEditor(cmdAction);
             }
+            if (cmdAction.getData() instanceof RecordSet)
+            {
+                runReport(cmdAction);
+            }
             else
             {
                 printReport(cmdAction);
@@ -885,7 +899,7 @@ public class ReportsBaseTask extends BaseTask
     protected void openIReportEditor(final CommandAction cmdAction) 
     {
         CommandAction repAction = null;
-        AppResourceIFace repRes = null;
+        final AppResourceIFace repRes;
         
         if (cmdAction.isAction(OPEN_EDITOR)) //EditReport was clicked or dropped on
         {
@@ -905,39 +919,77 @@ public class ReportsBaseTask extends BaseTask
             JasperReportsCache.refreshCacheFromDatabase();
             repRes = AppContextMgr.getInstance().getResource((String)repAction.getProperty("name")); 
         }
+        else
+        {
+            repRes = null;
+        }
         
-        if (iReportMainFrame == null)
-        {
-            try
-            {
-                MainFrame.reportClassLoader.rescanLibDirectory();
-                Thread.currentThread().setContextClassLoader( MainFrame.reportClassLoader );
-                updateIReportConfig();
-                iReportMainFrame = new MainFrameSpecify(MainFrameSpecify.getArgs());
+        
+        Thread appThread = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    SwingUtilities.invokeAndWait(new Runnable()
+                    {
+                        public void run()
+                        {
+                            //UIRegistry.getStatusBar().setVisible(true);
+                            UIRegistry.getStatusBar().setText(
+                                getResourceString("REP_INITIALIZING_DESIGNER"));
+                            UIRegistry.getStatusBar().getProgressBar().setIndeterminate(true);
+                            //UIRegistry.getStatusBar().getProgressBar().setValue(100);
+                            UIRegistry.getStatusBar().setVisible(true);
+                            UIRegistry.forceTopFrameRepaint();
+                        }
+                    });
+                }
+                catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
-            catch (Exception e)
+        };
+        appThread.start();
+        
+        
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            public void run()
             {
-                e.printStackTrace();
-                throw new RuntimeException(e);
+                try
+                {
+                    if (iReportMainFrame == null)
+                    {
+                        MainFrame.reportClassLoader.rescanLibDirectory();
+                        Thread.currentThread().setContextClassLoader(MainFrame.reportClassLoader);
+                        updateIReportConfig();
+                        iReportMainFrame = new MainFrameSpecify(MainFrameSpecify.getArgs());
+                    }
+                    iReportMainFrame.refreshSpQBConnections();
+                    if (repRes != null)
+                    {
+                        iReportMainFrame.openReportFromResource(repRes);
+                    }
+                    iReportMainFrame.setVisible(true);                
+                }
+                catch (Exception e)
+                {
+                    e.printStackTrace();
+                    throw new RuntimeException(e);
+                }
+                finally
+                {
+                    UIRegistry.getStatusBar().setText("");
+                    //UIRegistry.getStatusBar().setVisible(false);
+                    UIRegistry.getStatusBar().setIndeterminate(false);
+                    UIRegistry.forceTopFrameRepaint();
+                }
             }
-        }
-        iReportMainFrame.refreshSpQBConnections();
-        if (repRes != null)
-        {
-            iReportMainFrame.openReportFromResource(repRes);
-        }
-        SwingUtilities.invokeLater( new Runnable()
-        {
-             public void run()
-             {
-                 iReportMainFrame.setVisible(true);
-             }
         });
     }
         
     /**
      * @param cmd
-     * @return a fully-loaded SpReport 
+     * @return a fully-loaded SpReport
      */
     protected SpReport loadReport(final RecordSet repRS)
     {
@@ -1002,6 +1054,7 @@ public class ReportsBaseTask extends BaseTask
         SpReport toRun = null;
         CommandAction runAction = null;
         CommandAction repAction = null;
+        RecordSet rs = null;
         if (cmdAction.isAction(RUN_REPORT)) //RunReport was clicked or dropped on
         {
             runAction = cmdAction;
@@ -1019,20 +1072,24 @@ public class ReportsBaseTask extends BaseTask
             {
                 runAction = (CommandAction)data;
             }
+            else if (data instanceof RecordSet)
+            {
+                rs = (RecordSet)data;
+            }
         }
         
         if (runAction != null && repAction == null)
         {
             toRun = selectReport("ReportRunReport"); //XXX add help
         }
-        else if (runAction != null && repAction != null)
+        else if ((runAction != null || rs != null) && repAction != null)
         {
             toRun = loadReport((RecordSet)repAction.getProperty("spreport"));
         }
         
         if (toRun != null)
         {
-            QueryBldrPane.runReport(toRun, repAction.getPropertyAsString("title"));
+            QueryBldrPane.runReport(toRun, repAction.getPropertyAsString("title"), rs);
         }
     }
     

@@ -33,6 +33,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.JTable;
 
@@ -1147,7 +1148,7 @@ public class QueryTask extends BaseTask
      * Delete a record set
      * @param rs the recordSet to be deleted
      */
-    protected void deleteQuery(final RecordSet rs)
+    protected boolean deleteQuery(final RecordSet rs)
     {
         // delete from database
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
@@ -1155,11 +1156,21 @@ public class QueryTask extends BaseTask
         SpQuery query = session.get(SpQuery.class, rs.getOnlyItem().getRecordId());
         try
         {
+            query.forceLoad(true);
+            if (query.getReports().size() > 0)
+            {
+                JOptionPane.showMessageDialog(UIRegistry.getTopWindow(), 
+                        String.format(UIRegistry.getResourceString("QB_UNDELETABLE.REPS"), query.getName()), 
+                        UIRegistry.getResourceString("QB_UNDELETABLE_TITLE"), 
+                        JOptionPane.INFORMATION_MESSAGE);
+                return false;
+            }
             session.beginTransaction();
             transOpen = true;
             session.delete(query);
             session.commit();
             transOpen = false;
+            return true;
             
         } catch (Exception ex)
         {
@@ -1174,6 +1185,7 @@ public class QueryTask extends BaseTask
         {
             session.close();
         }
+        return false;
     }
 
 
@@ -1189,7 +1201,7 @@ public class QueryTask extends BaseTask
         deleteDnDBtn(navBox, boxItem != null ? boxItem : getBoxByTitle(navBox, rs.getName()));
     }
     
-    /**
+       /**
      * Processes all Commands of type QUERY.
      * @param cmdAction the command to be processed
      */
@@ -1198,8 +1210,10 @@ public class QueryTask extends BaseTask
         if (cmdAction.isAction(DELETE_CMD_ACT) && cmdAction.getData() instanceof RecordSet)
         {
             RecordSet recordSet = (RecordSet)cmdAction.getData();
-            deleteQuery(recordSet);
-            deleteQueryFromUI(null, recordSet);
+            if (deleteQuery(recordSet))
+            {
+                deleteQueryFromUI(null, recordSet);
+            }
         }
         if (cmdAction.isAction(QUERY_RESULTS_REPORT))
         {
@@ -1220,7 +1234,7 @@ public class QueryTask extends BaseTask
                }
                else if (reps.size() == 1)
                {
-                   fileName = reps.get(0).getName() + ".jrxml";
+                   fileName = reps.get(0).getName();// + ".jrxml";
                }
                else
                {

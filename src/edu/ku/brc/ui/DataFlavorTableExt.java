@@ -189,16 +189,17 @@ public class DataFlavorTableExt extends DataFlavor
         {
             return getHumanPresentableName().equals(that.getHumanPresentableName());
             
-        } else
-        {
-            for (Integer id :tableIds)
-            {
-                if (hash.get(id) != null)
-                {
-                    return true;
-                }
-            }
-        }
+        } 
+//        else 
+//        {
+//            for (Integer id :tableIds)
+//            {
+//                if (hash.get(id) != null)
+//                {
+//                    return true;
+//                }
+//            }
+//        }
         return false;
     }
     

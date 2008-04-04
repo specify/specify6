@@ -91,6 +91,7 @@ import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
+import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.RolloverCommand;
@@ -107,7 +108,7 @@ import edu.ku.brc.util.Pair;
  * Feb 23, 2007
  * 
  */
-public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContainerIFace
+public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContainerIFace, CommandListener
 {
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.qb.QueryFieldPanelContainerIFace#getAddBtn()
@@ -188,6 +189,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         createUI();
 
         setQueryIntoUI();
+        
+        CommandDispatcher.register(ReportsBaseTask.REPORTS, this);
+        
     }
 
     /**
@@ -624,7 +628,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
 
         if (keysToRetrieve != null)
         {
-            criteriaStr.append("where id in(");
+            criteriaStr.append(tableAbbreviator.getAbbreviation(rootTable.getTableTree()) + "." 
+                    + rootTable.getTableInfo().getIdFieldName() + " in(");
             boolean comma = false;
             for (RecordSetItemIFace item : keysToRetrieve.getRecordSetItems())
             {
@@ -836,7 +841,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             {
                 colName = ti.getAbbrev() + '.' + fi.getColumn();
             }
-            if (qfp.isForDisplay() && qfp.isDisplayable())
+            if (qfp.isForDisplay())
             {
                 String lbl = qfp.getLabel();
                 if (fixLabels)
@@ -995,15 +1000,22 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * 
      * Loads and runs the query that acts as data source for report. Then runs report.
      */
-    public static void runReport(final SpReport report, final String title)
+    public static void runReport(final SpReport report, final String title, final RecordSet rs)
     {
         final TableTree tblTree = readTables();
         final Hashtable<String, TableTree> ttHash = QueryBldrPane.buildTableTreeHash(tblTree);
+        boolean go = true;
         QueryParameterPanel qpp = new QueryParameterPanel();
         qpp.setQuery(report.getQuery(), tblTree, ttHash);
-        CustomDialog cd = new CustomDialog((Frame)UIRegistry.getTopWindow(), UIRegistry.getResourceString("QB_GET_REPORT_CONTENTS_TITLE"), true, qpp);
-        UIHelper.centerAndShow(cd);
-        if (!cd.isCancelled()) //what about x box?
+        if (rs == null)
+        {
+            CustomDialog cd = new CustomDialog((Frame) UIRegistry.getTopWindow(), UIRegistry
+                    .getResourceString("QB_GET_REPORT_CONTENTS_TITLE"), true, qpp);
+            UIHelper.centerAndShow(cd);
+            go = !cd.isCancelled(); // XXX what about x box?
+            cd.dispose();
+        }
+        if (go)
         {
             TableQRI rootQRI = null;
             int cId = report.getQuery().getContextTableId();
@@ -1026,7 +1038,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             String sql = QueryBldrPane.buildHQL(rootQRI, 
                     true, 
                     qfps, 
-                    tblTree, null);
+                    tblTree, rs);
             QBJRDataSource src = new QBJRDataSource(sql, getColumnInfo(qfps, true));
             final CommandAction cmd = new CommandAction(ReportsBaseTask.REPORTS,
                     ReportsBaseTask.PRINT_REPORT, src);
@@ -1035,7 +1047,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             cmd.setProperty("file", report.getName());
             CommandDispatcher.dispatch(cmd);
         }
-        cd.dispose();
     }
     
     /**
@@ -2243,6 +2254,31 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     public boolean isPromptMode()
     {
         return false;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CommandListener#doCommand(edu.ku.brc.ui.CommandAction)
+     */
+    //@Override
+    public void doCommand(CommandAction cmdAction)
+    {
+        if (cmdAction.isType(ReportsBaseTask.REPORTS) && cmdAction.isAction(ReportsBaseTask.REFRESH))
+        {
+            if (query != null)
+            {
+                DataProviderSessionIFace session = DataProviderFactory.getInstance()
+                .createSession();
+                try
+                {
+                    session.refresh(query);
+                    query.forceLoad(true);
+                }
+                finally
+                {
+                    session.close();
+                }
+            }
+        }
     }
     
     
