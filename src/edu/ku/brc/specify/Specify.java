@@ -197,7 +197,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private String               appName             = "Specify";
     private String               appVersion          = "6.0";
 
-    private String               appBuildVersion     = "200803311600 (SVN: 3768)";
+    private String               appBuildVersion     = "200804041130 (SVN: 3820)";
     
     protected static CacheManager cacheManager        = new CacheManager();
 
@@ -1350,48 +1350,58 @@ public class Specify extends JPanel implements DatabaseLoginListener
      */
     protected void doExit()
     {
-        if (AttachmentUtils.getAttachmentManager() != null)
+        try
         {
-            AttachmentUtils.getAttachmentManager().cleanup();
-        }
+            if (AttachmentUtils.getAttachmentManager() != null)
+            {
+                AttachmentUtils.getAttachmentManager().cleanup();
+            }
+            
+            if (SubPaneMgr.getInstance().aboutToShutdown())
+            {
+        		log.info("Application shutdown");
         
-        if (SubPaneMgr.getInstance().aboutToShutdown())
+                AppPreferences.shutdownLocalPrefs();
+                
+         		// save the long term cache mapping info
+        		try
+        		{
+        			UIRegistry.getLongTermFileCache().saveCacheMapping();
+        			log.info("Successfully saved long term cache mapping");
+        		}
+        		catch( IOException ioe )
+        		{
+        			log.warn("Error while saving long term cache mapping.",ioe);
+        		}
+                
+                // clear the contents of the short term cache
+                log.info("Clearing the short term cache");
+                UIRegistry.getShortTermFileCache().clear();
+        
+                // save the forms cache mapping info
+                try
+                {
+                    UIRegistry.getFormsCache().saveCacheMapping();
+                    log.info("Successfully saved forms cache mapping");
+                }
+                catch( IOException ioe )
+                {
+                    log.warn("Error while saving forms cache mapping.",ioe);
+                }
+                
+                if (topFrame != null)
+                {
+                    topFrame.setVisible(false);
+                }
+                QueryExecutor.shutdown();
+            }
+            
+        } catch (Exception ex)
         {
-    		log.info("Application shutdown");
-    
-            AppPreferences.shutdownLocalPrefs();
+            ex.printStackTrace();
             
-     		// save the long term cache mapping info
-    		try
-    		{
-    			UIRegistry.getLongTermFileCache().saveCacheMapping();
-    			log.info("Successfully saved long term cache mapping");
-    		}
-    		catch( IOException ioe )
-    		{
-    			log.warn("Error while saving long term cache mapping.",ioe);
-    		}
-            
-            // clear the contents of the short term cache
-            log.info("Clearing the short term cache");
-            UIRegistry.getShortTermFileCache().clear();
-    
-            // save the forms cache mapping info
-            try
-            {
-                UIRegistry.getFormsCache().saveCacheMapping();
-                log.info("Successfully saved forms cache mapping");
-            }
-            catch( IOException ioe )
-            {
-                log.warn("Error while saving forms cache mapping.",ioe);
-            }
-            
-            if (topFrame != null)
-            {
-                topFrame.setVisible(false);
-            }
-            QueryExecutor.shutdown();
+        } finally
+        {
             System.exit(0);
         }
     }

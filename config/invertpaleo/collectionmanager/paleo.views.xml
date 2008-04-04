@@ -93,7 +93,7 @@
                     <cell type="separator" label="Stratigraphy" collapse="paleoContext" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="SubPaleoContext" id="9" name="paleoContext" defaulttype="table" colspan="12"/>
+                    <cell type="subview" viewname="SubPaleoContext" id="9" name="paleoContext" colspan="12"/>
                 </row>   
                 
                 <row>

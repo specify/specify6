@@ -1380,6 +1380,11 @@ public class ViewFactory
                         (MultiView.isOptionOn(parent.getCreateOptions(), MultiView.IS_NEW_OBJECT) ? MultiView.IS_NEW_OBJECT : MultiView.NO_OPTIONS) |
                         (mode == AltViewIFace.CreationMode.EDIT ? MultiView.IS_EDITTING : MultiView.NO_OPTIONS) |
                         (useNoScrollbars ? MultiView.NO_SCROLLBARS : MultiView.NO_OPTIONS);
+                        
+                        if (!(isACollection && !isSingle))
+                        {
+                            options &= ~MultiView.ADD_SEARCH_BTN;
+                        }
           
                         //MultiView.printCreateOptions("_______________________________", parent.getCreateOptions());
                         //MultiView.printCreateOptions("_______________________________", options);
@@ -1727,11 +1732,8 @@ public class ViewFactory
             if (tblChild != null)
             {
                 return tblChild.getDataClass();
-                
-            } else
-            {
-                log.debug("How did we get here? ["+cell.getName()+"]");
             }
+            log.debug("How did we get here? ["+cell.getName()+"]");
         }
         return null;
     }

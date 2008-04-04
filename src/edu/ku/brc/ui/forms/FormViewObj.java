@@ -2691,8 +2691,10 @@ public class FormViewObj implements Viewable,
     {
         if (controlPanel != null)
         {
+            boolean doAddSearch = mvParent != null && MultiView.isOptionOn(mvParent.getOptions(), MultiView.ADD_SEARCH_BTN);
+            
             Insets insets = new Insets(1,1,1,1);
-            PanelBuilder rowBuilder = new PanelBuilder(new FormLayout("f:p:g,p,2px,p,2px,p", "p"));
+            PanelBuilder rowBuilder = new PanelBuilder(new FormLayout("f:p:g,p,2px,p"+ (doAddSearch ? ",2px,p" : ""), "p"));
             
             newRecBtn = UIHelper.createIconBtn("NewRecord", null, null);
             newRecBtn.setToolTipText(ResultSetController.createTooltip("NewRecordTT", view.getObjTitle()));
@@ -2704,32 +2706,36 @@ public class FormViewObj implements Viewable,
             delRecBtn.setMargin(insets);
             rowBuilder.add(delRecBtn, cc.xy(4,1));
             
-            srchRecBtn = UIHelper.createIconBtn("Search", IconManager.IconSize.Std16, null, null);
-            srchRecBtn.setToolTipText(ResultSetController.createTooltip("SearchForRecordTT", view.getObjTitle()));
-            srchRecBtn.setMargin(insets);
-            rowBuilder.add(srchRecBtn, cc.xy(6,1));
+            if (doAddSearch)
+            {
+                srchRecBtn = UIHelper.createIconBtn("Search", IconManager.IconSize.Std16, null, null);
+                srchRecBtn.setToolTipText(ResultSetController.createTooltip("SearchForRecordTT", view.getObjTitle()));
+                srchRecBtn.setMargin(insets);
+                rowBuilder.add(srchRecBtn, cc.xy(6,1));
+                
+                DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
+                if (tblInfo != null)
+                {
+                    searchName = tblInfo.getSearchDialog();
+                    if (StringUtils.isEmpty(searchName))
+                    {
+                        searchName = ""; // Note not null but empty tells it to disable the search btn
+                    }
+                }
+                
+                srchRecBtn.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        doSearch();
+                    }
+                });
+            }
             
             rowBuilder.getPanel().setOpaque(false);
             controlPanel.addController(rowBuilder.getPanel());
             setAddDelListeners(newRecBtn, delRecBtn);
-            
-            DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
-            if (tblInfo != null)
-            {
-                searchName = tblInfo.getSearchDialog();
-                if (StringUtils.isEmpty(searchName))
-                {
-                    searchName = ""; // Note not null but empty tells it to disable the search btn
-                }
-            }
-            
-            srchRecBtn.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent e)
-                {
-                    doSearch();
-                }
-            });
         }
+            
     }
     
     /**

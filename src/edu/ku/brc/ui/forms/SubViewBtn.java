@@ -252,12 +252,12 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
                         boolean  isNew   = fvo.isNewlyCreatedDataObj();
                         String   msgKey  = isNew ? "MV_INCOMPLETE_DATA_NEW" : "MV_INCOMPLETE_DATA";
                         String   btnKey  = isNew ? "MV_REMOVE_ITEM" : "MV_DISCARD_ITEM";
-                        Object[] options = { getResourceString(btnKey), getResourceString("Cancel") };
+                        Object[] optionLabels = { getResourceString(btnKey), getResourceString("Cancel") };
                         int rv = JOptionPane.showOptionDialog(null, 
                                     getResourceString(msgKey),
                                     getResourceString("MV_INCOMPLETE_DATA_TITLE"),
                                     JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE,
-                                    null, options, options[0]);                        
+                                    null, optionLabels, optionLabels[0]);                        
                         if (rv == JOptionPane.NO_OPTION)
                         {
                             return;
