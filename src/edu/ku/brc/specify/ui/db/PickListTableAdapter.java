@@ -64,7 +64,7 @@ public class PickListTableAdapter extends PickListDBAdapter
      * QueryAdjusterForDomain to make sure it gets properly filtered per collection or
      * what ever.
      * @param tableInfo the table
-     * @param fieldName the field to be retruned
+     * @param fieldName the field to be returned
      * @return the HQL statement
      */
     protected String buildHQL(final DBTableInfo tableInfo, final String fieldName)
@@ -80,8 +80,9 @@ public class PickListTableAdapter extends PickListDBAdapter
         }
         strBuf.append("FROM ");
         strBuf.append(tableInfo.getShortClassName());
-        strBuf.append(" in class ");
-        strBuf.append(tableInfo.getShortClassName());
+        
+        strBuf.append(" ");
+        strBuf.append(tableInfo.getAbbrev());
         
         String joinSnipet = QueryAdjusterForDomain.getInstance().getJoinClause(tableInfo, true, null); // false means SQL
         if (joinSnipet != null)
@@ -90,6 +91,7 @@ public class PickListTableAdapter extends PickListDBAdapter
             strBuf.append(joinSnipet);
             strBuf.append(' ');
         }
+        
         String specialWhereClause = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, true);
         if (StringUtils.isNotEmpty(specialWhereClause))
         {
@@ -114,7 +116,7 @@ public class PickListTableAdapter extends PickListDBAdapter
                 try
                 {
                     String sqlStr = buildHQL(tableInfo, type == PickListDBAdapterIFace.Type.TableField ? pickList.getFieldName() : null);
-                    log.debug(sqlStr);
+                    //log.debug(sqlStr);
                     if (StringUtils.isNotEmpty(sqlStr))
                     {
                         List<?> dataList = session.getDataList(sqlStr);
@@ -126,6 +128,10 @@ public class PickListTableAdapter extends PickListDBAdapter
                                 boolean  hasFormatter = StringUtils.isNotEmpty(formatterStr);
                                 for (Object dataObj : dataList)
                                 {
+                                    if (dataObj instanceof Object[])
+                                    {
+                                        dataObj = ((Object[])dataObj)[0];
+                                    }
                                     String valStr = hasFormatter ? String.format(formatterStr, dataObj) : dataObj.toString();
                                     items.add(pickList.addItem(valStr, valStr));
                                 }
@@ -134,6 +140,10 @@ public class PickListTableAdapter extends PickListDBAdapter
                             {
                                 for (Object dataObj : dataList)
                                 {
+                                    if (dataObj instanceof Object[])
+                                    {
+                                        dataObj = ((Object[])dataObj)[0];
+                                    }
                                     String title = DataObjFieldFormatMgr.format(dataObj, pickList.getFormatter());
                                     items.add(pickList.addItem(title, dataObj));
                                 }

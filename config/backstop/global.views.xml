@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<viewset name="Global" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<viewset name="Global" i18nresname="global_views" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 
     <views>
         <view name="Agent"
@@ -609,7 +609,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="6"/>
-                    <cell type="field" id="6" name="name" uitype="text" cols="30" isrequired="true"/>
+                    <cell type="field" id="6" name="lastName" uitype="text" cols="30" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="7"/>
@@ -1148,7 +1148,8 @@
             type="form"
             class="edu.ku.brc.specify.datamodel.Taxon"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            settable="edu.ku.brc.ui.forms.DataSetterForObj"
+            useresourcelabels="true">
             
             <desc><![CDATA[New Taxon Node Form]]></desc>
             <enableRules>
@@ -1162,7 +1163,7 @@
             
             <rows>
                 <row>
-                	<cell type="label" label="Taxon" icon="Taxon" recordobj="true" colspan="5"/>
+                	<cell type="label" label="TAXON" icon="Taxon" recordobj="true" colspan="5"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="name"/>
@@ -1179,7 +1180,7 @@
                 </row>
                 -->
                 <row>
-                    <cell type="label" labelfor="parent"/>
+                    <cell type="label" labelfor="parent" label="PARENT"/>
                 	<cell type="field" id="parent" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false;editoncreate=true" name="parent" colspan="3"/>
                 </row>
                 <row>
@@ -1219,7 +1220,7 @@
                 	<cell type="field" id="isAccepted" uitype="checkbox" name="isAccepted" default="true" isrequired="true" colspan="3"/>
                 </row>
                 <row>
-                	<cell type="label" labelfor="acceptedParent"/>
+                	<cell type="label" labelfor="acceptedParent" label="ACCEPTEDPARENT"/>
                 	<cell type="field" id="acceptedParent" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false" name="acceptedParent" colspan="3"/>
                 </row>
                 <row>
@@ -1227,21 +1228,21 @@
                 	<cell type="field" id="isHybrid" uitype="checkbox" name="isHybrid" default="false" isrequired="true" colspan="3"/>
                 </row>
                 <row>
-                	<cell type="label" labelfor="hybridParent1"/>
+                	<cell type="label" labelfor="hybridParent1" label="HYBRIDPARENT1"/>
                 	<cell type="field" id="hybridParent1" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false" name="hybridParent1" colspan="3"/>
                 </row>
                 <row>
-                	<cell type="label" labelfor="hybridParent2"/>
+                	<cell type="label" labelfor="hybridParent2" label="HYBRIDPARENT2"/>
                 	<cell type="field" id="hybridParent2" isrequired="true" uitype="querycbx" initialize="name=Taxon;title=Taxon;editbtn=false;newbtn=false" name="hybridParent2" colspan="3"/>
                 </row>
                 <row>
-                    <cell type="separator" label="Children" colspan="5"/>
+                    <cell type="separator" label="CHILDREN" colspan="5"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="TaxonSubform" id="children" name="children" colspan="5"/>
                 </row>
                 <row>
-                    <cell type="separator" label="Synonyms" colspan="5"/>
+                    <cell type="separator" label="SYNONYMS" colspan="5"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="TaxonSubform" id="acceptedChildren" name="acceptedChildren" colspan="5"/>
@@ -1257,7 +1258,8 @@
             type="form"
             class="edu.ku.brc.specify.datamodel.Geography"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            settable="edu.ku.brc.ui.forms.DataSetterForObj"
+            useresourcelabels="true">
             
             <desc><![CDATA[New Geography Node Form]]></desc>
             <enableRules>
@@ -1269,7 +1271,7 @@
 
             <rows>
                 <row>
-                	<cell type="label" label="Geography" icon="Geography" recordobj="true" colspan="3"/>
+                	<cell type="label" label="GEOGRAPHY" icon="Geography" recordobj="true" colspan="3"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="name"/>
@@ -1280,7 +1282,7 @@
                     <cell type="field" id="remarks" uitype="textarea" name="remarks"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="parent"/>
+                    <cell type="label" labelfor="parent" label="PARENT"/>
                 	<cell type="field" id="parent" isrequired="true" uitype="querycbx" initialize="name=Geography;title=Geography;editbtn=false;newbtn=false;editoncreate=true" name="parent"/>
                 </row>
                 <row>
@@ -1292,11 +1294,11 @@
                 	<cell type="field" id="isAccepted" uitype="checkbox" name="isAccepted" default="true" isrequired="true"/>
                 </row>
                 <row>
-                	<cell type="label" labelfor="acceptedParent"/>
+                	<cell type="label" labelfor="acceptedParent" label="ACCEPTEDPARENT"/>
                 	<cell type="field" id="acceptedParent" isrequired="true" uitype="querycbx" initialize="name=Geography;title=Geography;editbtn=false;newbtn=false" name="acceptedParent"/>
                 </row>
                 <row>
-                    <cell type="separator" label="Children" colspan="3"/>
+                    <cell type="separator" label="CHILDREN" colspan="3"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="GeographySubform" id="children" name="children" colspan="3"/>
@@ -1309,7 +1311,8 @@
             type="form"
             class="edu.ku.brc.specify.datamodel.Storage"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            settable="edu.ku.brc.ui.forms.DataSetterForObj"
+            useresourcelabels="true">
             
             <desc><![CDATA[New Storage Node Form]]></desc>
             <enableRules>
@@ -1320,7 +1323,7 @@
 
             <rows>
                 <row>
-                	<cell type="label" label="Storage" icon="Storage" recordobj="true" colspan="3"/>
+                	<cell type="label" label="STORAGE" icon="Storage" recordobj="true" colspan="3"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="name"/>
@@ -1331,7 +1334,7 @@
                     <cell type="field" id="remarks" uitype="textarea" name="remarks"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="parent"/>
+                    <cell type="label" labelfor="parent" label="PARENT"/>
                 	<cell type="field" id="parent" isrequired="true" uitype="querycbx" initialize="name=Storage;title=Storage;editbtn=false;newbtn=false;editoncreate=true" name="parent"/>
                 </row>
                 <row>
@@ -1339,7 +1342,7 @@
                 	<cell type="field" id="definitionItem" isrequired="true" uitype="combobox" name="definitionItem"/>
                 </row>
                 <row>
-                    <cell type="separator" label="Children" colspan="3"/>
+                    <cell type="separator" label="CHILDREN" colspan="3"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="StorageSubform" id="children" name="children" colspan="3"/>
@@ -1352,7 +1355,8 @@
             type="form"
             class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            settable="edu.ku.brc.ui.forms.DataSetterForObj"
+            useresourcelabels="true">
             
             <desc><![CDATA[New GeologicTimePeriod Node Form]]></desc>
             <enableRules>
@@ -1363,7 +1367,7 @@
 
             <rows>
                 <row>
-                	<cell type="label" label="GeologicTimePeriod" icon="GeologicTimePeriod" recordobj="true" colspan="7"/>
+                	<cell type="label" label="GEOLOGICTIMEPERIOD" icon="GeologicTimePeriod" recordobj="true" colspan="7"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="name"/>
@@ -1374,7 +1378,7 @@
                     <cell type="field" id="remarks" uitype="textarea" name="remarks" colspan="5"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="parent"/>
+                    <cell type="label" labelfor="parent" label="PARENT"/>
                 	<cell type="field" id="parent" isrequired="true" uitype="querycbx" initialize="name=GeologicTimePeriod;title=GeologicTimePeriod;editbtn=false;newbtn=false;editoncreate=true" name="parent" colspan="5"/>
                 </row>
                 <row>
@@ -1398,7 +1402,7 @@
                     <cell type="field" id="isBioStrat" uitype="checkbox" label="##" name="isBioStrat"/>
                 </row>                
                 <row>
-                    <cell type="separator" label="Children" colspan="7"/>
+                    <cell type="separator" label="CHILDREN" colspan="7"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="GeographySubform" id="children" name="children" colspan="7"/>
@@ -1411,7 +1415,8 @@
             type="form"
             class="edu.ku.brc.specify.datamodel.LithoStrat"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            settable="edu.ku.brc.ui.forms.DataSetterForObj"
+            useresourcelabels="true">
             
             <desc><![CDATA[New LithoStrat Node Form]]></desc>
             <enableRules>
@@ -1422,7 +1427,7 @@
 
             <rows>
                 <row>
-                	<cell type="label" label="LithoStrat" icon="LithoStrat" recordobj="true" colspan="7"/>
+                	<cell type="label" label="LITHOSTRAT" icon="LithoStrat" recordobj="true" colspan="7"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="name"/>
@@ -1433,7 +1438,7 @@
                     <cell type="field" id="remarks" uitype="textarea" name="remarks" colspan="5"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="parent"/>
+                    <cell type="label" labelfor="parent" label="PARENT"/>
                 	<cell type="field" id="parent" isrequired="true" uitype="querycbx" initialize="name=LithoStrat;title=LithoStrat;editbtn=false;newbtn=false;editoncreate=true" name="parent" colspan="5"/>
                 </row>
                 <row>

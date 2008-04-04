@@ -955,11 +955,14 @@ public class ViewFactory
         {
             FormCellField cellField = (FormCellField)cell;
             
+            String fieldName = cellField.getName();
             if (childInfo == null && 
-                cellField.getName() != null && 
-                cellField.getName().indexOf('.') == -1)
+                fieldName != null && 
+                fieldName.indexOf('.') == -1 &&
+                !fieldName.equals("this")
+                )
             {
-               log.debug("No DBChild "+cellField.getName()); 
+               log.debug("No DBChild ["+cellField.getName()+"]"); 
             }
             
             bi.isRequired = cellField.isRequired() || (childInfo != null && childInfo.isRequired());
@@ -1033,7 +1036,7 @@ public class ViewFactory
                 		 cls == Float.class || 
                 		 cls == BigDecimal.class)
                 {
-                    log.debug(cellField.getName()+"  is being changed to NUMERIC");
+                    //log.debug(cellField.getName()+"  is being changed to NUMERIC");
                     uiType =  FormCellField.FieldType.formattedtext;
                     uiFormatName = "Numeric" + cls.getSimpleName();
                 }
@@ -1455,7 +1458,7 @@ public class ViewFactory
                     }
                 } else
                 {
-                    log.debug("["+cell.getType()+"] ["+cell.getName()+"] col: "+bi.colInx+" row: "+rowInx+" colspan: "+cell.getColspan()+" rowspan: "+cell.getRowspan());
+                    //log.debug("["+cell.getType()+"] ["+cell.getName()+"] col: "+bi.colInx+" row: "+rowInx+" colspan: "+cell.getColspan()+" rowspan: "+cell.getRowspan());
                     viewBldObj.addSubView(cellSubView, parent, bi.colInx, rowInx, cellSubView.getColspan(), 1); 
                     
                     AltViewIFace     altView        = subView.getDefaultAltView();

@@ -45,12 +45,15 @@ import org.dom4j.Node;
 
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.DBFieldInfo;
+import edu.ku.brc.dbsupport.DBTableChildIFace;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.exceptions.ConfigurationException;
 import edu.ku.brc.ui.CustomFrame;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
+import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.ui.forms.validation.TypeSearchForQueryFactory;
@@ -518,7 +521,7 @@ public class ViewLoader
      */
     protected static String getResourceLabel(final String label)
     {
-        if (isNotEmpty(label))
+        if (isNotEmpty(label) && StringUtils.deleteWhitespace(label).length() > 0)
         {
             return instance.doingResourceLabels  ? getResourceString(label) : label;
         }
@@ -790,14 +793,16 @@ public class ViewLoader
                             }
 
                             boolean isEncrypted = getAttr(cellElement, "isencrypted", false);
-                            
+                            boolean isReadOnly  = uitype == FormCellFieldIFace.FieldType.dsptextfield ||
+                                                  uitype == FormCellFieldIFace.FieldType.dsptextarea ||
+                                                  uitype == FormCellFieldIFace.FieldType.label;
                             
                             FormCellField field = new FormCellField(FormCellIFace.CellType.field, cellId, 
                                                                     cellName, uitype, dspUIType, format, formatName, uiFieldFormatterName, isRequired,
                                                                     cols, rows, colspan, rowspan, validationType, validationRule, isEncrypted);
                             
                             field.setLabel(getAttr(cellElement,        "label",    ""));
-                            field.setReadOnly(getAttr(cellElement,     "readonly", false));
+                            field.setReadOnly(getAttr(cellElement,     "readonly", isReadOnly));
                             field.setDefaultValue(getAttr(cellElement, "default",  ""));
                             field.setPickListName(pickListName);
                             field.setChangeListenerOnly(getAttr(cellElement, "changesonly", true) && !isRequired);
@@ -823,6 +828,9 @@ public class ViewLoader
                                                                         colspan, rowspan);
                             
                             processRows(cellElement, cellPanel.getRows(), tableinfo);
+
+                            fixLabels(cellPanel.getName(), cellPanel.getRows(), tableinfo);
+                            
                             cell = formRow.addCell(cellPanel);
                             break;
                         }
@@ -958,6 +966,8 @@ public class ViewLoader
             
             formViewDef.setEnableRules(getEnableRules(element));
             
+            fixLabels(formViewDef.getName(), rows, tableinfo);
+            
         } else
         {
             Node defNode = element.selectSingleNode("definition");
@@ -976,7 +986,107 @@ public class ViewLoader
         return formViewDef;
     }
     
+    /**
+     * @param fieldName
+     * @param tableInfo
+     * @return
+     */
+    protected static String getTitleFromFieldName(final String fieldName, final DBTableInfo tableInfo)
+    {
+        DBTableChildIFace derivedCI = null;
+        if (fieldName.indexOf(".") > -1)
+        {
+            derivedCI = FormHelper.getChildInfoFromPath(fieldName, tableInfo);
+            if (derivedCI == null)
+            {
+                String msg = "The name 'path' ["+fieldName+"] was not valid in ViewSet ["+instance.viewSetName+"]";
+                UIRegistry.showError(msg);
+                log.error(msg);
+                return "";
+            }
+        }
+        DBTableChildIFace tblChild = derivedCI != null ? derivedCI : tableInfo.getItemByName(fieldName);
+        if (tblChild == null)
+        {
+            String msg = "The Field Name ["+fieldName+"] was not int the Table ["+tableInfo.getTitle()+"] in ViewSet ["+instance.viewSetName+"]";
+            UIRegistry.showError(msg);
+            log.error(msg);
+            return "";
+        }
+        return tblChild.getTitle();
+    }
     
+    /**
+     * @param rows
+     * @param tableInfo
+     */
+    protected static void fixLabels(final String name,
+                                    final List<FormRowIFace> rows, 
+                                    final DBTableInfo tableInfo)
+    {
+        if (tableInfo == null)
+        {
+            return;
+        }
+        
+        Hashtable<String, String> fldIdMap = new Hashtable<String, String>();
+        for (FormRowIFace row : rows)
+        {
+            for (FormCellIFace cell : row.getCells())
+            {
+                if (cell.getType() == FormCellIFace.CellType.field ||
+                        cell.getType() == FormCellIFace.CellType.subview)
+                {
+                    fldIdMap.put(cell.getIdent(), cell.getName()); 
+                }/* else
+                {
+                    System.err.println("Skipping ["+cell.getIdent()+"] " + cell.getType());
+                }*/
+            }
+        }
+        
+        for (FormRowIFace row : rows)
+        {
+            for (FormCellIFace cell : row.getCells())
+            {
+                if (cell.getType() == FormCellIFace.CellType.label)
+                {
+                    FormCellLabelIFace lblCell = (FormCellLabelIFace)cell;
+                    String             label   = lblCell.getLabel();
+                    if (label.length() == 0 || label.equals("##"))
+                    {
+                        String idFor = lblCell.getLabelFor();
+                        if (StringUtils.isNotEmpty(idFor))
+                        {
+                            String fieldName = fldIdMap.get(idFor);
+                            if (StringUtils.isNotEmpty(fieldName))
+                            {
+                                if (!fieldName.equals("this"))
+                                {
+                                    lblCell.setLabel(getTitleFromFieldName(fieldName, tableInfo));
+                                }
+                                
+                            } else
+                            {
+                                String msg = "Setting Label - Form control with id["+idFor+"] is not in ViewDef or Panel ["+name+"] in ViewSet ["+instance.viewSetName+"]";
+                                UIRegistry.showError(msg);
+                                log.error(msg);
+                            }
+                        }
+                    }
+                } else if (cell.getType() == FormCellIFace.CellType.field && 
+                          ((FormCellFieldIFace)cell).getUiType() == FormCellFieldIFace.FieldType.checkbox)
+                {
+                    FormCellFieldIFace fcf = (FormCellFieldIFace)cell;
+                    if (fcf.getLabel().equals("##"))
+                    {
+                        fcf.setLabel(getTitleFromFieldName(cell.getName(), tableInfo));
+                    }
+                }
+                    
+            }
+        }
+    }
     /**
      * @param type the type of form to be built
      * @param name the name of the form

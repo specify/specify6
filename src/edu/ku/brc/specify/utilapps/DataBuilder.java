@@ -39,6 +39,7 @@ import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttr;
 import edu.ku.brc.specify.datamodel.CollectionObjectCitation;
+import edu.ku.brc.specify.datamodel.CollectionRelType;
 import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.Container;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
@@ -229,6 +230,7 @@ public class DataBuilder
         persist(agent);
         return agent;
     }
+    
     public static Attachment createAttachment(final String filename,
                                               final String mimeType)
     {
@@ -255,6 +257,22 @@ public class DataBuilder
         query.setSpecifyUser(owner);
         return query;
         
+    }
+    
+    public static CollectionRelType createCollectionRelType(final String name,
+                                                            final Collection leftSideCollection,
+                                                            final Collection rightSideCollection)
+    {
+        CollectionRelType crt = new CollectionRelType();
+        crt.initialize();
+        crt.setName(name);
+        
+        crt.setLeftSideCollection(leftSideCollection);
+        crt.setRightSideCollection(rightSideCollection);
+        rightSideCollection.getRightSideRelTypes().add(crt);
+        leftSideCollection.getLeftSideRelTypes().add(crt);
+        
+        return crt;
     }
     
     public static SpQueryField createQueryField(final SpQuery query,

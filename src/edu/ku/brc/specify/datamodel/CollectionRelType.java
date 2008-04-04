@@ -24,6 +24,8 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -45,9 +47,11 @@ import org.hibernate.annotations.CascadeType;
 @Table(name = "collectionreltype")
 public class CollectionRelType extends DataModelObjBase implements java.io.Serializable 
 {
-    protected Integer        collectionRelTypeId;
-    protected String      name;
+    protected Integer                     collectionRelTypeId;
+    protected String                      name;
     protected Set<CollectionRelationship> relationships;
+    protected Collection                  leftSideCollection;
+    protected Collection                  rightSideCollection;
 
     // Initializer
     @Override
@@ -57,6 +61,8 @@ public class CollectionRelType extends DataModelObjBase implements java.io.Seria
         
         collectionRelTypeId = null;
         name                = null;
+        leftSideCollection  = null;
+        rightSideCollection = null;
     }
     
     /**
@@ -108,9 +114,47 @@ public class CollectionRelType extends DataModelObjBase implements java.io.Seria
     /**
      * @param relationships the relationships to set
      */
-    public void setRelationships(Set<CollectionRelationship> relationships)
+    public void setRelationships(final Set<CollectionRelationship> relationships)
     {
         this.relationships = relationships;
+    }
+
+    /**
+     * @return the leftSideCollection
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    @JoinColumn(name = "LeftSideCollectionID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Collection getLeftSideCollection()
+    {
+        return leftSideCollection;
+    }
+
+    /**
+     * @param leftSideCollection the leftSideCollection to set
+     */
+    public void setLeftSideCollection(Collection leftSideCollection)
+    {
+        this.leftSideCollection = leftSideCollection;
+    }
+
+    /**
+     * @return the rightSideCollection
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    @JoinColumn(name = "RightSideCollectionID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Collection getRightSideCollection()
+    {
+        return rightSideCollection;
+    }
+
+    /**
+     * @param rightSideCollection the rightSideCollection to set
+     */
+    public void setRightSideCollection(Collection rightSideCollection)
+    {
+        this.rightSideCollection = rightSideCollection;
     }
 
     /* (non-Javadoc)

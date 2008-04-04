@@ -250,6 +250,13 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         setOpaque(false);
     }
 
+    /**
+     * @param sqlTemplate the sqlTemplate to set
+     */
+    public void setSqlTemplate(String sqlTemplate)
+    {
+        textWithQuery.setSqlTemplate(sqlTemplate);
+    }
     
     /**
      * @param queryWhereClauseProvider

@@ -1051,17 +1051,18 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
         this.containerOwner = containerOwner;
     }
 
-    
     /**
      * 
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "leftSide")
     @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    public Set<CollectionRelationship> getLeftSideRels() {
+    public Set<CollectionRelationship> getLeftSideRels() 
+    {
         return this.leftSideRels;
     }
     
-    public void setLeftSideRels(Set<CollectionRelationship> leftSideRels) {
+    public void setLeftSideRels(Set<CollectionRelationship> leftSideRels) 
+    {
         this.leftSideRels = leftSideRels;
     }
 
@@ -1070,11 +1071,13 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "rightSide")
     @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
-    public Set<CollectionRelationship> getRightSideRels() {
+    public Set<CollectionRelationship> getRightSideRels() 
+    {
         return this.rightSideRels;
     }
     
-    public void setRightSideRels(Set<CollectionRelationship> rightSideRels) {
+    public void setRightSideRels(Set<CollectionRelationship> rightSideRels) 
+    {
         this.rightSideRels = rightSideRels;
     }
     

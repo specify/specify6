@@ -123,13 +123,11 @@ import edu.ku.brc.ui.forms.persist.FormCellField;
 import edu.ku.brc.ui.forms.persist.FormCellFieldIFace;
 import edu.ku.brc.ui.forms.persist.FormCellIFace;
 import edu.ku.brc.ui.forms.persist.FormCellLabel;
-import edu.ku.brc.ui.forms.persist.FormCellLabelIFace;
 import edu.ku.brc.ui.forms.persist.FormCellSubView;
 import edu.ku.brc.ui.forms.persist.FormCellSubViewIFace;
 import edu.ku.brc.ui.forms.persist.FormViewDef;
 import edu.ku.brc.ui.forms.persist.ViewDef;
 import edu.ku.brc.ui.forms.persist.ViewIFace;
-import edu.ku.brc.ui.forms.persist.FormCellFieldIFace.FieldType;
 import edu.ku.brc.ui.forms.validation.AutoNumberableIFace;
 import edu.ku.brc.ui.forms.validation.DataChangeNotifier;
 import edu.ku.brc.ui.forms.validation.FormValidator;
@@ -757,11 +755,7 @@ public class FormViewObj implements Viewable,
             {
                 // Only the ones that are editable.
                 FormCellFieldIFace fcf = (FormCellFieldIFace)fieldInfo.getFormCell();
-                FieldType type = fcf.getUiType();
-                if (fcf.isReadOnly() || 
-                    type == FieldType.dsptextfield || 
-                    type == FieldType.dsptextarea || 
-                    type == FieldType.label)
+                if (fcf.isReadOnly())
                 {
                     isOK = false; 
                 }
@@ -2940,7 +2934,7 @@ public class FormViewObj implements Viewable,
             {
                 FVOFieldInfo       labelInfo = labels.get(idFor);
                 JLabel             label     = (JLabel)labelInfo.getComp();
-                FormCellLabelIFace lblCell   = (FormCellLabelIFace)labelInfo.getFormCell();
+                //FormCellLabelIFace lblCell   = (FormCellLabelIFace)labelInfo.getFormCell();
                 
                 FormViewObj.FVOFieldInfo fieldInfo = controlsById.get(idFor);
                 if (fieldInfo == null)
@@ -2975,18 +2969,18 @@ public class FormViewObj implements Viewable,
                         label.setFont(boldFont);
                     }
                     
-                    if (lblCell.isDerived() && tblChild != null)
+                    /*if (lblCell.isDerived() && tblChild != null)
                     {
                         String title = tblChild.getTitle();
                         if (StringUtils.isNotEmpty(title))
                         {
                             label.setText(title + (StringUtils.isNotEmpty(title) ? ":" : ""));
                         }
-                    }
+                    }*/
                 }
             }
             
-            for (FVOFieldInfo fieldInfo : controlsByName.values())
+            /*for (FVOFieldInfo fieldInfo : controlsByName.values())
             {
                 if (fieldInfo.getFormCell().getType() == FormCellIFace.CellType.field)
                 {
@@ -3011,12 +3005,12 @@ public class FormViewObj implements Viewable,
                             String title = fi.getTitle();
                             if (StringUtils.isNotEmpty(title))
                             {
-                                cbx.setText(title);
+                                //cbx.setText(title);
                             }
                         }
                     }
                 }
-            }
+            }*/
         }
     }
     
@@ -3987,12 +3981,12 @@ public class FormViewObj implements Viewable,
                 
                 for (FVOFieldInfo fieldInfo : controlsById.values())
                 {
-                    String nm = fieldInfo.getFormCell().getName();
-                    if (nm.equals("agentAuthorizations"))
-                    {
-                        int x = 0;
-                        x++;
-                    }
+                    //String nm = fieldInfo.getFormCell().getName();
+                    //if (nm.equals("collection.collectionName"))
+                    //{
+                    //    int x = 0;
+                    //    x++;
+                    //}
                     
                     FormCellIFace fc = fieldInfo.getFormCell();
                     boolean isInoreGetSet = fc.isIgnoreSetGet();

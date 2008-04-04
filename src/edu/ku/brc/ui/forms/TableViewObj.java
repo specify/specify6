@@ -71,9 +71,7 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
-import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBRelationshipInfo;
-import edu.ku.brc.dbsupport.DBTableChildIFace;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -1121,7 +1119,7 @@ public class TableViewObj implements Viewable,
      */
     public void setDataIntoUI()
     {
-        log.debug(dataObjList.size());
+        //log.debug(dataObjList.size());
         //if (parentDataObj.getId() != null && dataObjList != null && model != null)
         if (dataObjList != null && model != null)
         {
@@ -1137,7 +1135,7 @@ public class TableViewObj implements Viewable,
                         tmpSession.attach(dObj);
                     } else
                     {
-                        log.error("Obj in list is null!");
+                        //log.error("Obj in list is null!");
                     }
                 }
             }
@@ -1621,7 +1619,7 @@ public class TableViewObj implements Viewable,
     public void fixUpRequiredDerivedLabels()
     {
         // NOTE: The forms can contain object that are not in our data model
-        DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(formViewDef.getClassName());
+        /*DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(formViewDef.getClassName());
         if (ti != null)
         {
             for (ColumnInfo colInfo : controlsById.values())
@@ -1664,7 +1662,7 @@ public class TableViewObj implements Viewable,
                     }
                 }
             }
-        }
+        }*/
     }
 
     

@@ -284,6 +284,14 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         this.queryWhereClauseProvider = queryWhereClauseProvider;
     }
 
+    /**
+     * @param sqlTemplate the sqlTemplate to set
+     */
+    public void setSqlTemplate(String sqlTemplate)
+    {
+        this.sqlTemplate = sqlTemplate;
+    }
+
     /* (non-Javadoc)
      * @see javax.swing.JComponent#setEnabled(boolean)
      */

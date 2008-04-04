@@ -76,6 +76,9 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
     protected Agent                      curatorAgent;
     protected Set<PrepType>              prepTypes;
     protected Set<PickList>              pickLists;
+    
+    protected Set<CollectionRelType>     leftSideRelTypes;
+    protected Set<CollectionRelType>     rightSideRelTypes;
 
 
 
@@ -147,10 +150,10 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
         prepTypes              = new HashSet<PrepType>();
         pickLists              = new HashSet<PickList>();
 
+        leftSideRelTypes       = new HashSet<CollectionRelType>();
+        rightSideRelTypes      = new HashSet<CollectionRelType>();
     }
     // End Initializer
-
-    // Property accessors
 
     /**
      *      * Primary key
@@ -527,6 +530,42 @@ public class Collection extends DataModelObjBase implements java.io.Serializable
     public void setPrepTypes(Set<PrepType> prepTypes)
     {
         this.prepTypes = prepTypes;
+    }
+
+    /**
+     * @return the leftSideRelTypes
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "leftSideCollection")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL })
+    public Set<CollectionRelType> getLeftSideRelTypes()
+    {
+        return leftSideRelTypes;
+    }
+
+    /**
+     * @param leftSideRelTypes the leftSideRelTypes to set
+     */
+    public void setLeftSideRelTypes(Set<CollectionRelType> leftSideRelTypes)
+    {
+        this.leftSideRelTypes = leftSideRelTypes;
+    }
+
+    /**
+     * @return the rightSideRelTypes
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "rightSideCollection")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL })
+    public Set<CollectionRelType> getRightSideRelTypes()
+    {
+        return rightSideRelTypes;
+    }
+
+    /**
+     * @param rightSideRelTypes the rightSideRelTypes to set
+     */
+    public void setRightSideRelTypes(Set<CollectionRelType> rightSideRelTypes)
+    {
+        this.rightSideRelTypes = rightSideRelTypes;
     }
 
     /**

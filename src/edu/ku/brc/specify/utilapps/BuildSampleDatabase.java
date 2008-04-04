@@ -22,6 +22,7 @@ import static edu.ku.brc.specify.utilapps.DataBuilder.createCollectingTrip;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createCollection;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createCollectionObject;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createCollectionObjectAttr;
+import static edu.ku.brc.specify.utilapps.DataBuilder.createCollectionRelType;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createCollector;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createDataType;
 import static edu.ku.brc.specify.utilapps.DataBuilder.createDetermination;
@@ -151,6 +152,7 @@ import edu.ku.brc.specify.datamodel.CollectingTrip;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttr;
+import edu.ku.brc.specify.datamodel.CollectionRelType;
 import edu.ku.brc.specify.datamodel.Collector;
 import edu.ku.brc.specify.datamodel.ConservDescription;
 import edu.ku.brc.specify.datamodel.ConservEvent;
@@ -3806,25 +3808,37 @@ public class BuildSampleDatabase
         //frame.setProcess(++createStep);
         frame.setOverall(steps++);
         
+        Collection voucher = null;
         if (isChoosen(DisciplineType.STD_DISCIPLINES.fish, false))
         {
-            createFishCollection(discipline, user, userAgent, division,
-                    taxonTreeDef, geoTreeDef, gtpTreeDef,
-                    lithoStratTreeDef, locTreeDef,
-                    journal, taxa, geos, locs, gtps, lithoStrats,
-                    "KUFSH", "Fish", true, false);
+            voucher = createFishCollection(discipline, user, userAgent, division,
+                                            taxonTreeDef, geoTreeDef, gtpTreeDef,
+                                            lithoStratTreeDef, locTreeDef,
+                                            journal, taxa, geos, locs, gtps, lithoStrats,
+                                            "KUFSH", "Fish", true, false);
         }
+        
 
         frame.setOverall(steps++);
         
+        Collection tissue = null;
         if (isChoosen(DisciplineType.STD_DISCIPLINES.fish, true))
         {
-            createFishCollection(discipline, user, userAgent, division,
-                    taxonTreeDef, geoTreeDef, gtpTreeDef,
-                    lithoStratTreeDef, locTreeDef,
-                    journal, taxa, geos, locs, gtps, lithoStrats,
-                    "KUTIS", "Fish Tissue", false, true);
+            tissue = createFishCollection(discipline, user, userAgent, division,
+                                            taxonTreeDef, geoTreeDef, gtpTreeDef,
+                                            lithoStratTreeDef, locTreeDef,
+                                            journal, taxa, geos, locs, gtps, lithoStrats,
+                                            "KUTIS", "Fish Tissue", false, true);
         }
+        
+        if (voucher != null && tissue != null)
+        {
+            startTx();
+            CollectionRelType colRelType = createCollectionRelType("Voucher Tissue", voucher, tissue);
+            persist(colRelType);
+            commitTx(); 
+        }
+
 
         globalLocalities.clear();
     }
@@ -3909,7 +3923,7 @@ public class BuildSampleDatabase
      * @return the entire list of DB object to be persisted
      */
     @SuppressWarnings("unchecked")
-    public List<Object> createFishCollection(final Discipline                discipline,
+    public Collection createFishCollection(final Discipline                discipline,
                                              final SpecifyUser               user,
                                              final Agent                     userAgent,
                                              final Division                  division,                  
@@ -4963,7 +4977,7 @@ public class BuildSampleDatabase
         }
         frame.setProcess(++createStep);
 
-        return null;
+        return collection;
     }
     
     /**

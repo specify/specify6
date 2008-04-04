@@ -194,7 +194,7 @@ public class MultiView extends JPanel
         boolean isUsingOnlyCreationMode = MultiView.isOptionOn(createOptions, MultiView.USE_ONLY_CREATION_MODE);
         boolean isUsingSelector         = StringUtils.isNotEmpty(view.getSelectorName());
         
-        log.debug("isUsingOnlyCreationMode "+isUsingOnlyCreationMode + " " + createWithMode + "  defaultAltViewType: "+defaultAltViewType);
+        //log.debug("isUsingOnlyCreationMode "+isUsingOnlyCreationMode + " " + createWithMode + "  defaultAltViewType: "+defaultAltViewType);
         
         
         if (mvParent == null && ViewLoader.isDoFieldVerification())
@@ -214,12 +214,12 @@ public class MultiView extends JPanel
                     // temporarily set this for creation, because it gets asked via getMode()
                     this.createWithMode = av.getMode();
                     
-                    log.debug("CREATING: createWithMode "+createWithMode+"  "+av.getName()+" "+av.getMode());
+                    //log.debug("CREATING: createWithMode "+createWithMode+"  "+av.getName()+" "+av.getMode());
                     createViewable(av.getName());
                     
                 } else
                 {
-                    log.debug("SKIPPED:  createWithMode "+createWithMode+"  "+av.getName()+" "+av.getMode());
+                    //log.debug("SKIPPED:  createWithMode "+createWithMode+"  "+av.getName()+" "+av.getMode());
                 }
             }
         } else if (isUsingSelector && defaultAltView.getMode() == AltViewIFace.CreationMode.EDIT) // Special situation for selectors in edit mode

@@ -41,10 +41,10 @@ import javax.persistence.Transient;
 @Table(name = "collectionrelationship")
 public class CollectionRelationship extends DataModelObjBase implements java.io.Serializable 
 {
-    protected Integer              collectionRelationshipId;
+    protected Integer           collectionRelationshipId;
     protected CollectionRelType collectionRelType;
-    protected CollectionObject        leftSide;
-    protected CollectionObject        rightSide;
+    protected CollectionObject  leftSide;
+    protected CollectionObject  rightSide;
     
     public CollectionRelationship()
     {
@@ -98,7 +98,7 @@ public class CollectionRelationship extends DataModelObjBase implements java.io.
      * 
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "LSCollectionID", unique = false, nullable = false, insertable = true, updatable = true)
+    @JoinColumn(name = "LeftSideCollectionID", unique = false, nullable = false, insertable = true, updatable = true)
     public CollectionObject getLeftSide() {
         return this.leftSide;
     }
@@ -111,7 +111,7 @@ public class CollectionRelationship extends DataModelObjBase implements java.io.
      * 
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "RSCollectionID", unique = false, nullable = false, insertable = true, updatable = true)
+    @JoinColumn(name = "RightSideCollectionID", unique = false, nullable = false, insertable = true, updatable = true)
     public CollectionObject getRightSide() {
         return this.rightSide;
     }
