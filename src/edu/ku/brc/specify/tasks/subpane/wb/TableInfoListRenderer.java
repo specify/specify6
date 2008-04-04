@@ -47,14 +47,14 @@ public class TableInfoListRenderer implements ListCellRenderer
     protected JLabel               icon1;
     protected JLabel               label;
     protected ImageIcon            checkmarkIcon = IconManager.getIcon("Checkmark", IconManager.IconSize.Std16);
-    protected ImageIcon            blankIcon     = IconManager.getIcon("BlankIcon", IconManager.IconSize.Std16);
+    protected ImageIcon            blankIcon     = IconManager.getIcon("BlankIcon", IconManager.STD_ICON_SIZE);
 
     public TableInfoListRenderer(final IconManager.IconSize iconSize)
     {
         // Don't paint behind the component
         this.iconSize = iconSize;
 
-        PanelBuilder builder = new PanelBuilder(new FormLayout(checkmarkIcon.getIconWidth()+"px,2px,f:p:g", "c:p"));
+        PanelBuilder builder = new PanelBuilder(new FormLayout(blankIcon.getIconWidth()+"px,2px,f:p:g", "c:p"));
         CellConstraints cc = new CellConstraints();
 
         builder.add(icon1 = createLabel(""), cc.xy(1, 1));

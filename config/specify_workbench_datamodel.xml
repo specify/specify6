@@ -89,7 +89,7 @@
     <field column="Cataloger First Name" name="catalogerFirstName" type="java.lang.String" length="50"/>
     <field column="Cataloger Last Name" name="catalogerLastName" type="java.lang.String" length="50"/>
   </table>
-  <table classname="edu.ku.brc.specify.datamodel.CollectionObjectAttributes" table="collectionobjectattributes" tableid="93" lazy="true" query="false">
+  <table classname="edu.ku.brc.specify.datamodel.CollectionObjectAttribute" table="collectionobjectattribute" tableid="93" lazy="true" query="false">
     <field column="Remarks (Col. Obj. Attribute)" name="colObjAttributesRemarks" type="java.lang.String" length="1073741823"/>
     <field column="Number 1 (Col. Obj. Attribute)" name="colObjAttributeNumber1" type="java.lang.Float" length="24"/>
     <field column="Number 2 (Col. Obj. Attribute)" name="colObjAttributeNumber2" type="java.lang.Float" length="24"/>
@@ -360,7 +360,7 @@
     <field column="Prep Remarks 8" name="prepRemarks8" type="text" length="255"/>
   </table>
   
-  <table classname="edu.ku.brc.specify.datamodel.PreparationAttributes" table="preparationattributes" tableid="91" lazy="true" query="false">
+  <table classname="edu.ku.brc.specify.datamodel.PreparationAttribute" table="preparationattribute" tableid="91" lazy="true" query="false">
     <field column="Prepared Date" name="preparedDate" type="calendar_date"/>
     <field column="Medium" name="medium" type="java.lang.String" length="50"/>
     <field column="Size" name="size" type="java.lang.String" length="50"/>

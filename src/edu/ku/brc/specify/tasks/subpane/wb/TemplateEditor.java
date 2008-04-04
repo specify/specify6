@@ -130,7 +130,7 @@ public class TemplateEditor extends CustomDialog
     protected boolean                        isEditMode;
     protected boolean                        ignoreMapListUpdate = false;
     
-    protected ImageIcon                      blankIcon   = IconManager.getIcon("BlankIcon", IconManager.IconSize.Std24);
+    protected ImageIcon                      blankIcon   = IconManager.getIcon("BlankIcon", IconManager.STD_ICON_SIZE);
     
     protected TableInfoListRenderer          tableInfoListRenderer;
     
@@ -219,7 +219,7 @@ public class TemplateEditor extends CustomDialog
         
         tableList = new JList(tableModel);
         tableList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        tableList.setCellRenderer(tableInfoListRenderer = new TableInfoListRenderer(IconManager.IconSize.Std16));
+        tableList.setCellRenderer(tableInfoListRenderer = new TableInfoListRenderer(IconManager.STD_ICON_SIZE));
         JScrollPane tableScrollPane = new JScrollPane(tableList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         
         tableList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -238,7 +238,7 @@ public class TemplateEditor extends CustomDialog
         });
 
         fieldList = new JList(fieldModel);
-        fieldList.setCellRenderer(tableInfoListRenderer = new TableInfoListRenderer(IconManager.IconSize.Std16));
+        fieldList.setCellRenderer(tableInfoListRenderer = new TableInfoListRenderer(IconManager.STD_ICON_SIZE));
         fieldList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         JScrollPane fieldScrollPane = new JScrollPane(fieldList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         fieldList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
@@ -438,7 +438,7 @@ public class TemplateEditor extends CustomDialog
         
         mainPanel.add(contentPanel, BorderLayout.CENTER);
         
-        FieldMappingPanel fmp = addMappingItem(null, IconManager.getIcon("BlankIcon", IconManager.IconSize.Std24), null);
+        FieldMappingPanel fmp = addMappingItem(null, IconManager.getIcon("BlankIcon", IconManager.STD_ICON_SIZE), null);
         fmp.setAdded(true);
         fmp.setNew(true);
         
@@ -647,7 +647,7 @@ public class TemplateEditor extends CustomDialog
             
             addNewMappingItems();
             
-            FieldMappingPanel newFmp = addMappingItem(null, IconManager.getIcon("BlankIcon", IconManager.IconSize.Std24), null);
+            FieldMappingPanel newFmp = addMappingItem(null, IconManager.getIcon("BlankIcon", IconManager.STD_ICON_SIZE), null);
             newFmp.setAdded(true);
             newFmp.setNew(true);
             
@@ -696,7 +696,7 @@ public class TemplateEditor extends CustomDialog
         fmp.setColInfo(colInfo);
         fmp.setFieldInfo(fieldInfo);
         fmp.setWbtmi(wbtmi);
-        fmp.setIcon(tableInfo.getTableInfo().getIcon(IconManager.IconSize.Std24));
+        fmp.setIcon(tableInfo.getTableInfo().getIcon(IconManager.STD_ICON_SIZE));
         
         fmp.getArrowLabel().setVisible(true);
         
@@ -825,7 +825,7 @@ public class TemplateEditor extends CustomDialog
                                                             null,
                                                             null,
                                                             null);
-        FieldMappingPanel fmp = addMappingItem(colInfo, IconManager.getIcon(fieldInfo.getTableinfo().getTitle(), IconManager.IconSize.Std24), wbtmi);
+        FieldMappingPanel fmp = addMappingItem(colInfo, IconManager.getIcon(fieldInfo.getTableinfo().getTitle(), IconManager.STD_ICON_SIZE), wbtmi);
         fmp.setFieldInfo(fieldInfo);
         fmp.setAdded(wbtmi == null); // new Items that was not in the data file.
         
@@ -1110,7 +1110,7 @@ public class TemplateEditor extends CustomDialog
                     }
 
                     FieldMappingPanel fmp = map(null, colInfo, tblInfo, fieldInfo, null);
-                    fmp.setIcon(IconManager.getIcon(fieldInfo.getTableinfo().getTitle(), IconManager.IconSize.Std24));
+                    fmp.setIcon(IconManager.getIcon(fieldInfo.getTableinfo().getTitle(), IconManager.STD_ICON_SIZE));
 
                 } else
                 {
