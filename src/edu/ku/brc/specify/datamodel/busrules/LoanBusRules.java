@@ -86,18 +86,19 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
                 ((JCheckBox)comp).setVisible(isEdit);
             }
             
-            comp = formViewObj.getControlByName("isClosed");
-            if (comp instanceof JCheckBox)
+            Component closedComp = formViewObj.getControlByName("isClosed");
+            if (closedComp instanceof JCheckBox)
             {
-                if (((JCheckBox)comp).isSelected())
-                {
-                    ((JCheckBox)comp).addActionListener(new ActionListener() {
-                        public void actionPerformed(ActionEvent arg0)
+                ((JCheckBox)closedComp).addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        if (((JCheckBox)e.getSource()).isSelected())
                         {
-                            Component dateComp = formViewObj.getControlByName("loanDate");
+                            Component dateComp = formViewObj.getControlByName("dateClosed");
                             if (dateComp != null && dateComp instanceof ValFormattedTextFieldSingle)
                             {
                                 ValFormattedTextFieldSingle loanDateComp = (ValFormattedTextFieldSingle)dateComp;
+                                System.out.println("["+loanDateComp.getText()+"]");
                                 if (StringUtils.isEmpty(loanDateComp.getText()))
                                 {
                                     DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
@@ -105,8 +106,8 @@ public class LoanBusRules extends AttachmentOwnerBaseBusRules
                                 }
                             }
                         }
-                    });
-                }
+                    }
+                });
             }
             
             boolean allResolved = true;
