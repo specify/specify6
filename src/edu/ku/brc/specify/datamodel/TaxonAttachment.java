@@ -201,6 +201,6 @@ public class TaxonAttachment extends DataModelObjBase implements ObjectAttachmen
      */
     public int compareTo(TaxonAttachment o)
     {
-        return ((Integer)getOrderIndex()).compareTo((Integer)o.getOrderIndex());
+        return ((Integer)getOrderIndex()).compareTo(o.getOrderIndex());
     }
 }

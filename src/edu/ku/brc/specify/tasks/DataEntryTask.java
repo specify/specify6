@@ -62,8 +62,6 @@ import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
-import edu.ku.brc.specify.datamodel.PrepType;
-import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -916,7 +914,10 @@ public class DataEntryTask extends BaseTask
                     }
                 }
 
-            } else if (dataObj instanceof Preparation)
+            } 
+            // Commenting out for now because we have no way to manage the default.
+            /*
+            else if (dataObj instanceof Preparation)
             {
                 Preparation prep = (Preparation)dataObj;
                 if (prep.getPreparedByAgent() == null)
@@ -928,7 +929,7 @@ public class DataEntryTask extends BaseTask
                     FormDataObjIFace     defPrepType   = appContextMgr.getDefaultObject(PrepType.class, "PrepType", prepTitle, true, true);
                     prep.setPrepType((PrepType)defPrepType);
                 }
-            }
+            }*/
         }
     }
     

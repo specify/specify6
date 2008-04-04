@@ -43,15 +43,12 @@ import org.hibernate.annotations.Index;
 @Table(name = "collectingtrip")
 @org.hibernate.annotations.Table(appliesTo="collectingtrip", indexes =
     {   
-        @Index (name="COLTRPColMemIDX", columnNames={"CollectionMemberID"}),
         @Index (name="COLTRPNameIDX", columnNames={"CollectingTripName"}),
         @Index (name="COLTRPStartDateIDX", columnNames={"StartDate"})
     })
-public class CollectingTrip extends CollectionMember implements java.io.Serializable
+public class CollectingTrip extends DisciplineMember implements java.io.Serializable
 {
-
-    // Fields    
-
+     // Fields    
      private Integer  collectingTripId;
      private String   remarks;
      private Calendar startDate;

@@ -18,6 +18,7 @@ import org.hibernate.Criteria;
 import org.hibernate.Session;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 
 import edu.ku.brc.dbsupport.CustomQueryIFace;
 import edu.ku.brc.dbsupport.CustomQueryListener;
@@ -27,6 +28,7 @@ import edu.ku.brc.dbsupport.QueryResultsDataObj;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.Loan;
 
 /**
@@ -92,6 +94,7 @@ public class CustomStatQueries implements CustomQueryIFace
                 
             case CatalogedLastYear :
                 return catalogedLastXDays(365);
+                
             case OverdueLoans:
                 return overdueLoans();
         }
@@ -202,9 +205,11 @@ public class CustomStatQueries implements CustomQueryIFace
         endDate.set(Calendar.DAY_OF_MONTH, today.get(Calendar.DAY_OF_MONTH));
         
         Criteria criteria = session.createCriteria(Loan.class);
-        criteria.add(Expression.isNotNull("currentDueDate"));
-        criteria.add(Expression.ge("currentDueDate", endDate));
-        criteria.add(Expression.eq("collectionMemberId", Collection.getCurrentCollection().getCollectionId()));
+        criteria.add(Restrictions.isNotNull("currentDueDate"));
+        criteria.add(Restrictions.ge("currentDueDate", endDate));
+        
+        Criteria dsp = criteria.createCriteria("discipline");
+        dsp.add(Restrictions.eq("disciplineId", Discipline.getCurrentDiscipline().getDisciplineId()));
 
         criteria.setProjection(Projections.rowCount());
         resultsList = criteria.list();

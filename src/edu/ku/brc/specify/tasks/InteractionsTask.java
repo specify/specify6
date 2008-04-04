@@ -94,7 +94,6 @@ import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.CommandActionForDB;
-import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.dnd.Trash;
@@ -680,17 +679,19 @@ public class InteractionsTask extends BaseTask
                             
                             // Get Defaults for Certain fields
                             SpecifyAppContextMgr appContextMgr     = (SpecifyAppContextMgr)AppContextMgr.getInstance();
-                            PickListItemIFace    defShipmentMethod = appContextMgr.getDefaultPickListItem("ShipmentMethod", getResourceString("SHIPMENT_METHOD"));
-                            if (defShipmentMethod != null)
-                            {
-                                 shipment.setShipmentMethod(defShipmentMethod.getValue());
-                            }
                             
-                            FormDataObjIFace shippedBy = appContextMgr.getDefaultObject(Agent.class, "ShippedBy", getResourceString("SHIPPED_BY"), true, false);
-                            if (shippedBy != null)
-                            {
-                                shipment.setShippedBy((Agent)shippedBy);
-                            }
+                            // Comment out defaults for now until we can manage them
+                            //PickListItemIFace    defShipmentMethod = appContextMgr.getDefaultPickListItem("ShipmentMethod", getResourceString("SHIPMENT_METHOD"));
+                            //if (defShipmentMethod != null)
+                            //{
+                            //     shipment.setShipmentMethod(defShipmentMethod.getValue());
+                            //}
+                            
+                            //FormDataObjIFace shippedBy = appContextMgr.getDefaultObject(Agent.class, "ShippedBy", getResourceString("SHIPPED_BY"), true, false);
+                            //if (shippedBy != null)
+                            //{
+                            //    shipment.setShippedBy((Agent)shippedBy);
+                            //}
                             
                             if (infoRequest != null && infoRequest.getAgent() != null)
                             {

@@ -80,6 +80,7 @@ public class PickListItem extends DataModelObjBase implements PickListItemIFace,
         initialize();
         this.title = title;
         this.value = value;
+        this.timestampCreated = timestampCreated;
     }
 
     public PickListItem(final String title, final Object valueObject, final Timestamp timestampCreated)
@@ -88,6 +89,7 @@ public class PickListItem extends DataModelObjBase implements PickListItemIFace,
         initialize();
         this.title       = title;
         this.valueObject = valueObject;
+        this.timestampCreated = timestampCreated;
     }
 
     /* (non-Javadoc)

@@ -59,10 +59,9 @@ import org.hibernate.annotations.Index;
 @Table(name = "gift")
 @org.hibernate.annotations.Table(appliesTo="gift", indexes =
     {   @Index (name="GiftNumberIDX", columnNames={"GiftNumber"}),
-        @Index (name="GiftDateIDX", columnNames={"GiftDate"}),
-        @Index (name="GiftColMemIDX", columnNames={"CollectionMemberID"})
+        @Index (name="GiftDateIDX", columnNames={"GiftDate"})
     })
-public class Gift extends CollectionMember implements java.io.Serializable 
+public class Gift extends DisciplineMember implements java.io.Serializable 
 {
     // Fields    
     protected Integer                 giftId;

@@ -454,7 +454,7 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
             items.remove(rsi);
         }
         
-        recordSetItems.remove((RecordSetItem)rsi);
+        recordSetItems.remove(rsi);
     }
 
     /* (non-Javadoc)

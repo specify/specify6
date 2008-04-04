@@ -46,10 +46,9 @@ import org.hibernate.annotations.Index;
 @org.hibernate.annotations.Table(appliesTo="fieldnotebook", indexes =
     {   @Index (name="FNBNameIDX", columnNames={"Name"}),
         @Index (name="FNBStartDateIDX", columnNames={"StartDate"}),
-        @Index (name="FNBEndDateIDX", columnNames={"EndDate"}),
-        @Index (name="FNBColMemIDX", columnNames={"CollectionMemberID"})
+        @Index (name="FNBEndDateIDX", columnNames={"EndDate"})
     })
-public class FieldNotebook extends CollectionMember
+public class FieldNotebook extends DisciplineMember
 {
     protected Integer    fieldNotebookId;
     protected String     name;

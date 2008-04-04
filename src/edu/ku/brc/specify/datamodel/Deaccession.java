@@ -38,7 +38,9 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -75,7 +77,7 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
     protected Boolean                     yesNo2;
     protected Set<DeaccessionAgent>       deaccessionAgents;
     protected Set<DeaccessionPreparation> deaccessionPreparations;
-
+    protected Accession                   accession;
 
     // Constructors
 
@@ -107,6 +109,7 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
         yesNo2 = null;
         deaccessionAgents = new HashSet<DeaccessionAgent>();
         deaccessionPreparations = new HashSet<DeaccessionPreparation>();
+        accession = null;
     }
     // End Initializer
 
@@ -295,38 +298,23 @@ public class Deaccession extends DataModelObjBase implements java.io.Serializabl
         this.deaccessionPreparations = deaccessionPreparations;
     }
 
-
-
-
-
-    // Add Methods
-
-    public void addDeaccessionAgent(final DeaccessionAgent deaccessionAgent)
+    /**
+     * @return the accession
+     */
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.SAVE_UPDATE, org.hibernate.annotations.CascadeType.MERGE, org.hibernate.annotations.CascadeType.LOCK })
+    @JoinColumn(name = "AccessionID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Accession getAccession()
     {
-        this.deaccessionAgents.add(deaccessionAgent);
-        deaccessionAgent.setDeaccession(this);
+        return accession;
     }
 
-    public void addDeaccessionPreparations(final DeaccessionPreparation deaccessionPreparation)
+    /**
+     * @param accession the accession to set
+     */
+    public void setAccession(Accession accession)
     {
-        this.deaccessionPreparations.add(deaccessionPreparation);
-        deaccessionPreparation.setDeaccession(this);
-    }
-
-    // Done Add Methods
-
-    // Delete Methods
-
-    public void removeDeaccessionAgent(final DeaccessionAgent deaccessionAgent)
-    {
-        this.deaccessionAgents.remove(deaccessionAgent);
-        deaccessionAgent.setDeaccession(null);
-    }
-
-    public void removeDeaccessionPreparations(final DeaccessionPreparation deaccessionPreparation)
-    {
-        this.deaccessionPreparations.remove(deaccessionPreparation);
-        deaccessionPreparation.setDeaccession(null);
+        this.accession = accession;
     }
 
     /* (non-Javadoc)

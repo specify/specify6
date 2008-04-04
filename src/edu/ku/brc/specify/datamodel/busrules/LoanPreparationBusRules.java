@@ -8,7 +8,6 @@ package edu.ku.brc.specify.datamodel.busrules;
 
 import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.ui.forms.BaseBusRules;
-import edu.ku.brc.ui.forms.Viewable;
 
 /**
  * @author rod
@@ -18,24 +17,16 @@ import edu.ku.brc.ui.forms.Viewable;
  * Jan 29, 2007
  *
  */
-public class LoanPreparationBusRule extends BaseBusRules
+public class LoanPreparationBusRules extends BaseBusRules
 {
     /**
      * 
      */
-    public LoanPreparationBusRule()
+    public LoanPreparationBusRules()
     {
         super(LoanPreparation.class);
     }
     
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.forms.BusinessRulesIFace#fillForm(java.lang.Object, edu.ku.brc.ui.forms.Viewable)
-     */
-    public void afterFillForm(Object dataObj, Viewable viewableArg)
-    {
-        
-    }
-
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.datamodel.busrules.BaseBusRules#okToDelete(java.lang.Object)
      */

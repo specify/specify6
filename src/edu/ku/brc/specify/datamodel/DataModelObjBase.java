@@ -330,10 +330,8 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
             {
                 return Collection.class.isAssignableFrom(fld.getType());
                 
-            } else
-            {
-                log.error("Couldn't find field ["+fieldName+"] in class ["+getClass().getSimpleName()+"]");
             }
+            log.error("Couldn't find field ["+fieldName+"] in class ["+getClass().getSimpleName()+"]");
             
         } catch (Exception ex)
         {

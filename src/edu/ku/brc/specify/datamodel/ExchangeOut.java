@@ -58,8 +58,7 @@ import org.hibernate.annotations.Index;
 @org.hibernate.annotations.Proxy(lazy = false)
 @Table(name = "exchangeout")
 @org.hibernate.annotations.Table(appliesTo="exchangeout", indexes =
-    {   @Index (name="ExchangeOutdateIDX", columnNames={"ExchangeDate"}),
-        @Index (name="ExChgOutColMemIDX", columnNames={"CollectionMemberID"})
+    {   @Index (name="ExchangeOutdateIDX", columnNames={"ExchangeDate"})
     })
 public class ExchangeOut extends CollectionMember implements java.io.Serializable {
 

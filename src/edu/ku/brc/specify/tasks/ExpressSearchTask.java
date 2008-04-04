@@ -995,12 +995,12 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                 
                 for (SearchTableConfig stc : scService.getSearchConfig().getTables())
                 {
-                    JMenuItem menu = new JMenuItem(stc.getTitle(), IconManager.getIcon(stc.getIconName(), IconManager.STD_ICON_SIZE));
+                    JMenuItem menu = new JMenuItem(stc.getTitle(), IconManager.getIcon(stc.getIconName(), IconManager.IconSize.Std16));
                     menu.addActionListener(action);
                     menus.add(menu);
                 }
                 
-                configMenuItem = new JMenuItem(getResourceString("ESConfig"), IconManager.getIcon("SystemSetup", IconManager.STD_ICON_SIZE)); // I18N
+                configMenuItem = new JMenuItem(getResourceString("ESConfig"), IconManager.getIcon("SystemSetup", IconManager.IconSize.Std16));
                 configMenuItem.addActionListener(action);
                 menus.add(configMenuItem);
             }

@@ -19,7 +19,7 @@
             <item title="Items On Loan">
                 <sql><statement><![CDATA[SELECT count(loanpreparationid) AS ItemsOnLoanCount FROM loanpreparation AS lpo 
                 INNER JOIN loan ON loan.loanid = lpo.loanid where quantityresolved < quantity AND 
-                loan.CollectionMemberId = COLMEMID AND (IsClosed = 0 or IsClosed is null)]]></statement></sql>
+                loan.DisciplineID = DSPLNID AND (IsClosed = 0 or IsClosed is null)]]></statement></sql>
                 <link>ListOnLoan</link>
             </item>
             <!--
@@ -34,8 +34,8 @@
             </item>
             <item title="Open Loans">
                 <sql type="jpa" name="OpenLoans">
-                	<statement><![CDATA[SELECT count(loanId) as OpenLoanCount FROM Loan l WHERE (isClosed = 0 OR isClosed is null) AND 
- l.collectionMemberId = COLMEMID ]]></statement></sql>
+                	<statement><![CDATA[SELECT count(loanId) as OpenLoanCount FROM Loan l INNER JOIN l.discipline dsp WHERE (isClosed = 0 OR isClosed is null) AND 
+ dsp.disciplineId = DSPLNID]]></statement></sql>
                 <link>OpenLoans</link>
             </item>
         </box>

@@ -70,10 +70,9 @@ import edu.ku.brc.dbsupport.DBConnection;
 @org.hibernate.annotations.Table(appliesTo="loan", indexes =
     {   @Index (name="LoanNumberIDX", columnNames={"LoanNumber"}),
         @Index (name="LoanDateIDX", columnNames={"LoanDate"}),
-        @Index (name="CurrentDueDateIDX", columnNames={"CurrentDueDate"}),
-        @Index (name="LoanColMemIDX", columnNames={"CollectionMemberID"})
+        @Index (name="CurrentDueDateIDX", columnNames={"CurrentDueDate"})
     })
-public class Loan extends CollectionMember implements AttachmentOwnerIFace<LoanAttachment>, java.io.Serializable 
+public class Loan extends DisciplineMember implements AttachmentOwnerIFace<LoanAttachment>, java.io.Serializable 
 {
 
     // options for the 'closed' field

@@ -70,7 +70,6 @@ import org.hibernate.annotations.Index;
 public class Accession extends DataModelObjBase implements java.io.Serializable, AttachmentOwnerIFace<AccessionAttachment> {
 
     // Fields
-
     protected Integer                     accessionId;
     protected String                      type;
     protected String                      status;
@@ -100,6 +99,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
     protected Set<AccessionAttachment>    accessionAttachments;
     protected Set<Appraisal>              appraisals;
     protected Set<TreatmentEvent>         treatmentEvents;
+    protected Set<Deaccession>            deaccessions;
 
     // Constructors
 
@@ -146,7 +146,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
         accessionAttachments    = new HashSet<AccessionAttachment>();
         appraisals              = new HashSet<Appraisal>();
         treatmentEvents         = new HashSet<TreatmentEvent>();
-
+        deaccessions            = new HashSet<Deaccession>();
         
     }
     // End Initializer
@@ -510,6 +510,24 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
     public void setTreatmentEvents(Set<TreatmentEvent> treatmentEvents)
     {
         this.treatmentEvents = treatmentEvents;
+    }
+
+    /**
+     * @return the deaccessions
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "accession")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<Deaccession> getDeaccessions()
+    {
+        return deaccessions;
+    }
+
+    /**
+     * @param deaccessions the deaccessions to set
+     */
+    public void setDeaccessions(Set<Deaccession> deaccessions)
+    {
+        this.deaccessions = deaccessions;
     }
 
     /**

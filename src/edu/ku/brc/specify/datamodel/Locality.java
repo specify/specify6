@@ -61,7 +61,7 @@ import edu.ku.brc.services.mapping.LocalityMapper.MapLocationIFace;
     {   @Index (name="localityNameIDX", columnNames={"LocalityName"}),
         @Index (name="LocalityDisciplineIDX", columnNames={"DisciplineID"})
     })
-public class Locality extends DataModelObjBase implements AttachmentOwnerIFace<LocalityAttachment>, java.io.Serializable, MapLocationIFace 
+public class Locality extends DisciplineMember implements AttachmentOwnerIFace<LocalityAttachment>, java.io.Serializable, MapLocationIFace 
 {
     // Fields    
     protected Integer               localityId;
@@ -94,7 +94,6 @@ public class Locality extends DataModelObjBase implements AttachmentOwnerIFace<L
     protected Integer               visibility;
     protected String                visibilitySetBy;
      
-    protected Discipline              discipline;
     protected Geography               geography;
     protected Set<LocalityCitation>   localityCitations;
     protected Set<CollectingEvent>    collectingEvents;
@@ -604,22 +603,7 @@ public class Locality extends DataModelObjBase implements AttachmentOwnerIFace<L
     }
 
     /**
-     * 
-     */
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "DisciplineID", unique = false, nullable = false, insertable = true, updatable = true)
-    public Discipline getDiscipline()
-    {
-        return this.discipline;
-    }
-
-    public void setDiscipline(Discipline discipline)
-    {
-        this.discipline = discipline;
-    }
-
-    /**
-     * * Link to Country, State, County, WaterBody, Island, IslandGroup ... info
+     * Link to Country, State, County, WaterBody, Island, IslandGroup ... info
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
     @JoinColumn(name = "GeographyID", unique = false, nullable = true, insertable = true, updatable = true)

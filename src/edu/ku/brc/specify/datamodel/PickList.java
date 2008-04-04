@@ -362,7 +362,7 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
         {
             items.remove(item);
         }
-        pickListItems.remove((PickListItem)item);
+        pickListItems.remove(item);
     }
 
     /* (non-Javadoc)

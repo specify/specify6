@@ -63,7 +63,7 @@
  From 
  collectingevent
  Inner Join locality ON collectingevent.LocalityID = locality.LocalityID
- WHERE collectingevent.CollectionMemberID = COLMEMID AND %s order by StartDate]]>
+ WHERE collectingevent.DisciplineID = DSPLNID AND %s order by StartDate]]>
                 </sql>
                 <captions>
                     <caption tableid="10" col="CollectingEventID" visible="false"/>
@@ -163,7 +163,7 @@
  agent.LastName,
  agent.FirstName,
  agent.AgentType,
- collector.OrderNumber,
+ collector.OrderNumber, 
  %s
  FROM collectionobject INNER JOIN determination ON collectionobject.CollectionObjectID = determination.CollectionObjectID
  INNER JOIN collectingevent ON collectionobject.CollectingEventID = collectingevent.CollectingEventID
@@ -171,7 +171,16 @@
  INNER JOIN agent ON collector.AgentID = agent.AgentID
  INNER JOIN taxon ON determination.TaxonID = taxon.TaxonID
  INNER JOIN determinationstatus ON determination.DeterminationStatusID = determinationstatus.DeterminationStatusID 
- WHERE collectionobject.CollectionMemberID = COLMEMID AND determinationstatus.Type = 1 AND %s ORDER BY collectionobject.CollectionObjectID, collector.OrderNumber]]>
+ WHERE collectionobject.CollectionMemberID = COLMEMID AND determinationstatus.Type = 1 AND collectionobject.CollectionObjectID 
+ in (SELECT collectionobject.CollectionObjectID FROM collectionobject 
+ INNER JOIN determination ON collectionobject.CollectionObjectID = determination.CollectionObjectID 
+ INNER JOIN collectingevent ON collectionobject.CollectingEventID = collectingevent.CollectingEventID 
+ INNER JOIN collector ON collectingevent.CollectingEventID = collector.CollectingEventID 
+ INNER JOIN agent ON collector.AgentID = agent.AgentID INNER JOIN taxon ON determination.TaxonID = taxon.TaxonID 
+ INNER JOIN determinationstatus ON determination.DeterminationStatusID = determinationstatus.DeterminationStatusID  
+ WHERE collectionobject.CollectionMemberID = COLMEMID AND determinationstatus.Type = 1 AND %s 
+ ORDER BY collectionobject.CollectionObjectID, collector.OrderNumber) ORDER BY 
+ collectionobject.CollectionObjectID, collector.OrderNumber]]>
                 </sql>
                 <captions>
                     <caption tableid="1"  col="collectionobject.CollectionObjectID" visible="false"/>
@@ -271,7 +280,7 @@
  INNER JOIN taxon deterTax ON d.TaxonID = deterTax.TaxonID 
  INNER JOIN taxon acceptTax ON acceptTax.TaxonID = deterTax.AcceptedID 
  INNER JOIN taxon oldTax ON oldTax.AcceptedID = acceptTax.TaxonID AND oldTax.TaxonID != deterTax.TaxonID 
- WHERE collectionobject.CollectionMemberID = COLMEMID AND %s]]>
+ WHERE co.CollectionMemberID = COLMEMID AND %s]]>
                 </sql>
                 <captions>
                     <caption tableid="1" col="co.CollectionObjectID" visible="false"/>
@@ -583,7 +592,7 @@
  INNER JOIN collection ON collectionobject.CollectingEventID = collection.CollectionID
  INNER JOIN collectiontype ON collection.DisciplineID = collectiontype.DisciplineID
  INNER JOIN specifyuser ON collectiontype.SpecifyUserID = specifyuser.SpecifyUserID 
- WHERE specifyuser.SpecifyUserID = SPECIFYUSERID AND loan.CollectionMemberID = COLMEMID AND 
+ WHERE specifyuser.SpecifyUserID = SPECIFYUSERID AND loan.DisciplineID = DSPLNID AND 
  (not (currentduedate is null)) AND (IsClosed = false or IsClosed is null) AND 
                     datediff(CURDATE(), currentduedate) > 0]]>
                 </sql>

@@ -14,13 +14,13 @@ import java.awt.event.ActionListener;
 
 import javax.swing.DefaultComboBoxModel;
 
+import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
-import edu.ku.brc.specify.dbsupport.SpecifyQueryAdjusterForDomain;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.BaseBusRules;
 import edu.ku.brc.ui.forms.Viewable;
@@ -104,7 +104,7 @@ public class TreeDefBusRules extends BaseBusRules
                     System.out.println(dataClass.getName());
                     String      sqlStr = "SELECT COUNT(id) FROM " + dataClass.getName();
                     DBTableInfo ti     = DBTableIdMgr.getInstance().getByClassName(dataClass.getName());
-                    sqlStr = sqlStr + " WHERE " + SpecifyQueryAdjusterForDomain.getInstance().getSpecialColumns(ti, true);
+                    sqlStr = sqlStr + " WHERE " + QueryAdjusterForDomain.getInstance().getSpecialColumns(ti, true);
                     session = DataProviderFactory.getInstance().createSession();
                     Integer count = (Integer)session.getData(sqlStr);
                     
