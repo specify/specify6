@@ -171,7 +171,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="5"/>
-                    <cell type="subview" viewname="Collectors" id="8" name="collectors" colspan="10"/>
+                    <cell type="subview" viewname="Collectors" id="5" name="collectors" colspan="10"/>
                 </row>
                 <row>
                     <cell type="separator" label="Attachments" collapse="collectingEventAttachments" colspan="12"/>
@@ -214,7 +214,7 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="5"/>
-                    <cell type="subview" viewname="Collectors" id="8" name="collectors" colspan="10"/>
+                    <cell type="subview" viewname="Collectors" id="5" name="collectors" colspan="10"/>
                 </row>
             </rows>
         </viewdef>
