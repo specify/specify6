@@ -56,11 +56,10 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
         int fldIdx = getFldIdx(arg0.getName());
         if (fldIdx < 0)
             return null;
-        Object result = columnInfo.get(fldIdx).processValue(rowVals[fldIdx]);
-        log.debug(arg0.getName() + " = " + result);
-        return result;
+        
+        return processValue(fldIdx, columnInfo.get(fldIdx).processValue(rowVals[fldIdx]));
     }
-
+    
     /* (non-Javadoc)
      * @see net.sf.jasperreports.engine.JRDataSource#next()
      */
@@ -81,7 +80,6 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
         rowVals = null;
         return false;
     }
-
     
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQueryListener#exectionDone(edu.ku.brc.dbsupport.CustomQueryIFace)

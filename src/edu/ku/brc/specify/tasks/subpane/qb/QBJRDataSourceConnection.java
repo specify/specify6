@@ -11,7 +11,10 @@ package edu.ku.brc.specify.tasks.subpane.qb;
 
 import it.businesslogic.ireport.IReportConnection;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -19,6 +22,7 @@ import net.sf.jasperreports.engine.JRDataSource;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.ERTICaptionInfo;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 
 /**
  * @author timbo
@@ -100,11 +104,37 @@ public class QBJRDataSourceConnection extends IReportConnection
             }
             for (ERTICaptionInfo col : cols)
             {
-                fields.add(new QBJRFieldDef(col.getColLabel(), col.getColClass()));
+                fields.add(new QBJRFieldDef(col.getColLabel(), getColClass(col)));
             }
         }
     }
 
+    /**
+     * @param col
+     * @return the class of the data contained in the column, or the
+     * the class returned by the formatter for the data in the column.
+     * 
+     * This code may be affected by changes to QBJRDataSourceBase.processValue, and vice-versa.
+     */
+    protected Class<?> getColClass(final ERTICaptionInfo col)
+    {
+        Class<?> cls = col.getColClass();
+        if (cls.equals(Calendar.class)
+                || cls.equals(Timestamp.class)
+                || cls.equals(java.sql.Date.class) 
+                || cls.equals(Date.class))
+        {
+            return String.class;
+        }
+    
+        UIFieldFormatterIFace formatter = col.getUiFieldFormatter();
+        if (formatter != null && formatter.isInBoundFormatter())
+        {
+            return Object.class;
+        }
+        
+        return cls;
+    }
     
     /* (non-Javadoc)
      * @see it.businesslogic.ireport.IReportConnection#getProperties()

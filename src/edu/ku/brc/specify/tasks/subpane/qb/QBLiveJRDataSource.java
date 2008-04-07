@@ -49,7 +49,7 @@ public class QBLiveJRDataSource extends QBJRDataSourceBase
         int fldIdx = getFldIdx(arg0.getName());
         if (fldIdx < 0)
             return null;
-        return data.getCacheValueAt(row, fldIdx);
+        return processValue(fldIdx, data.getCacheValueAt(row, fldIdx));
     }
 
     /* (non-Javadoc)

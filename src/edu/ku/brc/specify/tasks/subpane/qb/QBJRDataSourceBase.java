@@ -9,12 +9,18 @@
  */
 package edu.ku.brc.specify.tasks.subpane.qb;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
+import edu.ku.brc.af.prefs.AppPrefsCache;
+import edu.ku.brc.ui.DateWrapper;
 import edu.ku.brc.ui.db.ERTICaptionInfo;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.util.Pair;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
@@ -30,6 +36,7 @@ import net.sf.jasperreports.engine.JRField;
  */
 public class QBJRDataSourceBase implements JRDataSource
 {
+    protected static DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");    
     protected final List<ERTICaptionInfo> columnInfo;
     protected final ArrayList<Pair<String, Integer>> colNames = new ArrayList<Pair<String, Integer>>();
     protected final Comparator<Pair<String, Integer>> colPairComparator = 
@@ -92,5 +99,39 @@ public class QBJRDataSourceBase implements JRDataSource
         if (fldIdx < 0)
             return -1;
         return colNames.get(fldIdx).getSecond();
+    }
+    
+    /**
+     * @param fldIdx
+     * @param obj
+     * @return Possibly formatted version of obj.
+     * 
+     * Adds formatting, if necessary, for columns that aren't represented by ERTIRelCaptionInfo Objects.
+     * (Might be better to create a ERTICaptionInfo descendant with a processValue to do this for QueryBuilder query columns 
+     * that don't represent relationships.)
+     *
+     * This code may be affected by changes to QBJRDataSourceConnection.getColClass, and vice-versa.
+     */
+    protected Object processValue(final int fldIdx, final Object obj)
+    {    
+        if (obj instanceof Calendar)
+        {
+            return scrDateFormat.format((Calendar)obj);
+        
+        } else if (obj instanceof Timestamp )
+        {
+            return scrDateFormat.format((Date)obj);
+        } else if (obj instanceof java.sql.Date || obj instanceof Date )
+        {
+            return scrDateFormat.format((Date)obj);
+        }
+    
+        UIFieldFormatterIFace formatter = columnInfo.get(fldIdx).getUiFieldFormatter();
+        if (formatter != null && formatter.isInBoundFormatter())
+        {
+            return formatter.formatInBound(obj);
+        }
+        
+        return obj;
     }
 }
