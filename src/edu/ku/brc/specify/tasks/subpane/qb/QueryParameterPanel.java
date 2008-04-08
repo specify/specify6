@@ -26,6 +26,7 @@ import edu.ku.brc.specify.datamodel.SpQuery;
  */
 public class QueryParameterPanel extends JPanel implements QueryFieldPanelContainerIFace
 {
+    protected boolean hasPrompts = false;
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.qb.QueryFieldPanelContainerIFace#getFields()
      */
@@ -53,6 +54,7 @@ public class QueryParameterPanel extends JPanel implements QueryFieldPanelContai
             if (qfp.getQueryField().getIsPrompt())
             {
                 add(qfp);
+                hasPrompts = true;
             }
         }
     }
@@ -119,6 +121,14 @@ public class QueryParameterPanel extends JPanel implements QueryFieldPanelContai
     public boolean isPromptMode()
     {
         return true;
+    }
+
+    /**
+     * @return the hasPrompts
+     */
+    public boolean getHasPrompts()
+    {
+        return hasPrompts;
     }
     
     

@@ -249,7 +249,6 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
                     isPromptCkbx.setSelected(queryField.getIsPrompt() == null ? true : queryField.getIsPrompt());
                 }
                 validator.setHasChanged(false);
-                
             } else
             {
                 validator.reset(true); // tells it it is a new data object
@@ -566,7 +565,7 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
         if (!ownerQuery.isPromptMode())
         {
             isDisplayedCkbx.setSelected(true);
-            isPromptCkbx.setSelected(true);
+            isPromptCkbx.setSelected(!(fieldQRI instanceof RelQRI));
             closeBtn.addMouseListener(new MouseAdapter()
             {
                 @Override

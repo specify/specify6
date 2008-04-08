@@ -1007,7 +1007,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         boolean go = true;
         QueryParameterPanel qpp = new QueryParameterPanel();
         qpp.setQuery(report.getQuery(), tblTree, ttHash);
-        if (rs == null)
+        if (rs == null && qpp.getHasPrompts())
         {
             CustomDialog cd = new CustomDialog((Frame) UIRegistry.getTopWindow(), UIRegistry
                     .getResourceString("QB_GET_REPORT_CONTENTS_TITLE"), true, qpp);
