@@ -349,7 +349,7 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
         String criteriaStr = criteria.getText();
         
         UIFieldFormatterIFace formatter = fieldQRI.getFormatter();
-        if (formatter != null)
+        if (formatter != null && formatter.isOutBoundFormatter())
         {
             // XXX Passing in a string may not always work,
             // We might to convert to the actual type of data for that field.
