@@ -813,7 +813,8 @@ public class QueryTask extends BaseTask
         final DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByShortClassName(shortClassName);
         actionNavBox.add(NavBox.createBtnWithTT(String.format(getResourceString("QB_CREATE_NEWQUERY"), 
                 tableInfo.getTitle()), 
-                name, 
+                tableInfo.getTitle(),
+                //name, 
                 getResourceString("QB_CREATE_NEWQUERY_TT"), 
                 IconManager.STD_ICON_SIZE, new ActionListener() 
         {

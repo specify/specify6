@@ -293,7 +293,12 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         contextPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
 
         JPanel schemaPanel = new JPanel(new BorderLayout());
-        schemaPanel.add(createLabel(UIRegistry.getResourceString("QB_SEARCH_FIELDS")), BorderLayout.NORTH);
+        String schemaPanelCaption = UIRegistry.getResourceString("QB_SEARCH_FIELDS");
+        if (query.getContextTableId() != -1)
+        {
+            schemaPanelCaption = DBTableIdMgr.getInstance().getInfoById(query.getContextTableId()).getTitle() + " " + schemaPanelCaption;
+        }
+        schemaPanel.add(createLabel(schemaPanelCaption), BorderLayout.NORTH);
         schemaPanel.add(scrollPane, BorderLayout.CENTER);
 
         topPanel.add(contextPanel, BorderLayout.WEST);
@@ -308,21 +313,12 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         queryFieldsScroll.setBorder(null);
         add(queryFieldsScroll);
 
+        final JPanel mover = buildMoverPanel(false);
+        add(mover, BorderLayout.EAST);
+        
         searchBtn = createButton(UIRegistry.getResourceString("QB_SEARCH"));
         final JCheckBox distinctChk = createCheckBox(UIRegistry.getResourceString("QB_DISTINCT"));
         distinctChk.setSelected(false);
-        PanelBuilder outer = new PanelBuilder(new FormLayout("f:p:g,p", "p"));
-        PanelBuilder builder = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g,f:p:g,f:p:g", "p"));
-        CellConstraints cc = new CellConstraints();
-        builder.add(searchBtn, cc.xy(2, 1));
-        builder.add(distinctChk, cc.xy(3, 1));
-        final JPanel mover = buildMoverPanel();
-        builder.add(mover, cc.xy(4, 1));
-
-        outer.add(builder.getPanel(), cc.xy(1, 1));
-        outer.add(saveBtn, cc.xy(2, 1));
-        add(outer.getPanel(), BorderLayout.SOUTH);
-
         searchBtn.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
@@ -330,9 +326,17 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 doSearch((TableQRI)tableList.getSelectedValue(), distinctChk.isSelected());
             }
         });
+        
+        PanelBuilder outer = new PanelBuilder(new FormLayout("p, 2dlu, p, 6dlu, p", "p"));
+        CellConstraints cc = new CellConstraints();
+        outer.add(distinctChk, cc.xy(1, 1));
+        outer.add(searchBtn, cc.xy(3, 1));
+        outer.add(saveBtn, cc.xy(5, 1));
+        JPanel bottom = new JPanel(new BorderLayout());
+        bottom.add(outer.getPanel(), BorderLayout.EAST);
+        add(bottom, BorderLayout.SOUTH);
 
         setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-
     }
 
     /**
@@ -706,7 +710,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     /**
      * @return Panel with up and down arrows for moving fields up and down in queryFieldsPanel.
      */
-    protected JPanel buildMoverPanel()
+    protected JPanel buildMoverPanel(final boolean horizontal)
     {
         orderUpBtn = createIconBtn("ReorderUp", "QB_FLD_MOVE_UP", new ActionListener()
         {
@@ -723,11 +727,21 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             }
         });
         
-        PanelBuilder upDownPanel = new PanelBuilder(new FormLayout("f:p:g, p, 2px, p, f:p:g","p"));        
-        CellConstraints cc = new CellConstraints();
-        upDownPanel.add(orderUpBtn,       cc.xy(2, 1));
-        upDownPanel.add(orderDwnBtn,      cc.xy(4, 1));
-
+        PanelBuilder upDownPanel;
+        if (horizontal)
+        {
+            upDownPanel = new PanelBuilder(new FormLayout("f:p:g, p, 2px, p, f:p:g","p"));        
+            CellConstraints cc = new CellConstraints();
+            upDownPanel.add(orderUpBtn,       cc.xy(2, 1));
+            upDownPanel.add(orderDwnBtn,      cc.xy(4, 1));
+        }
+        else
+        {
+            upDownPanel = new PanelBuilder(new FormLayout("p", "f:p:g, p, 2px, p, f:p:g"));        
+            CellConstraints cc = new CellConstraints();
+            upDownPanel.add(orderUpBtn,       cc.xy(1, 2));
+            upDownPanel.add(orderDwnBtn,      cc.xy(1, 4));
+        }
         return upDownPanel.getPanel();
     }
 

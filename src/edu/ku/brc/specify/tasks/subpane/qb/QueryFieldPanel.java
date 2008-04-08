@@ -579,14 +579,16 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
 
         //for now
         boolean isRel = fieldQRI != null && fieldQRI instanceof RelQRI;
-        isNotCheckbox.setEnabled(!isRel);
-        operatorCBX.setEnabled(!isRel);
-        criteria.setEnabled(!isRel);
+        isNotCheckbox.setVisible(!isRel);
+        operatorCBX.setVisible(!isRel);
+        criteria.setVisible(!isRel);
+        this.sortCheckbox.setVisible(!isRel);
         if (!ownerQuery.isPromptMode())
         {
-            isDisplayedCkbx.setEnabled(!isRel);
-            isPromptCkbx.setEnabled(!isRel);
+            isDisplayedCkbx.setVisible(!isRel);
+            isPromptCkbx.setVisible(!isRel);
         }
+        
         validate();
         doLayout();
 
