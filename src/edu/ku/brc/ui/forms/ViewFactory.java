@@ -335,8 +335,6 @@ public class ViewFactory
         {
             // deliberately ignore "cellField.isChangeListenerOnly()"
             // pass in false instead
-
-            
             // THis is the OLD way before the UIFieldFormatter was moved into the DBFieldInfo and also the CellField
             UIFieldFormatterIFace formatter = UIFieldFormatterMgr.getFormatter(uiFormatterName);
             if (formatter == null)
@@ -361,15 +359,21 @@ public class ViewFactory
                 {
                     textField.setEditable(!cellField.isReadOnly());
                 }
+                
                 return textField;
             }
-
+            
+            boolean isPartialOK = cellField.getPropertyAsBoolean("ispartial", false);
+            
             ValFormattedTextField textField = new ValFormattedTextField(formatter, isViewOnly, allEditOK);
+            textField.setPartialOK(isPartialOK);
             textField.setRequired(isRequired);
             
             DataChangeNotifier dcn = validator.hookupComponent(textField,
                                                                cellField.getIdent(),
-                                                               UIValidator.Type.Changed,  cellField.getValidationRule(), false);
+                                                               UIValidator.Type.Changed,  
+                                                               cellField.getValidationRule(), 
+                                                               false);
             if (cellField.isRequired())
             {
                 textField.addDocumentListener(dcn);

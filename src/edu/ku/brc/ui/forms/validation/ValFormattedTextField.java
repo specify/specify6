@@ -91,6 +91,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
     protected boolean                     isChanged      = false;
     protected boolean                     isNew          = false;
     protected boolean                     isViewOnly     = false;
+    protected boolean                     isPartialOK    = false;
     protected Color                       bgColor        = null;
     
     protected JTextField                  viewtextField  = null;
@@ -174,6 +175,21 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
         init(UIFieldFormatterMgr.getFormatter(formatterName), isAllEditable);
     }
     
+    /**
+     * @param isPartialOK the isPartialOK to set
+     */
+    public void setPartialOK(final boolean isPartialOK)
+    {
+        boolean isDifferent = this.isPartialOK != isPartialOK;
+        
+        this.isPartialOK = isPartialOK;
+        
+        if (isDifferent)
+        {
+            setRequired(isRequired); // will adjust the color
+        }
+    }
+
     /* (non-Javadoc)
      * @see javax.swing.JComponent#requestFocus()
      */
@@ -196,17 +212,12 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
         
         createUI();
         
-        if (valtextcolor == null || requiredfieldcolor == null ||viewFieldColor == null)
+        if (!isPartialOK && (valtextcolor == null || requiredfieldcolor == null ||viewFieldColor == null))
         {
             valtextcolor       = AppPrefsCache.getColorWrapper("ui", "formatting", "valtextcolor");
             requiredfieldcolor = AppPrefsCache.getColorWrapper("ui", "formatting", "requiredfieldcolor");
             viewFieldColor     = AppPrefsCache.getColorWrapper("ui", "formatting", "viewfieldcolor");
         }
-        
-        //if (isViewOnly || !formatter.isUserInputNeeded())
-        //{
-        //    setBackground(viewFieldColor.getColor());
-        //}
         
         if (!isViewOnly && comps != null && !isAllEditable)
         {
@@ -435,15 +446,21 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
                 String val = null;
                 if (c instanceof JLabel)
                 {
-                    val = ((JLabel)c).getText();
+                    if (!isPartialOK)
+                    {
+                        val = ((JLabel)c).getText();
+                    }
                 } else
                 {
                     val = ((JTextField)c).getText();
                 }
                 
-                sb.append(val);
+                if (val != null)
+                {
+                    sb.append(val);
+                }
                 
-                if (StringUtils.isEmpty(val))
+                if (!isPartialOK && StringUtils.isEmpty(val))
                 {
                     return null;
                 }
@@ -570,7 +587,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
     {
         super.paint(g);
         
-        if (!isViewOnly && !isNew && valState == UIValidatable.ErrorType.Error && isEnabled())
+        if (!isViewOnly && !isPartialOK && !isNew && valState == UIValidatable.ErrorType.Error && isEnabled())
         {
             Graphics2D g2d = (Graphics2D)g;
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -683,7 +700,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
     public void setRequired(boolean isRequired)
     {
         this.isRequired = isRequired;
-        setBGColor(isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
+        setBGColor(!isPartialOK && isRequired && isEnabled() ? requiredfieldcolor.getColor() : bgColor);
     }
 
     /* (non-Javadoc)
@@ -835,7 +852,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
         }
         
         String fmtVal;
-        if (formatter != null)
+        if (formatter != null && !isPartialOK)
         {
             if (formatter.isInBoundFormatter())
             {
@@ -907,7 +924,10 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
         {
             //validateState();
             changeListener.stateChanged(new ChangeEvent(this));
-            documentListener.changedUpdate(null);
+            if (documentListener != null)
+            {
+                documentListener.changedUpdate(null);
+            }
         }
         currCachedValue = null;
     }
