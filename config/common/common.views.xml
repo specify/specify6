@@ -525,11 +525,9 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="7"/>
-                    <cell type="field" id="7" name="agent" uitype="querycbx" initialize="name=Agent" colspan="4"/>
-                </row>
-                <row>
+                    <cell type="field" id="7" name="agent" uitype="querycbx" initialize="name=Agent"/>
                     <cell type="label" labelfor="8"/>
-                    <cell type="field" id="8" name="appraisalValue" uitype="textarea" rows="3" colspan="10"/>
+                    <cell type="field" id="8" name="appraisalValue" uitype="text"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="5"/>
