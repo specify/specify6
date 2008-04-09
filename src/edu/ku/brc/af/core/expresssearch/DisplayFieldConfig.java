@@ -36,8 +36,9 @@ public class DisplayFieldConfig implements TableNameRendererIFace, Comparable<Di
 
     // Transient
     protected SearchTableConfig      stc;
-    protected boolean                isInUse   = false;
-    protected DBFieldInfo            fieldInfo = null;
+    protected boolean                isInUse        = false;
+    protected boolean                isInitialInUse = false;
+    protected DBFieldInfo            fieldInfo      = null;
     
     /**
      * 
@@ -46,6 +47,7 @@ public class DisplayFieldConfig implements TableNameRendererIFace, Comparable<Di
     {
         // TODO Auto-generated constructor stub
     }
+    
     /**
      * @param fieldName
      * @param formatter
@@ -116,7 +118,22 @@ public class DisplayFieldConfig implements TableNameRendererIFace, Comparable<Di
     {
         this.isInUse = isInUse;
     }
-    
+    /**
+     * 
+     */
+    public void reset()
+    {
+        isInUse = isInitialInUse;
+    }
+
+    /**
+     * @param isInitialInUse the isInitialInUse to set
+     */
+    public void setInitialInUse(boolean isInitialInUse)
+    {
+        this.isInitialInUse = isInitialInUse;
+    }
+
     /**
      * @return the isWebServiceField
      */

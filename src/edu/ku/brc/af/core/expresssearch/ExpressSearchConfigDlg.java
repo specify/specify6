@@ -123,7 +123,9 @@ public class ExpressSearchConfigDlg extends CustomDialog
      */
     public ExpressSearchConfigDlg()
     {
-        super((Frame)UIRegistry.getTopWindow(), getResourceString("ES_DLG_TITLE"), true, OKCANCELHELP, null);
+        super((Frame)UIRegistry.getTopWindow(), getResourceString("ES_DLG_TITLE"), true, OKHELP, null);
+        
+        setOkLabel(getResourceString("Close"));
         
         /*
         Locale german = new Locale("de", "", "");
@@ -567,6 +569,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
                         stc.getSearchFields().remove(sfc);
                     }
                 }
+                
                 for (DisplayFieldConfig dfc : new Vector<DisplayFieldConfig>(stc.getDisplayFields()))
                 {
                     if (!dfc.isInUse())
@@ -574,6 +577,12 @@ public class ExpressSearchConfigDlg extends CustomDialog
                         stc.getDisplayFields().remove(dfc);
                     }
                 }
+                
+                if (!stc.hasConfiguredSearchFields())
+                {
+                    config.removeTable(stc);
+                }
+                
             } else
             {
                 config.removeTable(stc);
