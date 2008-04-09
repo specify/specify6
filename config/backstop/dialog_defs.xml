@@ -2,6 +2,7 @@
 <dialog resourcelabels="">
     <dialog type="search" viewset="Search" view="AccessionSearch"          name="AccessionSearch"          class="edu.ku.brc.specify.datamodel.Accession"      idfield="accessionId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="AgentSearch"              name="AgentSearch"              class="edu.ku.brc.specify.datamodel.Agent"          idfield="agentId" helpcontext="CBXQSearch"/>
+    <dialog type="search" viewset="Search" view="AppraisalSearch"          name="AppraisalSearch"          class="edu.ku.brc.specify.datamodel.Appraisal"      idfield="appraisalId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="AttachmentSearch"         name="AttachmentSearch"         class="edu.ku.brc.specify.datamodel.Attachment"     idfield="attachmentId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="BioStratSearch"           name="BioStratSearch"           class="edu.ku.brc.specify.datamodel.GeologicTimePeriod" idfield="geologicTimePeriodId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="CollectionObjectSearch"   name="CollectionObjectSearch"   class="edu.ku.brc.specify.datamodel.CollectionObject" idfield="collectionObjectId" helpcontext="CBXQSearch"/>
@@ -22,6 +23,7 @@
     <dialog type="display" view="AccessionAgent"     name="AccessionAgentDisplay"    class="edu.ku.brc.specify.datamodel.AccessionAgent"/>
     <dialog type="display" view="Agent"              name="AgentDisplay"             class="edu.ku.brc.specify.datamodel.Agent"/>
     <dialog type="display" view="AgentVariant"       name="AgentVariant"             class="edu.ku.brc.specify.datamodel.AgentVariant"/>
+    <dialog type="display" view="Appraisal"          name="AppraisalDisplay"         class="edu.ku.brc.specify.datamodel.Appraisal"/>
     <dialog type="display" view="AttachmentsForm"    name="AttachmentsForm"          class="edu.ku.brc.specify.datamodel.Attachment"/>
     <dialog type="display" view="GeologicTimePeriod" name="BioStratDisplay"          class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"/>
     <dialog type="display" view="Collector"          name="CollectorDisplay"         class="edu.ku.brc.specify.datamodel.Collector"/>
