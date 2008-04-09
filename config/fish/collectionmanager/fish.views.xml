@@ -95,15 +95,16 @@
                 <row>
                     <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="collectingEvent" uitype="querycbx" formatname="CollectingEventDetail" initialize="name=CollectingEvent" colspan="12"/>
-                </row>  	
+                </row> 
+ 	          <row>
+                    <cell type="label" labelfor="20"/>
+                    <cell type="field" id="20" name="appraisal" uitype="querycbx" initialize="name=Appraisal;title=Appraisal" colspan="12"/>
+                </row>
                 <row>
                     <cell type="separator" label="Preparations" collapse="preparations" colspan="12"/>
                 </row>
                 <row>
                     <cell type="subview" viewname="Preparation" id="8" name="preparations" defaulttype="table" colspan="12"/>
-                </row>
-                <row>
-                    <cell type="subview" viewname="Appraisal" id="30" name="appraisal" colspan="12" />
                 </row>
                 <row>
                     <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectionObjectAttachments" colspan="12" initialize="btn=true;icon=CollectionObjectAttachment"/>
