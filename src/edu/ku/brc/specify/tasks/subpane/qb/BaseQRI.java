@@ -105,7 +105,7 @@ public class BaseQRI implements QryListRendererIFace, Comparable<QryListRenderer
     public boolean equals(Object obj)
     {
         //strictly for the purposes of QueryBldrPane.doSearch()
-        return this.getClass().equals(obj.getClass()) && this.tableTree.equals(((BaseQRI)obj).tableTree);
+        return this.getClass().equals(obj.getClass()) && this.tableTree != null
+            && ((BaseQRI)obj).tableTree != null && this.tableTree.equals(((BaseQRI)obj).tableTree);
     }
-    
 }

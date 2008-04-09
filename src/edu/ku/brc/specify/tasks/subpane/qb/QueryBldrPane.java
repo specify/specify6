@@ -1608,8 +1608,23 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 
                 try
                 {
-                    listBoxList.get(currentInx).repaint();
-                } catch (ArrayIndexOutOfBoundsException ex)
+                    BaseQRI qri = qfp.getFieldQRI() instanceof RelQRI ? qfp.getFieldQRI()
+                            .getTable() : qfp.getFieldQRI();
+                    for (JList lb : listBoxList)
+                    {
+                        if (lb.isVisible())
+                        {
+                            for (int i = 0; i < ((DefaultListModel) lb.getModel()).getSize(); i++)
+                            {
+                                if (((DefaultListModel) lb.getModel()).getElementAt(i) == qri)
+                                {
+                                    lb.repaint();
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (ArrayIndexOutOfBoundsException ex)
                 {
                     log.error(ex);
                 }
@@ -1671,29 +1686,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
         return null;
     }
-
-    /**
-     * Add QueryFieldItem to the list created with a TableFieldPair.
-     * 
-     * @param fieldItem the TableFieldPair to be in the list
-     */
-//    protected void addQueryFieldItem(final SpQueryField field, final boolean loading, final Hashtable<String, TableTree> ttHash)
-//    {
-//        if (field != null)
-//        {
-//            FieldQRI fieldQRI = getFieldQRI(tableTree, field, field.getTableIds(), 0, ttHash);
-//            if (fieldQRI != null)
-//            {
-//                addQueryFieldItem(fieldQRI, field, loading);
-//            }
-//            else
-//            {
-//                log.error("Couldn't find [" + field.getFieldName() + "] [" + field.getTableList()
-//                        + "]");
-//            }
-//        }
-//    }
-    
 
     protected static Vector<QueryFieldPanel> getQueryFieldPanels(final QueryFieldPanelContainerIFace container, 
             final Set<SpQueryField> fields, final TableTree tblTree, 
@@ -1773,7 +1765,25 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     {
                         queryFieldsPanel.add(qfp);
                         queryFieldsPanel.validate();
-                        listBoxList.get(currentInx).repaint();
+                        if (fieldQRI instanceof RelQRI)
+                        {
+                            BaseQRI qri = fieldQRI.getTable();
+                            for (JList lb : listBoxList)
+                            {
+                                if (lb.isVisible())
+                                {
+                                    if (((DefaultListModel) lb.getModel()).contains(qri))
+                                    {
+                                        lb.repaint();
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            listBoxList.get(currentInx).repaint();
+                        }
+                        
                         updateAddBtnState();
                         selectQFP(qfp);
                         queryFieldsPanel.repaint();
