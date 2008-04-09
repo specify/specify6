@@ -403,6 +403,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             if (header)
             {
                 header = false;
+                this.queryFieldsScroll.setColumnHeaderView(qfp);
             }
             else
             {
@@ -416,8 +417,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     }
                 });
                 qfp.resetValidator();
+                queryFieldsPanel.add(qfp);
             }
-            queryFieldsPanel.add(qfp);
         }
         
         SwingUtilities.invokeLater(new Runnable()
@@ -1749,18 +1750,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected void addQueryFieldItem(final FieldQRI fieldQRI, final SpQueryField queryField, final boolean loading)
     {
         if (fieldQRI != null)
-        {
-            final QueryFieldPanel header;
-            if (queryFieldItems.size() == 0 && queryFieldsPanel.getComponentCount() == 0)
-            {
-                header = new QueryFieldPanel(this, fieldQRI,
-                        IconManager.IconSize.Std24, columnDefStr, saveBtn, null);
-            }
-            else
-            {
-                header = null;
-            }
-            
+        {            
             final QueryFieldPanel qfp = new QueryFieldPanel(this, fieldQRI,
                     IconManager.IconSize.Std24, columnDefStr, saveBtn, queryField);
             qfp.addMouseListener(new MouseInputAdapter()
@@ -1781,10 +1771,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 {
                     if (currentInx > -1)
                     {
-                        if (header != null)
-                        {
-                            queryFieldsPanel.add(header);
-                        }
                         queryFieldsPanel.add(qfp);
                         queryFieldsPanel.validate();
                         listBoxList.get(currentInx).repaint();
