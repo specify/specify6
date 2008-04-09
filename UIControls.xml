@@ -167,7 +167,7 @@
 	        </param>
         </params>          
         <subcontrols>
-             <subcontrol type="text" dsp="disptextfield">
+             <subcontrol type="text" dsp="dsptextfield">
                 <desc>Text field that is editable.</desc>
                 <attrs>
 			        <attr name="format" type="string" required="false" default="">
@@ -198,6 +198,12 @@
 	                    <desc>The name of the UIFieldFormatter.</desc>
 	                </attr>
 	            </attrs>
+                <params>
+	                <param name="ispartial" type="boolean" required="false" default="false">
+	                    <desc>Indicates whether the control should accept partially filled in values. This is
+	                    sometimes needed for search dialogs.</desc>
+	                </param>        
+                </params>
             </subcontrol>
             
             <subcontrol type="textwithinfo" dsp="textwithinfo">

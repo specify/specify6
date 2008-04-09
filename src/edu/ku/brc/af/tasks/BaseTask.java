@@ -182,7 +182,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      */
     protected void setIcon(final String iconName)
     {
-        this.icon = IconManager.getIcon(iconName, IconManager.STD_ICON_SIZE);
+        this.icon = IconManager.getIcon(iconName, IconManager.IconSize.Std16);
     }
 
     /**

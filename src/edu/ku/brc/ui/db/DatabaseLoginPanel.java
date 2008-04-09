@@ -409,7 +409,7 @@ public class DatabaseLoginPanel extends JPanel
 
         PanelBuilder formBuilder = new PanelBuilder(new FormLayout("p,3dlu,max(220px;p):g", UIHelper.createDuplicateJGoodiesDef("p", "2dlu", 11)));
         CellConstraints cc = new CellConstraints();
-        formBuilder.addSeparator(getResourceString("logintitle"), cc.xywh(1, 1, 3, 1));
+        formBuilder.addSeparator(getResourceString("LOGINLABEL"), cc.xywh(1, 1, 3, 1));
 
         int y = 3;
         y = addLine("username", username, formBuilder, cc, y);

@@ -1351,7 +1351,7 @@ public final class UIHelper
         }
         JFrame.setDefaultLookAndFeelDecorated(false);
 
-        JFrame frame = new JFrame(getResourceString("logintitle"));
+        JFrame frame = new JFrame(getResourceString("LOGINTITLE"));
         DatabaseLoginPanel panel = new DatabaseLoginPanel(new DBListener(frame, listener, doAutoClose), false);
         frame.setAlwaysOnTop(true);
         panel.setAutoClose(doAutoClose);

@@ -402,7 +402,7 @@ Good: <cell type="field" name="FieldNum" ...>
             <rows>
                 <row>
                     <cell type="label" labelfor="1" label="Number"/>
-                    <cell type="field" id="1" name="AccessionNumber" />
+                    <cell type="field" id="1" name="AccessionNumber" initialize="ispartial=true"/>
                     
                     <cell type="label" labelfor="2" label="Status"/>
                     <cell type="field" id="2" name="Status"  uitype="combobox" picklist="AccessionStatus"/>
@@ -412,7 +412,7 @@ Good: <cell type="field" name="FieldNum" ...>
                     <cell type="field" id="3" name="Type" uitype="combobox" picklist="AccessionType"/>
                     
                     <cell type="label" labelfor="4" label="Division"/>
-                    <cell type="field" id="4" name="Text1" uitype="combobox" initialize="data=Botany,Entomology,Herpetology,Ichthyology,Invertebrate Paleo,Invertebrate Zoology,Mammalogy,Ornithology,Paleobotany,Vertebrate Paleo" valtype="Changed"/>
+                    <cell type="field" id="4" name="division" uitype="combobox" picklist="Division" isrequired="true"/>
                     
                 </row>
                 <row>

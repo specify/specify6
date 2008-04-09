@@ -53,7 +53,7 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
         
         this.listener = listener;
 
-        setTitle(getResourceString("logintitle"));
+        setTitle(getResourceString("LOGINTITLE"));
 
         dbPanel = new DatabaseLoginPanel(this, true);
         setContentPane(dbPanel);
