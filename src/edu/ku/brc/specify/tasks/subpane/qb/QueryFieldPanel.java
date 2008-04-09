@@ -13,6 +13,7 @@ import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Graphics2D;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.FocusEvent;
@@ -27,7 +28,6 @@ import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
@@ -130,7 +130,7 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
                            final FieldQRI      fieldQRI, 
                            final IconManager.IconSize iconSize,
                            final String        columnDefStr,
-                           final JButton       saveBtn,
+                           final Component       saveBtn,
                            final SpQueryField  queryField)
     {        
         this.ownerQuery = ownerQuery;

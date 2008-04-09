@@ -17,6 +17,7 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Point;
@@ -43,11 +44,15 @@ import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -93,6 +98,7 @@ import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.DropDownButton;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.UIHelper;
@@ -146,7 +152,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected JScrollPane                                    scrollPane;
     protected Vector<JScrollPane>                            spList           = new Vector<JScrollPane>();
     protected JPanel                                         contextPanel;
-    protected JButton                                        saveBtn;
+//    protected JButton                                        saveBtn;
+    protected DropDownButton                                        saveBtn;
     protected JButton                                        searchBtn;
     
     protected Hashtable<String, Boolean>                     fieldsToSkipHash = new Hashtable<String, Boolean>();
@@ -201,12 +208,47 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     {
         removeAll();
 
-        saveBtn = createButton(UIRegistry.getResourceString("QB_SAVE"));
+//        saveBtn = createButton(UIRegistry.getResourceString("QB_SAVE"));
+//        saveBtn.addActionListener(new ActionListener()
+//        {
+//            public void actionPerformed(ActionEvent e)
+//            {
+//                if (saveQuery())
+//                {
+//                    saveBtn.setEnabled(false);
+//                }
+//            }
+//        });
+        JMenuItem saveItem = new JMenuItem(UIRegistry.getResourceString("QB_SAVE"));
+        saveItem.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                if (saveQuery(false))
+                {
+                    saveBtn.setEnabled(false);
+                }
+            }
+        });
+        JMenuItem saveAsItem = new JMenuItem(UIRegistry.getResourceString("QB_SAVE_AS"));
+        saveAsItem.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                if (saveQuery(true))
+                {
+                    saveBtn.setEnabled(false);
+                }
+            }
+        });
+        JComponent[] itemSample = { saveItem, saveAsItem };
+        saveBtn = new DropDownButton(UIRegistry.getResourceString("QB_SAVE"), null, 1,
+                java.util.Arrays.asList(itemSample));
         saveBtn.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
             {
-                if (saveQuery())
+                if (saveQuery(false))
                 {
                     saveBtn.setEnabled(false);
                 }
@@ -1114,11 +1156,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     /**
      * 
      */
-    protected boolean saveQuery()
+    protected boolean saveQuery(final boolean saveAs)
     {
-        if (!query.isNamed())
+        if (!query.isNamed() || saveAs)
         {
-            if (!getQueryNameFromUser())
+            if (!getQueryNameFromUser(saveAs))
             {
                 return false;
             }
@@ -1138,7 +1180,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 position++;
             }
 
-            if (query.getSpQueryId() == null)
+            if (query.getSpQueryId() == null || saveAs)
             {
                 queryNavBtn = ((QueryTask) task).saveNewQuery(query, false); // false tells it to
                                                                                 // disable the
@@ -1158,6 +1200,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                         session.beginTransaction();
                         session.saveOrUpdate(query);
                         session.commit();
+                        session.evict(query);
                     }
                     finally
                     {
@@ -1182,7 +1225,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     /**
      * @return true if a valid query name was obtained from user
      */
-    protected boolean getQueryNameFromUser()
+    protected boolean getQueryNameFromUser(final boolean saveAs)
     {
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
@@ -1193,9 +1236,23 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             boolean good = false;
             do
             {
-                if (QueryTask.askUserForInfo("Query", getResourceString("QB_DATASET_INFO"), query))
+                //if (QueryTask.askUserForInfo("Query", getResourceString("QB_DATASET_INFO"), query))
+                //Using above method causes Hibernate 'Dirty Collection' issues for save as.
+                //Currently the only info involved is the name so using a simple dialog box is good enuf.
+                JTextField nameText = new JTextField(newQueryName);
+                JLabel nameLbl = new JLabel(UIRegistry.getResourceString("QB_Q_NAME_PROMPT"));
+                PanelBuilder pane = new PanelBuilder(new FormLayout("4dlu, p, 2dlu, fill:p:grow, 4dlu", "5dlu, p, 5dlu"));
+                CellConstraints cc = new CellConstraints();
+                pane.add(nameLbl, cc.xy(2, 2));
+                pane.add(nameText, cc.xy(4, 2));
+                CustomDialog cd = new CustomDialog((Frame)UIRegistry.getTopWindow(), 
+                        saveAs ? UIRegistry.getResourceString("QB_SAVE_Q_AS_TITLE") : UIRegistry.getResourceString("QB_SAVE_Q_TITLE"), 
+                        true, pane.getPanel());
+                UIHelper.centerAndShow(cd);
+                if (!cd.isCancelled())
                 {
-                    newQueryName = query.getName();
+                    //newQueryName = query.getName();
+                    newQueryName = nameText.getText();
                     if (StringUtils.isNotEmpty(newQueryName) && newQueryName.length() > 64)
                     {
                         UIRegistry.getStatusBar().setErrorMessage(
@@ -1219,6 +1276,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                         else
                         {
                             good = true;
+                            query.setName(newQueryName);
                         }
                     }
                 }
@@ -1690,7 +1748,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected static Vector<QueryFieldPanel> getQueryFieldPanels(final QueryFieldPanelContainerIFace container, 
             final Set<SpQueryField> fields, final TableTree tblTree, 
             final Hashtable<String,TableTree> ttHash,
-            final JButton saveBtn)
+            final Component saveBtn)
     {
         Vector<QueryFieldPanel> result = new Vector<QueryFieldPanel>();
         List<SpQueryField> orderedFlds = new ArrayList<SpQueryField>(fields);
@@ -1726,7 +1784,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                                                         final FieldQRI fieldQRI,
                                                         final SpQueryField fld,
                                                         String colDefStr,
-                                                        final JButton saveBtn)
+                                                        final Component saveBtn)
     {
         if (colDefStr == null) { return new QueryFieldPanel(container, fieldQRI,
                 IconManager.IconSize.Std24, colDefStr, saveBtn, null); }
@@ -2164,7 +2222,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                                                    JOptionPane.YES_NO_CANCEL_OPTION);
             if (rv == JOptionPane.YES_OPTION)
             {
-                saveQuery();
+                saveQuery(false);
             }
             else if (rv == JOptionPane.CANCEL_OPTION || rv == JOptionPane.CLOSED_OPTION)
             {
