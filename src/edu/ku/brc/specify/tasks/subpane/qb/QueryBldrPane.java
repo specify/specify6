@@ -1200,7 +1200,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                         session.beginTransaction();
                         session.saveOrUpdate(query);
                         session.commit();
-                        session.evict(query);
                     }
                     finally
                     {
