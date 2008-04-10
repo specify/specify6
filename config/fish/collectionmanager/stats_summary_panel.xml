@@ -108,7 +108,7 @@
       </box>
       <box title="Locality/Geography">
         <item title="Number of Localities">
-            <sql><statement><![CDATA[SELECT count(*) FROM locality WHERE CollectionMemberID = COLMEMID]]></statement></sql>
+            <sql><statement><![CDATA[SELECT count(*) FROM locality INNER JOIN discipline ON locality.DisciplineID = discipline.DisciplineID WHERE discipline.DisciplineID = DSPLNID]]></statement></sql>
         </item>
         <item title="Number of Geographies">
             <sql><statement><![CDATA[SELECT count(*) FROM geography WHERE GeographyTreeDefID = GEOTREEDEFID]]></statement></sql>
@@ -118,7 +118,7 @@
         </item>
         <item title="Percent Geo Referenced">
             <sql>
-                <statement><![CDATA[SELECT CASE WHEN (SELECT count(*) FROM locality WHERE CollectionMemberID = COLMEMID) = 0 THEN 0 ELSE ((count(localityid) * 1.0) / ((SELECT count(*) FROM locality) * 1.0)) * 100.0 END AS PercentGeoReferencedLocalities FROM locality WHERE not latitude1 is null]]></statement>
+                <statement><![CDATA[SELECT CASE WHEN (SELECT count(*) FROM locality INNER JOIN discipline ON locality.DisciplineID = discipline.DisciplineID WHERE discipline.DisciplineID = DSPLNID) = 0 THEN 0 ELSE ((count(localityid) * 1.0) / ((SELECT count(*) FROM locality) * 1.0)) * 100.0 END AS PercentGeoReferencedLocalities FROM locality WHERE not latitude1 is null]]></statement>
                 <format>%5.2f</format>
             </sql>
         </item>
