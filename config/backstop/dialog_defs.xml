@@ -8,6 +8,7 @@
     <dialog type="search" viewset="Search" view="CollectionObjectSearch"   name="CollectionObjectSearch"   class="edu.ku.brc.specify.datamodel.CollectionObject" idfield="collectionObjectId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="CollectingEventSearch"    name="CollectingEventSearch"    class="edu.ku.brc.specify.datamodel.CollectingEvent" idfield="collectingEventId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="DisciplineSearch"         name="DisciplineSearch"         class="edu.ku.brc.specify.datamodel.Discipline"     idfield="disciplineId" helpcontext="CBXQSearch"/>
+    <dialog type="search" viewset="Search" view="FieldNotebookPageSearch"  name="FieldNotebookPageSearch"  class="edu.ku.brc.specify.datamodel.FieldNotebookPage" idfield="fieldNotebookPageId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="DeterminationSearch"      name="DeterminationSearch"      class="edu.ku.brc.specify.datamodel.Determination"  idfield="determinationId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="GeographySearch"          name="GeographySearch"          class="edu.ku.brc.specify.datamodel.Geography"      idfield="geographyId" helpcontext="CBXQSearch"/>
     <dialog type="search" viewset="Search" view="GeologicTimePeriodSearch" name="GeologicTimePeriodSearch" class="edu.ku.brc.specify.datamodel.GeologicTimePeriod" idfield="geologicTimePeriodId" helpcontext="CBXQSearch"/>
@@ -25,6 +26,7 @@
     <dialog type="display" view="AgentVariant"       name="AgentVariant"             class="edu.ku.brc.specify.datamodel.AgentVariant"/>
     <dialog type="display" view="Appraisal"          name="AppraisalDisplay"         class="edu.ku.brc.specify.datamodel.Appraisal"/>
     <dialog type="display" view="AttachmentsForm"    name="AttachmentsForm"          class="edu.ku.brc.specify.datamodel.Attachment"/>
+    <dialog type="display" view="FieldNotebookPage"  name="FieldNotebookPageDisplay" class="edu.ku.brc.specify.datamodel.FieldNotebookPage"/>
     <dialog type="display" view="GeologicTimePeriod" name="BioStratDisplay"          class="edu.ku.brc.specify.datamodel.GeologicTimePeriod"/>
     <dialog type="display" view="Collector"          name="CollectorDisplay"         class="edu.ku.brc.specify.datamodel.Collector"/>
     <dialog type="display" view="CollectionObject"   name="CollectionObject"         class="edu.ku.brc.specify.datamodel.CollectionObject"/>
