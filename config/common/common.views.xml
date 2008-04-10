@@ -190,6 +190,16 @@
             </altviews>
         </view>
 
+        <view name="FieldNotebookPageSet"
+            class="edu.ku.brc.specify.datamodel.FieldNotebookPageSet" 
+            resourcelables="false">
+            <desc><![CDATA[Field Notebook Page.]]></desc>
+            <altviews>
+                <altview name="FieldNotebookPageSet Edit" viewdef="FieldNotebookPageSet" label="Edit" mode="edit"/>
+                <altview name="FieldNotebookPageSet View" viewdef="FieldNotebookPageSet" label="View" mode="view" default="true"/>
+            </altviews>
+        </view>
+
         <view name="Loan"
             class="edu.ku.brc.specify.datamodel.Loan"
             busrules="edu.ku.brc.specify.datamodel.busrules.LoanBusRules"
@@ -938,10 +948,7 @@
                     <cell type="field" id="1" name="description" uitype="textarea" colspan="10" rows="3"/>
                 </row>
                 <row>
-                    <cell type="separator" label="Page Sets" colspan="12"/>
-                </row>
-                <row>
-                    <cell type="subview" id="11" name="pageSets" viewname="FieldNotebookPage" colspan="12"/>
+                    <cell type="subview" id="11" name="pageSets" viewname="FieldNotebookPageSet" colspan="12"/>
                 </row>
                 
                 <!-- <row>
@@ -1008,6 +1015,44 @@
             </rows>
         </viewdef>
         
+        <viewdef 
+            type="form" 
+            name="FieldNotebookPageSet" 
+            class="edu.ku.brc.specify.datamodel.FieldNotebookPageSet" 
+            gettable="edu.ku.brc.ui.forms.DataGetterForObj" 
+            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            
+            <desc><![CDATA[Form For FieldNotebookPage]]></desc>
+            <columnDef>100px,2px,100px,2px,100px,2px,100px,2px,100px,2px,175px,p:g</columnDef>
+            <rowDef auto="true" sep="2px" cell="p"/>
+            <rows>
+                <row>
+                    <cell type="separator" label="Page Set" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="5"/>
+                    <cell type="field" id="5" name="pages" uitype="querycbx" initialize="name=FieldNotebookPage;title=FieldNotebookPage" colspan="4"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="4"/>
+                    <cell type="field" id="4" name="orderNumber" uitype="text"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="description" uitype="textarea" colspan="10"/>
+                </row>
+
+            <!--     <row>
+                    <cell type="label" labelfor="3"/>
+                    <cell type="field" id="3" name="method" uitype="text"/>
+                    </row>  
+                    <row>
+                    <cell type="separator" label="Attachments"/>
+                    <cell type="subview" id="6" name="attachments" viewname="FieldNotebookPageSetAttachment" initialize="btn=true;icon=FieldNotebookPageSetAttachment;addsearch=true"/>
+                    </row> -->
+            </rows>
+        </viewdef>
+
         <viewdef
             type="form"
             name="Loan"
