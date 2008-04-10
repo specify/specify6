@@ -19,19 +19,16 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Insets;
 import java.awt.RenderingHints;
-import java.awt.datatransfer.DataFlavor;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Vector;
 
-import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -40,7 +37,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
-import javax.swing.border.Border;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -49,7 +45,6 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-import edu.ku.brc.af.tasks.subpane.DroppableTaskPane;
 import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
@@ -58,10 +53,6 @@ import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.MultiStateIconButon;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.dnd.GhostActionable;
-import edu.ku.brc.ui.dnd.GhostGlassPane;
-import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
-import edu.ku.brc.ui.dnd.ShadowFactory;
 import edu.ku.brc.ui.forms.FormHelper;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.ui.forms.validation.DataChangeNotifier;
@@ -79,7 +70,7 @@ import edu.ku.brc.ui.forms.validation.ValTextField;
  * Oct 18, 2007
  *
  */
-public class QueryFieldPanel extends JPanel implements GhostActionable
+public class QueryFieldPanel extends JPanel 
 {
     protected static final Logger log = Logger.getLogger(QueryFieldPanel.class);
     
@@ -115,18 +106,18 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
     protected String[] labelStrs;
     protected String[] comparators;
     
-    public static final DataFlavor    QUERY_FLD_PANE_FLAVOR = new DataFlavor(DroppableTaskPane.class, "QueryFldPane");
-    protected List<DataFlavor>        flavors         = new ArrayList<DataFlavor>(); 
-    GhostMouseInputAdapter            mouseDropAdapter; 
-    protected BufferedImage           shadowBuffer        = null;
-    protected BufferedImage           buffer              = null;
-    protected boolean                 generateImgBuf      = true;    
-    protected static final int SHADOW_SIZE = 10;
-    protected boolean isOver = false;
+//    public static final DataFlavor    QUERY_FLD_PANE_FLAVOR = new DataFlavor(DroppableTaskPane.class, "QueryFldPane");
+//    protected List<DataFlavor>        flavors         = new ArrayList<DataFlavor>(); 
+//    GhostMouseInputAdapter            mouseDropAdapter; 
+//    protected BufferedImage           shadowBuffer        = null;
+//    protected BufferedImage           buffer              = null;
+//    protected boolean                 generateImgBuf      = true;    
+//    protected static final int SHADOW_SIZE = 10;
+//    protected boolean isOver = false;
     protected boolean selected = false;
     
-    protected Border inactiveBorder = BorderFactory.createEmptyBorder(1,1,1,1);
-    protected Border focusBorder    = BorderFactory.createLineBorder(Color.BLACK, 1);
+//    protected Border inactiveBorder = BorderFactory.createEmptyBorder(1,1,1,1);
+//    protected Border focusBorder    = BorderFactory.createLineBorder(Color.BLACK, 1);
     /**
      * Constructor.
      * @param fieldName the field Name
@@ -181,7 +172,10 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
         }
         
         setQueryField(queryField);
-        flavors.add(QueryFieldPanel.QUERY_FLD_PANE_FLAVOR);
+        if (!createAsHeader && getFieldInfo() != null /*this means relationships and tree levels won't get qualified*/)
+        {
+            setToolTipText(getQualifiedLabel(fieldQRI.getTableTree(), true));
+        }
 }
     
     public void updateQueryField()
@@ -542,7 +536,7 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
             sb.append(columnDefStr);
         }
 
-        PanelBuilder builder = new PanelBuilder(new FormLayout(sb.toString(), "p"), this);
+        PanelBuilder builder = new PanelBuilder(new FormLayout("3px, " + sb.toString() + ", 3px", "3px, p, 3px"), this);
         CellConstraints cc = new CellConstraints();
 
         int col = 1;
@@ -550,7 +544,7 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
         {
             if (comp != null)
             {
-                builder.add(comp, cc.xy(col, 1));
+                builder.add(comp, cc.xy(col+1, 2));
             }
             col += 2;
         }
@@ -705,150 +699,6 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
     {
         return ownerQuery.isPromptMode() || isDisplayedCkbx.isSelected();
     }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.dnd.GhostActionable#createMouseInputAdapter()
-     */
-    public void createMouseInputAdapter()
-    {
-        mouseDropAdapter = new GhostMouseInputAdapter(UIRegistry.getGlassPane(), "action", this);
-        mouseDropAdapter.setPaintPositionMode(GhostGlassPane.ImagePaintMode.ABSOLUTE);
-        mouseDropAdapter.setDoAnimationOnDrop(false);
-        addMouseListener(mouseDropAdapter);
-        addMouseMotionListener(mouseDropAdapter);
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.dnd.GhostActionable#doAction(edu.ku.brc.ui.dnd.GhostActionable)
-     */
-    public void doAction(GhostActionable source)
-    {
-       System.out.println(fieldLabel.getText() + " dropped");
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.dnd.GhostActionable#getBufferedImage()
-     */
-    public BufferedImage getBufferedImage()
-    {
-        if (buffer == null || generateImgBuf)
-        {
-            renderOffscreen();
-        }
-        return buffer;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.dnd.GhostActionable#getData()
-     */
-    public Object getData()
-    {
-        // TODO Auto-generated method stub
-        return this;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.dnd.GhostActionable#getDataForClass(java.lang.Class)
-     */
-    public Object getDataForClass(Class<?> classObj)
-    {
-        // TODO Auto-generated method stub
-        return this;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.dnd.GhostActionable#getDragDataFlavors()
-     */
-    public List<DataFlavor> getDragDataFlavors()
-    {
-        return flavors;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.dnd.GhostActionable#getDropDataFlavors()
-     */
-    public List<DataFlavor> getDropDataFlavors()
-    {
-        return flavors;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.dnd.GhostActionable#getMouseInputAdapter()
-     */
-    public GhostMouseInputAdapter getMouseInputAdapter()
-    {
-        return mouseDropAdapter;
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.dnd.GhostActionable#setActive(boolean)
-     */
-    public void setActive(final boolean isActive)
-    {
-        setBorder(isActive ? focusBorder : inactiveBorder);
-        repaint();
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.dnd.GhostActionable#setData(java.lang.Object)
-     */
-    public void setData(Object data)
-    {
-        // TODO Auto-generated method stub
-        
-    }
-    
-    /**
-     * Render the control to a buffer
-     */
-    private void renderOffscreen()
-    {
-        BufferedImage bgBufImg = getBackgroundImageBuffer();
-
-        
-        buffer = new BufferedImage(bgBufImg.getWidth(), bgBufImg.getHeight(), BufferedImage.TYPE_INT_ARGB);
-
-        int shadowWidth  = bgBufImg.getWidth() - getHeight();
-        int shadowHeight = bgBufImg.getHeight() - getHeight();
-
-        int left   = (int)((shadowWidth) * 0.5);
-        int top    = (int)((shadowHeight)* 0.4);
-        int width  = getWidth() - 2;
-        int height = getHeight() - 2;
-
-        Graphics2D g2 = buffer.createGraphics();
-
-        
-        g2.drawImage(bgBufImg, 0, 0, bgBufImg.getWidth(), bgBufImg.getHeight(), null);
-
-        g2.fillRect(left, top, width, height);
-
-        g2.setClip(left, top, width, height);
-        
-        g2.translate(left, top);
-    }
-
-    /**
-     * Returns the BufferedImage of a background shadow. I creates a large rectangle than the orignal image.
-     * @return Returns the BufferedImage of a background shadow. I creates a large rectangle than the orignal image.
-     */
-    private BufferedImage getBackgroundImageBuffer()
-    {
-        if (shadowBuffer == null || generateImgBuf)
-        {
-            ShadowFactory factory = new ShadowFactory(SHADOW_SIZE, 0.17f, Color.BLACK);
-
-            BufferedImage image = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_ARGB);
-
-            Graphics2D g2 = image.createGraphics();
-            g2.setColor(Color.WHITE);
-            g2.fillRect(0, 0, image.getWidth(), image.getHeight());
-            g2.dispose();
-
-            shadowBuffer = factory.createShadow(image);
-        }
-        return shadowBuffer;
-    }
     
     public String getLabel()
     {
@@ -896,16 +746,13 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
         {
             String newLabel = getFieldInfo().getTitle();
             TableTree parent = fieldQRI.getTableTree();
-            if (parent.getTableInfo().getClassObj().equals(Agent.class) && parent.getParent().getTableQRI() != null)
-            //agent (and what others??) generally offers no informative distinguishing info
-            {
-                parent = parent.getParent();
-            }
+            int checkParent = 1;
             do
             {
-                newLabel = parent.getTableQRI().getTitle() + "/" + newLabel;
+                newLabel = getQualifiedLabel(parent, checkParent-- > 0);
                 parent = parent.getParent();
             } while (parent != null && labels.indexOf(newLabel) != -1);
+            
             labelQualified = true;
             fieldLabel.setText(newLabel);
         }
@@ -917,22 +764,18 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
         return fieldLabel.getText();
     }
 
-    /**
-     * @return the isOver
-     */
-    public boolean isOver()
+    protected String getQualifiedLabel(final TableTree parent, final boolean checkParent)
     {
-        return isOver;
+        TableTree reParent = parent;
+        if (checkParent && reParent.getTableInfo().getClassObj().equals(Agent.class)
+                && reParent.getParent().getTableQRI() != null)
+        // agent (and what others??) generally offers no informative distinguishing info
+        {
+            reParent = reParent.getParent();
+        }
+        return reParent.getTableQRI().getTitle() + "/" + getFieldInfo().getTitle();
     }
-
-    /**
-     * @param isOver the isOver to set
-     */
-    public void setOver(boolean isOver)
-    {
-        this.isOver = isOver;
-    }
-
+    
     /* (non-Javadoc)
      * @see javax.swing.JComponent#paint(java.awt.Graphics)
      */
