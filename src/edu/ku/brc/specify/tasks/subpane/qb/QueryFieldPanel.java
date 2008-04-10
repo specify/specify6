@@ -14,12 +14,17 @@ import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Insets;
+import java.awt.RenderingHints;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -51,6 +56,7 @@ import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.SpQueryField;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.MultiStateIconButon;
+import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.dnd.GhostActionable;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
@@ -479,12 +485,6 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
             }
 
         };
-        // comparators = new String[SpQueryField.OperatorType.values().length];
-        // int inx = 0;
-        // for (SpQueryField.OperatorType op : SpQueryField.OperatorType.values())
-        // {
-        // comparators[inx++] = SpQueryField.OperatorType.getString(op.getOrdinal());
-        // }
         comparators = getComparatorList(fieldQRI);
         iconLabel = new JLabel(icon);
         iconLabel.addFocusListener(focusListener);
@@ -504,8 +504,6 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
                 UIValidator.Type.Changed, "", true);
         sortCheckbox.addFocusListener(focusListener);
         sortCheckbox.addActionListener(dcn);
-        // sortCheckbox.setMargin(new Insets(2,2,2,2));
-        // sortCheckbox.setBorder(BorderFactory.createLineBorder(new Color(225,225,225)));
         if (!this.ownerQuery.isPromptMode())
         {
             isDisplayedCkbx = createCheckBox("isDisplayedCkbx");
@@ -933,5 +931,53 @@ public class QueryFieldPanel extends JPanel implements GhostActionable
     public void setOver(boolean isOver)
     {
         this.isOver = isOver;
+    }
+
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#paint(java.awt.Graphics)
+     */
+    @Override
+    public void paint(Graphics g)
+    {
+        // TODO Auto-generated method stub
+        super.paint(g);
+
+        if (selected)
+        {
+            //this block was copied from RolloverCommand.paintComp()
+            
+            g.setColor(RolloverCommand.getActiveColor());
+            Insets insets = getInsets();
+            insets.set(1, 1, 1, 1);
+            Dimension size = getSize();
+            Graphics2D g2d = (Graphics2D) g;
+            g2d
+                    .setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                            RenderingHints.VALUE_ANTIALIAS_ON);
+            RoundRectangle2D.Double rr = new RoundRectangle2D.Double(insets.left, insets.top,
+                    size.width - insets.right - insets.left, size.height - insets.bottom
+                            - insets.top, 10, 10);
+            g2d.draw(rr);
+            rr = new RoundRectangle2D.Double(insets.left + 1, insets.top + 1, size.width
+                    - insets.right - insets.left - 2, size.height - insets.bottom - insets.top - 2,
+                    10, 10);
+            g2d.draw(rr);
+        }
+    }
+
+    /**
+     * @return the selected
+     */
+    public boolean isSelected()
+    {
+        return selected;
+    }
+
+    /**
+     * @param selected the selected to set
+     */
+    public void setSelected(boolean selected)
+    {
+        this.selected = selected;
     }
 }

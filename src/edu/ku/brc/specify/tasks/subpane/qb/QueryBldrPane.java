@@ -56,7 +56,6 @@ import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
-import javax.swing.border.LineBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.MouseInputAdapter;
@@ -208,17 +207,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     {
         removeAll();
 
-//        saveBtn = createButton(UIRegistry.getResourceString("QB_SAVE"));
-//        saveBtn.addActionListener(new ActionListener()
-//        {
-//            public void actionPerformed(ActionEvent e)
-//            {
-//                if (saveQuery())
-//                {
-//                    saveBtn.setEnabled(false);
-//                }
-//            }
-//        });
         JMenuItem saveItem = new JMenuItem(UIRegistry.getResourceString("QB_SAVE"));
         saveItem.addActionListener(new ActionListener()
         {
@@ -254,7 +242,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 }
             }
         });
-
+        UIHelper.setControlSize(saveBtn);
+        //saveBtn.setOverrideBorder(true, BasicBorders.getButtonBorder());
+        
         listBoxPanel = new JPanel(new HorzLayoutManager(2, 2));
 
         Vector<TableQRI> list = new Vector<TableQRI>();
@@ -1873,13 +1863,13 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         {
             if (selectedQFP != null)
             {
-                selectedQFP.setBorder(null);
+                selectedQFP.setSelected(false);
                 selectedQFP.repaint();
             }
             selectedQFP = qfp;
             if (selectedQFP != null)
             {
-                selectedQFP.setBorder(new LineBorder(Color.BLACK));
+                selectedQFP.setSelected(true);
                 selectedQFP.repaint();
                 scrollQueryFieldsToRect(selectedQFP.getBounds());
             }
