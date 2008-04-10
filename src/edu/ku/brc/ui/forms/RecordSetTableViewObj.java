@@ -181,22 +181,23 @@ public class RecordSetTableViewObj extends TableViewObj
             if (StringUtils.isNotBlank(sqlStr))
             {
                 dataObjList.addAll(tempSession.getDataList(sqlStr));
-                if (table != null)
-                {
-                    table.tableChanged(new TableModelEvent(model));
-                }
             }
   
         } else
         {
             this.dataObj = null;
-            // throw exception
         }
-
+        
+        if (table != null)
+        {
+            table.tableChanged(new TableModelEvent(model));
+        }
+        
         if (session == null)
         {
             session = tempSession;
         }
+        
         setDataIntoUI();
     }
     
@@ -227,6 +228,7 @@ public class RecordSetTableViewObj extends TableViewObj
             String sqlStr = DBTableIdMgr.getInstance().getQueryForTable(recordSet);
             if (StringUtils.isNotBlank(sqlStr))
             {
+                dataObjList.clear();
                 dataObjList.addAll(tempSession.getDataList(sqlStr));
                 if (table != null)
                 {
