@@ -1332,6 +1332,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 else
                 {
                     addIt = !tblQRI.getTableTree().getKid(k).getTableInfo().isHidden();
+                    System.out.println(tblQRI.getTableTree().getKid(k).getTableInfo().getTitle());
+                    if (addIt)
+                    {
+                        tblQRI.getTableTree().getKid(k).getTableQRI().determineRel();
+                    }
                 }
                 if (addIt)
                 {
@@ -1452,8 +1457,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                         {
                             if (currentInx != -1)
                             {
-//                                QryListRendererIFace qriFace = (QryListRendererIFace) listBoxList.get(
-//                                        currentInx).getSelectedValue();
                                 JList list = (JList)e.getSource();
                                 QryListRendererIFace qriFace = (QryListRendererIFace) list.getSelectedValue();
                                 if (BaseQRI.class.isAssignableFrom(qriFace.getClass()))
@@ -1476,7 +1479,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                                     {
                                         // add the field
                                         FieldQRI fieldQRI = buildFieldQRI(qri);
-                                        //FieldQRI fieldQRI = (FieldQRI)qri;
                                         SpQueryField qf = new SpQueryField();
                                         qf.initialize();
                                         qf.setFieldName(fieldQRI.getFieldName());
@@ -1518,11 +1520,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 createNewList((TableQRI)item, model);
 
             }
-//            else if (item instanceof RelQRI)
-//            {
-//                createNewList(item, model);
-//            }
-
             listBoxPanel.remove(addBtn);
             listBoxPanel.add(sp);
             listBoxPanel.add(addBtn);
@@ -1560,21 +1557,21 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     }
 
     
-    /**
-     * @param rel
-     * @param classObj
-     * @return false if rel represents a 'system' relationship.
-     */
-    protected static boolean isRelevantRel(final DBRelationshipInfo rel, final Class<?> classObj)
-    {
-        if (classObj.equals(edu.ku.brc.specify.datamodel.Agent.class))
-        {
-            return rel.getColName() == null ||
-                (!rel.getColName().equalsIgnoreCase("modifiedbyagentid") &&
-                 !rel.getColName().equalsIgnoreCase("createdbyagentid"));
-        }
-        return true;
-    }
+//    /**
+//     * @param rel
+//     * @param classObj
+//     * @return false if rel represents a 'system' relationship.
+//     */
+//    protected static boolean isRelevantRel(final DBRelationshipInfo rel, final Class<?> classObj)
+//    {
+//        if (classObj.equals(edu.ku.brc.specify.datamodel.Agent.class))
+//        {
+//            return rel.getColName() == null ||
+//                (!rel.getColName().equalsIgnoreCase("modifiedbyagentid") &&
+//                 !rel.getColName().equalsIgnoreCase("createdbyagentid"));
+//        }
+//        return true;
+//    }
     
     /**
      * @param qri
@@ -1585,26 +1582,12 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         if (qri instanceof FieldQRI) { return (FieldQRI) qri; }
         if (qri instanceof TableQRI)
         {
-            Class<?> classObj = qri.getTableTree().getTableInfo().getClassObj();
-            DBRelationshipInfo relInfo = null;
-            List<DBRelationshipInfo> rels = new LinkedList<DBRelationshipInfo>();
-            for (DBRelationshipInfo rel : qri.getTableTree().getParent().getTableInfo().getRelationships())
+            DBRelationshipInfo relInfo = ((TableQRI)qri).getRelationship();
+            if (relInfo != null)
             {
-                if (rel.getDataClass().equals(classObj) && isRelevantRel(rel, classObj))
-                {
-                    rels.add(rel);
-                }
+                return new RelQRI((TableQRI) qri, relInfo);
             }
-            if (rels.size() == 1)
-            {
-                relInfo = rels.get(0);
-            }
-            else
-            {
-                throw new RuntimeException("unable to determine relationship.");
-            }
-            
-            return new RelQRI((TableQRI) qri, relInfo);
+            throw new RuntimeException(QueryBldrPane.class.getName() + ": unable to determine relationship.");
         }
         throw new RuntimeException("invalid argument: " + qri);
     }
@@ -2074,37 +2057,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
         return true;
     }
-
-    /**
-     * @return
-     */
-//    protected TableTree readTables()
-//    {
-//        TableTree treeRoot = new TableTree("root", "root", "root", null);
-//        try
-//        {
-//            Element root = XMLHelper.readDOMFromConfigDir("querybuilder.xml");
-//            List<?> tableNodes = root.selectNodes("/database/table");
-//            for (Object obj : tableNodes)
-//            {
-//                Element tableElement = (Element) obj;
-//                processForTables(tableElement, treeRoot);
-//            }
-//
-//            tableTreeHash = new Hashtable<String, TableTree>();
-//            for (int t=0; t<treeRoot.getKids(); t++)
-//            {
-//                TableTree tt = treeRoot.getKid(t);
-//                tableTreeHash.put(tt.getName(), tt);
-//                log.debug("Adding[" + tt.getName() + "] to hash");
-//            }
-//        }
-//        catch (Exception ex)
-//        {
-//            ex.printStackTrace();
-//        }
-//        return treeRoot;
-//    }
 
     /**
      * @return
