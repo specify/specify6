@@ -156,6 +156,17 @@
                 <altview name="CatalogNumberingSchemeSearch" viewdef="CatalogNumberingSchemeSearch" label="Edit" mode="edit" validated="true" default="true"/>
             </altviews>
         </view>
+
+        <view 
+          name="ReferenceWorkSearch"
+          class="edu.ku.brc.specify.datamodel.ReferenceWork"
+          usedefbusrule="false"
+          resourcelabels="false">
+          <desc><![CDATA[The ReferenceWork Search Form]]></desc>
+          <altviews>
+             <altview name="ReferenceWorkSearch" viewdef="ReferenceWorkSearch" label="Edit" mode="edit" validated="true" default="true"/>
+          </altviews>
+        </view>
         
         <view name="TaxonSearch"
             class="edu.ku.brc.specify.datamodel.Taxon"
@@ -583,6 +594,26 @@ Good: <cell type="field" name="FieldNum" ...>
                 <row>
                     <cell type="label" labelfor="2" label="Is Numeric"/>
                     <cell type="field" id="2" name="IsNumericOnly" isrequired="true" uitype="text"/>
+                </row>
+            </rows>
+        </viewdef>
+
+        <viewdef type="form"
+            name="ReferenceWorkSearch"
+            class="edu.ku.brc.specify.datamodel.ReferenceWork"
+            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            
+            <desc><![CDATA[The Taxon Search Form]]></desc>
+            <enableRules/>
+            
+            <columnDef>p,3dlu,p</columnDef>
+            <rowDef>p,2dlu,p,2dlu,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="title" isrequired="false" uitype="text"/>
                 </row>
             </rows>
         </viewdef>
