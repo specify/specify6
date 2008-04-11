@@ -224,8 +224,12 @@ public class DataBuilder
         agent.setTitle(title);
         agent.setEmail(email);
         
-        agent.getDisciplines().add(Discipline.getCurrentDiscipline());
-        Discipline.getCurrentDiscipline().getAgents().add(agent);
+        Discipline discipline = Discipline.getCurrentDiscipline();
+        if (discipline != null)
+        {   
+            agent.getDisciplines().add(Discipline.getCurrentDiscipline());
+            Discipline.getCurrentDiscipline().getAgents().add(agent);
+        }
 
         persist(agent);
         return agent;
@@ -848,9 +852,9 @@ public class DataBuilder
                                           final String  tableName,
                                           final String  fieldName,
                                           final String  formatter,
-                                          boolean       readOnly, 
-                                          int           sizeLimit,
-                                          Boolean       isSystem)
+                                          final boolean readOnly, 
+                                          final int     sizeLimit,
+                                          final Boolean isSystem)
     {
         PickList pickList = new PickList();
         pickList.initialize();
@@ -862,6 +866,11 @@ public class DataBuilder
         pickList.setReadOnly(readOnly);
         pickList.setSizeLimit(sizeLimit);
         pickList.setIsSystem(isSystem);
+        
+        Collection collection = Collection.getCurrentCollection();
+        pickList.setCollection(collection);
+        collection.getPickLists().add(pickList);
+        
         persist(pickList);
         return pickList;
     }

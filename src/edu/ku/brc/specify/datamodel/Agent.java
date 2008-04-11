@@ -742,7 +742,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
      * @return the discipline
      */
    @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
-   @JoinTable(name = "agent_discpline", joinColumns = 
+   @JoinTable(name = "agent_discipline", joinColumns = 
            { 
                @JoinColumn(name = "AgentID", unique = false, nullable = false, insertable = true, updatable = false) 
            }, 

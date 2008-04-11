@@ -574,7 +574,9 @@ public class SpecifyDBConverter
                     
                     DataBuilder.getSession().getTransaction().commit();
 
-                    conversion.convertCollectionObjectDefs(specifyUser.getSpecifyUserId());
+                    boolean isEmbddedCE = false; // XXX Hard-coded for now
+                    int     catSeriesId = 0;
+                    conversion.convertCollectionObjectDefs(specifyUser.getSpecifyUserId(), isEmbddedCE, catSeriesId);
                     SpecifyUser.setCurrentUser(specifyUser);
 
                 } else
@@ -638,26 +640,7 @@ public class SpecifyDBConverter
 
                 frame.incOverall();
                 
-                frame.setDesc("Converting USYS Tables.");
-                log.info("Converting USYS Tables.");
-                boolean copyUSYSTables = false;
-                if (copyUSYSTables || doAll)
-                {
-                    conversion.convertUSYSTables();
-                    frame.incOverall();
-                    
-                    frame.setDesc("Converting Division.");
-                    conversion.createPickListsFromXML(null);
-                    conversion.createPickListsFromXML(discipline);
-                    frame.incOverall();
-                    
-                } else
-                {
-                    frame.incOverall();
-                    frame.incOverall();
-                }
-                
-                frame.setDesc("Converting Determinations Records");
+               frame.setDesc("Converting Determinations Records");
                 log.info("Converting Determinations Records");
                 boolean doDeterminations = false;
                 if (doDeterminations || doAll)
@@ -842,6 +825,24 @@ public class SpecifyDBConverter
                 }
                 frame.incOverall();
                 
+                frame.setDesc("Converting USYS Tables.");
+                log.info("Converting USYS Tables.");
+                boolean copyUSYSTables = false;
+                if (copyUSYSTables || doAll)
+                {
+                    conversion.convertUSYSTables();
+                    frame.incOverall();
+                    
+                    frame.setDesc("Converting Division.");
+                    conversion.createPickListsFromXML(null);
+                    conversion.createPickListsFromXML(discipline);
+                    frame.incOverall();
+                    
+                } else
+                {
+                    frame.incOverall();
+                    frame.incOverall();
+                }
                 
                 frame.setDesc("Localizing the Schema");
                 conversion.doLocalizeSchema();

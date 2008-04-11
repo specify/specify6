@@ -316,6 +316,28 @@ public class BasicSQLUtils
     }
     
     /**
+     * Returns the ID of the record that was just inserted.
+     * @param stmt the insert statement
+     * @return null on error, or the ID
+     */
+    public static Integer getInsertedId(final Statement stmt)
+    {
+        try
+        {
+            ResultSet resultSet = stmt.getGeneratedKeys(); 
+    
+            if ( resultSet != null && resultSet.next() ) 
+            { 
+                return resultSet.getInt(1); 
+            }
+        } catch (SQLException ex)
+        {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+    
+    /**
      * Executes an SQL Update command
      * @param stmt Statement object to execute the SQL
      * @param cmdStr the SQL string to execute
@@ -1064,9 +1086,12 @@ public class BasicSQLUtils
             ResultSet         rs   = stmt.executeQuery(sqlStr);
             ResultSetMetaData rsmd = rs.getMetaData();
 
+            
+            System.out.println(toTableName);
             Hashtable<String, Integer> fromHash = new Hashtable<String, Integer>();
             for (int i = 1; i <= rsmd.getColumnCount(); i++)
             {
+                System.out.println(rsmd.getColumnName(i));
                 fromHash.put(rsmd.getColumnName(i), i);
             }
             // System.out.println("Num Cols: "+rsmd.getColumnCount());
@@ -1189,12 +1214,12 @@ public class BasicSQLUtils
                     String        colName          = newFieldName.getName();
                     String        oldMappedColName = null;
                     
-                    /*System.out.println("["+newFieldName.getName()+"]");
-                    if (newFieldName.getName().equals("DeaccessionPreparationID"))
+                    System.out.println("["+newFieldName.getName()+"]");
+                    if (newFieldName.getName().equals("DisciplineID"))
                     {
                         int x = 0;
                         x++;
-                    }*/
+                    }
 
                     // Get the Old Column Index from the New Name
                     Integer columnIndex = fromHash.get(colName);
@@ -1207,7 +1232,8 @@ public class BasicSQLUtils
                             columnIndex = fromHash.get(oldMappedColName);
 
                         } else if (isOptionOn(SHOW_NAME_MAPPING_ERROR) &&
-                                   (ignoreMappingFieldNames == null || ignoreMappingFieldNames.get(colName) == null))
+                                   (ignoreMappingFieldNames == null || 
+                                    ignoreMappingFieldNames.get(colName) == null))
                         {
                             log.error("No Map for table ["+fromTableName+"] from New Name[" + colName + "] to Old Name["+oldMappedColName+"]");
                         }
@@ -1252,7 +1278,8 @@ public class BasicSQLUtils
 
                             } else
                             {
-                                if (isOptionOn(SHOW_NAME_MAPPING_ERROR) && ignoreMappingFieldIDs == null || ignoreMappingFieldIDs.get(oldMappedColName) == null)
+                                if (isOptionOn(SHOW_NAME_MAPPING_ERROR) && 
+                                        (ignoreMappingFieldIDs == null || ignoreMappingFieldIDs.get(oldMappedColName) == null))
                                 {
                                     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                                     // XXX Temporary fix so it doesn't hide other errors
@@ -1375,11 +1402,11 @@ public class BasicSQLUtils
                         }
                         if (i > 0) str.append(", ");
                         
-                        if (newFieldName.getName().equals("DivisionID"))
+                        /*if (newFieldName.getName().equals("DivisionID"))
                         {
                             int x= 0;
                             x++;
-                        }
+//                        }*/
                         
                         BasicSQLUtilsMapValueIFace valueMapper = columnValueMapper.get(newFieldName.getName());
                         if (valueMapper != null)
