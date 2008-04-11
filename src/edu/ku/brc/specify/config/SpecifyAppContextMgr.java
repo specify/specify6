@@ -77,6 +77,7 @@ import edu.ku.brc.ui.forms.persist.ViewIFace;
 import edu.ku.brc.ui.forms.persist.ViewLoader;
 import edu.ku.brc.ui.forms.persist.ViewSet;
 import edu.ku.brc.ui.forms.persist.ViewSetIFace;
+import edu.ku.brc.util.Pair;
 
 /**
  * This class provides the current context of the Specify application. The context consists of the following:<br>
@@ -117,6 +118,11 @@ public class SpecifyAppContextMgr extends AppContextMgr
     protected Hashtable<String, SpAppResourceDir>   spAppResourceHash = new Hashtable<String, SpAppResourceDir>();
     protected Hashtable<String, List<ViewSetIFace>> viewSetHash       = new Hashtable<String, List<ViewSetIFace>>();
     
+    // This hashes the Pair "Name of the ViewSetMgr" and the "Directory" where it is loaded from
+    // which enables it to easily reload anyone of them from disk when the ViewSetMgr is reverted.
+    // The key to the hash is the name of the "Virtual Directory Level" found above.
+    protected Hashtable<String, Pair<String, File>> viewSetMgrHash    = new Hashtable<String, Pair<String, File>>();
+    
 
     protected String         databaseName          = null;
     protected String         userName              = null;
@@ -124,7 +130,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
     protected Agent          currentUserAgent      = null;
 
-    protected boolean        debug                 = false;
+    protected boolean        debug                 = true;
     protected long           lastLoadTime          = 0;
     protected long           lastLoadTimeBS        = 0;
     protected UnhandledExceptionDialog dlg         = null;
@@ -148,6 +154,16 @@ public class SpecifyAppContextMgr extends AppContextMgr
         return (SpecifyAppContextMgr)AppContextMgr.getInstance();
     }
 
+    /**
+     * Returns the String name of the level given a level index.
+     * @param index the index of the level
+     * @return the name of the level
+     */
+    public static String getVirtualDirName(final int index)
+    {
+        String[] levels = {PERSONALDIR, USERTYPEDIR, COLLECTIONDIR, DISCPLINEDIR, COMMONDIR, BACKSTOPDIR};
+        return levels[index];
+    }
 
     /**
      * @return the viewSetHash
@@ -176,7 +192,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
     }
     
     /**
-     * @return
+     * Opens a session global to this object for loading
+     * @return the session
      */
     protected DataProviderSessionIFace openSession()
     {
@@ -195,6 +212,9 @@ public class SpecifyAppContextMgr extends AppContextMgr
         return globalSession;
     }
     
+    /**
+     * Closes the global session.
+     */
     protected void closeSession()
     {
         if (globalSession != null)
@@ -477,6 +497,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     }
     
     /**
+     * Get SpAppResourceDir from database.
      * @param sessionArg
      * @param specifyUser
      * @param discipline
@@ -562,39 +583,148 @@ public class SpecifyAppContextMgr extends AppContextMgr
         
         return null;
     }
+    
+    /**
+     * @param virtualDirName
+     */
+    public AppResourceIFace revertResource(final String virtualDirName,
+                                           final AppResourceIFace appRes)
+    {
+        Pair<String, File> pair = viewSetMgrHash.get(virtualDirName);
+        
+        AppResourceMgr   appResMgr = new AppResourceMgr();
+        AppResourceIFace newAppRes = appResMgr.loadResourceByName(pair.second, appRes.getName());
+        return newAppRes;
+    }
+    
+    /**
+     * @param virtualDirName
+     */
+    public SpViewSetObj revertViewSet(final String virtualDirName,
+                                      final String vsoName)
+    {
+        Pair<String, File> pair = viewSetMgrHash.get(virtualDirName);
+        if (pair != null)
+        {
+            SpAppResourceDir spAppResourceDir = spAppResourceHash.get(virtualDirName);
+            if (spAppResourceDir != null)
+            {
+                SpViewSetObj fndVSO = null;
+                for (SpViewSetObj vso : spAppResourceDir.getSpPersistedViewSets())
+                {
+                    if (vso.getName().equals(vsoName))
+                    {
+                        fndVSO = vso;
+                        break;
+                    }
+                }
+                
+                if (fndVSO != null)
+                {
+                    DataProviderSessionIFace session = null;
+                    try
+                    {
+                        session = DataProviderFactory.getInstance().createSession();
+                        session.attach(spAppResourceDir);
+                        spAppResourceDir.getSpPersistedViewSets().remove(fndVSO);
+                        spAppResourceDir.getSpViewSets().remove(fndVSO);
+                        session.beginTransaction();
+                        session.save(spAppResourceDir);
+                        session.delete(fndVSO);
+                        
+                        session.commit();
+                        session.flush();
+                        
+                        String viewSetMgrName = pair.first;
+                        File   loadFromDir    = pair.second;
+                        if (viewSetMgrName != null && loadFromDir != null)
+                        {
+                            SpViewSetObj vso = loadViewSetMgrFromDir(spAppResourceDir, viewSetMgrName, loadFromDir);
+                            return vso;
+                        }
+                        
+                    } catch (Exception ex)
+                    {
+                        ex.printStackTrace();
+                        session.rollback();
+                        
+                    } finally
+                    {
+                        if (session != null)
+                        {
+                            session.close();
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Loads a ViewSetMgr from a directory and adds it to the AppResourceDir object.
+     * @param spAppResourceDir the parent object
+     * @param viewSetMgrName the name of the manager
+     * @param dir the directory it is loaded from
+     * @return the ViewSetMgr
+     */
+    protected SpViewSetObj loadViewSetMgrFromDir(final SpAppResourceDir spAppResourceDir,
+                                                 final String           viewSetMgrName, 
+                                                 final File             dir)
+    {
+        SpViewSetObj vso = null;
+        ViewSetMgr viewSetMgr = new ViewSetMgr(viewSetMgrName, dir);
+        for (ViewSetIFace vs : viewSetMgr.getViewSets())
+        {
+            vso = new SpViewSetObj();
+            vso.initialize();
 
+            // Set up File Name to load the ViewSet
+            vso.setFileName(dir.getAbsoluteFile() + File.separator + vs.getFileName());
+
+            vso.setLevel((short)0);
+            vso.setName(vs.getName());
+
+            vso.setSpAppResourceDir(spAppResourceDir);
+            spAppResourceDir.getSpViewSets().add(vso);
+        }
+        return vso;
+    }
+    
     /**
      * Creates an AppResourceDefault object from a directory (note the Id will be null).
+     * @param virtualDirName
+     * @param spAppResourceDir
+     * @param viewSetMgrName
      * @param dir the directory in question)
      * @return a new AppResourceDefault object
      */
-    protected SpAppResourceDir fillAppResourceDefFromDir(final SpAppResourceDir spAppResourceDir,
-                                                         final String viewSetMgrName, 
-                                                         final File dir)
+    protected SpAppResourceDir mergeAppResourceDirFromDiskDir(final String           virtualDirName,
+                                                              final SpAppResourceDir spAppResourceDir,
+                                                              final String           viewSetMgrName, 
+                                                              final File             dir)
     {
         if (debug) log.debug("Creating AppResourceDef from Dir ["+dir.getAbsolutePath()+"]");
         
+        viewSetMgrHash.put(virtualDirName, new Pair<String, File>(viewSetMgrName, dir));
+        
+        // Checks to see if there are any ViewSet Resources that may have already been 
+        // loaded from the database. If not, then load then from the Directory (file system)
         if (spAppResourceDir.getSpViewSets().size() == 0)
         {
-            ViewSetMgr viewSetMgr = new ViewSetMgr(viewSetMgrName, dir);
-            for (ViewSetIFace vs : viewSetMgr.getViewSets())
-            {
-                SpViewSetObj vso = new SpViewSetObj();
-                vso.initialize();
-    
-                // Set up File Name to load the ViewSet
-                vso.setFileName(dir.getAbsoluteFile() + File.separator + vs.getFileName());
-    
-                vso.setLevel((short)0);
-                vso.setName(vs.getFileName());
-    
-                vso.setSpAppResourceDir(spAppResourceDir);
-                spAppResourceDir.getSpViewSets().add(vso);
-            }
+            if (debug) log.debug("Loading ViewSets from Dir ["+dir.getAbsolutePath()+"]");
+            loadViewSetMgrFromDir(spAppResourceDir, viewSetMgrName, dir);
+            
+        } else
+        {
+            if (debug) log.debug("ViewSets came from the database ["+dir.getAbsolutePath()+"]");
         }
 
+        // Now load all the other generic XML resources 
         AppResourceMgr appResMgr = new AppResourceMgr(dir);
         
+        // Load and Hash the Persisted AppResources to we don't load any disk based
+        // resource "over on top" of the database loaded resources
         Hashtable<String, SpAppResource> hash = new Hashtable<String, SpAppResource>();
         for (SpAppResource appRes : spAppResourceDir.getSpPersistedAppResources())
         {
@@ -602,6 +732,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             hash.put(fName, appRes);
         }
         
+        // Now check and merge the two
         for (SpAppResource appRes : appResMgr.getSpAppResources())
         {
             String fName = FilenameUtils.getName(appRes.getFileName());
@@ -629,23 +760,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
         
         SpAppResourceDir spAppResourceDir = new SpAppResourceDir();
         spAppResourceDir.initialize();
-
-        ViewSetMgr viewSetMgr = new ViewSetMgr(viewSetMgrName, dir);
-        for (ViewSetIFace vs : viewSetMgr.getViewSets())
-        {
-            SpViewSetObj vso = new SpViewSetObj();
-            vso.initialize();
-
-            // Set up File Name to load the ViewSet
-            vso.setFileName(dir.getAbsoluteFile() + File.separator + vs.getFileName());
-
-            vso.setLevel((short)0);
-            vso.setName(vs.getFileName());
-
-            vso.setSpAppResourceDir(spAppResourceDir);
-            spAppResourceDir.getSpViewSets().add(vso);
-
-        }
+        
+        loadViewSetMgrFromDir(spAppResourceDir, viewSetMgrName, dir);
 
         AppResourceMgr appResMgr = new AppResourceMgr(dir);
         for (SpAppResource appRes : appResMgr.getSpAppResources())
@@ -678,6 +794,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         
         return strBuf.toString();
     }
+
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.AppContextMgr#setContext(java.lang.String, java.lang.String, boolean)
@@ -758,65 +875,93 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
             String disciplineStr = discipline.getName().toLowerCase();
             
+            //---------------------------------------------------------
             // This is the Full Path User / Discipline / Collection / UserType / isPersonal
             // For example: rods/fish/fish/collectionmanager / true (meaning the usr's personal space)
+            //---------------------------------------------------------
             SpAppResourceDir appResDir = getAppResDir(session, user, discipline, collection, userType, true, true);
             spAppResourceList.add(appResDir);
             spAppResourceHash.put(PERSONALDIR, appResDir);
+            viewSetMgrHash.put(PERSONALDIR, new Pair<String, File>(null, null));
             
+            //---------------------------------------------------------
             // This is the Full Path User / Discipline / Collection / UserType
             // For example: rods/fish/fish/collectionmanager
+            //---------------------------------------------------------
             appResDir = getAppResDir(session, user, discipline, collection, userType, false, true);
             File dir = XMLHelper.getConfigDir(disciplineStr + File.separator + userType);
             if (dir.exists())
             {
-                fillAppResourceDefFromDir(appResDir, disciplineStr+" "+userType, dir);
+                mergeAppResourceDirFromDiskDir(USERTYPEDIR, appResDir, disciplineStr+" "+userType, dir);
             }
             spAppResourceList.add(appResDir);
             spAppResourceHash.put(USERTYPEDIR, appResDir);
             
+            //---------------------------------------------------------
             // This is the Full Path User / Discipline / Collection
             // For example: rods/fish/fish
+            //---------------------------------------------------------
             appResDir = getAppResDir(session, user, discipline, collection, null, false, true);
             spAppResourceList.add(appResDir);
             spAppResourceHash.put(COLLECTIONDIR, appResDir);
+            viewSetMgrHash.put(COLLECTIONDIR, new Pair<String, File>(null, null));
 
+            //---------------------------------------------------------
             // This is the Full Path User / Discipline
             // For example: rods/fish
+            //---------------------------------------------------------
             appResDir = getAppResDir(session, user, discipline, null, null, false, true);
             dir = XMLHelper.getConfigDir(disciplineStr);
             if (dir.exists())
             {
-                fillAppResourceDefFromDir(appResDir, disciplineStr, dir);
+                mergeAppResourceDirFromDiskDir(DISCPLINEDIR, appResDir, disciplineStr, dir);
             }
             spAppResourceList.add(appResDir);
             spAppResourceHash.put(DISCPLINEDIR, appResDir);
 
+            //---------------------------------------------------------
             // Common Views 
+            //---------------------------------------------------------
             dir = XMLHelper.getConfigDir("common");
             if (dir.exists())
             {
                 SpAppResourceDir appResDef = createAppResourceDefFromDir("Common", dir);
                 appResDef.setUserType("Common");
                 
-                if (debug) log.debug("Adding4 "+getSpAppResDefAsString(appResDef));
                 spAppResourceList.add(appResDef);
                 spAppResourceHash.put(COMMONDIR, appResDir);
             }
 
+            //---------------------------------------------------------
             // BackStop
-            appResDir = getAppResDir(session, user, discipline, null, "BackStop", false, true);
-            dir = XMLHelper.getConfigDir("backstop");
-            if (dir.exists())
+            //---------------------------------------------------------
+            if (true)
             {
-                fillAppResourceDefFromDir(appResDir, "backstop", dir);
+                dir = XMLHelper.getConfigDir("backstop");
+                if (dir.exists())
+                {
+                    SpAppResourceDir appResDef = createAppResourceDefFromDir("BackStop", dir);
+                    appResDef.setUserType("BackStop");
+                    
+                    spAppResourceList.add(appResDef);
+                    spAppResourceHash.put(BACKSTOPDIR, appResDir);
+                }
+            } else
+            {   // this is the old way
+                // I don't think we want to merge 
+                appResDir = getAppResDir(session, user, discipline, null, "BackStop", false, true);
+                dir = XMLHelper.getConfigDir("backstop");
+                if (dir.exists())
+                {
+                    mergeAppResourceDirFromDiskDir(BACKSTOPDIR, appResDir, "backstop", dir);
+                }
+                spAppResourceList.add(appResDir);
+                spAppResourceHash.put(BACKSTOPDIR, appResDir);
             }
-            spAppResourceList.add(appResDir);
-            spAppResourceHash.put(BACKSTOPDIR, appResDir);
-
+            
             // We close the session here so all SpAppResourceDir get unattached to hibernate
             // because UIFieldFormatterMgr and loading views all need a session
-            // and we don't want to reuse in and get a double session
+            // and we don't want to reuse it and get a double session
             closeSession();
             session = null;
             
@@ -1054,6 +1199,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 session.saveOrUpdate(appResDir);
                 session.saveOrUpdate(spAppResource);
                 session.commit();
+                session.flush();
                 
                 return true;
                 
@@ -1283,6 +1429,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                     appRes.setDataAsString(xmlStr);
                     session.saveOrUpdate(appRes);
                     session.commit();
+                    session.flush();
                     
                 } catch (Exception ex)
                 {
@@ -1392,6 +1539,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 session.evict(appResDir);
                 session.delete(appRes);
                 session.commit();
+                session.flush();
+                
                 return true;
             } catch (Exception ex)
             {
@@ -1432,11 +1581,18 @@ public class SpecifyAppContextMgr extends AppContextMgr
         protected File locationDir;
         protected Hashtable<String, SpAppResource> appResources = null;
 
-        public AppResourceMgr(final File file)
+        public AppResourceMgr()
         {
-            locationDir = file;
-            appResources = new Hashtable<String, SpAppResource>();
-            init(locationDir);
+            locationDir = null;
+        }
+        
+        public AppResourceMgr(final File locationDir)
+        {
+            this.locationDir = locationDir;
+            
+            appResources     = new Hashtable<String, SpAppResource>();
+            
+            init(locationDir, null);
 
         }
 
@@ -1453,11 +1609,30 @@ public class SpecifyAppContextMgr extends AppContextMgr
         {
             appResources.put(appRes.getName(), appRes);
         }
+        
+        /**
+         * @param locDir
+         * @param resName
+         * @return
+         */
+        public AppResourceIFace loadResourceByName(final File locDir, final String resName)
+        {
+            locationDir  = locDir;
+            appResources = new Hashtable<String, SpAppResource>();
+            
+            init(locDir, resName);
+            
+            if (appResources.size() == 1)
+            {
+                return appResources.values().iterator().next();
+            }
+            return null;
+        }
 
         /**
          * Reads in the App Resource for a disciplineType
          */
-        protected void init(final File file)
+        protected void init(final File file, final String resName)
         {
             if (file.exists())
             {
@@ -1470,7 +1645,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                         {
                             Element fileElement = (Element) i.next();
                             String  name        = getAttr(fileElement, "name", null);
-                            if (appResources.get(name) == null)
+                            if (appResources.get(name) == null && (resName == null || name.equals(resName)))
                             {
                                 Integer level    = getAttr(fileElement, "level", 0);
                                 String mimeType  = getAttr(fileElement, "mimetype", null);

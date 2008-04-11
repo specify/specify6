@@ -186,7 +186,7 @@ public class Appraisal extends DataModelObjBase
     /**
      * @return the appraisalValue
      */
-    @Column(name = "AppraisalValue", unique = false, nullable = true, insertable = true, updatable = true, precision = 12, scale = 10)
+    @Column(name = "AppraisalValue", unique = false, nullable = true, insertable = true, updatable = true, precision = 12, scale = 2)
     public BigDecimal getAppraisalValue()
     {
         return appraisalValue;

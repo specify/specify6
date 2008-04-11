@@ -575,6 +575,12 @@ public final class UIHelper
         {
             return StringUtils.isNotEmpty(dataStr) ? Double.parseDouble(dataStr) : null;
             
+        } else if (cls == BigDecimal.class)
+        {
+            System.out.println(BigDecimal.valueOf(Double.parseDouble(dataStr)));
+            
+            return StringUtils.isNotEmpty(dataStr) ? BigDecimal.valueOf(Double.parseDouble(dataStr)) : null;
+            
         } else if (cls == Long.class)
         {
             return StringUtils.isNotEmpty(dataStr) ? Long.parseLong(dataStr) : null;

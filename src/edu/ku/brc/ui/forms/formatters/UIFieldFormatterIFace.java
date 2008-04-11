@@ -130,12 +130,12 @@ public interface UIFieldFormatterIFace
     public boolean getByYear();
     
     /**
-     * Sets by year flag on first year field found
+     * Sets by year flag on first year field found.
      */
     public void setByYear(boolean byYear);
     
     /**
-     * @return whether this formatter can be set by year or not 
+     * @return whether this formatter can be set by year or not.
      */
     public boolean byYearApplies();
     
@@ -149,14 +149,14 @@ public interface UIFieldFormatterIFace
      * Indicates whether the value should be formatted on the way 'out' of the UI before it is set into the data object.
      * @return whether the value should be formatted on the way 'out' of the UI before it is set into the data object
      */
-    public abstract boolean isOutBoundFormatter();
+    public abstract boolean isFromUIFormatter();
 
     /**
-     * Formats a value after retrieval from the UI before it goes to the data object
+     * Formats a value after retrieval from the UI before it goes to the data object.
      * @param data the value to be formatted
      * @return the new formatted value
      */
-    public abstract Object formatOutBound(final Object data);
+    public abstract Object formatFromUI(final Object data);
 
     /**
      * @return true if this formatter can for/should format values before they get to the UI
@@ -168,7 +168,7 @@ public interface UIFieldFormatterIFace
      * @param data the value to be formatted
      * @return the new formatted value
      */
-    public abstract Object formatInBound(final Object data);
+    public abstract Object formatToUI(final Object data);
 
     /**
      * @return the class that is used for generating the next number in the sequence.

@@ -216,10 +216,26 @@ public class DataEntryTask extends BaseTask
                 try
                 {
                     Vector<Object> dataObjList = new Vector<Object>();
-                    formDataObj = FormHelper.createAndNewDataObj(Class.forName(view.getClassName()));
-                    dataObjList.add(formDataObj);
-                    dataObj = dataObjList;
-                    //dataObj = formDataObj;
+                    String         className   = view.getClassName();
+                    if (StringUtils.isNotEmpty(className))
+                    {
+                        try
+                        {
+                            Class<?> dataClass = Class.forName(className);
+                            formDataObj = FormHelper.createAndNewDataObj(dataClass);
+                            dataObjList.add(formDataObj);
+                            dataObj = dataObjList;
+                            //dataObj = formDataObj;
+                            
+                        } catch (Exception ex)
+                        {
+                            log.error("The Class["+className+"] couldn't be created.");
+                        }
+                        
+                    } else
+                    {
+                        log.error("Class name is empty for view["+view.getName()+"]");
+                    }
                     
                 } catch (Exception ex)
                 {

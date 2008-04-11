@@ -342,7 +342,6 @@ public class ViewSetMgr
             log.error(msg);
             throw new ConfigurationException(msg);
         } 
-
     }
 
     /**

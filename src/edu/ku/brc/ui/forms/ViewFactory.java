@@ -2093,12 +2093,12 @@ public class ViewFactory
      * @param options the options needed for creating the form
      * @return the form
      */
-    public TableViewObj buildRecordSetTableViewable(final ViewIFace        view,
-                                                    final AltViewIFace     altView,
-                                                    final MultiView   parentView,
+    public TableViewObj buildRecordSetTableViewable(final ViewIFace    view,
+                                                    final AltViewIFace altView,
+                                                    final MultiView    parentView,
                                                     @SuppressWarnings("unused")
-                                                    final int         options,
-                                                    final Color       bgColor)
+                                                    final int          options,
+                                                    final Color        bgColor)
     {
         RecordSetTableViewObj rsTableViewObj = null;
         try

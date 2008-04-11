@@ -567,8 +567,10 @@ public class BaseBusRules implements BusinessRulesIFace
                         session.close();
                     }
                 }
+            } else
+            {
+                return STATUS.OK;
             }
-            
         } else
         {
             reasonList.add(getErrorMsg("GENERIC_NUMBER_MISSING", numFieldName, dataClass));

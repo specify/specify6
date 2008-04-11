@@ -33,6 +33,7 @@ import org.dom4j.io.SAXReader;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.ui.forms.GenericBusRules;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.util.DatamodelHelper;
 
 /**
@@ -579,6 +580,26 @@ public class DBTableIdMgr
     public DBInfoVisibleIterator<DBTableInfo> getVisableTabless()
     {
         return new DBInfoVisibleIterator<DBTableInfo>(tables);
+    }
+    
+    /**
+     * Returns the UIFieldFormatterIFace for a given Table Class and field Name.
+     * @param tableClass the name of the class to look up
+     * @param fieldName the field name
+     * @return null or the formatter
+     */
+    public static UIFieldFormatterIFace getFieldFormatterFor(final Class<?> tableClass, final String fieldName)
+    {
+        DBTableInfo ti = DBTableIdMgr.getInstance().getByShortClassName(tableClass.getSimpleName());
+        if (ti != null)
+        {
+            DBFieldInfo fi = ti.getFieldByName(fieldName);
+            if (fi != null)
+            {
+                return fi.getFormatter();
+            }
+        }
+        return null;
     }
 
 }

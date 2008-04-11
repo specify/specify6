@@ -339,7 +339,7 @@ public class TextFieldWithInfo extends JPanel implements GetSetValueIFace, AppPr
                 UIFieldFormatterIFace uiFieldFormatter = UIFieldFormatterMgr.getFormatter(uiFieldFormatterName);
                 if (uiFieldFormatter != null)
                 {
-                    newVal = uiFieldFormatter.formatOutBound(val[0]).toString();
+                    newVal = uiFieldFormatter.formatFromUI(val[0]).toString();
                 } else
                 {
                     

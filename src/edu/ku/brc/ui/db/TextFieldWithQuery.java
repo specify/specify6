@@ -356,7 +356,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
         currentText = textField.getText();
         if (uiFieldFormatter != null)
         {
-            currentText = uiFieldFormatter.formatOutBound(currentText).toString();
+            currentText = uiFieldFormatter.formatFromUI(currentText).toString();
         } 
         //System.out.println(currentText);
         
@@ -408,7 +408,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             String text = textField.getText();
             if (uiFieldFormatter != null)
             {
-                text = uiFieldFormatter.formatOutBound(text).toString();
+                text = uiFieldFormatter.formatFromUI(text).toString();
             }
             doQuery(text);
         }
@@ -418,7 +418,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     {
         if (uiFieldFormatter != null)
         {
-            textField.setText(uiFieldFormatter.formatInBound(text).toString());
+            textField.setText(uiFieldFormatter.formatToUI(text).toString());
         } else
         {
             textField.setText(text);
@@ -518,7 +518,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 String label = str;
                 if (uiFieldFormatter != null)
                 {
-                    label = uiFieldFormatter.formatInBound(label).toString();
+                    label = uiFieldFormatter.formatToUI(label).toString();
                 }
                 JMenuItem mi = new JMenuItem(label);
                 setControlSize(mi);
@@ -594,17 +594,27 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 
             } else
             {
-                selectSB.append(displayColumns);
+                //if (StringUtils.contains(displayColumns, ','))
+                //{
+                //    for (String fld : StringUtils.)
+                //} else
+                //{
+                    selectSB.append(tableInfo.getAbbrev());    
+                    selectSB.append(".");    
+                    selectSB.append(displayColumns);
+                //}
                 selectSB.append(",");
                 selectSB.append(tableInfo.getAbbrev());    
                 selectSB.append(".");    
                 selectSB.append(tableInfo.getIdFieldName());    
             }
+            System.err.println( selectSB.toString());
+            
             sql = StringUtils.replace(sqlTemplate, "%s1", selectSB.toString());
             sql = StringUtils.replace(sql, "%s2", whereSB.toString());
             sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
             
-            //System.err.println(sql);
+            System.err.println(sql);
             
             return sql;
         }

@@ -348,12 +348,12 @@ public class QueryFieldPanel extends JPanel
         String criteriaStr = criteria.getText();
         
         UIFieldFormatterIFace formatter = fieldQRI.getFormatter();
-        if (formatter != null && formatter.isOutBoundFormatter())
+        if (formatter != null && formatter.isFromUIFormatter())
         {
             // XXX Passing in a string may not always work,
             // We might to convert to the actual type of data for that field.
             // i.e. convert it from a String to an Integer.
-            criteriaStr = formatter.formatOutBound(criteriaStr).toString();
+            criteriaStr = formatter.formatFromUI(criteriaStr).toString();
         }
             
         if (hasCriteria())

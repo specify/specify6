@@ -263,7 +263,7 @@ public class Accession extends DataModelObjBase implements java.io.Serializable,
     /**
      * @return the totalValue
      */
-    @Column(name = "TotalValue", unique = false, nullable = true, insertable = true, updatable = true, precision = 12, scale = 10)
+    @Column(name = "TotalValue", unique = false, nullable = true, insertable = true, updatable = true, precision = 12, scale = 2)
     public BigDecimal getTotalValue()
     {
         return totalValue;

@@ -647,7 +647,7 @@
         <table id="117" tableid="10" name="CollectingEventSearch" priority="1" color="30, 144, 255">
             <detailView icon="CollectionObject">
                 <sql>
-                    <![CDATA[SELECT CollectingEventID, StationFieldNumber, StartDate FROM collectingevent WHERE CollectionMemberID = COLMEMID AND (%s)]]>
+                    <![CDATA[SELECT CollectingEventID, StationFieldNumber, StartDate FROM collectingevent WHERE DisciplineID = DSPLNID AND (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="10" col="CollectingEventID" visible="false"/>

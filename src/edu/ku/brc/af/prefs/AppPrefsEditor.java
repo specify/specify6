@@ -225,6 +225,8 @@ public class AppPrefsEditor extends JPanel implements TableModelListener, ListSe
             {
                 appPrefs.put(key, aValue.toString());
             }
+            
+            
         }
 
         public void addTableModelListener(TableModelListener l)

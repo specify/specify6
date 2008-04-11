@@ -126,6 +126,7 @@ public class LogView extends HttpServlet
     {
         ExecutorService glExecServ = Executors.newFixedThreadPool(25);
         
+        int cnt = 0;
         for (String id: usageData.keySet())
         {
             final List<String> record = usageData.get(id);
@@ -135,6 +136,8 @@ public class LogView extends HttpServlet
             st.nextToken();
             final String ipAddr = st.nextToken().trim();
             
+            cnt++;
+            System.out.println(cnt + " / " + usageData.keySet().size());
             Runnable hostnameLookup = new Runnable()
             {
                 public void run()
@@ -190,4 +193,51 @@ public class LogView extends HttpServlet
         return "Short description";
     }
     // </editor-fold>
+    
+     
+    protected void processStats()
+    {
+        try
+        {
+            PrintWriter out = new PrintWriter(new File("stats.html"));
+            out.println("<html>");
+            out.println("<head>");
+            out.println("<title>Usage Stats Log Viewer</title>");
+            out.println("</head>");
+            out.println("<body>");
+            
+            File usageLog = new File("/Users/rod/usage_log.txt");
+            
+            Hashtable<String, List<String>> usageData = summarizeUsageData(usageLog);
+            
+            // augment the records by adding the hostname to the end of the IP address
+            performReverseDNS(usageData);
+            
+            out.println("<h3>Records found: " + usageData.keySet().size() + "</h3><br/>");
+            
+            out.println("<pre>");
+            for (String id: usageData.keySet())
+            {
+                for (String entry: usageData.get(id))
+                {
+                    out.println("\t" + entry);
+                }
+                out.println();
+            }
+            
+            out.println("</pre>");
+            out.println("</body>");
+            out.println("</html>");
+            out.close();
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
+    public static void main(String[] args)
+    {
+        LogView lv = new LogView();
+        lv.processStats();
+    }
 }

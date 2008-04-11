@@ -229,7 +229,7 @@ public class CatalogNumberUIFieldFormatter implements UIFieldFormatterIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#isOutBoundFormatter()
      */
-    public boolean isOutBoundFormatter()
+    public boolean isFromUIFormatter()
     {
         return isNumericCatalogNumber;
     }
@@ -237,7 +237,7 @@ public class CatalogNumberUIFieldFormatter implements UIFieldFormatterIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#formatOutBound(java.lang.Object)
      */
-    public Object formatOutBound(final Object data)
+    public Object formatFromUI(final Object data)
     {
         if (isNumericCatalogNumber)
         {
@@ -261,7 +261,7 @@ public class CatalogNumberUIFieldFormatter implements UIFieldFormatterIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#formatInBound(java.lang.Object)
      */
-    public Object formatInBound(Object data)
+    public Object formatToUI(Object data)
     {
         if (isNumericCatalogNumber)
         {        

@@ -129,7 +129,7 @@ public class QBJRDataSourceBase implements JRDataSource
         UIFieldFormatterIFace formatter = columnInfo.get(fldIdx).getUiFieldFormatter();
         if (formatter != null && formatter.isInBoundFormatter())
         {
-            return formatter.formatInBound(obj);
+            return formatter.formatToUI(obj);
         }
         
         return obj;

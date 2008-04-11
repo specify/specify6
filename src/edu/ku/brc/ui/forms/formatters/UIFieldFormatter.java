@@ -21,7 +21,6 @@ import java.util.Calendar;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 
 import edu.ku.brc.dbsupport.AutoNumberIFace;
 import edu.ku.brc.ui.DateWrapper;
@@ -44,7 +43,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
     public enum PartialDateEnum {None, Full, Month, Year}
     public enum FormatterType   {generic, date, numeric} // all lower case to follow convention in uiformatters.xml
 
-    private static final Logger log = Logger.getLogger(UIFieldFormatter.class);
+    //private static final Logger log = Logger.getLogger(UIFieldFormatter.class);
 
     protected String               fieldName;
     protected String               name;
@@ -413,7 +412,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#isOutBoundFormatter()
      */
-    public boolean isOutBoundFormatter()
+    public boolean isFromUIFormatter()
     {
         return false;
     }
@@ -421,9 +420,10 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#formatOutBound(java.lang.Object)
      */
-    public Object formatOutBound(final Object data)
+    public Object formatFromUI(final Object data)
     {
-        throw new RuntimeException("Can't call this when isOutBoundFormatter returns false.");
+        // Just pass it on through
+        return data;
     }
 
     /* (non-Javadoc)
@@ -457,7 +457,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#formatInBound(java.lang.Object)
      */
-    public Object formatInBound(Object data)
+    public Object formatToUI(Object data)
     {
         boolean isStr = data instanceof String;
         
@@ -479,7 +479,6 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
            return pattern;
         }
         return data;
-        //throw new RuntimeException("Can't call this when isInBoundFormatter returns false.");
     }
 
     /* (non-Javadoc)

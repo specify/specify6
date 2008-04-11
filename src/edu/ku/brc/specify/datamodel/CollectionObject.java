@@ -681,7 +681,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
     /**
      * @return the totalValue
      */
-    @Column(name = "TotalValue", unique = false, nullable = true, insertable = true, updatable = true, precision = 12, scale = 10)
+    @Column(name = "TotalValue", unique = false, nullable = true, insertable = true, updatable = true, precision = 12, scale = 2)
     public BigDecimal getTotalValue()
     {
         return totalValue;
@@ -1124,7 +1124,7 @@ public class CollectionObject extends CollectionMember implements AttachmentOwne
             UIFieldFormatterIFace fmt = UIFieldFormatterMgr.getFormatter("CatalogNumber");
             if (fmt != null)
             {
-                return fmt.formatInBound(catalogNumber).toString();
+                return fmt.formatToUI(catalogNumber).toString();
             }
         }
         return fieldNumber != null ? fieldNumber : super.getIdentityTitle();

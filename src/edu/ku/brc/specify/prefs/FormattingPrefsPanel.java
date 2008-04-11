@@ -11,6 +11,8 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
@@ -181,10 +183,19 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
         String iconName = AppPreferences.getRemote().get("ui.formatting.disciplineicon", "CollectionObject");
         
         List<Pair<String, ImageIcon>> list = IconManager.getListByType("disciplines", IconManager.IconSize.Std16);
+        Collections.sort(list, new Comparator<Pair<String, ImageIcon>>() {
+            public int compare(Pair<String, ImageIcon> o1, Pair<String, ImageIcon> o2)
+            {
+                String s1 = UIRegistry.getResourceString(o1.first);
+                String s2 = UIRegistry.getResourceString(o2.first);
+                return s1.compareTo(s2);
+            }
+        });
+        
+        disciplineCBX = (ValComboBox)form.getCompById("disciplineIconCBX");
         
         final JLabel dispLabel = (JLabel)form.getCompById("disciplineIcon");
-        disciplineCBX = (ValComboBox)form.getCompById("disciplineIconCBX");
-        JComboBox          comboBox  = disciplineCBX.getComboBox();
+        JComboBox    comboBox  = disciplineCBX.getComboBox();
         comboBox.setRenderer(new DefaultListCellRenderer()
         {
             @SuppressWarnings("unchecked")

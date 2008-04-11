@@ -83,6 +83,7 @@ import edu.ku.brc.specify.datamodel.Shipment;
 import edu.ku.brc.specify.ui.LoanReturnDlg;
 import edu.ku.brc.specify.ui.LoanSelectPrepsDlg;
 import edu.ku.brc.specify.ui.LoanReturnDlg.LoanReturnInfo;
+import edu.ku.brc.specify.ui.db.AskForNumbersDlg;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
@@ -93,15 +94,19 @@ import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.ViewBasedDialogFactoryIFace;
 import edu.ku.brc.ui.db.CommandActionForDB;
 import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
+import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
 import edu.ku.brc.ui.dnd.Trash;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.TableViewObj;
 import edu.ku.brc.ui.forms.Viewable;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatter;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.ui.forms.persist.ViewIFace;
 import edu.ku.brc.ui.forms.validation.UIValidatable;
 
@@ -570,6 +575,37 @@ public class InteractionsTask extends BaseTask
     }
     
     /**
+     * @return
+     */
+    protected RecordSetIFace askForCatNumbersRecordSet()
+    {
+        AskForNumbersDlg dlg = new AskForNumbersDlg("AFN_COLOBJ_TITLE", "AFN_LABEL", CollectionObject.class, "catalogNumber");
+        dlg.setVisible(true);
+        if (!dlg.isCancelled())
+        {
+            return dlg.getRecordSet();
+        }
+        return null;
+    }
+    
+    /**
+     * @return
+     */
+    protected boolean askToEnterCatNumbers()
+    {
+        Object[] options = { 
+                getResourceString("NEW_LOAN_USE_RS"), 
+                getResourceString("NEW_LOAN_ENTER_CATNUM") 
+              };
+        int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+                                                     getResourceString("NEW_LOAN_CHOOSE_RSOPT"), 
+                                                     getResourceString("NEW_LOAN_CHOOSE_RSOPT_TITLE"), 
+                                                     JOptionPane.YES_NO_CANCEL_OPTION,
+                                                     JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+        return userChoice == JOptionPane.NO_OPTION;
+    }
+    
+    /**
      * Creates a new loan from a RecordSet.
      * @param recordSet the recordset to use to create the loan
      */
@@ -593,7 +629,19 @@ public class InteractionsTask extends BaseTask
                     rsList.add(rs);
                 }
             }
-            recordSet = askForRecordSet(CollectionObject.getClassTableId(), rsList);
+            
+            if (rsList.size() == 0)
+            {
+                recordSet = askForCatNumbersRecordSet();
+                
+            } else if (askToEnterCatNumbers())
+            {
+                
+            } else
+            {
+                recordSet = askForRecordSet(CollectionObject.getClassTableId(), rsList);
+            }
+            
             if (recordSet == null)
             {
                 return;

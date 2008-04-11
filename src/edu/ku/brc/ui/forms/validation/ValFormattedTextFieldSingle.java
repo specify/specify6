@@ -675,7 +675,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
         
         if (formatter.isInBoundFormatter())
         {
-            setText((String)formatter.formatInBound(data));
+            setText((String)formatter.formatToUI(data));
             needsUpdating = StringUtils.isEmpty(data) && formatter.getAutoNumber() != null && formatter.isIncrementer();
             
         } else
@@ -719,11 +719,11 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
         }
         // else
         String val = getText();
-        if (formatter.isOutBoundFormatter())
+        if (formatter.isFromUIFormatter())
         {
             if (StringUtils.isNotEmpty(val))
             {
-                return formatter.formatOutBound(getText());
+                return formatter.formatFromUI(getText());
             }
         }
         return val;

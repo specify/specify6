@@ -537,7 +537,7 @@ public class DataObjFieldFormatMgr
                             UIFieldFormatterIFace fmt = UIFieldFormatterMgr.getFormatter(field.getUiFieldFormatter());
                             if (fmt != null)
                             {
-                                strBuf.append(fmt.formatInBound(value));
+                                strBuf.append(fmt.formatToUI(value));
                             } else
                             {
                                 strBuf.append(value);
@@ -618,7 +618,7 @@ public class DataObjFieldFormatMgr
                                 UIFieldFormatterIFace fmt = UIFieldFormatterMgr.getFormatter(field.getUiFieldFormatter());
                                 if (fmt != null)
                                 {
-                                    strBuf.append(fmt.formatInBound(value));
+                                    strBuf.append(fmt.formatToUI(value));
                                 } else
                                 {
                                     strBuf.append(value);

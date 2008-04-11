@@ -45,7 +45,7 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
     protected static final Logger log = Logger.getLogger(SpecifyQueryAdjusterForDomain.class);
     
     private static final String SPECIFYUSERID  = "SPECIFYUSERID";
-    private static final String DIVISIONID     = "DIVISIONID";
+    private static final String DIVID          = "DIVID";
     private static final String DSPLNID        = "DSPLNID";
     private static final String COLMEMID       = "COLMEMID";
     private static final String COLLID         = "COLLID";
@@ -278,12 +278,12 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                     adjSQL = StringUtils.replace(adjSQL, SPECIFYUSERID, Integer.toString(id));
                 }
                 
-                if (StringUtils.contains(adjSQL, DIVISIONID))
+                if (StringUtils.contains(adjSQL, DIVID))
                 {
                     Integer divId = Agent.getUserAgent().getDivision() != null ? Agent.getUserAgent().getDivision().getDivisionId() : null;
                     if (divId != null)
                     {
-                        adjSQL = StringUtils.replace(adjSQL, DIVISIONID, Integer.toString(divId));
+                        adjSQL = StringUtils.replace(adjSQL, DIVID, Integer.toString(divId));
                     }
                 }
                 

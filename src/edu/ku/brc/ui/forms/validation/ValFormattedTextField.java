@@ -858,7 +858,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
             {
                 needsUpdating = StringUtils.isEmpty(data) && formatter.getAutoNumber() != null && formatter.isIncrementer();
                 
-                fmtVal = (String)formatter.formatInBound(data);
+                fmtVal = (String)formatter.formatToUI(data);
                 
             } else 
             {
@@ -891,11 +891,11 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
         }
         // else
         String val = getText();
-        if (formatter.isOutBoundFormatter())
+        if (formatter.isFromUIFormatter())
         {
             if (StringUtils.isNotEmpty(val))
             {
-                return formatter.formatOutBound(getText());
+                return formatter.formatFromUI(getText());
             }
         }
         return val;
@@ -984,7 +984,9 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
 
             String text = getText();
 
-            if (isEnabled() && text != null && text.length() < bgStr.length())
+            int bgStrLen = bgStr == null ? 0 : bgStr.length();
+            int txtLen   = text  == null ? 0 : text.length();
+            if (isEnabled() && txtLen < bgStrLen)
             {
                 FontMetrics fm   = g.getFontMetrics();
                 int          w   = fm.stringWidth(text);

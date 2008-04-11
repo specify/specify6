@@ -170,10 +170,10 @@ public class Scriptlet extends JRDefaultScriptlet
      */
     public String formatCatNo(String catalogNumber) throws JRScriptletException
     {
-        log.debug("********* Catalog Formatter["+catalogFormatter+"]["+(catalogFormatter != null ? catalogFormatter.isOutBoundFormatter() : "")+"]["+catalogNumber+"]");
+        log.debug("********* Catalog Formatter["+catalogFormatter+"]["+(catalogFormatter != null ? catalogFormatter.isFromUIFormatter() : "")+"]["+catalogNumber+"]");
         if (catalogFormatter != null && catalogFormatter.isInBoundFormatter())
         {
-            return catalogFormatter.formatInBound(catalogNumber).toString();
+            return catalogFormatter.formatToUI(catalogNumber).toString();
         }
         return catalogNumber;
     }

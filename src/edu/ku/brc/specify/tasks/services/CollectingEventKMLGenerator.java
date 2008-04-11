@@ -323,7 +323,7 @@ public class CollectingEventKMLGenerator
             sb.append("<td><center>");
             if (formatter != null)
             {
-                sb.append(formatter.formatInBound(coHash.get(tax).getCatalogNumber()));                
+                sb.append(formatter.formatToUI(coHash.get(tax).getCatalogNumber()));                
             } else
             {
                 sb.append(coHash.get(tax).getCatalogNumber());    

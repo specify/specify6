@@ -298,7 +298,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                 UIFieldFormatterIFace formatter = captionInfo != null ? captionInfo.get(column).getUiFieldFormatter() : null;
                 if (formatter != null && formatter.isInBoundFormatter())
                 {
-                    return formatter.formatInBound(obj);
+                    return formatter.formatToUI(obj);
                 }
                 if (obj == null)
                 {
