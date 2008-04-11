@@ -8,7 +8,7 @@
  -->
 <typesearches>
     <typesearch tableid="7"   name="Accession"              searchfield="accessionNumber" displaycols="accessionNumber"    format="%s"     dataobjformatter=""/>
-    <typesearch tableid="5"   name="Agent"                  searchfield="ag.lastName"        displaycols="ag.lastName,ag.firstName" format="%s, %s" dataobjformatter="Agent">
+    <typesearch tableid="5"   name="Agent"                  searchfield="lastName"        displaycols="lastName,ag.firstName" format="%s, %s" dataobjformatter="Agent">
         SELECT %s1 FROM Agent ag JOIN ag.disciplines as dsp WHERE dsp.disciplineId = DSPLNID AND %s2
     </typesearch>
     <typesearch tableid="67"  name="Appraisal"              searchfield="appraisalNumber" displaycols="appraisalNumber"    format="%s"     dataobjformatter=""/>
