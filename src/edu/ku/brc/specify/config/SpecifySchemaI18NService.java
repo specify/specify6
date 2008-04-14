@@ -87,6 +87,7 @@ public class SpecifySchemaI18NService extends SchemaI18NService
               "splocalecontainer.SchemaType = " + schemaType +" AND splocalecontainer.DisciplineID = " + disciplineId;
         
         retrieveString(sql);
+        
         for (Vector<String> p : results)
         {
             DBTableInfo ti = mgr.getInfoByTableName(p.get(0));

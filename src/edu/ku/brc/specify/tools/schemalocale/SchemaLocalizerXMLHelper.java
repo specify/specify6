@@ -265,6 +265,8 @@ public class SchemaLocalizerXMLHelper implements LocalizableIOIFace
                             SpLocaleContainerItem item = new SpLocaleContainerItem();
                             item.initialize();
                             item.setName(fi.getName());
+                            item.setWebLinkName(fi.getWebLinkName());
+                            
                             nameStr = new SpLocaleItemStr();
                             nameStr.initialize();
                             //nameStr.setText(UIHelper.makeNamePretty(fi.getDataClass().getSimpleName()));

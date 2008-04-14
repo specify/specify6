@@ -6,14 +6,14 @@
  */
 package edu.ku.brc.specify.tools.schemalocale;
 
+import static edu.ku.brc.ui.UIHelper.adjustButtonArray;
 import static edu.ku.brc.ui.UIHelper.createButton;
 import static edu.ku.brc.ui.UIHelper.createCheckBox;
 import static edu.ku.brc.ui.UIHelper.createComboBox;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIHelper.createList;
-import static edu.ku.brc.ui.UIHelper.createTextField;
 import static edu.ku.brc.ui.UIHelper.createTextArea;
-import static edu.ku.brc.ui.UIHelper.adjustButtonArray;
+import static edu.ku.brc.ui.UIHelper.createTextField;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Dimension;
@@ -377,7 +377,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         		dlg.setVisible(true);
         		
         		// set combo selection to formatter selected in dialog
-        		if (dlg.getBtnPressed() == dlg.OK_BTN)
+        		if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
         		{
         			DataObjSwitchFormatter format = dlg.getSelectedFormatter();
         			

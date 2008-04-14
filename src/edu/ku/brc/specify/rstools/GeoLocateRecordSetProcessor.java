@@ -74,7 +74,7 @@ public class GeoLocateRecordSetProcessor extends GeoRefRecordSetProcessorBase im
      */
     public String getName()
     {
-        return "GeoLocate"; 
+        return "GEOLocate"; 
     }
 
     /* (non-Javadoc)

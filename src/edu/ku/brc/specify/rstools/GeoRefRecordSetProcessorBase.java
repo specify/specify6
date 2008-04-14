@@ -36,7 +36,7 @@ import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.RecordSetItem;
 
 /**
- * Implements the RecordSetToolsIFace for GeoReferenceing with Biogeomancer.
+ * Implements the RecordSetToolsIFace for GeoReferenceing with BioGeomancer.
  * 
  * @author rod
  *

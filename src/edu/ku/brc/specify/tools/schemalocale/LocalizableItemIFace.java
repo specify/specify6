@@ -111,4 +111,13 @@ public interface LocalizableItemIFace
      */
     public abstract void setPickListName(String pickListName);
 
+    /**
+     * @return
+     */
+    public abstract String getWebLinkName();
+
+    /**
+     * @param webLinkName the webLinkName to set
+     */
+    public abstract void setWebLinkName(String webLinkName);
 }

@@ -46,9 +46,10 @@ public class DBFieldInfo extends DBInfoBase implements DBTableChildIFace
     
     // Transient
     protected String                pickListName = null;
-    protected UIFieldFormatterIFace formatter  = null;
-    protected String                formatStr  = null;
-    protected Class<?>              dataClass  = null;
+    protected UIFieldFormatterIFace formatter    = null;
+    protected String                formatStr    = null;
+    protected Class<?>              dataClass    = null;
+    protected String                webLinkName  = null;
     
     
 
@@ -179,6 +180,22 @@ public class DBFieldInfo extends DBInfoBase implements DBTableChildIFace
     public void setPickListName(String pickListName)
     {
         this.pickListName = pickListName;
+    }
+
+    /**
+     * @return the webLinkName
+     */
+    public String getWebLinkName()
+    {
+        return webLinkName;
+    }
+
+    /**
+     * @param webLinkName the webLinkName to set
+     */
+    public void setWebLinkName(String webLinkName)
+    {
+        this.webLinkName = webLinkName;
     }
 
     public Class<?> getDataClass()

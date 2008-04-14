@@ -141,12 +141,12 @@ public class LocalityGeoRefPlugin extends JButton implements GetSetValueIFace,
         if (doGeoLocate)
         {
             setIcon(IconManager.getIcon("BioGeoMancer32", IconManager.IconSize.Std16));
-            setText("GeoLocate");
+            setText("GEOLocate");
             
         } else
         {
             setIcon(IconManager.getIcon("BioGeoMancer32", IconManager.IconSize.Std16));
-            setText("Biogeomancer");
+            setText("BioGeomancer");
         }
     }
     

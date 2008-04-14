@@ -232,6 +232,7 @@ public class BuildSampleDatabase
     private static final Logger  log      = Logger.getLogger(BuildSampleDatabase.class);
     
     protected static boolean     debugOn  = false;
+    protected static Hashtable<String, Boolean> fieldsToHideHash = new Hashtable<String, Boolean>();
 
     protected Calendar           calendar = Calendar.getInstance();
     protected Session            session;
@@ -264,6 +265,7 @@ public class BuildSampleDatabase
     protected int                 NUM_COLOBJS   = 50000;
     
     protected boolean             doHugeBotany = false;
+    
     
     /**
      * 
@@ -5022,12 +5024,12 @@ public class BuildSampleDatabase
         
         frame.setProcess(++createStep);
         
-        boolean done = false;
+        //boolean done = false;
         if (isChoosen(DisciplineType.STD_DISCIPLINES.fish, false) ||
             isChoosen(DisciplineType.STD_DISCIPLINES.fish, true))
         {
             createFishCollection(DisciplineType.getDiscipline("fish"), institution, user, userGroup);
-            done = true;
+            //done = true;
         }
         
         frame.setOverall(steps++);
@@ -5035,7 +5037,7 @@ public class BuildSampleDatabase
         if (isChoosen(DisciplineType.STD_DISCIPLINES.invertpaleo, false))
         {
             createSingleInvertPaleoCollection(DisciplineType.getDiscipline("invertpaleo"), institution, user);
-            done = true;
+            //done = true;
         }
         frame.setOverall(steps++);
         
@@ -5048,7 +5050,7 @@ public class BuildSampleDatabase
             {
                 createHugeBotanyCollection(DisciplineType.getDiscipline("botany"), institution, user);
             }
-            done = true;
+            //done = true;
         }
         
         for (DisciplineType.STD_DISCIPLINES disp : DisciplineType.STD_DISCIPLINES.values())
@@ -6680,13 +6682,47 @@ public class BuildSampleDatabase
         }
     }
     
-    public static void loadLocalization(final SpLocaleContainerItem memoryItem, final SpLocaleContainerItem newItem)
+    protected static void loadFieldsToHideHash()
     {
-        newItem.setName(memoryItem.getName());
+        if (fieldsToHideHash.size() == 0)
+        {
+            String[] fields = { "version", 
+                                "timestampCreated", 
+                                "timestampModified", 
+                                "createdByAgent", 
+                                "modifiedByAgent", 
+                                "collectionMemberId", 
+                                "visibility", 
+                                "visibilitySetBy"};
+            
+            for (String fieldName : fields)
+            {
+                fieldsToHideHash.put(fieldName, true);
+            }
+        }
+    }
+    
+    public static void loadLocalization(final SpLocaleContainerItem memoryItem, 
+                                        final SpLocaleContainerItem newItem,
+                                        final boolean hideGenericFields)
+    {
+        String itemName = memoryItem.getName();
+        newItem.setName(itemName);
+        
         newItem.setType(memoryItem.getType());
         newItem.setFormat(memoryItem.getFormat());
         newItem.setIsUIFormatter(memoryItem.getIsUIFormatter());
         newItem.setPickListName(memoryItem.getPickListName());
+        newItem.setWebLinkName(memoryItem.getWebLinkName());
+        newItem.setIsHidden(memoryItem.getIsHidden());
+        
+        if (fieldsToHideHash.get(itemName) != null || 
+            itemName.startsWith("text") ||
+            itemName.startsWith("number") ||
+            itemName.startsWith("yesNo"))
+        {
+            newItem.setIsHidden(true);
+        }
 
         for (SpLocaleItemStr nm : memoryItem.getNames())
         {
@@ -6720,13 +6756,21 @@ public class BuildSampleDatabase
 
     }
     
-    public static void loadLocalization(final SpLocaleContainer memoryContainer, final SpLocaleContainer newContainer)
+    /**
+     * @param memoryContainer
+     * @param newContainer
+     */
+    public static void loadLocalization(final SpLocaleContainer memoryContainer, 
+                                        final SpLocaleContainer newContainer,
+                                        final boolean hideGenericFields)
     {
         newContainer.setName(memoryContainer.getName());
         newContainer.setType(memoryContainer.getType());
         newContainer.setFormat(newContainer.getFormat());
         newContainer.setIsUIFormatter(newContainer.getIsUIFormatter());
         newContainer.setPickListName(newContainer.getPickListName());
+        newContainer.setWebLinkName(newContainer.getWebLinkName());
+        newContainer.setIsHidden(newContainer.getIsHidden());
         
         debugOn = false;//memoryContainer.getName().equals("collectionobject");
        
@@ -6766,7 +6810,7 @@ public class BuildSampleDatabase
             newContainer.getItems().add(newItem);
             newItem.setContainer(newContainer);
             
-            loadLocalization(item, newItem);
+            loadLocalization(item, newItem, hideGenericFields);
         }
     }
     
@@ -6780,6 +6824,10 @@ public class BuildSampleDatabase
         SchemaLocalizerXMLHelper schemaLocalizer = new SchemaLocalizerXMLHelper(schemaType, tableMgr);
         schemaLocalizer.load();
         
+        boolean hideGenericFields = true;
+        
+        loadFieldsToHideHash();
+        
         for (SpLocaleContainer table : schemaLocalizer.getSpLocaleContainers())
         {
             SpLocaleContainer container = new SpLocaleContainer();
@@ -6788,7 +6836,7 @@ public class BuildSampleDatabase
             container.setType(table.getType());
             container.setSchemaType(schemaType);
             
-            loadLocalization(table, container);
+            loadLocalization(table, container, hideGenericFields);
             
             discipline.getSpLocaleContainers().add(container);
             container.setDiscipline(discipline);

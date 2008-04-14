@@ -430,6 +430,23 @@ public class SpLocaleContainer extends SpLocaleBase implements LocalizableContai
             log.error("LocalizableStrIFace was null or not of Class SpLocaleItemStr");
         }
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableItemIFace#getWebLinkName()
+     */
+    @Transient
+    public String getWebLinkName()
+    {
+        return null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tools.schemalocale.LocalizableItemIFace#setWebLinkName(java.lang.String)
+     */
+    public void setWebLinkName(String webLinkName)
+    {
+        
+    }
     
     
 }

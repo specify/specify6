@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <files>
-  
+      <file level="3" mimetype="text/xml" name="WebLinks" description="Web Link Formats" file="weblinks.xml"/>
 </files>

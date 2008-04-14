@@ -64,6 +64,8 @@ public class SpLocaleContainerItem extends SpLocaleBase implements LocalizableIt
     
     protected Set<SpLocaleItemStr> names;
     protected Set<SpLocaleItemStr> descs;
+    
+    protected String               webLinkName;
 
     // Transient
     //protected Vector<LocalizableStrIFace> names;
@@ -165,6 +167,23 @@ public class SpLocaleContainerItem extends SpLocaleBase implements LocalizableIt
     public void setContainer(SpLocaleContainer container)
     {
         this.container = container;
+    }
+
+    /**
+     * @return the webLinkName
+     */
+    @Column(name = "WebLinkName", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
+    public String getWebLinkName()
+    {
+        return webLinkName;
+    }
+
+    /**
+     * @param webLinkName the webLinkName to set
+     */
+    public void setWebLinkName(String webLinkName)
+    {
+        this.webLinkName = webLinkName;
     }
 
     /* (non-Javadoc)

@@ -16,7 +16,7 @@ import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
- * Implements the RecordSetToolsIFace for GeoReferenceing with Biogeomancer.
+ * Implements the RecordSetToolsIFace for GeoReferenceing with BioGeomancer.
  * 
  * @author rod
  *
@@ -75,7 +75,7 @@ public class BGMRecordSetProcessor extends GeoRefRecordSetProcessorBase implemen
      */
     public String getName()
     {
-        return "Biogeomancer";
+        return "BioGeomancer";
     }
 
     /* (non-Javadoc)

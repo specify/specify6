@@ -551,6 +551,22 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
     }
     
     /**
+     * Adds the field name with the table abbrev if it doesn't already have one.
+     * @param abbrev the table abbrev
+     * @param fld the field name
+     * @param selectSB the StringBuilder to add it to 
+     */
+    protected void addTblAbbrev(final String abbrev, final String fld, final StringBuilder selectSB)
+    {
+        if (!StringUtils.contains(fld, '.'))
+        {
+            selectSB.append(tableInfo.getAbbrev());    
+            selectSB.append(".");
+        }
+        selectSB.append(fld.trim()); 
+    }
+    
+    /**
      * Builds the SQL to be used to do the search.
      * @param newEntryStr the string value to be searched
      * @param isForCount do query for count of returns
@@ -586,35 +602,35 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
             StringBuilder selectSB = new StringBuilder();
             if (isForCount)
             {
-                selectSB.append("count(");                
-                selectSB.append(tableInfo.getAbbrev());    
-                selectSB.append(".");    
-                selectSB.append(tableInfo.getIdFieldName());               
+                selectSB.append("count("); 
+                addTblAbbrev(tableInfo.getAbbrev(), tableInfo.getIdFieldName(), selectSB);
                 selectSB.append(")");
                 
             } else
             {
-                //if (StringUtils.contains(displayColumns, ','))
-                //{
-                //    for (String fld : StringUtils.)
-                //} else
-                //{
-                    selectSB.append(tableInfo.getAbbrev());    
-                    selectSB.append(".");    
-                    selectSB.append(displayColumns);
-                //}
-                selectSB.append(",");
-                selectSB.append(tableInfo.getAbbrev());    
-                selectSB.append(".");    
-                selectSB.append(tableInfo.getIdFieldName());    
+                if (StringUtils.contains(displayColumns, ','))
+                {
+                    int fCnt = 0;
+                    for (String fld : StringUtils.split(displayColumns, ','))
+                    {
+                        if (fCnt > 0) selectSB.append(", ");
+                        addTblAbbrev(tableInfo.getAbbrev(), fld, selectSB);
+                        fCnt++;
+                    }
+                } else
+                {
+                    addTblAbbrev(tableInfo.getAbbrev(), displayColumns, selectSB);
+                }
+                selectSB.append(", ");
+                addTblAbbrev(tableInfo.getAbbrev(), tableInfo.getIdFieldName(), selectSB);
             }
-            System.err.println( selectSB.toString());
+            //System.err.println( selectSB.toString());
             
             sql = StringUtils.replace(sqlTemplate, "%s1", selectSB.toString());
             sql = StringUtils.replace(sql, "%s2", whereSB.toString());
             sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
             
-            System.err.println(sql);
+            //System.err.println(sql);
             
             return sql;
         }
@@ -660,7 +676,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 {
                     if (whereSB.length() > 0) whereSB.append(" AND ");
                     whereSB.append(specialCols);
-                    System.err.println(whereSB.toString());
+                    //System.err.println(whereSB.toString());
                 }
                 
                 whereSB.append(" ORDER BY ");
@@ -676,7 +692,7 @@ public class TextFieldWithQuery extends JPanel implements CustomQueryListener
                 sb.append(whereSB.toString());
                 
             }
-            System.err.println(sb.toString());
+            //System.err.println(sb.toString());
             return sb.toString();
         }
         return sql;

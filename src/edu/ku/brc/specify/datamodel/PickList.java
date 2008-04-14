@@ -93,6 +93,14 @@ public class PickList extends DataModelObjBase implements PickListIFace, java.io
         // do nothing
     }
 
+    /**
+     * @param name
+     */
+    public PickList(final String name)
+    {
+        this.name = name;
+    }
+
     /** constructor with id */
     public PickList(Integer pickListId)
     {

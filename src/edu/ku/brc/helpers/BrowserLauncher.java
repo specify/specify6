@@ -48,7 +48,7 @@ import edu.ku.brc.ui.UIHelper;
 public class BrowserLauncher
 {
 
-    private static final String errMsg = "Error attempting to launch web browser";
+    private static final String errMsg = "Error attempting to launch web browser"; // I18N
 
     /**
      * Opens an URL in a browser.

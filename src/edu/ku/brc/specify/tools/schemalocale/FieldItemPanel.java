@@ -16,6 +16,7 @@ import static edu.ku.brc.ui.UIHelper.createTextArea;
 import static edu.ku.brc.ui.UIHelper.adjustButtonArray;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Frame;
@@ -82,6 +83,9 @@ import edu.ku.brc.ui.db.PickListIFace;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.ui.forms.formatters.UIFormatterDlg;
+import edu.ku.brc.ui.weblink.WebLinkConfigDlg;
+import edu.ku.brc.ui.weblink.WebLinkDef;
+import edu.ku.brc.ui.weblink.WebLinkMgr;
 
 /**
  * @author rod
@@ -112,6 +116,7 @@ public class FieldItemPanel extends LocalizerBasePanel
     protected JList            fieldsList;
     protected JTextArea        fieldDescText = createTextArea();
     protected JTextField       fieldNameText = createTextField();
+    
     protected JLabel           fieldDescLbl;
     protected JLabel           fieldNameLbl;
     protected JLabel           fieldTypeLbl;
@@ -121,16 +126,26 @@ public class FieldItemPanel extends LocalizerBasePanel
     protected JLabel           fieldReqLbl;
     protected JLabel           fieldReqTxt;
     
-    // Formatting
     protected JLabel           formatLbl     = null;
+    protected JComboBox        formatSwitcherCombo = null;
+    protected JPanel           formatterPanel;
+    protected CardLayout       fmtCardLayout;
+    
+    // Formatting
     protected JComboBox        formatCombo;
     protected JButton          formatMoreBtn;
     protected Hashtable<String, UIFieldFormatterIFace> formatHash = new Hashtable<String, UIFieldFormatterIFace>();
     protected UIFieldFormatterIFace selectedFormatter = null;
     
+    // WebLinks
+    protected JComboBox        wbLnkCombo;
+    protected JButton          wbLnkMoreBtn;
+    protected WebLinkDef       webLinkDefNone = new WebLinkDef(getResourceString("None"));
+    
     // PickList
     protected JLabel           pickListLbl;
     protected JComboBox        pickListCBX;
+    protected PickList         pickListNone = new PickList(getResourceString("None")); // I18N
 
     protected JLabel           autoNumLbl;
     protected JComboBox        autoNumberCombo;
@@ -223,7 +238,7 @@ public class FieldItemPanel extends LocalizerBasePanel
         PanelBuilder pb = new PanelBuilder(new FormLayout("max(200px;p),4px,p,2px,p,10px,p,2px,p,f:p:g", 
                                                              (includeHiddenUI ? "p,2px," : "") + 
                                                              (isDBSchema ? "p,2px,p,2px," : "") + 
-                                                             (includeFormatAndAutoNumUI ? "p,2px," : "") + 
+                                                             (includeFormatAndAutoNumUI ? "p,2px,p,2px," : "") + 
                                                              "p,2px,p,2px,p,2px,p,2px,p,2px,p,2px,f:p:g"), this);
         
         pb.add(fldsp, cc.xywh(1, y, 1, 7+(isDBSchema ? 4 : 0)));
@@ -267,17 +282,36 @@ public class FieldItemPanel extends LocalizerBasePanel
         
         if (includeFormatAndAutoNumUI)
         {
-            PanelBuilder inner = new PanelBuilder(new FormLayout("max(p;150px),2px,min", "p"));
+            PanelBuilder inner = new PanelBuilder(new FormLayout("p,2px,p", "p"));
             
-            formatCombo = createComboBox(new DefaultComboBoxModel());
-            //formatCombo.setEditable(true); // leave uneditable for now
-            formatMoreBtn = createButton("...");
-            
+            formatSwitcherCombo = createComboBox();
+            fmtCardLayout       = new CardLayout();
+            formatterPanel      = new JPanel(fmtCardLayout);
             pb.add(formatLbl = createLabel(getResourceString("SL_FORMAT") + ":", SwingConstants.RIGHT), cc.xy(3, y));
+            
+            inner.add(formatSwitcherCombo, cc.xy(1,1));   
+            inner.add(formatterPanel, cc.xy(3,1));
+            
+            pb.add(inner.getPanel(), cc.xywh(5, y, 6, 1));   y += 2;
+            
+            ActionListener switchAL = new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    fmtCardLayout.show(formatterPanel, (String)formatSwitcherCombo.getSelectedItem());
+                }
+            };
+            formatSwitcherCombo.addActionListener(switchAL);
+            
+            //--------------------------
+            // UIFieldFormatter
+            //--------------------------
+            inner = new PanelBuilder(new FormLayout("max(p;150px),2px,min", "p"));
+            
+            formatCombo   = createComboBox(new DefaultComboBoxModel());
+            formatMoreBtn = createButton("...");
             
             inner.add(formatCombo,   cc.xy(1, 1));   
             inner.add(formatMoreBtn, cc.xy(3, 1));
-            pb.add(inner.getPanel(), cc.xywh(5, y, 6, 1));   y += 2;
             
             formatMoreBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e)
@@ -294,11 +328,9 @@ public class FieldItemPanel extends LocalizerBasePanel
                 }
             });
             
-            //String[] items = {noneStr, getResourceString("Generic"), getResourceString("External")};
-            
-            //autoNumberCombo = createComboBox(items);
-            //pb.add(autoNumLbl = createLabel(getResourceString("SL_AUTONUM") + ":", SwingConstants.RIGHT), cc.xy(3, y));
-            //pb.add(autoNumberCombo, cc.xy(5, y));   y += 2;
+            String label = getResourceString("SL_FORMAT");
+            formatterPanel.add(label, inner.getPanel());
+            formatSwitcherCombo.addItem(label);
             
             ActionListener changed = new ActionListener() {
                 public void actionPerformed(ActionEvent e)
@@ -306,12 +338,71 @@ public class FieldItemPanel extends LocalizerBasePanel
                     setHasChanged(true);
                     schemaPanel.setHasChanged(true);
                     hasFieldInfoChanged = true;
+                    
+                    boolean hasFormat = formatCombo.getSelectedIndex() > 0;
+                    wbLnkCombo.setEnabled(!hasFormat);
+                    if (hasFormat)
+                    {
+                        wbLnkCombo.setSelectedIndex(0);
+                        pickListCBX.setSelectedIndex(0);
+                    }
                 }
             };
             formatCombo.addActionListener(changed);
-            //autoNumberCombo.addActionListener(changed);
+            
+            //--------------------------
+            // WebLinks
+            //--------------------------
+            wbLnkMoreBtn = createButton("...");
+            wbLnkMoreBtn.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    WebLinkConfigDlg dlg = new WebLinkConfigDlg(tableInfo, fieldInfo);
+                    dlg.setVisible(true);
+                    if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
+                    {
+                        setSelectedWebLink(dlg.getSelectedItem());
+                    }
+                }
+            });
+            
+            inner = new PanelBuilder(new FormLayout("max(p;150px),2px,min", "p"));
+            wbLnkCombo = createComboBox();
+            DefaultComboBoxModel model = (DefaultComboBoxModel)wbLnkCombo.getModel();
+            model.addElement(webLinkDefNone);
+            wbLnkCombo.setSelectedIndex(0);
+            
+            inner.add(wbLnkCombo,   cc.xy(1, 1));   
+            inner.add(wbLnkMoreBtn, cc.xy(3, 1));
+            
+            ActionListener wlchanged = new ActionListener() {
+                public void actionPerformed(ActionEvent e)
+                {
+                    setHasChanged(true);
+                    schemaPanel.setHasChanged(true);
+                    hasFieldInfoChanged = true;
+                    
+                    boolean hasWL = wbLnkCombo.getSelectedIndex() < 1;
+                    formatLbl.setEnabled(hasWL);
+                    formatCombo.setEnabled(hasWL);
+                    if (hasWL)
+                    {
+                        formatCombo.setSelectedIndex(formatCombo.getModel().getSize() > 0 ? 0 : -1);
+                        pickListCBX.setSelectedIndex(pickListCBX.getModel().getSize() > 0 ? 0 : -1);
+                    }
+                }
+            };
+            wbLnkCombo.addActionListener(wlchanged);
+            
+            label = getResourceString("SL_WEBLINK");
+            formatterPanel.add(label, inner.getPanel());
+            formatSwitcherCombo.addItem(label);
         }
         
+        //--------------------------
+        // PickList
+        //--------------------------
+
         pickListCBX = createComboBox(new DefaultComboBoxModel());
         pickListCBX.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e)
@@ -319,11 +410,30 @@ public class FieldItemPanel extends LocalizerBasePanel
                 setHasChanged(true);
                 schemaPanel.setHasChanged(true);
                 hasFieldInfoChanged = true;
+                
+                if (formatCombo != null)
+                {
+                    formatCombo.setSelectedIndex(formatCombo.getModel().getSize() > 0 ? 0 : -1);
+                    wbLnkCombo.setSelectedIndex(wbLnkCombo.getModel().getSize() > 0 ? 0 : -1);
+                }
             }
         });
 
-        pb.add(pickListLbl   = createLabel(getResourceString("SL_PICKLIST") + ":", SwingConstants.RIGHT), cc.xy(3, y));
-        pb.add(pickListCBX,   cc.xy(5, y));   y += 2;
+        if (includeFormatAndAutoNumUI)
+        {
+            PanelBuilder inner = new PanelBuilder(new FormLayout("max(p;150px),2px,min", "p"));
+            inner.add(pickListCBX,   cc.xy(1, 1));   
+            //inner.add(formatMoreBtn, cc.xy(3, 1));
+            
+            String label = getResourceString("SL_PICKLIST");
+            formatterPanel.add(label, inner.getPanel());
+            formatSwitcherCombo.addItem(label);
+            
+        } else
+        {
+            pb.add(pickListLbl   = createLabel(getResourceString("SL_PICKLIST") + ":", SwingConstants.RIGHT), cc.xy(3, y));
+            pb.add(pickListCBX,   cc.xy(5, y));   y += 2;
+        }
         
         nxtBtn         = createButton(getResourceString("SL_NEXT"));
         nxtEmptyBtn    = createButton(getResourceString("SL_NEXT_EMPTY"));
@@ -454,6 +564,40 @@ public class FieldItemPanel extends LocalizerBasePanel
     		formatCombo.setSelectedIndex(model.getSize() - 1);
     		setHasChanged(true);
     	}
+    	
+    }
+    
+    /**
+     * @param webLinkDef
+     */
+    protected void setSelectedWebLink(final WebLinkDef webLinkDef)
+    {
+        DefaultComboBoxModel model = (DefaultComboBoxModel)wbLnkCombo.getModel();
+        model.removeAllElements();
+        
+        model.addElement(webLinkDefNone);
+        
+        int fndInx = 0;
+        int index  = 0;
+        for (WebLinkDef wld : WebLinkMgr.getInstance().getWebLinkDefs())
+        {
+            model.addElement(wld);
+            if (webLinkDef == wld)
+            {
+                setHasChanged(true);
+                wbLnkCombo.setSelectedIndex(index);
+                fndInx = index;
+                break;
+            }
+            index++;
+        }   
+        
+        if (fndInx > 0)
+        {
+            wbLnkCombo.setSelectedItem(webLinkDef);
+            setHasChanged(true);
+        }
+
     }
     
     /**
@@ -474,15 +618,18 @@ public class FieldItemPanel extends LocalizerBasePanel
     }
 
     /**
-     * Fills the format combobox with the available formatters.
+     * Fills the format Combobox with the available formatters.
      */
     protected void fillFormatBox()
     {
         if (formatCombo != null)
         {
             ((DefaultComboBoxModel)formatCombo.getModel()).removeAllElements();
+            
             formatCombo.setEnabled(false);
             formatMoreBtn.setEnabled(false);
+            
+            wbLnkCombo.setEnabled(false);
             
             if (fieldInfo != null)
             {
@@ -568,6 +715,7 @@ public class FieldItemPanel extends LocalizerBasePanel
                 return o1.toPattern().compareTo(o2.toPattern());
             }
         });
+        
         if (fList != null && fList.size() > 0)
         {
             for (UIFieldFormatterIFace fmt : fList)
@@ -584,7 +732,18 @@ public class FieldItemPanel extends LocalizerBasePanel
             }
         }
         
+        boolean hasFormat = selectedInx > 0;
+        wbLnkCombo.setEnabled(hasFormat);
+        
         formatCombo.setSelectedIndex(selectedInx);
+        
+        if (hasFormat)
+        {
+            
+        } else
+        {
+            
+        }
         
         return selectedFmt;
     }
@@ -676,7 +835,12 @@ public class FieldItemPanel extends LocalizerBasePanel
         fieldLengthLbl.setEnabled(enable);
         fieldLengthTxt.setEnabled(enable);
         
-        pickListLbl.setEnabled(enable);
+        formatSwitcherCombo.setEnabled(enable);
+        
+        if (pickListLbl != null)
+        {
+            pickListLbl.setEnabled(enable);
+        }
         pickListCBX.setEnabled(enable);
         
         if (formatLbl != null)
@@ -684,6 +848,8 @@ public class FieldItemPanel extends LocalizerBasePanel
             formatLbl.setEnabled(enable);
             formatCombo.setEnabled(enable);
             formatMoreBtn.setEnabled(enable);
+            
+            wbLnkCombo.setEnabled(enable);
         }
         
         if (!enable)
@@ -822,10 +988,17 @@ public class FieldItemPanel extends LocalizerBasePanel
                 schemaPanel.setHasChanged(true);
             }
             
-            PickList pl = (PickList)pickListCBX.getSelectedItem();
-            prevField.setPickListName(pl != null ? pl.getName() : null);
+            prevField.setPickListName(null);
+            prevField.setWebLinkName(null);
+            prevField.setFormat(null);
+            prevField.setIsUIFormatter(false);
             
-            if (formatCombo != null)
+            if (pickListCBX.getSelectedIndex() > 0)
+            {
+                PickList pl = (PickList)pickListCBX.getSelectedItem();
+                prevField.setPickListName(pl != null ? pl.getName() : null);
+                
+            } else if (formatCombo != null && formatCombo.getSelectedIndex() > 0)
             {
                 Object item = formatCombo.getSelectedItem();
                 if (item != null) // should never be null
@@ -848,6 +1021,11 @@ public class FieldItemPanel extends LocalizerBasePanel
                 {
                     log.error("We should never get here!");
                 }
+                    
+            } else if (wbLnkCombo != null && wbLnkCombo.getSelectedIndex() > 0)
+            {
+                WebLinkDef wld = (WebLinkDef)wbLnkCombo.getSelectedItem();
+                prevField.setWebLinkName(wld.getName());
             }
             prevField = null;
         }
@@ -1002,12 +1180,14 @@ public class FieldItemPanel extends LocalizerBasePanel
                 String  typeStr  = fieldInfo != null ? fieldInfo.getType() : null;
                 boolean isString = typeStr != null && (typeStr.equals("java.lang.String") || typeStr.equals("string"));
                 
-                int selectedIndex = -1;
+                int selectedIndex = 0;
                 DefaultComboBoxModel plCbxModel = (DefaultComboBoxModel)pickListCBX.getModel();
                 
                 if (isString)
                 {
                     plCbxModel.removeAllElements();
+                    plCbxModel.addElement(pickListNone);
+                    
                     int inx = 0;
                     for (PickList pl : pickLists)
                     {
@@ -1042,7 +1222,8 @@ public class FieldItemPanel extends LocalizerBasePanel
                     }
                 }
                 pickListCBX.setEnabled(isString || relType != null);
-                pickListCBX.setSelectedIndex(selectedIndex);
+                pickListCBX.setSelectedIndex(pickListCBX.getModel().getSize() > 0 ? selectedIndex : -1);
+                
             } else
             {
                 pickListCBX.setEnabled(false);

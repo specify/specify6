@@ -868,8 +868,11 @@ public class DataBuilder
         pickList.setIsSystem(isSystem);
         
         Collection collection = Collection.getCurrentCollection();
-        pickList.setCollection(collection);
-        collection.getPickLists().add(pickList);
+        if (collection != null)
+        {
+            pickList.setCollection(collection);
+            collection.getPickLists().add(pickList);
+        }
         
         persist(pickList);
         return pickList;

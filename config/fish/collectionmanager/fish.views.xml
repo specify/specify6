@@ -68,12 +68,10 @@
                     <cell type="label" labelfor="13"/>
                     <cell type="field" id="13" name="countAmt" uitype="text"/>
                 </row>
-                <!-- 
     			<row>
     			    <cell type="label" labelfor="25" label="Tissue"/>
     			    <cell type="field" id="25" name="this" uitype="plugin" initialize="name=ColRelTypePlugin"/>
 			    </row>
-			     -->    			
                 <row>
                     <cell type="label" labelfor="3"/>
                     <cell type="field" id="3" name="accession" uitype="querycbx" initialize="name=Accession;title=Accession" isrequired="false"/>
