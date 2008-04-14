@@ -189,6 +189,7 @@ public class WebLinkConfigDlg extends CustomDialog
         if (!dlg.isCancelled())
         {
             ((DefaultListModel)list.getModel()).addElement(wld);
+            list.setSelectedValue(wld, true);
             wlMgr.add(wld);
             hasChanged = true;
         }

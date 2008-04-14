@@ -79,7 +79,7 @@ public class CollectorBusRules extends BaseBusRules
     @Override
     public STATUS processBusinessRules(final Object parentDataObj, final Object dataObj, final boolean isEdit)
     {
-        if (!isEdit &&
+        if (isEdit &&
             parentDataObj instanceof CollectingEvent &&
             dataObj instanceof Collector)
         {

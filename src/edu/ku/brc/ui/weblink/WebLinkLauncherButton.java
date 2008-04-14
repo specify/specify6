@@ -1,4 +1,4 @@
-package edu.ku.brc.specify.ui;
+package edu.ku.brc.ui.weblink;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
@@ -27,8 +27,6 @@ import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIPluginable;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
-import edu.ku.brc.ui.weblink.WebLinkDef;
-import edu.ku.brc.ui.weblink.WebLinkMgr;
 import edu.ku.brc.util.AttachmentUtils;
 
 /**
@@ -206,7 +204,16 @@ public class WebLinkLauncherButton extends JPanel implements UIPluginable, GetSe
      */
     protected void doEdit()
     {
+        boolean doSimpleDialog = true;
+        if (webLinkDef != null)
+        {
+            
+        } 
         
+        if (doSimpleDialog)
+        {
+            // simple dialog
+        }
     }
     
     //--------------------------------------------------------

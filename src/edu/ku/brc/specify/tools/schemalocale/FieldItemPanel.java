@@ -287,7 +287,7 @@ public class FieldItemPanel extends LocalizerBasePanel
             formatSwitcherCombo = createComboBox();
             fmtCardLayout       = new CardLayout();
             formatterPanel      = new JPanel(fmtCardLayout);
-            pb.add(formatLbl = createLabel(getResourceString("SL_FORMAT") + ":", SwingConstants.RIGHT), cc.xy(3, y));
+            pb.add(formatLbl = createLabel(getResourceString("SL_FMTTYPE") + ":", SwingConstants.RIGHT), cc.xy(3, y));
             
             inner.add(formatSwitcherCombo, cc.xy(1,1));   
             inner.add(formatterPanel, cc.xy(3,1));
@@ -302,6 +302,10 @@ public class FieldItemPanel extends LocalizerBasePanel
             };
             formatSwitcherCombo.addActionListener(switchAL);
             
+            String label = getResourceString("None");
+            formatSwitcherCombo.addItem(label);
+            formatterPanel.add(label, new JPanel());
+
             //--------------------------
             // UIFieldFormatter
             //--------------------------
@@ -328,7 +332,7 @@ public class FieldItemPanel extends LocalizerBasePanel
                 }
             });
             
-            String label = getResourceString("SL_FORMAT");
+            label = getResourceString("SL_FORMAT");
             formatterPanel.add(label, inner.getPanel());
             formatSwitcherCombo.addItem(label);
             
@@ -382,8 +386,7 @@ public class FieldItemPanel extends LocalizerBasePanel
                     schemaPanel.setHasChanged(true);
                     hasFieldInfoChanged = true;
                     
-                    boolean hasWL = wbLnkCombo.getSelectedIndex() < 1;
-                    formatLbl.setEnabled(hasWL);
+                    boolean hasWL = wbLnkCombo.getSelectedIndex() > 0;
                     formatCombo.setEnabled(hasWL);
                     if (hasWL)
                     {
@@ -411,7 +414,7 @@ public class FieldItemPanel extends LocalizerBasePanel
                 schemaPanel.setHasChanged(true);
                 hasFieldInfoChanged = true;
                 
-                if (formatCombo != null)
+                if (formatCombo != null && pickListCBX.getSelectedIndex() > 0)
                 {
                     formatCombo.setSelectedIndex(formatCombo.getModel().getSize() > 0 ? 0 : -1);
                     wbLnkCombo.setSelectedIndex(wbLnkCombo.getModel().getSize() > 0 ? 0 : -1);
@@ -615,6 +618,50 @@ public class FieldItemPanel extends LocalizerBasePanel
     public void setDisciplineType(DisciplineType disciplineType)
     {
         this.disciplineType = disciplineType;
+    }
+
+    /**
+     * Fills the format Combobox with the available formatters.
+     */
+    protected void fillWebLinkBox()
+    {
+        if (wbLnkCombo != null)
+        {
+            DefaultComboBoxModel wlModel = (DefaultComboBoxModel)wbLnkCombo.getModel();
+            if (wlModel.getSize() == 0)
+            {
+                wlModel.addElement(webLinkDefNone);
+                for (WebLinkDef wld : WebLinkMgr.getInstance().getWebLinkDefs())
+                {
+                    wlModel.addElement(wld);
+                }
+            }
+            
+            //wbLnkCombo.setEnabled(false);
+            wbLnkMoreBtn.setEnabled(true);
+            //wbLnkCombo.setEnabled(false);
+            
+            int selInx = wbLnkCombo.getModel().getSize() > 0 ? 0 : -1;
+            LocalizableItemIFace fld = getSelectedFieldItem();
+            if (fld != null)
+            {
+                String webLinkName = fld.getWebLinkName();
+                if (StringUtils.isNotEmpty(webLinkName))
+                {
+                    DefaultComboBoxModel model = (DefaultComboBoxModel)wbLnkCombo.getModel();
+                    for (int i=0;i<model.getSize();i++)
+                    {
+                        WebLinkDef wld = (WebLinkDef)model.getElementAt(i);
+                        if (wld.getName().equals(webLinkName))
+                        {
+                            selInx = i;
+                            break;
+                        }
+                    }
+                }
+            }
+            wbLnkCombo.setSelectedIndex(selInx);
+        }
     }
 
     /**
@@ -848,7 +895,6 @@ public class FieldItemPanel extends LocalizerBasePanel
             formatLbl.setEnabled(enable);
             formatCombo.setEnabled(enable);
             formatMoreBtn.setEnabled(enable);
-            
             wbLnkCombo.setEnabled(enable);
         }
         
@@ -979,6 +1025,11 @@ public class FieldItemPanel extends LocalizerBasePanel
     {
         if (prevField != null && hasFieldInfoChanged)
         {
+            prevField.setPickListName(null);
+            prevField.setWebLinkName(null);
+            prevField.setFormat(null);
+            prevField.setIsUIFormatter(false);
+            
             prevField.setIsHidden(fieldHideChk.isSelected());
             boolean nameChanged = setNameDescStrForCurrLocale(prevField, fieldNameText.getText());
             boolean descChanged = setDescStrForCurrLocale(prevField,     fieldDescText.getText());
@@ -987,11 +1038,6 @@ public class FieldItemPanel extends LocalizerBasePanel
                 setHasChanged(true);
                 schemaPanel.setHasChanged(true);
             }
-            
-            prevField.setPickListName(null);
-            prevField.setWebLinkName(null);
-            prevField.setFormat(null);
-            prevField.setIsUIFormatter(false);
             
             if (pickListCBX.getSelectedIndex() > 0)
             {
@@ -1027,6 +1073,7 @@ public class FieldItemPanel extends LocalizerBasePanel
                 WebLinkDef wld = (WebLinkDef)wbLnkCombo.getSelectedItem();
                 prevField.setWebLinkName(wld.getName());
             }
+            
             prevField = null;
         }
         hasFieldInfoChanged = false;
@@ -1144,6 +1191,7 @@ public class FieldItemPanel extends LocalizerBasePanel
             statusBar.setText("");
         }
         
+        int switcherInx = 0;
         LocalizableItemIFace fld = getSelectedFieldItem();
         if (fld != null)
         {
@@ -1220,6 +1268,7 @@ public class FieldItemPanel extends LocalizerBasePanel
                         }
                         inx++;
                     }
+                    switcherInx = 3;
                 }
                 pickListCBX.setEnabled(isString || relType != null);
                 pickListCBX.setSelectedIndex(pickListCBX.getModel().getSize() > 0 ? selectedIndex : -1);
@@ -1251,6 +1300,7 @@ public class FieldItemPanel extends LocalizerBasePanel
                         fieldLengthTxt.setEnabled(StringUtils.isNotEmpty(lenStr));
                         
                         fieldReqTxt.setText(getResourceString(fi.isRequired() ? getResourceString("SL_YES") : getResourceString("SL_NO")));
+                        
 
                     } else
                     {
@@ -1277,8 +1327,7 @@ public class FieldItemPanel extends LocalizerBasePanel
                     }
                 }
             }
-
-
+            
             if (doAutoSpellCheck)
             {
                 checker.spellCheck(fieldDescText);
@@ -1295,6 +1344,19 @@ public class FieldItemPanel extends LocalizerBasePanel
         }
         
         fillFormatBox();
+        fillWebLinkBox();
+        
+        if (formatCombo.getSelectedIndex() > 0)
+        {
+            switcherInx = 1;
+        }
+        
+        if (wbLnkCombo.getSelectedIndex() > 0)
+        {
+            switcherInx = 2;
+        }
+        
+        formatSwitcherCombo.setSelectedIndex(switcherInx);
         
         boolean ok = fld != null;
         fieldDescText.setEnabled(ok);
