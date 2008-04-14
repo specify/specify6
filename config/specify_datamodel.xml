@@ -2123,7 +2123,7 @@
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.SpecifyUser" relationshipname="specifyUser" columnname="SpecifyUserID" othersidename="recordSets" updatable="false" required="true"/>
     </table>
     <table classname="edu.ku.brc.specify.datamodel.ReferenceWork" table="referencework" tableid="69" searchable="true" abbrv="rw">
-      <display view="ReferenceWork"/>
+      <display view="ReferenceWork" searchdlg="ReferenceWorkSearch" newobjdlg="ReferenceWorkDisplay"/>
       <field column="ContainingReferenceWorkID" name="containingReferenceWorkId" type="java.lang.Integer" length="10" updatable="true" required="false" unique="false" indexed="false"/>
       <field column="GUID" name="guid" type="java.lang.String" length="128" indexName="RefWrkGuidIDX" updatable="true" required="false" unique="false" indexed="true"/>
       <field column="IsPublished" name="isPublished" type="java.lang.Boolean" updatable="true" required="false" unique="false" indexed="false"/>
