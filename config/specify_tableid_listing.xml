@@ -261,7 +261,7 @@
         <table name="edu.ku.brc.specify.datamodel.RecordSet" abbrev="rs" id="68"/>
         <table name="edu.ku.brc.specify.datamodel.RecordSetItem" abbrev="rsi" id="502"/>
         <table name="edu.ku.brc.specify.datamodel.ReferenceWork" abbrev="rw" id="69" searchable="true">
-            <display view="ReferenceWork"/>
+            <display view="ReferenceWork" searchdlg="ReferenceWorkSearch" newobjdlg="ReferenceWorkDisplay"/>
         </table>
         <table name="edu.ku.brc.specify.datamodel.RepositoryAgreement" abbrev="ra" id="70" searchable="true">
         	<businessrule>edu.ku.brc.specify.datamodel.busrules.RepositoryAgreementBusRules</businessrule>
