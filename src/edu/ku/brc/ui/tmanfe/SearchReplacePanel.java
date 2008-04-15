@@ -168,6 +168,8 @@ public class SearchReplacePanel extends JPanel
      */
     private void setupKeyStrokeMappings()
     {
+        table.getActionMap().clear();
+        
         //override the "Ctrl-F" function for launching the find dialog shipped with JXTable
         table.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), FIND);        
         table.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_MASK), FIND);
