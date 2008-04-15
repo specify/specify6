@@ -153,12 +153,12 @@ public class WebLinkMgr
      */
     public void read()
     {
-
+        throw new RuntimeException("Read is not implemented");
     }
 
     public void write()
     {
-        
+        throw new RuntimeException("Write is not implemented");
     }
 
     /**

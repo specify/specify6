@@ -1,2 +1,19 @@
 <vector>
+  <weblinkdef>
+    <name>MailTo</name>
+    <desc>Launches an email message window for sending an email.</desc>
+    <baseURLStr>mailto:[email]</baseURLStr>
+    <args>
+      <weblinkdefarg>
+        <name>email</name>
+        <prompt>false</prompt>
+      </weblinkdefarg>
+    </args>
+    <usedByList>
+      <usedby>
+        <tableName>agent</tableName>
+        <fieldName>email</fieldName>
+      </usedby>
+    </usedByList>
+  </weblinkdef>
 </vector>

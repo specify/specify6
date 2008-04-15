@@ -138,8 +138,8 @@ public class FieldItemPanel extends LocalizerBasePanel
     protected UIFieldFormatterIFace selectedFormatter = null;
     
     // WebLinks
-    protected JComboBox        wbLnkCombo;
-    protected JButton          wbLnkMoreBtn;
+    protected JComboBox        webLinkCombo;
+    protected JButton          webLinkMoreBtn;
     protected WebLinkDef       webLinkDefNone = new WebLinkDef(getResourceString("None"));
     
     // PickList
@@ -344,10 +344,10 @@ public class FieldItemPanel extends LocalizerBasePanel
                     hasFieldInfoChanged = true;
                     
                     boolean hasFormat = formatCombo.getSelectedIndex() > 0;
-                    wbLnkCombo.setEnabled(!hasFormat);
+                    webLinkCombo.setEnabled(!hasFormat);
                     if (hasFormat)
                     {
-                        wbLnkCombo.setSelectedIndex(0);
+                        webLinkCombo.setSelectedIndex(0);
                         pickListCBX.setSelectedIndex(0);
                     }
                 }
@@ -357,8 +357,8 @@ public class FieldItemPanel extends LocalizerBasePanel
             //--------------------------
             // WebLinks
             //--------------------------
-            wbLnkMoreBtn = createButton("...");
-            wbLnkMoreBtn.addActionListener(new ActionListener() {
+            webLinkMoreBtn = createButton("...");
+            webLinkMoreBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
                     WebLinkConfigDlg dlg = new WebLinkConfigDlg(tableInfo, fieldInfo);
@@ -371,13 +371,13 @@ public class FieldItemPanel extends LocalizerBasePanel
             });
             
             inner = new PanelBuilder(new FormLayout("max(p;150px),2px,min", "p"));
-            wbLnkCombo = createComboBox();
-            DefaultComboBoxModel model = (DefaultComboBoxModel)wbLnkCombo.getModel();
+            webLinkCombo = createComboBox();
+            DefaultComboBoxModel model = (DefaultComboBoxModel)webLinkCombo.getModel();
             model.addElement(webLinkDefNone);
-            wbLnkCombo.setSelectedIndex(0);
+            webLinkCombo.setSelectedIndex(0);
             
-            inner.add(wbLnkCombo,   cc.xy(1, 1));   
-            inner.add(wbLnkMoreBtn, cc.xy(3, 1));
+            inner.add(webLinkCombo,   cc.xy(1, 1));   
+            inner.add(webLinkMoreBtn, cc.xy(3, 1));
             
             ActionListener wlchanged = new ActionListener() {
                 public void actionPerformed(ActionEvent e)
@@ -386,7 +386,7 @@ public class FieldItemPanel extends LocalizerBasePanel
                     schemaPanel.setHasChanged(true);
                     hasFieldInfoChanged = true;
                     
-                    boolean hasWL = wbLnkCombo.getSelectedIndex() > 0;
+                    boolean hasWL = webLinkCombo.getSelectedIndex() > 0;
                     formatCombo.setEnabled(hasWL);
                     if (hasWL)
                     {
@@ -395,7 +395,7 @@ public class FieldItemPanel extends LocalizerBasePanel
                     }
                 }
             };
-            wbLnkCombo.addActionListener(wlchanged);
+            webLinkCombo.addActionListener(wlchanged);
             
             label = getResourceString("SL_WEBLINK");
             formatterPanel.add(label, inner.getPanel());
@@ -417,7 +417,7 @@ public class FieldItemPanel extends LocalizerBasePanel
                 if (formatCombo != null && pickListCBX.getSelectedIndex() > 0)
                 {
                     formatCombo.setSelectedIndex(formatCombo.getModel().getSize() > 0 ? 0 : -1);
-                    wbLnkCombo.setSelectedIndex(wbLnkCombo.getModel().getSize() > 0 ? 0 : -1);
+                    webLinkCombo.setSelectedIndex(webLinkCombo.getModel().getSize() > 0 ? 0 : -1);
                 }
             }
         });
@@ -575,7 +575,7 @@ public class FieldItemPanel extends LocalizerBasePanel
      */
     protected void setSelectedWebLink(final WebLinkDef webLinkDef)
     {
-        DefaultComboBoxModel model = (DefaultComboBoxModel)wbLnkCombo.getModel();
+        DefaultComboBoxModel model = (DefaultComboBoxModel)webLinkCombo.getModel();
         model.removeAllElements();
         
         model.addElement(webLinkDefNone);
@@ -588,7 +588,7 @@ public class FieldItemPanel extends LocalizerBasePanel
             if (webLinkDef == wld)
             {
                 setHasChanged(true);
-                wbLnkCombo.setSelectedIndex(index);
+                webLinkCombo.setSelectedIndex(index);
                 fndInx = index;
                 break;
             }
@@ -597,7 +597,7 @@ public class FieldItemPanel extends LocalizerBasePanel
         
         if (fndInx > 0)
         {
-            wbLnkCombo.setSelectedItem(webLinkDef);
+            webLinkCombo.setSelectedItem(webLinkDef);
             setHasChanged(true);
         }
 
@@ -625,9 +625,9 @@ public class FieldItemPanel extends LocalizerBasePanel
      */
     protected void fillWebLinkBox()
     {
-        if (wbLnkCombo != null)
+        if (webLinkCombo != null)
         {
-            DefaultComboBoxModel wlModel = (DefaultComboBoxModel)wbLnkCombo.getModel();
+            DefaultComboBoxModel wlModel = (DefaultComboBoxModel)webLinkCombo.getModel();
             if (wlModel.getSize() == 0)
             {
                 wlModel.addElement(webLinkDefNone);
@@ -638,17 +638,17 @@ public class FieldItemPanel extends LocalizerBasePanel
             }
             
             //wbLnkCombo.setEnabled(false);
-            wbLnkMoreBtn.setEnabled(true);
+            webLinkMoreBtn.setEnabled(true);
             //wbLnkCombo.setEnabled(false);
             
-            int selInx = wbLnkCombo.getModel().getSize() > 0 ? 0 : -1;
+            int selInx = webLinkCombo.getModel().getSize() > 0 ? 0 : -1;
             LocalizableItemIFace fld = getSelectedFieldItem();
             if (fld != null)
             {
                 String webLinkName = fld.getWebLinkName();
                 if (StringUtils.isNotEmpty(webLinkName))
                 {
-                    DefaultComboBoxModel model = (DefaultComboBoxModel)wbLnkCombo.getModel();
+                    DefaultComboBoxModel model = (DefaultComboBoxModel)webLinkCombo.getModel();
                     for (int i=0;i<model.getSize();i++)
                     {
                         WebLinkDef wld = (WebLinkDef)model.getElementAt(i);
@@ -660,7 +660,7 @@ public class FieldItemPanel extends LocalizerBasePanel
                     }
                 }
             }
-            wbLnkCombo.setSelectedIndex(selInx);
+            webLinkCombo.setSelectedIndex(selInx);
         }
     }
 
@@ -676,7 +676,7 @@ public class FieldItemPanel extends LocalizerBasePanel
             formatCombo.setEnabled(false);
             formatMoreBtn.setEnabled(false);
             
-            wbLnkCombo.setEnabled(false);
+            webLinkCombo.setEnabled(false);
             
             if (fieldInfo != null)
             {
@@ -780,7 +780,7 @@ public class FieldItemPanel extends LocalizerBasePanel
         }
         
         boolean hasFormat = selectedInx > 0;
-        wbLnkCombo.setEnabled(hasFormat);
+        webLinkCombo.setEnabled(hasFormat);
         
         formatCombo.setSelectedIndex(selectedInx);
         
@@ -895,7 +895,7 @@ public class FieldItemPanel extends LocalizerBasePanel
             formatLbl.setEnabled(enable);
             formatCombo.setEnabled(enable);
             formatMoreBtn.setEnabled(enable);
-            wbLnkCombo.setEnabled(enable);
+            webLinkCombo.setEnabled(enable);
         }
         
         if (!enable)
@@ -1068,9 +1068,9 @@ public class FieldItemPanel extends LocalizerBasePanel
                     log.error("We should never get here!");
                 }
                     
-            } else if (wbLnkCombo != null && wbLnkCombo.getSelectedIndex() > 0)
+            } else if (webLinkCombo != null && webLinkCombo.getSelectedIndex() > 0)
             {
-                WebLinkDef wld = (WebLinkDef)wbLnkCombo.getSelectedItem();
+                WebLinkDef wld = (WebLinkDef)webLinkCombo.getSelectedItem();
                 prevField.setWebLinkName(wld.getName());
             }
             
@@ -1351,7 +1351,7 @@ public class FieldItemPanel extends LocalizerBasePanel
             switcherInx = 1;
         }
         
-        if (wbLnkCombo.getSelectedIndex() > 0)
+        if (webLinkCombo.getSelectedIndex() > 0)
         {
             switcherInx = 2;
         }

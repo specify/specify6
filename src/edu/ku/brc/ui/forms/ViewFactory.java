@@ -1235,10 +1235,19 @@ public class ViewFactory
                     UIPluginable uip = createPlugin(parent,
                                                 validator, 
                                                 cellField, 
-                                                mode == AltViewIFace.CreationMode.VIEW, bi.isRequired);
-                    bi.compToAdd = uip.getUIComponent();
-                    viewBldObj.registerPlugin(cell, uip);
-                    bi.doRegControl = false;
+                                                mode == AltViewIFace.CreationMode.VIEW, 
+                                                bi.isRequired);
+                    if (uip != null)
+                    {
+                        bi.compToAdd = uip.getUIComponent();
+                        viewBldObj.registerPlugin(cell, uip);
+                    } else
+                    {
+                        bi.compToAdd = new JPanel();
+                        log.error("Couldn't create UIPlugin ["+cellField.getName()+"]");
+                    }
+                    bi.doRegControl = false;                        
+
                     break;
 
                 case textpl:

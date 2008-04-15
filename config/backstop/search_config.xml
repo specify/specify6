@@ -338,9 +338,9 @@
  agent.FirstName,
  agent.AgentType,
  %s
- FROM agent INNER JOIN agent_discpline ON agent.AgentID = agent_discpline.AgentID
+ FROM agent INNER JOIN agent_discipline ON agent.AgentID = agent_discipline.AgentID
  INNER JOIN agentvariant ON agent.AgentID = agentvariant.AgentID
- WHERE agent_discpline.DisciplineID = DSPLNID AND %s order by agentvariant.Name asc]]>
+ WHERE agent_discipline.DisciplineID = DSPLNID AND %s order by agentvariant.Name asc]]>
                 </sql>
                 <captions>
                     <caption tableid="5" col="agent.AgentID" visible="false"/>
@@ -394,9 +394,9 @@
  address.State, 
  address.Postalcode, 
  address.Country
- FROM agent INNER JOIN agent_discpline ON agent.AgentID = agent_discpline.AgentID
+ FROM agent INNER JOIN agent_discipline ON agent.AgentID = agent_discipline.AgentID
  INNER JOIN address ON agent.AgentID = address.AgentID
- WHERE agent_discpline.DisciplineID = DSPLNID AND (%s)]]>
+ WHERE agent_discipline.DisciplineID = DSPLNID AND (%s)]]>
                 </sql>
                 <captions>
                     <caption tableid="5" col="AgentID" visible="false"/>

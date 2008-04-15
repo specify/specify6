@@ -51,6 +51,10 @@ public class WebLinkConfigDlg extends CustomDialog
     protected AddRemoveEditPanel itemsPanelADE;
     protected WebLinkMgr         wlMgr      = WebLinkMgr.getInstance();
     protected boolean            hasChanged = false;
+    
+    protected DBTableInfo        tableInfo;
+    protected DBFieldInfo        fieldInfo;
+    
     /**
      * @throws HeadlessException
      */
@@ -58,6 +62,9 @@ public class WebLinkConfigDlg extends CustomDialog
                             final DBFieldInfo fieldInfo) throws HeadlessException
     {
         super((Frame)UIRegistry.getTopWindow(), "Web Link Editor", true, OKHELP, null); // I18N
+        
+        this.tableInfo = tableInfo;
+        this.fieldInfo = fieldInfo;
         
         okLabel = UIRegistry.getResourceString("Close");
     }
@@ -179,7 +186,7 @@ public class WebLinkConfigDlg extends CustomDialog
     }
     
     /**
-     * 
+     * Add a new WebLinkDef to the Manager.
      */
     protected void addWebLink()
     {
@@ -188,6 +195,8 @@ public class WebLinkConfigDlg extends CustomDialog
         dlg.setVisible(true);
         if (!dlg.isCancelled())
         {
+            wld.getUsedByList().add(new WebLinkUsedBy(tableInfo.getName(), fieldInfo.getName()));
+            
             ((DefaultListModel)list.getModel()).addElement(wld);
             list.setSelectedValue(wld, true);
             wlMgr.add(wld);
@@ -196,18 +205,27 @@ public class WebLinkConfigDlg extends CustomDialog
     }
 
     /**
-     * 
+     * Remove a WebLinkDef from the manager.
      */
     protected void delWebLink()
     {
         WebLinkDef wld = (WebLinkDef)list.getSelectedValue();
+        for (WebLinkUsedBy wlub : wld.getUsedByList())
+        {
+            if (wlub.getTableName().equals(tableInfo.getName()) &&
+                wlub.getFieldName().equals(fieldInfo.getName()))
+            {
+                wld.getUsedByList().remove(wlub);
+                break;
+            }
+        }
         ((DefaultListModel)list.getModel()).removeElement(wld);
         wlMgr.remove(wld);
         hasChanged = true;
     }
 
     /**
-     * 
+     * Show the editor for the WebLinkDef.
      */
     protected void editWebLink()
     {

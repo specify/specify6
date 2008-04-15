@@ -489,4 +489,36 @@
     <field column="Subforma" name="subforma" type="java.lang.String" length="64"/>
     -->
   </table>
+  <table classname="edu.ku.brc.specify.datamodel.Taxon" table="taxon" tableid="4000">
+    <field column="Kingdom" name="kingdom" type="java.lang.String" length="64"/>
+    <field column="Subkingdom" name="subkingdom" type="java.lang.String" length="64"/>
+    <field column="Division" name="division" type="java.lang.String" length="64"/>
+    <field column="Phylum" name="phylum" type="java.lang.String" length="64"/>
+    <field column="Subphylum" name="subphylum" type="java.lang.String" length="64"/>
+    <field column="Superclass" name="superclass" type="java.lang.String" length="64"/>
+    <field column="Class" name="class" type="java.lang.String" length="64"/>
+    <field column="Subclass" name="subclass" type="java.lang.String" length="64"/>
+    <field column="Infraclass" name="infraclass" type="java.lang.String" length="64"/>
+    <field column="Superorder" name="superorder" type="java.lang.String" length="64"/>
+    <field column="Order" name="order" type="java.lang.String" length="64"/>
+    <field column="Suborder" name="suborder" type="java.lang.String" length="64"/>
+    <field column="Infraorder" name="infraorder" type="java.lang.String" length="64"/>
+    <field column="Superfamily" name="superfamily" type="java.lang.String" length="64"/>
+    <field column="Family" name="family" type="java.lang.String" length="64"/>
+    <field column="Subfamily" name="subfamily" type="java.lang.String" length="64"/>
+    <field column="CommonName" name="commonName" type="java.lang.String" length="128"/>
+    <field column="Tribe" name="tribe" type="java.lang.String" length="64"/>
+    <field column="Subtribe" name="subtribe" type="java.lang.String" length="64"/>
+    <field column="Genus" name="genus" type="java.lang.String" length="64"/>
+    <field column="Subgenus" name="subgenus" type="java.lang.String" length="64"/>
+    <field column="Section" name="section" type="java.lang.String" length="64"/>
+    <field column="Subsection" name="subsection" type="java.lang.String" length="64"/>
+    <field column="Species" name="species" type="java.lang.String" length="64"/>
+    <field column="Subspecies" name="subspecies" type="java.lang.String" length="64"/>
+    <field column="Variety" name="variety" type="java.lang.String" length="64"/>
+    <field column="Subvariety" name="subvariety" type="java.lang.String" length="64"/>
+    <field column="Forma" name="forma" type="java.lang.String" length="64"/>
+    <field column="Subforma" name="subforma" type="java.lang.String" length="64"/>
+  </table>
+  
 </database>

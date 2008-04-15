@@ -47,7 +47,7 @@
 	</core>
 	
 	<uiplugins>
-		<plugin name="WebLinkLauncherButton" class="edu.ku.brc.ui.weblink.WebLinkLauncherButton"/>
+		<plugin name="WebLinkButton" class="edu.ku.brc.ui.weblink.WebLinkButton"/>
 		<plugin name="PartialDateUI" class="edu.ku.brc.specify.plugins.PartialDateUI"/>
 		<plugin name="LocalityGoogleEarth" class="edu.ku.brc.specify.plugins.LocalityGoogleEarthPlugin"/>
 		<plugin name="LocalityGeoRef" class="edu.ku.brc.specify.plugins.LocalityGeoRefPlugin"/>

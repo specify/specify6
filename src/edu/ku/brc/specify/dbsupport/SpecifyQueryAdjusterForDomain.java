@@ -155,7 +155,7 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                 {
                     //this probably won't actually work without additional
                     //changes to the from clause for the query
-                    fld = "agent_discpline.DisciplineID"; 
+                    fld = "agent_discipline.DisciplineID"; 
                     throw new RuntimeException("Fix me I am probably broken!");
                 }
             }

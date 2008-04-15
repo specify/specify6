@@ -320,8 +320,7 @@ public class WebLinkArgDlg extends CustomDialog
     //--------------------------------------------------------
     class WebLinkArgsTableModel extends DefaultTableModel
     {
-        protected String[]              colHeaders = {"Name", "Prompt"}; //I18N
-        //protected Vector<WebLinkDefArg> args       = null;
+        protected String[] colHeaders = null;
         
         /**
          * 
@@ -356,6 +355,9 @@ public class WebLinkArgDlg extends CustomDialog
             return columnIndex == 0 ? String.class : Boolean.class;
         }
 
+        /**
+         * 
+         */
         public void removeItem()
         {
             int index = table.getSelectedRow();
@@ -372,6 +374,10 @@ public class WebLinkArgDlg extends CustomDialog
         @Override
         public int getColumnCount()
         {
+            if (colHeaders == null)
+            {
+                colHeaders = new String[] {"Name", "Prompt"}; //I18N
+            }
             return colHeaders.length;
         }
 
@@ -400,7 +406,7 @@ public class WebLinkArgDlg extends CustomDialog
         public Object getValueAt(int row, int column)
         {
             WebLinkDefArg arg = args.get(row);
-            return column == 0 ? arg.getName() : arg.getPrompt();
+            return column == 0 ? arg.getName() : arg.isPrompt();
         }
 
         /* (non-Javadoc)

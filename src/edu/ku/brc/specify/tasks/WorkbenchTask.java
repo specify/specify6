@@ -365,6 +365,14 @@ public class WorkbenchTask extends BaseTask
             SchemaLocalizerXMLHelper schemaLocalizer = new SchemaLocalizerXMLHelper(SpLocaleContainer.WORKBENCH_SCHEMA, schema);
             schemaLocalizer.load();
             schemaLocalizer.setTitlesIntoSchema();
+            
+            DBTableIdMgr mgr = databasechema.get();
+            DBTableInfo taxonOnly = mgr.getInfoById(4000);
+            if (taxonOnly != null)
+            {
+                taxonOnly.setTitle(getResourceString("WB_TAXONIMPORT_ONLY"));
+                taxonOnly.setTableId(4);
+            }
         }
         
         return schema;

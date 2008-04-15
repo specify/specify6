@@ -181,7 +181,10 @@ public class TemplateEditor extends CustomDialog
         databaseSchema = WorkbenchTask.getDatabaseSchema();
         
         int disciplineeId = Discipline.getCurrentDiscipline().getDisciplineId();
-        SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.WORKBENCH_SCHEMA, disciplineeId, databaseSchema, SchemaI18NService.getCurrentLocale());
+        SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.WORKBENCH_SCHEMA, 
+                                                       disciplineeId, 
+                                                       databaseSchema, 
+                                                       SchemaI18NService.getCurrentLocale());
 
         
         // Create the Table List

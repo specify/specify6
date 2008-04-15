@@ -62,7 +62,7 @@ public class WebLinkDefArg implements Cloneable
     /**
      * @return the prompt
      */
-    public boolean getPrompt()
+    public boolean isPrompt()
     {
         return prompt;
     }

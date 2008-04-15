@@ -240,7 +240,7 @@ public class IconEntry
         protected ImageIcon iseImageIcon;
         
         /**
-         * @param url
+         * @param urlStr
          */
         public IconSizeEntry(final IconSize size)
         {

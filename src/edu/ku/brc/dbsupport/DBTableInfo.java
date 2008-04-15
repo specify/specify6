@@ -96,12 +96,26 @@ public class DBTableInfo extends DBInfoBase
         fields        = new Vector<DBFieldInfo>();
     }
     
+    /**
+     * @param tableId the tableId to set
+     */
+    public void setTableId(int tableId)
+    {
+        this.tableId = tableId;
+    }
+
+    /**
+     * 
+     */
     public void cleanUp()
     {
         relationships.clear();
         fields.clear();
     }
 
+    /**
+     * @return
+     */
     public String getShortClassName()
     {
         // TODO: replace calls to this with a call to classObj.getSimpleName();

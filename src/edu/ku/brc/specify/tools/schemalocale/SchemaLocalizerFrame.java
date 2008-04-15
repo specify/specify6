@@ -43,6 +43,7 @@ import edu.ku.brc.af.core.SchemaI18NService;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.Specify;
+import edu.ku.brc.specify.config.SpecifyWebLinkMgr;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpLocaleItemStr;
 import edu.ku.brc.ui.IconManager;
@@ -50,6 +51,7 @@ import edu.ku.brc.ui.JStatusBar;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
+import edu.ku.brc.ui.weblink.WebLinkMgr;
 
 /**
  * @author rod
@@ -449,9 +451,11 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
                 }
                 
                 UIFieldFormatterMgr.setDoingLocal(true);
-
+                SpecifyWebLinkMgr.setDoingLocal(true);
+                
                 System.setProperty(SchemaI18NService.factoryName, "edu.ku.brc.specify.config.SpecifySchemaI18NService");    // Needed for Localization and Schema
                 System.setProperty(UIFieldFormatterMgr.factoryName, "edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr");    // Needed for CatalogNumbering
+                System.setProperty(WebLinkMgr.factoryName, "edu.ku.brc.specify.config.SpecifyWebLinkMgr");                  // Needed for WebLnkButton
                 
                 UIFieldFormatterMgr.setDoingLocal(true); // reads from local disk
                

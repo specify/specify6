@@ -63,6 +63,22 @@ public class WebLinkDef
         this.desc = desc;
         this.baseURLStr = baseURLStr;
     }
+    
+    /**
+     * @return whether there is at least one arg with a prompt.
+     */
+    public int getPromptCount()
+    {
+        int cnt = 0;
+        for (WebLinkDefArg arg : args)
+        {
+            if (arg.isPrompt())
+            {
+                cnt++;
+            }
+        }
+        return cnt;
+    }
 
     /**
      * @return the name
