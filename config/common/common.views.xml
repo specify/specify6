@@ -771,9 +771,12 @@
             <desc><![CDATA[Conservation Description]]></desc>
             <enableRules/>
             
-            <columnDef>100px,2px,p,10px,p,2px,p,p:g</columnDef>
+            <columnDef>100px,2px,250px,10px,p,2px,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
+                <row>
+                    <cell type="separator" label="Conservator Description" colspan="8"/>
+                </row>
                 <row> 
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="shortDesc" uitype="text"/>
@@ -791,6 +794,12 @@
                 </row>
                 <row>
                     <cell type="subview" viewname="ConservEvent" id="9"  name="events" colspan="8" rows="5"/>   
+                </row>
+                <row>
+                    <cell type="separator" label="Attachments" colspan="8"/>
+                </row>
+                <row>
+                    <cell type="subview" id="13" name="conservDescriptionAttachments" viewname="ObjectAttachment" initialize="btn=true;icon=ConservDescriptionAttachment;addsearch=true"/>
                 </row>
             </rows>
         </viewdef>
@@ -951,11 +960,13 @@
                     <cell type="subview" id="11" name="pageSets" viewname="FieldNotebookPageSet" colspan="12"/>
                 </row>
                 
-                <!-- <row>
-                    <cell type="separator" label="Attachments"/>
-                    <cell type="subview" id="6" name="attachments" viewname="FieldNotebookAttachment" initialize="btn=true;icon=FieldNotebookAttachment;addsearch=true"/>
+                <row>
+                    <cell type="separator" label="Attachments" colspan="12"/>
                 </row>
                 <row>
+                    <cell type="subview" id="6" name="attachments" viewname="ObjectAttachment" initialize="btn=true;icon=FieldNotebookAttachment;addsearch=true"/>
+                </row>
+             <!--   <row>
                     <cell type="label" labelfor="7"/>
                     <cell type="field" id="7" name="Collection" uitype="querycbx" initialize="name=Collection;title=Collection"/>
                 </row>
@@ -997,11 +1008,13 @@
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="description" uitype="textarea" colspan="10" rows="3"/>
                 </row>
-          <!--      <row>
+                <row>
                     <cell type="separator" label="Attachments"/>
-                    <cell type="subview" id="4" name="attachments" viewname="FieldNotebookPageAttachment" initialize="btn=true;icon=FieldNotebookPageAttachment;addsearch=true"/>
                 </row>
                 <row>
+                    <cell type="subview" id="4" name="attachments" viewname="ObjectAttachment" initialize="btn=true;icon=FieldNotebookPageAttachment;addsearch=true"/>
+                </row>
+             <!--   <row>
                     <cell type="separator" label="Collection Objects" collapse="collectionObjects" colspan="12"/>
                 </row>
                 <row>
