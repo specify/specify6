@@ -174,7 +174,11 @@ public class MissingDataResolver implements ActionListener
     {
         for (RelatedClassSetter rce : missingClasses)
         {
-            rce.defaultSetting();
+            if (!rce.isDefined())
+            //filter out already assigned defaults (TreeDefs defaults are determined by UploadTableTree)
+            {
+                rce.defaultSetting();
+            }
         }
     }
 
