@@ -103,6 +103,17 @@
         </view>
 
         <view 
+            name="JournalSearch"
+            class="edu.ku.brc.specify.datamodel.Journal"
+            usedefbusrule="false"
+            resourcelabels="false">
+            <desc><![CDATA[The FieldNotebookPage Search Form]]></desc>
+            <altviews>
+                <altview name="JournalSearch" viewdef="JournalSearch" label="Edit" mode="edit" validated="true" default="true"/>
+            </altviews>
+        </view>
+
+        <view 
             name="LocalitySearch"
             class="edu.ku.brc.specify.datamodel.Locality"
             usedefbusrule="false"
@@ -422,7 +433,30 @@ Good: <cell type="field" name="FieldNum" ...>
                     <cell type="field" id="3" name="scanDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
                 </row>
             </rows>
-        </viewdef>             
+        </viewdef> 
+
+        <viewdef type="form"
+            name="JournalSearch"
+            class="edu.ku.brc.specify.datamodel.Journal"
+            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
+            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
+            
+            <desc><![CDATA[The CollectingEvent Search Form]]></desc>
+            <enableRules/>
+            
+            <columnDef>p,3dlu,p</columnDef>
+            <rowDef>100px,2px,100px,2px,p</rowDef>
+            
+            <rows>
+                <row>
+                    <cell type="separator" label="Journal" colspan="3"/>
+                </row>
+                <row>
+                    <cell type="label" labelfor="1"/>
+                    <cell type="field" id="1" name="journalName" uitype="text"/>
+                </row>
+            </rows>
+        </viewdef>      
         
         <viewdef type="form"
             name="PermitSearch"
