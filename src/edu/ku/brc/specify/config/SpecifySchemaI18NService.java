@@ -65,7 +65,7 @@ public class SpecifySchemaI18NService extends SchemaI18NService
         String sql = "SELECT splocalecontainer.Name, Text, IsHidden FROM splocalecontainer INNER JOIN splocaleitemstr ON " +
                      "splocalecontainer.SpLocaleContainerID = splocaleitemstr.SpLocaleContainerNameID where Language = '"+locale.getLanguage()+"' AND " +
                      "splocalecontainer.SchemaType = " + schemaType +" AND splocalecontainer.DisciplineID = " + disciplineId;
-        
+
         retrieveString(sql);
         
         for (Vector<String> p : results)
@@ -100,7 +100,9 @@ public class SpecifySchemaI18NService extends SchemaI18NService
             }
         }
         
-        sql = "SELECT splocalecontainer.Name,splocalecontaineritem.Name,splocalecontaineritem.Format, splocalecontaineritem.IsUIFormatter, splocalecontaineritem.PickListName,splocaleitemstr.Text "+
+        sql = "SELECT splocalecontainer.Name,splocalecontaineritem.Name,splocalecontaineritem.Format, " +
+              "splocalecontaineritem.IsUIFormatter, splocalecontaineritem.PickListName, splocaleitemstr.Text, " +
+              "splocalecontaineritem.IsHidden " +
               "FROM splocalecontainer INNER JOIN splocalecontaineritem ON splocalecontainer.SpLocaleContainerID = splocalecontaineritem.SpLocaleContainerID "+
               "INNER JOIN splocaleitemstr ON splocalecontaineritem.SpLocaleContainerItemID = splocaleitemstr.SpLocaleContainerItemNameID "+
               " where splocaleitemstr.Language = '"+locale.getLanguage()+"' AND " +
@@ -124,6 +126,7 @@ public class SpecifySchemaI18NService extends SchemaI18NService
                 if (tblChild != null)
                 {
                     tblChild.setTitle(p.get(5));
+                    tblChild.setHidden(!p.get(6).equals("0"));
                     
                 } else
                 {
@@ -182,6 +185,7 @@ public class SpecifySchemaI18NService extends SchemaI18NService
             
             if (ti != null)
             {
+                
                 DBTableChildIFace tblChild = ti.getItemByName(p.get(1));
                 if (tblChild != null)
                 {
@@ -192,6 +196,7 @@ public class SpecifySchemaI18NService extends SchemaI18NService
                 {
                     log.error("Couldn't find field["+p.get(1)+"] for table ["+p.get(0)+"]");
                 }
+                
             } else
             {
                 log.error("Couldn't find table ["+p.get(0)+"]");
