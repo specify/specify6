@@ -46,6 +46,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.dbsupport.DBFieldInfo;
+import edu.ku.brc.dbsupport.DBRelationshipInfo;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.SpQueryField;
@@ -144,7 +145,7 @@ public class QueryFieldPanel extends JPanel
         else
         {
             labelStrs = new String[]{ " ",
-                    UIRegistry.getResourceString("QB_FIELD"), UIRegistry.getResourceString("QB_NOT"),
+                    /*UIRegistry.getResourceString("QB_FIELD")*/" ", UIRegistry.getResourceString("QB_NOT"),
                     UIRegistry.getResourceString("QB_OPERATOR"),
                     UIRegistry.getResourceString("QB_CRITERIA"), UIRegistry.getResourceString("QB_SORT"),
                     UIRegistry.getResourceString("QB_DISPLAY"), getResourceString("QB_PROMPT"), " ", " " };
@@ -482,7 +483,22 @@ public class QueryFieldPanel extends JPanel
         comparators = getComparatorList(fieldQRI);
         iconLabel = new JLabel(icon);
         iconLabel.addFocusListener(focusListener);
-        fieldLabel = createLabel(fieldQRI != null ? fieldQRI.getTitle() : "WXYZ");
+        String fieldLabelText = fieldQRI != null ? fieldQRI.getTitle() : "WXYZ";
+        if (fieldQRI instanceof RelQRI)
+        {
+            DBRelationshipInfo.RelationshipType relType = ((RelQRI)fieldQRI).getRelationshipInfo().getType();
+            if (relType.equals(DBRelationshipInfo.RelationshipType.OneToMany) || 
+                    relType.equals(DBRelationshipInfo.RelationshipType.ManyToMany))
+            {
+                fieldLabelText += " " + UIRegistry.getResourceString("QB_AGGREGATED");
+            }
+            else
+            {
+                fieldLabelText += " " + UIRegistry.getResourceString("QB_FORMATTED");
+            }
+                
+        }
+        fieldLabel = createLabel(fieldLabelText);
         fieldLabel.addFocusListener(focusListener);
         isNotCheckbox = createCheckBox("isNotCheckbox");
         isNotCheckbox.addFocusListener(focusListener);

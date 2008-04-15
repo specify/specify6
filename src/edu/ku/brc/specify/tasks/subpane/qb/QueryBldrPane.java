@@ -325,12 +325,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         contextPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 10));
 
         JPanel schemaPanel = new JPanel(new BorderLayout());
-        String schemaPanelCaption = UIRegistry.getResourceString("QB_SEARCH_FIELDS");
-        if (query.getContextTableId() != -1)
-        {
-            schemaPanelCaption = DBTableIdMgr.getInstance().getInfoById(query.getContextTableId()).getTitle() + " " + schemaPanelCaption;
-        }
-        schemaPanel.add(createLabel(schemaPanelCaption), BorderLayout.NORTH);
         schemaPanel.add(scrollPane, BorderLayout.CENTER);
 
         topPanel.add(contextPanel, BorderLayout.WEST);
@@ -1332,7 +1326,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 else
                 {
                     addIt = !tblQRI.getTableTree().getKid(k).getTableInfo().isHidden();
-                    System.out.println(tblQRI.getTableTree().getKid(k).getTableInfo().getTitle());
                     if (addIt)
                     {
                         tblQRI.getTableTree().getKid(k).getTableQRI().determineRel();
@@ -1494,6 +1487,15 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 listBoxList.add(newList);
                 sp = new JScrollPane(newList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS,
                         ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+                String colHeaderText = "Query Fields";
+                if (item instanceof TableQRI)
+                {
+                    colHeaderText = ((TableQRI)item).getTitle();
+                }
+                JLabel colHeader = new JLabel(colHeaderText);
+                colHeader.setHorizontalAlignment(SwingConstants.CENTER);
+                sp.setColumnHeaderView(colHeader);
+                
                 spList.add(sp);
 
                 newList.getSelectionModel().addListSelectionListener(new ListSelectionListener()
@@ -1513,6 +1515,15 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 newList = listBoxList.get(curInx + 1);
                 model = (DefaultListModel) newList.getModel();
                 sp = spList.get(curInx + 1);
+                JLabel colHeaderLbl = (JLabel)sp.getColumnHeader().getComponent(0);
+                if (item instanceof TableQRI)
+                {
+                    colHeaderLbl.setText(((TableQRI)item).getTitle());
+                }
+                else
+                {
+                    colHeaderLbl.setText("Query Fields");
+                }
             }
 
             if (item instanceof TableQRI)

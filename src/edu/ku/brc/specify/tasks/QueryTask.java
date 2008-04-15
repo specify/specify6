@@ -317,7 +317,7 @@ public class QueryTask extends BaseTask
     public void preInitialize()
     {
         // Create and add the Actions NavBox first so it is at the top at the top
-        actionNavBox = new NavBox(getResourceString("QB_NEW_QUERY"));
+        actionNavBox = new NavBox(getResourceString("QB_CREATE_QUERY"));
         addNewQCreators();
     }
     
