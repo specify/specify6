@@ -113,37 +113,6 @@ public class WebLinkArgDlg extends CustomDialog
             ViewFactory.changeTextFieldUIForDisplay(nameTF, true);
         }
         
-        DocumentListener docLis = new DocumentListener() {
-            public void changedUpdate(DocumentEvent e)
-            {
-                parseForFields();
-                enableUI();
-            }
-            public void insertUpdate(DocumentEvent e)
-            {
-                parseForFields();
-                enableUI(); 
-            }
-            public void removeUpdate(DocumentEvent e)
-            {
-                parseForFields();
-                enableUI(); 
-            }
-        };
-        
-        nameTF.getDocument().addDocumentListener(docLis);
-        baseUrlTF.getDocument().addDocumentListener(docLis);
-        
-        baseUrlTF.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusLost(FocusEvent arg0)
-            {
-                parseForFields();
-                super.focusLost(arg0);
-            }
-            
-        });
-        
         descTA.setRows(5);
         
         model = new WebLinkArgsTableModel();
@@ -179,7 +148,30 @@ public class WebLinkArgDlg extends CustomDialog
         
         setDataIntoUI();
         
+        DocumentListener docLis = new DocumentListener() {
+            public void changedUpdate(DocumentEvent e)
+            {
+                parseForFields();
+                enableUI();
+            }
+            public void insertUpdate(DocumentEvent e)
+            {
+                parseForFields();
+                enableUI(); 
+            }
+            public void removeUpdate(DocumentEvent e)
+            {
+                parseForFields();
+                enableUI(); 
+            }
+        };
+        
+        nameTF.getDocument().addDocumentListener(docLis);
+        baseUrlTF.getDocument().addDocumentListener(docLis);
+        
         enableUI();
+        
+        pack();
     }
     
     /**
@@ -289,7 +281,7 @@ public class WebLinkArgDlg extends CustomDialog
         baseUrlTF.setText(webLinkDef.getBaseURLStr());
         descTA.setText(webLinkDef.getDesc());
         
-        parseForFields();
+        //parseForFields();
     }
     
     /**

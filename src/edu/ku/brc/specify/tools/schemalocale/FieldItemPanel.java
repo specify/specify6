@@ -361,8 +361,7 @@ public class FieldItemPanel extends LocalizerBasePanel
             webLinkMoreBtn.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e)
                 {
-                    WebLinkConfigDlg dlg = new WebLinkConfigDlg(tableInfo, fieldInfo);
-                    dlg.setVisible(true);
+                    WebLinkConfigDlg dlg = WebLinkMgr.getInstance().editWebLinks(tableInfo, fieldInfo);
                     if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
                     {
                         setSelectedWebLink(dlg.getSelectedItem());

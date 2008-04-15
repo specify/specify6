@@ -170,8 +170,12 @@ public class WebLinkMgr
         return webLinkDefs;
     }
 
-    public void editWebLinks(final DBTableInfo tableInfo,
-                             final DBFieldInfo fieldInfo)
+    /**
+     * @param tableInfo
+     * @param fieldInfo
+     */
+    public WebLinkConfigDlg editWebLinks(final DBTableInfo tableInfo,
+                                         final DBFieldInfo fieldInfo)
     {
         WebLinkConfigDlg dlg = new WebLinkConfigDlg(tableInfo, fieldInfo);
         dlg.setVisible(true);
@@ -180,6 +184,7 @@ public class WebLinkMgr
         {
             hasChanged = true;
         }
+        return dlg;
     }
 }
 

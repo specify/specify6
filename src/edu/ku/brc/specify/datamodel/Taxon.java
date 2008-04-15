@@ -31,6 +31,7 @@ import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
 import edu.ku.brc.specify.treeutils.TreeOrderSiblingComparator;
+import edu.ku.brc.ui.weblink.WebLinkDataProviderIFace;
 
 @SuppressWarnings("serial")
 @Entity
@@ -44,7 +45,10 @@ import edu.ku.brc.specify.treeutils.TreeOrderSiblingComparator;
         @Index (name="TaxonNameIDX", columnNames={"Name"}),
         @Index (name="TaxonFullNameIDX", columnNames={"FullName"})
     })
-public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<TaxonAttachment>, Serializable, Treeable<Taxon,TaxonTreeDef,TaxonTreeDefItem>
+public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<TaxonAttachment>, 
+                                                       Serializable, 
+                                                       Treeable<Taxon,TaxonTreeDef,TaxonTreeDefItem>,
+                                                       WebLinkDataProviderIFace
 {
     /**
      * A <code>Logger</code> object used for all log messages emanating from
@@ -1214,6 +1218,10 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         return null;
     }
     
+    /**
+     * @param levelRank
+     * @return
+     */
     public String getLevelName(int levelRank)
     {
         Taxon t = getLevel(levelRank);
@@ -1223,4 +1231,26 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
         }
         return null;
     }
+
+    
+    //-------------------------------------------------------------------
+    //-- WebLinkProviderIFace
+    //-------------------------------------------------------------------
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.weblink.WebLinkDataProviderIFace#getWebLinkData(java.lang.String)
+     */
+    public String getWebLinkData(String dataName)
+    {
+        if (dataName.equals("species"))
+        {
+            return getSpeciesName();
+            
+        } else if (dataName.equals("genus"))
+        {
+            return getGenusName();
+        }
+        return null;
+    }
+    
 }
