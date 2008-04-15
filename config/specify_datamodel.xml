@@ -1547,7 +1547,7 @@
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="technicalContacts" othersidename="instTechContact" updatable="false" required="false"/>
     </table>
     <table classname="edu.ku.brc.specify.datamodel.Journal" table="journal" tableid="51" searchable="true" abbrv="jn">
-      <display view="Journal"/>
+      <display view="Journal" searchdlg="JournalSearch" newobjdlg="JournalDisplay"/>
       <field column="GUID" name="guid" type="java.lang.String" length="128" indexName="JournalGUIDIDX" updatable="true" required="false" unique="false" indexed="true"/>
       <field column="JournalAbbreviation" name="journalAbbreviation" type="java.lang.String" length="50" updatable="true" required="false" unique="false" indexed="false"/>
       <field column="JournalName" name="journalName" type="java.lang.String" length="255" indexName="JournalNameIDX" updatable="true" required="false" unique="false" indexed="true"/>
