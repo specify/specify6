@@ -668,6 +668,54 @@
                 </captions>
             </detailView>
         </table>
+
+        <table id="119" tableid="85" name="FieldNotebookPageSearch" priority="1" color="30, 144, 255">
+            <detailView icon="FieldNotebook">
+                <sql>
+                    <![CDATA[SELECT FieldNotebookPageID, PageNumber FROM fieldnotebookpage WHERE DisciplineID = DSPLNID AND (%s)]]>
+                </sql>
+                <captions>
+                    <caption tableid="85" col="FieldNotebookPageID" visible="false"/>
+                    <caption tableid="85" col="PageNumber"/>
+                </captions>
+            </detailView>
+        </table>
+        
+        <table id="120" tableid="51" name="JournalSearch" priority="1" color="30, 144, 255">
+            <detailView icon="Journal">
+                <sql>
+                    <![CDATA[SELECT JournalID, JournalName FROM journal WHERE DisciplineID = DSPLNID AND (%s)]]>
+                </sql>
+                <captions>
+                    <caption tableid="51" col="JournalID" visible="false"/>
+                    <caption tableid="51" col="JournalName"/>
+                </captions>
+            </detailView>
+        </table>
+        
+        <table id="121" tableid="67" name="AppraisalSearch" priority="1" color="30, 144, 255">
+            <detailView icon="Appraisal">
+                <sql>
+                    <![CDATA[SELECT AppraisalID, AppraisalNumber FROM appraisal WHERE DisciplineID = DSPLNID AND (%s)]]>
+                </sql>
+                <captions>
+                    <caption tableid="67" col="AppraisalID" visible="false"/>
+                    <caption tableid="67" col="AppraisalNumber"/>
+                </captions>
+            </detailView>
+        </table>
+        
+        <table id="122" tableid="69" name="ReferenceWorkSearch" priority="1" color="30, 144, 255">
+            <detailView icon="ReferenceWork">
+                <sql>
+                    <![CDATA[SELECT ReferenceWorkID, Title FROM appraisal WHERE DisciplineID = DSPLNID AND (%s)]]>
+                </sql>
+                <captions>
+                    <caption tableid="69" col="ReferenceWorkID" visible="false"/>
+                    <caption tableid="69" col="Title"/>
+                </captions>
+            </detailView>
+        </table>
         
     </generic>
 </searches>
