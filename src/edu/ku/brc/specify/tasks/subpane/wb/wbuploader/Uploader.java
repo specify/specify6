@@ -608,6 +608,7 @@ public class Uploader implements ActionListener, KeyListener
      */
     protected void addEmptyUploadTables() throws UploaderException
     {
+        
         boolean genSpPresent = false, detPresent = false, locPresent = false, coPresent = false, cePresent = false;
         for (UploadTable ut : uploadTables)
         {
@@ -639,9 +640,16 @@ public class Uploader implements ActionListener, KeyListener
                         || fldName.startsWith("variety") || fldName.startsWith("subspecies"))
                 {
                     genSpPresent = true;
-                    if (Integer.valueOf(fldName.substring(fldName.length() - 1)) > maxSeq)
+                    try
                     {
-                        maxSeq = Integer.valueOf(fldName.substring(fldName.length() - 1));
+                        if (Integer.valueOf(fldName.substring(fldName.length() - 1)) > maxSeq)
+                        {
+                            maxSeq = Integer.valueOf(fldName.substring(fldName.length() - 1));
+                        }
+                    }
+                    catch (NumberFormatException e)
+                    {
+                        genSpPresent = false;
                     }
                 }
             }

@@ -341,4 +341,6 @@
     <field table="Taxon" name="superfamily" treename="taxon" maptofield="name" rankid="130"/>
     <field table="Taxon" name="family" treename="taxon" maptofield="name" rankid="140"/>
     <field table="Taxon" name="subfamily" treename="taxon" maptofield="name" rankid="150"/>
+    <field table="Taxon" name="genus" treename="taxon" maptofield="name" rankid="180"/>
+    <field table="Taxon" name="species" treename="taxon" maptofield="name" rankid="220"/>
 </uploaddef>    
