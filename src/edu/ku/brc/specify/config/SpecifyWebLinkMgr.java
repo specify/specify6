@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
@@ -29,9 +30,12 @@ import edu.ku.brc.ui.weblink.WebLinkMgr;
  */
 public class SpecifyWebLinkMgr extends WebLinkMgr
 {
+    private static final Logger log = Logger.getLogger(SpecifyWebLinkMgr.class);
+            
     private static final String WEBLINKS      = "WebLinks";
     private static final String DISCPLINEDIR  = "Discipline";
     private static final String COMMONDIR     = "Common";
+    private static final String DISKLOC       = "common/weblinks.xml";
     
     protected static boolean    doingLocal = false;
 
@@ -60,7 +64,7 @@ public class SpecifyWebLinkMgr extends WebLinkMgr
     {
         if (doingLocal)
         {
-            File file = XMLHelper.getConfigDir("common/weblinks.xml");
+            File file = XMLHelper.getConfigDir(DISKLOC);
             try
             {
                 loadFromXML(FileUtils.readFileToString(file));
@@ -70,21 +74,35 @@ public class SpecifyWebLinkMgr extends WebLinkMgr
             }
         } else
         {
-            AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromDir(COMMONDIR, WEBLINKS);
-            if (escAppRes != null)
+            AppResourceIFace appRes = AppContextMgr.getInstance().getResourceFromDir(DISCPLINEDIR, WEBLINKS);
+            if (appRes != null)
             {
-                loadFromXML(AppContextMgr.getInstance().getResourceAsXML(escAppRes));
-               
+                loadFromXML(AppContextMgr.getInstance().getResourceAsXML(appRes));
+                
             } else
             {
-                // Get the default resource by name and copy it to a new User Area Resource
-                AppResourceIFace newAppRes = AppContextMgr.getInstance().copyToDirAppRes(DISCPLINEDIR, WEBLINKS);
-                if (newAppRes != null)
+                appRes = AppContextMgr.getInstance().getResourceFromDir(COMMONDIR, WEBLINKS);
+                if (appRes != null)
                 {
-                    // Save it in the User Area
-                    AppContextMgr.getInstance().saveResource(newAppRes);
-                    loadFromXML(AppContextMgr.getInstance().getResourceAsXML(newAppRes));
+                    loadFromXML(AppContextMgr.getInstance().getResourceAsXML(appRes));
+                   
+                } else
+                {
+                    log.error("Couldn't get WebLinks");
                 }
+                
+                
+                /* else
+                {
+                    // Get the default resource by name and copy it to a new User Area Resource
+                    AppResourceIFace newAppRes = AppContextMgr.getInstance().copyToDirAppRes(DISCPLINEDIR, WEBLINKS);
+                    if (newAppRes != null)
+                    {
+                        // Save it in the User Area
+                        AppContextMgr.getInstance().saveResource(newAppRes);
+                        loadFromXML(AppContextMgr.getInstance().getResourceAsXML(newAppRes));
+                    }
+                }*/
             }
         }
     }
@@ -95,37 +113,41 @@ public class SpecifyWebLinkMgr extends WebLinkMgr
     @Override
     public void write()
     {
-        if (doingLocal)
+        if (hasChanged)
         {
-            File outputFile = XMLHelper.getConfigDir("common/weblinks.xml");
-            try
+            if (doingLocal)
             {
-                FileUtils.writeStringToFile(outputFile, convertToXML());
+                File outputFile = XMLHelper.getConfigDir(DISKLOC);
+                try
+                {
+                    FileUtils.writeStringToFile(outputFile, convertToXML());
+                    hasChanged = false;
+
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                }
                 
-            } catch (Exception ex)
-            {
-                ex.printStackTrace();
-            }
-            
-        } else
-        {
-            AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromDir(DISCPLINEDIR, WEBLINKS);
-            if (escAppRes != null)
-            {
-                escAppRes.setDataAsString(convertToXML());
-                AppContextMgr.getInstance().saveResource(escAppRes);
-               
             } else
             {
-                String xml = convertToXML();
-                System.err.println(xml);
-                AppResourceIFace appRes = AppContextMgr.getInstance().createAppResourceForDir(DISCPLINEDIR);
-                appRes.setLevel((short)0);
-                appRes.setName(WEBLINKS);
-                appRes.setMimeType("text/xml");
-                appRes.setDataAsString(xml);
-                
-                AppContextMgr.getInstance().saveResource(appRes);
+                AppResourceIFace appRes = AppContextMgr.getInstance().getResourceFromDir(DISCPLINEDIR, WEBLINKS);
+                if (appRes != null)
+                {
+                    appRes.setDataAsString(convertToXML());
+                    AppContextMgr.getInstance().saveResource(appRes);
+                   
+                } else
+                {
+                    String xml = convertToXML();
+                    appRes = AppContextMgr.getInstance().createAppResourceForDir(DISCPLINEDIR);
+                    appRes.setLevel((short)0);
+                    appRes.setName(WEBLINKS);
+                    appRes.setMimeType("text/xml");
+                    appRes.setDataAsString(xml);
+                    
+                    AppContextMgr.getInstance().saveResource(appRes);
+                }
+                hasChanged = false;
             }
         }
     }

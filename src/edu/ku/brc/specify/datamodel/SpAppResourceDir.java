@@ -338,6 +338,14 @@ public class SpAppResourceDir extends DataModelObjBase implements java.io.Serial
     }
 
     /**
+     * @param title the title to set
+     */
+    public void setTitle(String title)
+    {
+        this.title = title;
+    }
+
+    /**
      * @return a very descriptive unique identifier
      */
     @Transient

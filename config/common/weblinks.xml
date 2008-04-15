@@ -6,7 +6,8 @@
     <args>
       <weblinkdefarg>
         <name>email</name>
-        <prompt>false</prompt>
+        <title>EMail</title>
+        <prompt>true</prompt>
       </weblinkdefarg>
     </args>
     <usedByList>

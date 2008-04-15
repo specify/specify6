@@ -628,7 +628,8 @@ public class FieldItemPanel extends LocalizerBasePanel
         if (webLinkCombo != null)
         {
             DefaultComboBoxModel wlModel = (DefaultComboBoxModel)webLinkCombo.getModel();
-            if (wlModel.getSize() == 0)
+            wlModel.removeAllElements();
+            //if (wlModel.getSize() == 0)
             {
                 wlModel.addElement(webLinkDefNone);
                 for (WebLinkDef wld : WebLinkMgr.getInstance().getWebLinkDefs())

@@ -672,6 +672,8 @@ public class SpecifyAppContextMgr extends AppContextMgr
                                                  final String           viewSetMgrName, 
                                                  final File             dir)
     {
+        if (debug) log.debug("loadViewSetMgrFromDir ["+spAppResourceDir.getIdentityTitle()+"]");
+        
         SpViewSetObj vso = null;
         ViewSetMgr viewSetMgr = new ViewSetMgr(viewSetMgrName, dir);
         for (ViewSetIFace vs : viewSetMgr.getViewSets())
@@ -704,7 +706,11 @@ public class SpecifyAppContextMgr extends AppContextMgr
                                                               final String           viewSetMgrName, 
                                                               final File             dir)
     {
-        if (debug) log.debug("Creating AppResourceDef from Dir ["+dir.getAbsolutePath()+"]");
+        if (debug) 
+        {
+            log.debug("Creating AppResourceDef from Dir ["+virtualDirName+"]");
+            log.debug("mergeAppResourceDirFromDiskDir AppResourceDef from Dir ["+dir.getAbsolutePath()+"]");
+        }
         
         viewSetMgrHash.put(virtualDirName, new Pair<String, File>(viewSetMgrName, dir));
         
@@ -925,10 +931,11 @@ public class SpecifyAppContextMgr extends AppContextMgr
             dir = XMLHelper.getConfigDir("common");
             if (dir.exists())
             {
-                SpAppResourceDir appResDef = createAppResourceDefFromDir("Common", dir);
-                appResDef.setUserType("Common");
+                appResDir = createAppResourceDefFromDir("Common", dir);
+                appResDir.setTitle("Common");
+                appResDir.setUserType("Common");
                 
-                spAppResourceList.add(appResDef);
+                spAppResourceList.add(appResDir);
                 spAppResourceHash.put(COMMONDIR, appResDir);
             }
 
@@ -940,10 +947,11 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 dir = XMLHelper.getConfigDir("backstop");
                 if (dir.exists())
                 {
-                    SpAppResourceDir appResDef = createAppResourceDefFromDir("BackStop", dir);
-                    appResDef.setUserType("BackStop");
+                    appResDir = createAppResourceDefFromDir("BackStop", dir);
+                    appResDir.setUserType("BackStop");
+                    appResDir.setTitle("Common");
                     
-                    spAppResourceList.add(appResDef);
+                    spAppResourceList.add(appResDir);
                     spAppResourceHash.put(BACKSTOPDIR, appResDir);
                 }
             } else
@@ -1271,6 +1279,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         {
             for (SpAppResource ar : appResDir.getSpAppResources())
             {
+                System.out.println(ar.getName());
                 if (ar.getName().equals(appResName))
                 {
                     return ar;
@@ -1559,6 +1568,11 @@ public class SpecifyAppContextMgr extends AppContextMgr
         return false;
     }
 
+    /**
+     * @param appResDir
+     * @param appResource
+     * @return
+     */
     public boolean removeAppResourceSp(final SpAppResourceDir appResDir,
                                        final AppResourceIFace appResource)
     {

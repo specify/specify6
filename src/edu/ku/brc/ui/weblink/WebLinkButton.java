@@ -22,6 +22,8 @@ import java.net.URISyntaxException;
 import java.util.Hashtable;
 import java.util.Properties;
 
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
@@ -133,7 +135,7 @@ public class WebLinkButton extends JPanel implements UIPluginable, GetSetValueIF
     /**
      * @return
      */
-    private CustomDialog createPromptDlg()
+    private CustomDialog createPromptDlg(final Hashtable<String, String> backupHash)
     {
         if (webLinkDef != null)
         {
@@ -141,12 +143,14 @@ public class WebLinkButton extends JPanel implements UIPluginable, GetSetValueIF
             // so first see if we need to prompt for data.
             
             int promptCnt = webLinkDef.getPromptCount();
-            if (promptCnt > 0)
+            if (promptCnt > 0 || backupHash.size() > 0)
             {
                 textFieldHash.clear();
                 
+                promptCnt += backupHash.size();
+                
                 String          rowDef = createDuplicateJGoodiesDef("p", "4px", promptCnt);
-                PanelBuilder    pb     = new PanelBuilder(new FormLayout("p,2px,p", rowDef));
+                PanelBuilder    pb     = new PanelBuilder(new FormLayout("p,2px,f:p:g", rowDef));
                 CellConstraints cc     = new CellConstraints();
                 
                 DocumentListener dl = new DocumentListener()
@@ -182,13 +186,28 @@ public class WebLinkButton extends JPanel implements UIPluginable, GetSetValueIF
                 int y = 1;
                 for (WebLinkDefArg arg : webLinkDef.getArgs())
                 {
-                    JTextField txtField = createTextField();
+                    if (arg.isPrompt())
+                    {
+                        JTextField txtField = createTextField(15);
+                        txtField.getDocument().addDocumentListener(dl);
+                        textFieldHash.put(arg.getName(), txtField);
+                        pb.add(createLabel(arg.getTitle(), SwingConstants.RIGHT), cc.xy(1, y));
+                        pb.add(txtField, cc.xy(3, y));
+                        y += 2;
+                    }
+                }
+                
+                for (String name : backupHash.keySet())
+                {
+                    JTextField txtField = createTextField(15);
                     txtField.getDocument().addDocumentListener(dl);
-                    textFieldHash.put(arg.getName(), txtField);
-                    pb.add(createLabel(arg.getName(), SwingConstants.RIGHT), cc.xy(1, y));
+                    textFieldHash.put(name, txtField);
+                    pb.add(createLabel(backupHash.get(name), SwingConstants.RIGHT), cc.xy(1, y));
                     pb.add(txtField, cc.xy(3, y));
                     y += 2;
                 }
+                
+                pb.getPanel().setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
                 
                 return new CustomDialog((Frame)getTopWindow(), 
                                         getResourceString("WBLK_PROMPT_DATA"),
@@ -216,11 +235,36 @@ public class WebLinkButton extends JPanel implements UIPluginable, GetSetValueIF
             // Start by getting the data needed to build the URL
             // so first see if we need to prompt for data.
             
+            Hashtable<String, String> backupPrompt = new Hashtable<String, String>();
+            for (WebLinkDefArg arg : webLinkDef.getArgs())
+            {
+                if (!arg.isPrompt())
+                {
+                    String name  = arg.getName();
+                    String value = "";
+                    if (provider != null)
+                    {
+                        value = provider.getWebLinkData(name);
+                    } else
+                    {
+                        Object data = FormHelper.getValue(dataObj, name);
+                        if (data != null)
+                        {
+                            value = data.toString();
+                        } else
+                        {
+                            backupPrompt.put(name, arg.getTitle() == null ? arg.getName() : arg.getTitle());
+                        }
+                    }
+                    valueHash.put(name, value);
+                }
+            }
+            
             int promptCnt = webLinkDef.getPromptCount();
-            if (promptCnt > 0)
+            if (promptCnt > 0 || backupPrompt.size() > 0)
             {
                 valueHash.clear();
-                promptDialog = createPromptDlg();
+                promptDialog = createPromptDlg(backupPrompt);
                 promptDialog.setVisible(true);
                 if (!promptDialog.isCancelled())
                 {
@@ -236,24 +280,6 @@ public class WebLinkButton extends JPanel implements UIPluginable, GetSetValueIF
                 promptDialog = null;
             }
             
-            for (WebLinkDefArg arg : webLinkDef.getArgs())
-            {
-                String name  = arg.getName();
-                String value = "";
-                if (provider != null)
-                {
-                    value = provider.getWebLinkData(name);
-                } else
-                {
-                    Object data = FormHelper.getValue(dataObj, name);
-                    if (data != null)
-                    {
-                        value = data.toString();
-                    }
-                }
-                valueHash.put(name, value);
-            }
-        
             String url = webLinkDef.getBaseURLStr();
             for (String key : valueHash.keySet())
             {
@@ -321,7 +347,18 @@ public class WebLinkButton extends JPanel implements UIPluginable, GetSetValueIF
     {
         urlStr = properties.getProperty("url");
         
-        launchBtn = createButton(IconManager.getIcon("EMail", IconManager.STD_ICON_SIZE));
+        String iconName = properties.getProperty("icon");
+        ImageIcon icon = null;
+        if (StringUtils.isNotEmpty(iconName))
+        {
+            icon = IconManager.getIcon(iconName, IconManager.STD_ICON_SIZE);
+        }
+        
+        if (icon == null)
+        {
+            icon = IconManager.getIcon("WebLink", IconManager.STD_ICON_SIZE);
+        }
+        launchBtn = createButton(icon);
         launchBtn.addActionListener(this);
         
         String wlName = properties.getProperty("weblink");

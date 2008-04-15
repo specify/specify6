@@ -37,6 +37,7 @@ public class WebLinkMgr
     protected static WebLinkMgr instance = null;
     
     protected Vector<WebLinkDef> webLinkDefs = new Vector<WebLinkDef>();
+    protected boolean            hasChanged  = false;
     
     /**
      * Protected Constructor
@@ -174,6 +175,11 @@ public class WebLinkMgr
     {
         WebLinkConfigDlg dlg = new WebLinkConfigDlg(tableInfo, fieldInfo);
         dlg.setVisible(true);
+        
+        if (dlg.hasChanged())
+        {
+            hasChanged = true;
+        }
     }
 }
 

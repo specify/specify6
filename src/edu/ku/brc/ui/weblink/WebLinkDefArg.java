@@ -22,6 +22,7 @@ import com.thoughtworks.xstream.XStream;
 public class WebLinkDefArg implements Cloneable
 {
     protected String  name;
+    protected String  title;
     protected boolean prompt;
     
     /**
@@ -36,7 +37,7 @@ public class WebLinkDefArg implements Cloneable
      * @param name
      * @param prompt
      */
-    public WebLinkDefArg(String name, boolean prompt)
+    public WebLinkDefArg(String name, String title, boolean prompt)
     {
         super();
         this.name = name;
@@ -75,7 +76,22 @@ public class WebLinkDefArg implements Cloneable
         this.prompt = prompt;
     }
     
-    
+    /**
+     * @return the title
+     */
+    public String getTitle()
+    {
+        return title;
+    }
+
+    /**
+     * @param title the title to set
+     */
+    public void setTitle(String title)
+    {
+        this.title = title;
+    }
+
     /* (non-Javadoc)
      * @see java.lang.Object#clone()
      */

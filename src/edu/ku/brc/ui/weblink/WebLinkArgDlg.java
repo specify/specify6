@@ -168,7 +168,7 @@ public class WebLinkArgDlg extends CustomDialog
         
         rightPB.getPanel().setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         
-        TableColumn promptCol = table.getColumnModel().getColumn(1);
+        TableColumn promptCol = table.getColumnModel().getColumn(2);
         promptCol.setCellEditor(new DefaultCellEditor(new JCheckBox()));
         //promptCol.setCellRenderer(cellRenderer)
         UIHelper.makeTableHeadersCentered(table, false);
@@ -232,7 +232,7 @@ public class WebLinkArgDlg extends CustomDialog
                     if (fields.get(field) == null)
                     {
                         fields.put(field, field);
-                        model.addItem(field, true);
+                        model.addItem(field, StringUtils.capitalize(field), true);
                         inx = endInx+1;
                         
                     } else
@@ -339,9 +339,9 @@ public class WebLinkArgDlg extends CustomDialog
          * @param name
          * @param isPrompt
          */
-        public void addItem(final String name, final boolean isPrompt)
+        public void addItem(final String name, final String title, final boolean isPrompt)
         {
-            args.add(new WebLinkDefArg(name, isPrompt)); // I18N
+            args.add(new WebLinkDefArg(name, title, isPrompt)); // I18N
             fireTableDataChanged();
 
         }
@@ -352,7 +352,7 @@ public class WebLinkArgDlg extends CustomDialog
         @Override
         public Class<?> getColumnClass(int columnIndex)
         {
-            return columnIndex == 0 ? String.class : Boolean.class;
+            return columnIndex < 2 ? String.class : Boolean.class;
         }
 
         /**
@@ -376,7 +376,7 @@ public class WebLinkArgDlg extends CustomDialog
         {
             if (colHeaders == null)
             {
-                colHeaders = new String[] {"Name", "Prompt"}; //I18N
+                colHeaders = new String[] {"Name", "Ttile", "Prompt"}; //I18N
             }
             return colHeaders.length;
         }
@@ -406,7 +406,13 @@ public class WebLinkArgDlg extends CustomDialog
         public Object getValueAt(int row, int column)
         {
             WebLinkDefArg arg = args.get(row);
-            return column == 0 ? arg.getName() : arg.isPrompt();
+            switch (column)
+            {
+                case 0 : return arg.getName();
+                case 1 : return arg.getTitle();
+                case 2 : return arg.isPrompt();
+            }
+            return "";
         }
 
         /* (non-Javadoc)
@@ -415,7 +421,7 @@ public class WebLinkArgDlg extends CustomDialog
         @Override
         public boolean isCellEditable(int row, int column)
         {
-            return column == 1;
+            return column > 0;
         }
 
         /* (non-Javadoc)
@@ -425,9 +431,14 @@ public class WebLinkArgDlg extends CustomDialog
         public void setValueAt(Object value, int row, int column)
         {
             WebLinkDefArg arg = args.get(row);
-            if (column == 1)
+            switch (column)
             {
-                arg.setPrompt((Boolean)value);
+                case 0 : 
+                    break;
+                case 1 : arg.setTitle((String)value);
+                    break;
+                case 2 : arg.setPrompt((Boolean)value);
+                    break;
             }
         }
     }
