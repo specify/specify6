@@ -130,6 +130,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
             if (sqlStr != null)
             {
                 jpaQuery = new JPAQuery(sqlStr, this);
+                jpaQuery.setParams(results.getParams());
                 jpaQuery.start();
             }
             

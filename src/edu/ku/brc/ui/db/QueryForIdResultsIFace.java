@@ -21,6 +21,8 @@ import java.awt.Color;
 import java.util.List;
 import java.util.Vector;
 
+import edu.ku.brc.util.Pair;
+
 
 
 /**
@@ -143,4 +145,9 @@ public interface QueryForIdResultsIFace
      * @return whether the results UI should allow Multiple selection if poissible.
      */
     public abstract boolean isMultipleSelection();
+    
+    /**
+     * @returns a list of <name, value> pairs describing parameters.
+     */
+    public abstract List<Pair<String, Object>> getParams();
 }

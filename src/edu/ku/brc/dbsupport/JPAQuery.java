@@ -25,6 +25,8 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.exception.JDBCConnectionException;
 
+import edu.ku.brc.util.Pair;
+
 /**
  * This class is used to execute JPA or Hibernate queries and notify the listener when done.
  *  <br>The start method asks a thread pool service
@@ -44,6 +46,11 @@ public class JPAQuery implements CustomQueryIFace
     protected boolean                   inError     = false;
     protected List<?>                   resultsList = null;
     protected boolean                   isUnique    = false;
+    
+    /**
+     * A list of <Name, Value> pairs for each parameter in the query.
+     */
+    protected List<Pair<String, Object>> params = null;
     
     protected CustomQueryListener       cql         = null;
     protected Object                    data        = null;
@@ -161,6 +168,15 @@ public class JPAQuery implements CustomQueryIFace
                     sqlStr = "SELECT gtp.geologicTimePeriodId FROM GeologicTimePeriod as gtp WHERE lower(gtp.fullName) like '%taylor%' OR lower(gtp.name) like '%taylor%'";
                 }
                 Query qry = query != null ? query : session.createQuery(sqlStr);
+                
+                if (params != null)
+                {
+                    for (Pair<String, Object> param : params)
+                    {
+                        qry.setParameter(param.getFirst(), param.getSecond());
+                    }
+                }
+                
                 if (isUnique)
                 {
                     List<Object> objArray = new ArrayList<Object>(1);
@@ -267,4 +283,22 @@ public class JPAQuery implements CustomQueryIFace
     {
         throw new RuntimeException("Not Implemented");
     }
+
+    /**
+     * @return the params
+     */
+    public List<Pair<String, Object>> getParams()
+    {
+        return params;
+    }
+
+    /**
+     * @param params the params to set
+     */
+    public void setParams(List<Pair<String, Object>> params)
+    {
+        this.params = params;
+    }
+    
+    
 }

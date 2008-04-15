@@ -23,6 +23,7 @@ import edu.ku.brc.dbsupport.CustomQueryIFace;
 import edu.ku.brc.dbsupport.CustomQueryListener;
 import edu.ku.brc.dbsupport.JPAQuery;
 import edu.ku.brc.ui.db.ERTICaptionInfo;
+import edu.ku.brc.util.Pair;
 
 /**
  * @author timbo
@@ -37,6 +38,7 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
     protected static final Logger log = Logger.getLogger(QBJRDataSource.class);
 
     protected final String hql;
+    protected final List<Pair<String, Object>> params;
     protected List<?> results;
     protected Object[] rowVals = null;
     protected final AtomicReference<Iterator<?>> rows = new AtomicReference<Iterator<?>>(null);
@@ -103,10 +105,11 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
      * @param hql
      * @param columnInfo
      */
-    public QBJRDataSource(final String hql, final List<ERTICaptionInfo> columnInfo)
+    public QBJRDataSource(final String hql, final List<Pair<String, Object>> params, final List<ERTICaptionInfo> columnInfo)
     {
         super(columnInfo);
         this.hql = hql;
+        this.params = params;
         startDataAcquisition();
     }
     
@@ -115,7 +118,9 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
      */
     protected void startDataAcquisition()
     {
-        new JPAQuery(hql, this).start();
+        JPAQuery q = new JPAQuery(hql, this);
+        q.setParams(params);
+        q.start();
     }
 
 }

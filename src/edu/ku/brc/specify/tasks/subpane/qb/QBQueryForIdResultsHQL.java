@@ -26,6 +26,7 @@ import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.ERTICaptionInfo;
+import edu.ku.brc.util.Pair;
 
 /**
  * @author rod
@@ -39,6 +40,7 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
 {
     protected static final int QBQIdRHQLTblId = -123;
     
+    protected List<Pair<String, Object>> params;
     protected String title;
     protected int    tableId;
     protected String iconName;
@@ -184,5 +186,22 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
     public SortedSet<SpReport> getReports()
     {
         return reports;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL#getParams()
+     */
+    @Override
+    public List<Pair<String, Object>> getParams()
+    {
+        return params;
+    }
+
+    /**
+     * @param params the params to set
+     */
+    public void setParams(List<Pair<String, Object>> params)
+    {
+        this.params = params;
     }
 }

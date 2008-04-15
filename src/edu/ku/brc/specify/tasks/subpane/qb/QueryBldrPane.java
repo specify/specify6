@@ -26,6 +26,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -92,7 +93,6 @@ import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.specify.tasks.ReportsBaseTask;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable;
-import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
@@ -484,10 +484,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * @param qfps
      * @param tblTree
      * @param keysToRetrieve
-     * @return
+     * @return the hql paired with a list of parameters/objects to assign.
      */
-    protected static String buildHQL(final TableQRI rootTable, boolean distinct, final Vector<QueryFieldPanel> qfps,
-                              final TableTree tblTree, final RecordSet keysToRetrieve)
+    protected static Pair<String, List<Pair<String, Object>>> buildHQL(final TableQRI rootTable, boolean distinct, final Vector<QueryFieldPanel> qfps,
+                              final TableTree tblTree, final RecordSet keysToRetrieve) throws ParseException
     {
         if (qfps.size() == 0)
             return null;
@@ -623,6 +623,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             fieldsStr.append(rootTable.getTableInfo().getIdFieldName());
         }
 
+        List<Pair<String,Object>> paramsToSet = new LinkedList<Pair<String, Object>>();
         for (QueryFieldPanel qfi : qfps)
         {
             if (qfi.isForDisplay())
@@ -637,10 +638,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     fieldsStr.append(fldSpec);
                 }
             }
-
             if (keysToRetrieve == null)
             {
-                String criteria = qfi.getCriteriaFormula(tableAbbreviator);
+                String criteria = qfi.getCriteriaFormula(tableAbbreviator, paramsToSet);
                 boolean isDisplayOnly = StringUtils.isEmpty(criteria);
                 if (!isDisplayOnly)
                 {
@@ -717,7 +717,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         
         String result = sqlStr.toString();
         
-        return result;
+        return new Pair<String, List<Pair<String, Object>>>(result, paramsToSet);
     }
     
     /**
@@ -725,13 +725,15 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      */
     protected void doSearch(final TableQRI rootTable, boolean distinct)
     {
-        String hql = buildHQL(rootTable, distinct, queryFieldItems, tableTree, null);    
-        processSQL(queryFieldItems, hql, rootTable.getTableInfo(), distinct);
-    }
-
-    protected void doReport(final TableQRI rootTable, boolean distinct)
-    {
-        processReport(queryFieldItems, buildHQL(rootTable, distinct, queryFieldItems, tableTree, null));
+        try
+        {
+            Pair<String, List<Pair<String, Object>>> hql = buildHQL(rootTable, distinct, queryFieldItems, tableTree, null);    
+            processSQL(queryFieldItems, hql.getFirst(), hql.getSecond(), rootTable.getTableInfo(), distinct);
+        }
+        catch (Exception ex)
+        {
+            UIRegistry.getStatusBar().setErrorMessage(ex.getLocalizedMessage(), ex);
+        }
     }
     
     /**
@@ -996,46 +998,6 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
     }
     
-    
-    /**
-     * @param queryFieldItemsArg
-     * @param sql
-     * 
-     * Launches a report (if one exists) for this.query.
-     * 
-     */
-    protected void processReport(final Vector<QueryFieldPanel> queryFieldItemsArg, final String sql)
-    {
-        QBJRDataSource src = new QBJRDataSource(sql, getColumnInfo(queryFieldItemsArg, true));
-        final CommandAction cmd = new CommandAction(ReportsBaseTask.REPORTS,
-                ReportsBaseTask.PRINT_REPORT, src);
-        cmd.setProperty("title", query.getName());
-        String fileName = null;
-        List<SpReport> reps = getReports();
-        if (reps.size() == 0)
-        {
-            log.error("no reports for query. Should't have gotten here.");
-        }
-        else if (reps.size() == 1)
-        {
-            fileName = reps.get(0).getName() + ".jrxml";
-        }
-        else
-        {
-            ChooseFromListDlg<SpReport> dlg = new ChooseFromListDlg<SpReport>((Frame) UIRegistry
-                    .getTopWindow(), UIRegistry.getResourceString("REP_CHOOSE_SP_REPORT"),
-                    reps);
-            dlg.setVisible(true);
-            if (dlg.isCancelled()) { return; }
-            fileName = dlg.getSelectedObject().getName() + ".jrxml";
-            dlg.dispose();
-        }
-        if (fileName == null) { return; }
-
-        cmd.setProperty("file", fileName);
-        CommandDispatcher.dispatch(cmd);
-    }
-    
     /**
      * @param report
      * 
@@ -1073,14 +1035,24 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             {
                 qfps.add(qpp.getField(f));
             }
-            //XXX selectDistinct hard-coded to true?? Only necessary because when not true, the RecordKey is
-            //included in the query for queries with a TableContext and causes problems with the creation
-            //of the JR data source.
-            String sql = QueryBldrPane.buildHQL(rootQRI, 
-                    true, 
-                    qfps, 
-                    tblTree, rs);
-            QBJRDataSource src = new QBJRDataSource(sql, getColumnInfo(qfps, true));
+            
+            Pair<String, List<Pair<String, Object>>> sql = null;
+            try
+            {
+                // XXX selectDistinct hard-coded to true?? Only necessary because when not true, the
+                // RecordKey is
+                // included in the query for queries with a TableContext and causes problems with
+                // the creation
+                // of the JR data source.
+                sql = QueryBldrPane.buildHQL(rootQRI, true, qfps, tblTree, rs);
+            }
+            catch (Exception ex)
+            {
+                UIRegistry.getStatusBar().setErrorMessage(ex.getLocalizedMessage(), ex);
+                return;
+            }
+            
+            QBJRDataSource src = new QBJRDataSource(sql.getFirst(), sql.getSecond(), getColumnInfo(qfps, true));
             final CommandAction cmd = new CommandAction(ReportsBaseTask.REPORTS,
                     ReportsBaseTask.PRINT_REPORT, src);
             //cmd.setProperty("title", report.getQuery().getName()); //probably don't want to do this.
@@ -1094,7 +1066,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
      * @param queryFieldItemsArg
      * @param sql
      */
-    protected void processSQL(final Vector<QueryFieldPanel> queryFieldItemsArg, final String sql, final DBTableInfo rootTable, final boolean distinct)
+    protected void processSQL(final Vector<QueryFieldPanel> queryFieldItemsArg, final String sql, 
+                              final List<Pair<String, Object>> params, final DBTableInfo rootTable, 
+                              final boolean distinct)
     {
         List<ERTICaptionInfo> captions = getColumnInfo(queryFieldItemsArg, false);
         List<Integer> list = new Vector<Integer>();
@@ -1111,6 +1085,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 list);
         
         qri.setSQL(sql);
+        qri.setParams(params);
         qri.setCaptions(captions);
         qri.setReports(this.query.getReports());
         qri.setExpanded(true);

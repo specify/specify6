@@ -24,6 +24,7 @@ import org.apache.commons.lang.StringUtils;
 
 import edu.ku.brc.ui.db.ERTICaptionInfo;
 import edu.ku.brc.ui.db.QueryForIdResultsIFace;
+import edu.ku.brc.util.Pair;
 
 
 /**
@@ -359,4 +360,15 @@ public class QueryForIdResultsSQL implements QueryForIdResultsIFace
     {
         isMultipleSelection = isMultiple;
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#getParams()
+     */
+    //@Override
+    public List<Pair<String, Object>> getParams()
+    {
+        return null;
+    }
+    
+    
 }

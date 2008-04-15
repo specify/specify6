@@ -24,6 +24,7 @@ import java.awt.event.FocusListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.geom.RoundRectangle2D;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -50,6 +51,7 @@ import edu.ku.brc.dbsupport.DBRelationshipInfo;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.SpQueryField;
+import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.DateConverter;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.MultiStateIconButon;
 import edu.ku.brc.ui.RolloverCommand;
@@ -62,6 +64,7 @@ import edu.ku.brc.ui.forms.validation.UIValidator;
 import edu.ku.brc.ui.forms.validation.ValCheckBox;
 import edu.ku.brc.ui.forms.validation.ValComboBox;
 import edu.ku.brc.ui.forms.validation.ValTextField;
+import edu.ku.brc.util.Pair;
 
 /**
  * @author rod
@@ -106,19 +109,12 @@ public class QueryFieldPanel extends JPanel
     
     protected String[] labelStrs;
     protected String[] comparators;
+
+    protected DateConverter                             dateConverter = null;
     
-//    public static final DataFlavor    QUERY_FLD_PANE_FLAVOR = new DataFlavor(DroppableTaskPane.class, "QueryFldPane");
-//    protected List<DataFlavor>        flavors         = new ArrayList<DataFlavor>(); 
-//    GhostMouseInputAdapter            mouseDropAdapter; 
-//    protected BufferedImage           shadowBuffer        = null;
-//    protected BufferedImage           buffer              = null;
-//    protected boolean                 generateImgBuf      = true;    
-//    protected static final int SHADOW_SIZE = 10;
-//    protected boolean isOver = false;
     protected boolean selected = false;
     
-//    protected Border inactiveBorder = BorderFactory.createEmptyBorder(1,1,1,1);
-//    protected Border focusBorder    = BorderFactory.createLineBorder(Color.BLACK, 1);
+
     /**
      * Constructor.
      * @param fieldName the field Name
@@ -150,7 +146,13 @@ public class QueryFieldPanel extends JPanel
                     UIRegistry.getResourceString("QB_CRITERIA"), UIRegistry.getResourceString("QB_SORT"),
                     UIRegistry.getResourceString("QB_DISPLAY"), getResourceString("QB_PROMPT"), " ", " " };
         }
+        
         this.fieldQRI      = fieldQRI;
+        if (fieldQRI != null && fieldQRI.getDataClass().equals(Calendar.class))
+        {
+            dateConverter = new DateConverter();
+        }
+        
         this.columnDefStr  = columnDefStr;
         
         thisItem = this;
@@ -344,7 +346,7 @@ public class QueryFieldPanel extends JPanel
     /**
      * @return
      */
-    public String getCriteriaFormula(final TableAbbreviator ta)
+    public String getCriteriaFormula(final TableAbbreviator ta, final List<Pair<String,Object>> paramList) throws ParseException
     {
         String criteriaStr = criteria.getText();
         
@@ -382,7 +384,9 @@ public class QueryFieldPanel extends JPanel
             }
             else if (fieldQRI.getDataClass().equals(Calendar.class))
             {
-                criteriaStr = "'" + criteriaStr + "'";
+                String paramName = "spparam" + paramList.size();
+                paramList.add(new Pair<String,Object>(paramName, dateConverter.convert(criteriaStr)));
+                criteriaStr = ":" + paramName;
             }
             if (criteriaStr.length() > 0)
             {

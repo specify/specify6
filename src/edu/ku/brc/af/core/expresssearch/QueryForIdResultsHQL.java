@@ -30,6 +30,7 @@ import edu.ku.brc.dbsupport.RecordSetItemIFace;
 import edu.ku.brc.ui.db.ERTICaptionInfo;
 import edu.ku.brc.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.ui.forms.FormHelper;
+import edu.ku.brc.util.Pair;
 
 /**
  * @author rods
@@ -336,4 +337,14 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
         isMultipleSelection = isMultiple;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#getParams()
+     */
+    //@Override
+    public List<Pair<String, Object>> getParams()
+    {
+        return null;
+    }
+
+    
 }
