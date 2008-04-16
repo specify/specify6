@@ -994,15 +994,21 @@ public class ReportsBaseTask extends BaseTask
     protected SpReport loadReport(final RecordSet repRS)
     {
         SpReport result = null;
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        try
+        if (repRS != null && repRS.getDbTableId() == SpReport.getClassTableId())
         {
-            result = session.get(SpReport.class, repRS.getItems().iterator().next().getRecordId());
-            result.forceLoad();
-        }
-        finally
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            try
+            {
+                result = session.get(SpReport.class, repRS.getItems().iterator().next().getRecordId());
+                result.forceLoad();
+            }
+            finally
+            {
+                session.close();
+            }
+        } else
         {
-            session.close();
+            UIRegistry.showError("RecordSet was NULL or not of type report!");
         }
         return result;
     }
