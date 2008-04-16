@@ -371,7 +371,7 @@ public class WorkbenchTask extends BaseTask
             if (taxonOnly != null)
             {
                 taxonOnly.setTitle(getResourceString("WB_TAXONIMPORT_ONLY"));
-                taxonOnly.setTableId(4);
+                //taxonOnly.setTableId(4);
             }
         }
         

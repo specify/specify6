@@ -489,7 +489,7 @@
     <field column="Subforma" name="subforma" type="java.lang.String" length="64"/>
     -->
   </table>
-  <table classname="edu.ku.brc.specify.datamodel.Taxon" table="taxon" tableid="4">
+  <table classname="edu.ku.brc.specify.datamodel.Taxon" table="taxon" tableid="4000">
     <field column="Kingdom" name="kingdom" type="java.lang.String" length="64"/>
     <field column="Subkingdom" name="subkingdom" type="java.lang.String" length="64"/>
     <field column="Division" name="division" type="java.lang.String" length="64"/>
