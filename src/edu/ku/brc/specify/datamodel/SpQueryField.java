@@ -70,24 +70,41 @@ public class SpQueryField extends DataModelObjBase implements Comparable<SpQuery
         LESSTHANEQUALS(5),
         TRUE(6),
         FALSE(7),
-        DONTCARE(8);
+        DONTCARE(8),
+        BETWEEN(9),
+        IN(10),
+        CONTAINS(11);
         
         OperatorType(final int ord)
         { 
             this.ord = (byte)ord;
         }
         private byte ord;
+        private static final String[] names = {"Like", "=", ">", "<", ">=", "<=", 
+            UIRegistry.getResourceString("WB_TRUE"), 
+            UIRegistry.getResourceString("WB_FALSE"),
+            " ", UIRegistry.getResourceString("QB_BETWEEN"),
+            UIRegistry.getResourceString("QB_IN"),
+            UIRegistry.getResourceString("QB_CONTAINS")};
+
         public  byte getOrdinal()         { return ord; }
         public  void set(final byte  ord) { this.ord = ord; }
         public  static String getString(final byte ord)
         {
-            String[] names = {"Like", "=", ">", "<", ">=", "<=", 
-                    UIRegistry.getResourceString("WB_TRUE"), 
-                    UIRegistry.getResourceString("WB_FALSE"),
-                    " "};
             return names[ord];
         }
         public static OperatorType valueOf(Byte ord) { return OperatorType.valueOf(ord.toString()); }
+        public static byte getOrdForName(final String name)
+        {
+            for (byte o = 0; o < names.length; o++)
+            {
+                if (names[o].equals(name))
+                {
+                    return o;
+                }
+            }
+            return -1;
+        }
     }
     
     protected Integer      spQueryFieldId;

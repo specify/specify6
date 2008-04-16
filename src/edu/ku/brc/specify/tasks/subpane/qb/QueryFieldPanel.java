@@ -302,7 +302,8 @@ public class QueryFieldPanel extends JPanel
         if (classObj.equals(String.class))
         {
             return new String[] {SpQueryField.OperatorType.getString(SpQueryField.OperatorType.LIKE.getOrdinal()),
-                    SpQueryField.OperatorType.getString(SpQueryField.OperatorType.EQUALS.getOrdinal())};
+                    SpQueryField.OperatorType.getString(SpQueryField.OperatorType.EQUALS.getOrdinal())/*,
+                    SpQueryField.OperatorType.getString(SpQueryField.OperatorType.CONTAINS.getOrdinal())*/};
         }
         else if (classObj.equals(Boolean.class))
         {
@@ -315,7 +316,9 @@ public class QueryFieldPanel extends JPanel
                 SpQueryField.OperatorType.getString(SpQueryField.OperatorType.GREATERTHAN.getOrdinal()),
                 SpQueryField.OperatorType.getString(SpQueryField.OperatorType.LESSTHAN.getOrdinal()),
                 SpQueryField.OperatorType.getString(SpQueryField.OperatorType.GREATERTHANEQUALS.getOrdinal()),
-                SpQueryField.OperatorType.getString(SpQueryField.OperatorType.LESSTHANEQUALS.getOrdinal())};
+                SpQueryField.OperatorType.getString(SpQueryField.OperatorType.LESSTHANEQUALS.getOrdinal()),
+                SpQueryField.OperatorType.getString(SpQueryField.OperatorType.BETWEEN.getOrdinal()),
+                SpQueryField.OperatorType.getString(SpQueryField.OperatorType.IN.getOrdinal())};
     }
     
     /**
@@ -343,67 +346,153 @@ public class QueryFieldPanel extends JPanel
         }
         return StringUtils.isNotEmpty(criteria.getText());
     }
+    
+    /**
+     * @param criteriaEntry - String of comma-delimited entries
+     * @return Array of formatted criteria
+     * @throws ParseException
+     */
+    protected String[] parseCriteria(final String criteriaEntry) throws ParseException
+    {
+        String[] raw = criteriaEntry.split(",");
+        
+        String operStr = operatorCBX.getSelectedItem().toString();
+        if (SpQueryField.OperatorType.getOrdForName(operStr) == SpQueryField.OperatorType.BETWEEN.getOrdinal())
+        {
+            if (raw.length != 2)
+            {
+                throw new ParseException(getLabel() + " - " + UIRegistry.getResourceString("QB_INVALID_CRITERIA"), -1);
+            }
+        }
+        else if (SpQueryField.OperatorType.getOrdForName(operStr) != SpQueryField.OperatorType.IN.getOrdinal())
+        {
+            if (raw.length != 1)
+            {
+                //XXX this means that commas can't be used within search criteria
+                throw new ParseException(getLabel() + " - " + UIRegistry.getResourceString("QB_INVALID_CRITERIA"), -1);
+                //String[] result = new String[1];
+                //result[0] = criteriaEntry
+            }
+        }
+        
+        UIFieldFormatterIFace formatter = fieldQRI.getFormatter();
+        String[] result = new String[raw.length];
+        for (int e=0; e<raw.length; e++)
+        {
+            try
+            {
+                result[e] = formatter != null ? formatter.formatFromUI(raw[e].trim()).toString() : raw[e].trim();
+            }
+            catch (Exception ex)
+            {
+                throw new ParseException(getLabel() + " - " 
+                        + String.format(UIRegistry.getResourceString("QB_PARSE_ERROR"), ex.getLocalizedMessage()), -1);
+            }
+        }
+        return result;
+    }
+    
     /**
      * @return
      */
-    public String getCriteriaFormula(final TableAbbreviator ta, final List<Pair<String,Object>> paramList) throws ParseException
+    public String getCriteriaFormula(final TableAbbreviator ta,
+                                     final List<Pair<String, Object>> paramList)
+            throws ParseException
     {
-        String criteriaStr = criteria.getText();
-        
-        UIFieldFormatterIFace formatter = fieldQRI.getFormatter();
-        if (formatter != null && formatter.isFromUIFormatter())
-        {
-            // XXX Passing in a string may not always work,
-            // We might to convert to the actual type of data for that field.
-            // i.e. convert it from a String to an Integer.
-            criteriaStr = formatter.formatFromUI(criteriaStr).toString();
-        }
-            
         if (hasCriteria())
         {
-            StringBuilder str  = new StringBuilder();
-            String operStr     = operatorCBX.getSelectedItem().toString();
-            
-            //System.out.println(fieldQRI.getFieldInfo().getDataClass().getSimpleName());
+            String[] criteriaStrs = parseCriteria(criteria.getText());
+
+            StringBuilder str = new StringBuilder();
+            String operStr = operatorCBX.getSelectedItem().toString();
+            String criteriaFormula = "";
+
+            // System.out.println(fieldQRI.getFieldInfo().getDataClass().getSimpleName());
             if (fieldQRI.getDataClass().equals(Boolean.class))
             {
-                //kind of a goofy way to handle booleans but works without worrying about disabling/removing isNotCheckbox (and criteria)
-                if (operStr.equals(SpQueryField.OperatorType.getString(SpQueryField.OperatorType.TRUE.getOrdinal())))
+                if (criteriaStrs.length != 0) { throw new ParseException(getLabel() + " - "
+                        + UIRegistry.getResourceString("QB_INVALID_CRITERIA"), -1); }
+
+                // kind of a goofy way to handle booleans but works without worrying about
+                // disabling/removing isNotCheckbox (and criteria)
+                if (operStr.equals(SpQueryField.OperatorType
+                        .getString(SpQueryField.OperatorType.TRUE.getOrdinal())))
                 {
-                    criteriaStr = "true";
+                    criteriaFormula = "true";
                 }
                 else
                 {
-                    criteriaStr = "false";
+                    criteriaFormula = "false";
                 }
                 operStr = "=";
             }
             else if (fieldQRI.getDataClass().equals(String.class))
             {
-                criteriaStr =  "'" + criteriaStr + "'";
+                criteriaFormula = "'" + criteriaStrs[0] + "'";
+                if (SpQueryField.OperatorType.getOrdForName(operStr) == SpQueryField.OperatorType.BETWEEN.getOrdinal())
+                {
+                    criteriaFormula += " and '" + criteriaStrs[1] + "'";
+                }
+                else if (SpQueryField.OperatorType.getOrdForName(operStr) == SpQueryField.OperatorType.IN.getOrdinal())
+                {
+                    for (int p = 1; p < criteriaStrs.length; p++)
+                    {
+                        criteriaFormula += ", '" + criteriaStrs[p] + "'"; 
+                    }
+                    criteriaFormula = "(" + criteriaFormula + ")";
+                }
             }
             else if (fieldQRI.getDataClass().equals(Calendar.class))
             {
-                String paramName = "spparam" + paramList.size();
-                paramList.add(new Pair<String,Object>(paramName, dateConverter.convert(criteriaStr)));
-                criteriaStr = ":" + paramName;
+                for (int p = 0; p < criteriaStrs.length; p++)
+                {
+                    String paramName = "spparam" + paramList.size();
+                    try
+                    {
+                        paramList.add(new Pair<String, Object>(paramName, dateConverter
+                                .convert(criteriaStrs[p])));
+                    }
+                    catch (ParseException ex)
+                    {
+                        throw new ParseException(getLabel() + " - " + String.format(UIRegistry.getResourceString("QB_PARSE_ERROR"), ex.getLocalizedMessage()), -1);
+                    }
+                    if (p > 0)
+                    {
+                        if (SpQueryField.OperatorType.getOrdForName(operStr) == SpQueryField.OperatorType.BETWEEN.getOrdinal())
+                        {
+                            criteriaFormula += " and ";
+                        }
+                        else
+                        {
+                            criteriaFormula += ", ";
+                        }
+                    }
+                    criteriaFormula += ":" + paramName;
+                }
+                if (SpQueryField.OperatorType.getOrdForName(operStr) == SpQueryField.OperatorType.IN.getOrdinal())
+                {
+                    criteriaFormula = "(" + criteriaFormula + ")";
+                }
             }
-            if (criteriaStr.length() > 0)
+            // else if (fieldQRI.getDataClass().equals(Timestamp.class) ?? etc ??
+
+            if (criteriaFormula.length() > 0)
             {
                 str.append(fieldQRI.getSQLFldSpec(ta, true) + " ");
                 if (operStr.equals("="))
                 {
                     str.append(isNotCheckbox.isSelected() ? "!" : "");
                     str.append(operStr);
-                    
-                } else
+
+                }
+                else
                 {
                     str.append(isNotCheckbox.isSelected() ? "NOT" : "");
                     str.append(' ');
                     str.append(operStr);
                 }
                 str.append(' ');
-                str.append(criteriaStr);
+                str.append(criteriaFormula);
                 return str.toString();
             }
         }

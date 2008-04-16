@@ -69,6 +69,7 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.core.ContextMgr;
 import edu.ku.brc.af.core.NavBoxLayoutManager;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.Taskable;
@@ -93,6 +94,7 @@ import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.tasks.QueryTask;
 import edu.ku.brc.specify.tasks.ReportsBaseTask;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable;
+import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
@@ -360,6 +362,9 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         outer.add(saveBtn, cc.xy(5, 1));
         JPanel bottom = new JPanel(new BorderLayout());
         bottom.add(outer.getPanel(), BorderLayout.EAST);
+        JButton helpBtn = new JButton(UIRegistry.getResourceString("Help"));
+        HelpMgr.registerComponent(helpBtn, ContextMgr.getCurrentContext().getName());
+        bottom.add(helpBtn, BorderLayout.WEST);
         add(bottom, BorderLayout.SOUTH);
 
         setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
