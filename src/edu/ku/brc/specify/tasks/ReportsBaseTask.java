@@ -722,15 +722,19 @@ public class ReportsBaseTask extends BaseTask
             {
                 openIReportEditor(cmdAction);
             }
+            
             if (cmdAction.getData() instanceof RecordSet)
             {
-                runReport(cmdAction);
+                RecordSet rs = (RecordSet)cmdAction.getData();
+                if (rs.getDbTableId() == SpReport.getClassTableId())
+                {
+                    runReport(cmdAction);
+                }
+                else
+                {
+                    printReport(cmdAction);
+                }
             }
-            else
-            {
-                printReport(cmdAction);
-            }
-
         }
         else if (cmdAction.isAction(OPEN_EDITOR))
         {
