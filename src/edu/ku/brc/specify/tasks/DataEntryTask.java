@@ -447,7 +447,9 @@ public class DataEntryTask extends BaseTask
                 DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(view.getClassName());
                 dev.setTableInfo(tableInfo);
                 
-                if (tableInfo != null)
+                System.err.println(tableInfo.getName()+"  "+tableInfo.isHidden());
+                
+                if (tableInfo != null && !tableInfo.isHidden())
                 {
                     CommandAction cmdAction = new CommandAction(DATA_ENTRY, EDIT_DATA);
                     //cmdAction.setProperty("viewset", dev.getViewSet());
@@ -545,7 +547,7 @@ public class DataEntryTask extends BaseTask
                             {
                                 if (deView.getTableInfo().getTableId() == rs.getDbTableId())
                                 {
-                                    editData(rs, deView.getView());
+                                    editData(DataEntryTask.this, rs, deView.getView());
                                     return;
                                 }
                             }
@@ -951,16 +953,18 @@ public class DataEntryTask extends BaseTask
     
     /**
      * Handles creating a form for viewing/editing and that will have data placed into it. The ViewSetName and View name are optional.
+     * @param task the originating task
      * @param data the data to be placed into the form
      * @param viewSetName the optional viewset name (can be null)
      * @param viewName the optional view name (can be null)
      */
-    protected void editData(final Object data, 
+    protected void editData(final Taskable task,
+                            final Object data, 
                             final String viewName)
     {
         if (data instanceof RecordSet)
         {
-            addSubPaneToMgr(createFormFor(this, name, null, viewName, (RecordSetIFace)data));
+            addSubPaneToMgr(createFormFor(task, name, null, viewName, (RecordSetIFace)data));
             
         } else if (data instanceof Object[])
         {
@@ -971,7 +975,7 @@ public class DataEntryTask extends BaseTask
                 String mode = (String)dataList[1];
                 String idStr = (String)dataList[2];
                 
-                openView(this, view, mode, idStr);
+                openView(task, view, mode, idStr);
                 
             } else
             {
@@ -993,21 +997,23 @@ public class DataEntryTask extends BaseTask
         if (cmdAction.isAction(OPEN_NEW_VIEW))
         {
             String viewName    = cmdAction.getPropertyAsString("view");
+            Taskable task      = (Taskable)cmdAction.getProperty(NavBoxAction.ORGINATING_TASK);
             Object data        = cmdAction.getData();
             
             if (data instanceof RecordSetIFace)
             {
-                editData(data, viewName);
+                editData(task != null ? task : this, data, viewName);
                 
             } else
             {
-                openView(this, null, viewName, "edit", null, true);
+                openView(task != null ? task : this, null, viewName, "edit", null, true);
             }
             
         } else if (cmdAction.isAction(EDIT_DATA))
         {
-            editData(cmdAction.getData(), null);
+            editData(this, cmdAction.getData(), null);
         }
+        
 //        else if (cmdAction.isAction(EDIT_IN_DIALOG))
 //        {
 //            if (cmdAction.getData() instanceof RecordSet)
@@ -1076,7 +1082,7 @@ public class DataEntryTask extends BaseTask
             {
                 if (dev.getTableInfo().getTableId() == rs.getDbTableId())
                 {
-                    editData(rs, dev.getView());
+                    editData(this, rs, dev.getView());
                     return true;
                 }
             }

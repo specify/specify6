@@ -330,6 +330,8 @@ public class ViewFactory
     {
         //log.debug(cellField.getName()+"  "+cellField.getUIFieldFormatter());
 
+        boolean isPartialOK = cellField.getPropertyAsBoolean("ispartial", false);
+        
         // Because it is formatted we ALWAYS validate it when there is a validator
         if (validator != null)
         {
@@ -339,12 +341,14 @@ public class ViewFactory
             UIFieldFormatterIFace formatter = UIFieldFormatterMgr.getFormatter(uiFormatterName);
             if (formatter == null)
             {
-                throw new RuntimeException("Missing formatter by name ["+cellField.getUIFieldFormatterName()+"]");
+                String msg = "Field["+cellField.getName()+ "] is missing formatter by name ["+uiFormatterName+"]";
+                UIRegistry.showError(msg);
+                throw new RuntimeException(msg);
             }
             
             if (formatter.isDate() || formatter.isNumeric())
             {
-                ValFormattedTextFieldSingle textField = new ValFormattedTextFieldSingle(uiFormatterName, isViewOnly);
+                ValFormattedTextFieldSingle textField = new ValFormattedTextFieldSingle(uiFormatterName, isViewOnly, isPartialOK);
                 textField.setRequired(isRequired);
                 
                 validator.hookupTextField(textField,
@@ -363,7 +367,7 @@ public class ViewFactory
                 return textField;
             }
             
-            boolean isPartialOK = cellField.getPropertyAsBoolean("ispartial", false);
+            
             
             ValFormattedTextField textField = new ValFormattedTextField(formatter, isViewOnly, allEditOK);
             textField.setPartialOK(isPartialOK);
@@ -386,7 +390,7 @@ public class ViewFactory
         
         if (isViewOnly)
         {
-            ValFormattedTextFieldSingle vtfs = new ValFormattedTextFieldSingle(uiFormatterName, isViewOnly);
+            ValFormattedTextFieldSingle vtfs = new ValFormattedTextFieldSingle(uiFormatterName, isViewOnly, false);
             changeTextFieldUIForDisplay(vtfs, cellField.getPropertyAsBoolean("transparent", false));
             return vtfs;
         }
@@ -1731,7 +1735,7 @@ public class ViewFactory
     }
     
     /**
-     * Determines the clas that is to be created.
+     * Determines the class that is to be created.
      * @param multiView the parent
      * @param cell the definitions
      * @return the class
@@ -1746,7 +1750,9 @@ public class ViewFactory
             {
                 return tblChild.getDataClass();
             }
-            log.debug("How did we get here? ["+cell.getName()+"]");
+            // Sometime, like in Taxon, the QCBX is not a field in the schema.
+            // see 'acceptedParent'
+            //log.debug("How did we get here? ["+cell.getName()+"]");
         }
         return null;
     }

@@ -62,9 +62,28 @@ public class SpecifySchemaI18NService extends SchemaI18NService
                                final DBTableIdMgr mgr, 
                                final Locale       locale)
     {
-        String sql = "SELECT splocalecontainer.Name, Text, IsHidden FROM splocalecontainer INNER JOIN splocaleitemstr ON " +
-                     "splocalecontainer.SpLocaleContainerID = splocaleitemstr.SpLocaleContainerNameID where Language = '"+locale.getLanguage()+"' AND " +
-                     "splocalecontainer.SchemaType = " + schemaType +" AND splocalecontainer.DisciplineID = " + disciplineId;
+        // First do Just Hidden in case a table is missing a itle or desc
+        String sql = "SELECT Name, IsHidden FROM  splocalecontainer WHERE " +
+                     "SchemaType = " + schemaType +" AND DisciplineID = " + disciplineId;
+
+        retrieveString(sql);
+
+        for (Vector<String> p : results)
+        {
+            DBTableInfo ti = mgr.getInfoByTableName(p.get(0));
+            if (ti != null)
+            {
+                ti.setHidden(!p.get(1).equals("0"));
+
+            } else
+            {
+                log.error("Couldn't find table [" + p.get(0) + "]");
+            }
+        }
+        
+        sql = "SELECT splocalecontainer.Name, Text FROM splocalecontainer INNER JOIN splocaleitemstr ON " +
+              "splocalecontainer.SpLocaleContainerID = splocaleitemstr.SpLocaleContainerNameID where Language = '"+locale.getLanguage()+"' AND " +
+              "splocalecontainer.SchemaType = " + schemaType +" AND splocalecontainer.DisciplineID = " + disciplineId;
 
         retrieveString(sql);
         
@@ -74,7 +93,6 @@ public class SpecifySchemaI18NService extends SchemaI18NService
             if (ti != null)
             {
                 ti.setTitle(p.get(1));
-                ti.setHidden(!p.get(2).equals("0"));
                 
             } else
             {
@@ -94,6 +112,7 @@ public class SpecifySchemaI18NService extends SchemaI18NService
             if (ti != null)
             {
                 ti.setDescription(p.get(1));
+
             } else
             {
                 log.error("Couldn't find table ["+p.get(0)+"]");

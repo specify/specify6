@@ -241,7 +241,7 @@ public class CatalogNumberUIFieldFormatter implements UIFieldFormatterIFace
     {
         if (isNumericCatalogNumber)
         {
-            if (data != null && data instanceof String)
+            if (data != null && data instanceof String && StringUtils.isNumeric((String)data))
             {
                 String dataStr = (String)data;
                 if (StringUtils.isNotEmpty(dataStr))

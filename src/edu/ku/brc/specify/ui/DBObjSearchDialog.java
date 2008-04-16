@@ -18,7 +18,6 @@
 package edu.ku.brc.specify.ui;
 
 import java.awt.Dialog;
-import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.awt.Window;
@@ -141,7 +140,7 @@ public class DBObjSearchDialog extends CustomDialog implements ViewBasedSearchDi
         if (panel != null)
         {
             panel.setOKBtn(okBtn);
-            panel.getScrollPane().setPreferredSize(new Dimension(300, 200));
+            //panel.getScrollPane().setPreferredSize(new Dimension(300, 200));
         }
 
     }

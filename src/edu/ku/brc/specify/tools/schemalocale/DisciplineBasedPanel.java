@@ -17,7 +17,7 @@
  */
 package edu.ku.brc.specify.tools.schemalocale;
 
-import static edu.ku.brc.specify.utilapps.DataBuilder.createPickList;
+import static edu.ku.brc.specify.config.init.DataBuilder.createPickList;
 import static edu.ku.brc.ui.UIHelper.createComboBox;
 
 import java.awt.event.ActionEvent;
@@ -40,12 +40,12 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.specify.config.DisciplineType;
+import edu.ku.brc.specify.config.init.BldrPickList;
+import edu.ku.brc.specify.config.init.BldrPickListItem;
+import edu.ku.brc.specify.config.init.DataBuilder;
 import edu.ku.brc.specify.datamodel.PickList;
 import edu.ku.brc.specify.datamodel.SpLocaleContainerItem;
 import edu.ku.brc.specify.datamodel.SpLocaleItemStr;
-import edu.ku.brc.specify.utilapps.BldrPickList;
-import edu.ku.brc.specify.utilapps.BldrPickListItem;
-import edu.ku.brc.specify.utilapps.DataBuilder;
 import edu.ku.brc.ui.UIHelper;
 
 /**

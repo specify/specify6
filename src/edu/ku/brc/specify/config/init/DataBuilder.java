@@ -1,4 +1,4 @@
-package edu.ku.brc.specify.utilapps;
+package edu.ku.brc.specify.config.init;
 
 import java.io.File;
 import java.io.IOException;

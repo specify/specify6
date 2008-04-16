@@ -32,12 +32,14 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 
@@ -316,10 +318,9 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
     public void createUI()
     {
         panel      = new JPanel(new BorderLayout());
-        scrollPane = new JScrollPane(panel);
-        add(scrollPane, BorderLayout.CENTER);
-        
+        add(panel, BorderLayout.CENTER);
         panel.setPreferredSize(new Dimension(300,200));
+        panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
      }
     
     /**
@@ -382,8 +383,6 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
      */
     protected void doStartQuery(final JComponent comp)
     {
-        panel.removeAll();
-
         getDataFromUI();
         
         QueryForIdResultsIFace resultsInfo = null;
@@ -399,8 +398,6 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
             } else
             {
                 UIRegistry.getStatusBar().setErrorMessage(getResourceString("ES_SUSPICIOUS_SQL"));
-                panel.validate();
-                panel.repaint();
                 return;
             }
             
@@ -430,8 +427,6 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
                         } else
                         {
                             UIRegistry.getStatusBar().setErrorMessage(getResourceString("ES_SUSPICIOUS_SQL"));
-                            panel.validate();
-                            panel.repaint();
                             return;
                         }
                     }
@@ -443,8 +438,6 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
             
             if (cnt == 0)
             {
-                panel.validate();
-                panel.repaint();
                 return;  
             }
             
@@ -492,9 +485,11 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
         
         updateUIControls();
 
+        remove(panel != null ? panel : scrollPane);
+        panel = null;
+        
         if (etrb != null)
         {
-            panel.remove(etrb.getUIComponent());
             etrb.cleanUp();
         }
         
@@ -510,46 +505,10 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
             etrb.setPropertyChangeListener(this);
         }
         
-        panel.add(etrb.getUIComponent(), BorderLayout.CENTER);
-        panel.validate();
+        scrollPane = new JScrollPane(etrb.getUIComponent(), ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        add(scrollPane, BorderLayout.CENTER);
+        validate();
         
-        /*
-        if (etrb instanceof ESResultsTablePanel)
-        {
-            ESResultsTablePanel etrbPanel = (ESResultsTablePanel)etrb;
-            
-            table = etrbPanel.getTable();
-            table.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-            table.getSelectionModel().addListSelectionListener(new ListSelectionListener() 
-            {
-                public void valueChanged(ListSelectionEvent e)
-                    {
-                        if (etrb != null && !e.getValueIsAdjusting())
-                        {
-                            if (table.getSelectedRowCount() > 0)
-                            {
-                                idList = etrb.getListOfIds(false);
-                            } else
-                            {
-                                idList = null;
-                            }
-    
-                        } else
-                        {
-                            idList = null;
-                        }
-                        updateUIControls();
-                    }});
-            
-            table.addMouseListener(new MouseAdapter() {
-                public void mouseClicked(MouseEvent e) {
-                    if (e.getClickCount() == 2) {
-                        okBtn.doClick(); //emulate button click
-                    }
-                }
-            });
-        }
-        */
         setUIEnabled(true);
         repaint();
     }
@@ -561,15 +520,6 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
     public void removeTable(final ESResultsTablePanelIFace etrbTable)
     {
         etrbTable.cleanUp();
-        
-        panel.remove(etrbTable.getUIComponent());
-        panel.invalidate();
-        panel.doLayout();
-        panel.repaint();
-
-        scrollPane.revalidate();
-        scrollPane.doLayout();
-        scrollPane.repaint();
     }
     
     /* (non-Javadoc)
@@ -586,7 +536,6 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
      */
     public void revalidateScroll()
     {
-        panel.invalidate();
         scrollPane.revalidate();
     }
     

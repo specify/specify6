@@ -13,6 +13,9 @@
  */
 package edu.ku.brc.specify.conversion;
 
+import static edu.ku.brc.specify.config.init.DataBuilder.createDivision;
+import static edu.ku.brc.specify.config.init.DataBuilder.createInstitution;
+import static edu.ku.brc.specify.config.init.DataBuilder.createPickList;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.buildSelectFieldList;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.copyTable;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.createFieldNameMap;
@@ -20,9 +23,6 @@ import static edu.ku.brc.specify.conversion.BasicSQLUtils.deleteAllRecordsFromTa
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.getFieldMetaDataFromSchema;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.getFieldNamesFromSchema;
 import static edu.ku.brc.specify.conversion.BasicSQLUtils.getStrValue;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createDivision;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createInstitution;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createPickList;
 
 import java.io.File;
 import java.sql.Connection;
@@ -63,6 +63,9 @@ import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.config.init.BldrPickList;
+import edu.ku.brc.specify.config.init.BldrPickListItem;
+import edu.ku.brc.specify.config.init.DataBuilder;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.AttributeDef;
 import edu.ku.brc.specify.datamodel.CatalogNumberingScheme;
@@ -97,10 +100,7 @@ import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.dbsupport.HibernateDataProviderSession;
 import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.specify.treeutils.TreeHelper;
-import edu.ku.brc.specify.utilapps.BldrPickList;
-import edu.ku.brc.specify.utilapps.BldrPickListItem;
 import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
-import edu.ku.brc.specify.utilapps.DataBuilder;
 import edu.ku.brc.ui.ProgressFrame;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.db.PickListDBAdapterIFace;

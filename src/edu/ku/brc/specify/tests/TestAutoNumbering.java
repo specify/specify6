@@ -10,10 +10,10 @@
 package edu.ku.brc.specify.tests;
 
 
-import static edu.ku.brc.specify.utilapps.DataBuilder.createAccession;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createCatalogNumberingScheme;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createCollection;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createCollectionObject;
+import static edu.ku.brc.specify.config.init.DataBuilder.createAccession;
+import static edu.ku.brc.specify.config.init.DataBuilder.createCatalogNumberingScheme;
+import static edu.ku.brc.specify.config.init.DataBuilder.createCollection;
+import static edu.ku.brc.specify.config.init.DataBuilder.createCollectionObject;
 
 import java.io.File;
 import java.io.IOException;

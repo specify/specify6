@@ -655,7 +655,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
      */
     public boolean isFormatterAutoNumber()
     {
-        return formatter != null && formatter.getAutoNumber() != null;
+        return !isPartialOK && formatter != null && formatter.getAutoNumber() != null;
     }
     
     //--------------------------------------------------

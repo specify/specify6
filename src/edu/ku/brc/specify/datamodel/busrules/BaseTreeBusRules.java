@@ -377,7 +377,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
                 parentCBX.addListSelectionListener(new ListSelectionListener() {
                     public void valueChanged(ListSelectionEvent e)
                     {
-                        if (!e.getValueIsAdjusting())
+                        if (e == null || !e.getValueIsAdjusting())
                         {
                             parentChanged(formViewObj, parentCBX, rankComboBox);
                         }

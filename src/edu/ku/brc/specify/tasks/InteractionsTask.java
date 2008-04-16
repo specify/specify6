@@ -32,8 +32,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+
+import com.thoughtworks.xstream.XStream;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
@@ -67,6 +70,7 @@ import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Discipline;
@@ -77,6 +81,7 @@ import edu.ku.brc.specify.datamodel.InfoRequest;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.LoanReturnPreparation;
+import edu.ku.brc.specify.datamodel.Permit;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Shipment;
@@ -94,19 +99,15 @@ import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
-import edu.ku.brc.ui.ViewBasedDialogFactoryIFace;
 import edu.ku.brc.ui.db.CommandActionForDB;
 import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
-import edu.ku.brc.ui.db.ViewBasedSearchDialogIFace;
 import edu.ku.brc.ui.dnd.Trash;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.TableViewObj;
 import edu.ku.brc.ui.forms.Viewable;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatter;
-import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.ui.forms.persist.ViewIFace;
 import edu.ku.brc.ui.forms.validation.UIValidatable;
 
@@ -137,9 +138,12 @@ public class InteractionsTask extends BaseTask
 
     protected static final String InfoRequestName      = "InfoRequest";
     protected static final String NEW_LOAN             = "NEW_LOAN";
+    protected static final String NEW_ACCESSION        = "NEW_ACCESSION";
+    protected static final String NEW_PERMIT           = "NEW_PERMIT";
     protected static final String NEW_GIFT             = "NEW_GIFT";
-    protected static final String NEW_EXCHANGE         = "NEW_EXCHANGE";
-    protected static final String PRINT_LOAN           = "PRINT_LOANORGIFT";
+    protected static final String NEW_EXCHANGE_IN      = "NEW_EXCHANGE_IN";
+    protected static final String NEW_EXCHANGE_OUT     = "NEW_EXCHANGE_OUT";
+    protected static final String PRINT_LOAN           = "PRINT_LOAN";
     protected static final String INFO_REQ_MESSAGE     = "Specify Info Request";
     protected static final String CREATE_MAILMSG       = "CreateMailMsg";
     
@@ -162,6 +166,8 @@ public class InteractionsTask extends BaseTask
     protected boolean                 isDoingExchanges = false;
     protected ToolBarDropDownBtn      toolBarBtn       = null;
     protected int                     indexOfTBB       = -1;
+    
+    protected List<InteractionEntry>  entries = new Vector<InteractionEntry>();
     
     static 
     {
@@ -187,6 +193,33 @@ public class InteractionsTask extends BaseTask
         CommandDispatcher.register(DB_CMD_TYPE, this);
         CommandDispatcher.register(DataEntryTask.DATA_ENTRY, this);
         CommandDispatcher.register(PreferencesDlg.PREFERENCES, this);
+        
+        // temporary
+        String I = INTERACTIONS;
+        String F = OPEN_FORM_CMD_ACT;
+        String D = DataEntryTask.DATA_ENTRY;
+        String OPEN_NEW_VIEW = DataEntryTask.OPEN_NEW_VIEW;
+        
+        //                                 name          table       lblKey    View         Type    Action      Icon         isOn
+        entries.add(new InteractionEntry("accession",   "accession",   null,  "Loan",        D,   OPEN_NEW_VIEW,    "Accession",   new int[] {Accession.getClassTableId()}));
+        entries.add(new InteractionEntry("permit",      "permit",      null,  "Permit",      D,   OPEN_NEW_VIEW,    "Permit",      new int[] {Permit.getClassTableId()}));
+        entries.add(new InteractionEntry("loan",        "loan",        null,  "Loan",        I,   NEW_LOAN,         "Loan",        new int[] {Loan.getClassTableId(), CollectionObject.getClassTableId(), InfoRequest.getClassTableId()}));
+        entries.add(new InteractionEntry("gift",        "gift",        null,  "Gift",        F,   NEW_GIFT,         "Gift",        new int[] {Gift.getClassTableId()}));
+        entries.add(new InteractionEntry("exchangein",  "exchangein",  null,  "ExchangeIn",  F,   NEW_EXCHANGE_IN,  "ExchangeIn",  new int[] {ExchangeIn.getClassTableId()}));
+        entries.add(new InteractionEntry("exchangeout", "exchangeout", null,  "ExchangeOut", F,   NEW_EXCHANGE_OUT, "ExchangeOut", new int[] {ExchangeOut.getClassTableId()}));
+        entries.add(new InteractionEntry("inforequest", "inforequest", null,  null,          I,   INFO_REQ_MESSAGE, "InfoRequest", new int[] {ExchangeIn.getClassTableId(), ExchangeOut.getClassTableId(), CollectionObject.getClassTableId(), InfoRequest.getClassTableId()}));
+        entries.add(new InteractionEntry("printloan",   "loan",        "PRINT_LOANINVOICE",  null, I,   PRINT_LOAN, "Reports",     new int[] {Loan.getClassTableId()}));
+        
+        /*try
+        {
+            XStream xstream = new XStream();
+            InteractionEntry.config(xstream);
+            FileUtils.writeStringToFile(new File("interactions.xml"), xstream.toXML(entries));
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }*/
     }
     
     /**
@@ -219,63 +252,91 @@ public class InteractionsTask extends BaseTask
 
             actionsNavBox = new NavBox(getResourceString("Actions"));
             
-            // New Loan Action
-            // A New loan can accept RecordSets that contain CollectionObjects or InfoRequests
-            // or InfoRequests
-            addCommand(actionsNavBox, NEW_LOAN, NEW_LOAN, "Loan", new int[] {Loan.getClassTableId(), CollectionObject.getClassTableId(), InfoRequest.getClassTableId()});
-            if (isDoingGifts)
+            if (true)
             {
-                createGiftNavBtn();
-            }
-            if (isDoingExchanges)
-            {
-                createExchangeNavBtn();
-            }
-            addCommand(actionsNavBox, InfoRequestName, InfoRequestName, "InfoRequest", new int[] {ExchangeIn.getClassTableId(), ExchangeOut.getClassTableId(), CollectionObject.getClassTableId(), InfoRequest.getClassTableId()});
-            addCommand(actionsNavBox, OPEN_FORM_CMD_ACT, "INTER_OPEN", name, new int[] {ExchangeIn.getClassTableId(), ExchangeOut.getClassTableId(), CollectionObject.getClassTableId(), InfoRequest.getClassTableId()});
-            
-            // Then add
-            if (commands != null)
-            {
-                for (AppResourceIFace ap : AppContextMgr.getInstance().getResourceByMimeType("jrxml/report"))
+                for (InteractionEntry entry : entries)
                 {
-                    Properties params = ap.getMetaDataMap();
-                    if (params.getProperty("reporttype", "").equals("Invoice"))
+                    DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoByTableName(entry.getTableName());
+                    
+                    String label;
+                    if (StringUtils.isNotEmpty(entry.getLabelKey()))
                     {
-                        params.put("title", ap.getDescription());
-                        params.put("file", ap.getName());
-                        //log.info("["+ap.getDescription()+"]["+ap.getName()+"]");
-                        
-                        commands.add(new TaskCommandDef(ap.getDescription(), name, params));
-                    }
-                }
-                
-                for (TaskCommandDef tcd : commands)
-                {
-                    // XXX won't be needed when we start validating the XML
-                    String tableIdStr = tcd.getParams().getProperty("tableid");
-                    if (tableIdStr != null)
-                    {
-                        CommandAction cmdAction = new CommandAction(INTERACTIONS, PRINT_LOAN, Loan.getClassTableId());
-                        cmdAction.addStringProperties(tcd.getParams());
-                        NavBoxItemIFace nbi = makeDnDNavBtn(actionsNavBox, tcd.getName(), "Reports", cmdAction, null, true, false);
-                        RolloverCommand roc = (NavBoxButton)nbi;
-                        invoiceList.add(nbi);// true means make it draggable
-                        roc.addDragDataFlavor(INFOREQUEST_FLAVOR);
-                        roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
-                        
-                        DataFlavorTableExt dfx = new DataFlavorTableExt(RecordSetTask.RECORDSET_FLAVOR.getDefaultRepresentationClass(), 
-                                RecordSetTask.RECORDSET_FLAVOR.getHumanPresentableName(), new int[] {52});
-                        roc.addDropDataFlavor(dfx);
-                        
+                        label = getResourceString(entry.getLabelKey());
                     } else
                     {
-                        log.error("Interaction Command is missing the table id");
+                        label = tableInfo.getTitle();
+                    }
+                    
+                    addCommand(actionsNavBox,
+                              tableInfo,
+                              label, 
+                              entry.getCmdType(), 
+                              entry.getAction(), 
+                              entry.getViewName(), 
+                              entry.getIconName(), 
+                              entry.getTableIdsAsArray());
+                }
+            } else
+            {
+            
+                // New Loan Action
+                // A New loan can accept RecordSets that contain CollectionObjects or InfoRequests
+                // or InfoRequests
+                addCommand(actionsNavBox, NEW_LOAN, NEW_LOAN, "Loan", new int[] {Loan.getClassTableId(), CollectionObject.getClassTableId(), InfoRequest.getClassTableId()});
+                if (isDoingGifts)
+                {
+                    createGiftNavBtn();
+                }
+                if (isDoingExchanges)
+                {
+                    createExchangeNavBtn();
+                }
+                addCommand(actionsNavBox, InfoRequestName, InfoRequestName, "InfoRequest", new int[] {ExchangeIn.getClassTableId(), ExchangeOut.getClassTableId(), CollectionObject.getClassTableId(), InfoRequest.getClassTableId()});
+                addCommand(actionsNavBox, OPEN_FORM_CMD_ACT, "INTER_OPEN", name, new int[]           {ExchangeIn.getClassTableId(), ExchangeOut.getClassTableId(), CollectionObject.getClassTableId(), InfoRequest.getClassTableId()});
+                
+                // Then add
+                if (commands != null)
+                {
+                    for (AppResourceIFace ap : AppContextMgr.getInstance().getResourceByMimeType("jrxml/report"))
+                    {
+                        Properties params = ap.getMetaDataMap();
+                        if (params.getProperty("reporttype", "").equals("Invoice"))
+                        {
+                            params.put("title", ap.getDescription());
+                            params.put("file", ap.getName());
+                            //log.info("["+ap.getDescription()+"]["+ap.getName()+"]");
+                            
+                            commands.add(new TaskCommandDef(ap.getDescription(), name, params));
+                        }
+                    }
+                    
+                    for (TaskCommandDef tcd : commands)
+                    {
+                        // XXX won't be needed when we start validating the XML
+                        String tableIdStr = tcd.getParams().getProperty("tableid");
+                        if (tableIdStr != null)
+                        {
+                            CommandAction cmdAction = new CommandAction(INTERACTIONS, PRINT_LOAN, Loan.getClassTableId());
+                            cmdAction.addStringProperties(tcd.getParams());
+                            NavBoxItemIFace nbi = makeDnDNavBtn(actionsNavBox, tcd.getName(), "Reports", cmdAction, null, true, false);
+                            RolloverCommand roc = (NavBoxButton)nbi;
+                            invoiceList.add(nbi);// true means make it draggable
+                            roc.addDragDataFlavor(INFOREQUEST_FLAVOR);
+                            roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
+                            
+                            DataFlavorTableExt dfx = new DataFlavorTableExt(RecordSetTask.RECORDSET_FLAVOR.getDefaultRepresentationClass(), 
+                                    RecordSetTask.RECORDSET_FLAVOR.getHumanPresentableName(), new int[] {52});
+                            roc.addDropDataFlavor(dfx);
+                            
+                        } else
+                        {
+                            log.error("Interaction Command is missing the table id");
+                        }
                     }
                 }
             }
             navBoxes.add(actionsNavBox);
-           
+            
             infoRequestNavBox  = new NavBox(getResourceString("InfoRequest"));
             loadNavBox(infoRequestNavBox, InfoRequest.class, INFOREQUEST_FLAVOR);
             
@@ -297,6 +358,23 @@ public class InteractionsTask extends BaseTask
     }
     
     /**
+     * @return
+     */
+    protected List<AppResourceIFace> getInvoiceAppResources()
+    {
+        Vector<AppResourceIFace> ars = new Vector<AppResourceIFace>();
+        for (AppResourceIFace ap : AppContextMgr.getInstance().getResourceByMimeType("jrxml/report"))
+        {
+            Properties params = ap.getMetaDataMap();
+            if (params.getProperty("reporttype", "").equals("Invoice"))
+            {
+                ars.add(ap);
+            }
+        }
+        return ars;
+    }
+    
+    /**
      * 
      */
     private void createGiftNavBtn()
@@ -309,7 +387,7 @@ public class InteractionsTask extends BaseTask
      */
     private void createExchangeNavBtn()
     {
-        exchgNavBtn = addCommand(actionsNavBox, NEW_EXCHANGE,NEW_EXCHANGE, name, new int[] {Gift.getClassTableId(), CollectionObject.getClassTableId(), InfoRequest.getClassTableId()});
+        exchgNavBtn = addCommand(actionsNavBox, NEW_EXCHANGE_IN,NEW_EXCHANGE_IN, name, new int[] {Gift.getClassTableId(), CollectionObject.getClassTableId(), InfoRequest.getClassTableId()});
     }
     
     /**
@@ -321,19 +399,41 @@ public class InteractionsTask extends BaseTask
      * @return
      */
     protected NavBoxButton addCommand(final NavBox navBox, 
-                              final String action, 
-                              final String cmdName, 
-                              final String iconName,
-                              final int[]  tableIds)
+                                      final String action, 
+                                      final String cmdName, 
+                                      final String iconName,
+                                      final int[]  tableIds)
+            {
+                CommandAction cmdAction = new CommandAction(INTERACTIONS, action);
+                NavBoxButton roc = (NavBoxButton)makeDnDNavBtn(navBox, getResourceString(cmdName), iconName, cmdAction, null, true, false);// true means make it draggable
+                DataFlavorTableExt dfx = new DataFlavorTableExt(RecordSetTask.RECORDSET_FLAVOR.getDefaultRepresentationClass(), 
+                                                                RecordSetTask.RECORDSET_FLAVOR.getHumanPresentableName(), tableIds);
+                roc.addDropDataFlavor(dfx);
+                return roc;
+            }
+            
+    protected NavBoxButton addCommand(final NavBox navBox, 
+                                      final DBTableInfo tableInfo,
+                                      final String label,
+                                      final String cmdType, 
+                                      final String action,
+                                      final String viewName,
+                                      final String iconName,
+                                      final int[]  tableIds)
     {
-        CommandAction cmdAction = new CommandAction(INTERACTIONS, action);
-        NavBoxButton roc = (NavBoxButton)makeDnDNavBtn(navBox, getResourceString(cmdName), iconName, cmdAction, null, true, false);// true means make it draggable
+        CommandAction cmdAction = new CommandAction(cmdType, action, tableInfo.getTableId());
+        if (StringUtils.isNotEmpty(viewName))
+        {
+            cmdAction.setProperty("view", viewName);
+            cmdAction.setProperty(NavBoxAction.ORGINATING_TASK, this);
+        }
+        NavBoxButton roc = (NavBoxButton)makeDnDNavBtn(navBox, label, iconName, cmdAction, null, true, false);// true means make it draggable
         DataFlavorTableExt dfx = new DataFlavorTableExt(RecordSetTask.RECORDSET_FLAVOR.getDefaultRepresentationClass(), 
                                                         RecordSetTask.RECORDSET_FLAVOR.getHumanPresentableName(), tableIds);
         roc.addDropDataFlavor(dfx);
         return roc;
     }
-    
+            
     /**
      * Helper function to load all the items for a class of data objects (i.e. Loans, Gifts)
      * @param navBox the parent
@@ -503,7 +603,9 @@ public class InteractionsTask extends BaseTask
             String fileName = fileNameArg;
             if (fileName == null)
             {
-                if (invoiceList.size() == 0)
+                
+                List<AppResourceIFace> invoiceReports = getInvoiceAppResources();
+                if (invoiceReports.size() == 0)
                 {
                     // XXX Need Error Dialog that there are no Invoices (can this happen?)
                     
@@ -513,12 +615,8 @@ public class InteractionsTask extends BaseTask
                     
                 } else  
                 {
-                    NavBoxItemIFace nbi = invoiceList.get(0);
-                    Object nbData = nbi.getData();
-                    if (nbData instanceof CommandAction)
-                    {
-                        fileName = ((CommandAction)nbData).getPropertyAsString("file");
-                    }
+                    AppResourceIFace invoiceAppRes = invoiceReports.get(0);
+                    fileName = invoiceAppRes.getName();
                 }
             }
 
@@ -726,7 +824,7 @@ public class InteractionsTask extends BaseTask
                             shipment.initialize();
                             
                             // Get Defaults for Certain fields
-                            SpecifyAppContextMgr appContextMgr     = (SpecifyAppContextMgr)AppContextMgr.getInstance();
+                            //SpecifyAppContextMgr appContextMgr     = (SpecifyAppContextMgr)AppContextMgr.getInstance();
                             
                             // Comment out defaults for now until we can manage them
                             //PickListItemIFace    defShipmentMethod = appContextMgr.getDefaultPickListItem("ShipmentMethod", getResourceString("SHIPMENT_METHOD"));
@@ -802,40 +900,28 @@ public class InteractionsTask extends BaseTask
     
     /**
      * Displays UI that asks the user to select a predefined label.
-     * @return the name of the label file or null if cancelled
+     * @return the name of the label file or null if canceled
      */
     protected String askForInvoiceName()
     {
-        initialize();
-
-        // XXX Need to pass in or check table type for different types of lables.
-
-        NavBoxItemIFace nbi = null;
-        if (invoiceList.size() == 1)
+        List<AppResourceIFace> invoiceReports = getInvoiceAppResources();
+        
+        if (invoiceReports.size() == 1)
         {
-            nbi = invoiceList.get(0);
+            return (String)invoiceReports.get(0).getMetaDataMap().get("file");
 
         } else
         {
-            ChooseFromListDlg<NavBoxItemIFace> dlg = new ChooseFromListDlg<NavBoxItemIFace>((Frame)UIRegistry.getTopWindow(),
+            ChooseFromListDlg<AppResourceIFace> dlg = new ChooseFromListDlg<AppResourceIFace>((Frame)UIRegistry.getTopWindow(),
                                                                                             getResourceString("ChooseInvoice"), 
-                                                                                            invoiceList, 
+                                                                                            invoiceReports, 
                                                                                             IconManager.getIcon(name, IconManager.IconSize.Std24));
             dlg.setMultiSelect(false);
             dlg.setModal(true);
             dlg.setVisible(true);
             if (!dlg.isCancelled())
             {
-                nbi  = dlg.getSelectedObject();
-            }
-        }
-        
-        if (nbi != null && nbi.getData() != null)
-        {
-            Object data = nbi.getData();
-            if (data instanceof CommandAction)
-            {
-                return ((CommandAction)data).getPropertyAsString("file");
+                return  (String)dlg.getSelectedObject().getMetaDataMap().get("file");
             }
         }
         return null;

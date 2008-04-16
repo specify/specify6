@@ -14,23 +14,23 @@
 package edu.ku.brc.specify.tests;
 
 
+import static edu.ku.brc.specify.config.init.DataBuilder.createAgent;
+import static edu.ku.brc.specify.config.init.DataBuilder.createDataType;
+import static edu.ku.brc.specify.config.init.DataBuilder.createDiscipline;
+import static edu.ku.brc.specify.config.init.DataBuilder.createDivision;
+import static edu.ku.brc.specify.config.init.DataBuilder.createInstitution;
+import static edu.ku.brc.specify.config.init.DataBuilder.createLithoStratTreeDef;
+import static edu.ku.brc.specify.config.init.DataBuilder.createSpecifyUser;
+import static edu.ku.brc.specify.config.init.DataBuilder.createTaxonTreeDef;
+import static edu.ku.brc.specify.config.init.DataBuilder.createUserGroup;
+import static edu.ku.brc.specify.config.init.DataBuilder.createUserPermission;
+import static edu.ku.brc.specify.config.init.DataBuilder.setSession;
 import static edu.ku.brc.specify.tests.SpecifyUserTestHelper.deleteSpecifyUserDB;
 import static edu.ku.brc.specify.tests.SpecifyUserTestHelper.deleteUserGroupFromDB;
 import static edu.ku.brc.specify.tests.SpecifyUserTestHelper.deleteUserPermissionFromDB;
 import static edu.ku.brc.specify.tests.SpecifyUserTestHelper.isSpecifyUserInDB;
 import static edu.ku.brc.specify.tests.SpecifyUserTestHelper.isUserGroupInDB;
 import static edu.ku.brc.specify.tests.SpecifyUserTestHelper.isUserPermissionInDB;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createAgent;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createDiscipline;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createDataType;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createDivision;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createInstitution;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createLithoStratTreeDef;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createSpecifyUser;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createTaxonTreeDef;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createUserGroup;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createUserPermission;
-import static edu.ku.brc.specify.utilapps.DataBuilder.setSession;
 import junit.framework.TestCase;
 
 import org.apache.log4j.Logger;

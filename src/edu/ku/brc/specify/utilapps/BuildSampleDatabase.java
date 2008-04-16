@@ -8,64 +8,64 @@
 package edu.ku.brc.specify.utilapps;
 
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createAccession;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createAccessionAgent;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createAddress;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createAgent;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createAgentVariant;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createAttachment;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createAttributeDef;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createCatalogNumberingScheme;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createCollectingEvent;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createCollectingEventAttr;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createCollectingTrip;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createCollection;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createCollectionObject;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createCollectionObjectAttr;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createCollectionRelType;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createCollector;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createDataType;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createDetermination;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createDeterminationStatus;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createDiscipline;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createDivision;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createGeography;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createGeographyChildren;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createGeographyTreeDef;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createGeographyTreeDefItem;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createGeologicTimePeriod;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createGeologicTimePeriodTreeDef;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createGeologicTimePeriodTreeDefItem;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createGroupPerson;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createInstitution;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createJournal;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createLithoStratTreeDef;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createLithoStratTreeDefItem;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createLoan;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createLoanAgent;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createLoanPreparation;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createLoanReturnPreparation;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createLocality;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createPermit;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createPickList;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createPrepType;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createPreparation;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createQuery;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createQueryField;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createReferenceWork;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createShipment;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createSpecifyUser;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createStorage;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createStorageTreeDef;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createStorageTreeDefItem;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createTaxon;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createTaxonChildren;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createTaxonTreeDef;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createUserGroup;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createWorkbench;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createWorkbenchDataItem;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createWorkbenchMappingItem;
-import static edu.ku.brc.specify.utilapps.DataBuilder.createWorkbenchTemplate;
+import static edu.ku.brc.specify.config.init.DataBuilder.createAccession;
+import static edu.ku.brc.specify.config.init.DataBuilder.createAccessionAgent;
+import static edu.ku.brc.specify.config.init.DataBuilder.createAddress;
+import static edu.ku.brc.specify.config.init.DataBuilder.createAgent;
+import static edu.ku.brc.specify.config.init.DataBuilder.createAgentVariant;
+import static edu.ku.brc.specify.config.init.DataBuilder.createAttachment;
+import static edu.ku.brc.specify.config.init.DataBuilder.createAttributeDef;
+import static edu.ku.brc.specify.config.init.DataBuilder.createCatalogNumberingScheme;
+import static edu.ku.brc.specify.config.init.DataBuilder.createCollectingEvent;
+import static edu.ku.brc.specify.config.init.DataBuilder.createCollectingEventAttr;
+import static edu.ku.brc.specify.config.init.DataBuilder.createCollectingTrip;
+import static edu.ku.brc.specify.config.init.DataBuilder.createCollection;
+import static edu.ku.brc.specify.config.init.DataBuilder.createCollectionObject;
+import static edu.ku.brc.specify.config.init.DataBuilder.createCollectionObjectAttr;
+import static edu.ku.brc.specify.config.init.DataBuilder.createCollectionRelType;
+import static edu.ku.brc.specify.config.init.DataBuilder.createCollector;
+import static edu.ku.brc.specify.config.init.DataBuilder.createDataType;
+import static edu.ku.brc.specify.config.init.DataBuilder.createDetermination;
+import static edu.ku.brc.specify.config.init.DataBuilder.createDeterminationStatus;
+import static edu.ku.brc.specify.config.init.DataBuilder.createDiscipline;
+import static edu.ku.brc.specify.config.init.DataBuilder.createDivision;
+import static edu.ku.brc.specify.config.init.DataBuilder.createGeography;
+import static edu.ku.brc.specify.config.init.DataBuilder.createGeographyChildren;
+import static edu.ku.brc.specify.config.init.DataBuilder.createGeographyTreeDef;
+import static edu.ku.brc.specify.config.init.DataBuilder.createGeographyTreeDefItem;
+import static edu.ku.brc.specify.config.init.DataBuilder.createGeologicTimePeriod;
+import static edu.ku.brc.specify.config.init.DataBuilder.createGeologicTimePeriodTreeDef;
+import static edu.ku.brc.specify.config.init.DataBuilder.createGeologicTimePeriodTreeDefItem;
+import static edu.ku.brc.specify.config.init.DataBuilder.createGroupPerson;
+import static edu.ku.brc.specify.config.init.DataBuilder.createInstitution;
+import static edu.ku.brc.specify.config.init.DataBuilder.createJournal;
+import static edu.ku.brc.specify.config.init.DataBuilder.createLithoStratTreeDef;
+import static edu.ku.brc.specify.config.init.DataBuilder.createLithoStratTreeDefItem;
+import static edu.ku.brc.specify.config.init.DataBuilder.createLoan;
+import static edu.ku.brc.specify.config.init.DataBuilder.createLoanAgent;
+import static edu.ku.brc.specify.config.init.DataBuilder.createLoanPreparation;
+import static edu.ku.brc.specify.config.init.DataBuilder.createLoanReturnPreparation;
+import static edu.ku.brc.specify.config.init.DataBuilder.createLocality;
+import static edu.ku.brc.specify.config.init.DataBuilder.createPermit;
+import static edu.ku.brc.specify.config.init.DataBuilder.createPickList;
+import static edu.ku.brc.specify.config.init.DataBuilder.createPrepType;
+import static edu.ku.brc.specify.config.init.DataBuilder.createPreparation;
+import static edu.ku.brc.specify.config.init.DataBuilder.createQuery;
+import static edu.ku.brc.specify.config.init.DataBuilder.createQueryField;
+import static edu.ku.brc.specify.config.init.DataBuilder.createReferenceWork;
+import static edu.ku.brc.specify.config.init.DataBuilder.createShipment;
+import static edu.ku.brc.specify.config.init.DataBuilder.createSpecifyUser;
+import static edu.ku.brc.specify.config.init.DataBuilder.createStorage;
+import static edu.ku.brc.specify.config.init.DataBuilder.createStorageTreeDef;
+import static edu.ku.brc.specify.config.init.DataBuilder.createStorageTreeDefItem;
+import static edu.ku.brc.specify.config.init.DataBuilder.createTaxon;
+import static edu.ku.brc.specify.config.init.DataBuilder.createTaxonChildren;
+import static edu.ku.brc.specify.config.init.DataBuilder.createTaxonTreeDef;
+import static edu.ku.brc.specify.config.init.DataBuilder.createUserGroup;
+import static edu.ku.brc.specify.config.init.DataBuilder.createWorkbench;
+import static edu.ku.brc.specify.config.init.DataBuilder.createWorkbenchDataItem;
+import static edu.ku.brc.specify.config.init.DataBuilder.createWorkbenchMappingItem;
+import static edu.ku.brc.specify.config.init.DataBuilder.createWorkbenchTemplate;
 import static edu.ku.brc.ui.UIHelper.createButton;
 import static edu.ku.brc.ui.UIHelper.createCheckBox;
 import static edu.ku.brc.ui.UIHelper.createComboBox;
@@ -135,7 +135,11 @@ import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.DisciplineType;
+import edu.ku.brc.specify.config.init.BldrPickList;
+import edu.ku.brc.specify.config.init.BldrPickListItem;
 import edu.ku.brc.specify.config.init.DBConfigInfo;
+import edu.ku.brc.specify.config.init.DataBuilder;
+import edu.ku.brc.specify.config.init.HiddenTableMgr;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.AccessionAgent;
 import edu.ku.brc.specify.datamodel.Address;
@@ -6682,6 +6686,9 @@ public class BuildSampleDatabase
         }
     }
     
+    /**
+     * 
+     */
     protected static void loadFieldsToHideHash()
     {
         if (fieldsToHideHash.size() == 0)
@@ -6702,6 +6709,11 @@ public class BuildSampleDatabase
         }
     }
     
+    /**
+     * @param memoryItem
+     * @param newItem
+     * @param hideGenericFields
+     */
     public static void loadLocalization(final SpLocaleContainerItem memoryItem, 
                                         final SpLocaleContainerItem newItem,
                                         final boolean hideGenericFields)
@@ -6821,6 +6833,9 @@ public class BuildSampleDatabase
      */
     public static void loadSchemaLocalization(final Discipline discipline, final Byte schemaType, final DBTableIdMgr tableMgr)
     {
+        
+        HiddenTableMgr hiddenTableMgr = new HiddenTableMgr();
+
         SchemaLocalizerXMLHelper schemaLocalizer = new SchemaLocalizerXMLHelper(schemaType, tableMgr);
         schemaLocalizer.load();
         
@@ -6836,6 +6851,8 @@ public class BuildSampleDatabase
             container.setType(table.getType());
             container.setSchemaType(schemaType);
             
+            container.setIsHidden(hiddenTableMgr.isHidden(discipline.getName(), table.getName()));
+            
             loadLocalization(table, container, hideGenericFields);
             
             discipline.getSpLocaleContainers().add(container);
@@ -6848,7 +6865,7 @@ public class BuildSampleDatabase
      */
     public static void main(final String[] args)
     {
-        
+        new HiddenTableMgr();
         try
         {
             if (!System.getProperty("os.name").equals("Mac OS X"))

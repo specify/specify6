@@ -57,7 +57,7 @@
   <format system="true" name="NumericByte" class="java.lang.Byte" type="numeric">
   </format>
 
-  <format system="true" name="NumericDigDecimal" class="java.math.BigDecimal" type="numeric">
+  <format system="true" name="NumericBigDecimal" class="java.math.BigDecimal" type="numeric">
   </format>
 
   <format system="true" name="NumericDouble" class="java.lang.Double" type="numeric">

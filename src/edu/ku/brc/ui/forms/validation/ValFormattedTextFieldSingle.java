@@ -122,11 +122,11 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
      * Constructor
      * @param dataObjFormatterName the formatters name
      */
-    public ValFormattedTextFieldSingle(final UIFieldFormatterIFace formatter, final boolean isViewOnly)
+    public ValFormattedTextFieldSingle(final UIFieldFormatterIFace formatter, final boolean isViewOnly, final boolean isPartialOK)
     {
       super();
       
-      init(formatter, isViewOnly);
+      init(formatter, isViewOnly, isPartialOK);
 
     }
 
@@ -134,11 +134,11 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
      * Constructor
      * @param formatterName the formatters name
      */
-    public ValFormattedTextFieldSingle(final String formatterName, final boolean isViewOnly)
+    public ValFormattedTextFieldSingle(final String formatterName, final boolean isViewOnly, final boolean isPartialOK)
     {
         super();
 
-        init(UIFieldFormatterMgr.getFormatter(formatterName), isViewOnly);
+        init(UIFieldFormatterMgr.getFormatter(formatterName), isViewOnly, isPartialOK);
 
     }
     
@@ -146,7 +146,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
      * @param formatterArg
      * @param isViewOnly
      */
-    protected void init(final UIFieldFormatterIFace formatterArg, final boolean isViewOnlyArg)
+    protected void init(final UIFieldFormatterIFace formatterArg, final boolean isViewOnlyArg, final boolean isPartialOK)
     {
         setControlSize(this);
 
@@ -194,7 +194,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
 
         if (!isViewOnly) // NOTE: This is checking the method argument NOT the class member!
         {
-            if (!formatterArg.isUserInputNeeded())
+            if (!formatterArg.isUserInputNeeded() && !isPartialOK)
             {
                 ViewFactory.changeTextFieldUIForDisplay(this, false);
                 //bgStr = "";
