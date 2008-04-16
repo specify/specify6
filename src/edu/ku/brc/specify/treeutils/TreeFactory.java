@@ -335,7 +335,7 @@ public class TreeFactory
             
         } else if (clazz.equals(Geography.class))
         {
-            sb.append(" WHERE CE.CollectionMemberID = COLMEMID AND G.GeographyID = %d");
+            sb.append(" WHERE CE.DisciplineID = DSPLNID AND G.GeographyID = %d");
             
         } else if (clazz.equals(Storage.class))
         {
