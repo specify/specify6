@@ -17,8 +17,12 @@ package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.List;
 import java.util.Vector;
+
+import javax.swing.JMenuItem;
 
 import org.apache.log4j.Logger;
 
@@ -30,6 +34,7 @@ import edu.ku.brc.specify.tasks.subpane.SecurityAdminPane;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
+import edu.ku.brc.ui.UIHelper;
 
 /**
  * 
@@ -78,6 +83,15 @@ public class SecurityAdminTask extends BaseTask
     public List<MenuItemDesc> getMenuItems()
     {
         Vector<MenuItemDesc> list = new Vector<MenuItemDesc>();
+        JMenuItem mi = UIHelper.createMenuItem("Security Tools", "T", "", true, null); // I18N
+        mi.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent ae)
+            {
+                SecurityAdminTask.this.requestContext();
+            }
+        });
+        list.add(new MenuItemDesc(mi, "AdvMenu/SystemMenu"));
         return list;
 
     }  
@@ -93,7 +107,7 @@ public class SecurityAdminTask extends BaseTask
         String iconName = "SystemSetup"; // temporary
         String hint = getResourceString("SECURITY_ADMIN_HINT");
         ToolBarDropDownBtn btn = createToolbarButton(label, iconName, hint);
-        list.add(new ToolBarItemDesc(btn));
+        //list.add(new ToolBarItemDesc(btn));
         return list;
     } 
     
