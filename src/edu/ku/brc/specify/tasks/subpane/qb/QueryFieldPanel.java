@@ -354,9 +354,22 @@ public class QueryFieldPanel extends JPanel
      */
     protected String[] parseCriteria(final String criteriaEntry) throws ParseException
     {
-        String[] raw = criteriaEntry.split(",");
-        
         String operStr = operatorCBX.getSelectedItem().toString();
+        String[] raw;
+        
+        if (SpQueryField.OperatorType.getOrdForName(operStr) == SpQueryField.OperatorType.BETWEEN
+                .getOrdinal() || SpQueryField.OperatorType.getOrdForName(operStr) == SpQueryField.OperatorType.IN
+                .getOrdinal())
+        {
+            raw = criteriaEntry.split(",");
+        }
+        else
+        {
+            raw = new String[1];
+            raw[0] = criteriaEntry;
+        }
+        
+        
         if (SpQueryField.OperatorType.getOrdForName(operStr) == SpQueryField.OperatorType.BETWEEN.getOrdinal())
         {
             if (raw.length != 2)
@@ -368,10 +381,7 @@ public class QueryFieldPanel extends JPanel
         {
             if (raw.length != 1)
             {
-                //XXX this means that commas can't be used within search criteria
                 throw new ParseException(getLabel() + " - " + UIRegistry.getResourceString("QB_INVALID_CRITERIA"), -1);
-                //String[] result = new String[1];
-                //result[0] = criteriaEntry
             }
         }
         
