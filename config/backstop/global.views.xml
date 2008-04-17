@@ -2002,17 +2002,10 @@
             name="ObjectAttachment Form"
             class="edu.ku.brc.specify.datamodel.ObjectAttachmentIFace"
             gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
+            settable="edu.ku.brc.ui.forms.DataSetterForObj"
             useresourcelabels="true">
             
             <desc><![CDATA[The ObjectAttachment form.]]></desc>
-            
-            <enableRules>
-                <!--  <rule id="origFilename"><![CDATA[!filename()]]></rule>
-                <rule id="title"><![CDATA[title()]]></rule>
-                -->
-            </enableRules>
-
             
             <columnDef>p,5dlu,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
