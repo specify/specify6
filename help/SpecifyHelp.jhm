@@ -28,6 +28,7 @@
 	<!-- Other Tasks -->
 	<mapID target="Tools"               url="SpecifyHelp/Export/Export.html" />
 	<mapID target="Statistics"          url="SpecifyHelp/Statistics/Statistics.html" />
+	<mapID target="InteractionsConfig"  url="SpecifyHelp/Interactions/InteractionsConfig.html" />
 	
 	<!-- Express Search Help -->
 	<mapID target="Express_Search"          url="SpecifyHelp/Express_Search/Express_Search.html" />

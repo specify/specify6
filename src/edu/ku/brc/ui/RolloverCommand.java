@@ -219,7 +219,6 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
     @Override
     public void setBackground(Color bg)
     {
-        // TODO Auto-generated method stub
         super.setBackground(bg);
         
         if (iconLabel != null)
@@ -291,14 +290,13 @@ public class RolloverCommand extends JPanel implements GhostActionable, DndDelet
                 preferredSize.width  = ins.left + ins.right + insets.left + insets.right +
                                        Math.max((label != null ? fm.stringWidth(label) : 0), (imgIcon != null ? (imgIcon.getIconWidth() + 2) : 0));
                 preferredSize.height = ins.top + ins.bottom + insets.top + insets.bottom +
-                                       (label != null ? fm.getHeight() : 0) + (imgIcon != null ? (imgIcon.getIconHeight() + vertGap) : 0);
+                                       (label != null ? fm.getHeight()+4 : 0) + (imgIcon != null ? (imgIcon.getIconHeight() + vertGap) : 0);
             } else
             {
                 preferredSize.width  = ins.left + ins.right + insets.left + insets.right + ICON_TEXT_GAP + 
                                        ((label != null ? fm.stringWidth(label) : 0)+2) + (imgIcon != null ? imgIcon.getIconWidth() : 0);
                 preferredSize.height = ins.top + ins.bottom + insets.top + insets.bottom +
                                        (Math.max(fm.getHeight(), (imgIcon != null ? (imgIcon.getIconHeight() + 2) : 0)));
-
             }
             g.dispose();
         }

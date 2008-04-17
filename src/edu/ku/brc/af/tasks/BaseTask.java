@@ -27,6 +27,7 @@ import java.util.Vector;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
+import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingConstants;
 
@@ -1067,23 +1068,34 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     {
         return false;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.Taskable#doConfigure()
+     */
+    public void doConfigure()
+    {
+        
+    }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.Taskable#getPopupMenu()
      */
     public JPopupMenu getPopupMenu()
     {
-        return null;
+        JPopupMenu popupMenu = new JPopupMenu();
+        JMenuItem mi = new JMenuItem(UIRegistry.getResourceString("Configure"));
+        popupMenu.add(mi);
+        
+        mi.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e)
+            {
+                doConfigure();
+            }
+        });
+        
+        return popupMenu;
     }
 
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.core.Taskable#doConfigure()
-     */
-    public void doConfigure()
-    {
-        // do nothing
-    }    
-    
     //--------------------------------------------------------------
     // NavBoxButton Helpers
     //--------------------------------------------------------------

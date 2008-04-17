@@ -65,7 +65,7 @@ public class PrefsToolbar extends JPanel
      */
     public PrefsToolbar(final PreferencesDlg prefsDlg)
     {
-        super(new ToolbarLayoutManager(2,5));
+        super(new ToolbarLayoutManager(2, 8));
 
         this.prefsDlg = prefsDlg;
 
@@ -119,6 +119,10 @@ public class PrefsToolbar extends JPanel
      */
     protected void loadSectionPrefs(final Element sectionElement)
     {
+        NavBoxButton.setVertGap(2);
+        
+        //List<NavBoxButton> btns = new Vector<NavBoxButton>();
+        //int totalWidth = 0;
         try
         {
             List<?> prefs = sectionElement.selectNodes("pref");
@@ -162,7 +166,10 @@ public class PrefsToolbar extends JPanel
                     NavBoxButton btn = new NavBoxButton(getResourceString(prefTitle), icon);
                     btn.setOpaque(false);
                     btn.setVerticalLayout(true);
-
+                    
+                    //btns.add(btn);
+                    //totalWidth += btn.getPreferredSize().getWidth();
+                    
                     try
                     {
                         Class<?>  panelClassObj = Class.forName(panelClass);
@@ -192,10 +199,27 @@ public class PrefsToolbar extends JPanel
                     btn.addActionListener(new ShowAction(prefTitle));
                 }
             }
+            
+            /*int aveWidth = totalWidth / btns.size();
+            for (NavBoxButton nbb : btns)
+            {
+                Dimension size = nbb.getPreferredSize();
+                if (size.width < aveWidth)
+                {
+                    size.width = aveWidth;
+                }
+                nbb.setPreferredSize(size);
+                nbb.setSize(size);
+            } */               
 
         } catch (Exception ex)
         {
+            
             throw new RuntimeException(ex);
+        } finally
+        {
+            NavBoxButton.setVertGap(0);
+
         }
         
     }

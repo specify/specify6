@@ -2008,8 +2008,9 @@
             <desc><![CDATA[The ObjectAttachment form.]]></desc>
             
             <enableRules>
-                <rule id="origFilename"><![CDATA[!filename()]]></rule>
+                <!--  <rule id="origFilename"><![CDATA[!filename()]]></rule>
                 <rule id="title"><![CDATA[title()]]></rule>
+                -->
             </enableRules>
 
             
@@ -2021,7 +2022,7 @@
                     <cell type="field" id="origFilename" name="attachment.origFilename" initialize="editoncreate=true" cols="30" uitype="browse" isrequired="true"/>
                 </row>
                 <row>
-                	<cell type="label" labelfor="title" label="Title" label="TITLE"/>
+                	<cell type="label" labelfor="title" label="TITLE"/>
                 	<cell type="field" id="title" name="attachment.title" cols="30"/>
                 </row>
 			</rows>

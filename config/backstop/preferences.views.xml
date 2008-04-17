@@ -226,10 +226,7 @@
                     <cell type="field" id="1" name="Interactions.Using.Interactions" uitype="checkbox" label="Using Interactions" ignore="true"/>
                 </row>
                 <row>
-                    <cell type="field" id="2" name="Interactions.Doing.Gifts" uitype="checkbox" label="Using Gifts" ignore="true"/>
-                </row>
-                <row>
-                    <cell type="field" id="3" name="Interactions.Doing.Exchanges" uitype="checkbox" label="Using Exchanges" ignore="true"/>
+                    <cell type="field" id="2" name="Exporttask.OnTaskbar" uitype="checkbox" label="Add Tools to Taskbar" colspan="4"/>
                 </row>
             </rows>
             
@@ -316,9 +313,6 @@
             <rowDef auto="true" cell="p" sep="2dlu"/>
 
             <rows>
-                <row>
-                    <cell type="field" id="20" name="exporttask.ontaskbar" uitype="checkbox" label="Add Tools to Taskbar" colspan="4"/>
-                </row>
                 <row>
                     <cell type="separator" label="Google Earth" colspan="5"/>
                 </row>

@@ -20,7 +20,6 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.GenericPrefsPanel;
 import edu.ku.brc.af.prefs.PrefsPanelIFace;
 import edu.ku.brc.af.prefs.PrefsSavable;
-import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.ui.forms.validation.ValCheckBox;
 
@@ -42,9 +41,8 @@ public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, P
     {
         createForm("Preferences", "Misc");
         
-        setCheckbox("1", "Using.Interactions", true);
-        setCheckbox("2", "Doing.Gifts", true);
-        setCheckbox("3", "Doing.Exchanges", Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.botany));
+        setCheckbox("1", "Interactions.Using.Interactions", true);
+        setCheckbox("2", "ExportTask.OnTaskbar", false);
 
     }
     
@@ -61,7 +59,7 @@ public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, P
         {
             String ds = Discipline.getCurrentDiscipline().getName();
             AppPreferences remotePrefs = AppPreferences.getRemote();
-            boolean value = remotePrefs.getBoolean("Interactions."+prefName+"."+ds, defVal);
+            boolean value = remotePrefs.getBoolean(prefName+"."+ds, defVal);
             ((ValCheckBox)comp).setSelected(value);
         }
     }
@@ -77,7 +75,7 @@ public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, P
         {
             String ds = Discipline.getCurrentDiscipline().getName();
             AppPreferences remotePrefs = AppPreferences.getRemote();
-            remotePrefs.putBoolean("Interactions."+prefName+"."+ds, ((ValCheckBox)comp).isSelected());
+            remotePrefs.putBoolean(prefName+"."+ds, ((ValCheckBox)comp).isSelected());
         } 
     }
     
@@ -121,9 +119,9 @@ public class MiscPrefsPanel extends GenericPrefsPanel implements PrefsSavable, P
         {
             super.savePrefs();
         
-            getCheckbox("1", "Using.Interactions");
-            getCheckbox("2", "Doing.Gifts");
-            getCheckbox("3", "Doing.Exchanges");
+            getCheckbox("1", "Interactions.Using.Interactions");
+            getCheckbox("2", "ExportTask.OnTaskbar");
+
         }
     }
     

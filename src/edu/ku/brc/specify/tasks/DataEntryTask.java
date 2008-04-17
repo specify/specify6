@@ -25,8 +25,6 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 
 import org.apache.commons.lang.StringUtils;
@@ -457,7 +455,7 @@ public class DataEntryTask extends BaseTask
                     
                     ContextMgr.registerService(dev.getName(), tableInfo.getTableId(), cmdAction, this, DATA_ENTRY, tableInfo.getTitle(), true);
                     
-                    if (dev.isSideBar())
+                    //if (dev.isSideBar())
                     {
                         cmdAction = new CommandAction(DATA_ENTRY, OPEN_NEW_VIEW);
                         //cmdAction.setProperty("viewset",   dev.getViewSet());
@@ -792,47 +790,123 @@ public class DataEntryTask extends BaseTask
     @Override
     public void doConfigure()
     {
-        DataEntryConfigureDlg dlg = new DataEntryConfigureDlg(DataEntryTask.this);
-        UIHelper.centerAndShow(dlg);
-        if (!dlg.isCancelled())
+        if (true)
         {
-            viewsNavBox.clear();
+            stdViews  = getStdViews();
+            miscViews = getMiscViews();
+
+            Vector<TaskConfigItemIFace> stdList  = new Vector<TaskConfigItemIFace>();
+            Vector<TaskConfigItemIFace> miscList = new Vector<TaskConfigItemIFace>();
             
-            Vector<DataEntryView> stds  = dlg.getStdViews();
-            Vector<DataEntryView> miscs = dlg.getMiscViews();
-            
-            // Add the non-visible once from the old list
-            for (DataEntryView dev : stdViews)
+            // Clone for undo (Cancel)
+            try
             {
-                if (!dev.isSideBar())
+                for (DataEntryView de : stdViews)
                 {
-                    stds.add(dev);
+                    stdList.add((DataEntryView)de.clone());
                 }
-                // Unregister it as a service
-                ContextMgr.removeServicesByTaskAndTable(DataEntryTask.this, dev.getTableInfo().getTableId());
-            }
+                for (DataEntryView de : miscViews)
+                {
+                    miscList.add((DataEntryView)de.clone());
+                }
+            } catch (CloneNotSupportedException ex) {}
             
-            // Add the non-visible once from the old list
-            for (DataEntryView dev : miscViews)
+            DataEntryConfigDlg dlg = new DataEntryConfigDlg(stdList, miscList, true,
+                    "DataEntryConfigure",
+                    "DET_CONFIGURE_VIEWS",
+                    "DET_STANDARD",
+                    "DET_MISC",
+                    "DET_MOVE_TO_MISC_TT",
+                    "DET_MOVE_TO_STD_TT");
+            dlg.setVisible(true);
+            if (dlg.isCancelled())
             {
-                if (!dev.isSideBar())
+                
+            } else
+            {
+                // Unregister all the exiting DataViewEntry Objects
+                // they will get registered.
+                for (DataEntryView entry : stdViews)
                 {
-                    miscs.add(dev);
+                    ContextMgr.removeServicesByTaskAndTable(DataEntryTask.this, entry.getTableInfo().getTableId());  
                 }
-                // Unregister it as a service
-                ContextMgr.removeServicesByTaskAndTable(DataEntryTask.this, dev.getTableInfo().getTableId());
+                
+                for (DataEntryView entry : miscViews)
+                {
+                    ContextMgr.removeServicesByTaskAndTable(DataEntryTask.this, entry.getTableInfo().getTableId());  
+                }
+                
+                // Clear the current lists
+                stdViews.clear();
+                miscViews.clear();
+                
+                // Copy the Dlg List to the actual lists
+                for (TaskConfigItemIFace entry : stdList)
+                {
+                    stdViews.add((DataEntryView)entry);
+                }
+                
+                for (TaskConfigItemIFace entry : miscList)
+                {
+                    miscViews.add((DataEntryView)entry);
+                }
+                
+                viewsNavBox.clear();
+                
+                // This re-registers the items
+                buildNavBoxes(stdViews, miscViews);
+                
+                viewsNavBox.validate();
+                viewsNavBox.doLayout();
+                NavBoxMgr.getInstance().validate();
+                NavBoxMgr.getInstance().doLayout();
+                NavBoxMgr.getInstance().repaint();
             }
-            
-            buildNavBoxes(stds, miscs);
-            
-            viewsNavBox.validate();
-            viewsNavBox.doLayout();
-            NavBoxMgr.getInstance().validate();
-            NavBoxMgr.getInstance().doLayout();
-            NavBoxMgr.getInstance().repaint();
-            
-            stdViews  = stds;
-            miscViews = miscs;
+
+        } else
+        {
+            DataEntryConfigureDlg dlg = new DataEntryConfigureDlg(DataEntryTask.this);
+            UIHelper.centerAndShow(dlg);
+            if (!dlg.isCancelled())
+            {
+                viewsNavBox.clear();
+                
+                Vector<DataEntryView> stds  = dlg.getStdViews();
+                Vector<DataEntryView> miscs = dlg.getMiscViews();
+                
+                // Add the non-visible once from the old list
+                for (DataEntryView dev : stdViews)
+                {
+                    if (!dev.isSideBar())
+                    {
+                        stds.add(dev);
+                    }
+                    // Unregister it as a service
+                    ContextMgr.removeServicesByTaskAndTable(DataEntryTask.this, dev.getTableInfo().getTableId());
+                }
+                
+                // Add the non-visible once from the old list
+                for (DataEntryView dev : miscViews)
+                {
+                    if (!dev.isSideBar())
+                    {
+                        miscs.add(dev);
+                    }
+                    // Unregister it as a service
+                    ContextMgr.removeServicesByTaskAndTable(DataEntryTask.this, dev.getTableInfo().getTableId());
+                }
+                
+                buildNavBoxes(stds, miscs);
+                
+                viewsNavBox.validate();
+                viewsNavBox.doLayout();
+                NavBoxMgr.getInstance().validate();
+                NavBoxMgr.getInstance().doLayout();
+                NavBoxMgr.getInstance().repaint();
+                
+                stdViews  = stds;
+                miscViews = miscs;
+            }
             
             // Persist out to database
             DataEntryXML dataEntryXML = new DataEntryXML(stdViews, miscViews);
@@ -851,26 +925,6 @@ public class DataEntryTask extends BaseTask
                 AppContextMgr.getInstance().putResourceAsXML(resourceName, xstream.toXML(dataEntryXML));     
             }
         }
-    }
-
-    /* (non-Javadoc)
-     * @see edu.ku.brc.af.tasks.BaseTask#getPopupMenu()
-     */
-    @Override
-    public JPopupMenu getPopupMenu()
-    {
-        JPopupMenu popupMenu = new JPopupMenu();
-        JMenuItem mi = new JMenuItem(UIRegistry.getResourceString("Configure"));
-        popupMenu.add(mi);
-        
-        mi.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e)
-            {
-                doConfigure();
-            }
-        });
-        
-        return popupMenu;
     }
 
     /**

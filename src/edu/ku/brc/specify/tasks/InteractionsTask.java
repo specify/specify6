@@ -21,6 +21,7 @@ import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
 import java.io.File;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -47,6 +48,7 @@ import edu.ku.brc.af.core.NavBoxAction;
 import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.NavBoxItemIFace;
+import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskCommandDef;
@@ -69,7 +71,6 @@ import edu.ku.brc.helpers.EMailHelper;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.config.DisciplineType;
-import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
@@ -210,7 +211,7 @@ public class InteractionsTask extends BaseTask
         entries.add(new InteractionEntry("inforequest", "inforequest", null,  null,          I,   INFO_REQ_MESSAGE, "InfoRequest", new int[] {ExchangeIn.getClassTableId(), ExchangeOut.getClassTableId(), CollectionObject.getClassTableId(), InfoRequest.getClassTableId()}));
         entries.add(new InteractionEntry("printloan",   "loan",        "PRINT_LOANINVOICE",  null, I,   PRINT_LOAN, "Reports",     new int[] {Loan.getClassTableId()}));
         
-        /*try
+        try
         {
             XStream xstream = new XStream();
             InteractionEntry.config(xstream);
@@ -219,9 +220,106 @@ public class InteractionsTask extends BaseTask
         } catch (Exception ex)
         {
             ex.printStackTrace();
-        }*/
+        }
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#isConfigurable()
+     */
+    @Override
+    public boolean isConfigurable()
+    {
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.tasks.BaseTask#doConfigure()
+     */
+    @Override
+    public void doConfigure()
+    {
+        Vector<TaskConfigItemIFace> stdList  = new Vector<TaskConfigItemIFace>();
+        Vector<TaskConfigItemIFace> miscList = new Vector<TaskConfigItemIFace>();
+        
+        Hashtable<String, Boolean> origValue = new Hashtable<String, Boolean>();
+        for (InteractionEntry entry : entries)
+        {
+            Vector<TaskConfigItemIFace> list = entry.isSideBar() ? stdList : miscList;
+            // Clone for undo (Cancel)
+            try
+            {
+                list.add((DataEntryView)entry.clone());
+            } catch (CloneNotSupportedException ex) {}
+            origValue.put(entry.getName(), entry.isSideBar());
+        }
+        
+        TaskConfigureDlg dlg = new TaskConfigureDlg(stdList, miscList, false,
+                "InteractionsConfig",
+                "IAT_TITLE",
+                "IAT_AVAIL_ITEMS",
+                "IAT_HIDDEN_ITEMS",
+                "IAT_MAKE_AVAIL",
+                "IAT_MAKE_HIDDEN");
+        dlg.setVisible(true);
+        if (dlg.isCancelled())
+        {
+            for (InteractionEntry ie : entries)
+            {
+                ie.setOn(origValue.get(ie.getName()));
+            }
+            
+        } else
+        {
+            for (TaskConfigItemIFace ie : stdList)
+            {
+                ((InteractionEntry)ie).setOn(true);
+            }
+            for (TaskConfigItemIFace ie : miscList)
+            {
+                ((InteractionEntry)ie).setOn(false);
+            }
+            
+            actionsNavBox.clear();
+            
+            Collections.sort(entries);
+            
+            for (InteractionEntry entry : entries)
+            {
+                if (entry.isOn())
+                {
+                    DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoByTableName(entry.getTableName());
+                    addCommand(actionsNavBox,
+                              tableInfo,
+                              entry.getTitle(), 
+                              entry.getCmdType(), 
+                              entry.getAction(), 
+                              entry.getViewName(), 
+                              entry.getIconName(), 
+                              entry.getTableIdsAsArray());
+                }
+            }
+            
+            NavBoxMgr.getInstance().validate();
+            NavBoxMgr.getInstance().invalidate();
+            NavBoxMgr.getInstance().doLayout();
+            //actionsNavBox.validate();
+            //actionsNavBox.invalidate();
+            //actionsNavBox.doLayout();
+            //actionsNavBox.repaint();
+            
+            if (stdList.size() == 0)
+            {
+                String ds = Discipline.getCurrentDiscipline().getName();
+                AppPreferences.getRemote().putBoolean(IS_USING_INTERACTIONS_PREFNAME+ds, false);
+                JToolBar toolBar = (JToolBar)UIRegistry.get(UIRegistry.TOOLBAR);
+                indexOfTBB = toolBar.getComponentIndex(toolBarBtn);
+                TaskMgr.removeToolbarBtn(toolBarBtn);
+                toolBar.validate();
+                toolBar.repaint();
+            }
+        }
+    }
+
     /**
      * Retrieves the prefs that we cache.
      */
@@ -267,14 +365,19 @@ public class InteractionsTask extends BaseTask
                         label = tableInfo.getTitle();
                     }
                     
-                    addCommand(actionsNavBox,
-                              tableInfo,
-                              label, 
-                              entry.getCmdType(), 
-                              entry.getAction(), 
-                              entry.getViewName(), 
-                              entry.getIconName(), 
-                              entry.getTableIdsAsArray());
+                    entry.setTitle(label);
+                    
+                    if (entry.isOn())
+                    {
+                        addCommand(actionsNavBox,
+                                  tableInfo,
+                                  label, 
+                                  entry.getCmdType(), 
+                                  entry.getAction(), 
+                                  entry.getViewName(), 
+                                  entry.getIconName(), 
+                                  entry.getTableIdsAsArray());
+                    }
                 }
             } else
             {

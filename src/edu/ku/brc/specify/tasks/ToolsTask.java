@@ -43,6 +43,7 @@ import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.HtmlDescPane;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.TableModel2Excel;
+import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.rstools.RecordSetToolsIFace;
 import edu.ku.brc.ui.CommandAction;
@@ -257,10 +258,10 @@ public class ToolsTask extends BaseTask
             {
                 org.dom4j.Element pluginElement = (org.dom4j.Element)iter.next();
 
-                String name   = pluginElement.attributeValue("class");
+                String clsName = pluginElement.attributeValue("class");
                 try
                 {
-                    Class<? extends RecordSetToolsIFace> cls = Class.forName(name).asSubclass(RecordSetToolsIFace.class);
+                    Class<? extends RecordSetToolsIFace> cls = Class.forName(clsName).asSubclass(RecordSetToolsIFace.class);
                     toolsRegistryList.add(cls);
                     
                 } catch (Exception ex)
@@ -447,7 +448,8 @@ public class ToolsTask extends BaseTask
         toolBarBtn      = createToolbarButton(label, iconName, hint);
         
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
-        if (AppPreferences.getRemote().getBoolean("exporttask.ontaskbar", false))
+        String ds = Discipline.getCurrentDiscipline().getName();
+        if (AppPreferences.getRemote().getBoolean("ExportTask.OnTaskbar"+"."+ds, false))
         {
             list.add(new ToolBarItemDesc(toolBarBtn));
         }
@@ -528,7 +530,9 @@ public class ToolsTask extends BaseTask
         
         if (appPrefs == AppPreferences.getRemote())
         {
-            Object value = cmdAction.getProperties().get("exporttask.ontaskbar");
+            // Note: The event send with the name of pref from the form
+            // not the name that was saved. So we don't need to append the discipline name on the end
+            Object value = cmdAction.getProperties().get("Exporttask.OnTaskbar");
             if (value != null && value instanceof Boolean)
             {
                 /*

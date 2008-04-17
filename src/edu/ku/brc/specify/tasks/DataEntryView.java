@@ -29,14 +29,16 @@ import edu.ku.brc.dbsupport.DBTableInfo;
  * Created Date: Feb 27, 2008
  *
  */
-public class DataEntryView implements Comparable<DataEntryView>
+public class DataEntryView implements TaskConfigItemIFace, Comparable<TaskConfigItemIFace>, Cloneable
 {
     protected String  name;
     protected String  view;
     protected String  iconName;
     protected String  toolTip;
+    protected int     order;
     protected boolean isSideBar;
     
+    // Transient
     protected DBTableInfo tableInfo = null;
     
     /**
@@ -51,6 +53,7 @@ public class DataEntryView implements Comparable<DataEntryView>
                          String view, 
                          String iconName, 
                          String toolTip,
+                         int     order,
                          boolean isSideBar)
     {
         super();
@@ -58,6 +61,7 @@ public class DataEntryView implements Comparable<DataEntryView>
         this.view = view;
         this.iconName = iconName;
         this.toolTip = toolTip;
+        this.order = order;
         this.isSideBar = isSideBar;
     }
 
@@ -159,6 +163,30 @@ public class DataEntryView implements Comparable<DataEntryView>
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.TaskConfigItemIFace#getOrder()
+     */
+    public int getOrder()
+    {
+        return order;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.TaskConfigItemIFace#getTitle()
+     */
+    public String getTitle()
+    {
+        return name;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.TaskConfigItemIFace#setOrder(int)
+     */
+    public void setOrder(int order)
+    {
+        this.order = order;
+    }
+
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
@@ -170,11 +198,29 @@ public class DataEntryView implements Comparable<DataEntryView>
     /* (non-Javadoc)
      * @see java.lang.Comparable#compareTo(java.lang.Object)
      */
-    public int compareTo(DataEntryView o)
+    public int compareTo(TaskConfigItemIFace o)
     {
-        return toString().compareTo(o.toString());
+        Integer o1 = getOrder();
+        Integer o2 = o.getOrder();
+        return o1.compareTo(o2);
     }
     
+    /* (non-Javadoc)
+     * @see java.lang.Object#clone()
+     */
+    @Override
+    protected Object clone() throws CloneNotSupportedException
+    {
+        DataEntryView dev = (DataEntryView)super.clone();
+        dev.name      = name;
+        dev.view      = view;
+        dev.iconName  = iconName;
+        dev.toolTip   = toolTip;
+        dev.order     = order;
+        dev.isSideBar = isSideBar;
+        return dev;
+    }
+
     /**
      * Configures inner classes for XStream.
      * @param xstream the xstream
@@ -188,6 +234,7 @@ public class DataEntryView implements Comparable<DataEntryView>
         xstream.useAttributeFor(DataEntryView.class, "iconName");
         xstream.useAttributeFor(DataEntryView.class, "toolTip");
         xstream.useAttributeFor(DataEntryView.class, "isSideBar");
+        xstream.useAttributeFor(DataEntryView.class, "order");
         
         xstream.omitField(DataEntryView.class, "tableInfo");
         
