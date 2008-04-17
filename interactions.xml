@@ -1,0 +1,47 @@
+<vector>
+  <entry name="accession" table="accession" view="Loan" type="Data_Entry" action="OpenNewView" table="Accession" isturnedon="true" order="0">
+    <tableIds>
+      <int>7</int>
+    </tableIds>
+  </entry>
+  <entry name="permit" table="permit" view="Permit" type="Data_Entry" action="OpenNewView" table="Permit" isturnedon="true" order="0">
+    <tableIds>
+      <int>6</int>
+    </tableIds>
+  </entry>
+  <entry name="loan" table="loan" view="Loan" type="Interactions" action="NEW_LOAN" table="Loan" isturnedon="true" order="0">
+    <tableIds>
+      <int>52</int>
+      <int>1</int>
+      <int>50</int>
+    </tableIds>
+  </entry>
+  <entry name="gift" table="gift" view="Gift" type="OPEN_FORM" action="NEW_GIFT" table="Gift" isturnedon="true" order="0">
+    <tableIds>
+      <int>131</int>
+    </tableIds>
+  </entry>
+  <entry name="exchangein" table="exchangein" view="ExchangeIn" type="OPEN_FORM" action="NEW_EXCHANGE_IN" table="ExchangeIn" isturnedon="true" order="0">
+    <tableIds>
+      <int>39</int>
+    </tableIds>
+  </entry>
+  <entry name="exchangeout" table="exchangeout" view="ExchangeOut" type="OPEN_FORM" action="NEW_EXCHANGE_OUT" table="ExchangeOut" isturnedon="true" order="0">
+    <tableIds>
+      <int>40</int>
+    </tableIds>
+  </entry>
+  <entry name="inforequest" table="inforequest" type="Interactions" action="Specify Info Request" table="InfoRequest" isturnedon="true" order="0">
+    <tableIds>
+      <int>39</int>
+      <int>40</int>
+      <int>1</int>
+      <int>50</int>
+    </tableIds>
+  </entry>
+  <entry name="printloan" table="loan" labelKey="PRINT_LOANINVOICE" type="Interactions" action="PRINT_LOAN" table="Reports" isturnedon="true" order="0">
+    <tableIds>
+      <int>52</int>
+    </tableIds>
+  </entry>
+</vector>
