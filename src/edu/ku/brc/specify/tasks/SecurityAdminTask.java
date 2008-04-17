@@ -107,7 +107,7 @@ public class SecurityAdminTask extends BaseTask
         String iconName = "SystemSetup"; // temporary
         String hint = getResourceString("SECURITY_ADMIN_HINT");
         ToolBarDropDownBtn btn = createToolbarButton(label, iconName, hint);
-        list.add(new ToolBarItemDesc(btn));
+        //list.add(new ToolBarItemDesc(btn));
         return list;
     } 
     

@@ -35,7 +35,7 @@
 		<plugin class="edu.ku.brc.specify.tasks.WorkbenchTask" addui="true"/>
 
 		<!-- Remove the comments from the line below to see the security administration task on the main toolbar --> 
-		<!-- plugin class="edu.ku.brc.specify.tasks.SecurityAdminTask" addui="true"/ -->
+		<plugin class="edu.ku.brc.specify.tasks.SecurityAdminTask" addui="true"/>
 		
 		<!-- 
 		<plugin class="edu.ku.brc.af.tasks.EditorTask" addui="true"/>
