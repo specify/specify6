@@ -84,6 +84,10 @@
     <icon name="group"                file="group.png" sizes="all"/>
     <icon name="person"               file="person.png" sizes="all"/>
     
+    <icon name="add-person"           file="add-person.png" sizes="NonStd"/>
+    <icon name="add-group"            file="add-group.png" sizes="NonStd"/>
+    <icon name="add-discipline"       file="add-discipline.png" sizes="NonStd"/>
+    <icon name="add-collection"       file="add-collection.png" sizes="NonStd"/>
 
     <!-- Aliases -->
 	<icon name="borrowagent"                    alias="agent"/>

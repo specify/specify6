@@ -16,28 +16,35 @@ package edu.ku.brc.specify.tasks.subpane;
 
 import java.awt.CardLayout;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
-import javax.swing.Icon;
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTree;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 import org.apache.commons.lang.StringUtils;
@@ -64,10 +71,18 @@ public class SecurityAdminPane extends BaseSubPane
 	protected JTree  tree;
 	protected JPanel navCards;
 	protected JPanel infoCards;
+	protected JAutoCompTextField searchText; 
 	protected Vector<SecurityPanelWrapper> navPanelWrappers;
 	protected Vector<SecurityPanelWrapper> infoPanelWrappers;
 	protected Hashtable<JButton, SecurityPanelWrapper> navPanelWrapperHash;
 	protected Hashtable<String, SecurityPanelWrapper>  infoPanelWrapperHash;
+	
+	protected JButton[] navToolbarBtns;
+	protected JButton delBtn;
+	protected JButton addDiscBtn;
+	protected JButton addCollBtn;
+	protected JButton addGrpBtn;
+	protected JButton addUserBtn;
 	
 	final protected int fieldSize = 40;
 
@@ -108,7 +123,7 @@ public class SecurityAdminPane extends BaseSubPane
 		JPanel navToolbarPanel = new JPanel();
 		//JPanel navToolbarPanel = new FormDebugPanel();
         final PanelBuilder mainPB = new PanelBuilder(new FormLayout(
-        		"l:p:g", "p,3dlu,p,3dlu,t:p:g,3dlu,p,3dlu,p,3dlu,p"), navToolbarPanel);
+        		"l:p:g", "p,3dlu,p,3dlu,f:p:g,3dlu,p,3dlu,p,3dlu,p,3dlu,p"), navToolbarPanel);
 		final CellConstraints cc = new CellConstraints();
         
 		ActionListener buttonAL = new ActionListener()
@@ -132,7 +147,21 @@ public class SecurityAdminPane extends BaseSubPane
 		navCards = new JPanel();
 		navCards.setLayout(new CardLayout());
 
-		JAutoCompTextField searchText = new JAutoCompTextField(22);
+		DocumentListener searchDL = new DocumentListener()
+		{
+			public void removeUpdate(DocumentEvent e)  { changed(e); }
+			public void insertUpdate(DocumentEvent e)  { changed(e); }
+			public void changedUpdate(DocumentEvent e) { changed(e); }
+
+			private void changed(DocumentEvent e)
+			{ 
+				FilteredTreeModel model = (FilteredTreeModel) tree.getModel();
+				model.setFilter(new Filter(searchText.getText()));
+			}
+		};
+		
+		searchText = new JAutoCompTextField(22);
+		searchText.getDocument().addDocumentListener(searchDL);
 		SearchBox searchBox = new SearchBox(searchText, null);
 		
         final PanelBuilder toolbarPB = new PanelBuilder(new FormLayout("l:p,1dlu,p,1dlu,p,1dlu,p,15dlu,r:p", "p"));
@@ -149,12 +178,50 @@ public class SecurityAdminPane extends BaseSubPane
 		}
 		toolbarPB.add(searchBox, cc.xy(1, 1));
 		
-		mainPB.add(toolbarPB.getPanel(), cc.xy(1, 1));
-		mainPB.add(navCards,             cc.xy(1, 5));
+		mainPB.add(toolbarPB.getPanel(),  cc.xy(1, 3));
+		mainPB.add(navCards,              cc.xy(1, 5));
 
 		return navToolbarPanel;
 	}
 
+	protected JPanel createAddDeleteNavToolbarPanel()
+	{
+        final PanelBuilder toolbarPB = new PanelBuilder(new FormLayout(UIHelper.createDuplicateJGoodiesDef("p", "2px", 5), "p"));
+		final CellConstraints cc = new CellConstraints();
+		
+		ActionListener btnAL = new ActionListener()
+		{
+			public void actionPerformed(ActionEvent ae)
+			{
+				
+			}
+		};
+		
+		IconManager.IconSize sz = IconManager.IconSize.NonStd;
+		delBtn     = UIHelper.createButton(IconManager.getIcon("MinusSign", IconManager.IconSize.Std16));
+		addUserBtn = UIHelper.createButton(IconManager.getIcon("add-person", sz));
+		addGrpBtn  = UIHelper.createButton(IconManager.getIcon("add-group", sz));
+		addCollBtn = UIHelper.createButton(IconManager.getIcon("add-collection", sz));
+		addDiscBtn = UIHelper.createButton(IconManager.getIcon("add-discipline", sz));
+		
+		navToolbarBtns = new JButton[5];
+		navToolbarBtns[0] = delBtn;
+		navToolbarBtns[1] = addUserBtn;
+		navToolbarBtns[2] = addGrpBtn;
+		navToolbarBtns[3] = addCollBtn;
+		navToolbarBtns[4] = addDiscBtn;
+		
+		int x = 1;
+		for (JButton btn : navToolbarBtns)
+		{
+			btn.addActionListener(btnAL);
+			toolbarPB.add(btn, cc.xy(x, 1));
+			x += 2;
+		}
+		
+		return toolbarPB.getPanel();
+	}
+	
 	protected SecurityPanelWrapper createFullTreeNavPanel(ActionListener buttonAL)
 	{
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode(new DataModelObjBaseWrapper("institution", "The Natural History Museum"));
@@ -162,7 +229,6 @@ public class SecurityAdminPane extends BaseSubPane
     	DefaultMutableTreeNode globalGrp1 = new DefaultMutableTreeNode(new DataModelObjBaseWrapper("group", "Administrators"));
     	DefaultMutableTreeNode globalGrp2 = new DefaultMutableTreeNode(new DataModelObjBaseWrapper("group", "Guests"));
     	DefaultMutableTreeNode globalGrp3 = new DefaultMutableTreeNode(new DataModelObjBaseWrapper("group", "Web"));
-    	DefaultMutableTreeNode globalGrp4 = new DefaultMutableTreeNode(new DataModelObjBaseWrapper("group", "All Users"));
     	
     	DefaultMutableTreeNode div1 = new DefaultMutableTreeNode(new DataModelObjBaseWrapper("Bug", "Entomology Division"));
     	DefaultMutableTreeNode div2 = new DefaultMutableTreeNode(new DataModelObjBaseWrapper("Plants", "Botany Division"));
@@ -175,7 +241,6 @@ public class SecurityAdminPane extends BaseSubPane
     	root.add(globalGrp1);
     	root.add(globalGrp2);
     	root.add(globalGrp3);
-    	root.add(globalGrp4);
 
     	DefaultMutableTreeNode col1 = new DefaultMutableTreeNode(new DataModelObjBaseWrapper("collection", "Voucher Collection"));
     	DefaultMutableTreeNode col2 = new DefaultMutableTreeNode(new DataModelObjBaseWrapper("collection", "Tissue Collection"));
@@ -264,10 +329,11 @@ public class SecurityAdminPane extends BaseSubPane
     			DataModelObjBaseWrapper dataWrp  = (DataModelObjBaseWrapper) (node.getUserObject());
 
     			showInfoPanel(dataWrp);
+    			updateUIEnabled(dataWrp);
     		}
     	};
     	
-    	DefaultTreeModel model = new DefaultTreeModel(root);
+    	DefaultTreeModel model = new FilteredTreeModel(root, null);
     	tree = new JTree(model);
     	tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
     	tree.setRootVisible(true);
@@ -275,15 +341,173 @@ public class SecurityAdminPane extends BaseSubPane
     	tree.addTreeSelectionListener(tsl);
     	//expandAll(tree, true);
     	
-        final PanelBuilder mainPB = new PanelBuilder(new FormLayout("180dlu", "f:p:g"));
-        JScrollPane sp= new JScrollPane(tree);
-    	sp.setMinimumSize(new Dimension(150, 300));
-    	sp.setPreferredSize(new Dimension(180, 500));
-    	mainPB.add(sp);
+    	DefaultListModel listModel = new DefaultListModel();
+    	listModel.addElement(usr1);
+    	listModel.addElement(usr2);
+    	listModel.addElement(usr3);
+    	listModel.addElement(usr4);
+    	listModel.addElement(usr5);
+    	listModel.addElement(usr6);
+    	listModel.addElement(usr7);
+    	listModel.addElement(usr8);
+    	listModel.addElement(usr9);
+    	JList userList = new JList(listModel);
+    	    	
+		JPanel addDeleteNavToolbarPanel = createAddDeleteNavToolbarPanel();
+		
+		String helpStr = "<html>To add an existing user to a group, just " +
+				"drag the user from this list and drop it into the appropriate " +
+				"group on the list above.</html>";
+		JLabel userDnDHelp = UIHelper.createLabel(helpStr);
+		
+		final PanelBuilder mainPB = new PanelBuilder(new FormLayout("210px", "f:p:g,p,15px,p,p,p")/*, new FormDebugPanel()*/);
+		final CellConstraints cc = new CellConstraints();
+        
+    	mainPB.add(new JScrollPane(tree), cc.xy(1, 1));
+		mainPB.add(addDeleteNavToolbarPanel, cc.xy(1, 2));
+    	mainPB.addSeparator("Users", cc.xy(1, 4));
+    	mainPB.add(new JScrollPane(userList), cc.xy(1, 5));
+    	mainPB.add(userDnDHelp, cc.xy(1, 6));
 
 		JButton button = UIHelper.createIconBtn("Record_Set", IconManager.IconSize.Std24, "View all objects in a tree", buttonAL);
     	
     	return new SecurityPanelWrapper(mainPB.getPanel(), button, "FullTreeNavPanel");
+	}
+	
+	protected class FilteredTreeModel extends DefaultTreeModel
+	{
+		protected Filter filter;
+		
+		public FilteredTreeModel(DefaultMutableTreeNode root, Filter filter)
+		{
+			super(root);
+			this.filter = filter;
+		}
+
+		public Object getChild(Object parent, int index) 
+		{
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode) parent;
+			DataModelObjBaseWrapper parentWrapper = (DataModelObjBaseWrapper) node.getUserObject();
+			if (filter==null || !parentWrapper.getType().equals("group"))
+				return node.getChildAt(index);
+			
+			int pos = 0;
+			for (int i = 0, cnt = 0; i < node.getChildCount(); i++) 
+			{
+				DefaultMutableTreeNode child = (DefaultMutableTreeNode) node.getChildAt(i);
+				DataModelObjBaseWrapper childWrapper = (DataModelObjBaseWrapper) child.getUserObject();
+				if(filter.accepts(childWrapper.getName())) 
+				{
+					if (cnt++ == index) 
+					{
+						pos = i;
+						break;
+					}
+				}
+			}
+			
+			return node.getChildAt(pos);
+		}
+		
+		public int getChildCount(Object parent) 
+		{
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode) parent;
+			DataModelObjBaseWrapper parentWrapper = (DataModelObjBaseWrapper) node.getUserObject();
+			if (filter==null || !parentWrapper.getType().equals("group"))
+				return node.getChildCount();
+			
+			int childCount = 0;
+			Enumeration children = node.children();
+			while (children.hasMoreElements()) 
+			{
+				DefaultMutableTreeNode child = (DefaultMutableTreeNode) children.nextElement();
+				DataModelObjBaseWrapper childWrapper = (DataModelObjBaseWrapper) child.getUserObject();
+				if (filter.accepts(childWrapper.getName())) 
+				{
+					childCount++;
+				}
+
+			}
+			return childCount;
+		}
+		
+		public void setFilter(Filter filter) 
+		{
+			if (this.filter == null && filter == null)
+				return;
+			
+			if (this.filter != null && this.filter.equals(filter))
+				return;
+			
+			this.filter = filter;
+			
+			Object[] path = {root};
+			int[] childIndices = new int[root.getChildCount()];
+			Object[] children = new Object[root.getChildCount()];
+
+			for (int i = 0; i < root.getChildCount(); i++) 
+			{
+				childIndices[i] = i;
+				children[i] = root.getChildAt(i);
+			}
+			fireTreeStructureChanged(this, path, childIndices, children);
+			
+			// open all selected users
+			openUserNodesRecursive(root);
+		}
+
+		public void openUserNodesRecursive(TreeNode node)
+		{
+			DefaultMutableTreeNode defNode = (DefaultMutableTreeNode) node;
+			DataModelObjBaseWrapper nodeWrapper = (DataModelObjBaseWrapper) defNode.getUserObject();
+			
+			if (nodeWrapper.getType().equals("person"))
+			{
+				tree.scrollPathToVisible(new TreePath(defNode.getPath()));
+				return;
+			}
+			
+			for (int i = 0; i < node.getChildCount(); i++) 
+			{
+				openUserNodesRecursive(node.getChildAt(i));
+			}
+			
+		}
+
+	}
+	
+	protected class Filter
+	{
+		protected String patternStr;
+		protected Pattern p;
+		protected Matcher m;
+		
+		public Filter(String patternStr)
+		{
+			patternStr = patternStr.replaceAll("\\*", ".*");
+			this.patternStr = patternStr;
+			try 
+			{
+				p = Pattern.compile(patternStr);
+			}
+			catch (PatternSyntaxException pse)
+			{
+				p = null;
+			}
+		}
+		
+		public boolean accepts(String subject)
+		{
+			if (StringUtils.isEmpty(patternStr))
+				return true;
+			
+			if (p == null)
+				return false;
+			
+			m = p.matcher(subject);
+			return m.matches();
+			//return Pattern.matches(patternStr, subject);
+		}
 	}
 	
 	protected SecurityPanelWrapper createUserNavPanel(ActionListener buttonAL)
@@ -599,6 +823,14 @@ public class SecurityAdminPane extends BaseSubPane
 		return new JPanel();
 	}
 
+	protected void updateUIEnabled(DataModelObjBaseWrapper objWrapper)
+	{
+		delBtn.setEnabled(
+				!objWrapper.getType().equals("institution") &&
+				!objWrapper.getType().equals("collection") );
+		addDiscBtn.setEnabled(objWrapper.getType().equals("institution"));
+	}
+	
 	protected class DataModelObjBaseWrapper 
 	{
 		protected String iconName;
