@@ -71,19 +71,6 @@
                 <altview name="Locality Edit" viewdef="Locality" label="Edit" mode="edit" default="true"/>
             </altviews>
         </view>
-
-        <view name="Preparation"
-              class="edu.ku.brc.specify.datamodel.Preparation"
-              busrules="edu.ku.brc.specify.datamodel.busrules.PreparationBusRules"
-              resourcelabels="false">
-            <desc><![CDATA[Subform within the Preparation form.]]></desc>
-    	    <altviews>
-    	        <altview name="Preparation Table View" viewdef="Preparation Table" label="Grid" mode="view"/>
-    	        <altview name="Preparation Table Edit" viewdef="Preparation Table" label="Grid" mode="edit"/>
-    	        <altview name="Preparation View" viewdef="Preparation" label="View" mode="view"/>
-    	        <altview name="Preparation Edit" viewdef="Preparation" label="Edit" mode="edit" default="true"/>
-    		</altviews>
-    	  </view>
         
     </views>
 
@@ -385,54 +372,6 @@
                 </row>
             </rows>
         </viewdef>
-
-         <viewdef
-            type="formtable"
-            name="Preparation Table"
-            class="edu.ku.brc.specify.datamodel.Preparation"
-            gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-            settable="edu.ku.brc.ui.forms.DataSetterForObj">
-            
-            <desc><![CDATA[Preparation subform table for Collection Object form.]]></desc>
-            <definition>Preparation</definition>
-        </viewdef>
-                
-        <viewdef
-    	    type="form"
-    	    name="Preparation"
-    	    class="edu.ku.brc.specify.datamodel.Preparation"
-    	    gettable="edu.ku.brc.ui.forms.DataGetterForObj"
-    	    settable="edu.ku.brc.ui.forms.DataSetterForObj">
-    	    <desc><![CDATA[Preparation for Collection Object form.]]></desc>
-    	    <enableRules/>
-
-    	    <columnDef>120px,2px,p,2px,100px,2px,p,2px,60px,2px,p,p:g</columnDef>
-    	    <rowDef auto="true" cell="p" sep="2dlu"/>
-
-    		<rows>
-			   <row>
-                   <cell type="label" labelfor="7"/>
-			       <cell type="field" id="7" name="prepType" uitype="combobox" picklist="Preparation" isrequired="true"/>
-			   </row>
-    			<row>
-                    <cell type="label" labelfor="1"/>
-    			    <cell type="field" id="1" name="preparedDate" uitype="formattedtext" uifieldformatter="Date" isrequired="true" default="today"/>
-
-    			    <cell type="label" labelfor="2"/>
-    			    <cell type="field" id="2" name="preparedByAgent" uitype="querycbx" initialize="name=Agent;title=Prepared By Agent" isrequired="true"/>
-    			</row>
-    			<row>
-                    <cell type="label" labelfor="3" />
-    			    <cell type="field" id="3" name="count" uitype="text" isrequired="true"/>
-
-                    <cell type="label" labelfor="4"/>
-    			    <cell type="field" id="4" name="storageLocation" uitype="text" cols="20"/>
-    			</row>
-    		    <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="preparationAttachments" colspan="12" initialize="btn=true;icon=PreparationAttachment"/>
-                </row>
-    		</rows>
-    	</viewdef>
 
         
     </viewdefs>
