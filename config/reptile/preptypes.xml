@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <vector>
 	<preptype name="EtOH" isloanable="true"/>
-	<preptype name="skeleton" isloanable="true"/>
+	<preptype name="Denatured EtoH" isloanable="true"/>
 	<preptype name="C&amp;S" isloanable="true"/>
-	<preptype name="x-ray" isloanable="false"/>
+	<preptype name="Dry" isloanable="false"/>
+	<preptype name="Formalin" isloanable="true"/>
+	<preptype name="Isopropanol" isloanable="true"/>
+	<preptype name="Misc" isloanable="true"/>
+	<preptype name="Shell" isloanable="false"/>
+	<preptype name="Skel" isloanable="true"/>
+	<preptype name="Skin" isloanable="true"/>
+	<preptype name="Slide" isloanable="false"/>
+	<preptype name="Tissue" isloanable="false"/>
 </vector>
