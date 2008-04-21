@@ -361,12 +361,6 @@
   </table>
   
   <table classname="edu.ku.brc.specify.datamodel.PreparationAttribute" table="preparationattribute" tableid="91" lazy="true" query="false">
-    <field column="Prepared Date" name="preparedDate" type="calendar_date"/>
-    <field column="Medium" name="medium" type="java.lang.String" length="50"/>
-    <field column="Size" name="size" type="java.lang.String" length="50"/>
-    <field column="Storage Info" name="storageInfo" type="java.lang.String" length="50"/>
-    <field column="Preparation Type" name="preparationType" type="java.lang.String" length="50"/>
-    <field column="Container Type" name="containerType" type="java.lang.String" length="50"/>
     <field column="Remarks (Preparation Attribute)" name="preparationAttributeRemarks" type="java.lang.String" length="1073741823"/>
     <field column="Number 1 (Preparation Attribute)" name="preparationAttributeNumber1" type="java.lang.Float" length="24"/>
     <field column="Number 2 (Preparation Attribute)" name="preparationAttributeNumber2" type="java.lang.Float" length="24"/>
@@ -398,8 +392,15 @@
     <field column="Text 19 (Preparation Attribute)" name="preparationAttributeText19" type="java.lang.String" length="50"/>
     <field column="Text 20 (Preparation Attribute)" name="preparationAttributeText20" type="java.lang.String" length="50"/>
     <field column="Text 21 (Preparation Attribute)" name="preparationAttributeText21" type="java.lang.String" length="50"/>
+    <field column="Text 22 (Preparation Attribute)" name="preparationAttributeText22" type="java.lang.String" length="50"/>
+    <field column="Text 23 (Preparation Attribute)" name="preparationAttributeText23" type="java.lang.String" length="50"/>
+    <field column="Text 24 (Preparation Attribute)" name="preparationAttributeText24" type="java.lang.String" length="50"/>
+    <field column="Text 25 (Preparation Attribute)" name="preparationAttributeText25" type="java.lang.String" length="50"/>
+    <field column="Text 26 (Preparation Attribute)" name="preparationAttributeText26" type="java.lang.String" length="50"/>
     <field column="YesNo 1 (Preparation Attribute)" name="preparationAttributeYesNo1" type="java.lang.Short" length="5"/>
     <field column="YesNo 2 (Preparation Attribute)" name="preparationAttributeYesNo2" type="java.lang.Short" length="5"/>
+    <field column="YesNo 3 (Preparation Attribute)" name="preparationAttributeYesNo3" type="java.lang.Short" length="5"/>
+    <field column="YesNo 4 (Preparation Attribute)" name="preparationAttributeYesNo4" type="java.lang.Short" length="5"/>
   </table>
   
   <table classname="edu.ku.brc.specify.datamodel.ReferenceWork" table="referencework" tableid="69" lazy="true" >

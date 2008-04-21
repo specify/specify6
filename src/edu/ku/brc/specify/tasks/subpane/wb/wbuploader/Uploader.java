@@ -36,6 +36,7 @@ import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JRField;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.dbsupport.DBTableIdMgr;
@@ -2525,7 +2526,7 @@ public class Uploader implements ActionListener, KeyListener
         }
         else if (op.equals(Uploader.FAILURE) && killer != null)
         {
-            if (killer.getLocalizedMessage().equals(""))
+            if (StringUtils.isNotEmpty(killer.getLocalizedMessage()))
             {
                 statText += ": " + killer;
             }
@@ -2694,7 +2695,7 @@ public class Uploader implements ActionListener, KeyListener
             public Object construct()
             {
                 initProgressBar(0, uploadData.getRows(), true, 
-                        getResourceString("WB_UPLOAD_UPLOADING") + " " + getResourceString("Row"), false);
+                        getResourceString("WB_UPLOAD_UPLOADING") + " " + getResourceString("WB_ROW"), false);
                 try
                 {
                     for (rowUploading = 0; rowUploading < uploadData.getRows();)
