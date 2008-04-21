@@ -42,6 +42,7 @@
         <view name="Determination"
             class="edu.ku.brc.specify.datamodel.Determination"
             busrules="edu.ku.brc.specify.datamodel.busrules.DeterminationBusRules"
+            isinternal="true"
             resourcelabels="false">
             <desc><![CDATA[Subform within the Collection Object form.]]></desc>
             <altviews>
