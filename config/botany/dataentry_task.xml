@@ -3,7 +3,7 @@
 	<std>
 	    <view sidebar="true"  name="Accession"          view="Accession"          iconname="Accession"          tooltip=""/>    
 	    <view sidebar="true"  name="Permit"             view="Permit"             iconname="Permit"             tooltip=""/>
-	     
+		<view sidebar="false" name="Determination"      view="Determination"      iconname="Determination"      tooltip=""/>	     
 	    <view sidebar="true"  name="Collection Object"  view="CollectionObject"   iconname="CollectionObject"   tooltip=""/>    
 	    <view sidebar="true"  name="Collecting Event"   view="CollectingEvent"    iconname="CollectingEvent"    tooltip=""/>    
 	    <view sidebar="true"  name="Taxon"              view="Taxon"              iconname="Taxon"              tooltip=""/> 
