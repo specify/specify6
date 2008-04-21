@@ -1060,10 +1060,6 @@ public class DatamodelGenerator
                     if (i < stop || StringUtils.contains(strLines.get(i), "@Cascade"))
                     {
                         lines.remove(i);
-                    } else
-                    {
-                        int x = 0;
-                        x++;
                     }
                 }
                 lines.add(line);

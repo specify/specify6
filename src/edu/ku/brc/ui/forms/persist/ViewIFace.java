@@ -166,6 +166,11 @@ public interface ViewIFace  extends Comparable<ViewIFace>
     public abstract boolean isInternal();
     
     /**
+     * @return the localized title of the view.
+     */
+    public abstract String getTitle();
+    
+    /**
      * Comparator.
      * @param obj the obj to compare
      * @return 0,1,-1

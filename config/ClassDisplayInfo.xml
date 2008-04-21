@@ -209,6 +209,7 @@
 			<field>visibility</field>
 			<field>visibilitySetBy</field>
 			<field>groupPermittedToView</field>
+			<field>orderNumber</field>
 		</skip>
 		<order>
 		</order>
@@ -316,7 +317,7 @@
 		</order>
 	</class>
 	
-    <class name="Accession" linkfield="number" indexfield="number">
+    <class name="Accession" linkfield="number" indexfield="accessionNumber">
     	<skip>
 			<field>visibility</field>
 			<field>visibilitySetBy</field>

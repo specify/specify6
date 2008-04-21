@@ -17,7 +17,7 @@
         <view name="SubCollectingEvent"
             class="edu.ku.brc.specify.datamodel.CollectingEvent"
             busrules="edu.ku.brc.specify.datamodel.busrules.CollectingEventBusRules"
-            isinternal="false"
+            isinternal="trues"
             resourcelabels="false">
             <desc><![CDATA[CollectingEvent Form]]></desc>
             <altviews>

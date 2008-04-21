@@ -83,6 +83,7 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
     protected String  defaultModeName;
     protected Boolean useDefaultBusRule;
     protected Boolean isInternal;
+    protected String  title;
     
     protected SpUIViewSet       spViewSet;
     protected Set<SpUIAltView>  spAltViews;
@@ -146,6 +147,7 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
         defaultModeName   = null;
         useDefaultBusRule = true;
         isInternal        = true;
+        title             = null;
         
         spAltViews = new HashSet<SpUIAltView>();
         spViewSet  = null;
@@ -264,6 +266,23 @@ public class SpUIView extends DataModelObjBase implements ViewIFace
     public void setObjTitle(String objTitle)
     {
         this.objTitle = objTitle;
+    }
+    
+    /**
+     * @return the title
+     */
+    @Column(name = "Title", unique = false, nullable = false, insertable = true, updatable = true, length = 64)
+    public String getTitle()
+    {
+        return title;
+    }
+
+    /**
+     * @param title the title to set
+     */
+    public void setTitle(String title)
+    {
+        this.title = title;
     }
 
     /* (non-Javadoc)

@@ -127,6 +127,13 @@ public class ViewLoader
         String   className         = element.attributeValue(CLASSNAME);
         String   desc              = getDesc(element);
         String   businessRules     = getAttr(element, "busrules", null);
+        boolean  isInternal        = getAttr(element, "isinternal", true);
+        
+        DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(className);
+        if (ti != null && StringUtils.isEmpty(objTitle))
+        {
+            objTitle = ti.getTitle();
+        }
         
         View view = new View(instance.viewSetName, 
                              name, 
@@ -134,8 +141,19 @@ public class ViewLoader
                              className, 
                              businessRules != null ? businessRules.trim() : null, 
                              getAttr(element, "usedefbusrule", true),
-                             getAttr(element, "isinternal", true),
+                             isInternal,
                              desc);
+        
+        // Later we should get this from a properties file.
+        if (ti != null)
+        {
+            view.setTitle(ti.getTitle());
+        }
+        
+        /*if (!isInternal)
+        {
+            System.err.println(StringUtils.replace(name, " ", "_")+"="+UIHelper.makeNamePretty(name));
+        }*/
 
         Element altviews = (Element)element.selectSingleNode("altviews");
         if (altviews != null)
@@ -323,7 +341,13 @@ public class ViewLoader
                                   final Hashtable<AltViewIFace, String> altViewsViewDefName) throws Exception
     {
         instance.viewSetName = doc.attributeValue(NAME);
-
+        
+        /*
+        System.err.println("#################################################");
+        System.err.println("# "+instance.viewSetName);
+        System.err.println("#################################################");
+        */
+        
         Element viewsElement = (Element)doc.selectSingleNode("views");
         if (viewsElement != null)
         {

@@ -97,6 +97,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
 
     protected UIFieldFormatterIFace       formatter;
     protected List<UIFieldFormatterField> fields         = null;
+    protected boolean                     isFromUIFmtOverride = false;
     
     protected Object                      origValue      = null;
     protected UndoManager                 undoManager    = null;
@@ -693,6 +694,15 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
         repaint();
     }
 
+
+    /**
+     * @param isFromUIFmtOverride the isFromUIFmtOverride to set
+     */
+    public void setFromUIFmtOverride(boolean isFromUIFmtOverride)
+    {
+        this.isFromUIFmtOverride = isFromUIFmtOverride;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.af.ui.GetSetValueIFace#getValue()
      */
@@ -719,7 +729,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
         }
         // else
         String val = getText();
-        if (formatter.isFromUIFormatter())
+        if (formatter.isFromUIFormatter() && !isFromUIFmtOverride)
         {
             if (StringUtils.isNotEmpty(val))
             {

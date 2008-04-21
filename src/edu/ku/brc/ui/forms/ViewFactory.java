@@ -330,7 +330,8 @@ public class ViewFactory
     {
         //log.debug(cellField.getName()+"  "+cellField.getUIFieldFormatter());
 
-        boolean isPartialOK = cellField.getPropertyAsBoolean("ispartial", false);
+        boolean isPartialOK         = cellField.getPropertyAsBoolean("ispartial", false);
+        boolean isFromUIFmtOverride = cellField.getPropertyAsBoolean("fromuifmt", false);
         
         // Because it is formatted we ALWAYS validate it when there is a validator
         if (validator != null)
@@ -364,15 +365,15 @@ public class ViewFactory
                     textField.setEditable(!cellField.isReadOnly());
                 }
                 
+                textField.setFromUIFmtOverride(isFromUIFmtOverride);
                 return textField;
             }
-            
-            
             
             ValFormattedTextField textField = new ValFormattedTextField(formatter, isViewOnly, allEditOK);
             textField.setPartialOK(isPartialOK);
             textField.setRequired(isRequired);
-            
+            textField.setFromUIFmtOverride(isFromUIFmtOverride);
+
             DataChangeNotifier dcn = validator.hookupComponent(textField,
                                                                cellField.getIdent(),
                                                                UIValidator.Type.Changed,  

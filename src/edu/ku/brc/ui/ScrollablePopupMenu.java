@@ -105,11 +105,6 @@ public class ScrollablePopupMenu extends JPopupMenu implements ActionListener
     public void setVisible(final boolean vis)
     {
         super.setVisible(vis);
-        if (!vis)
-        {
-            int x = 0;
-            x++;
-        }
     }
     
     public void show(Component invoker, int x, int y)

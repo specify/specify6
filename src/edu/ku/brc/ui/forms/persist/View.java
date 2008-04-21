@@ -50,6 +50,8 @@ public class View implements ViewIFace
     protected boolean              useDefaultBusRules = false;
     protected boolean              isInternal         = false;
     
+    protected String               title              = null;
+    
     // transient data members
     protected Boolean              isSpecial    = null;
    
@@ -397,6 +399,22 @@ public class View implements ViewIFace
     public void setInternal(boolean isInternal)
     {
         this.isInternal = isInternal;
+    }
+
+    /**
+     * @return the title
+     */
+    public String getTitle()
+    {
+        return title;
+    }
+
+    /**
+     * @param title the title to set
+     */
+    public void setTitle(String title)
+    {
+        this.title = title;
     }
 
     /* (non-Javadoc)

@@ -130,7 +130,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
 
     protected Agent          currentUserAgent      = null;
 
-    protected boolean        debug                 = true;
+    protected boolean        debug                 = false;
     protected long           lastLoadTime          = 0;
     protected long           lastLoadTimeBS        = 0;
     protected UnhandledExceptionDialog dlg         = null;
@@ -1020,7 +1020,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
         if (reloadViews)
         {
             long rightNow = (Calendar.getInstance().getTimeInMillis()/1000);
-            //System.out.println((rightNow - lastLoadTime));
             if ((rightNow - lastLoadTime) > 10)
             {
                 viewSetHash.clear();
@@ -1279,7 +1278,6 @@ public class SpecifyAppContextMgr extends AppContextMgr
         {
             for (SpAppResource ar : appResDir.getSpAppResources())
             {
-                System.out.println(ar.getName());
                 if (ar.getName().equals(appResName))
                 {
                     return ar;

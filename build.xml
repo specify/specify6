@@ -195,7 +195,7 @@
 				<include name="*.jar" />
 			</fileset>
 			<fileset dir="${ireport.dir}">
-				<include name="iReport.jar" />
+				<include name="*.jar" />
 			</fileset>
 			<fileset dir="${macnative.dir}">
 				<include name="*.jar" />
@@ -727,7 +727,7 @@
 				<include name="*.jar" />
 			</fileset>
 			<fileset dir="${ireport.dir}">
-				<include name="iReport.jar" />
+				<include name="*.jar" />
 			</fileset>
 			<fileset dir="${system.dep.libs.dir}">
 				<include name="*.jar" />

@@ -808,13 +808,8 @@ public class ERDVisualizer extends JFrame
      */
     protected void processAsTree(final ERDTable table, final int level)
     {
-        System.out.println("["+table.getClassName()+"]");
+        //System.out.println("["+table.getClassName()+"]");
         
-        if (table.getClassName().indexOf("Paleo") > -1)
-        {
-            int x = 0;
-            x++;
-        }
         NodeInfo ni = tblTracker.getNodeInfo(table);
         
         boolean skip = false;

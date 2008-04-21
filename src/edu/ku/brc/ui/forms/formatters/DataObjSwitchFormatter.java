@@ -256,7 +256,7 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
      */
     public String format(@SuppressWarnings("unused") Object dataObj)
     {
-        throw new RuntimeException("This method cannot be called on this type of object");
+        throw new RuntimeException("This method cannot be called on this type of object["+name+"]["+dataObj.getClass().getSimpleName()+"]");
     }
 
     public void setTableAndFieldInfo()

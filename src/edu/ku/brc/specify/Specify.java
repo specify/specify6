@@ -1908,6 +1908,16 @@ public class Specify extends JPanel implements DatabaseLoginListener
    */
   public static void main(String[] args)
   {
+      /*if (true)
+      {
+          File[] files = (new File("iReportLibs")).listFiles();
+          for (File f : files)
+          {
+              System.err.println("            <string>$JAVAROOT/"+f.getName()+"</string>");
+          }
+          return;
+      }*/
+      
       log.debug("********* Current ["+(new File(".").getAbsolutePath())+"]");
       boolean doingConfig = false;
       // This is for Windows and Exe4J, turn the args into System Properties

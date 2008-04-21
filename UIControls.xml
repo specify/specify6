@@ -204,6 +204,11 @@
 	                    sometimes needed for search dialogs.</desc>
 	                </param>        
                 </params>
+                <params>
+	                <param name="fromuifmt" type="boolean" required="false" default="false">
+	                    <desc>Indicates whether the control should perform any formatting when getValue is called.</desc>
+	                </param>        
+                </params>
             </subcontrol>
             
             <subcontrol type="textwithinfo" dsp="textwithinfo">

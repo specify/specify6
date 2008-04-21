@@ -58,8 +58,6 @@ import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 
 import edu.ku.brc.specify.datamodel.Appraisal;
-import edu.ku.brc.specify.datamodel.ConservDescription;
-import edu.ku.brc.specify.datamodel.ConservEvent;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -280,13 +278,7 @@ public class DataModelClassGenerator extends JFrame
             {
                 fieldsType = field.getType().getSimpleName();
             }
-            System.out.println("isField["+fieldsType+"]["+isFieldObj + "] " + fieldName);
-            
-            if (fieldsType.startsWith("Agent"))
-            {
-                int x = 0;
-                x++;
-            }
+            //System.out.println("isField["+fieldsType+"]["+isFieldObj + "] " + fieldName);
             
             //String checkClass = "";
             if (!isSet)

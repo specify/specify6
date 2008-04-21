@@ -203,12 +203,6 @@ public class FormGenerator
                     
                     cell.setUiType(FormCellFieldIFace.FieldType.querycbx);
                     
-                    if (rName.equals("Division") && id == 19)
-                    {
-                        int x = 0;
-                        x++;
-                        
-                    }
                     Properties props = new Properties();
                     props.put("title", rName);
                     props.put("name", rName);

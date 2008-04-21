@@ -376,7 +376,7 @@ Good: <cell type="field" name="FieldNum" ...>
                 </row>
                 <row>
                     <cell type="label" labelfor="1" label="Catalog Number"/>
-                    <cell type="field" id="1" name="CatalogNumber" uitype="formattedtext" formatter="CatalogNumber" initialize="ispartial=true"/>
+                    <cell type="field" id="1" name="CatalogNumber" uitype="formattedtext" formatter="CatalogNumber" initialize="ispartial=true;fromuifmt=true"/>
                 </row>
             </rows>
         </viewdef>        

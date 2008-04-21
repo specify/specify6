@@ -45,69 +45,69 @@ public interface Viewable
      * Returns a unique name.
      * @return a unique name
      */
-    public String getName();
+    public abstract String getName();
     
     /**
      * Returns the form's type (field, form, table).
      * @return the form's type (field, form, table)
      */
-    public ViewDef.ViewType getType();
+    public abstract ViewDef.ViewType getType();
 
     /**
      * Returns the Form's UI Component.
      * @return Returns the Form's UI Component
      */
-    public Component getUIComponent();
+    public abstract Component getUIComponent();
 
     /**
      * Returns whether it is a sub form or not.
      * @return Returns whether it is a sub form or not
      */
-    public boolean isSubform();
+    public abstract boolean isSubform();
 
     /**
      * Returns a component by id for "labelfor" attr.
      * @param id the id of the component
      * @return the component
      */
-    public Component getCompById(final String id);
+    public abstract Component getCompById(final String id);
 
     /**
      * Returns a label by id.
      * @param id the id of the label
      * @return the label
      */
-    public JLabel getLabelFor(final String id);
+    public abstract JLabel getLabelFor(final String id);
 
     /**
      * Returns the mapping of name to control.
      * @return Returns the mapping of name to control
      */
-    public Map<String, Component> getControlMapping();
+    public abstract Map<String, Component> getControlMapping();
 
     /**
      * Returns the validator for the form.
      * @return Returns the validator for the form
      */
-    public FormValidator getValidator();
+    public abstract FormValidator getValidator();
 
     /**
      * Sets the Data Object into the form.
      * @param dataObj the data
      */
-    public void setDataObj(final Object dataObj);
+    public abstract void setDataObj(final Object dataObj);
 
     /**
      * Returns the data object for the form.
      * @return Returns the data object for the form
      */
-    public Object getDataObj();
+    public abstract Object getDataObj();
     
     /**
      * Sets in the RecordSet the form needs to traverse over.
      * @param recordSet the recordset of items
      */
-    public void setRecordSet(RecordSetIFace recordSet);
+    public abstract void setRecordSet(RecordSetIFace recordSet);
 
     /**
      * Sets the Parent Data Object into the Viewable. This is usually when the form will manage a list (Set)
@@ -115,149 +115,149 @@ public interface Viewable
      * a One-to-Many where the parent data object is the "One" and the List (Set) of objects is the "Many".
      * @param parentDataObj the parent data object
      */
-    public void setParentDataObj(Object parentDataObj);
+    public abstract void setParentDataObj(Object parentDataObj);
 
     /**
      * Returns the parent data object for the form.
      * @return Returns the parent data object for the form
      */
-    public Object getParentDataObj();
+    public abstract Object getParentDataObj();
 
     /**
      * Fill the form from the data obj.
      */
-    public void setDataIntoUI();
+    public abstract void setDataIntoUI();
 
     /**
      * Get the data from the form and put into the data object.
      */
-    public void getDataFromUI();
+    public abstract void getDataFromUI();
 
     /**
      * Return the data from the UI control.
      * @param id the id of the control
      * @return return the value or null if the control was not found.
      */
-    public Object getDataFromUIComp(final String id);
+    public abstract Object getDataFromUIComp(final String id);
 
     /**
      * Sets data into a single field.
      * @param name the name of the control
      * @param data the data for the control
      */
-    public void setDataIntoUIComp(final String name, Object data);
+    public abstract void setDataIntoUIComp(final String name, Object data);
 
     /**
      * Returns a subform by name
      * @param name the name of the sub form to be returned
      * @return a subform (Viewable)
      */
-    public MultiView getSubView(final String name);
+    public abstract MultiView getSubView(final String name);
 
     /**
      * List the List with all the ids of the cells of type "field".
      * @param fieldIds the list to be filled
      */
-    public void getFieldIds(final List<String> fieldIds);
+    public abstract void getFieldIds(final List<String> fieldIds);
 
     /**
      * List the List with all the names of the cells of type "field".
      * @param fieldIds the list to be filled
      */
-    public void getFieldNames(final List<String> fieldNames);
+    public abstract void getFieldNames(final List<String> fieldNames);
 
     /**
      * Tells the object it is abut to be shown.
      * @param show whether it is being shown or hidden
      */
-    public void aboutToShow(boolean show);
+    public abstract void aboutToShow(boolean show);
 
     /**
      * Returns the View definition for this viewable.
      * @return the View definition for this viewable
      */
-    public ViewIFace getView();
+    public abstract ViewIFace getView();
 
     /**
      * Returns the ViewDef definition for this viewable.
      * @return the ViewDef definition for this viewable
      */
-    public ViewDefIFace getViewDef();
+    public abstract ViewDefIFace getViewDef();
 
     /**
      * Returns the AltView definition for this viewable.
      * @return the AltView definition for this viewable
      */
-    public AltViewIFace getAltView();
+    public abstract AltViewIFace getAltView();
 
     /**
      * Indicates it should hide the UI that enables switching between different AltViews;
      * this is used for children MultiView when there are only two of the same ViewDef differing only by edit mode or view mode.
      * @param hide true - hide, false show
      */
-    public void hideMultiViewSwitch(boolean hide);
+    public abstract void hideMultiViewSwitch(boolean hide);
 
     /**
      * Tell the viewable whether the validation was OK so it knows to update the UI appropriately; this usually means it should update an OK or save button.
      * @param wasOK whether validation was OK
      */
-    public void validationWasOK(boolean wasOK);
+    public abstract void validationWasOK(boolean wasOK);
     
     /**
      * Sets the "cell" name of this subview which is the name of this control in the form, this doesn't
      * need to be called ("set") when it is a top-level form.
      * @param cellName the cell name
      */
-    public void setCellName(String cellName);
+    public abstract void setCellName(String cellName);
     
     /**
      * The class name that will be used to create new objects.
      * @param classToCreate the classToCreate to set
      */
-    public void setClassToCreate(Class<?> classToCreate);
+    public abstract void setClassToCreate(Class<?> classToCreate);
     
     /**
      * Sets the current serssion into the Viewable.
      * @param session the current session
      */
-    public void setSession(DataProviderSessionIFace session);
+    public abstract void setSession(DataProviderSessionIFace session);
     
     
     /**
      * Set whether the viewable has new data and should any UI accordingly.
      * @param hasNewData true- has new data, false - doesn't
      */
-    public void setHasNewData(boolean hasNewData);
+    public abstract void setHasNewData(boolean hasNewData);
     
     /**
      * Sets the Save Btn into the Viewable so it can enable and disABLE IT.
      * @param saveBtn THE SAVE BTN
      */
-    public void registerSaveBtn(JButton saveBtn);
+    public abstract void registerSaveBtn(JButton saveBtn);
     
     /**
      * Updates the enable/disable state of the save btn if it has one.
      */
-    public void updateSaveBtn();
+    public abstract void updateSaveBtn();
     
     /**
      * @return the save btn if it has one.
      */
-    public JComponent getSaveComponent();
+    public abstract JComponent getSaveComponent();
     
     /**
      * @return
      */
-    public boolean isDataCompleteAndValid();
+    public abstract boolean isDataCompleteAndValid();
     
     /**
      * Focus the appropriate UI element.
      */
-    public void focus();
+    public abstract void focus();
 
     /**
      * Tells the Viewable that it is being shutdown and it should cleanup.
      */
-    public void shutdown();
+    public abstract void shutdown();
 
 }

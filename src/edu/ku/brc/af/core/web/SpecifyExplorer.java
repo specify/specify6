@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.Vector;
 
@@ -43,20 +44,37 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.category.DefaultCategoryDataset;
 
 import edu.ku.brc.af.core.AppContextMgr;
+import edu.ku.brc.af.core.SchemaI18NService;
+import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.CustomQueryFactory;
 import edu.ku.brc.dbsupport.DBConnection;
+import edu.ku.brc.dbsupport.DBFieldInfo;
+import edu.ku.brc.dbsupport.DBTableChildIFace;
+import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
+import edu.ku.brc.dbsupport.DataProviderFactory;
+import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.datamodel.Accession;
+import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectingEvent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Determination;
+import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.GeographyTreeDef;
+import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
+import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
 import edu.ku.brc.specify.datamodel.Locality;
+import edu.ku.brc.specify.datamodel.SpLocaleContainer;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.datamodel.StorageTreeDef;
 import edu.ku.brc.specify.datamodel.Taxon;
+import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.tests.SpecifyAppPrefs;
@@ -68,6 +86,7 @@ import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
+import edu.ku.brc.ui.weblink.WebLinkMgr;
 
 /**
  * @author rod
@@ -273,9 +292,89 @@ public class SpecifyExplorer extends HttpServlet
         System.setProperty("edu.ku.brc.dbsupport.DataProvider",         "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set
         System.setProperty("edu.ku.brc.ui.db.PickListDBAdapterFactory", "edu.ku.brc.specify.ui.db.PickListDBAdapterFactory");   // Needed By the Auto Cosmplete UI
         System.setProperty(CustomQueryFactory.factoryName,              "edu.ku.brc.specify.dbsupport.SpecifyCustomQueryFactory");
-        System.setProperty(UIFieldFormatterMgr.factoryName,             "edu.ku.brc.specify.utilapps.LocalDiskUIFieldFormatterMgr");    // Needed for CatalogNumberign
-        System.setProperty(DataObjFieldFormatMgr.factoryName,           "edu.ku.brc.specify.utilapps.LocalDiskDataObjFieldFormatMgr");
+        System.setProperty(UIFieldFormatterMgr.factoryName,             "edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr");           // Needed for CatalogNumberign
+        System.setProperty(QueryAdjusterForDomain.factoryName,          "edu.ku.brc.specify.dbsupport.SpecifyQueryAdjusterForDomain"); // Needed for ExpressSearch
+        System.setProperty(SchemaI18NService.factoryName,               "edu.ku.brc.specify.config.SpecifySchemaI18NService");         // Needed for Localization and Schema
+        System.setProperty(WebLinkMgr.factoryName,                      "edu.ku.brc.specify.config.SpecifyWebLinkMgr");                // Needed for WebLnkButton
     }
+    
+    protected Collection setupCurrentCollection(final DataProviderSessionIFace sessionArg, 
+                                                final SpecifyUser user,
+                                                final String collectionName)
+    {
+        
+        UIFieldFormatterMgr.setDoingLocal(true);
+        DataObjFieldFormatMgr.setDoingLocal(true);
+        DataObjFieldFormatMgr.setLocalFileName(XMLHelper.getConfigDirPath(DataObjFieldFormatMgr.getLocalFileName()));
+
+        //System.out.println("############### "+(new File(".")).getAbsolutePath());
+        //System.out.println("############### "+DataObjFieldFormatMgr.getLocalFileName());
+        
+        try
+        {
+            
+            Collection collection = null;
+            
+            // First get the Collections the User has access to.
+            Hashtable<String, Collection> collectionHash = new Hashtable<String, Collection>();
+            String sqlStr = "SELECT cs From Discipline as ct Inner Join ct.agents cta Inner Join cta.specifyUser as user Inner Join ct.collections as cs where user.specifyUserId = "+user.getSpecifyUserId();
+            for (Object obj : sessionArg.getDataList(sqlStr))
+            {
+                Collection cs = (Collection)obj; 
+                collectionHash.put(cs.getCollectionName(), cs);
+                
+                if (cs.getCollectionName().equals(collectionName))
+                {
+                    collection = cs;
+                }
+            }
+            
+            Collection.setCurrentCollection(collection);
+            
+            if (collection != null)
+            {
+                
+                Discipline discipline = collection.getDiscipline();
+                if (discipline != null)
+                {
+                    
+                    Discipline.setCurrentDiscipline(discipline);
+                    
+                    for (Agent uAgent : discipline.getAgents())
+                    {
+                        SpecifyUser spu = uAgent.getSpecifyUser();
+                        if (spu != null && spu.getSpecifyUserId().equals(user.getSpecifyUserId()))
+                        {
+                            Agent.setUserAgent(uAgent);
+                            break;
+                        }
+                    }
+                    TaxonTreeDef.setCurrentTaxonTreeDef(discipline.getTaxonTreeDef());
+                    GeologicTimePeriodTreeDef.setCurrentGeologicTimePeriodTreeDef(discipline.getGeologicTimePeriodTreeDef());
+                    StorageTreeDef.setCurrentStorageTreeDef(discipline.getStorageTreeDef());
+                    LithoStratTreeDef.setCurrentLithoStratTreeDef(discipline.getLithoStratTreeDef());
+                    GeographyTreeDef.setCurrentGeographyTreeDef(discipline.getGeographyTreeDef());
+                    
+                    int disciplineeId = discipline.getDisciplineId();
+                    SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.CORE_SCHEMA, disciplineeId, DBTableIdMgr.getInstance(), Locale.getDefault());
+
+                }
+            } else
+            {
+                UIRegistry.showLocalizedError("COLLECTION_WAS_NULL");
+            }
+            
+            return collection;
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            UIRegistry.showLocalizedError(ex.toString()); // Yes, I know it isn't localized.
+        }
+        
+        return null;
+    }
+
     
     /** 
      * Drops, Creates and Builds the Database.
@@ -296,11 +395,13 @@ public class SpecifyExplorer extends HttpServlet
         
         log.info("Logging into "+dbName+"....");
         
-        String connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Create, hostName, dbName);
-        if (connStr == null)
-        {
-            connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName, dbName);
-        }
+        //String connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Create, hostName, dbName);
+        //if (connStr == null)
+        //{
+            String connStr = driverInfo.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, hostName, dbName);
+        //}
+            
+            log.info(connStr);  
         
         if (!UIHelper.tryLogin(driverInfo.getDriverClassName(), 
                 driverInfo.getDialectClassName(), 
@@ -335,6 +436,80 @@ public class SpecifyExplorer extends HttpServlet
             return false;
         } */
         
+        //AppContextMgr.CONTEXT_STATUS status = AppContextMgr.getInstance().setContext("testfish", "rods", false);
+        
+        DataProviderSessionIFace hibSession = null;
+        try
+        {
+            hibSession = DataProviderFactory.getInstance().createSession();
+            
+        } catch (org.hibernate.exception.SQLGrammarException ex)
+        {
+            log.error(ex);
+            return false;
+        }
+        
+        SpecifyUser user = null;
+        String userName = "rods";
+        boolean debug = true;
+        try
+        {
+            List<?> list = hibSession.getDataList(SpecifyUser.class, "name", userName);
+            if (list.size() == 1)
+            {
+                user = (SpecifyUser)list.get(0);
+                user.getAgents(); // makes sure the Agent is not lazy loaded
+                hibSession.evict( user.getAgents());
+                SpecifyUser.setCurrentUser(user);
+    
+            } else
+            {
+                //JOptionPane.showMessageDialog(null, 
+                //        getResourceString("USER_NOT_FOUND"), 
+                //        getResourceString("USER_NOT_FOUND_TITLE"), JOptionPane.WARNING_MESSAGE);
+                
+                return false;
+                //throw new RuntimeException("The user ["+userName+"] could  not be located as a Specify user.");
+            }
+    
+            // First we start by getting all the Collection that the User want to
+            // work with for this "Context" then we need to go get all the Default View and
+            // additional XML Resources.
+            
+            // Ask the User to choose which Collection they will be working with
+            Collection collection = setupCurrentCollection(hibSession, user, "Fish");
+            if (collection == null)
+            {
+                // Return false but don't mess with anything that has been set up so far
+                return false;
+            }
+            
+            String userType = user.getUserType();
+            
+            if (debug) log.debug("User["+user.getName()+"] Type["+userType+"]");
+    
+            userType = StringUtils.replace(userType, " ", "").toLowerCase();
+            
+            if (debug) log.debug("Def Type["+userType+"]");
+            
+    
+            Discipline discipline = hibSession.getData(Discipline.class, "disciplineId", collection.getDiscipline().getId(), DataProviderSessionIFace.CompareType.Equals) ;
+            discipline.getDeterminationStatuss().size(); // make sure they are loaded
+            Discipline.setCurrentDiscipline(discipline);
+            
+        } catch (Exception ex)
+        {
+            log.error(ex);
+        } finally
+        {
+            hibSession.close();
+        }
+        // AppContextMgr.getInstance().
+        //SpecifyAppPrefs.initialPrefs();
+         
+        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        localPrefs.setDirPath(UIRegistry.getAppDataDir());
+         
         SpecifyAppPrefs.initialPrefs();
         
         fmtMgr = new MyFmtMgr();
@@ -356,7 +531,7 @@ public class SpecifyExplorer extends HttpServlet
         DisciplineType         disciplineType = DisciplineType.getDiscipline("fish");
         DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver("MySQL");
         
-        setupDatabase(driverInfo, "localhost", "fish", "rods", "rods", "rods", "rods", "guest@ku.edu", disciplineType);
+        setupDatabase(driverInfo, "localhost", "testfish", "rods", "rods", "rods", "rods", "guest@ku.edu", disciplineType);
     }
     
     /**
@@ -364,8 +539,8 @@ public class SpecifyExplorer extends HttpServlet
      */
     public void setUpClasses()
     {
-        Collection collection = (Collection)session.createCriteria(Collection.class).list().get(0);
-        Collection.setCurrentCollection(collection);
+        //Collection collection = (Collection)session.createCriteria(Collection.class).list().get(0);
+        //Collection.setCurrentCollection(collection);
     }
     
     /**
@@ -395,6 +570,13 @@ public class SpecifyExplorer extends HttpServlet
      */
     protected String formatFDI(final FormDataObjIFace fdi)
     {
+        DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(fdi.getDataClass().getName());
+        if (StringUtils.isNotEmpty(ti.getDataObjFormatter()))
+        {
+            String title = DataObjFieldFormatMgr.format(fdi, ti.getDataObjFormatter());
+            formatFDI(fdi, title);
+        }
+        
         return formatFDI(fdi, fdi.getIdentityTitle());
     }
     
@@ -454,14 +636,21 @@ public class SpecifyExplorer extends HttpServlet
      * @param dataObjSet
      * @return
      */
-    protected String processDataObjAsSet(final String fieldName,
-                                         final Set<?> dataObjSet)
+    protected String processDataObjAsSet(final DBTableInfo       tableInfo,
+                                         final DBTableChildIFace childInfo,
+                                         final String            fieldName,
+                                         final Set<?>            dataObjSet)
     
     {
-        String labelStr = labelMap.get(fieldName);
-        if (StringUtils.isEmpty(labelStr))
+        
+        String labelStr = childInfo != null ? childInfo.getTitle() : null;
+        if (labelStr == null)
         {
-            labelStr = UIHelper.makeNamePretty(fieldName);
+            labelStr = labelMap.get(fieldName);
+            if (StringUtils.isEmpty(labelStr))
+            {
+                labelStr = UIHelper.makeNamePretty(fieldName);
+            }
         }
         
         StringBuilder sb = new StringBuilder();
@@ -611,6 +800,8 @@ public class SpecifyExplorer extends HttpServlet
         Hashtable<Integer, String> orderedSets    = new Hashtable<Integer, String>();
         Vector<String>             unOrderedSets  = new Vector<String>();
         
+        DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(dataObj.getClass().getName());
+        
         ClassDisplayInfo cdi = classHash.get(dataObj.getClass().getSimpleName());
         try
         {
@@ -618,6 +809,7 @@ public class SpecifyExplorer extends HttpServlet
             {
                 String fieldName = field.getName();
                 FieldDisplayInfo fdi = cdi.getField(fieldName);
+                
                 
                 if (fdi != null && fdi.isSkipped())
                 {
@@ -630,6 +822,19 @@ public class SpecifyExplorer extends HttpServlet
                     continue;
                 }
                 
+                DBTableChildIFace child = tableInfo.getItemByName(fieldName);
+                if (child != null)
+                {
+                    if (child.isHidden())
+                    {
+                        continue;
+                    }
+                    //System.out.println("******* "+tableInfo.getTitle()+"  ["+fieldName+"]["+child.getTitle()+"]");
+                } else
+                {
+                    System.out.println("******* "+tableInfo.getTitle()+"  ["+fieldName+"]");
+                }
+                
                 String row = null;
                 try
                 {
@@ -638,12 +843,41 @@ public class SpecifyExplorer extends HttpServlet
                     {
                         if (!(data instanceof Set<?>))
                         {
-                            String labelStr = labelMap.get(fieldName);
+                            String valueStr = null;
+                            String labelStr = "";
+                            if (child != null)
+                            {
+                                labelStr = child.getTitle();
+                                if (child instanceof DBFieldInfo)
+                                {
+                                    DBFieldInfo fi = (DBFieldInfo)child;
+                                    if (fi.getFormatter() != null)
+                                    {
+                                        //System.out.println("!!!!!!!!!!!!!! "+labelStr);
+                                        Object valObj = fi.getFormatter().formatToUI(data);
+                                        if (valObj != null)
+                                        {
+                                            valueStr = valObj.toString();
+                                        }
+                                        //System.out.println("!!!!!!!!!!!!!! "+labelStr+"["+data+"] ["+valueStr+"] "+fi.getFormatter().formatFromUI(data));
+                                    }
+                                }
+                            } else
+                            {
+                                labelStr = labelMap.get(fieldName);
+                            }
+                            
                             if (StringUtils.isEmpty(labelStr))
                             {
                                 labelStr = UIHelper.makeNamePretty(fieldName);
                             }
-                            row = "<tr><td align=\"right\"><b>"+labelStr+ ":</b></td><td nowrap=\"nowrap\">"+formatValue(data)+"</td></tr>\n";
+                            
+                            if (valueStr == null)
+                            {
+                                valueStr = formatValue(data);
+                            }
+                            
+                            row = "<tr><td align=\"right\"><b>"+labelStr+ ":</b></td><td nowrap=\"nowrap\">"+valueStr+"</td></tr>\n";
                         }
                     }
                 } catch (Exception ex)
@@ -664,15 +898,15 @@ public class SpecifyExplorer extends HttpServlet
                 }
             }
             
-            System.out.println("XXXXXXXXXXXXXXXX "+cdi.getAdditional());
+            //System.out.println("XXXXXXXXXXXXXXXX "+cdi.getAdditional());
             // Do additional Fields that are not sets
             for (AdditionalDisplayField adf : cdi.getAdditional())
             {
-                System.out.println("-> "+adf.getFieldName()+"  "+adf.isSet());
+                //System.out.println("-> "+adf.getFieldName()+"  "+adf.isSet());
                 if (!adf.isSet())
                 {
-                    StringBuffer sb = new StringBuffer();
-                    String[] fNames = StringUtils.split(adf.getFieldName(), ".");
+                    StringBuffer sb     = new StringBuffer();
+                    String[]     fNames = StringUtils.split(adf.getFieldName(), ".");
                     valueTraversal(dataObj, fNames, 0, false, sb, 0, adf);
                     unOrdered.add(sb.toString());
                 }
@@ -682,8 +916,8 @@ public class SpecifyExplorer extends HttpServlet
             {
                 for (Field field : dataObj.getClass().getDeclaredFields())
                 {
-                    String fieldName = field.getName();
-                    FieldDisplayInfo fdi = cdi.getField(fieldName);
+                    String           fieldName = field.getName();
+                    FieldDisplayInfo fdi       = cdi.getField(fieldName);
                     
                     if (fdi != null && fdi.isSkipped())
                     {
@@ -707,7 +941,14 @@ public class SpecifyExplorer extends HttpServlet
                                 Set<?> set = (Set<?>)data;
                                 if (set.size() > 0)
                                 {
-                                    row = processDataObjAsSet(fieldName, set);
+                                    
+                                    DBTableChildIFace childInfo = tableInfo.getItemByName(fieldName);
+                                    if (childInfo != null && childInfo.isHidden())
+                                    {
+                                        continue;
+                                    }
+
+                                    row = processDataObjAsSet(tableInfo, childInfo, fieldName, set);
                                 }
                             }
                         }
@@ -745,11 +986,11 @@ public class SpecifyExplorer extends HttpServlet
             
             int inx = template.indexOf(contentTag);
             String subContent = template.substring(0, inx);
-            out.println(StringUtils.replace(subContent, "<!-- Title -->", dataObj.getIdentityTitle()));
+            out.println(StringUtils.replace(subContent, "<!-- Title -->", tableInfo.getTitle()));//dataObj.getIdentityTitle()));
 
             
             out.println("<table>\n");
-            out.println("<tr><td class=\"title\" colspan=\"2\" align=\"center\">"+dataObj.getClass().getSimpleName()+"</td></tr>\n");
+            out.println("<tr><td class=\"title\" colspan=\"2\" align=\"center\">"+tableInfo.getTitle()+"</td></tr>\n");
             fillRows(out, ordered, unOrdered);
             out.println("</table>\n");
             
@@ -1656,12 +1897,12 @@ public class SpecifyExplorer extends HttpServlet
     
     /**
      * @param dataObj
-     * @param labelMap
+     * @param labelHashMap
      */
     protected void fillLabelMap(final FormDataObjIFace dataObj, 
-                                final Hashtable<String, String> labelMap)
+                                final Hashtable<String, String> labelHashMap)
     {
-        labelMap.clear();
+        labelHashMap.clear();
         
         if (dataObj instanceof Treeable<?, ?, ?>)
         {
@@ -1677,7 +1918,7 @@ public class SpecifyExplorer extends HttpServlet
                if (parentDef != null)
                {
                    String parentDefName = parentDef.getName();
-                   labelMap.put("parent", parentDefName);
+                   labelHashMap.put("parent", parentDefName);
                }
            }
            
@@ -1685,11 +1926,11 @@ public class SpecifyExplorer extends HttpServlet
            if (childDef != null)
            {
                String childDefName = childDef.getName();
-               labelMap.put("children", childDefName);
+               labelHashMap.put("children", childDefName);
            }
            if (dataObj.getClass() == Taxon.class)
            {
-               labelMap.put("definitionItem", "Taxonomy");
+               labelHashMap.put("definitionItem", "Taxonomy");
            }
         }
     }
@@ -2374,6 +2615,22 @@ public class SpecifyExplorer extends HttpServlet
         String className = request.getParameter("cls");
         String idStr     = request.getParameter("id");
         String letter    = request.getParameter("ltr");
+        String json      = request.getParameter("json");
+        
+        
+        
+        if (StringUtils.isNotEmpty(json))
+        {
+            //JSONObject jsonObj = new JSONObject();
+            //jsonObj.accumulate("success", true);
+            //response.setContentType("text/html");
+            PrintWriter out = response.getWriter();
+            out.print("{success:true}");//jsonObj.toString());
+            out.flush();
+            
+            //System.out.println("*********** "+jsonObj.toString());
+            return;
+        }
         
         if (StringUtils.isEmpty(idStr) && StringUtils.isEmpty(className))
         {
@@ -2438,8 +2695,10 @@ public class SpecifyExplorer extends HttpServlet
             {
                 String sql = "SELECT DISTINCT taxon.TaxonID, taxon.FullName  "+
                              " FROM determination INNER JOIN determinationstatus ON determination.DeterminationStatusID = determinationstatus.DeterminationStatusID " +
-                             "     INNER JOIN taxon ON determination.TaxonID = taxon.TaxonID " +
-                             " WHERE determinationstatus.IsCurrent = true ORDER BY taxon.FullName ASC";
+                             " INNER JOIN taxon ON determination.TaxonID = taxon.TaxonID " +
+                             " WHERE determinationstatus.Type = 1 AND taxon.TaxonTreeDefID = TAXTREEDEFID ORDER BY taxon.FullName ASC";
+                sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
+                
                 doAlphaIndexPageSQL(out, className, letter, sql);
             } else
             {

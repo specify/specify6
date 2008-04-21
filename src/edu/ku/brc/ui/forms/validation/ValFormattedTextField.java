@@ -108,6 +108,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
 
     protected UIFieldFormatterIFace       formatter;
     protected List<UIFieldFormatterField> fields         = null;
+    protected boolean                     isFromUIFmtOverride = false;
     
     protected Object                      origValue      = null;
     protected ChangeListener              changeListener = null;
@@ -891,7 +892,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
         }
         // else
         String val = getText();
-        if (formatter.isFromUIFormatter())
+        if (formatter.isFromUIFormatter() && !isFromUIFmtOverride)
         {
             if (StringUtils.isNotEmpty(val))
             {
@@ -913,6 +914,15 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
         //}
     }
 
+
+    /**
+     * @param isFromUIFmtOverride the isFromUIFmtOverride to set
+     */
+    public void setFromUIFmtOverride(boolean isFromUIFmtOverride)
+    {
+        this.isFromUIFmtOverride = isFromUIFmtOverride;
+    }
+    
     //--------------------------------------------------------
     // DocumentListener
     //--------------------------------------------------------

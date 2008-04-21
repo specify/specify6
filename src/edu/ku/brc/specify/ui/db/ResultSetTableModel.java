@@ -301,11 +301,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
                 {
                     return formatter.formatToUI(obj);
                 }
-                if (obj == null)
-                {
-                    int x = 0;
-                    x++;
-                }
+                
                 return obj;
             }
         }

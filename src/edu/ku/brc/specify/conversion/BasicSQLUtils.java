@@ -1214,12 +1214,12 @@ public class BasicSQLUtils
                     String        colName          = newFieldName.getName();
                     String        oldMappedColName = null;
                     
-                    System.out.println("["+newFieldName.getName()+"]");
-                    if (newFieldName.getName().equals("DisciplineID"))
-                    {
-                        int x = 0;
-                        x++;
-                    }
+                    //System.out.println("["+newFieldName.getName()+"]");
+                    //if (newFieldName.getName().equals("DisciplineID"))
+                    //{
+                    //    int x = 0;
+                    //    x++;
+                    //}
 
                     // Get the Old Column Index from the New Name
                     Integer columnIndex = fromHash.get(colName);

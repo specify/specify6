@@ -346,7 +346,7 @@
         
         <view name="SubPaleoContext"
             class="edu.ku.brc.specify.datamodel.PaleoContext"
-            isinternal="false"
+            isinternal="true"
             resourcelabels="false">
             <desc><![CDATA[PaleoContext subform within Collection Object form.]]></desc>
             <altviews>

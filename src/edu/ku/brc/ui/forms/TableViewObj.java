@@ -1504,11 +1504,6 @@ public class TableViewObj implements Viewable,
      */
     public void addControlToUI(Component control, int rowInx, int colInx, int colSpan, int rowSpan)
     {
-        if (control == null)
-        {
-            int x = 0;
-            x++;
-        }
         //log.info("addControlToUI["+control+"]");
     }
 

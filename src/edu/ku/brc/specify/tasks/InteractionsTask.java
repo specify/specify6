@@ -51,7 +51,6 @@ import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
-import edu.ku.brc.af.core.TaskCommandDef;
 import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.ToolBarItemDesc;
@@ -70,7 +69,6 @@ import edu.ku.brc.dbsupport.TableModel2Excel;
 import edu.ku.brc.helpers.EMailHelper;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
-import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
@@ -134,8 +132,6 @@ public class InteractionsTask extends BaseTask
     public static final DataFlavorTableExt EXCHGOUT_FLAVOR     = new DataFlavorTableExt(ExchangeOut.class, "ExchangeOut");
     
     public static final  String   IS_USING_INTERACTIONS_PREFNAME = "Interactions.Using.Interactions.";
-    public static final  String   IS_DOING_GIFT_PREFNAME = "Interactions.Doing.Gifts.";
-    public static final  String   IS_DOING_EXCH_PREFNAME = "Interactions.Doing.Exchanges.";
 
     protected static final String InfoRequestName      = "InfoRequest";
     protected static final String NEW_LOAN             = "NEW_LOAN";
@@ -163,8 +159,6 @@ public class InteractionsTask extends BaseTask
     protected NavBox                  actionsNavBox;
     
     protected boolean                 isUsingInteractions = true;
-    protected boolean                 isDoingGifts     = false;
-    protected boolean                 isDoingExchanges = false;
     protected ToolBarDropDownBtn      toolBarBtn       = null;
     protected int                     indexOfTBB       = -1;
     
@@ -328,9 +322,6 @@ public class InteractionsTask extends BaseTask
         AppPreferences remotePrefs = AppPreferences.getRemote();
         String ds = Discipline.getCurrentDiscipline().getName();
         isUsingInteractions = remotePrefs.getBoolean(IS_USING_INTERACTIONS_PREFNAME+ds, true);
-        isDoingGifts        = remotePrefs.getBoolean(IS_DOING_GIFT_PREFNAME+ds, true);
-        isDoingExchanges    = remotePrefs.getBoolean(IS_DOING_EXCH_PREFNAME+ds, Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.botany));
-  
     }
     
     /* (non-Javadoc)
@@ -350,92 +341,31 @@ public class InteractionsTask extends BaseTask
 
             actionsNavBox = new NavBox(getResourceString("Actions"));
             
-            if (true)
+            for (InteractionEntry entry : entries)
             {
-                for (InteractionEntry entry : entries)
-                {
-                    DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoByTableName(entry.getTableName());
-                    
-                    String label;
-                    if (StringUtils.isNotEmpty(entry.getLabelKey()))
-                    {
-                        label = getResourceString(entry.getLabelKey());
-                    } else
-                    {
-                        label = tableInfo.getTitle();
-                    }
-                    
-                    entry.setTitle(label);
-                    
-                    if (entry.isOn())
-                    {
-                        addCommand(actionsNavBox,
-                                  tableInfo,
-                                  label, 
-                                  entry.getCmdType(), 
-                                  entry.getAction(), 
-                                  entry.getViewName(), 
-                                  entry.getIconName(), 
-                                  entry.getTableIdsAsArray());
-                    }
-                }
-            } else
-            {
-            
-                // New Loan Action
-                // A New loan can accept RecordSets that contain CollectionObjects or InfoRequests
-                // or InfoRequests
-                addCommand(actionsNavBox, NEW_LOAN, NEW_LOAN, "Loan", new int[] {Loan.getClassTableId(), CollectionObject.getClassTableId(), InfoRequest.getClassTableId()});
-                if (isDoingGifts)
-                {
-                    createGiftNavBtn();
-                }
-                if (isDoingExchanges)
-                {
-                    createExchangeNavBtn();
-                }
-                addCommand(actionsNavBox, InfoRequestName, InfoRequestName, "InfoRequest", new int[] {ExchangeIn.getClassTableId(), ExchangeOut.getClassTableId(), CollectionObject.getClassTableId(), InfoRequest.getClassTableId()});
-                addCommand(actionsNavBox, OPEN_FORM_CMD_ACT, "INTER_OPEN", name, new int[]           {ExchangeIn.getClassTableId(), ExchangeOut.getClassTableId(), CollectionObject.getClassTableId(), InfoRequest.getClassTableId()});
+                DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoByTableName(entry.getTableName());
                 
-                // Then add
-                if (commands != null)
+                String label;
+                if (StringUtils.isNotEmpty(entry.getLabelKey()))
                 {
-                    for (AppResourceIFace ap : AppContextMgr.getInstance().getResourceByMimeType("jrxml/report"))
-                    {
-                        Properties params = ap.getMetaDataMap();
-                        if (params.getProperty("reporttype", "").equals("Invoice"))
-                        {
-                            params.put("title", ap.getDescription());
-                            params.put("file", ap.getName());
-                            //log.info("["+ap.getDescription()+"]["+ap.getName()+"]");
-                            
-                            commands.add(new TaskCommandDef(ap.getDescription(), name, params));
-                        }
-                    }
-                    
-                    for (TaskCommandDef tcd : commands)
-                    {
-                        // XXX won't be needed when we start validating the XML
-                        String tableIdStr = tcd.getParams().getProperty("tableid");
-                        if (tableIdStr != null)
-                        {
-                            CommandAction cmdAction = new CommandAction(INTERACTIONS, PRINT_LOAN, Loan.getClassTableId());
-                            cmdAction.addStringProperties(tcd.getParams());
-                            NavBoxItemIFace nbi = makeDnDNavBtn(actionsNavBox, tcd.getName(), "Reports", cmdAction, null, true, false);
-                            RolloverCommand roc = (NavBoxButton)nbi;
-                            invoiceList.add(nbi);// true means make it draggable
-                            roc.addDragDataFlavor(INFOREQUEST_FLAVOR);
-                            roc.addDragDataFlavor(Trash.TRASH_FLAVOR);
-                            
-                            DataFlavorTableExt dfx = new DataFlavorTableExt(RecordSetTask.RECORDSET_FLAVOR.getDefaultRepresentationClass(), 
-                                    RecordSetTask.RECORDSET_FLAVOR.getHumanPresentableName(), new int[] {52});
-                            roc.addDropDataFlavor(dfx);
-                            
-                        } else
-                        {
-                            log.error("Interaction Command is missing the table id");
-                        }
-                    }
+                    label = getResourceString(entry.getLabelKey());
+                } else
+                {
+                    label = tableInfo.getTitle();
+                }
+                
+                entry.setTitle(label);
+                
+                if (entry.isOn())
+                {
+                    addCommand(actionsNavBox,
+                              tableInfo,
+                              label, 
+                              entry.getCmdType(), 
+                              entry.getAction(), 
+                              entry.getViewName(), 
+                              entry.getIconName(), 
+                              entry.getTableIdsAsArray());
                 }
             }
             navBoxes.add(actionsNavBox);
@@ -475,22 +405,6 @@ public class InteractionsTask extends BaseTask
             }
         }
         return ars;
-    }
-    
-    /**
-     * 
-     */
-    private void createGiftNavBtn()
-    {
-        giftsNavBtn = addCommand(actionsNavBox, NEW_GIFT, NEW_GIFT, "Gift", new int[] {Gift.getClassTableId(), CollectionObject.getClassTableId(), InfoRequest.getClassTableId()});
-    }
-    
-    /**
-     * 
-     */
-    private void createExchangeNavBtn()
-    {
-        exchgNavBtn = addCommand(actionsNavBox, NEW_EXCHANGE_IN,NEW_EXCHANGE_IN, name, new int[] {Gift.getClassTableId(), CollectionObject.getClassTableId(), InfoRequest.getClassTableId()});
     }
     
     /**
@@ -1470,15 +1384,11 @@ public class InteractionsTask extends BaseTask
      */
     protected void prefsChanged(final CommandAction cmdAction)
     {
-        boolean hasGifts = false;
         AppPreferences remotePrefs = (AppPreferences)cmdAction.getData();
         if (remotePrefs == AppPreferences.getRemote())
         {
             String ds = Discipline.getCurrentDiscipline().getName();
             isUsingInteractions = remotePrefs.getBoolean(IS_USING_INTERACTIONS_PREFNAME+ds, true);
-            
-            boolean isDoingGiftsNew        = remotePrefs.getBoolean(IS_DOING_GIFT_PREFNAME+ds, true);
-            boolean isDoingExchangesNew    = remotePrefs.getBoolean(IS_DOING_EXCH_PREFNAME+ds, Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.botany));            
             
             JToolBar toolBar = (JToolBar)UIRegistry.get(UIRegistry.TOOLBAR);
             if (!isUsingInteractions)
@@ -1499,43 +1409,6 @@ public class InteractionsTask extends BaseTask
                     toolBar.repaint();
                 }
             }
-            
-            if (this.isDoingGifts && !isDoingGiftsNew)
-            {
-                actionsNavBox.remove(giftsNavBtn);
-
-            } else if (!this.isDoingGifts && isDoingGiftsNew)
-            {
-                createGiftNavBtn();
-                actionsNavBox.remove(giftsNavBtn);
-                actionsNavBox.insert(giftsNavBtn, true, false, 1);
-                
-                hasGifts = true;
-                
-            } else if (this.isDoingGifts)
-            {
-                hasGifts = true;
-            }
-            
-            if (this.isDoingExchanges && !isDoingExchangesNew)
-            {
-                actionsNavBox.remove(exchgNavBtn);
-
-            } else if (!this.isDoingExchanges && isDoingExchangesNew)
-            {
-                createExchangeNavBtn();
-                actionsNavBox.remove(exchgNavBtn);
-                actionsNavBox.insert(exchgNavBtn, true, false, hasGifts ? 2 : 1);
-            }
-            
-            // I hate that I have to do this, why?
-            actionsNavBox.validate();
-            actionsNavBox.invalidate();
-            actionsNavBox.doLayout();
-            actionsNavBox.repaint();
-            
-            isDoingExchanges = isDoingExchangesNew;
-            isDoingGifts     = isDoingGiftsNew;
         }
     }
     

@@ -38,7 +38,6 @@ import org.dom4j.Element;
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
 import edu.ku.brc.helpers.XMLHelper;
-import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.forms.DataObjectGettable;
 import edu.ku.brc.ui.forms.DataObjectGettableFactory;
@@ -76,6 +75,8 @@ public class DataObjFieldFormatMgr
     
     protected String                                      localFileName   = null;
     
+    protected static boolean                              doingLocal      = false;
+    
     /**
      * Protected Constructor
      */
@@ -97,10 +98,39 @@ public class DataObjFieldFormatMgr
     }
     
     /**
+     * @param localFileName the localFileName to set
+     */
+    public static void setLocalFileName(String localFileName)
+    {
+        getInstance().localFileName = localFileName;
+    }
+
+    /**
+     * @return the localFileName
+     */
+    public static String getLocalFileName()
+    {
+        return getInstance().localFileName;
+    }
+
+    /**
+     * @param doLocal the doLocal to set
+     */
+    public static void setDoingLocal(boolean doLocal)
+    {
+        DataObjFieldFormatMgr.doingLocal = doLocal;
+    }
+
+    /**
      * @return the DOM to process
      */
     protected Element getDOM() throws Exception
     {
+        if (doingLocal)
+        {
+            return XMLHelper.readDOMFromConfigDir(localFileName);
+        }
+        
         AppContextMgr mgr = AppContextMgr.getInstance();
         if (mgr != null)
         {
@@ -808,11 +838,6 @@ public class DataObjFieldFormatMgr
         if (getInstance().domFound)
         {
             DataObjAggregator defAgg = null;
-            if (dataClass == Determination.class)
-            {
-                int x = 0;
-                x++;
-            }
             for (Enumeration<DataObjAggregator> e=getInstance().aggHash.elements();e.hasMoreElements();)
             {
                 DataObjAggregator agg = e.nextElement();

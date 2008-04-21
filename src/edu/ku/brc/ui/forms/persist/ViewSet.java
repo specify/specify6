@@ -482,14 +482,14 @@ public class ViewSet implements Comparable<ViewSetIFace>, ViewSetIFace
         Collections.sort(viewDefsList);
         for (ViewDefIFace viewDef : viewDefsList)
         {
-            if (viewDef instanceof FormViewDef)
+            /*if (viewDef instanceof FormViewDef)
             {
                 if (((FormViewDef)viewDef).getDefinitionName() != null && ((FormViewDef)viewDef).getDefinitionName().equals("Collectors"))
                 {
                     int x = 0;
                     x++;
                 }
-            }
+            }*/
             viewDef.toXML(sb);
         }
         sb.append("  </viewdefs>\n");

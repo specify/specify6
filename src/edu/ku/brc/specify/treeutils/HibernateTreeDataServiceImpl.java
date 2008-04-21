@@ -948,8 +948,6 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
                 }
             } else
             {
-                int x = 0;
-                x++;
                 // Error Dialog
             }
 
