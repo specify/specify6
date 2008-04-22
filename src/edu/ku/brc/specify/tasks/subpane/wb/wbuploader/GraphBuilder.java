@@ -96,7 +96,7 @@ public class GraphBuilder
                     if (relTblName != null && g.getVertexByLabel(relTblName) != null && includeEdge(tbl.getShortClassName().toLowerCase(), relTblName, rel))
                     {
                         Relationship relationship = getOneToManyRelationship(tbl, rel);
-                        if (relationship != null)
+                        if (relationship != null && !isSystemRelationship(relationship))
                         {
                             g.addEdge(relTblName, tbl.getShortClassName().toLowerCase(), relationship);
                         }
@@ -142,6 +142,21 @@ public class GraphBuilder
         return  !excludeTbls.contains(tbl.getShortClassName().toLowerCase());
     }
     
+    /**
+     * @param r
+     * @return true if r involves a 'System' field that is populated by the application.
+     * 
+     */
+    protected boolean isSystemRelationship(final Relationship r)
+    {
+        return r.getField().getName().equalsIgnoreCase("ModifiedByAgentID")
+            || r.getField().getName().equalsIgnoreCase("CreatedByAgentID")
+            || r.getRelatedField().getName().equalsIgnoreCase("ModifiedByAgentID")
+            || r.getRelatedField().getName().equalsIgnoreCase("CreatedByAgentID")
+        //more to come???
+            ;
+    }
+
     /**
      * @param tbl
      * @param rel

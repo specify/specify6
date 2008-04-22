@@ -1010,15 +1010,6 @@ public class Uploader implements ActionListener, KeyListener
         }
     }
 
-    protected boolean isSystemRelationship(final Relationship r)
-    {
-        return r.getField().getName().equalsIgnoreCase("ModifiedByAgentID")
-            || r.getField().getName().equalsIgnoreCase("CreatedByAgentID")
-            || r.getRelatedField().getName().equalsIgnoreCase("ModifiedByAgentID")
-            || r.getRelatedField().getName().equalsIgnoreCase("CreatedByAgentID")
-        //more to come???
-            ;
-    }
     /**
      * @throws UploaderException
      * 
@@ -1038,21 +1029,17 @@ public class Uploader implements ActionListener, KeyListener
                             .getTable());
                     for (Relationship r : rs)
                     {
-                        if (!isSystemRelationship(r))
+                        Vector<UploadTable> impTs = getUploadTable(tv.getData());
+                        Vector<ParentTableEntry> entries = new Vector<ParentTableEntry>();
+                        for (UploadTable impT : impTs)
                         {
-                            Vector<UploadTable> impTs = getUploadTable(tv.getData());
-                            Vector<ParentTableEntry> entries = new Vector<ParentTableEntry>();
-                            for (UploadTable impT : impTs)
+                            if (impT.getRelationship() == null || r.equals(impT.getRelationship()))
                             {
-                                if (impT.getRelationship() == null
-                                        || r.equals(impT.getRelationship()))
-                                {
-                                    impT.setHasChildren(true);
-                                    entries.add(new ParentTableEntry(impT, r));
-                                }
+                                impT.setHasChildren(true);
+                                entries.add(new ParentTableEntry(impT, r));
                             }
-                            parentTables.add(entries);
                         }
+                        parentTables.add(entries);
                     }
                 }
                 catch (DirectedGraphException ex)
