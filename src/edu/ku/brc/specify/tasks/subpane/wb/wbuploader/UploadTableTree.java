@@ -376,7 +376,7 @@ public class UploadTableTree extends UploadTable
      * @see edu.ku.brc.specify.tasks.subpane.wb.wbuploader.UploadTable#undoUpload()
      */
     @Override
-    public void undoUpload()
+    public void undoUpload() throws UploaderException
     {
         super.undoUpload();
         List<Object> keys = new LinkedList<Object>();

@@ -109,6 +109,11 @@ public class Uploader implements ActionListener, KeyListener
     protected String                                currentOp;
 
     /**
+     * The operation that preceded the currentOp
+     */
+    protected String                                previousOp = null;
+    
+    /**
      * the exception that killed the most recent op. null if most recent op was not murdered.
      * locked by this. Use setOpKiller and getOpKiller for access.
      */
@@ -1729,6 +1734,7 @@ public class Uploader implements ActionListener, KeyListener
      */
     public synchronized void setCurrentOp(final String opName)
     {
+        previousOp = currentOp;
         currentOp = opName;
         if (mainPanel == null)
         {
@@ -2513,7 +2519,15 @@ public class Uploader implements ActionListener, KeyListener
 
         mainPanel.getCurrOpProgress().setVisible(mainPanel.getCancelBtn().isVisible());
         
-        String statText = getResourceString(op);
+        String statText;
+        if (previousOp != null && previousOp.equals(UNDOING_UPLOAD) && op.equals(FAILURE))
+        {
+            statText = getResourceString("WB_UPLOAD_UNDO_FAILURE");
+        }
+        else
+        {
+            statText = getResourceString(op);
+        }
         Exception killer = getOpKiller();
         if (op.equals(Uploader.SUCCESS))
         {

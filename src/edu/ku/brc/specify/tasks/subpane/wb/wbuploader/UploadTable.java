@@ -22,6 +22,7 @@ import java.util.Vector;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.exception.ConstraintViolationException;
 
 import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
@@ -1835,7 +1836,7 @@ public class UploadTable implements Comparable<UploadTable>
      * undoes the most recent upload.
      * 
      */
-    public void undoUpload()
+    public void undoUpload() throws UploaderException
     {
         deleteObjects(uploadedKeys.iterator());
     }
@@ -1845,7 +1846,7 @@ public class UploadTable implements Comparable<UploadTable>
      * 
      * Deletes all the objects whose keys are present in objs.
      */
-    protected void deleteObjects(Iterator<Object> objs)
+    protected void deleteObjects(Iterator<Object> objs) throws UploaderException
     {
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         String hql = "from " + getWriteTable().getName() + " where id =:theKey";
@@ -1874,7 +1875,7 @@ public class UploadTable implements Comparable<UploadTable>
                         session.commit();
                         committed = true;
                     }
-                    catch (Exception ex)
+                    catch (ConstraintViolationException ex)
                     {
                         // the delete may fail if another user has used or deleted uploaded
                         // records...
@@ -1883,6 +1884,15 @@ public class UploadTable implements Comparable<UploadTable>
                         {
                             session.rollback();
                         }
+                    }
+                    catch (Exception ex)
+                    {
+                        log.info(table.getName() + ":" + ex);
+                        if (opened && !committed)
+                        {
+                            session.rollback();
+                        }
+                        throw new UploaderException(ex);
                     }
                 }
             }
