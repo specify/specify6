@@ -1850,7 +1850,6 @@ public class UploadTable implements Comparable<UploadTable>
     {
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         String hql = "from " + getWriteTable().getName() + " where id =:theKey";
-        System.out.println(hql);
         QueryIFace q = session.createQuery(hql);
         try
         {
