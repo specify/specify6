@@ -106,7 +106,6 @@ public class UIRegistry
     public static final String COPY         = "Copy";
     public static final String PASTE        = "Paste";
     public static final String FIND         = "Find";
-    public static final String FINDREPLACE  = "FindReplace";
     public static final String INSERT       = "Insert";
     public static final String ADD          = "Add";
     public static final String DELETE       = "Delete";
@@ -155,7 +154,7 @@ public class UIRegistry
     //------------------------------------------------
     protected static UndoAction       undoAction; // these three are special
     protected static RedoAction       redoAction;
-    protected static LaunchFindReplaceAction launchReplaceAction;
+    protected static LaunchFindReplaceAction launchFindReplaceAction;
     
     protected HashMap<Object, Action> actions = null;
     
@@ -1419,18 +1418,22 @@ public class UIRegistry
                                            KeyStroke.getKeyStroke(KeyEvent.VK_A, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
        menu.add(selectAllAction);
        */
-       
-       launchReplaceAction = (LaunchFindReplaceAction) makeAction(LaunchFindReplaceAction.class,
+       launchFindReplaceAction = (LaunchFindReplaceAction) makeAction(LaunchFindReplaceAction.class,
                this,
                "Find",
                null,
                null,
                new Integer(KeyEvent.VK_F),
                KeyStroke.getKeyStroke(KeyEvent.VK_F, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()));
-        menu.add(launchReplaceAction);
-        launchReplaceAction.setEnabled(false);
-        actionMap.put(FINDREPLACE, launchReplaceAction);
-
+        //menu.add(launchFindReplaceAction);
+//        launchFindReplaceAction.setEnabled(false);
+//        register(FIND, menu.add(launchFindReplaceAction));
+//        actionMap.put(FIND, launchFindReplaceAction);
+        
+        launchFindReplaceAction.setEnabled(false);
+        register(FIND, menu.add(launchFindReplaceAction));
+        actionMap.put(FIND, launchFindReplaceAction);
+        
        return menu;
     }
     
@@ -1815,21 +1818,23 @@ public class UIRegistry
     }
 
     /**
-     * @return the launchReplaceAction
+     * @return the launchFindReplaceAction
      */
     public static LaunchFindReplaceAction getLaunchFindReplaceAction()
     {
-        return launchReplaceAction;
+        return launchFindReplaceAction;
     }
     
     public static void disableFindFromEditMenu()
     {
         getLaunchFindReplaceAction().setEnabled(false);
+        instance.actionMap.get(FIND).setEnabled(false);   
     }
     
-    public static void enableFindinEditMenu(final SearchReplacePanel findPanel)
+    public static void enableFind(final SearchReplacePanel findPanel, final boolean enable)
     {
         getLaunchFindReplaceAction().setSearchReplacePanel(findPanel);
+        instance.actionMap.get(FIND).setEnabled(enable);   
     }
     /**
      * @param undoableText

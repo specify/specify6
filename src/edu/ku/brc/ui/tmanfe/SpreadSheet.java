@@ -306,6 +306,7 @@ public class SpreadSheet  extends SearchableJXTable implements ActionListener
         KeyStroke cut   = KeyStroke.getKeyStroke(KeyEvent.VK_X, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(), false);
         KeyStroke copy  = KeyStroke.getKeyStroke(KeyEvent.VK_C, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(), false);
         KeyStroke paste = KeyStroke.getKeyStroke(KeyEvent.VK_V, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask(), false);
+        
         registerKeyboardAction(this, "Cut",   cut,   JComponent.WHEN_FOCUSED);
         registerKeyboardAction(this, "Copy",  copy,  JComponent.WHEN_FOCUSED);
         registerKeyboardAction(this, "Paste", paste, JComponent.WHEN_FOCUSED);

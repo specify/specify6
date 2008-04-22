@@ -317,11 +317,13 @@ public class WorkbenchPaneSS extends BaseSubPane
             public void focusGained(FocusEvent e)
             {
                 UIRegistry.enableCutCopyPaste(true);
+                UIRegistry.enableFind(findPanel, true);
             }
             @Override
             public void focusLost(FocusEvent e)
             {
                 UIRegistry.enableCutCopyPaste(true);
+                UIRegistry.enableFind(findPanel, true);
             }
         });
 
@@ -1176,7 +1178,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 });
             }
             // Enable the "Find" action in the Edit menu when a spreadsheet is shown
-            UIRegistry.enableFindinEditMenu(findPanel);
+            UIRegistry.enableFind(findPanel, true);
 
         } else
         {
@@ -1196,7 +1198,6 @@ public class WorkbenchPaneSS extends BaseSubPane
             
             // Disable the ctrl-F from the edit menu
             UIRegistry.disableFindFromEditMenu();
-
         }
         
              
@@ -2538,7 +2539,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         
         
         UIRegistry.getLaunchFindReplaceAction().setSearchReplacePanel(null);
-        UIRegistry.enableFindinEditMenu(null);
+        UIRegistry.enableFind(null, false);
         
         JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
         

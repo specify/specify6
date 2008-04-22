@@ -32,23 +32,24 @@ public class TableSearcherCell
     private int row = -1;
     private int col = -1;
     private boolean found = false;
+    private String foundValue = "";
     
     /**
      * Returns the information associated with a found value in the TableSearcher class.
      * allows user to acces the row, col and whether teh value was found
      */
-    public TableSearcherCell(int row, int col, boolean found)
+    public TableSearcherCell(int row, int col, boolean found, String foundValue)
     {
         this.row = row;
         this.col = col;
         this.found = found;
-
+        this.foundValue = foundValue;
     }
     
     /**
      * @return the col in which the value was found
      */
-    public int getCol()
+    public int getColumn()
     {
         return this.col;
     }
@@ -75,5 +76,21 @@ public class TableSearcherCell
     public static void main(String[] args)
     {
         // TODO Auto-generated method stub
+    }
+
+    /**
+     * @return the foundValue
+     */
+    public String getFoundValue()
+    {
+        return foundValue;
+    }
+
+    /**
+     * @param foundValue the foundValue to set
+     */
+    public void setFoundValue(String foundValue)
+    {
+        this.foundValue = foundValue;
     }
 }
