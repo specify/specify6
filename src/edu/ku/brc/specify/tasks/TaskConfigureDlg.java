@@ -240,48 +240,6 @@ public class TaskConfigureDlg extends CustomDialog
 
     }
     
-    /* (non-Javadoc)
-     * @see edu.ku.brc.ui.CustomDialog#okButtonPressed()
-     */
-    @Override
-    protected void okButtonPressed()
-    {
-        stdPanel.doOrderItems();
-        miscPanel.doOrderItems();
-        
-        super.okButtonPressed();
-    }
-
-    /**
-     * @param panel
-     * @return
-     */
-    protected Vector<TaskConfigItemIFace> getViews(ItemsOrderPanel panel)
-    {
-        Vector<TaskConfigItemIFace> list = new Vector<TaskConfigItemIFace>();
-        for (int i=0;i<panel.getOrderModel().getSize();i++)
-        {
-            list.add((TaskConfigItemIFace)panel.getOrderModel().getElementAt(i));
-        }
-        return list;
-    }
-
-    /**
-     * @return
-     */
-    public Vector<TaskConfigItemIFace> getStdViews()
-    {
-        return getViews(stdPanel);
-    }
-
-    /**
-     * @return
-     */
-    public Vector<TaskConfigItemIFace> getMiscViews()
-    {
-        return getViews(miscPanel);
-    }
-
     /**
      * @return the removedItems
      */
@@ -324,6 +282,18 @@ public class TaskConfigureDlg extends CustomDialog
         mvToStdBtn.setEnabled(!miscPanel.getOrderList().isSelectionEmpty());
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.CustomDialog#okButtonPressed()
+     */
+    @Override
+    protected void okButtonPressed()
+    {
+        stdPanel.doOrderItems();
+        miscPanel.doOrderItems();
+        
+        super.okButtonPressed();
+    }
+
     //---------------------------------------------------------------------
     public class ItemsOrderPanel extends JPanel
     {
@@ -335,9 +305,13 @@ public class TaskConfigureDlg extends CustomDialog
         
         protected AddRemoveEditPanel                    arePanel = null;
         protected Vector<TaskConfigItemIFace>           items;
+        protected Vector<TaskConfigItemIFace>           hiddenItems = new Vector<TaskConfigItemIFace>();
         
         /**
-         * 
+         * @param titleKey
+         * @param items
+         * @param orderOnLeft
+         * @param includeAREPanel
          */
         public ItemsOrderPanel(final String titleKey, 
                                final Vector<TaskConfigItemIFace> items,
@@ -353,11 +327,14 @@ public class TaskConfigureDlg extends CustomDialog
             
             Collections.sort(items);
             orderModel = new DefaultListModel();
-            for (TaskConfigItemIFace dev : items)
+            for (TaskConfigItemIFace item : items)
             {
-                //if (dev.isSideBar())
+                if (item.isVisible())
                 {
-                    orderModel.addElement(dev);
+                    orderModel.addElement(item);
+                } else
+                {
+                    hiddenItems.add(item);
                 }
             }
             orderList = new JList(orderModel);
@@ -453,12 +430,22 @@ public class TaskConfigureDlg extends CustomDialog
          */
         public void doOrderItems()
         {
+            // clear the List
             items.clear();
             
-            for (int i=0;i<orderModel.size();i++)
+            // Fill it back in and order the items
+            int order;
+            for (order=0;order<orderModel.size();order++)
             {
-                TaskConfigItemIFace item = (TaskConfigItemIFace)orderModel.get(i);
-                item.setOrder(i);
+                TaskConfigItemIFace item = (TaskConfigItemIFace)orderModel.get(order);
+                item.setOrder(order);
+                items.add(item);
+            }
+            
+            // Add in the Hidden items
+            for (TaskConfigItemIFace item : hiddenItems)
+            {
+                item.setOrder(order++);
                 items.add(item);
             }
         }
@@ -474,7 +461,7 @@ public class TaskConfigureDlg extends CustomDialog
         /**
          * @return the orderModel
          */
-        public DefaultListModel getOrderModel()
+        protected DefaultListModel getOrderModel()
         {
             return orderModel;
         }

@@ -88,7 +88,7 @@ public class DataEntryConfigDlg extends TaskConfigureDlg
             hash.put(dev.getView(), dev);
         }
         
-        // Add only the unused forms
+        // Add only the unused forms (does NOT return internal views).
         List<String>                 uniqueList    = new Vector<String>();
         List<ViewIFace>              views         = ((SpecifyAppContextMgr)AppContextMgr.getInstance()).getAllViews();
         Hashtable<String, ViewIFace> newAvailViews = new Hashtable<String, ViewIFace>();

@@ -27,7 +27,7 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
     protected String  cmdType;
     protected String  action;
     protected String  iconName;
-    protected boolean isOn;
+    protected boolean isOnLeft;
     protected int     order;
     
     protected Vector<Integer> tableIds = new Vector<Integer>();
@@ -49,7 +49,7 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
      * @param viewName
      * @param action
      * @param iconName
-     * @param isOn
+     * @param isOnLeft
      */
     public InteractionEntry(String name, 
                             String tableName, 
@@ -68,7 +68,7 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
         this.cmdType = cmdType;
         this.action = action;
         this.iconName = iconName;
-        this.isOn = true;
+        this.isOnLeft = true;
         
         if (dropTableIds != null)
         {
@@ -201,25 +201,6 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
         this.iconName = iconName;
     }
 
-
-    /**
-     * @return the isOn
-     */
-    public boolean isOn()
-    {
-        return isOn;
-    }
-
-
-    /**
-     * @param isOn the isOn to set
-     */
-    public void setOn(boolean isOn)
-    {
-        this.isOn = isOn;
-    }
-
-
     /**
      * @return the tableIds
      */
@@ -275,31 +256,38 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
         xstream.useAttributeFor(InteractionEntry.class, "labelKey");
         xstream.useAttributeFor(InteractionEntry.class, "action");
         xstream.useAttributeFor(InteractionEntry.class, "iconName");
-        xstream.useAttributeFor(InteractionEntry.class, "isOn");
+        xstream.useAttributeFor(InteractionEntry.class, "isOnLeft");
         xstream.useAttributeFor(InteractionEntry.class, "viewName");
         xstream.useAttributeFor(InteractionEntry.class, "cmdType");
         xstream.useAttributeFor(InteractionEntry.class, "order");
         
         xstream.aliasAttribute(InteractionEntry.class, "name",      "name");
         xstream.aliasAttribute(InteractionEntry.class, "tableName", "table");
-        xstream.aliasAttribute(InteractionEntry.class, "labelKey",  "labelKey");
+        xstream.aliasAttribute(InteractionEntry.class, "labelKey",  "label");
         xstream.aliasAttribute(InteractionEntry.class, "action",    "action");
-        xstream.aliasAttribute(InteractionEntry.class, "iconName",  "table");
-        xstream.aliasAttribute(InteractionEntry.class, "isOn",      "isturnedon");
+        xstream.aliasAttribute(InteractionEntry.class, "iconName",  "icon");
+        xstream.aliasAttribute(InteractionEntry.class, "isOnLeft",  "isonleft");
         xstream.aliasAttribute(InteractionEntry.class, "viewName",  "view");
         xstream.aliasAttribute(InteractionEntry.class, "cmdType",   "type");
-        xstream.aliasAttribute(InteractionEntry.class, "order",   "order");
+        xstream.aliasAttribute(InteractionEntry.class, "order",     "order");
         
         xstream.omitField(InteractionEntry.class, "title");
     }
-    
-    
+
     /* (non-Javadoc)
-     * @see edu.ku.brc.specify.tasks.TaskConfigItemIFace#isSideBar()
+     * @see edu.ku.brc.specify.tasks.TaskConfigItemIFace#isOnLeft()
      */
-    public boolean isSideBar()
+    public boolean isOnLeft()
     {
-        return isOn;
+        return isOnLeft;
+    }
+
+    /**
+     * @param isOnLeft the isOnLeft to set
+     */
+    public void setOnLeft(boolean isOnLeft)
+    {
+        this.isOnLeft = isOnLeft;
     }
 
     /**
@@ -316,6 +304,14 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
     public void setTitle(String title)
     {
         this.title = title;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.TaskConfigItemIFace#isVisible()
+     */
+    public boolean isVisible()
+    {
+        return true;
     }
 
     /* (non-Javadoc)
@@ -349,8 +345,8 @@ public class InteractionEntry implements TaskConfigItemIFace, Comparable<TaskCon
         entry.viewName = viewName;
         entry.cmdType  = cmdType;
         entry.action   = action;
-        entry.iconName = action;
-        entry.isOn     = isOn;
+        entry.iconName = iconName;
+        entry.isOnLeft = isOnLeft;
         entry.order    = order;
         entry.tableIds = new Vector<Integer>(tableIds); // doing this instead of clone
         return entry;

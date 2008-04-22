@@ -454,7 +454,7 @@ public class DataEntryTask extends BaseTask
                     
                     ContextMgr.registerService(dev.getName(), tableInfo.getTableId(), cmdAction, this, DATA_ENTRY, tableInfo.getTitle(), true);
                     
-                    //if (dev.isSideBar())
+                    if (dev.isSideBar())
                     {
                         cmdAction = new CommandAction(DATA_ENTRY, OPEN_NEW_VIEW);
                         //cmdAction.setProperty("viewset",   dev.getViewSet());

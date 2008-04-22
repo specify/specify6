@@ -326,12 +326,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
 
     public void setAgentType(Byte agentType) 
     {
-        if (agentType == -1)
-        {
-            int x = 0;
-            x++;
-        }
-    
         this.agentType = agentType;
     }
 

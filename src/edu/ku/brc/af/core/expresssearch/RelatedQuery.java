@@ -63,12 +63,6 @@ public class RelatedQuery implements Comparable<RelatedQuery>, DisplayOrderingIF
         this.id           = id;
         this.displayOrder = displayOrder;
         this.isActive     = isActive;
-        
-        if (id.equals("12"))
-        {
-            int x = 0;
-            x++;
-        }
     }
 
     /**

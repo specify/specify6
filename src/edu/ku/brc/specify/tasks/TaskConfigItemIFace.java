@@ -17,12 +17,24 @@ package edu.ku.brc.specify.tasks;
 public interface TaskConfigItemIFace extends Comparable<TaskConfigItemIFace>
 {
 
+    /**
+     * @return
+     */
     public abstract String getTitle();
     
-    public abstract boolean isSideBar();
-    
+    /**
+     * @return
+     */
     public abstract int getOrder();
     
+    /**
+     * @param order
+     */
     public abstract void setOrder(int order);
+    
+    /**
+     * @return whether the item should be displayed
+     */
+    public abstract boolean isVisible();
     
 }

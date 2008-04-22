@@ -190,6 +190,8 @@
 		<copy todir="${appdir}/Contents/Resources/Java">
 			<fileset dir="libs">
 				<include name="*.jar" />
+				<exclude name="**/json-lib.jar" />
+				<exclude name="**/ezmorph.jar" />
 			</fileset>
 			<fileset dir="${hibernatelib.dir}">
 				<include name="*.jar" />
@@ -722,6 +724,8 @@
 		<copy todir="${appdir}/libs">
 			<fileset dir="libs">
 				<include name="*.jar" />
+				<exclude name="**/json-lib.jar" />
+				<exclude name="**/ezmorph.jar" />
 			</fileset>
 			<fileset dir="${hibernatelib.dir}">
 				<include name="*.jar" />

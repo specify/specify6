@@ -1107,7 +1107,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
     }
     
     /**
-     * @return all unique views
+     * @return all unique views (does NOT return any internal views)
      */
     public List<ViewIFace> getAllViews()
     {

@@ -32,6 +32,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -2604,7 +2607,158 @@ public class SpecifyExplorer extends HttpServlet
         out.println(template.substring(inx+contentTag.length()+1, template.length()));
     }
     
+    protected String createJSONTable()
+    {
+        try
+        {
+            String[] headers     = {"Company", "Price",  "Change", "% Change",  "Last Updated"};
+            String[] dataIndexes = {"company", "price",  "change", "pctChange", "lastChange"};
+            String[] renders     = {null,      "usMoney", null,     null,        "Ext.util.Format.dateRenderer('m/d/Y')"};
+            int[]    widths  =     {160,       75,        75,       75,           85};
+            
+            Vector<JSONObject> colModelList = new Vector<JSONObject>();
+            for (int i=0;i<headers.length;i++)
+            {
+                JSONObject colObj = new JSONObject();
+                if (i == 0)
+                {
+                    colObj.accumulate("id", dataIndexes[i]);  
+                }
+                colObj.accumulate("header", headers[i]);
+                colObj.accumulate("width", widths[i]);
+                colObj.accumulate("sortable", true);
+                
+                if (dataIndexes[i] != null)
+                {
+                    colObj.accumulate("dataIndex", dataIndexes[i]);
+                }
+                if (renders[i] != null)
+                {
+                    colObj.accumulate("renderer", renders[i]);
+                }
+                colModelList.add(colObj);
+            }
+            
+            JSONArray colModel = new JSONArray();
+            colModel.addAll(colModelList);
+            
+            System.out.println("COLMODEL: "+colModel.toString());
+            
+            String[] hdrName = {"company", "price", "change", "pctChange", "lastChange"};
+            String[] hdrType = {"string",  "float",  "float",  "float",     "date"};
+            
+            Vector<JSONObject> colHdrList = new Vector<JSONObject>();
+            for (int i=0;i<hdrName.length;i++)
+            {
+                JSONObject hdr = new JSONObject();
+                hdr.accumulate("name", hdrName[i]);
+                hdr.accumulate("type", hdrType[i]); 
+                if (hdrType[i].equals("date"))
+                {
+                    hdr.accumulate("dateFormat", "n/j h:ia"); 
+                }
+                colHdrList.add(hdr);
+            }
+            JSONArray headerModel = new JSONArray();
+            headerModel.addAll(colHdrList);
+            
+            System.out.println("HEADER: "+headerModel.toString());
+            
+            
+            Vector<JSONArray> dataList = new Vector<JSONArray>();
+            for (int i=0;i<5;i++)
+            {
+                Object[] data = {"3m Co", 71.72, 0.02+i, 0.03, "9/1 12:00am"};
+                Vector<Object> dataItemList = new Vector<Object>();
+                for (Object o : data)
+                {
+                    dataItemList.add(o);
+                }
+                JSONArray row = new JSONArray();
+                row.addAll(dataItemList);
+                dataList.add(row);
+            }
+            JSONArray dataModel = new JSONArray();
+            dataModel.addAll(dataList);
+            
+            JSONObject json = new JSONObject();
+            
+            json.accumulate("column_model", colModel);
+            json.accumulate("headers",      headerModel);
+            json.accumulate("rows",         dataModel);
+            
+            System.out.println("===============");
+            System.out.println(json.toString());
+            System.out.println("===============");
+            
+            if (false)
+            {
+                if (false)
+                {
+                    String colModelStr = 
+                     "[" +
+                     "{id:'company',header: \"Company\", width: 160, sortable: true, dataIndex: 'company'}," +
+                     "{header: \"Price\", width: 75, sortable: true, renderer: 'usMoney', dataIndex: 'price'}," +
+                     "{header: \"Change\", width: 75, sortable: true, dataIndex: 'change'}," +
+                     "{header: \"% Change\", width: 75, sortable: true, dataIndex: 'pctChange'}," +
+                     "{header: \"Last Updated\", width: 85, sortable: true, renderer: Ext.util.Format.dateRenderer('m/d/Y'), dataIndex: 'lastChange'}" +
+                     "]";
+                    
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("{");
+                    sb.append("rows:[['3m Co',71.72,0.02,0.03,'9/1 12:00am'],['2m Co',71.72,0.02,0.03,'9/1 12:00am']],");
+                    sb.append("headers:[{type:'string',name:'company'},{type:'float',name:'price'},{type:'float',name:'change'},{type:'float',name:'pctChange'},{type:'date',dateFormat:'n/j h:ia',name:'lastChange'}],");
+                    sb.append("column_model:"+colModelStr);
+                    sb.append("}");
+                    return sb.toString();
+                } else
+                {
+                    String  str = "{" +
+                    		      "column_model:[{id:\"company\",header: \"Company\",width:160,sortable:true,dataIndex:\"company\"},{header:\"Price\",width:75,sortable:true,dataIndex:\"price\",renderer:\"usMoney\"},{header:\"Change\",width:75,sortable:true,dataIndex:\"change\"},{header:\" Change\",width:75,sortable:true,dataIndex:\"pctChange\"},{header:\"Last Updated\",width:85,sortable:true,dataIndex:\"lastChange\",renderer:Ext.util.Format.dateRenderer(\"m/d/Y\")}]," +
+                    		      "headers:[{name:\"company\",type:\"string\"},{name:\"price\",type:\"float\"},{name:\"change\",type:\"float\"},{name:\"pctChange\",type:\"float\"},{name:\"lastChange\",type:\"date\",dateFormat:\"n/j h:ia\"}]," +
+                    		      "rows:[[\"3m Co\",71.72,0.02,0.03,\"9/1 12:00am\"],[\"2m Co\",71.72,0.02,0.03,\"9/1 12:00am\"],[\"1m Co\",71.72,0.02,0.03,\"9/1 12:00am\"],[\"3m Co\",71.72,0.02,0.03,\"9/1 12:00am\"],[\"3m Co\",71.72,0.02,0.03,\"9/1 12:00am\"]]" +
+                    		      "}";
+                    return str;
+
+                }
+            }
+            return json.toString();
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+        return null;
+    }
     
+    /* (non-Javadoc)
+     * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
+     */
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException
+    {
+        //String className = request.getParameter("cls");
+        //String idStr     = request.getParameter("id");
+        //String letter    = request.getParameter("ltr");
+        String searchStr = request.getParameter("searchStr");
+        
+        System.out.println("***** "+searchStr);
+        
+        if (StringUtils.isNotEmpty(searchStr))
+        {
+            response.setContentType("text/html");
+            PrintWriter out = response.getWriter();
+            out.print(createJSONTable());
+            out.flush();
+            
+            //System.out.println("*********** "+jsonObj.toString());
+        } else
+        {
+            super.doPost(request, response);
+        }
+    }
+
     /* (non-Javadoc)
      * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
@@ -2615,17 +2769,20 @@ public class SpecifyExplorer extends HttpServlet
         String className = request.getParameter("cls");
         String idStr     = request.getParameter("id");
         String letter    = request.getParameter("ltr");
-        String json      = request.getParameter("json");
+        String searchStr = request.getParameter("searchStr");
         
+        System.out.println("***** "+searchStr);
         
-        
-        if (StringUtils.isNotEmpty(json))
+        if (StringUtils.isNotEmpty(searchStr))
         {
+            //JSONObject json = new JSONObject();
+            
             //JSONObject jsonObj = new JSONObject();
             //jsonObj.accumulate("success", true);
-            //response.setContentType("text/html");
+            response.setContentType("text/html");
             PrintWriter out = response.getWriter();
-            out.print("{success:true}");//jsonObj.toString());
+            out.print(createJSONTable());
+            //out.print("{success:true}");//jsonObj.toString());
             out.flush();
             
             //System.out.println("*********** "+jsonObj.toString());

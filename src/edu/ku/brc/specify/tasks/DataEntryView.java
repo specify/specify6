@@ -163,6 +163,14 @@ public class DataEntryView implements TaskConfigItemIFace, Comparable<TaskConfig
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.TaskConfigItemIFace#isOnLeft()
+     */
+    public boolean isOnLeft()
+    {
+        return false; // isn't used
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.TaskConfigItemIFace#getOrder()
      */
     public int getOrder()
@@ -186,6 +194,14 @@ public class DataEntryView implements TaskConfigItemIFace, Comparable<TaskConfig
         this.order = order;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.TaskConfigItemIFace#isVisible()
+     */
+    public boolean isVisible()
+    {
+        return isSideBar;
+    }
+    
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */

@@ -69,6 +69,7 @@ import edu.ku.brc.dbsupport.TableModel2Excel;
 import edu.ku.brc.helpers.EMailHelper;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
+import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
@@ -123,6 +124,8 @@ public class InteractionsTask extends BaseTask
 {
     private static final Logger log = Logger.getLogger(InteractionsTask.class);
 
+    protected static final String resourceName = "InteractionsTaskInit";
+    
     public static final String             INTERACTIONS        = "Interactions";
     public static final DataFlavorTableExt INTERACTIONS_FLAVOR = new DataFlavorTableExt(DataEntryTask.class, INTERACTIONS);
     public static final DataFlavorTableExt INFOREQUEST_FLAVOR  = new DataFlavorTableExt(InfoRequest.class, "InfoRequest");
@@ -162,7 +165,7 @@ public class InteractionsTask extends BaseTask
     protected ToolBarDropDownBtn      toolBarBtn       = null;
     protected int                     indexOfTBB       = -1;
     
-    protected List<InteractionEntry>  entries = new Vector<InteractionEntry>();
+    protected Vector<InteractionEntry>  entries = new Vector<InteractionEntry>();
     
     static 
     {
@@ -189,31 +192,100 @@ public class InteractionsTask extends BaseTask
         CommandDispatcher.register(DataEntryTask.DATA_ENTRY, this);
         CommandDispatcher.register(PreferencesDlg.PREFERENCES, this);
         
-        // temporary
-        String I = INTERACTIONS;
-        String F = OPEN_FORM_CMD_ACT;
-        String D = DataEntryTask.DATA_ENTRY;
-        String OPEN_NEW_VIEW = DataEntryTask.OPEN_NEW_VIEW;
-        
-        //                                 name          table       lblKey    View         Type    Action      Icon         isOn
-        entries.add(new InteractionEntry("accession",   "accession",   null,  "Loan",        D,   OPEN_NEW_VIEW,    "Accession",   new int[] {Accession.getClassTableId()}));
-        entries.add(new InteractionEntry("permit",      "permit",      null,  "Permit",      D,   OPEN_NEW_VIEW,    "Permit",      new int[] {Permit.getClassTableId()}));
-        entries.add(new InteractionEntry("loan",        "loan",        null,  "Loan",        I,   NEW_LOAN,         "Loan",        new int[] {Loan.getClassTableId(), CollectionObject.getClassTableId(), InfoRequest.getClassTableId()}));
-        entries.add(new InteractionEntry("gift",        "gift",        null,  "Gift",        F,   NEW_GIFT,         "Gift",        new int[] {Gift.getClassTableId()}));
-        entries.add(new InteractionEntry("exchangein",  "exchangein",  null,  "ExchangeIn",  F,   NEW_EXCHANGE_IN,  "ExchangeIn",  new int[] {ExchangeIn.getClassTableId()}));
-        entries.add(new InteractionEntry("exchangeout", "exchangeout", null,  "ExchangeOut", F,   NEW_EXCHANGE_OUT, "ExchangeOut", new int[] {ExchangeOut.getClassTableId()}));
-        entries.add(new InteractionEntry("inforequest", "inforequest", null,  null,          I,   INFO_REQ_MESSAGE, "InfoRequest", new int[] {ExchangeIn.getClassTableId(), ExchangeOut.getClassTableId(), CollectionObject.getClassTableId(), InfoRequest.getClassTableId()}));
-        entries.add(new InteractionEntry("printloan",   "loan",        "PRINT_LOANINVOICE",  null, I,   PRINT_LOAN, "Reports",     new int[] {Loan.getClassTableId()}));
-        
+        if (false)
+        {
+            // temporary
+            String I = INTERACTIONS;
+            String F = OPEN_FORM_CMD_ACT;
+            String D = DataEntryTask.DATA_ENTRY;
+            String OPEN_NEW_VIEW = DataEntryTask.OPEN_NEW_VIEW;
+            
+            //                                 name          table       lblKey    View         Type    Action      Icon         isOn
+            entries.add(new InteractionEntry("accession",   "accession",   null,  "Loan",        D,   OPEN_NEW_VIEW,    "Accession",   new int[] {Accession.getClassTableId()}));
+            entries.add(new InteractionEntry("permit",      "permit",      null,  "Permit",      D,   OPEN_NEW_VIEW,    "Permit",      new int[] {Permit.getClassTableId()}));
+            entries.add(new InteractionEntry("loan",        "loan",        null,  "Loan",        I,   NEW_LOAN,         "Loan",        new int[] {Loan.getClassTableId(), CollectionObject.getClassTableId(), InfoRequest.getClassTableId()}));
+            entries.add(new InteractionEntry("gift",        "gift",        null,  "Gift",        F,   NEW_GIFT,         "Gift",        new int[] {Gift.getClassTableId()}));
+            entries.add(new InteractionEntry("exchangein",  "exchangein",  null,  "ExchangeIn",  F,   NEW_EXCHANGE_IN,  "ExchangeIn",  new int[] {ExchangeIn.getClassTableId()}));
+            entries.add(new InteractionEntry("exchangeout", "exchangeout", null,  "ExchangeOut", F,   NEW_EXCHANGE_OUT, "ExchangeOut", new int[] {ExchangeOut.getClassTableId()}));
+            entries.add(new InteractionEntry("inforequest", "inforequest", null,  null,          I,   INFO_REQ_MESSAGE, "InfoRequest", new int[] {ExchangeIn.getClassTableId(), ExchangeOut.getClassTableId(), CollectionObject.getClassTableId(), InfoRequest.getClassTableId()}));
+            entries.add(new InteractionEntry("printloan",   "loan",        "PRINT_LOANINVOICE",  null, I,   PRINT_LOAN, "Reports",     new int[] {Loan.getClassTableId()}));
+            
+            try
+            {
+                XStream xstream = new XStream();
+                InteractionEntry.config(xstream);
+                FileUtils.writeStringToFile(new File("interactions.xml"), xstream.toXML(entries));
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+        } else
+        {
+            readEntries();
+        }
+    }
+    
+    /**
+     * Reads the entries set up information from the database.
+     */
+    @SuppressWarnings("unchecked")
+    private void readEntries()
+    {
         try
         {
             XStream xstream = new XStream();
+            
             InteractionEntry.config(xstream);
-            FileUtils.writeStringToFile(new File("interactions.xml"), xstream.toXML(entries));
+            
+            String           xmlStr = null;
+            AppResourceIFace appRes = AppContextMgr.getInstance().getResourceFromDir(SpecifyAppContextMgr.PERSONALDIR, resourceName);
+            if (appRes != null)
+            {
+                xmlStr = appRes.getDataAsString();
+                
+            } else
+            {
+                // Get the default resource by name and copy it to a new User Area Resource
+                AppResourceIFace newAppRes = AppContextMgr.getInstance().copyToDirAppRes(SpecifyAppContextMgr.PERSONALDIR, resourceName);
+                if (newAppRes != null)
+                {
+                    // Save it in the User Area
+                    AppContextMgr.getInstance().saveResource(newAppRes);
+                    xmlStr = newAppRes.getDataAsString();
+                } else
+                {
+                    return;
+                }
+            }
+            
+            //log.debug(xmlStr);
+            entries = (Vector<InteractionEntry>)xstream.fromXML(xmlStr); // Describes the definitions of the full text search);
             
         } catch (Exception ex)
         {
+            log.error(ex);
             ex.printStackTrace();
+        }
+    }
+    
+    /**
+     * Writes the entries set up information to the database.
+     */
+    private void writeEntries()
+    {
+        XStream xstream = new XStream();
+        InteractionEntry.config(xstream);
+        
+        AppResourceIFace appRes = AppContextMgr.getInstance().getResourceFromDir(SpecifyAppContextMgr.PERSONALDIR, resourceName);
+        if (appRes != null)
+        {
+            appRes.setDataAsString(xstream.toXML(entries));
+            AppContextMgr.getInstance().saveResource(appRes);
+            
+        } else
+        {
+            AppContextMgr.getInstance().putResourceAsXML(resourceName, xstream.toXML(entries));     
         }
     }
     
@@ -235,16 +307,14 @@ public class InteractionsTask extends BaseTask
         Vector<TaskConfigItemIFace> stdList  = new Vector<TaskConfigItemIFace>();
         Vector<TaskConfigItemIFace> miscList = new Vector<TaskConfigItemIFace>();
         
-        Hashtable<String, Boolean> origValue = new Hashtable<String, Boolean>();
         for (InteractionEntry entry : entries)
         {
-            Vector<TaskConfigItemIFace> list = entry.isSideBar() ? stdList : miscList;
+            Vector<TaskConfigItemIFace> list = entry.isOnLeft() ? stdList : miscList;
             // Clone for undo (Cancel)
             try
             {
-                list.add((DataEntryView)entry.clone());
+                list.add((TaskConfigItemIFace)entry.clone());
             } catch (CloneNotSupportedException ex) {}
-            origValue.put(entry.getName(), entry.isSideBar());
         }
         
         TaskConfigureDlg dlg = new TaskConfigureDlg(stdList, miscList, false,
@@ -255,23 +325,22 @@ public class InteractionsTask extends BaseTask
                 "IAT_MAKE_AVAIL",
                 "IAT_MAKE_HIDDEN");
         dlg.setVisible(true);
-        if (dlg.isCancelled())
+        if (!dlg.isCancelled())
         {
-            for (InteractionEntry ie : entries)
-            {
-                ie.setOn(origValue.get(ie.getName()));
-            }
-            
-        } else
-        {
+            entries.clear();
             for (TaskConfigItemIFace ie : stdList)
             {
-                ((InteractionEntry)ie).setOn(true);
+                ((InteractionEntry)ie).setOnLeft(true);
+                entries.add((InteractionEntry)ie);
             }
+            
             for (TaskConfigItemIFace ie : miscList)
             {
-                ((InteractionEntry)ie).setOn(false);
+                ((InteractionEntry)ie).setOnLeft(false);
+                entries.add((InteractionEntry)ie);
             }
+            
+            writeEntries();
             
             actionsNavBox.clear();
             
@@ -279,7 +348,7 @@ public class InteractionsTask extends BaseTask
             
             for (InteractionEntry entry : entries)
             {
-                if (entry.isOn())
+                if (entry.isOnLeft())
                 {
                     DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoByTableName(entry.getTableName());
                     addCommand(actionsNavBox,
@@ -296,10 +365,6 @@ public class InteractionsTask extends BaseTask
             NavBoxMgr.getInstance().validate();
             NavBoxMgr.getInstance().invalidate();
             NavBoxMgr.getInstance().doLayout();
-            //actionsNavBox.validate();
-            //actionsNavBox.invalidate();
-            //actionsNavBox.doLayout();
-            //actionsNavBox.repaint();
             
             if (stdList.size() == 0)
             {
@@ -356,7 +421,7 @@ public class InteractionsTask extends BaseTask
                 
                 entry.setTitle(label);
                 
-                if (entry.isOn())
+                if (entry.isOnLeft())
                 {
                     addCommand(actionsNavBox,
                               tableInfo,
@@ -372,21 +437,6 @@ public class InteractionsTask extends BaseTask
             
             infoRequestNavBox  = new NavBox(getResourceString("InfoRequest"));
             loadNavBox(infoRequestNavBox, InfoRequest.class, INFOREQUEST_FLAVOR);
-            
-            /*
-            loansNavBox  = new NavBox(getResourceString("LOANS"));
-            loadNavBox(loansNavBox, Loan.class, LOAN_FLAVOR);
-            
-            giftsNavBox  = new NavBox(getResourceString("GIFTS"));
-            loadNavBox(giftsNavBox, Gift.class, GIFT_FLAVOR);
-            
-            exchangesNavBox  = new NavBox(getResourceString("EXCHANGES"));
-            loadNavBox(exchangesNavBox, ExchangeIn.class, EXCHANGE_FLAVOR);
-            
-            exchangesNavBox  = new NavBox(getResourceString("EXCHANGES"));
-            loadNavBox(exchangesNavBox, ExchangeOut.class, EXCHANGE_FLAVOR);
-            */
-            
         }
     }
     

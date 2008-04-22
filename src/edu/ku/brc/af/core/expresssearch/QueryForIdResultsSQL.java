@@ -267,11 +267,6 @@ public class QueryForIdResultsSQL implements QueryForIdResultsIFace
                     joinIdName = jci.getColName();
                 }
             }
-            if (joinIdName == null)
-            {
-                int x = 0;
-                x++;
-            }
             
             String critiera = (tableInfo.isFieldNameOnlyForSQL() ? StringUtils.substringAfterLast(joinIdName, ".") : joinIdName)
                               + " in (" + idsStr.toString() + ")";

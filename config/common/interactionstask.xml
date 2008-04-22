@@ -1,85 +1,37 @@
 <vector>
-  <entry>
-    <name>accession</name>
-    <tableName>accession</tableName>
-    <viewName>Loan</viewName>
-    <cmdType>Data_Entry</cmdType>
-    <action>OpenNewView</action>
-    <iconName>Accession</iconName>
-    <isOn>true</isOn>
+  <entry name="accession" table="accession" view="Loan" type="Data_Entry" action="OpenNewView" icon="Accession" isonleft="true" order="0">
     <tableIds>
       <int>7</int>
     </tableIds>
   </entry>
-  <entry>
-    <name>permit</name>
-    <tableName>permit</tableName>
-    <viewName>Permit</viewName>
-    <cmdType>Data_Entry</cmdType>
-    <action>OpenNewView</action>
-    <iconName>Permit</iconName>
-    <isOn>true</isOn>
+  <entry name="permit" table="permit" view="Permit" type="Data_Entry" action="OpenNewView" icon="Permit" isonleft="true" order="0">
     <tableIds>
       <int>6</int>
     </tableIds>
   </entry>
-  <entry>
-    <name>loan</name>
-    <tableName>loan</tableName>
-    <viewName>Loan</viewName>
-    <cmdType>Interactions</cmdType>
-    <action>NEW_LOAN</action>
-    <iconName>Loan</iconName>
-    <isOn>true</isOn>
+  <entry name="loan" table="loan" view="Loan" type="Interactions" action="NEW_LOAN" icon="Loan" isonleft="true" order="0">
     <tableIds>
       <int>52</int>
       <int>1</int>
       <int>50</int>
     </tableIds>
   </entry>
-  <entry>
-    <name>gift</name>
-    <tableName>gift</tableName>
-    <viewName>Gift</viewName>
-    <cmdType>OPEN_FORM</cmdType>
-    <action>NEW_GIFT</action>
-    <iconName>Gift</iconName>
-    <isOn>true</isOn>
+  <entry name="gift" table="gift" view="Gift" type="OPEN_FORM" action="NEW_GIFT" icon="Gift" isonleft="true" order="0">
     <tableIds>
       <int>131</int>
     </tableIds>
   </entry>
-  <entry>
-    <name>exchangein</name>
-    <tableName>exchangein</tableName>
-    <viewName>ExchangeIn</viewName>
-    <cmdType>OPEN_FORM</cmdType>
-    <action>NEW_EXCHANGE_IN</action>
-    <iconName>ExchangeIn</iconName>
-    <isOn>true</isOn>
+  <entry name="exchangein" table="exchangein" view="ExchangeIn" type="OPEN_FORM" action="NEW_EXCHANGE_IN" icon="ExchangeIn" isonleft="true" order="0">
     <tableIds>
       <int>39</int>
     </tableIds>
   </entry>
-  <entry>
-    <name>exchangeout</name>
-    <tableName>exchangeout</tableName>
-    <viewName>ExchangeOut</viewName>
-    <cmdType>OPEN_FORM</cmdType>
-    <action>NEW_EXCHANGE_OUT</action>
-    <iconName>ExchangeOut</iconName>
-    <isOn>true</isOn>
+  <entry name="exchangeout" table="exchangeout" view="ExchangeOut" type="OPEN_FORM" action="NEW_EXCHANGE_OUT" icon="ExchangeOut" isonleft="true" order="0">
     <tableIds>
       <int>40</int>
     </tableIds>
   </entry>
-  <entry>
-    <name>inforequest</name>
-    <tableName>inforequest</tableName>
-    <cmdType>Interactions</cmdType>
-    <action>Specify Info Request</action>
-    <iconName>InfoRequest</iconName>
-    <isOn>true</isOn>
+  <entry name="inforequest" table="inforequest" type="Interactions" action="Specify Info Request" icon="InfoRequest" isonleft="true" order="0">
     <tableIds>
       <int>39</int>
       <int>40</int>
@@ -87,14 +39,7 @@
       <int>50</int>
     </tableIds>
   </entry>
-  <entry>
-    <name>printloan</name>
-    <tableName>loan</tableName>
-    <labelKey>PRINT_LOANINVOICE</labelKey>
-    <cmdType>Interactions</cmdType>
-    <action>PRINT_LOAN</action>
-    <iconName>Reports</iconName>
-    <isOn>true</isOn>
+  <entry name="printloan" table="loan" label="PRINT_LOANINVOICE" type="Interactions" action="PRINT_LOAN" icon="Reports" isonleft="true" order="0">
     <tableIds>
       <int>52</int>
     </tableIds>
