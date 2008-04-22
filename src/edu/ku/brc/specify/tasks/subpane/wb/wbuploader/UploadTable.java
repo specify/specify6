@@ -48,6 +48,7 @@ import edu.ku.brc.specify.tasks.subpane.wb.schema.Relationship;
 import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader.ParentTableEntry;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.util.Pair;
 
 /**
@@ -978,7 +979,16 @@ public class UploadTable implements Comparable<UploadTable>
                 }
                 else
                 {
-                    arg[0] = fldStr;
+                    Object val = fldStr;
+                    if (ufld.getField().getFieldInfo() != null)
+                    {
+                        UIFieldFormatterIFace formatter = ufld.getField().getFieldInfo().getFormatter();
+                        if (formatter != null)
+                        {
+                            val = formatter.formatFromUI(fldStr);
+                        }
+                    }
+                    arg[0] = val;
                 }
             }
             return arg;
