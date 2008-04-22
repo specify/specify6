@@ -665,7 +665,7 @@ public class UploadTable implements Comparable<UploadTable>
         boolean result = false;
         for (UploadField f : uploadFields.get(index))
         {
-            if (f.getValue() != null)
+            if (StringUtils.isNotEmpty(f.getValue()))
             {
                 result = true;
                 break;
@@ -1850,6 +1850,7 @@ public class UploadTable implements Comparable<UploadTable>
     {
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         String hql = "from " + getWriteTable().getName() + " where id =:theKey";
+        System.out.println(hql);
         QueryIFace q = session.createQuery(hql);
         try
         {

@@ -143,7 +143,7 @@ public class PrepType extends DataModelObjBase implements java.io.Serializable
     /**
      * 
      */
-    @Column(name = "Name", unique = false, nullable = true, insertable = true, updatable = true, length = 64)
+    @Column(name = "Name", unique = false, nullable = false, insertable = true, updatable = true, length = 64)
     public String getName()
     {
         return this.name;

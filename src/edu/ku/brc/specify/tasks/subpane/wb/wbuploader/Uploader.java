@@ -21,6 +21,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
@@ -1009,6 +1010,15 @@ public class Uploader implements ActionListener, KeyListener
         }
     }
 
+    protected boolean isSystemRelationship(final Relationship r)
+    {
+        return r.getField().getName().equalsIgnoreCase("ModifiedByAgentID")
+            || r.getField().getName().equalsIgnoreCase("CreatedByAgentID")
+            || r.getRelatedField().getName().equalsIgnoreCase("ModifiedByAgentID")
+            || r.getRelatedField().getName().equalsIgnoreCase("CreatedByAgentID")
+        //more to come???
+            ;
+    }
     /**
      * @throws UploaderException
      * 
@@ -1028,17 +1038,21 @@ public class Uploader implements ActionListener, KeyListener
                             .getTable());
                     for (Relationship r : rs)
                     {
-                        Vector<UploadTable> impTs = getUploadTable(tv.getData());
-                        Vector<ParentTableEntry> entries = new Vector<ParentTableEntry>();
-                        for (UploadTable impT : impTs)
+                        if (!isSystemRelationship(r))
                         {
-                            if (impT.getRelationship() == null || r.equals(impT.getRelationship()))
+                            Vector<UploadTable> impTs = getUploadTable(tv.getData());
+                            Vector<ParentTableEntry> entries = new Vector<ParentTableEntry>();
+                            for (UploadTable impT : impTs)
                             {
-                                impT.setHasChildren(true);
-                                entries.add(new ParentTableEntry(impT, r));
+                                if (impT.getRelationship() == null
+                                        || r.equals(impT.getRelationship()))
+                                {
+                                    impT.setHasChildren(true);
+                                    entries.add(new ParentTableEntry(impT, r));
+                                }
                             }
+                            parentTables.add(entries);
                         }
-                        parentTables.add(entries);
                     }
                 }
                 catch (DirectedGraphException ex)
@@ -2813,6 +2827,32 @@ public class Uploader implements ActionListener, KeyListener
         newMessages.add(msg);
     }
 
+    
+    /**
+     * @return uploadTables ordered such that unDo will work.
+     * 
+     * Currently this merely moves XXXAttributes tables to the end of the ordering.
+     * This prevents problems caused by the DeleteOrphan annotation for the XXX->XXXAttribute relationships.
+     * This is a horrible hack, but should work for now. If not, it could be achieved more effectively by
+     * checking the annotations properties and re-ordering according.
+     */
+    protected List<UploadTable> reorderUploadTablesForUndo()
+    {
+        Vector<UploadTable> result = new Vector<UploadTable>(uploadTables.size());
+        for (int ut = uploadTables.size()-1; ut >= 0; ut--)
+        {
+            if (uploadTables.get(ut).getTable().getName().endsWith("Attribute"))
+            {
+                result.insertElementAt(uploadTables.get(ut), 0);
+            }
+            else
+            {
+                result.add(uploadTables.get(ut));
+            }
+        }
+        Collections.reverse(result);
+        return result;
+    }
     /**
      * Undoes the most recent upload.
      * 
@@ -2830,11 +2870,12 @@ public class Uploader implements ActionListener, KeyListener
                     wbSS.getWorkbench().getName()), WorkbenchTask.GLASSPANE_FONT_SIZE);
             try
             {
+                List<UploadTable> fixedUp = reorderUploadTablesForUndo();
                 try
                 {
-                    for (int ut = uploadTables.size() - 1; ut >= 0; ut--)
+                    for (int ut = fixedUp.size() - 1; ut >= 0; ut--)
                     {
-                        uploadTables.get(ut).undoUpload();
+                        fixedUp.get(ut).undoUpload();
                     }
                 }
                 catch (Exception ex)
@@ -2877,10 +2918,11 @@ public class Uploader implements ActionListener, KeyListener
                                     getResourceString("WB_UPLOAD_CLEANING_UP") + " "
                                             + getResourceString("ERD_TABLE"), false);
                         }
-                        for (int ut = uploadTables.size() - 1; ut >= 0; ut--)
+                        List<UploadTable> fixedUp = reorderUploadTablesForUndo();
+                        for (int ut = fixedUp.size() - 1; ut >= 0; ut--)
                         {
-                            setCurrentOpProgress(uploadTables.size() - ut, false);
-                            uploadTables.get(ut).undoUpload();
+                            setCurrentOpProgress(fixedUp.size() - ut, false);
+                            fixedUp.get(ut).undoUpload();
                         }
                         success = true;
                         return success;
