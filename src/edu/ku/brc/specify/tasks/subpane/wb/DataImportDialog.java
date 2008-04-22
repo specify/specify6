@@ -447,7 +447,7 @@ public class DataImportDialog extends JDialog implements ActionListener
         PanelBuilder builder = new PanelBuilder(formLayout, myPanel);
 
         textQualLabel = createLabel(getResourceString("TEXT_QUAL"));
-        String[] qualifiers = { "\"", "\'", "{"+getResourceString("NONE")+"}" };
+        String[] qualifiers = { "\"", "\'", "{"+getResourceString("WB_NONE")+"}" };
         textQualCombo = createComboBox(qualifiers);
         textQualCombo.setSelectedIndex(0);
         textQualCombo.addActionListener(this);

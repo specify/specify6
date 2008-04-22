@@ -278,7 +278,7 @@ public class MatchHandler
         {
             settingDlg = new CustomDialog(null, getResourceString("WB_UPLOAD_SETTINGS"), true,
                     CustomDialog.OKCANCELAPPLYHELP, umsbp, CustomDialog.OK_BTN);
-            settingDlg.setApplyLabel(getResourceString("Apply to All")); // i18n
+            settingDlg.setApplyLabel(getResourceString("WB_UPLOAD_APPLY_TO_ALL"));
             settingDlg.createUI();
             settingDlg.getApplyBtn().addActionListener(new ActionListener()
             {

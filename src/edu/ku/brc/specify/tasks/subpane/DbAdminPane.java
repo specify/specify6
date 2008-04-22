@@ -196,8 +196,8 @@ public class DbAdminPane extends BaseSubPane
 
     public JPanel buildAddRemoveUserButtons()
     {
-        addBtn = createButton(getResourceString("Add"));
-        removeBtn = createButton(getResourceString("Remove"));
+        addBtn = createButton(getResourceString("ADD"));
+        removeBtn = createButton(getResourceString("REMOVE"));
 
         addBtn.addActionListener(new ActionListener()
         {

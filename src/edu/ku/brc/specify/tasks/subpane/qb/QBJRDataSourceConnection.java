@@ -211,7 +211,7 @@ public class QBJRDataSourceConnection extends IReportConnection
     @Override
     public String getDescription()
     {
-        return UIRegistry.getResourceString("SPECIFY_REPORT_CONNECTION");
+        return UIRegistry.getResourceString("REP_SPECIFY_REPORT_CONNECTION");
     }
 
     /**

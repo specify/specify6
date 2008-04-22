@@ -44,7 +44,7 @@ import edu.ku.brc.ui.UIHelper;
 public class SecurityAdminTask extends BaseTask
 {
     private static final Logger log            = Logger.getLogger(SecurityAdminTask.class);
-    public static final  String SECURITY_ADMIN = "Security";
+    public static final  String SECURITY_ADMIN = "SECURITY";
     protected SubPaneIFace      starterPane    = null;
 
     public SecurityAdminTask()

@@ -48,7 +48,7 @@ import edu.ku.brc.ui.forms.persist.ViewSetIFace;
  */
 public class EditorTask extends BaseTask
 {
-    public static final String EDITOR = "FormEditor";
+    public static final String EDITOR = "FORMEDITOR";
     
     protected ViewSetSelectorPanel viewSetSelectorPanel;
     protected JTree                tree          = null;

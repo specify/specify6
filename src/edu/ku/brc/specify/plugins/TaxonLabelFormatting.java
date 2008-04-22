@@ -226,7 +226,7 @@ public class TaxonLabelFormatting extends UIPluginBase
             
             PanelBuilder rwPanel = new PanelBuilder(new FormLayout("p, 2px, f:p:g", "p"));
             refWorkLabel = createLabel(getResourceString("None"));
-            rwPanel.add(createLabel(getResourceString("ReferenceWork")+":"), cc.xy(1, 1));
+            rwPanel.add(createLabel(getResourceString("REFERENCEWORK")+":"), cc.xy(1, 1));
             rwPanel.add(refWorkLabel, cc.xy(3, 1));
             
             int y = 1;
@@ -245,14 +245,14 @@ public class TaxonLabelFormatting extends UIPluginBase
             
             bldr.add(newAgentPanel.getPanel(), cc.xy(1, y));  y += 2;
             
-            JLabel fmtLabel = createLabel(getResourceString("LabelFormat"));
+            JLabel fmtLabel = createLabel(getResourceString("LABELFORMAT"));
             bldr.add(fmtLabel, cc.xy(1, y));  y += 2;
             bldr.add(formatCBX, cc.xywh(1, y, 7, 1));  y += 2;
             
             Font plain = fmtLabel.getFont();
             specialLabel = new SpecialLabel(plain, new Font(plain.getName(), Font.ITALIC, plain.getSize()));
             specialLabel.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
-            bldr.add(createLabel(getResourceString("SampleOutput") + ":"), cc.xywh(1, y, 7, 1));  y += 2;
+            bldr.add(createLabel(getResourceString("SAMPLEOUTPUT") + ":"), cc.xywh(1, y, 7, 1));  y += 2;
             bldr.add(specialLabel, cc.xywh(1, y, 7, 1));
             
             searchPanel.setOKBtn(mapToBtn);

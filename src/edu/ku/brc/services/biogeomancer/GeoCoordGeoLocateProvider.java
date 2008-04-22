@@ -49,7 +49,7 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace
 {
     private static final Logger log = Logger.getLogger(GeoCoordGeoLocateProvider.class);
     
-    protected static final String GEOLOCATE_RESULTS_VIEW_CONFIRM = "RESULTS_VIEW_CONFIRM";
+    protected static final String GEOLOCATE_RESULTS_VIEW_CONFIRM = "GEOLOCATE_RESULTS_VIEW_CONFIRM";
     
     protected GeoCoordProviderListenerIFace listener    = null;
     protected String                        helpContext = null;

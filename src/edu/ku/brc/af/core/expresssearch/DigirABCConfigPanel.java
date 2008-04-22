@@ -122,8 +122,8 @@ public class DigirABCConfigPanel extends JPanel
         PanelBuilder    builder = new PanelBuilder(new FormLayout("p,2px,p", "p,2px,f:p:g"), this);
         CellConstraints cc      = new CellConstraints();
 
-        builder.add(createLabel(getResourceString("AVAIL_TABLES"), SwingConstants.CENTER), cc.xy(1,1));
-        builder.add(createLabel(getResourceString("FIELDNAME"), SwingConstants.CENTER), cc.xy(3,1));
+        builder.add(createLabel(getResourceString("DIGIR_AVAIL_TABLES"), SwingConstants.CENTER), cc.xy(1,1));
+        builder.add(createLabel(getResourceString("DIGIR_FIELDNAME"), SwingConstants.CENTER), cc.xy(3,1));
         builder.add(sp, cc.xy(1,3));
 
         JScrollPane dspSp = new JScrollPane(displayList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);

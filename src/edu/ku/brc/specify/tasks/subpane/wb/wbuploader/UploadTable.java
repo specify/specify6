@@ -2133,7 +2133,7 @@ public class UploadTable implements Comparable<UploadTable>
         @Override
         public String getMsg()
         {
-            StringBuilder result = new StringBuilder(getResourceString("Row"));
+            StringBuilder result = new StringBuilder(getResourceString("WB_UPLOAD_ROW"));
             result.append(" ");
             result.append(String.valueOf(row));
             result.append(": ");

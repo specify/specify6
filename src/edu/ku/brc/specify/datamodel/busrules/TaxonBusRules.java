@@ -87,7 +87,7 @@ public class TaxonBusRules extends BaseTreeBusRules<Taxon, TaxonTreeDef, TaxonTr
     @Override
     public String getDeleteMsg(Object dataObj)
     {
-        return getLocalizedMessage("TAXON_DELETED", ((Taxon)dataObj).getName());
+        return getLocalizedMessage("TAXON_DELETE", ((Taxon)dataObj).getName());
     }
 
     /* (non-Javadoc)
