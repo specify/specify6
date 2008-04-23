@@ -72,6 +72,7 @@ import javax.swing.SwingUtilities;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.hibernate.HibernateException;
 import org.hibernate.exception.ConstraintViolationException;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -3596,7 +3597,30 @@ public class FormViewObj implements Viewable,
                 
                 if (true)
                 {
-                    session.attach(dataObj);
+                    try
+                    {
+                        session.attach(dataObj);
+                    }
+                    catch (HibernateException ex)
+                    {
+                        //Oh No!
+                        //take the drastic measures in the unreachable else block below...
+                        Object beforeSaveDataObj = dataObj;
+                        try
+                        {
+                            dataObj = session.merge(dataObj);
+                        }
+                        catch (Exception ex2)
+                        {
+                            throw new RuntimeException(ex2);
+                        }
+                        replaceDataObjInList(beforeSaveDataObj, dataObj);
+                        if (origDataSet != null)
+                        {
+                            origDataSet.remove(beforeSaveDataObj);
+                            origDataSet.add(dataObj);
+                        }
+                    }
                 } else
                 {
                     try
