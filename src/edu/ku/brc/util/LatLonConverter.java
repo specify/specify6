@@ -213,8 +213,7 @@ public class LatLonConverter
         minutes = Math.round(minutes*10000);
         minutes = minutes / 10000;
         
-        
-        sb.append(StringUtils.strip(String.format("%10.10f", new Object[] {minutes}), "0"));
+        sb.append(StringUtils.stripEnd(String.format("%10.10f", new Object[] {minutes}), "0"));
         
         if (degreesFMT == DEGREES_FORMAT.String)
         {
