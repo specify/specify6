@@ -82,6 +82,7 @@ import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
+import edu.ku.brc.dbsupport.DBRelationshipInfo.RelationshipType;
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.RecordSet;
@@ -541,9 +542,14 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
             TableTree parent = pqri.getTableTree();
             if (pqri instanceof RelQRI)
             {
-                //parent will initially point to the related table
-                //and don't need to add related table unless it has children displayed/queried,
-                parent = parent.getParent();
+                RelQRI relQRI = (RelQRI)pqri;
+                RelationshipType relType = relQRI.getRelationshipInfo().getType();
+                if (!relType.equals(RelationshipType.ManyToOne)) //Maybe need to consider some types of OneToOne also?????????
+                {
+                    //parent will initially point to the related table
+                    //and don't need to add related table unless it has children displayed/queried,
+                    parent = parent.getParent();
+                }
             }
             else
             {

@@ -105,11 +105,12 @@ public class RelQRI extends FieldQRI
     @Override
     public String getSQLFldSpec(TableAbbreviator ta, final boolean forWhereClause)
     {
-        if (relationshipInfo.getType().equals(DBRelationshipInfo.RelationshipType.OneToMany))
+        if (relationshipInfo.getType().equals(DBRelationshipInfo.RelationshipType.OneToMany) /*What about ManyToMany?? And some OneToOnes???*/)
         {
             return ta.getAbbreviation(table.getTableTree().getParent()) + "." + relationshipInfo.getOtherSide() + "Id";
         }
-        return ta.getAbbreviation(table.getTableTree().getParent()) + "." + relationshipInfo.getName();
+        //else ManyToOnes.   Is this OK for all OneToOnes too?
+        return ta.getAbbreviation(table.getTableTree()) + "." + table.getTableInfo().getName() + "Id";
     }
 
     /* (non-Javadoc)
