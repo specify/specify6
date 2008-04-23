@@ -549,12 +549,12 @@
                     <cell type="separator" label="Agent Info" colspan="6"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="0" label="Type"/>
-                    <cell type="field" id="0" name="type" uitype="combobox" ignore="true"/>
+                    <cell type="label" labelfor="0"/>
+                    <cell type="field" id="0" name="agentType" uitype="combobox" ignore="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="1"/>
-                    <cell type="field" id="1" name="title" uitype="combobox" initialize="data=Asst. Director, Curator, Mr., Mrs., Ms., Dr."/> <!-- Needs to be a PickList -->
+                    <cell type="field" id="1" name="title" uitype="combobox" picklist="AgentTitles"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="3"/>

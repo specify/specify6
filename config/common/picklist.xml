@@ -104,4 +104,14 @@
       <picklistitem title="Ms." value="Ms."/>
     </items>
   </picklist>
+  <picklist name="AgentTitles" issystem="true" type="0" readonly="true" sizelimit="6">
+    <items>
+      <picklistitem title="Asst. Director" value="Asst. Director"/>
+      <picklistitem title="Curator" value="Curator"/>
+      <picklistitem title="Mr." value="Mr."/>
+      <picklistitem title="Mrs." value="Mrs."/>
+      <picklistitem title="Ms." value="Ms."/>
+      <picklistitem title="Dr." value="Dr."/>
+    </items>
+  </picklist>
 </list>
