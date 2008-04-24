@@ -272,7 +272,7 @@ public class LocalizerApp extends LocalizableBaseApp
     @SuppressWarnings("unchecked")
     protected void collectResources()
     {
-        String[] reskeys = {"getResourceString(", "getLocalizedMessage("};
+        String[] reskeys = {"getResourceString(", "getLocalizedMessage(", "createI18NLabel("};
         char[]   termChar = {')', ','};
         
         Vector<String> keyNamesList = new Vector<String>();
