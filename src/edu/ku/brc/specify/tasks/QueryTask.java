@@ -683,7 +683,7 @@ public class QueryTask extends BaseTask
         if (extraList != null && !extraList.isEmpty())
         {
             NavBoxItemIFace nbi = NavBox.createBtnWithTT(getResourceString("QY_EXTRA_QUERIES"),
-                                                         name, 
+                                                         "MoreQueries", 
                                                          getResourceString("QY_EXTRA_QUERIES_TT"), 
                                                          IconManager.STD_ICON_SIZE, new ActionListener() {
                 public void actionPerformed(ActionEvent e)
