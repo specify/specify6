@@ -72,8 +72,10 @@ import edu.ku.brc.dbsupport.DBFieldInfo;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
+import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplate;
 import edu.ku.brc.specify.datamodel.WorkbenchTemplateMappingItem;
 import edu.ku.brc.specify.tasks.WorkbenchTask;
@@ -1130,7 +1132,86 @@ public class TemplateEditor extends CustomDialog
             okBtn.setEnabled(false);
         }
         
+        adjustMappings();
         updateEnabledState();
+    }
+    
+    
+    /**
+     * @return set of distinct TableIds in the mapModel 
+     */
+    protected Set<Integer> getTblsMapped()
+    {
+        Set<Integer> result = new HashSet<Integer>();
+        for (int m=0; m<mapModel.getSize(); m++)
+        {
+            FieldMappingPanel fmp = mapModel.getElementAt(m);
+            result.add(fmp.getFieldInfo().getTableinfo().getTableId());
+        }
+        
+        return result;
+    }
+    
+    /**
+     * Modify mappings to be more user-friendly.
+     * Currently, just handles situation where only Taxon fields are contained in the import file - remaps Taxon and Determination
+     * fields to Taxon Only equivalents.
+     * Currently, very very klugey. Totally dependent on current behavior of automapper functions, and
+     * on workbench_datamodel schema. 
+     */
+    protected void adjustMappings()
+    {
+        Set<Integer> tblsMapped = getTblsMapped();
+        for (Integer t : tblsMapped)
+        {
+            System.out.println(t);
+        }
+        if (tblsMapped.size() == 2  
+                && tblsMapped.contains(DBTableIdMgr.getInstance().getByClassName(Taxon.class.getName()).getTableId())
+                && tblsMapped.contains(DBTableIdMgr.getInstance().getByClassName(Determination.class.getName()).getTableId()))
+        {
+            log.debug("remapping for taxon-only import");
+            TableInfo taxaOnly = null;
+            for (int i=0;i<tableModel.size();i++)
+            {
+                TableListItemIFace item = tableModel.getElementAt(i);
+                if (item.isExpandable() && ((TableInfo)item).getTableInfo().getTableId() == 4000)
+                {
+                    taxaOnly = (TableInfo)item;
+                    break;
+                }
+            }
+
+            if (taxaOnly == null)
+            {
+                throw new RuntimeException("Couldn't find Taxon Only table info.");
+            }
+            for (int m=0; m<mapModel.getSize(); m++)
+            {
+                FieldMappingPanel fmp = mapModel.getElementAt(m);
+                String fldName = fmp.getFieldName();
+                if (fldName.endsWith("1") || fldName.endsWith("2"))
+                {
+                    fldName = fldName.substring(0, fldName.length()-1);
+                }
+                FieldInfo newInfo = null;
+                for (FieldInfo fi : taxaOnly.getFieldItems())
+                {
+                    if (fi.getFieldInfo().getName().equals(fldName))
+                    {
+                        newInfo = fi;
+                        break;
+                    }
+                }   
+                if (newInfo == null)
+                {
+                    throw new RuntimeException("Couldn't find Taxon Only field info.");
+                }             
+                
+                fmp.setFieldInfo(newInfo);
+                fmp.setIcon(DBTableIdMgr.getInstance().getByClassName(Taxon.class.getName()).getIcon(IconManager.STD_ICON_SIZE));
+            }
+        }
     }
     
     /**

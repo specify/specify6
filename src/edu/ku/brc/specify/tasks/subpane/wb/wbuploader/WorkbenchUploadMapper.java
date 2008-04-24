@@ -267,6 +267,7 @@ public class WorkbenchUploadMapper
             {
                 if (treeName.equals(def.treeName))
                 {
+                    System.out.println(def.name);
                     result.put(def.name, new TreeLevelInfo(def.rankId, getTreeLevelEnforcement(def.treeName, def.name), def.oneToManySequence));
                 }
             }

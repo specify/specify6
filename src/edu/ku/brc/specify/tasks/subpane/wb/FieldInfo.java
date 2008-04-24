@@ -93,4 +93,11 @@ public class FieldInfo extends TableFieldPair implements TableListItemIFace
         // no-op
     }
 
+    /**
+     * @param tableInfo the tableInfo to set.
+     */
+    public void setTableInfo(final DBTableInfo tableInfo)
+    {
+        this.tableinfo = tableInfo;
+    }
 }

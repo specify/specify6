@@ -343,4 +343,10 @@
     <field table="Taxon" name="subfamily" treename="taxon" maptofield="name" rankid="150"/>
     <field table="Taxon" name="genus" treename="taxon" maptofield="name" rankid="180"/>
     <field table="Taxon" name="species" treename="taxon" maptofield="name" rankid="220"/>
+    <field table="Taxon" name="subspecies" treename="taxon" maptofield="name" rankid="230"/>
+    <field table="Taxon" name="variety" treename="taxon" maptofield="name" rankid="240"/>
+    <field table="Taxon" name="subvariety" treename="taxon" maptofield="name" rankid="250"/>
+    <field table="Taxon" name="forma" treename="taxon" maptofield="name" rankid="260"/>
+    <field table="Taxon" name="subforma" treename="taxon" maptofield="name" rankid="270"/>
+    
 </uploaddef>    
