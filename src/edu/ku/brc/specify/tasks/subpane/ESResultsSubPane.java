@@ -369,40 +369,21 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
             }
         }
     }
-
-    /*
-     * See Bugs 4072 and 4073 - Adding Items to the NavBox just creates a boat load of bugs.
-     * 
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace#doQueriesSynchronously()
      */
-    /*
-    class ResInfoForSort implements Comparable<ResInfoForSort>
+    public boolean doQueriesSynchronously()
     {
-        protected ExpressTableResultsBase erb;
-        protected NavBoxItemIFace         nbi;
-        
-        public ResInfoForSort(ExpressTableResultsBase erb, NavBoxItemIFace nbi)
-        {
-            super();
-            this.erb = erb;
-            this.nbi = nbi;
-        }
+        return false;
+    }
 
-        public ExpressTableResultsBase getErb()
-        {
-            return erb;
-        }
-
-        public NavBoxItemIFace getNbi()
-        {
-            return nbi;
-        }
-
-
-        public int compareTo(ResInfoForSort obj)
-        {
-            return erb.getResults().getTableInfo().getTitle().compareTo(obj.getErb().getResults().getTableInfo().getTitle());
-        }
-        
-    }*/
-
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace#done()
+     */
+    public void done()
+    {
+        // not needed
+    }
+    
 }

@@ -4,7 +4,7 @@
      * [INSERT KU-APPROVED LICENSE TEXT HERE]
      *
      */
-package edu.ku.brc.af.core.web;
+package edu.ku.brc.specify.web;
 
 import java.util.Hashtable;
 import java.util.Vector;

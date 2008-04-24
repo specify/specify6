@@ -330,4 +330,21 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
     {
         return etrb.hasResults();
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace#doQueriesSynchronously()
+     */
+    public boolean doQueriesSynchronously()
+    {
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace#done()
+     */
+    public void done()
+    {
+        // not needed
+    }
+
 }

@@ -835,7 +835,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
         {
             List<?> list = session.getDataList(SpecifyUser.class, "name", userName);
             if (list.size() == 1)
-            {
+            {       
                 user = (SpecifyUser)list.get(0);
                 user.getAgents(); // makes sure the Agent is not lazy loaded
                 session.evict( user.getAgents());

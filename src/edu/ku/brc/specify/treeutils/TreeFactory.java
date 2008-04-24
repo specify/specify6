@@ -569,11 +569,20 @@ public class TreeFactory
 		return def;
     }
     
+    /**
+     * @param def
+     * @return
+     */
     public static Set<TaxonTreeDefItem> addStandardTaxonDefItems(TaxonTreeDef def)
     {
         return addStandardTaxonDefItems(def, stdTaxonItems);
     }
     
+    /**
+     * @param def
+     * @param taxonItems
+     * @return
+     */
     public static Set<TaxonTreeDefItem> addStandardTaxonDefItems(TaxonTreeDef def, Object[][] taxonItems)
     {
         Set<TaxonTreeDefItem> items = def.getTreeDefItems();

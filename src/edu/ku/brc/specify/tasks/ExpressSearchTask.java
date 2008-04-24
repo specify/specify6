@@ -77,6 +77,7 @@ import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
 import edu.ku.brc.specify.tasks.subpane.ExpressTableResultsFromQuery;
 import edu.ku.brc.specify.ui.HelpMgr;
+import edu.ku.brc.specify.web.ExplorerESPanel;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
@@ -189,21 +190,52 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     {
         sqlHasResults = false;
         
-        searchText.setBackground(textBGColor);
-        String searchTerm = searchText.getText();
+        if (true)
+        {
+            searchText.setBackground(textBGColor);
+            String searchTerm = searchText.getText();
+            if (isNotEmpty(searchTerm))
+            {
+                if (QueryAdjusterForDomain.getInstance().isUserInputNotInjectable(searchTerm.toLowerCase()))
+                {
+                    ESResultsSubPane expressSearchPane = new ESResultsSubPane(searchTerm, this, true);
+                    doQuery(searchText, null, badSearchColor, expressSearchPane);
+                    AppPreferences.getLocalPrefs().put(LAST_SEARCH, searchTerm);
+                    
+                } else
+                {
+                    setUserInputToNotFound("ES_SUSPICIOUS_SQL", true);
+                }
+            }
+        } else
+        {
+            String searchTerm = searchText.getText();
+            
+            ExplorerESPanel explorerSearch = new ExplorerESPanel();
+            
+            doQuery(searchTerm, explorerSearch);
+            
+            explorerSearch.done();
+        }
+    }
+    
+    /**
+     * @param searchTerm
+     * @param esrp
+     */
+    public boolean doQuery(final String searchTerm, 
+                           final ExpressSearchResultsPaneIFace esrp)
+    {
         if (isNotEmpty(searchTerm))
         {
             if (QueryAdjusterForDomain.getInstance().isUserInputNotInjectable(searchTerm.toLowerCase()))
             {
-                ESResultsSubPane expressSearchPane = new ESResultsSubPane(searchTerm, this, true);
-                doQuery(searchText, null, badSearchColor, expressSearchPane);
-                AppPreferences.getLocalPrefs().put(LAST_SEARCH, searchTerm);
-                
-            } else
-            {
-                setUserInputToNotFound("ES_SUSPICIOUS_SQL", true);
+                doQuery(null, searchTerm, badSearchColor, esrp);
+                return true;
             }
-        }
+            return false; // bad query
+        } 
+        return true;
     }
     
     /**
@@ -224,7 +256,13 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
 
             jpaQuery = new JPAQuery(sqlStr, instance);
             jpaQuery.setData(new Object[] {searchTableConfig, esrPane, searchTerm});
-            jpaQuery.start();
+            if (esrPane.doQueriesSynchronously())
+            {
+                jpaQuery.execute();
+            } else
+            {
+                jpaQuery.start();
+            }
         }
         return jpaQuery;
     }
@@ -260,10 +298,18 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                     instance.sqlHasResults    = false;
                     instance.sqlResultsCount  = 0;
                     
-                    instance.searchText.setEnabled(false);
-                    instance.searchBtn.setEnabled(false);
-                    UIRegistry.getStatusBar().setIndeterminate(true);
-                    
+                    if (instance.searchText != null)
+                    {
+                        instance.searchText.setEnabled(false);
+                    }                    
+                    if (instance.searchBtn != null)
+                    {
+                        instance.searchBtn.setEnabled(false);
+                    }
+                    if (UIRegistry.getStatusBar() != null)
+                    {
+                        UIRegistry.getStatusBar().setIndeterminate(true);
+                    }
     
                     Vector<JPAQuery> queryList = new Vector<JPAQuery>();
                     
@@ -281,6 +327,10 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
             {
                 startSearchJPA(esrPane, context, searchTerm);
             }
+        } else
+        {
+            System.out.println("SearchTableConfig service has been loaded or is empty.");
+            log.error("SearchTableConfig service has been loaded or is empty.");
         }
     }
     
@@ -410,9 +460,8 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
             esrPane.addSearchResults(queryResults);
         }
         
-        for (Enumeration<QueryForIdResultsSQL> e=resultsForJoinsMap.elements();e.hasMoreElements();)
+        for (QueryForIdResultsSQL rs : resultsForJoinsMap.values())
         {
-            QueryForIdResultsSQL rs = e.nextElement();
             if (rs.getRecIds().size() > 0)
             {
                 esrPane.addSearchResults(rs);
@@ -849,21 +898,23 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
         
         if (instance.sqlResultsCount < 1)
         {
-            searchText.setEnabled(true);
-            searchBtn.setEnabled(true);
+            if (searchText != null)
+            {
+                searchText.setEnabled(true);
+                searchBtn.setEnabled(true);
             
-            if (!sqlHasResults)
-            {
-                setUserInputToNotFound(null, false);
-                
-            } else
-            {
-                searchText.setSelectionStart(searchText.getText().length());
-                searchText.setSelectionEnd(searchText.getText().length());
-                searchText.repaint();
-                UIRegistry.getStatusBar().setText("");
+                if (!sqlHasResults)
+                {
+                    setUserInputToNotFound(null, false);
+                    
+                } else
+                {
+                    searchText.setSelectionStart(searchText.getText().length());
+                    searchText.setSelectionEnd(searchText.getText().length());
+                    searchText.repaint();
+                    UIRegistry.getStatusBar().setText("");
+                }
             }
-            
             CommandDispatcher.dispatch(new CommandAction(EXPRESSSEARCH, "SearchComplete"));
         } 
     }
@@ -894,7 +945,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                 ExpressSearchResultsPaneIFace esrPane           = (ExpressSearchResultsPaneIFace)data[1];
                 String                        searchTerm        = (String)data[2];
                 
-                if (addPane)
+                if (addPane && esrPane instanceof SubPaneIFace)
                 {
                     addSubPaneToMgr((SubPaneIFace)esrPane);
                 }
@@ -1022,57 +1073,60 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
      */
     protected void doSearchComplete(final CommandAction cmdAction)
     {
-        UIRegistry.getStatusBar().setIndeterminate(false);
-        if (cmdAction.getData() instanceof JPAQuery)
+        if (UIRegistry.getStatusBar() != null)
         {
-            QueryForIdResultsIFace   results = (QueryForIdResultsIFace)cmdAction.getProperty("QueryForIdResultsIFace");
-            ESResultsTablePanelIFace esrto   = (ESResultsTablePanelIFace)cmdAction.getProperty("ESResultsTablePanelIFace");
-            if (esrto != null && !esrto.hasResults())
+            UIRegistry.getStatusBar().setIndeterminate(false);
+            if (cmdAction.getData() instanceof JPAQuery)
             {
-                UIRegistry.displayLocalizedStatusBarText("QB_NO_RESULTS");
-                return;
-            }
-            
-            //Only execute this block for QueryBuilder results...
-            if (queryResultsPane != null && results != null && queryResultsPane.contains(results))
-            {
-                int     rowCount = ((JPAQuery) cmdAction.getData()).getDataObjects().size();
-                boolean isError  = ((JPAQuery) cmdAction.getData()).isInError();
-                boolean showPane = !isError && rowCount > 0;
-                //print status bar msg if error or rowCount == 0, 
-                //else show the queryResults pane if rowCount > 0
-                int index = SubPaneMgr.getInstance().indexOfComponent(queryResultsPane.getUIComponent());
-                if (index == -1)
+                QueryForIdResultsIFace   results = (QueryForIdResultsIFace)cmdAction.getProperty("QueryForIdResultsIFace");
+                ESResultsTablePanelIFace esrto   = (ESResultsTablePanelIFace)cmdAction.getProperty("ESResultsTablePanelIFace");
+                if (esrto != null && !esrto.hasResults())
                 {
-                    if (showPane)
-                    {
-                        addSubPaneToMgr(queryResultsPane);
-                    }
+                    UIRegistry.displayLocalizedStatusBarText("QB_NO_RESULTS");
+                    return;
                 }
-                else
+                
+                //Only execute this block for QueryBuilder results...
+                if (queryResultsPane != null && results != null && queryResultsPane.contains(results))
                 {
-                    if (showPane)
+                    int     rowCount = ((JPAQuery) cmdAction.getData()).getDataObjects().size();
+                    boolean isError  = ((JPAQuery) cmdAction.getData()).isInError();
+                    boolean showPane = !isError && rowCount > 0;
+                    //print status bar msg if error or rowCount == 0, 
+                    //else show the queryResults pane if rowCount > 0
+                    int index = SubPaneMgr.getInstance().indexOfComponent(queryResultsPane.getUIComponent());
+                    if (index == -1)
                     {
-                        SubPaneMgr.getInstance().showPane(queryResultsPane);
+                        if (showPane)
+                        {
+                            addSubPaneToMgr(queryResultsPane);
+                        }
                     }
                     else
                     {
-                        SubPaneMgr.getInstance().removePane(queryResultsPane, false);
+                        if (showPane)
+                        {
+                            SubPaneMgr.getInstance().showPane(queryResultsPane);
+                        }
+                        else
+                        {
+                            SubPaneMgr.getInstance().removePane(queryResultsPane, false);
+                        }
                     }
-                }
-                
-                if (isError)
-                {
-                    UIRegistry.getStatusBar().setErrorMessage(getResourceString("QB_RUN_ERROR"));
-                }
-                
-                else if (rowCount == 0)
-                {
-                    UIRegistry.displayLocalizedStatusBarText("QB_NO_RESULTS");
-                }
-                else
-                {
-                    UIRegistry.getStatusBar().setText(null);
+                    
+                    if (isError)
+                    {
+                        UIRegistry.getStatusBar().setErrorMessage(getResourceString("QB_RUN_ERROR"));
+                    }
+                    
+                    else if (rowCount == 0)
+                    {
+                        UIRegistry.displayLocalizedStatusBarText("QB_NO_RESULTS");
+                    }
+                    else
+                    {
+                        UIRegistry.getStatusBar().setText(null);
+                    }
                 }
             }
         }

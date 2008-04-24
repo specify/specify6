@@ -5,7 +5,7 @@
  *
  */
 
-package edu.ku.brc.af.core.web;
+package edu.ku.brc.specify.web;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,6 +24,7 @@ import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
+import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 
@@ -80,6 +81,7 @@ import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
+import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.tests.SpecifyAppPrefs;
 import edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr;
 import edu.ku.brc.ui.UIHelper;
@@ -87,6 +89,7 @@ import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.DataGetterForObj;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterField;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.ui.weblink.WebLinkMgr;
@@ -103,6 +106,8 @@ public class SpecifyExplorer extends HttpServlet
 {
     private final Logger         log      = Logger.getLogger(SpecifyExplorer.class);
     private Hashtable<Class<?>, Boolean> baseClassHash = new Hashtable<Class<?>, Boolean>();
+    
+    protected String DATABASE_NAME = "fish_kansas";
     
     protected static String contentTag = "<!-- Content -->";
     
@@ -122,6 +127,9 @@ public class SpecifyExplorer extends HttpServlet
     protected String template = "";
     
     protected DataGetterForObj getter = new DataGetterForObj();
+    
+    protected ExpressSearchTask expressSearch         = null;
+    protected ExplorerESPanel   expressSearchExplorer = null;
 
     
     /**
@@ -301,6 +309,12 @@ public class SpecifyExplorer extends HttpServlet
         System.setProperty(WebLinkMgr.factoryName,                      "edu.ku.brc.specify.config.SpecifyWebLinkMgr");                // Needed for WebLnkButton
     }
     
+    /**
+     * @param sessionArg
+     * @param user
+     * @param collectionName
+     * @return
+     */
     protected Collection setupCurrentCollection(final DataProviderSessionIFace sessionArg, 
                                                 final SpecifyUser user,
                                                 final String collectionName)
@@ -439,73 +453,89 @@ public class SpecifyExplorer extends HttpServlet
             return false;
         } */
         
-        //AppContextMgr.CONTEXT_STATUS status = AppContextMgr.getInstance().setContext("testfish", "rods", false);
-        
-        DataProviderSessionIFace hibSession = null;
-        try
+        if (true)
         {
-            hibSession = DataProviderFactory.getInstance().createSession();
+            AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+            localPrefs.setDirPath(UIRegistry.getAppDataDir());
             
-        } catch (org.hibernate.exception.SQLGrammarException ex)
-        {
-            log.error(ex);
-            return false;
-        }
-        
-        SpecifyUser user = null;
-        String userName = "rods";
-        boolean debug = true;
-        try
-        {
-            List<?> list = hibSession.getDataList(SpecifyUser.class, "name", userName);
-            if (list.size() == 1)
+            AppContextMgr.CONTEXT_STATUS status = AppContextMgr.getInstance().setContext(DATABASE_NAME, "rods", false);
+            if (status == AppContextMgr.CONTEXT_STATUS.OK)
             {
-                user = (SpecifyUser)list.get(0);
-                user.getAgents(); // makes sure the Agent is not lazy loaded
-                hibSession.evict( user.getAgents());
-                SpecifyUser.setCurrentUser(user);
-    
-            } else
+                if (Discipline.getCurrentDiscipline() != null)
+                {
+                    int disciplineeId = Discipline.getCurrentDiscipline().getDisciplineId();
+                    SchemaI18NService.getInstance().loadWithLocale(SpLocaleContainer.CORE_SCHEMA, disciplineeId, DBTableIdMgr.getInstance(), Locale.getDefault());
+                }
+            }
+            
+        } else
+        {
+            DataProviderSessionIFace hibSession = null;
+            try
             {
-                //JOptionPane.showMessageDialog(null, 
-                //        getResourceString("USER_NOT_FOUND"), 
-                //        getResourceString("USER_NOT_FOUND_TITLE"), JOptionPane.WARNING_MESSAGE);
+                hibSession = DataProviderFactory.getInstance().createSession();
                 
-                return false;
-                //throw new RuntimeException("The user ["+userName+"] could  not be located as a Specify user.");
-            }
-    
-            // First we start by getting all the Collection that the User want to
-            // work with for this "Context" then we need to go get all the Default View and
-            // additional XML Resources.
-            
-            // Ask the User to choose which Collection they will be working with
-            Collection collection = setupCurrentCollection(hibSession, user, "Fish");
-            if (collection == null)
+            } catch (org.hibernate.exception.SQLGrammarException ex)
             {
-                // Return false but don't mess with anything that has been set up so far
+                log.error(ex);
                 return false;
             }
             
-            String userType = user.getUserType();
-            
-            if (debug) log.debug("User["+user.getName()+"] Type["+userType+"]");
-    
-            userType = StringUtils.replace(userType, " ", "").toLowerCase();
-            
-            if (debug) log.debug("Def Type["+userType+"]");
-            
-    
-            Discipline discipline = hibSession.getData(Discipline.class, "disciplineId", collection.getDiscipline().getId(), DataProviderSessionIFace.CompareType.Equals) ;
-            discipline.getDeterminationStatuss().size(); // make sure they are loaded
-            Discipline.setCurrentDiscipline(discipline);
-            
-        } catch (Exception ex)
-        {
-            log.error(ex);
-        } finally
-        {
-            hibSession.close();
+            SpecifyUser user = null;
+            String userName = "rods";
+            boolean debug = true;
+            try
+            {
+                List<?> list = hibSession.getDataList(SpecifyUser.class, "name", userName);
+                if (list.size() == 1)
+                {
+                    user = (SpecifyUser)list.get(0);
+                    user.getAgents(); // makes sure the Agent is not lazy loaded
+                    hibSession.evict( user.getAgents());
+                    SpecifyUser.setCurrentUser(user);
+        
+                } else
+                {
+                    //JOptionPane.showMessageDialog(null, 
+                    //        getResourceString("USER_NOT_FOUND"), 
+                    //        getResourceString("USER_NOT_FOUND_TITLE"), JOptionPane.WARNING_MESSAGE);
+                    
+                    return false;
+                    //throw new RuntimeException("The user ["+userName+"] could  not be located as a Specify user.");
+                }
+        
+                // First we start by getting all the Collection that the User want to
+                // work with for this "Context" then we need to go get all the Default View and
+                // additional XML Resources.
+                
+                // Ask the User to choose which Collection they will be working with
+                Collection collection = setupCurrentCollection(hibSession, user, "Fish");
+                if (collection == null)
+                {
+                    // Return false but don't mess with anything that has been set up so far
+                    return false;
+                }
+                
+                String userType = user.getUserType();
+                
+                if (debug) log.debug("User["+user.getName()+"] Type["+userType+"]");
+        
+                userType = StringUtils.replace(userType, " ", "").toLowerCase();
+                
+                if (debug) log.debug("Def Type["+userType+"]");
+                
+        
+                Discipline discipline = hibSession.getData(Discipline.class, "disciplineId", collection.getDiscipline().getId(), DataProviderSessionIFace.CompareType.Equals) ;
+                discipline.getDeterminationStatuss().size(); // make sure they are loaded
+                Discipline.setCurrentDiscipline(discipline);
+                
+            } catch (Exception ex)
+            {
+                log.error(ex);
+            } finally
+            {
+                hibSession.close();
+            }
         }
         // AppContextMgr.getInstance().
         //SpecifyAppPrefs.initialPrefs();
@@ -534,7 +564,7 @@ public class SpecifyExplorer extends HttpServlet
         DisciplineType         disciplineType = DisciplineType.getDiscipline("fish");
         DatabaseDriverInfo driverInfo = DatabaseDriverInfo.getDriver("MySQL");
         
-        setupDatabase(driverInfo, "localhost", "testfish", "rods", "rods", "rods", "rods", "guest@ku.edu", disciplineType);
+        setupDatabase(driverInfo, "localhost", DATABASE_NAME, "rods", "rods", "rods", "rods", "guest@ku.edu", disciplineType);
     }
     
     /**
@@ -585,13 +615,64 @@ public class SpecifyExplorer extends HttpServlet
     
     /**
      * @param fdi
+     * @param title
+     * @return
+     */
+    protected String makeURLLink(final FormDataObjIFace fdi, 
+                                 final String           title, 
+                                 final Properties       props) 
+    {
+        StringBuffer sb = new StringBuffer("<a href=\"SpecifyExplorer?");
+        if (fdi != null)
+        {
+            sb.append("cls=");
+            sb.append(fdi.getDataClass().getSimpleName());
+            sb.append("&id=");
+            sb.append(fdi.getId());
+        }
+        
+        boolean needsAmp = fdi != null;
+        if (props != null)
+        {
+            for (Object key : props.keySet())
+            {
+                if (!needsAmp)
+                {
+                    needsAmp = true;
+                } else
+                {
+                    sb.append('&');
+                }
+                sb.append(key.toString());
+                sb.append('=');
+                sb.append(props.get(key));
+            }
+        }
+        sb.append("\">");
+        sb.append(title);
+        sb.append("</a>");
+        return sb.toString();
+    }
+    
+    /**
+     * @param fdi
+     * @param title
+     * @return
+     */
+    protected String makeURLLink(final FormDataObjIFace fdi, final String title) 
+    {
+        return makeURLLink(fdi, title, null);
+    }
+    
+    /**
+     * @param fdi
      * @return
      */
     protected String formatFDI(final FormDataObjIFace fdi, final String title)
     {
         if (classHash.get(fdi.getDataClass().getSimpleName()) != null)
         {
-            return "<a href=\"SpecifyExplorer?cls="+fdi.getDataClass().getSimpleName()+"&id="+fdi.getId()+"\">"+title+"</a>";
+            return makeURLLink(fdi, title);
         }
         System.out.println(">>>>>>>>>>>>>>> class not in hash["+fdi.getDataClass().getSimpleName()+"]");
         return fdi.getIdentityTitle();
@@ -1947,8 +2028,56 @@ public class SpecifyExplorer extends HttpServlet
                                  final String fieldName,
                                  final String letter)
     {
-        String sql = "select "+className+"ID, "+fieldName+" from "+className.toLowerCase()+" order by "+fieldName+" asc";
-        doAlphaIndexPageSQL(out, className, letter, sql);
+        UIFieldFormatterIFace fmt = null;
+        boolean     isNumeric  = false;
+        int         numLetters = 1;
+        DBTableInfo tableInfo  = DBTableIdMgr.getInstance().getByShortClassName(className);
+        String      tableName  = tableInfo.getName();
+        DBFieldInfo fi         = tableInfo.getFieldByName(fieldName);
+        if (fi != null)
+        {
+            //System.out.println("Found field["+fi.getTitle()+"]");
+            fmt = fi.getFormatter();
+            if (fmt != null)
+            {
+                isNumeric = fmt.isNumeric(); 
+                if (!isNumeric)
+                {
+                    //System.out.println("Found fmt ["+fmt.getName()+"] size "+fmt.getFields().size());
+                    List<UIFieldFormatterField> fields = fmt.getFields();
+                    if (fields.size() > 0)
+                    {
+                        //System.out.println("FMT "+fields.get(0));
+                        if (fields.get(0).getType() == UIFieldFormatterField.FieldType.year)
+                        {
+                            numLetters = 4;
+                        }
+                        //System.out.println("Found numLetters "+numLetters);
+                    }
+                }
+            }
+        }
+        
+        String filter = "";
+        if (true)
+        {
+            if (StringUtils.isNotEmpty(fieldName) && StringUtils.isNotEmpty(letter) && !isNumeric)
+            {
+                filter = " LOWER(SUBSTRING("+fieldName+", 1, "+letter.length()+")) = \""+ letter.toLowerCase() + "\" ";
+            }
+        }
+        
+        String joinStr       = QueryAdjusterForDomain.getInstance().getJoinClause(tableInfo, false, null);
+        String specialFields = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, false);
+        String sql = "SELECT "+tableName + "." + tableInfo.getIdColumnName()+", "+fieldName+
+            " FROM "+tableInfo.getName() +  " " +
+            (StringUtils.isNotEmpty(joinStr) ? joinStr : "") +
+            (StringUtils.isNotEmpty(specialFields) ? " WHERE "+specialFields : "") +
+            (StringUtils.isNotEmpty(filter) ? " AND "+filter : "") +
+            " ORDER BY "+fieldName+" ASC";
+        sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
+        System.out.println(sql);
+        doAlphaIndexPageSQL(out, className, letter, numLetters, fmt, sql);
     }
     
     /**
@@ -1956,19 +2085,22 @@ public class SpecifyExplorer extends HttpServlet
      * @param fieldName
      */
     public void doAlphaIndexPageSQL(final PrintWriter out, 
-                                    final String className,
-                                    final String letter,
-                                    final String sql)
+                                    final String  className,
+                                    final String  letter,
+                                    final int     numLetters,
+                                    final UIFieldFormatterIFace fmt,
+                                    final String  sql)
     {
+        boolean isNumeric = fmt != null && fmt.isNumeric();
         int    inx        = template.indexOf(contentTag);
         String subContent = template.substring(0, inx);
+        
         out.println(StringUtils.replace(subContent, "<!-- Title -->", className));
         
         ClassDisplayInfo cdi = classHash.get(className);
         
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
         boolean useLetter = true;
-
 
         Connection connection = null;
         Statement stmt        = null;
@@ -1985,62 +2117,114 @@ public class SpecifyExplorer extends HttpServlet
             boolean doingIndex = StringUtils.isEmpty(letter);
             System.out.println("\n\ndoingIndex "+doingIndex+" letter["+letter+"]");
 
+            int numMin = Integer.MAX_VALUE;
+            int numMax = Integer.MIN_VALUE;
+            int cnt    = 0;
+            
+            
             while (rs.next())
             {
+                String name;
                 int    id   = rs.getInt(1);
-                String name = rs.getString(2);
-                if (StringUtils.isEmpty(name))
-                {
-                    name = rs.getString(1);
-                }
                 
-                if (cdi.isUseIdentityTitle())
+                if (isNumeric)
                 {
-                    FormDataObjIFace fdi = (FormDataObjIFace)SpecifyExplorer.session.createQuery("from "+className+" where id = "+id).list().get(0);
-                    if (fdi != null)
-                    {
-                        String title = fdi.getIdentityTitle();
-                        if (StringUtils.isNotEmpty(title))
-                        {
-                            name = title;
-                        }
-                    }
                     
-                } else if (cdi.getIndexClass() != null)
-                {
-                    if (cdi.getIndexClass() == Calendar.class)
+                    name = rs.getString(2);
+                    name = (String)fmt.formatToUI(name);
+                    Integer numAsInt = null;
+                    Integer floor    = null;
+                    try
                     {
-                        Date date = rs.getDate(2);
-                        if (date != null)
+                        numAsInt = Integer.parseInt(name);
+                        floor    = Integer.parseInt(letter);
+                        
+                    } catch (Exception ex) {}
+                    
+                    numMin = Math.min(numMin, numAsInt);
+                    numMax = Math.min(numMax, numAsInt);
+                    
+                    if (doingIndex)
+                    {
+                        int    numSegment = numAsInt / 1000;
+                        String c          = Integer.toString(numSegment);
+                        NameId nis        = alphaHash.get(c);
+                        if (nis == null)
                         {
-                            name = sdf.format(date);
-                        } else
-                        {
-                            name = "0000";
+                            nis = new NameId(c, 0, numSegment);
+                            alphaHash.put(c, nis);
                         }
-                        useLetter = false;
-                    }
-                }
-
-                if (doingIndex)
-                {
-                    String c = useLetter ? name.substring(0, 1).toLowerCase() : name;
-                    NameId nis = alphaHash.get(c);
-                    if (nis == null)
+                        nis.add();
+                        
+                    } else
                     {
-                        nis = new NameId(c, 0);
-                        alphaHash.put(c, nis);
+                        if (numAsInt >= floor && numAsInt < (floor + 1000))
+                        {
+                            alphaList.add(new NameId(name, id, numAsInt));
+                        }
                     }
-                    nis.add();
+
                     
                 } else
                 {
-                    if ((useLetter && name.substring(0, 1).toUpperCase().equals(letter)) ||
-                        (!useLetter && name.equals(letter)))
+                    
+                    name = rs.getString(2);
+                    if (StringUtils.isEmpty(name))
                     {
-                        alphaList.add(new NameId(name, id));
+                        name = rs.getString(1);
+                    }
+                    
+                    if (cdi.isUseIdentityTitle())
+                    {
+                        FormDataObjIFace fdi = (FormDataObjIFace)SpecifyExplorer.session.createQuery("from "+className+" where id = "+id).list().get(0);
+                        if (fdi != null)
+                        {
+                            String title = fdi.getIdentityTitle();
+                            if (StringUtils.isNotEmpty(title))
+                            {
+                                name = title;
+                            }
+                        }
+                        
+                    } else if (cdi.getIndexClass() != null)
+                    {
+                        if (cdi.getIndexClass() == Calendar.class)
+                        {
+                            Date date = rs.getDate(2);
+                            if (date != null)
+                            {
+                                name = sdf.format(date);
+                            } else
+                            {
+                                name = "0000";
+                            }
+                            useLetter = false;
+                        }
+                    }
+                    
+                    int len = Math.min(numLetters, name.length());
+                    if (doingIndex)
+                    {
+                        String c = useLetter ? name.substring(0, len).toLowerCase() : name;
+                        NameId nis = alphaHash.get(c);
+                        if (nis == null)
+                        {
+                            nis = new NameId(c, 0);
+                            alphaHash.put(c, nis);
+                        }
+                        nis.add();
+                        
+                    } else
+                    {
+                        if ((useLetter && name.substring(0, len).toUpperCase().equals(letter)) ||
+                            (!useLetter && name.equals(letter)))
+                        {
+                            alphaList.add(new NameId(name, id));
+                        }
                     }
                 }
+
+                cnt++;
             }
             
             System.out.println("alphaHash.size: "+alphaHash.size());
@@ -2061,7 +2245,7 @@ public class SpecifyExplorer extends HttpServlet
                 int i = 0;
                 for (NameId nis : alphaList)
                 {
-                    String ltrStr = nis.getName().toUpperCase();
+                    String ltrStr = nis.getNum() != null ? Integer.toString(nis.getNum() * 1000) : nis.getName().toUpperCase();
                     out.println("<tr>");
                     out.println("<td class=\"brdr"+(((i+1) % 2 == 0) ? "even" : "odd")+"\" align=\"center\">&nbsp;&nbsp;<a href=\"SpecifyExplorer?cls="+className+"&ltr="+ltrStr+"\">" +ltrStr+ "</a>&nbsp;&nbsp;</td>\n");  
                     out.println("<td class=\"brdr"+(((i+1) % 2 == 0) ? "even" : "odd")+"\"  align=\"center\"><a href=\"SpecifyExplorer?cls="+className+"&ltr="+ltrStr+"\">" +nis.getId()+ "</a></td>\n");  
@@ -2224,6 +2408,12 @@ public class SpecifyExplorer extends HttpServlet
             for (ClassDisplayInfo cdi : sortedClassList)
             {
                 String className = cdi.getClassName();
+                String indexName = cdi.getIndexName();
+                
+                if (StringUtils.isEmpty(indexName))
+                {
+                    continue;
+                }
                 
                 String brdCls = " class=\"brdr"+((cnt % 2 == 0) ? "even" : "odd")+"\"";
                 		
@@ -2469,7 +2659,115 @@ public class SpecifyExplorer extends HttpServlet
     /**
      * @param response
      */
-    protected void generateChart(HttpServletRequest request, final HttpServletResponse response)
+    protected void generateDateChart(final HttpServletRequest request, 
+                                     final HttpServletResponse response,
+                                     final String sql,
+                                     final String title,
+                                     final String x_AxisTitle,
+                                     final String y_AxisTitle)
+    {
+        String type = request.getParameter("type");
+        
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
+
+        Hashtable<String, NameId> alphaHash = new Hashtable<String, NameId>();
+        Vector<NameId>            alphaList = null;
+        
+        Connection connection = null;
+        Statement stmt        = null;
+        ResultSet rs          = null;
+        try
+        {
+            connection = DBConnection.getInstance().createConnection();
+            stmt       = connection.createStatement();
+            rs         = stmt.executeQuery(sql);
+            
+            while (rs.next())
+            {
+                Date   date = rs.getDate(1);
+                String dateStr = sdf.format(date);
+                
+                int year = Integer.parseInt(dateStr);
+                
+                int decade = (year / 10) * 10;
+                dateStr = Integer.toString(decade);
+                
+                NameId nis = alphaHash.get(dateStr);
+                if (nis == null)
+                {
+                    nis = new NameId(dateStr, 0);
+                    alphaHash.put(dateStr, nis);
+                }
+                nis.add();
+            }
+            
+        
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            
+        } finally
+        {
+            try
+            {
+                if (rs != null)
+                {
+                    rs.close();
+                }
+                if (stmt != null)
+                {
+                    stmt.close();
+                }
+                if (connection != null)
+                {
+                    connection.close();
+                }
+            } catch (Exception e)
+            {
+                e.printStackTrace();
+            }
+        }
+        
+        alphaList = new Vector<NameId>(alphaHash.values());
+        Collections.sort(alphaList);
+        createChart(response, type, alphaList, title, x_AxisTitle, y_AxisTitle);
+    }
+    
+    /**
+     * @param request
+     * @param response
+     */
+    protected void generateCEChart(final HttpServletRequest request, 
+                                   final HttpServletResponse response)
+    {
+        generateDateChart(request, 
+                          response, 
+                          "select startDate from collectingevent where startDate is not null", 
+                          "Collecting Events By Decade", 
+                          "Decades", 
+                          "Number of Collecting Events");
+    }
+    
+    /**
+     * @param request
+     * @param response
+     */
+    protected void generateColObjChart(final HttpServletRequest request, 
+                                      final HttpServletResponse response)
+    {
+        generateDateChart(request, 
+                          response, 
+                          "select catalogedDate from collectionobject where catalogedDate is not null", 
+                          "Cataloged By Decade", 
+                          "Decades", 
+                          "Number of Collection Objects");
+    }
+    
+    /**
+     * @param response
+     */
+    protected void generateCEChartOld(final HttpServletRequest request, 
+                                   final HttpServletResponse response)
     {
         String type = request.getParameter("type");
         
@@ -2596,17 +2894,131 @@ public class SpecifyExplorer extends HttpServlet
     /**
      * @param response
      */
-    protected void chartCEs(final PrintWriter out)
+    protected void chartIt(final PrintWriter out, final String arg, final String title)
     {
         int inx = template.indexOf(contentTag);
         String subContent = template.substring(0, inx);
-        out.println(StringUtils.replace(subContent, "<!-- Title -->", "CollectingEvents By Year"));
+        out.println(StringUtils.replace(subContent, "<!-- Title -->", title));
 
-        out.println("<iframe FRAMEBORDER=\"0\" src=\"SpecifyExplorer?id=genCEChart\" width=\"705\" height=\"605\"></iframe>");
+        out.println("<iframe FRAMEBORDER=\"0\" src=\"SpecifyExplorer?id="+arg+"\" width=\"705\" height=\"605\"></iframe>");
         
         out.println(template.substring(inx+contentTag.length()+1, template.length()));
     }
     
+    @SuppressWarnings("unchecked")
+    protected JSONObject createNode(final Treeable<?, ?, ?> treeable)
+    {
+        JSONObject json = new JSONObject();
+        json.accumulate("name", treeable.getName());
+        json.accumulate("fullname", treeable.getName());
+        json.accumulate("uiProvider", "col");
+               
+        JSONArray childrenArray = new JSONArray();
+        Set<Treeable<?,?,?>> children = (Set<Treeable<?,?,?>>)treeable.getChildren();
+        json.accumulate("leaf", children.size() == 0);
+        
+        //json.accumulate("count", children.size());
+        
+        for (Treeable<?,?,?> kid : children)
+        {
+            childrenArray.add(createNode(kid));
+        }
+        json.accumulate("children", childrenArray);
+        
+        return json;
+        
+    }
+    
+    /**
+     * @param text
+     * @param className
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    protected String searchTree(final String text, final String className)
+    {
+        
+        DBTableInfo ti = DBTableIdMgr.getInstance().getByShortClassName(className);
+        
+        DataProviderSessionIFace localSession = DataProviderFactory.getInstance().createSession();
+        try
+        {
+            List<FormDataObjIFace> list = (List<FormDataObjIFace>)localSession.getDataList("FROM "+ti.getClassName()+" WHERE name = '"+text+"'");
+            if (list.size() > 0)
+            {
+                JSONObject treeJSON = new JSONObject();
+                treeJSON.accumulate("title",        className);
+                treeJSON.accumulate("id",         list.iterator().next().getId());
+                System.out.println("====>\n"+treeJSON.toString());
+                return treeJSON.toString();
+            }
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            //log.error(ex);
+            
+        } finally
+        {
+            localSession.close();    
+        }
+        return "[]";
+    }
+    
+    /**
+     * @param cls
+     * @param id
+     * @return
+     */
+    protected String createTree(final Class<?> clsObj, 
+                                final int id)
+    {
+        
+        System.out.println("************************ \nLooking up ["+clsObj.getName()+"] node: "+id);
+
+        JSONObject rootNode = null;
+        
+        DataProviderSessionIFace localSession = DataProviderFactory.getInstance().createSession();
+        try
+        {
+            Treeable<?, ?, ?> treeable = (Treeable<?, ?, ?>)localSession.get(clsObj, id);
+            if (treeable != null)
+            {
+                rootNode = createNode(treeable);
+            } else
+            {
+                System.out.println("************************ \nCouldn't find ["+clsObj.getName()+"] node: "+id);
+            }
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            //log.error(ex);
+            
+        } finally
+        {
+            localSession.close();    
+        }
+        
+        if (rootNode != null)
+        {
+            JSONArray treeArray = new JSONArray();
+            treeArray.add(rootNode);
+            
+            //JSONObject treeJSON = new JSONObject();
+            //treeJSON.accumulate("title",        cls.getName());
+            //treeJSON.accumulate("tree",         treeArray);
+            
+            System.out.println("Results ************************ \n"+treeArray.toString());
+            return treeArray.toString();
+        }
+        return "{}";
+            
+    }
+    
+    /**
+     * @return
+     */
     protected String createJSONTable()
     {
         try
@@ -2691,9 +3103,9 @@ public class SpecifyExplorer extends HttpServlet
             System.out.println(json.toString());
             System.out.println("===============");
             
-            if (false)
+            if (true)
             {
-                if (false)
+                if (true)
                 {
                     String colModelStr = 
                      "[" +
@@ -2735,58 +3147,156 @@ public class SpecifyExplorer extends HttpServlet
      * @see javax.servlet.http.HttpServlet#doPost(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException
+    protected void doPost(final HttpServletRequest request, 
+                          final HttpServletResponse response) throws ServletException, IOException
     {
-        //String className = request.getParameter("cls");
-        //String idStr     = request.getParameter("id");
-        //String letter    = request.getParameter("ltr");
-        String searchStr = request.getParameter("searchStr");
+        System.out.println("doPost -------------------------------");
         
-        System.out.println("***** "+searchStr);
+        String treeSearch = request.getParameter("treeSearchStr");
+        String treeType   = request.getParameter("tree");
         
-        if (StringUtils.isNotEmpty(searchStr))
+        System.out.println(treeType);
+        if (StringUtils.isNotEmpty(treeSearch))
         {
             response.setContentType("text/html");
             PrintWriter out = response.getWriter();
-            out.print(createJSONTable());
+            out.print(searchTree(treeSearch, treeType));
             out.flush();
-            
-            //System.out.println("*********** "+jsonObj.toString());
+            return; 
+        }
+        
+        String searchStr = request.getParameter("searchStr");
+        if (expressSearch == null)
+        {
+            expressSearch         = new ExpressSearchTask();
+            expressSearchExplorer = new ExplorerESPanel();
         } else
         {
-            super.doPost(request, response);
+            expressSearchExplorer.reset();
         }
+        
+        if (expressSearch.doQuery(searchStr, expressSearchExplorer))
+        {
+            if (StringUtils.isNotEmpty(searchStr))
+            {
+                
+                JSONArray tableArray = expressSearchExplorer.getTables();
+                
+                response.setContentType("text/html");
+                PrintWriter out = response.getWriter();
+                out.print(tableArray.toString());
+                out.flush();
+                return; 
+                
+            }
+            return; 
+        }
+        
+        super.doPost(request, response);
+    }
+                          
+    /**
+     * @param out
+     */
+    protected void doQuery(final HttpServletResponse response) throws IOException
+    {
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+    }
+    
+    /**
+     * @param out
+     */
+    protected void showQueryIndex(final HttpServletResponse response) throws IOException
+    {
+        response.setContentType("text/html");
+        PrintWriter out = response.getWriter();
+
+        int    inx        = template.indexOf(contentTag);
+        String subContent = template.substring(0, inx);
+        
+        out.println(StringUtils.replace(subContent, "<!-- Title -->", "Queries"));
+
+        DataProviderSessionIFace hibSession = null;
+        try
+        {
+            hibSession = DataProviderFactory.getInstance().createSession();
+            
+            Properties props = new Properties();
+            int cnt = 0;
+            StringBuilder sb = new StringBuilder();
+            sb.append("<BR><table width=\"100%\" cellspacing=\"0\" class=\"brdr\">\n");
+            List<?> list = hibSession.getDataList("SELECT sq.id, sq.name FROM SpQuery sq INNER JOIN sq.specifyUser spu WHERE spu.id = "+SpecifyUser.getCurrentUser().getId());
+            for (Object rowObj : list)
+            {
+                Object[] cols   = (Object[])rowObj;
+                props.clear();
+                props.put("id", cols[0]);
+                props.put("query", "1");
+                String   anchor = makeURLLink(null, cols[1].toString(), props);
+                sb.append("<tr><td class=\"brdr"+((cnt % 2 == 0) ? "even" : "odd")+"\">"+anchor+"</td></tr>\n");
+                cnt++;
+            }
+            sb.append("</TABLE>");
+            out.println(sb.toString());
+            
+        } catch (org.hibernate.exception.SQLGrammarException ex)
+        {
+            log.error(ex);
+            
+        } finally
+        {
+            if (hibSession != null)
+            {
+                hibSession.close();
+            }
+        }
+        
+        
+        out.println(template.substring(inx+contentTag.length()+1, template.length()));
+
     }
 
     /* (non-Javadoc)
      * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException
+    public void doGet(final HttpServletRequest request, 
+                      final HttpServletResponse response) throws ServletException, IOException
     {
         // set session info if needed
 
         String className = request.getParameter("cls");
         String idStr     = request.getParameter("id");
         String letter    = request.getParameter("ltr");
-        String searchStr = request.getParameter("searchStr");
+        String treeStr   = request.getParameter("tree");
+        String query     = request.getParameter("query");
         
-        System.out.println("***** "+searchStr);
-        
-        if (StringUtils.isNotEmpty(searchStr))
+        //System.out.println("doGet -------------------------------["+treeStr+"]["+idStr+"]");
+        if (StringUtils.isNotEmpty(treeStr))
         {
-            //JSONObject json = new JSONObject();
-            
-            //JSONObject jsonObj = new JSONObject();
-            //jsonObj.accumulate("success", true);
             response.setContentType("text/html");
             PrintWriter out = response.getWriter();
-            out.print(createJSONTable());
-            //out.print("{success:true}");//jsonObj.toString());
+            int id = Integer.parseInt(idStr);
+            if (id > 0)
+            {
+                DBTableInfo tableInfo  = DBTableIdMgr.getInstance().getByShortClassName(treeStr);
+                //System.out.println(createTree(tableInfo.getClassObj(), id));
+                out.print(createTree(tableInfo.getClassObj(), id));
+            }
             out.flush();
-            
-            //System.out.println("*********** "+jsonObj.toString());
             return;
+        }
+        
+        if (StringUtils.isNotEmpty(query))
+        {
+            if (StringUtils.isNotEmpty(idStr))
+            {
+                
+            } else
+            {
+                showQueryIndex(response);
+                return;
+            }
         }
         
         if (StringUtils.isEmpty(idStr) && StringUtils.isEmpty(className))
@@ -2799,7 +3309,12 @@ public class SpecifyExplorer extends HttpServlet
             
             if (idStr.equals("genCEChart"))
             {
-                generateChart(request, response);
+                generateCEChart(request, response);
+                return;
+                
+            } else if (idStr.equals("genCOChart"))
+            {
+                generateColObjChart(request, response);
                 return;
             }
             
@@ -2824,11 +3339,11 @@ public class SpecifyExplorer extends HttpServlet
                 
             } else if (idStr.equals("ChartCE"))
             {
-                chartCEs(out);
+                chartIt(out, "genCEChart", "CollectingEvents By Year");
                 
-            } else if (idStr.equals("genCEChart"))
+            } else if (idStr.equals("ChartCO"))
             {
-                generateChart(request, response);
+                chartIt(out, "genCOChart", "Cataloged By Year");
                 
             } else
             {
@@ -2856,7 +3371,8 @@ public class SpecifyExplorer extends HttpServlet
                              " WHERE determinationstatus.Type = 1 AND taxon.TaxonTreeDefID = TAXTREEDEFID ORDER BY taxon.FullName ASC";
                 sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
                 
-                doAlphaIndexPageSQL(out, className, letter, sql);
+                doAlphaIndexPageSQL(out, className, letter, 1, null, sql);
+                
             } else
             {
                 ClassDisplayInfo cdi = classHash.get(className);
@@ -2952,14 +3468,21 @@ public class SpecifyExplorer extends HttpServlet
     
     class NameId implements Comparable<NameId>
     {
-        protected String name;
-        protected int id;
+        protected String  name;
+        protected int     id;
+        protected Integer num;
         
         public NameId(String name, int id)
         {
             super();
             this.name = name;
             this.id = id;
+        }
+        
+        public NameId(String name, int id, Integer num)
+        {
+            this(name, id);
+            this.num = num;
         }
         
         public void add()
@@ -2983,9 +3506,17 @@ public class SpecifyExplorer extends HttpServlet
             return id;
         }
 
+        /**
+         * @return the num
+         */
+        public Integer getNum()
+        {
+            return num;
+        }
+
         public int compareTo(NameId arg0)
         {
-            return name.compareTo(arg0.name);
+            return num != null ? num.compareTo(arg0.num) : name.compareTo(arg0.name);
         }
     }
 }

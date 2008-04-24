@@ -339,7 +339,6 @@ public class Address extends DataModelObjBase implements java.io.Serializable {
     /**
      * @return the endDate
      */
-    @Transient
     @Temporal(TemporalType.DATE)
     @Column(name = "EndDate", unique = false, nullable = true, insertable = true, updatable = true)
     public Calendar getEndDate()

@@ -48,7 +48,14 @@
   </format>
 
   <format system="true" name="LoanNumber" class="edu.ku.brc.specify.datamodel.Loan" fieldname="loanNumber" default="true">
-  <autonumber>edu.ku.brc.dbsupport.AutoNumberGeneric</autonumber>
+    <autonumber>edu.ku.brc.dbsupport.AutoNumberGeneric</autonumber>
+    <field type="year" size="4" value="YEAR" byyear="true"/>
+    <field type="separator" size="1" value="-"/>
+    <field type="numeric" size="3" inc="true"/>
+  </format>
+
+  <format system="true" name="GiftNumber" class="edu.ku.brc.specify.datamodel.Gift" fieldname="giftNumber" default="true">
+    <autonumber>edu.ku.brc.dbsupport.AutoNumberGeneric</autonumber>
     <field type="year" size="4" value="YEAR" byyear="true"/>
     <field type="separator" size="1" value="-"/>
     <field type="numeric" size="3" inc="true"/>
@@ -82,7 +89,7 @@
   </format>
 
   <format system="false" name="accessionNumber.1" class="edu.ku.brc.specify.datamodel.Accession" fieldname="accessionNumber">
-  <autonumber>edu.ku.brc.dbsupport.AutoNumberGeneric</autonumber>
+    <autonumber>edu.ku.brc.dbsupport.AutoNumberGeneric</autonumber>
     <field type="year" size="4" value="YEAR"/>
     <field type="separator" size="1" value="-"/>
     <field type="alphanumeric" size="3" value="AAA"/>

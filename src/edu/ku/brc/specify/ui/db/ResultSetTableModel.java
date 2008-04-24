@@ -95,23 +95,36 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
     
     /**
      * Construct with a QueryForIdResultsIFace
+     * @param parentERTP
      * @param results
      */
     public ResultSetTableModel(final ESResultsTablePanelIFace parentERTP,
                                final QueryForIdResultsIFace results)
+    {
+        this(parentERTP, results, false);
+    }
+    
+    /**
+     * @param parentERTP
+     * @param results
+     * @param doSequentially
+     */
+    public ResultSetTableModel(final ESResultsTablePanelIFace parentERTP,
+                               final QueryForIdResultsIFace results,
+                               final boolean doSequentially)
     {
         this.parentERTP = parentERTP;
         this.results = results;
         
         captionInfo = results.getVisibleCaptionInfo();
         
-        startDataAquisition();
+        startDataAquisition(doSequentially);
     }
     
     /**
-     * 
+     * @param doSequentially
      */
-    protected void startDataAquisition()
+    protected void startDataAquisition(final boolean doSequentially)
     {
         //System.out.println("\n"+results.getTitle()+" " +results.isHQL());
         
@@ -131,13 +144,26 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
             {
                 jpaQuery = new JPAQuery(sqlStr, this);
                 jpaQuery.setParams(results.getParams());
-                jpaQuery.start();
+                if (doSequentially)
+                {
+                    jpaQuery.execute();
+                } else
+                {
+                    jpaQuery.start();
+                }
             }
             
         } else
         {
             SQLExecutionProcessor sqlProc = new SQLExecutionProcessor(this, results.getSQL(results.getSearchTerm(), ids));
-            sqlProc.start();
+            if (doSequentially)
+            {
+                sqlProc.execute();
+                
+            } else
+            {
+                sqlProc.start();
+            }
         }
     }
     
@@ -349,6 +375,14 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
         fireTableRowsDeleted(index, index);
     }
     
+    /**
+     * @return the results
+     */
+    public QueryForIdResultsIFace getQueryForIdResults()
+    {
+        return results;
+    }
+
     /**
      * Returns a RecordSet object from the table
      * @param rows the selected rows
@@ -839,10 +873,14 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
         {
             propertyListener.propertyChange(new PropertyChangeEvent(this, "rowCount", null, new Integer(cache.size())));
         }
-        CommandAction cmdAction = new CommandAction(ExpressSearchTask.EXPRESSSEARCH, "SearchComplete", customQuery);
-        cmdAction.setProperty("QueryForIdResultsIFace", results);
-        cmdAction.setProperty("ESResultsTablePanelIFace", parentERTP);
-        CommandDispatcher.dispatch(cmdAction);
+        
+        if (parentERTP != null)
+        {
+            CommandAction cmdAction = new CommandAction(ExpressSearchTask.EXPRESSSEARCH, "SearchComplete", customQuery);
+            cmdAction.setProperty("QueryForIdResultsIFace", results);
+            cmdAction.setProperty("ESResultsTablePanelIFace", parentERTP);
+            CommandDispatcher.dispatch(cmdAction);
+        }
     }
 
     /* (non-Javadoc)

@@ -37,6 +37,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.NoSuchElementException;
@@ -119,6 +120,7 @@ import edu.ku.brc.specify.datamodel.PermitAttachment;
 import edu.ku.brc.specify.datamodel.PreparationAttachment;
 import edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.TaxonAttachment;
 import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
 import edu.ku.brc.specify.tests.SpecifyAppPrefs;
@@ -196,7 +198,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private String               appName             = "Specify";
     private String               appVersion          = "6.0";
 
-    private String               appBuildVersion     = "200804111500 (SVN: 3876)";
+    private String               appBuildVersion     = "200804221000 (SVN: 3935)";
     
     protected static CacheManager cacheManager        = new CacheManager();
 
@@ -1010,6 +1012,32 @@ public class Specify extends JPanel implements DatabaseLoginListener
                         @SuppressWarnings("synthetic-access")
                         public void actionPerformed(ActionEvent ae)
                         {
+                            if (true)
+                            {
+                                DataProviderSessionIFace hibSession = null;
+                                try
+                                {
+                                    hibSession = DataProviderFactory.getInstance().createSession();
+                                    
+                                    List<?> list = hibSession.getDataList("SELECT sq.id, sq.name FROM SpQuery sq INNER JOIN sq.specifyUser spu WHERE spu.id = "+SpecifyUser.getCurrentUser().getId());
+                                    for (Object rowObj : list)
+                                    {
+                                        System.out.println(rowObj);
+                                    }
+                                    
+                                } catch (org.hibernate.exception.SQLGrammarException ex)
+                                {
+                                    log.error(ex);
+                                    
+                                } finally
+                                {
+                                    if (hibSession != null)
+                                    {
+                                        hibSession.close();
+                                    }
+                                }
+                                return;
+                            }
                             final CustomDialog dialog = new CustomDialog(topFrame, "Local Prefs", true, CustomDialog.OK_BTN, new AppPrefsEditor(false));
                             dialog.setOkLabel(UIRegistry.getResourceString("Close"));
                             dialog.pack();

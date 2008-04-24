@@ -17411,7 +17411,7 @@
         <isHidden>false</isHidden>
         <version>0</version>
       </item>
-      <item name="loanNumber" type="java.lang.String">
+      <item name="loanNumber" type="java.lang.String" format="LoanNumber" isUIFormatter="true">
         <names>
           <str language="de" country="" variant="">
             <text>Loan Number</text>
@@ -32527,7 +32527,7 @@
         <isHidden>false</isHidden>
         <version>0</version>
       </item>
-      <item name="giftNumber">
+      <item name="giftNumber" type="java.lang.String" format="GiftNumber" isUIFormatter="true">
         <names>
           <str language="en">
             <text>Gift Number</text>

@@ -7,7 +7,7 @@
 /**
  * 
  */
-package edu.ku.brc.af.core.web;
+package edu.ku.brc.specify.web;
 
 /**
  * @author rod

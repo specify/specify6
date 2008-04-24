@@ -82,6 +82,9 @@
 			<field>guid</field>
 			<field>remarks</field>
 		</order>
+		<stats>
+			<stat url="SpecifyExplorer?id=ChartCO">Cataloged By Decade</stat>
+	    </stats>
 	</class>
 		
     <class name="Locality" linkfield="namedPlace" indexfield="">
@@ -317,7 +320,7 @@
 		</order>
 	</class>
 	
-    <class name="Accession" linkfield="number" indexfield="accessionNumber">
+    <class name="Accession" linkfield="accessionNumber" indexfield="accessionNumber">
     	<skip>
 			<field>visibility</field>
 			<field>visibilitySetBy</field>

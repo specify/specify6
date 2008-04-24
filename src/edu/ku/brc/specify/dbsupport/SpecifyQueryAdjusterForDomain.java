@@ -156,7 +156,8 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
                     //this probably won't actually work without additional
                     //changes to the from clause for the query
                     fld = "agent_discipline.DisciplineID"; 
-                    throw new RuntimeException("Fix me I am probably broken!");
+                    prefix = "";
+                    //throw new RuntimeException("Fix me I am probably broken!");
                 }
             }
             
@@ -222,7 +223,7 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
             {
                 throw new RuntimeException("SpecifyQueryAdjuster.getJoinClause does not work for SQL with non-null alias.");
             }
-            return "INNER JOIN agent_discpline ON agent.AgentID = agent_discpline.AgentID";
+            return "INNER JOIN agent_discipline ON agent.AgentID = agent_discipline.AgentID";
             
         } else if (tableInfo.getRelationshipByName("discipline") != null)
         {
@@ -234,7 +235,7 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
             {
                 throw new RuntimeException("SpecifyQueryAdjuster.getJoinClause does not work for SQL with non-null alias.");
             }
-            return "INNER JOIN discpline as dsp ON "+tableInfo.getName()+".DisciplineID = discpline.DisciplineID";
+            return "INNER JOIN discipline as dsp ON "+tableInfo.getName()+".DisciplineID = dsp.DisciplineID";
         }
         return super.getJoinClause(tableInfo, isHQL, alias);
 
@@ -245,7 +246,7 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
 //            {
 //                return "JOIN ag.disciplines as dsp";
 //            }
-//            return "INNER JOIN agent_discpline ON agent.AgentID = agent_discpline.AgentID";
+//            return "INNER JOIN agent_discipline ON agent.AgentID = agent_discipline.AgentID";
 //            
 //        } else if (tableInfo.getRelationshipByName("discipline") != null)
 //        {
@@ -253,7 +254,7 @@ public class SpecifyQueryAdjusterForDomain extends QueryAdjusterForDomain
 //            {
 //                return "JOIN "+tableInfo.getAbbrev()+".discipline as dsp";
 //            }
-//            return "INNER JOIN discpline as dsp ON "+tableInfo.getName()+".DisciplineID = discpline.DisciplineID";
+//            return "INNER JOIN discipline as dsp ON "+tableInfo.getName()+".DisciplineID = discipline.DisciplineID";
 //        }
 //        return super.getJoinClause(tableInfo, isHQL);
     }

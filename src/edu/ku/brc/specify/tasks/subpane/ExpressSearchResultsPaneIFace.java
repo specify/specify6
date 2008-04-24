@@ -55,5 +55,15 @@ public interface ExpressSearchResultsPaneIFace
      * @return true if there are results, false if none were found.
      */
     public abstract boolean hasResults();
+    
+    /**
+     * @return returns whether the Queries should be executed in a synchronous fashion.
+     */
+    public boolean doQueriesSynchronously();
+    
+    /**
+     * 
+     */
+    public void done();
 
 }

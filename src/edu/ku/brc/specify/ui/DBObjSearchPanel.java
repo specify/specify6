@@ -678,4 +678,20 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
     {
         isMultipleSelection = isMultiple;
     }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace#doQueriesSynchronously()
+     */
+    public boolean doQueriesSynchronously()
+    {
+        return false;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace#done()
+     */
+    public void done()
+    {
+        // not needed
+    }
 }

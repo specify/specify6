@@ -4,7 +4,7 @@
      * [INSERT KU-APPROVED LICENSE TEXT HERE]
      *
      */
-package edu.ku.brc.af.core.web;
+package edu.ku.brc.specify.web;
 
 
 public class FieldDisplayInfo
