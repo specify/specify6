@@ -31,6 +31,7 @@ import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.forms.DataObjectGettable;
 import edu.ku.brc.ui.forms.DataObjectGettableFactory;
+import edu.ku.brc.ui.forms.FormHelper;
 
 /**
  * A formatter that can have one or more formatters that depend on an external value, typically from the database.
@@ -147,7 +148,7 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
             return getFormatterForValue(null); // null is ignored
         }
 
-        DataObjectGettable getter = DataObjectGettableFactory.get(dataObj.getClass().getName(), "edu.ku.brc.ui.forms.DataGetterForObj");
+        DataObjectGettable getter = DataObjectGettableFactory.get(dataObj.getClass().getName(), FormHelper.DATA_OBJ_GETTER);
 
         DataObjDataFieldFormatIFace dff = null;
         Object[] values = UIHelper.getFieldValues(new String[] {getFieldName()}, dataObj, getter);

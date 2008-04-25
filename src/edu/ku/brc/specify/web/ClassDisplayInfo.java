@@ -20,6 +20,9 @@ public class ClassDisplayInfo  implements Comparable<ClassDisplayInfo>
     protected boolean  useIdentityTitle;
     protected String   linkField;
     
+    protected TitleGetterIFace titleGetter = null;
+    protected String           titleField  = null;
+    
     // Fields are in Order
     protected Vector<FieldDisplayInfo>            fields    = new Vector<FieldDisplayInfo>();
     protected Vector<FieldDisplayInfo>            order     = new Vector<FieldDisplayInfo>();
@@ -47,6 +50,38 @@ public class ClassDisplayInfo  implements Comparable<ClassDisplayInfo>
         this.useIdentityTitle = useIdentityTitle;
     }
     
+    /**
+     * @return the titleField
+     */
+    public String getTitleField()
+    {
+        return titleField;
+    }
+
+    /**
+     * @param titleField the titleField to set
+     */
+    public void setTitleField(String titleField)
+    {
+        this.titleField = titleField;
+    }
+
+    /**
+     * @return the titlGetter
+     */
+    public TitleGetterIFace getTitleGetter()
+    {
+        return titleGetter;
+    }
+
+    /**
+     * @param titlGetter the titlGetter to set
+     */
+    public void setTitleGetter(TitleGetterIFace titleGetter)
+    {
+        this.titleGetter = titleGetter;
+    }
+
     public void addOrdered(final FieldDisplayInfo field)
     {
         order.add(field);

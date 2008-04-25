@@ -41,6 +41,7 @@ import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.forms.DataObjectGettable;
 import edu.ku.brc.ui.forms.DataObjectGettableFactory;
+import edu.ku.brc.ui.forms.FormHelper;
 
 
 /**
@@ -540,9 +541,8 @@ public class DataObjFieldFormatMgr
                 return format.format(dataObj);
             }
             
-            // XXX FIXME this shouldn't be hard coded here
             DataObjectGettable getter = DataObjectGettableFactory.get(format.getDataClass().getName(), 
-                                                                      "edu.ku.brc.ui.forms.DataGetterForObj");
+                                                                      FormHelper.DATA_OBJ_GETTER);
             if (getter != null)
             {
                 StringBuilder strBuf = new StringBuilder(128);
@@ -619,9 +619,8 @@ public class DataObjFieldFormatMgr
     {
         if (format != null)
         {
-            // XXX FIXME this shouldn't be hard coded here
             DataObjectGettable getter = DataObjectGettableFactory.get(format.getDataClass().getName(), 
-                                                                      "edu.ku.brc.ui.forms.DataGetterForObj");
+                                                                      FormHelper.DATA_OBJ_GETTER);
             if (getter != null)
             {
                 StringBuilder strBuf = new StringBuilder(128);

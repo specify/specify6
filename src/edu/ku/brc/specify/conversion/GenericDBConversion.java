@@ -3856,15 +3856,15 @@ public class GenericDBConversion
                 .get("stratigraphy_GeologicTimePeriodID");
 
         String[] fieldsToSkip = { "CatalogedDateVerbatim", "ContainerID", "ContainerItemID",
-                "AltCatalogNumber",
-                "GUID",
-                "ContainerOwnerID",
-                "RepositoryAgreementID",
-                "GroupPermittedToView", // this may change when converting Specify 5.x
-                "CollectionObjectID", "VisibilitySetBy", "ContainerOwnerID", "InventoryDate",
-                "ObjectCondition", "Notifications", "ProjectNumber", "Restrictions", "YesNo3",
-                "YesNo4", "YesNo5", "YesNo6", "FieldNotebookPageID", "ColObjAttributesID",
-                "DNASequenceID", "AppraisalID", "TotalValue" };
+                                  "AltCatalogNumber",
+                                  "GUID",
+                                  "ContainerOwnerID",
+                                  "RepositoryAgreementID",
+                                  "GroupPermittedToView", // this may change when converting Specify 5.x
+                                  "CollectionObjectID", "VisibilitySetBy", "ContainerOwnerID", "InventoryDate",
+                                  "ObjectCondition", "Notifications", "ProjectNumber", "Restrictions", "YesNo3",
+                                  "YesNo4", "YesNo5", "YesNo6", "FieldNotebookPageID", "ColObjAttributesID",
+                                  "DNASequenceID", "AppraisalID", "TotalValue" };
 
         Hashtable<String, String> fieldsToSkipHash = new Hashtable<String, String>();
         for (String fName : fieldsToSkip)
@@ -3873,36 +3873,30 @@ public class GenericDBConversion
         }
 
         log.info("colObjTaxonMapper: " + colObjTaxonMapper.size());
-        BasicSQLUtils.setIdentityInsertONCommandForSQLServer(newDBConn, "collectionobject",
-                BasicSQLUtils.myDestinationServerType);
+        BasicSQLUtils.setIdentityInsertONCommandForSQLServer(newDBConn, "collectionobject", BasicSQLUtils.myDestinationServerType);
 
-        deleteAllRecordsFromTable(newDBConn, "collectionobject",
-                BasicSQLUtils.myDestinationServerType); // automatically closes the connection
+        deleteAllRecordsFromTable(newDBConn, "collectionobject", BasicSQLUtils.myDestinationServerType); // automatically closes the connection
         try
         {
-            Statement stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-                    ResultSet.CONCUR_READ_ONLY);
+            Statement stmt = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             StringBuilder str = new StringBuilder();
 
             List<String> oldFieldNames = new ArrayList<String>();
 
             StringBuilder sql = new StringBuilder("select ");
             List<String> names = new ArrayList<String>();
-            getFieldNamesFromSchema(oldDBConn, "collectionobject", names,
-                    BasicSQLUtils.mySourceServerType);
+            getFieldNamesFromSchema(oldDBConn, "collectionobject", names, BasicSQLUtils.mySourceServerType);
 
             sql.append(buildSelectFieldList(names, "collectionobject"));
             sql.append(", ");
             oldFieldNames.addAll(names);
 
             names.clear();
-            getFieldNamesFromSchema(oldDBConn, "collectionobjectcatalog", names,
-                    BasicSQLUtils.mySourceServerType);
+            getFieldNamesFromSchema(oldDBConn, "collectionobjectcatalog", names, BasicSQLUtils.mySourceServerType);
             sql.append(buildSelectFieldList(names, "collectionobjectcatalog"));
             oldFieldNames.addAll(names);
 
-            sql
-                    .append(" From collectionobject Inner Join collectionobjectcatalog ON collectionobject.CollectionObjectID = collectionobjectcatalog.CollectionObjectCatalogID Where collectionobject.CollectionObjectTypeID = 10");
+            sql.append(" From collectionobject Inner Join collectionobjectcatalog ON collectionobject.CollectionObjectID = collectionobjectcatalog.CollectionObjectCatalogID Where collectionobject.CollectionObjectTypeID = 10");
 
             log.info(sql);
 
@@ -3910,8 +3904,7 @@ public class GenericDBConversion
             // getFieldNamesFromSchema(newDBConn, "collectionobject", newFieldNames);
 
             List<BasicSQLUtils.FieldMetaData> newFieldMetaData = new ArrayList<BasicSQLUtils.FieldMetaData>();
-            getFieldMetaDataFromSchema(newDBConn, "collectionobject", newFieldMetaData,
-                    BasicSQLUtils.myDestinationServerType);
+            getFieldMetaDataFromSchema(newDBConn, "collectionobject", newFieldMetaData, BasicSQLUtils.myDestinationServerType);
 
             log.info("Number of Fields in New CollectionObject " + newFieldMetaData.size());
             String sqlStr = sql.toString();
@@ -3958,8 +3951,7 @@ public class GenericDBConversion
                 }
             }
 
-            Statement stmt2 = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,
-                    ResultSet.CONCUR_READ_ONLY);
+            Statement stmt2 = oldDBConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
 
             int catNumInx = oldNameIndex.get("CatalogNumber");
 
@@ -4033,7 +4025,9 @@ public class GenericDBConversion
                 for (int i = 0; i < newFieldMetaData.size(); i++)
                 {
                     if (i > 0)
+                    {
                         str.append(", ");
+                    }
 
                     String newFieldName = newFieldMetaData.get(i).getName();
 
@@ -4052,9 +4046,8 @@ public class GenericDBConversion
                         } else
                         {
                             float catNum = rs.getFloat(catNumInx + 1);
-                            catalogNumber = (usePrefix && StringUtils.isNotEmpty(prefix) ? (prefix + "-")
-                                    : "")
-                                    + String.format("%9.0f", catNum).trim();
+                            catalogNumber = (usePrefix && StringUtils.isNotEmpty(prefix) ? (prefix + "-") : "")
+                                            + String.format("%9.0f", catNum).trim();
                         }
 
                         int subNumber = rs.getInt(oldNameIndex.get("SubNumber") + 1);
@@ -4153,8 +4146,7 @@ public class GenericDBConversion
                         Integer index = oldNameIndex.get(newFieldName);
                         if (index == null)
                         {
-                            String msg = "Couldn't find new field name[" + newFieldName
-                                    + "] in old field name in index Map";
+                            String msg = "Couldn't find new field name[" + newFieldName + "] in old field name in index Map";
                             log.error(msg);
                             // for (String key : oldNameIndex.keySet())
                             // {
@@ -4179,8 +4171,7 @@ public class GenericDBConversion
                                     data = idMapper.get(rs.getInt(index + 1));
                                 } else
                                 {
-                                    log.error("No Map for [" + tableName + "][" + newFieldName
-                                            + "]");
+                                    log.error("No Map for [" + tableName + "][" + newFieldName + "]");
                                 }
                             }
                         }
@@ -4218,8 +4209,7 @@ public class GenericDBConversion
                         Statement updateStatement = newDBConn.createStatement();
                         if (BasicSQLUtils.myDestinationServerType != BasicSQLUtils.SERVERTYPE.MS_SQLServer)
                         {
-                            BasicSQLUtils.removeForeignKeyConstraints(newDBConn,
-                                    BasicSQLUtils.myDestinationServerType);
+                            BasicSQLUtils.removeForeignKeyConstraints(newDBConn, BasicSQLUtils.myDestinationServerType);
                         }
                         // updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
                         updateStatement.executeUpdate(str.toString());
@@ -4259,14 +4249,12 @@ public class GenericDBConversion
             stmt.close();
         } catch (SQLException e)
         {
-            BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "collectionobject",
-                    BasicSQLUtils.myDestinationServerType);
+            BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "collectionobject", BasicSQLUtils.myDestinationServerType);
             e.printStackTrace();
             log.error(e);
             throw new RuntimeException(e);
         }
-        BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "collectionobject",
-                BasicSQLUtils.myDestinationServerType);
+        BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "collectionobject", BasicSQLUtils.myDestinationServerType);
         return true;
     }
 

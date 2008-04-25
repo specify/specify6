@@ -254,7 +254,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
     {
         try
         {
-            DataObjectGettable getter     = DataObjectGettableFactory.get(dataObject.getClass().getName(), "edu.ku.brc.ui.forms.DataGetterForObj");
+            DataObjectGettable getter     = DataObjectGettableFactory.get(dataObject.getClass().getName(), FormHelper.DATA_OBJ_GETTER);
             Object             dataMember = getter.getFieldValue(dataObject, fieldName);
             
             if (dataMember != null)
@@ -294,7 +294,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
      */
     public static boolean removeFromCollection(final Object dataObject, final String fieldName, final FormDataObjIFace ref)
     {
-        DataObjectGettable getter     = DataObjectGettableFactory.get(dataObject.getClass().getName(), "edu.ku.brc.ui.forms.DataGetterForObj");
+        DataObjectGettable getter     = DataObjectGettableFactory.get(dataObject.getClass().getName(), FormHelper.DATA_OBJ_GETTER);
         Object             dataMember = getter.getFieldValue(dataObject, fieldName);
         try
         {
@@ -459,7 +459,7 @@ public abstract class DataModelObjBase implements FormDataObjIFace, Cloneable
                 parentPath[i] = fieldNames[i];
             }
             // Now go get the 'true' parent of the incoming reference by walk the hierarchy
-            DataObjectGettable getter = DataObjectGettableFactory.get(getClass().getName(), "edu.ku.brc.ui.forms.DataGetterForObj");
+            DataObjectGettable getter = DataObjectGettableFactory.get(getClass().getName(), FormHelper.DATA_OBJ_GETTER);
             Object[] values = UIHelper.getFieldValues(parentPath, this, getter);
             parentDataObject = (FormDataObjIFace)values[parentPath.length-1];
             

@@ -14,6 +14,7 @@
 	</class>
 	
 	<class name="Taxon" linkfield="name" indexfield="fullName">
+	    <title field="fullName"/>
 		<skip>
 			<field>highestChildNodeNumber</field>
 			<field>definition</field>
@@ -31,11 +32,11 @@
 			<field>groupNumber</field>
 			<field>determinations</field>
             <field search="true">rankId</field>
+            <field search="true">fullName</field>
 		</skip>
 		<order>
 			<field>definitionItem</field>
 			<field>name</field>
-			<field>fullName</field>
 			<field>commonName</field>
 			<field>taxonomicSerialNumber</field>
 			<field>environmentalProtectionStatus</field>
@@ -43,17 +44,18 @@
 			<field>source</field>
 			<field>guid</field>
 			<field>remarks</field>
-			<field>rankId</field>
 		</order>
 		<additional>
-			<field type="set" label="Collection Objects" labellevel="determinations" >determinations.collectionObject</field>
+			<field type="set" label="Collection Objects" labellevel="determinations" singlecell="true">determinations.collectionObject</field>
 		</additional>
 	</class>
 	
     <class name="Geography" linkfield="name" indexfield="name">
+        <title field="fullName"/>
     	<skip>
 			<field>visibility</field>
 			<field>visibilitySetBy</field>
+			<field search="true">fullName</field>
 		</skip>
 	</class>
 	
@@ -65,15 +67,18 @@
 	</class>
 	
     <class name="CollectionObject" linkfield="catalogNumber" indexfield="catalogNumber">
+        <title getter="edu.ku.brc.specify.web.ColObjTitleGetter"/>
     	<skip>
 			<field>visibility</field>
 			<field>visibilitySetBy</field>
 			<field>groupPermittedToView</field>
-			<field>colObjAttributes</field>
+			<field>catalogNumber</field>
+			<field>collectionObjectAttrs</field>
+			<field>collectionObjectAttribute</field>
+			<field>modifier</field>
 			<field>attrs</field>
 		</skip>
 		<order>
-			<field>catalogNumber</field>
 			<field>fieldNumber</field>
 			<field>catalogedDate</field>
 			<field>catalogedDateVerbatim</field>
@@ -164,11 +169,13 @@
 	</class>
 	
     <class name="CollectingEvent" linkfield="startDate" indexfield="startDate">
+        <title field="startDate"/>
     	<skip>
 			<field>visibility</field>
 			<field>visibilitySetBy</field>
 			<field>groupPermittedToView</field>
 			<field>habitatAttributes</field>
+			<field search="true">startDate</field>
 		</skip>
 		<order>
 			<field>startDate</field>
@@ -321,10 +328,12 @@
 	</class>
 	
     <class name="Accession" linkfield="accessionNumber" indexfield="accessionNumber">
+        <title field="accessionNumber"/>
     	<skip>
 			<field>visibility</field>
 			<field>visibilitySetBy</field>
 			<field>groupPermittedToView</field>
+			<field search="true">accessionNumber</field>
 		</skip>
 		<order>
 		</order>

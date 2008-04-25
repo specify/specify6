@@ -65,6 +65,9 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
                                        extends BaseBusRules
 {
     private static final Logger log = Logger.getLogger(BaseTreeBusRules.class);
+    
+    protected boolean isAcceptedItemListenerInstalled = false;
+
 
     /**
      * Constructor.
@@ -395,20 +398,30 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
         }
         
         // TODO: the form system MUST require the accepted parent widget to be present if the isAccepted checkbox is present
-        final JCheckBox        acceptedCheckBox     = (JCheckBox)formViewObj.getControlByName("isAccepted");
-        final GetSetValueIFace acceptedParentWidget = (GetSetValueIFace)formViewObj.getControlByName("acceptedParent");
+        final JCheckBox            acceptedCheckBox     = (JCheckBox)formViewObj.getControlByName("isAccepted");
+        final ValComboBoxFromQuery acceptedParentWidget = (ValComboBoxFromQuery)formViewObj.getControlByName("acceptedParent");
         if (acceptedCheckBox != null && acceptedParentWidget != null)
         {
-            acceptedCheckBox.addItemListener(new ItemListener()
+            acceptedParentWidget.setEnabled(!acceptedCheckBox.isSelected());
+            if (acceptedCheckBox.isSelected())
             {
-                public void itemStateChanged(ItemEvent e)
+                acceptedParentWidget.setValue(null, null);
+            }
+            
+            if (!isAcceptedItemListenerInstalled)
+            {
+                isAcceptedItemListenerInstalled = true;
+                acceptedCheckBox.addItemListener(new ItemListener()
                 {
-                    if (acceptedCheckBox.isSelected())
+                    public void itemStateChanged(ItemEvent e)
                     {
-                        acceptedParentWidget.setValue(null, null);
+                        if (acceptedCheckBox.isSelected())
+                        {
+                            acceptedParentWidget.setValue(null, null);
+                        }
                     }
-                }
-            });
+                });
+            }
         }
 
     }
