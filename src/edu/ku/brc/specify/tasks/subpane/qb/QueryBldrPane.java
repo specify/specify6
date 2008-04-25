@@ -986,7 +986,7 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                     result.add(erti);
                 }
             }
-            else log.error("null contextTableIdent for" + qf.getFieldName());
+            else log.error("null contextTableIdent for " + qf.getFieldName());
         }
         return result;
     }

@@ -722,7 +722,6 @@ public class ReportsBaseTask extends BaseTask
             {
                 openIReportEditor(cmdAction);
             }
-            
             if (cmdAction.getData() instanceof RecordSet)
             {
                 RecordSet rs = (RecordSet)cmdAction.getData();
@@ -734,6 +733,10 @@ public class ReportsBaseTask extends BaseTask
                 {
                     printReport(cmdAction);
                 }
+            }
+            else 
+            {
+                printReport(cmdAction);
             }
         }
         else if (cmdAction.isAction(OPEN_EDITOR))
@@ -904,7 +907,7 @@ public class ReportsBaseTask extends BaseTask
     {
         CommandAction repAction = null;
         final AppResourceIFace repRes;
-        
+        final boolean doNewWiz = cmdAction.getProperty("newwizard") != null ? true : false;
         if (cmdAction.isAction(OPEN_EDITOR)) //EditReport was clicked or dropped on
         {
             Object data = cmdAction.getData();
@@ -912,6 +915,7 @@ public class ReportsBaseTask extends BaseTask
             {
                 repAction = (CommandAction)data;
             }
+            
         }
         else if (cmdAction.isAction(PRINT_REPORT))//Report was dropped upon
         {
@@ -973,7 +977,11 @@ public class ReportsBaseTask extends BaseTask
                     {
                         iReportMainFrame.openReportFromResource(repRes);
                     }
-                    iReportMainFrame.setVisible(true);                
+                    iReportMainFrame.setVisible(true);    
+                    if (doNewWiz)
+                    {
+                        iReportMainFrame.newWizard();
+                    }
                 }
                 catch (Exception e)
                 {

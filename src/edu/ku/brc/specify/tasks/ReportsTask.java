@@ -17,6 +17,8 @@ package edu.ku.brc.specify.tasks;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.datatransfer.DataFlavor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -31,6 +33,7 @@ import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.tasks.subpane.LabelsPane;
 import edu.ku.brc.ui.CommandAction;
+import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.RolloverCommand;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
@@ -85,7 +88,22 @@ public class ReportsTask extends ReportsBaseTask
     {
         super.preInitialize();
         
-        actionNavBox.add(NavBox.createBtnWithTT(getResourceString("Create_New_Report"), name, getResourceString("CREATE_REPORT_TT"), IconManager.STD_ICON_SIZE, null));
+        actionNavBox.add(NavBox.createBtnWithTT(getResourceString("Create_New_Report"), name, 
+                getResourceString("CREATE_REPORT_TT"), IconManager.STD_ICON_SIZE, 
+                new ActionListener() {
+
+                    /* (non-Javadoc)
+                     * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+                     */
+                    @Override
+                    public void actionPerformed(ActionEvent e)
+                    {
+                        System.out.println("You clicked 'Create New Report'");
+                        CommandAction cmd = new CommandAction(REPORTS, OPEN_EDITOR, SpReport.getClassTableId());
+                        cmd.setProperty("newwizard", "true");
+                        CommandDispatcher.dispatch(cmd);
+                    }
+        }));
         
         RolloverCommand roc = (RolloverCommand)makeDnDNavBtn(actionNavBox, getResourceString("ReportEditor"), "EditIcon", 
                 getResourceString("EDIT_REPORT_TT"), 

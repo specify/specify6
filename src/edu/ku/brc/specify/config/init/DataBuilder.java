@@ -281,7 +281,8 @@ public class DataBuilder
     
     public static SpQueryField createQueryField(final SpQuery query,
                                                 final Short   position,
-                                                final String  fieldName, 
+                                                final String  fieldName,
+                                                final String  fieldAlias,
                                                 final Boolean isNot,
                                                 final Byte    operStart,
                                                 final Byte    operEnd,
@@ -289,12 +290,14 @@ public class DataBuilder
                                                 final String  endValue,
                                                 final Byte    sortType,
                                                 final Boolean isDisplay,
-                                                final String  tableList)
+                                                final String  tableList,
+                                                final int contextTableIdent)
     {
         SpQueryField field = new SpQueryField();
         field.initialize();
         field.setPosition(position);
         field.setFieldName(fieldName);
+        field.setColumnAlias(fieldAlias); 
         field.setOperStart(operStart);
         field.setOperEnd(operEnd);
         field.setEndValue(endValue);
@@ -303,6 +306,8 @@ public class DataBuilder
         field.setSortType(sortType);
         field.setStartValue(startValue);
         field.setTableList(tableList);
+        field.setContextTableIdent(contextTableIdent);
+        field.setIsPrompt(true);
         query.addReference(field, "fields");
         return field;
     }

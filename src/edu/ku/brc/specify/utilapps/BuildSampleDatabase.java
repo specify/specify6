@@ -308,7 +308,7 @@ public class BuildSampleDatabase
         //Byte desc        = SpQueryField.SortType.DESC.getOrdinal();
         
         SpQuery query = createQuery("CO "+Collection.getCurrentCollection().getCollectionName(), "CollectionObject", 1, SpecifyUser.getCurrentUser(), userAgent);
-        createQueryField(query, (short)0, "catalogNumber", false, greq, lteq, "102", "103", asc, true, "1");
+        createQueryField(query, (short)0, "catalogNumber", "Catalog Number", false, greq, lteq, "102", "103", asc, true, "1", 1);
         query.setIsFavorite(true);
         dataObjects.add(query);
     }
