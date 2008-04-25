@@ -15,6 +15,7 @@
 
 package edu.ku.brc.specify.conversion;
 
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -87,13 +88,28 @@ public class BasicSQLUtils
     protected static ProgressFrame   frame = null;
     
     protected static boolean ignoreMySQLduplicates = true;
+    
+    // Missing Mapping File
+    protected static PrintWriter missingPW;
+    
+    static
+    {
+        try
+        {
+            missingPW = new PrintWriter("missing.txt");
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
 
     /**
      * Singleton
      */
     protected  BasicSQLUtils()
     {
-        //
+        
     }
 
     public static int getShowErrors()
@@ -1215,11 +1231,11 @@ public class BasicSQLUtils
                     String        oldMappedColName = null;
                     
                     //System.out.println("["+newFieldName.getName()+"]");
-                    //if (newFieldName.getName().equals("DisciplineID"))
-                    //{
-                    //    int x = 0;
-                    //    x++;
-                    //}
+                    if (newFieldName.getName().equals("DisciplineID"))
+                    {
+                        int x = 0;
+                        x++;
+                    }
 
                     // Get the Old Column Index from the New Name
                     Integer columnIndex = fromHash.get(colName);
@@ -1235,7 +1251,12 @@ public class BasicSQLUtils
                                    (ignoreMappingFieldNames == null || 
                                     ignoreMappingFieldNames.get(colName) == null))
                         {
-                            log.error("No Map for table ["+fromTableName+"] from New Name[" + colName + "] to Old Name["+oldMappedColName+"]");
+                            String msg = "No Map for table ["+fromTableName+"] from New Name[" + colName + "] to Old Name["+oldMappedColName+"]";
+                            log.error(msg);
+                            
+                            missingPW.println(msg);
+                            missingPW.flush();
+                            
                         }
                     } else
                     {

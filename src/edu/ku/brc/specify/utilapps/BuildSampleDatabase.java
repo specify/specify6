@@ -116,6 +116,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
+import org.hibernate.Query;
 import org.hibernate.Session;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -457,8 +458,8 @@ public class BuildSampleDatabase
         frame.setDesc("Creating PickLists...");
         frame.setProcess(++createStep);
         
-        createPickLists(null);
-        createPickLists(discipline);
+        createPickLists(session, null);
+        createPickLists(session, discipline);
         
         //startTx();
         persist(dataObjects);
@@ -546,17 +547,44 @@ public class BuildSampleDatabase
      * @param discipline
      * @return
      */
-    protected BldrPickList createPickLists(final Discipline discipline)
+    public static BldrPickList createPickLists(final Session localSession,
+                                               final Discipline discipline)
     {
-        BldrPickList colMethods = null;
+        return createPickLists(localSession, discipline, false, Collection.getCurrentCollection());
+    }
+    
+    /**
+     * @param discipline
+     * @return
+     */
+    public static BldrPickList createPickLists(final Session    localSession,
+                                               final Discipline discipline, 
+                                               final boolean    doCheck,
+                                               final Collection collection)
+    {
         
-        Collection collection = Collection.getCurrentCollection();
+        Hashtable<String, Boolean> nameHash = doCheck ? new Hashtable<String, Boolean>() : null;
+        
+        if (doCheck)
+        {
+            for (PickList pl : collection.getPickLists())
+            {
+                nameHash.put(pl.getName(), true);
+            }
+        }
+        
+        BldrPickList colMethods = null;
         
         List<BldrPickList> pickLists = DataBuilder.getBldrPickLists(discipline != null ? discipline.getName() : "common");
         if (pickLists != null)
         {
             for (BldrPickList pl : pickLists)
             {
+                if (doCheck && nameHash.get(pl.getName()) != null)
+                {
+                    continue;
+                }
+                
                 PickList pickList = createPickList(pl.getName(), pl.getType(), pl.getTableName(),
                                                    pl.getFieldName(), pl.getFormatter(), pl.getReadOnly(), 
                                                    pl.getSizeLimit(), pl.getIsSystem());
@@ -567,14 +595,21 @@ public class BuildSampleDatabase
                 {
                     pickList.addItem(item.getTitle(), item.getValue());
                 }
-                persist(pickList);
+                
+                if (localSession != null)
+                {
+                    localSession.saveOrUpdate(pickList);
+                }
                 
                 if (pl.getName().equals("CollectingMethod"))
                 {
                     colMethods = pl;
                 }
             }
-            persist(collection);
+            if (localSession != null)
+            {
+                localSession.saveOrUpdate(collection);
+            }
         } else
         {
             log.error("No PickList XML");
@@ -769,8 +804,8 @@ public class BuildSampleDatabase
         frame.setDesc("Creating PickLists...");
         //frame.setProcess(++createStep);
         
-        createPickLists(null);
-        createPickLists(discipline);
+        createPickLists(session, null);
+        createPickLists(session, discipline);
         
         Vector<Object> dataObjects = new Vector<Object>();
         
@@ -1525,8 +1560,8 @@ public class BuildSampleDatabase
         frame.setDesc("Creating PickLists...");
         //frame.setProcess(++createStep);
         
-        createPickLists(null);
-        createPickLists(discipline);
+        createPickLists(session, null);
+        createPickLists(session, discipline);
         
         Vector<Object> dataObjects = new Vector<Object>();
         
@@ -1961,10 +1996,10 @@ public class BuildSampleDatabase
         frame.setDesc("Creating Common PickLists...");
         //frame.setProcess(++createStep);
         
-        createPickLists(null);
+        createPickLists(session, null);
         
         frame.setDesc("Creating PickLists...");
-        createPickLists(discipline);
+        createPickLists(session, discipline);
         
         Vector<Object> dataObjects = new Vector<Object>();
         
@@ -2964,10 +2999,10 @@ public class BuildSampleDatabase
         frame.setDesc("Creating Common PickLists...");
         //frame.setProcess(++createStep);
         
-        createPickLists(null);
+        createPickLists(session, null);
         
         frame.setDesc("Creating PickLists...");
-        createPickLists(discipline);
+        createPickLists(session, discipline);
         
         Vector<Object> dataObjects = new Vector<Object>();
         
@@ -3973,8 +4008,8 @@ public class BuildSampleDatabase
         ////////////////////////////////
         log.info("Creating picklists");
         
-        createPickLists(null);
-        BldrPickList colMethods = createPickLists(discipline);
+        createPickLists(session, null);
+        BldrPickList colMethods = createPickLists(session, discipline);
         
         commitTx();
         
