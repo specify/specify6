@@ -49,7 +49,9 @@ import edu.ku.brc.specify.tasks.subpane.wb.schema.Table;
 import edu.ku.brc.specify.tasks.subpane.wb.wbuploader.Uploader.ParentTableEntry;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.util.GeoRefConverter;
 import edu.ku.brc.util.Pair;
+import edu.ku.brc.util.GeoRefConverter.GeoRefFormat;
 
 /**
  * @author timbo
@@ -859,6 +861,19 @@ public class UploadTable implements Comparable<UploadTable>
     }
 
     /**
+     * @param ufld
+     * @return true if ufld represents a geoCoord field.
+     * 
+     * Assumes the field's type has already been determined BigDecimal.
+     */
+    protected boolean isLatLongFld(final UploadField ufld)
+    {
+        String name = ufld.getField().getName();
+        name = name.substring(0, name.length()-1);
+        return name.equalsIgnoreCase("latitude") || name.equalsIgnoreCase("longitude");
+    }
+    
+    /**
      * @param fld
      * @return values of the correct class for fld's setter.
      * @throws NoSuchMethodException
@@ -869,7 +884,7 @@ public class UploadTable implements Comparable<UploadTable>
      * 
      * Converts fld's string value to the correct class for the field being uploaded to.
      */
-    protected Object[] getArgForSetter(UploadField ufld) throws NoSuchMethodException,
+    protected Object[] getArgForSetter(final UploadField ufld) throws NoSuchMethodException,
             InvocationTargetException, IllegalAccessException, UploaderException
     {
         try
@@ -913,6 +928,17 @@ public class UploadTable implements Comparable<UploadTable>
                 }
                 else
                 {
+                    if (isLatLongFld(ufld))
+                    {
+                        try
+                        {
+                            fldStr = new GeoRefConverter().convert(fldStr, GeoRefFormat.D_PLUS_MINUS.name());
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new UploaderException(ex, UploaderException.INVALID_DATA);
+                        }
+                    }
                     arg[0] = new BigDecimal(fldStr);
                 }
             }
