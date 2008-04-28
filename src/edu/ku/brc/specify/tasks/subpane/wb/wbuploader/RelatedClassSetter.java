@@ -18,8 +18,11 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.DataModelObjBase;
 import edu.ku.brc.specify.datamodel.DeterminationStatus;
+import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.Division;
 
 /**
  * @author timbo
@@ -261,22 +264,42 @@ public class RelatedClassSetter
      */
     public boolean defaultSetting() 
     {
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        try
+        if (relatedClass.equals(Discipline.class))
         {
-            List<?> data = session.getDataList(getRelatedClass());
-            if (data.size() > 0)
-            {
-                Object id = ((DataModelObjBase) data.get(0)).getId();
-                log.debug("setting " + getRelatedClass().getSimpleName() + " to " + id);
-                setDefaultId(id, 0);
-                return true;
-            }
+            setDefaultId(Discipline.getCurrentDiscipline().getDisciplineId());
+            return true;
         }
-        finally
+        
+        if (relatedClass.equals(Collection.class))
         {
-            session.close();
+            setDefaultId(Collection.getCurrentCollection().getCollectionId());
+            return true;
         }
+
+        if (relatedClass.equals(Division.class))
+        {
+            setDefaultId(Discipline.getCurrentDiscipline().getDivision().getId());
+            return true;
+        }
+
+//        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+//        try
+//        {
+//            List<?> data = session.getDataList(getRelatedClass());
+//            //if (data.size() > 0)
+//            if (data.size() == 1)
+//            {
+//                Object id = ((DataModelObjBase) data.get(0)).getId();
+//                log.debug("setting " + getRelatedClass().getSimpleName() + " to " + id);
+//                setDefaultId(id, 0);
+//                return true;
+//            }
+//        }
+//        finally
+//        {
+//            session.close();
+//        }
+        
         log.debug("unable to meet requirement: " + getUploadTbl().getTblClass().getSimpleName() + "<->"
                 + getRelatedClass().getSimpleName());
         return false;

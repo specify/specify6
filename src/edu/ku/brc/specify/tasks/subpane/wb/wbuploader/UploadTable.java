@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
+import javax.persistence.CascadeType;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.criterion.Restrictions;
@@ -352,9 +354,17 @@ public class UploadTable implements Comparable<UploadTable>
             if (a != null)
             {
                 javax.persistence.JoinColumn jc = (javax.persistence.JoinColumn) a;
+                System.out.println(jc.columnDefinition());
                 if (!jc.nullable())
                 {
                     log.debug("adding required class: " + tblClass.getName() + " - " + m.getName());
+                    javax.persistence.ManyToOne mto = m.getAnnotation(javax.persistence.ManyToOne.class);
+                    if (mto != null)
+                    {
+                        CascadeType[] ct = mto.cascade();
+                        for (int c=0; c<ct.length; c++)
+                            System.out.println(ct[c]);
+                    }
                     Method setter = getSetterForGetter(m);
                     String fldName = jc.referencedColumnName();
                     if (fldName == null || fldName.equals(""))
