@@ -1165,10 +1165,6 @@ public class TemplateEditor extends CustomDialog
     protected void adjustMappings()
     {
         Set<Integer> tblsMapped = getTblsMapped();
-        for (Integer t : tblsMapped)
-        {
-            System.out.println(t);
-        }
         if (tblsMapped.size() == 2  
                 && tblsMapped.contains(DBTableIdMgr.getInstance().getByClassName(Taxon.class.getName()).getTableId())
                 && tblsMapped.contains(DBTableIdMgr.getInstance().getByClassName(Determination.class.getName()).getTableId()))
