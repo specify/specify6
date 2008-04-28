@@ -12,10 +12,8 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package edu.ku.brc.af.core;
+package edu.ku.brc.af.auth;
 
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 
 
 /**
@@ -41,8 +39,9 @@ public abstract class SecurityMgr
     /**
      * Returns whether a users is authenticated to use this database
      * @return boolean
+     * @throws Exception 
      */
-    public abstract boolean authenticate();
+    public abstract  boolean authenticate() throws Exception;
     /**
      * @param args - 
      * void
@@ -64,25 +63,25 @@ public abstract class SecurityMgr
             
         }
         // else
-        String factoryName = AccessController.doPrivileged(new PrivilegedAction<String>() {
-                public String run() {
-                    return System.getProperty(
-                    "edu.ku.brc.af.core.SecurityMgrFactory");}});
-            
-        if (factoryName != null) 
-        {
-            try 
-            {
-                instance = (SecurityMgr)Class.forName(factoryName).newInstance();
-                return instance;
-                 
-            } catch (Exception e) 
-            {
-                InternalError error = new InternalError("Can't instantiate SecurityMgr factory " + factoryName);
-                error.initCause(e);
-                throw error;
-            }
-        }
+//        String factoryName = AccessController.doPrivileged(new PrivilegedAction<String>() {
+//                public String run() {
+//                    return System.getProperty(
+//                    "edu.ku.brc.af.core.SecurityMgrFactory");}});
+//            
+//        if (factoryName != null) 
+//        {
+//            try 
+//            {
+//                instance = (SecurityMgr)Class.forName(factoryName).newInstance();
+//                return instance;
+//                 
+//            } catch (Exception e) 
+//            {
+//                InternalError error = new InternalError("Can't instantiate SecurityMgr factory " + factoryName);
+//                error.initCause(e);
+//                throw error;
+//            }
+//        }
         return null;
     }
 }

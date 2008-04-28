@@ -190,7 +190,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     protected DatabaseLoginPanel dbLoginPanel        = null;
     protected String             databaseName        = null;
     protected String             userName            = null;
-
+    //DatabaseLoginPanel dbLoginPanel
     protected GhostGlassPane     glassPane;
 
     private boolean              isWorkbenchOnly     = false;
@@ -424,13 +424,12 @@ public class Specify extends JPanel implements DatabaseLoginListener
             HibernateUtil.setListener("post-commit-delete", new edu.ku.brc.specify.dbsupport.PostDeleteEventListener());
             //HibernateUtil.setListener("delete", new edu.ku.brc.specify.dbsupport.DeleteEventListener());
         }
-        
-        adjustLocaleFromPrefs();
-        
+        adjustLocaleFromPrefs();         
         dbLoginPanel = UIHelper.doLogin(true, false, false, this); // true means do auto login if it can, second bool means use dialog instead of frame
         localPrefs.load();
     }
     
+
     /**
      * Setup all the System properties. This names all the needed factories. 
      */
@@ -684,7 +683,9 @@ public class Specify extends JPanel implements DatabaseLoginListener
                             
                             AppPreferences.setConnectedToDB(false);
                             adjustLocaleFromPrefs();
+                            //JaasContext jassEm = new JaasContext();
                             UIHelper.doLogin(false, true, true, new DBListener()); // true means do auto login if it can, second bool means use dialog instead of frame
+                            //dbLoginPanel = UIHelper.doLogin(true, false, false, new DBListener(), jassEm); // true means do auto login if it can, second bool means use dialog instead of frame
                         }
                     }
                 });
@@ -1552,6 +1553,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                            final boolean startOver, 
                            final boolean firstTime)
     {
+        log.debug("restartApp");
         if (dbLoginPanel != null)
         {
             dbLoginPanel.getStatusBar().setText(getResourceString("InitializingApp"));
@@ -1631,8 +1633,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 
                 // TODO This is really bad because there is a Database Login with no Specify login
                 JOptionPane.showMessageDialog(null, 
-                                              getResourceString("LoginUserMismatch"), 
-                                              getResourceString("LoginUserMismatchTitle"), 
+                                              getResourceString("LOGIN_USER_MISMATCH"), 
+                                              getResourceString("LOGIN_USER_MISMATCH_TITLE"), 
                                               JOptionPane.ERROR_MESSAGE);
                 System.exit(0);
             }
@@ -1718,6 +1720,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
      */
     public void loggedIn(final Window window, final String databaseNameArg, final String userNameArg)
     {
+        log.debug("loggedIn - database["+databaseNameArg+"] username["+ userNameArg +"]");
         boolean firstTime = this.databaseName == null;
         
         this.databaseName = databaseNameArg;

@@ -207,7 +207,6 @@ public class ERDVisualizer extends JFrame
                 
                 tblTracker.addNodeInfo("Attachment",              true,  true,        true,       false,         null);
                 tblTracker.addNodeInfo("AttributeDef",            true,  true,        true,       false,         null);
-                tblTracker.addNodeInfo("UserPermission",          true,  true,        true,       false,         null);
                 tblTracker.addNodeInfo("SpAppResourceDir",        true,  true,        true,       false,         null);
                 tblTracker.addNodeInfo("SpLocaleContainer",       true,  true,        true,       false,         null);
                 tblTracker.addNodeInfo("DeaccessionPreparation",  true,  true,        true,       false,         null);

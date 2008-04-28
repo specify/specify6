@@ -552,6 +552,17 @@ public class GenericDBConversion
         // }
 
         // Map all the Physical IDs
+        // Meg working copy, completely commented out.
+        //        idMapper = idMapperMgr.addTableMapper("geography", "GeographyID");
+        //        if (shouldCreateMapTables)
+        //        {
+        //            idMapper.mapAllIds("SELECT DISTINCT GeographyID,ContinentOrOcean,Country,State,County" +
+        //                  "FROM demo_fish2.geography" +
+        //                  "WHERE( (ContinentOrOcean IS NOT NULL) OR (Country IS NOT NULL) OR (State IS NOT NULL) OR (County IS NOT NULL) )" +
+        //                  "AND ( (IslandGroup IS NULL) AND (Island IS NULL) AND (WaterBody IS NULL) AND (Drainage IS NULL) ) " +
+        //                  "GROUP BY ContinentOrOcean,Country,State,County" );
+        //        }
+        
         // idMapper = idMapperMgr.addTableMapper("geography", "GeographyID");
         // if (shouldCreateMapTables)
         // {
@@ -1168,7 +1179,7 @@ public class GenericDBConversion
 
         for (String tableName : tablesToMoveOver)
         {
-            String fromTableName = tableName.toLowerCase();
+            String fromTableName = tableName.toLowerCase(); 
             String toTableName = fromTableName;
 
             BasicSQLUtils.setOneToOneIDHash(null);
@@ -1341,6 +1352,7 @@ public class GenericDBConversion
             {
                 fromTableName = fromTableName + "s";
             }
+
 
             if (!BasicSQLUtils.hasIgnoreFields())
             {
@@ -1967,6 +1979,7 @@ public class GenericDBConversion
                 strBuf2.append("1,"); // GeologicTimePeriodTreeDefID
                 strBuf2.append("1,"); // StorageTreeDefID
                 strBuf2.append("1,");// TaxonTreeDefID
+
                 strBuf2.append(division.getDivisionId() + ","); // DivisionID
                 strBuf2.append(getCreatorAgentId(null) + "," + getModifiedByAgentId(lastEditedBy) + ",0");
                 strBuf2.append(")");
@@ -4683,6 +4696,7 @@ public class GenericDBConversion
         TaxonTreeDef ttd = new TaxonTreeDef();
         ttd.initialize();
 
+
         ResultSet rs = st
                 .executeQuery("SELECT TaxonomyTypeName FROM taxonomytype WHERE TaxonomyTypeID="
                         + taxonomyTypeId);
@@ -4703,6 +4717,7 @@ public class GenericDBConversion
 
         Vector<TaxonTreeDefItem> items = new Vector<TaxonTreeDefItem>();
         Vector<Integer> enforcedRanks = new Vector<Integer>();
+
 
         while (rs.next())
         {
@@ -4727,7 +4742,6 @@ public class GenericDBConversion
                 i.setParent(items.lastElement());
             }
             items.add(i);
-
             enforcedRanks.add(requiredRank);
         }
 
@@ -4741,7 +4755,6 @@ public class GenericDBConversion
                 i.setIsEnforced(false);
             }
         }
-
         return ttd;
     }
 
@@ -4785,15 +4798,16 @@ public class GenericDBConversion
         }
 
         BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(null);
-        BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "taxontreedef",
-                BasicSQLUtils.myDestinationServerType);
+        BasicSQLUtils.setIdentityInsertOFFCommandForSQLServer(newDBConn, "taxontreedef", BasicSQLUtils.myDestinationServerType);
     }
 
     /**
-     * Converts the old taxonomy records to the new schema. In general, the process is... 1. Copy
-     * all columns that don't require any modification (other than col. name) 2. Set the proper
-     * values in the IsEnforced column 3. Set the proper values in the ParentItemID column
-     * 
+     * Converts the old taxonomy records to the new schema.  In general,
+     * the process is...
+     *  1. Copy all columns that don't require any modification (other than col. name)
+     *  2. Set the proper values in the IsEnforced column
+     *  3. Set the proper values in the ParentItemID column
+     *
      * @throws SQLException
      */
     public void convertTaxonTreeDefItems() throws SQLException
@@ -4811,6 +4825,7 @@ public class GenericDBConversion
         // TaxonomyTypeId)";
         String sqlStr = "SELECT * FROM taxonomicunittype where taxonomicunittype.TaxonomyTypeID in (SELECT DISTINCT t.TaxonomyTypeId FROM taxonname t WHERE t.RankId<> 0)";
         log.debug("convertTaxonTreeDefItems - created sql string: " + sqlStr);
+
         Hashtable<String, String> newToOldColMap = new Hashtable<String, String>();
         newToOldColMap.put("TaxonTreeDefItemID", "TaxonomicUnitTypeID");
         newToOldColMap.put("Name", "RankName");
@@ -4821,17 +4836,25 @@ public class GenericDBConversion
         timestampValues.put("TimestampCreated", "'" + nowStr + "'");
         timestampValues.put("TimestampModified", "'" + nowStr + "'");
 
+
         String[] ignoredFields = { "IsEnforced", "ParentItemID", "Remarks", "IsInFullName",
                 "FullNameSeparator", "TextBefore", "TextAfter", "TimestampCreated",
                 "TimestampModified", "LastEditedBy", "FormatToken", "CreatedByAgentID",
                 "ModifiedByAgentID", "Version", "CollectionMemberID" };
         BasicSQLUtils.setFieldsToIgnoreWhenMappingNames(ignoredFields);
 
+
+
         // Copy over most of the columns in the old table to the new one
         log.info("Copying taxonomy tree definition items from 'taxonomicunittype' table");
-        if (!copyTable(oldDBConn, newDBConn, sqlStr, "taxonomicunittype", "taxontreedefitem",
-                newToOldColMap, null, timestampValues, BasicSQLUtils.mySourceServerType,
-                BasicSQLUtils.myDestinationServerType))
+        if (!copyTable(oldDBConn, 
+                newDBConn, 
+                sqlStr, 
+                "taxonomicunittype", 
+                "taxontreedefitem",
+                newToOldColMap, 
+                null, 
+                timestampValues, BasicSQLUtils.mySourceServerType, BasicSQLUtils.myDestinationServerType))
         {
             log.error("Table 'taxonomicunittype' didn't copy correctly");
         }
@@ -4855,6 +4878,9 @@ public class GenericDBConversion
         sqlStr = "SELECT DISTINCT TaxonomyTypeID from taxonomicunittype where taxonomicunittype.TaxonomyTypeId in (SELECT DISTINCT t.TaxonomyTypeId FROM taxonname t WHERE t.RankId<> 0)";
 
         ResultSet rs = oldDbStmt.executeQuery(sqlStr);
+
+
+        // will be used to map old TaxonomyTypeID values to TreeDefID values
 
         Vector<Integer> typeIds = new Vector<Integer>();
         while (rs.next())
@@ -4988,6 +5014,7 @@ public class GenericDBConversion
         // t.TaxonomyTypeId FROM taxonname t WHERE t.RankId <> 0 ORDER BY TaxonomyTypeId)";
         String sql = "SELECT * FROM taxonname where taxonname.TaxonomyTypeId in (SELECT DISTINCT t.TaxonomyTypeId FROM taxonname t WHERE t.RankId <> 0 )";
 
+
         Hashtable<String, String> newToOldColMap = new Hashtable<String, String>();
         newToOldColMap.put("TaxonID", "TaxonNameID");
         newToOldColMap.put("ParentID", "ParentTaxonNameID");
@@ -5059,6 +5086,7 @@ public class GenericDBConversion
         BasicSQLUtils.deleteAllRecordsFromTable(newDBConn, "geographytreedefitem",
                 BasicSQLUtils.myDestinationServerType);
 
+
         Session localSession = HibernateUtil.getCurrentSession();
         HibernateUtil.beginTransaction();
 
@@ -5067,7 +5095,9 @@ public class GenericDBConversion
         def.setName("Default Geography Definition");
         def.setRemarks("A simple continent/country/state/county geography tree");
         def.setFullNameDirection(TreeDefIface.REVERSE);
+
         // session.save(def);
+
 
         GeographyTreeDefItem planet = new GeographyTreeDefItem();
         planet.initialize();
@@ -5075,6 +5105,7 @@ public class GenericDBConversion
         planet.setRankId(0);
         planet.setIsEnforced(true);
         planet.setFullNameSeparator(", ");
+
         // session.save(planet);
 
         GeographyTreeDefItem cont = new GeographyTreeDefItem();
@@ -5082,6 +5113,7 @@ public class GenericDBConversion
         cont.setName("Continent");
         cont.setRankId(100);
         cont.setFullNameSeparator(", ");
+
         // session.save(cont);
 
         GeographyTreeDefItem country = new GeographyTreeDefItem();
@@ -5090,6 +5122,7 @@ public class GenericDBConversion
         country.setRankId(200);
         country.setIsInFullName(true);
         country.setFullNameSeparator(", ");
+
         // session.save(country);
 
         GeographyTreeDefItem state = new GeographyTreeDefItem();
@@ -5098,6 +5131,7 @@ public class GenericDBConversion
         state.setRankId(300);
         state.setIsInFullName(true);
         state.setFullNameSeparator(", ");
+
         // session.save(state);
 
         GeographyTreeDefItem county = new GeographyTreeDefItem();
@@ -5106,6 +5140,7 @@ public class GenericDBConversion
         county.setRankId(400);
         county.setIsInFullName(true);
         county.setFullNameSeparator(", ");
+
         // session.save(county);
 
         // setup parents
@@ -5114,6 +5149,7 @@ public class GenericDBConversion
         country.setParent(cont);
         cont.setParent(planet);
 
+
         // set the tree def for each tree def item
         planet.setTreeDef(def);
         cont.setTreeDef(def);
@@ -5121,12 +5157,16 @@ public class GenericDBConversion
         state.setTreeDef(def);
         county.setTreeDef(def);
 
+
+
         Set defItems = def.getTreeDefItems();
         defItems.add(planet);
         defItems.add(cont);
         defItems.add(country);
         defItems.add(state);
         defItems.add(county);
+
+
 
         localSession.save(def);
 
@@ -5447,6 +5487,7 @@ public class GenericDBConversion
             oldGeoRecords.first();
         }
 
+
         // setup the root Geography record (planet Earth)
         Geography planetEarth = new Geography();
         planetEarth.initialize();
@@ -5490,6 +5531,7 @@ public class GenericDBConversion
             String state = oldGeoRecords.getString(4);
             String county = oldGeoRecords.getString(5);
 
+
             // create a new Geography object from the old data
             List<Geography> newGeos = convertOldGeoRecord(cont, country, state, county, planetEarth);
             if (newGeos.size() > 0)
@@ -5514,6 +5556,7 @@ public class GenericDBConversion
         TreeHelper.fixFullnameForNodeAndDescendants(planetEarth);
         planetEarth.setNodeNumber(1);
         fixNodeNumbersFromRoot(planetEarth);
+
         localSession.save(planetEarth);
 
         HibernateUtil.commitTransaction();
@@ -6043,7 +6086,6 @@ public class GenericDBConversion
     {
         BasicSQLUtils.deleteAllRecordsFromTable("geologictimeperiodtreedef", BasicSQLUtils.myDestinationServerType);
         BasicSQLUtils.deleteAllRecordsFromTable("geologictimeperiodtreedefitem", BasicSQLUtils.myDestinationServerType);
-
         log.info("Inferring geologic time period definition from old records");
         int count = 0;
 
@@ -6275,6 +6317,7 @@ public class GenericDBConversion
 
         log.info(count + " geologic time period records converted");
     }
+
 
     /**
      * Regenerates all nodeNumber and highestChildNodeNumber field values for all nodes attached to

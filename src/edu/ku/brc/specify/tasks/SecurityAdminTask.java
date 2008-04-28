@@ -26,6 +26,8 @@ import javax.swing.JMenuItem;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.af.auth.specify.SpecifySecurityMgr;
+import edu.ku.brc.af.auth.specify.permission.BasicSpPermission;
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.ToolBarItemDesc;
@@ -33,7 +35,6 @@ import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.specify.tasks.subpane.SecurityAdminPane;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
-import edu.ku.brc.ui.ToolBarDropDownBtn;
 import edu.ku.brc.ui.UIHelper;
 
 /**
@@ -44,7 +45,7 @@ import edu.ku.brc.ui.UIHelper;
 public class SecurityAdminTask extends BaseTask
 {
     private static final Logger log            = Logger.getLogger(SecurityAdminTask.class);
-    public static final  String SECURITY_ADMIN = "SECURITY";
+    public static final  String SECURITY_ADMIN = "SecurityAdmin";
     protected SubPaneIFace      starterPane    = null;
 
     public SecurityAdminTask()
@@ -83,6 +84,13 @@ public class SecurityAdminTask extends BaseTask
     public List<MenuItemDesc> getMenuItems()
     {
         Vector<MenuItemDesc> list = new Vector<MenuItemDesc>();
+        
+        // check whether user can see the security admin panel
+        // other permissions will be checked when the panel is created 
+        if (!SpecifySecurityMgr.checkPermission("Task." + SECURITY_ADMIN, BasicSpPermission.view))
+        	return list;
+
+        // else
         JMenuItem mi = UIHelper.createMenuItem("Security Tools", "T", "", true, null); // I18N
         mi.addActionListener(new ActionListener()
         {
@@ -103,11 +111,6 @@ public class SecurityAdminTask extends BaseTask
     public List<ToolBarItemDesc> getToolBarItems()
     {
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
-        String label = getResourceString(name);
-        String iconName = "SystemSetup"; // temporary
-        String hint = getResourceString("SECURITY_ADMIN_HINT");
-        ToolBarDropDownBtn btn = createToolbarButton(label, iconName, hint);
-        //list.add(new ToolBarItemDesc(btn));
         return list;
     } 
     

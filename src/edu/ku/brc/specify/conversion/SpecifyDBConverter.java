@@ -50,7 +50,6 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
-import edu.ku.brc.specify.datamodel.UserGroup;
 import edu.ku.brc.specify.tools.SpecifySchemaGenerator;
 import edu.ku.brc.specify.utilapps.BuildSampleDatabase;
 import edu.ku.brc.ui.ChooseFromListDlg;
@@ -551,10 +550,11 @@ public class SpecifyDBConverter
                     String           abbrev           = initPrefs.getProperty("useragent.abbrev", "rs");
                     String           email            = initPrefs.getProperty("useragent.email", "rods@ku.edu");
                     String           userType         = initPrefs.getProperty("useragent.usertype", "CollectionManager");   
+                    String           password         = initPrefs.getProperty("useragent.password", "rods");
                     
                     BasicSQLUtils.deleteAllRecordsFromTable(newConn, "usergroup", BasicSQLUtils.myDestinationServerType);
                     BasicSQLUtils.deleteAllRecordsFromTable(newConn, "specifyuser", BasicSQLUtils.myDestinationServerType);
-                    UserGroup userGroup = DataBuilder.createUserGroup("admin2");
+                    //SpPrincipal userGroup = DataBuilder.createPrincipalGroup("admin2");
                     
                     Criteria criteria = DataBuilder.getSession().createCriteria(Agent.class);
                     criteria.add(Restrictions.eq("lastName", lastName));
@@ -570,7 +570,10 @@ public class SpecifyDBConverter
                         userAgent = DataBuilder.createAgent(title, firstName, midInit, lastName, abbrev, email);
                     }
                     
-                    SpecifyUser specifyUser = DataBuilder.createSpecifyUser(username, email, (short)0, userGroup, userType);
+                    //List<SpPrincipal> groups = new ArrayList<SpPrincipal>();
+                    //groups.add(userGroup);
+                    
+                    SpecifyUser specifyUser = DataBuilder.createSpecifyUser(username, email, password, userType);
                     specifyUser.addReference(userAgent, "agents");
                     
                     DataBuilder.getSession().getTransaction().commit();

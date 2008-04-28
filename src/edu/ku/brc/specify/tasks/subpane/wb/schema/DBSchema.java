@@ -131,7 +131,7 @@ public class DBSchema
         // there are probably a whole bunch of tables that will never be importable but for
         // now...
         String[] badTbls = { "appresource", "appresourcedata", "appresourcedefault", "datatype",
-                /*"geographytreedef", "geographytreedefitem",*/ "picklist", "specifyuser", /*"taxontreedef", "taxontreedefitem",*/ "usergroup", "viewsetobj", "workbench",
+                /*"geographytreedef", "geographytreedefitem",*/ "picklist", "specifyuser", /*"taxontreedef", "taxontreedefitem",*/ "spprincipal", "viewsetobj", "workbench",
                 "workbenchdataitem", "workbenchrow", "workbenchrowimage", "workbenchtemplate",
                 "workbenchtemplatemappingitem" };
         GraphBuilder gb = new GraphBuilder(scheme, this, badTbls);

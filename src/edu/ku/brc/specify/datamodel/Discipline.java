@@ -83,7 +83,7 @@ public class Discipline extends DataModelObjBase implements java.io.Serializable
     protected LithoStratTreeDef         lithoStratTreeDef;
     protected Set<Locality>             localities;
     protected Set<SpAppResourceDir>     spAppResourceDirs;
-    protected Set<UserPermission>       userPermissions;
+    //protected Set<UserPermission>       userPermissions;
     protected Set<Agent>                agents;
     protected Division                  division;
     
@@ -145,7 +145,7 @@ public class Discipline extends DataModelObjBase implements java.io.Serializable
         name                  = null;
         title                 = null;
         dataType              = null;
-        userPermissions       = null;
+        //userPermissions       = null;
         collections           = new HashSet<Collection>();
         attributeDefs         = new HashSet<AttributeDef>();
         geographyTreeDef      = null;
@@ -378,17 +378,17 @@ public class Discipline extends DataModelObjBase implements java.io.Serializable
         this.spAppResourceDirs = spAppResourceDirs;
     }
     
-    @OneToMany(mappedBy="discipline")
-    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
-    public Set<UserPermission> getUserPermissions() 
-    {
-        return this.userPermissions;
-    }
-    
-    public void setUserPermissions(Set<UserPermission> userPermissions) 
-    {
-        this.userPermissions = userPermissions;
-    }
+//    @OneToMany(mappedBy="discipline")
+//    @Cascade( {CascadeType.ALL, CascadeType.DELETE_ORPHAN} )
+//    public Set<UserPermission> getUserPermissions() 
+//    {
+//        return this.userPermissions;
+//    }
+//    
+//    public void setUserPermissions(Set<UserPermission> userPermissions) 
+//    {
+//        this.userPermissions = userPermissions;
+//    }
     
 
     /**

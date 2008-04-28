@@ -13,7 +13,13 @@
  */
 package edu.ku.brc.ui.db;
 
-import static edu.ku.brc.ui.UIHelper.*;
+import static edu.ku.brc.ui.UIHelper.createButton;
+import static edu.ku.brc.ui.UIHelper.createCheckBox;
+import static edu.ku.brc.ui.UIHelper.createComboBox;
+import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.createPasswordField;
+import static edu.ku.brc.ui.UIHelper.createTextField;
+import static edu.ku.brc.ui.UIHelper.setControlSize;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Component;
@@ -57,6 +63,7 @@ import com.jgoodies.forms.factories.ButtonBarFactory;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.af.auth.JaasContext;
 import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -122,6 +129,7 @@ public class DatabaseLoginPanel extends JPanel
     protected boolean                    isAutoClose    = false;
 
     protected DatabaseLoginListener      dbListener;
+    protected JaasContext         jaasContext;
     protected Window                     window;
 
     protected Vector<DatabaseDriverInfo> dbDrivers      = new Vector<DatabaseDriverInfo>();
@@ -137,13 +145,15 @@ public class DatabaseLoginPanel extends JPanel
      * @param dbListener listener to the panel (usually the frame or dialog)
      * @param isDlg whether the parent is a dialog (false mean JFrame)
      */
-    public DatabaseLoginPanel(final DatabaseLoginListener dbListener, final boolean isDlg)
+    public DatabaseLoginPanel(final DatabaseLoginListener dbListener,  final boolean isDlg)
     {
+        log.debug("constructor with jaas");
         this.dbListener = dbListener;
-
+        this.jaasContext = new JaasContext(); 
         createUI(isDlg);
 
     }
+    
 
     /**
      * Sets a window to be resized for extra options
@@ -338,6 +348,7 @@ public class DatabaseLoginPanel extends JPanel
         {
             public void actionPerformed(ActionEvent e)
             {
+                log.debug("panel action performed");
                 doLogin();
             }
         });
@@ -632,6 +643,10 @@ public class DatabaseLoginPanel extends JPanel
         {
             dbListener.loggedIn((Window)parent, getDatabaseName(), getUserName());
         }
+        else
+        {
+            log.debug("lister is NULL");
+        }
     }
 
     /**
@@ -669,15 +684,15 @@ public class DatabaseLoginPanel extends JPanel
      */
     public void doLogin()
     {
+        log.debug("doLogin()");
         isLoggingIn = true;
-
+        log.debug("preparing to save");
         save();
 
         statusBar.setIndeterminate(true);
         enableUI(false);
 
-        setMessage(String
-                .format(getResourceString("LoggingIn"), new Object[] { getDatabaseName() }), false);
+        setMessage(String.format(getResourceString("LoggingIn"), new Object[] { getDatabaseName() }), false);
 
         String basePrefName = getDatabaseName() + "." + getUserName() + ".";
 
@@ -688,8 +703,7 @@ public class DatabaseLoginPanel extends JPanel
         if (loginCount != -1 && loginAccumTime != -1)
         {
             int timesPerSecond = 4;
-            progressWorker = new ProgressWorker(statusBar.getProgressBar(), 0,
-                    (int) (((double) loginAccumTime / (double) loginCount) + 0.5), timesPerSecond);
+            progressWorker = new ProgressWorker(statusBar.getProgressBar(), 0,(int) (((double) loginAccumTime / (double) loginCount) + 0.5), timesPerSecond);
             new Timer(1000 / timesPerSecond, progressWorker).start();
 
         } else
@@ -715,6 +729,8 @@ public class DatabaseLoginPanel extends JPanel
                                                getConnectionStr(), 
                                                getUserName(), 
                                                getPassword());
+                
+                isLoggedIn &= jaasLogin();
 
                 if (isLoggedIn)
                 {
@@ -759,8 +775,7 @@ public class DatabaseLoginPanel extends JPanel
                     DataProviderFactory.getInstance().shutdown();
 
                     // This restarts the System
-                    DataProviderSessionIFace session = DataProviderFactory.getInstance()
-                            .createSession();
+                    DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
                     session.close();
                 }
 
@@ -811,6 +826,19 @@ public class DatabaseLoginPanel extends JPanel
         worker.start();
     }
 
+    public boolean jaasLogin()
+    {
+        if (jaasContext != null)
+        {
+            return jaasContext.jaasLogin(getUserName(),
+            							 getPassword(),
+            							 getConnectionStr(), 
+            							 getDriverClassName());
+        }
+
+        return false;
+    }
+    
     /**
      * @return the server name
      */
@@ -955,5 +983,21 @@ public class DatabaseLoginPanel extends JPanel
         {
             this.stop = true;
         }
+    }
+
+    /**
+     * @return the isLoggingIn
+     */
+    public boolean isLoggingIn()
+    {
+        return isLoggingIn;
+    }
+
+    /**
+     * @param isLoggingIn the isLoggingIn to set
+     */
+    public void setLoggingIn(boolean isLoggingIn)
+    {
+        this.isLoggingIn = isLoggingIn;
     }
 }

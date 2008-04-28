@@ -19,8 +19,8 @@ import org.hibernate.Criteria;
 
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.specify.datamodel.UserGroup;
-import edu.ku.brc.specify.datamodel.UserPermission;
+import edu.ku.brc.specify.datamodel.SpPrincipal;
+//import edu.ku.brc.specify.datamodel.UserPermission;
 /**
  * 
  * @code_status Unknown
@@ -58,25 +58,25 @@ public class SpecifyUserTestHelper
         }
         return found;
     }
-    
-    /**
-     * @param permId
-     * @return
-     */
-    public static boolean isUserPermissionInDB(Integer permId) {   
-        log.info("isUserPermissionInDB(Integer): " + permId);
-        if(permId==null)return false;
-        boolean found = false;        
-        Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(UserPermission.class);
-        java.util.List<?> list = criteria.list();
-
-        for (int i = 0; i < list.size(); i++) {
-            UserPermission perm = (UserPermission) list.get(i);
-            if (perm.getId().equals(permId)) 
-                found = true;
-        }
-        return found;
-    }
+//    
+//    /**
+//     * @param permId
+//     * @return
+//     */
+//    public static boolean isUserPermissionInDB(Integer permId) {   
+//        log.info("isUserPermissionInDB(Integer): " + permId);
+//        if(permId==null)return false;
+//        boolean found = false;        
+//        Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(UserPermission.class);
+//        java.util.List<?> list = criteria.list();
+//
+//        for (int i = 0; i < list.size(); i++) {
+//            UserPermission perm = (UserPermission) list.get(i);
+//            if (perm.getId().equals(permId)) 
+//                found = true;
+//        }
+//        return found;
+//    }
     /**
      * @param groupId
      * @return
@@ -85,11 +85,11 @@ public class SpecifyUserTestHelper
         log.info("isUserGroupInDB: " + groupId);
         if(groupId==null)return false;
         boolean found = false;        
-        Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(UserGroup.class);
+        Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(SpPrincipal.class);
         java.util.List<?> list = criteria.list();
 
         for (int i = 0; i < list.size(); i++) {
-            UserGroup user = (UserGroup) list.get(i);
+            SpPrincipal user = (SpPrincipal) list.get(i);
             if (user.getId().equals(groupId))
                 found = true;
         }
@@ -105,11 +105,11 @@ public class SpecifyUserTestHelper
         boolean isDeleted = false;
         try {
             HibernateUtil.beginTransaction();
-            Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(UserGroup.class);
+            Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(SpPrincipal.class);
             java.util.List<?> list = criteria.list();
             
             for(int i = 0; i< list.size(); i++) {
-                UserGroup group = (UserGroup)list.get(i);
+                SpPrincipal group = (SpPrincipal)list.get(i);
                 if(group.getUserGroupId().equals(groupId)) {
                     HibernateUtil.getCurrentSession().delete(group);
                     isDeleted = true;                   
@@ -154,33 +154,33 @@ public class SpecifyUserTestHelper
         } 
     }
     
-    /**
-     * @param permId
-     * @return
-     */
-    public static boolean deleteUserPermissionFromDB(Integer permId) {
-        log.info("deleteUserPermissionFromDB(): " + permId);
-        boolean isDeleted = false;
-        try {
-            HibernateUtil.beginTransaction();
-            Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(UserPermission.class);
-            java.util.List<?> list = criteria.list();
-            
-            for(int i = 0; i< list.size(); i++) {
-                UserPermission perm = (UserPermission)list.get(i);
-                if(perm.getId().equals(permId)) {
-                    HibernateUtil.getCurrentSession().delete(perm);
-                    isDeleted = true;                   
-                }
-            }
-            HibernateUtil.commitTransaction();
-            return isDeleted;
-            
-        } catch (Exception ex) {
-            log.error("******* " + ex);
-            ex.printStackTrace();
-            HibernateUtil.rollbackTransaction();
-            return false;
-        } 
-    } 
+//    /**
+//     * @param permId
+//     * @return
+//     */
+//    public static boolean deleteUserPermissionFromDB(Integer permId) {
+//        log.info("deleteUserPermissionFromDB(): " + permId);
+//        boolean isDeleted = false;
+//        try {
+//            HibernateUtil.beginTransaction();
+//            Criteria criteria = HibernateUtil.getCurrentSession().createCriteria(UserPermission.class);
+//            java.util.List<?> list = criteria.list();
+//            
+//            for(int i = 0; i< list.size(); i++) {
+//                UserPermission perm = (UserPermission)list.get(i);
+//                if(perm.getId().equals(permId)) {
+//                    HibernateUtil.getCurrentSession().delete(perm);
+//                    isDeleted = true;                   
+//                }
+//            }
+//            HibernateUtil.commitTransaction();
+//            return isDeleted;
+//            
+//        } catch (Exception ex) {
+//            log.error("******* " + ex);
+//            ex.printStackTrace();
+//            HibernateUtil.rollbackTransaction();
+//            return false;
+//        } 
+//    } 
 }

@@ -15,6 +15,9 @@ import org.hibernate.Session;
 
 import com.thoughtworks.xstream.XStream;
 
+import edu.ku.brc.af.auth.specify.principal.AdminPrincipal;
+import edu.ku.brc.af.auth.specify.principal.GroupPrincipal;
+import edu.ku.brc.af.auth.specify.principal.UserPrincipal;
 import edu.ku.brc.dbsupport.AttributeIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.helpers.XMLHelper;
@@ -83,6 +86,7 @@ import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.ReferenceWork;
 import edu.ku.brc.specify.datamodel.RepositoryAgreement;
 import edu.ku.brc.specify.datamodel.Shipment;
+import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpQueryField;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
@@ -94,8 +98,8 @@ import edu.ku.brc.specify.datamodel.TaxonCitation;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
-import edu.ku.brc.specify.datamodel.UserGroup;
-import edu.ku.brc.specify.datamodel.UserPermission;
+import edu.ku.brc.specify.datamodel.SpPrincipal;
+//import edu.ku.brc.specify.datamodel.UserPermission;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
@@ -2261,33 +2265,16 @@ public class DataBuilder
         return shipment;
     }
 
+
     public static SpecifyUser createSpecifyUser(final String    name,
                                                 final String    email,
-                                                final Short     privLevel,
+                                                final String    password,
                                                 final String    userType)
     {
         SpecifyUser specifyuser = new SpecifyUser();
         specifyuser.initialize();
         specifyuser.setEmail(email);
-        specifyuser.setPrivLevel(privLevel);
-        //specifyuser.setUserGroup(userGroup);
-        specifyuser.setName(name);
-        specifyuser.setUserType(userType);
-        persist(specifyuser);
-        return specifyuser;
-    }
-    
-    public static SpecifyUser createSpecifyUser(final String    name,
-                                                final String    email,
-                                                final Short     privLevel,
-                                                final UserGroup userGroup,
-                                                final String    userType)
-    {
-        SpecifyUser specifyuser = new SpecifyUser();
-        specifyuser.initialize();
-        specifyuser.setEmail(email);
-        specifyuser.setPrivLevel(privLevel);
-        //specifyuser.setUserGroup(userGroup);
+        specifyuser.setPassword(password);
         specifyuser.setName(name);
         specifyuser.setUserType(userType);
         persist(specifyuser);
@@ -2296,41 +2283,78 @@ public class DataBuilder
     
     public static SpecifyUser createSpecifyUser(final String name,
                                                 final String email,
-                                                final Short privLevel,
-                                                final UserGroup[] userGroups,
+                                                final String password,
+                                                final SpPrincipal userGroup,
                                                 final String userType)
     {
         SpecifyUser specifyuser = new SpecifyUser();
         specifyuser.initialize();
         specifyuser.setEmail(email);
-        specifyuser.setPrivLevel(privLevel);
-        //specifyuser.setUserGroup(userGroup);
+        specifyuser.setPassword(password);
+        specifyuser.addUserToSpPrincipalGroup(userGroup);
         specifyuser.setName(name);
         specifyuser.setUserType(userType);
+        persist(specifyuser);
+        return specifyuser;
+    }
+    
+    public static SpecifyUser createSpecifyUser(final String name,
+                                                final String email,
+                                                final String    password,
+                                                final List<SpPrincipal> userGroups)
+    {
+        SpecifyUser specifyuser = new SpecifyUser();
+        specifyuser.initialize();
+        specifyuser.setEmail(email);
+        specifyuser.setPassword(password);
+        specifyuser.setName(name);
         if (userGroups!=null) 
         {
-            for (UserGroup group : userGroups)
+            for (SpPrincipal group : userGroups)
             {
-                specifyuser.addUserGroups(group);
+                specifyuser.addUserToSpPrincipalGroup(group);
             }
         }
         persist(specifyuser);
         return specifyuser;
     }
     
-    public static UserPermission createUserPermission(SpecifyUser owner, 
-                                                      Discipline objDef, 
-                                                      boolean adminPrivilege, 
-                                                      boolean dataAccessPrivilege)
+    public static SpecifyUser createSpecifyUser(final String name,
+                                                final String email,
+                                                final String    password,
+                                                final List<SpPrincipal> userGroups,
+                                                final String userType)
     {
-        UserPermission permission = new UserPermission();
-        permission.setAdminPrivilege(adminPrivilege);
-        permission.setDiscipline(objDef);
-        permission.setDataAccessPrivilege(dataAccessPrivilege);
-        permission.setSpecifyUser(owner);
-        persist(permission);
-        return permission;
+        SpecifyUser specifyuser = new SpecifyUser();
+        specifyuser.initialize();
+        specifyuser.setEmail(email);
+        specifyuser.setPassword(password);
+        specifyuser.setName(name);
+        specifyuser.setUserType(userType);
+        if (userGroups!=null) 
+        {
+            for (SpPrincipal group : userGroups)
+            {
+                specifyuser.addUserToSpPrincipalGroup(group);
+            }
+        }
+        persist(specifyuser);
+        return specifyuser;
     }
+    
+//    public static UserPermission createUserPermission(SpecifyUser owner, 
+//                                                      Discipline objDef, 
+//                                                      boolean adminPrivilege, 
+//                                                      boolean dataAccessPrivilege)
+//    {
+//        UserPermission permission = new UserPermission();
+//        permission.setAdminPrivilege(adminPrivilege);
+//        permission.setDiscipline(objDef);
+//        permission.setDataAccessPrivilege(dataAccessPrivilege);
+//        permission.setSpecifyUser(owner);
+//        persist(permission);
+//        return permission;
+//    }
 
     public static TaxonCitation createTaxonCitation(final ReferenceWork referenceWork, final Taxon taxon)
     {
@@ -2343,15 +2367,44 @@ public class DataBuilder
         return taxoncitation;
     }
 
-    public static UserGroup createUserGroup(final String name)
+//  public static SpPrincipal createPrincipalGroup(final String name)
+//  {
+//      SpPrincipal usergroup = new SpPrincipal();
+//      usergroup.initialize();
+//      usergroup.setName(name);
+//      usergroup.setPrincipalSubtypeClass(GroupPrincipal.class.getCanonicalName());
+//      persist(usergroup);
+//      return usergroup;
+//  }
+    public static SpPrincipal createDisciplineGroup(final Discipline discipline)
     {
-        UserGroup usergroup = new UserGroup();
+        SpPrincipal usergroup = new SpPrincipal();
         usergroup.initialize();
-        usergroup.setName(name);
+        usergroup.setName(discipline.getName());
+        usergroup.setGroupSubClass(GroupPrincipal.class.getCanonicalName());
         persist(usergroup);
-        return usergroup;
+        return usergroup;    
     }
     
+    public static SpPrincipal createAdminPrincipal(final String name)
+    {
+        SpPrincipal groupPrincipal = new SpPrincipal();
+        groupPrincipal.initialize();
+        groupPrincipal.setName(name);
+        groupPrincipal.setGroupSubClass(AdminPrincipal.class.getCanonicalName());
+        persist(groupPrincipal);
+        return groupPrincipal;
+    }
+    
+    public static SpPrincipal createUserPrincipal(final SpecifyUser user)
+    {
+        SpPrincipal userPrincipal = new SpPrincipal();
+        userPrincipal.initialize();
+        userPrincipal.setName(user.getName());
+        userPrincipal.setGroupSubClass(UserPrincipal.class.getCanonicalName());
+        persist(userPrincipal);
+        return userPrincipal;   
+    }
     public static CatalogNumberingScheme createCatalogNumberingScheme(final String schemeName,
                                                                       final String schemeClassName,
                                                                       final boolean isNumericOnly)

@@ -382,15 +382,11 @@ public class SpecifyExplorer extends HttpServlet
                     
                     Discipline.setCurrentDiscipline(discipline);
                     
-                    for (Agent uAgent : discipline.getAgents())
-                    {
-                        SpecifyUser spu = uAgent.getSpecifyUser();
-                        if (spu != null && spu.getSpecifyUserId().equals(user.getSpecifyUserId()))
-                        {
-                            Agent.setUserAgent(uAgent);
-                            break;
-                        }
-                    }
+                    // The line below replaces the calls to:
+                	//   SpecifyUser spu = uAgent.getSpecifyUser();
+                	//   Agent.setUserAgent(spu);
+                	// That's required as per Meg's change of cardinality on relationship between agents and users
+                	Agent.setUserAgent(user, discipline.getAgents());
                     TaxonTreeDef.setCurrentTaxonTreeDef(discipline.getTaxonTreeDef());
                     GeologicTimePeriodTreeDef.setCurrentGeologicTimePeriodTreeDef(discipline.getGeologicTimePeriodTreeDef());
                     StorageTreeDef.setCurrentStorageTreeDef(discipline.getStorageTreeDef());
@@ -515,8 +511,8 @@ public class SpecifyExplorer extends HttpServlet
                 if (list.size() == 1)
                 {
                     user = (SpecifyUser)list.get(0);
-                    user.getAgents(); // makes sure the Agent is not lazy loaded
-                    hibSession.evict( user.getAgents());
+                    user.getAgent(); // makes sure the Agent is not lazy loaded
+                    hibSession.evict( user.getAgent() );
                     SpecifyUser.setCurrentUser(user);
         
                 } else

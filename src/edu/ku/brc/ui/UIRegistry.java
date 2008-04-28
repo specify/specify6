@@ -527,28 +527,28 @@ public class UIRegistry
 	/**
 	 * @return
 	 */
-	public static String getAppDataDir()
-	{
-		File dir;
-		//log.debug("1 AppDataDir["+instance.appDataDir+"]");
-		if (instance.appDataDir == null)
-		{
-			dir = new File(getUserHomeAppDir());
-		} else
-		{
-			//log.debug("2 AppDataDir["+instance.appDataDir+"]");
-			if (instance.appDataDir.equals("."))
-			{
-				//log.debug("************* dot");
-				dir = new File(UIHelper.stripSubDirs((new File(".").getAbsolutePath()), 1) + File.separator + instance.appName);
-			} else
-			{
-				//log.debug("3 AppDataDir["+instance.appDataDir+"]");
-				dir = new File(instance.appDataDir + File.separator + instance.appName);
-			}
-		}
-		//log.debug("AppDataDir["+dir.getAbsolutePath()+"]");
-		
+    public static String getAppDataDir()
+    {
+        File dir;
+        //log.debug("1 AppDataDir["+instance.appDataDir+"]");
+        if (instance.appDataDir == null)
+        {
+            dir = new File(getUserHomeAppDir());
+        } else
+        {
+            //log.debug("2 AppDataDir["+instance.appDataDir+"]");
+            if (instance.appDataDir.equals("."))
+            {
+                //log.debug("************* dot");
+                dir = new File(UIHelper.stripSubDirs((new File(".").getAbsolutePath()), 1) + File.separator + instance.appName);
+            } else
+            {
+                //log.debug("3 AppDataDir["+instance.appDataDir+"]");
+                dir = new File(instance.appDataDir + File.separator + instance.appName);
+            }
+        }
+        //log.debug("AppDataDir["+dir.getAbsolutePath()+"]");
+        
         if (!dir.exists())
         {
             if (!dir.mkdir())
@@ -557,7 +557,7 @@ public class UIRegistry
             }
         }
          
-		return dir.getAbsolutePath();
+        return dir.getAbsolutePath();
     }
 
     /**
@@ -569,6 +569,10 @@ public class UIRegistry
         return getUserHomeDir() + File.separator + instance.appName;
     }
 
+    /**
+     * Get the "user" based working directory that is platform specific. 
+     * @return the string to a platform specify user data directory
+     */
     /**
      * Get the "user" based working directory that is platform specific. 
      * @return the string to a platform specify user data directory
@@ -595,7 +599,7 @@ public class UIRegistry
         }
         // else
         return homeDir;
-	}
+    }
 
     /**
      * Returns the current application name.

@@ -18,6 +18,7 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
@@ -38,6 +39,10 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.SpPrincipal;
+import edu.ku.brc.specify.datamodel.SpecifyUser;
+
 /**
  * 
  * @code_status Alpha
@@ -57,26 +62,28 @@ public class ListSlider extends JPanel
     private DefaultListModel    sourceListModel;
     private DefaultListModel    destinationListModel;
     // TO DO: I18N
-    private String              addString            = "Add";//XXX 
-    private String              removeString         = "Remove";//XXX 
-    private String              addAllString         = "Add All";//XXX 
-    private String              removeAllString      = "Remove All";//XXX 
+    private String              addString            = ">";//XXX 
+    private String              removeString         = "<";//XXX 
+    private String              addAllString         = ">>";//XXX 
+    private String              removeAllString      = "<<";//XXX 
 
     private JButton             addButton;                               
     private JButton             removeButton;                                
     private JButton             addAllButton;                              
     private JButton             removeAllButton;      
-    private Dimension           preferredListSize = new Dimension(200,200);
-    private Dimension           minimumListSize = new Dimension(50,50);
-    @SuppressWarnings("unused")
-    private Dimension           maximumListSize = new Dimension(500,500);
+    private Dimension           preferredListSize = new Dimension(150,150);
+    //private Dimension           minimumListSize = new Dimension(50,50);
+    //@SuppressWarnings("unused")
+    //private Dimension           maximumListSize = new Dimension(300,500);
     private boolean             isGrowableList = true;
+    private boolean             listChanged = false;
     //private DefaultListCellRenderer cellRenderer = null;
 
     /**
      * Constructor
      */
-    public ListSlider(String[] sourceData, DefaultListModel sourceModel, String sourceListTitle,
+    @SuppressWarnings("unused")
+    private ListSlider(String[] sourceData, DefaultListModel sourceModel, String sourceListTitle,
             String[] destinationData, DefaultListModel destinationModel, String destinationListTitle)
     {
         this.sourceListTitle = sourceListTitle;
@@ -90,7 +97,8 @@ public class ListSlider extends JPanel
     /**
      * Constructor
      */
-    public ListSlider(Object[] sourceData, DefaultListModel sourceModel, String sourceListTitle,
+    @SuppressWarnings("unused")
+    private ListSlider(Object[] sourceData, DefaultListModel sourceModel, String sourceListTitle,
     		Object[] destinationData, DefaultListModel destinationModel, String destinationListTitle)
     {
         this.sourceListTitle = sourceListTitle;
@@ -104,7 +112,8 @@ public class ListSlider extends JPanel
     /**
      * Constructor
      */
-    public ListSlider(String[] sourceData, String sourceListTitle, String[] destinationData,
+    @SuppressWarnings("unused")
+    private ListSlider(String[] sourceData, String sourceListTitle, String[] destinationData,
             String destinationListTitle)
     {
         this.sourceListTitle = sourceListTitle;
@@ -144,7 +153,8 @@ public class ListSlider extends JPanel
     /**
      * Constructor
      */
-    public ListSlider(Object[] sourceData, String sourceListTitle, Object[] destinationData,
+    @SuppressWarnings("unused")
+    private ListSlider(Object[] sourceData, String sourceListTitle, Object[] destinationData,
             String destinationListTitle)
     {
         this.sourceListTitle = sourceListTitle;
@@ -161,11 +171,40 @@ public class ListSlider extends JPanel
         setupListComponents(sourceListModel, destinationListModel);
     }
     
+//    /**
+//     * Constructor
+//     */
+//    public void resetData(List<?> sourceData, List<?> destinationData
+//           )
+//    {
+//        //this.sourceListTitle = sourceListTitle;
+//        //this.destinationListTitle = destinationListTitle;
+//
+//        //this.sourceListModel = new DefaultListModel();
+//        addDataToListModel(sourceListModel, sourceData.toArray());
+//        //SortedListModel sourceSortedListModel = new SortedListModel(sourceListModel);
+//
+//        //this.destinationListModel = new DefaultListModel();
+//        addDataToListModel(destinationListModel, destinationData.toArray());
+//        //SortedListModel destSortedListModel = new SortedListModel(destinationListModel);
+//
+//        setupListComponents(sourceListModel, destinationListModel);
+//    }   
+
+    
+    /**
+     * @param cellRenderer
+     */
     public void setDefaultListCellRenderer(DefaultListCellRenderer cellRenderer) 
     {
     	sourceList.setCellRenderer(cellRenderer);
     	destinationList.setCellRenderer(cellRenderer);
     }
+    
+    /**
+     * @param sourceListModel
+     * @param destListModel
+     */
     private void setupListComponents(DefaultListModel sourceListModel, DefaultListModel destListModel)
     {
         sourceList = new JList(sourceListModel);
@@ -245,6 +284,16 @@ public class ListSlider extends JPanel
        
     }
 
+    public void setExternalActionListener(ActionListener listener)
+    {
+        addButton.addActionListener(listener);
+        addAllButton.addActionListener(listener);
+        removeButton.addActionListener(listener);
+        removeAllButton.addActionListener(listener);
+    }
+    /**
+     * @return
+     */
     public Object[] getDestinationData()
     {
         if (destinationListModel == null)
@@ -264,7 +313,45 @@ public class ListSlider extends JPanel
             log.debug(values[i].toString());
         return values;
     }
-
+    
+    /**
+     * @return
+     */
+    public Object[] getSourceData()
+    {
+        if (sourceListModel == null)
+        {
+            log.debug("No data selected");
+            return null;
+        }
+        
+        int listSize = sourceListModel.getSize();
+        Object[] values = new Object[listSize];
+        for (int i = 0; i < listSize; i++)
+        {
+            values[i] = sourceListModel.getElementAt(i);
+        }
+        log.debug("The following data is in the destination list"); 
+        for (int i = 0; i < values.length; i++)
+            log.debug(values[i].toString());
+        return values;
+    }
+    
+    /**
+     * @return
+     */
+    public JList getDestinationList()
+    {
+        return new JList(destinationListModel);
+    }
+    
+    /**
+     * @return
+     */
+    public JList getSourceList()
+    {
+        return new JList(sourceListModel);
+    }
     /**
      * Create the GUI and show it. For thread safety, this method should be invoked from the
      * event-dispatching thread.
@@ -288,27 +375,35 @@ public class ListSlider extends JPanel
         frame.setVisible(true);
     }
 
+    /**
+     * @param d
+     */
     public void setPreferredListSize(Dimension d)
     {
         preferredListSize = d;
 
     }
 
-    public void setMinimumListSize(Dimension d)
-    {
-        minimumListSize = d;
-    }
+    //public void setMinimumListSize(Dimension d)
+    //{
+    //    minimumListSize = d;
+    //}
 
     public void setGrowableLists(boolean b)
     {
         isGrowableList = b;
     }
 
-     public JPanel getListPanel(JList list, String title)
+     /**
+     * @param list
+     * @param title
+     * @return
+     */
+    public JPanel getListPanel(JList list, String title)
      {
          JScrollPane scrollPane = new JScrollPane(list);
          scrollPane.setPreferredSize(preferredListSize);
-         scrollPane.setMinimumSize(minimumListSize);
+         //scrollPane.setMinimumSize(minimumListSize);
         // scrollPane.setMaximumSize(maximumListSize);
          JPanel panel = new JPanel();
          panel.setLayout(new BorderLayout());
@@ -332,8 +427,70 @@ public class ListSlider extends JPanel
         });
     }
     
+    /**
+     * @param ids
+     */
+    public void setSourceSelectedValues(Integer[] ids)
+    {
+        log.debug("setSourceSelectedValues");
+        Object[] vals = getSourceData();
+        List<Integer> indicesToMove = new ArrayList<Integer> ();
+        for(int i =0; i < vals.length; i++)
+        {
+            Object o = vals[i];
+            if(o instanceof SpPrincipal)
+            {
+                SpPrincipal spug = (SpPrincipal)o;
+                Integer spugID = spug.getId();
+                for(int j = 0 ; j < ids.length; j++)
+                {
+                    if(ids[j].intValue()== spugID.intValue())
+                    {
+                        log.debug("preparint to move: " + i);
+                        indicesToMove.add(new Integer(i));
+                    }
+                }
 
-    public void moveDestinationDataToSource()
+            }
+            else if(o instanceof Discipline)
+            {
+                Discipline disc = (Discipline)o;
+                Integer ctID = disc.getId();
+                for(int j = 0 ; j < ids.length; j++)
+                {
+                    if(ids[j].intValue()== ctID.intValue())
+                    {
+                        indicesToMove.add(new Integer(i));
+                    }
+                }
+            }
+            else if(o instanceof SpecifyUser)
+            {
+                SpecifyUser ct = (SpecifyUser)o;
+                Integer ctID = ct.getId();
+                for(int j = 0 ; j < ids.length; j++)
+                {
+                    if(ids[j].intValue()== ctID.intValue())
+                    {
+                        indicesToMove.add(new Integer(i));
+                    }
+                }
+            }
+        }
+        int [] indices = new int [indicesToMove.size()];
+        for(int i = 0; i< indicesToMove.size(); i ++)
+        {
+            indices[i] = (Integer)indicesToMove.get(i).intValue();    
+            log.debug("selecting: " +  (Integer)indicesToMove.get(i).intValue() );
+        }
+        sourceList.setSelectedIndices(indices);
+        moveSelectedSourceDataToDestination();
+    }    
+
+    /**
+     * 
+     */
+    public void moveSelectedDestinationDataToSource()
     {
         Object[] selectedVals = destinationList.getSelectedValues();
         addDataToListModel(sourceListModel, selectedVals);
@@ -341,8 +498,28 @@ public class ListSlider extends JPanel
         destinationList.setSelectedIndex(0);
         if(destinationList.getModel().getSize()==0) sourceList.setSelectedIndex(1);       
     }
+   
+    /**
+     * 
+     */
+    public void moveAllDestinationDataToSource()
+    {
+        
+        Object[] selectedVals = new Object[destinationList.getModel().getSize()];
+        for(int i =0; i< destinationList.getModel().getSize(); i++) 
+        {
+            selectedVals[i] = destinationList.getModel().getElementAt(i);
+        }
+        addDataToListModel(sourceListModel, selectedVals);
+        removeDataFromListModel(destinationListModel, selectedVals);
+        destinationList.setSelectedIndex(0);
+        if(destinationList.getModel().getSize()==0) sourceList.setSelectedIndex(1);       
+    }
     
-    public void moveSourceDataToDestination()
+    /**
+     * 
+     */
+    public void moveSelectedSourceDataToDestination()
     {
         Object[] selectedVals = sourceList.getSelectedValues();
         addDataToListModel(destinationListModel, selectedVals);
@@ -351,38 +528,88 @@ public class ListSlider extends JPanel
         if(sourceList.getModel().getSize()==0)destinationList.setSelectedIndex(1);       
     }
 
+    /**
+     * 
+     */
+    public void moveAllSourceDataToDestination()
+    {
+        Object[] selectedVals = new Object[sourceList.getModel().getSize()];
+        for(int i =0; i< sourceList.getModel().getSize(); i++) 
+        {
+            selectedVals[i] = sourceList.getModel().getElementAt(i);
+        }
+        addDataToListModel(destinationListModel, selectedVals);
+        removeDataFromListModel(sourceListModel, selectedVals);
+        sourceList.setSelectedIndex(0);
+        if(sourceList.getModel().getSize()==0)destinationList.setSelectedIndex(1);       
+    }
+    
+    /**
+     * @author megkumin
+     *
+     * @code_status Alpha
+     *
+     */
     class AddListener implements ActionListener
     {
         public void actionPerformed(ActionEvent e)
         {
-            moveSourceDataToDestination();
+            moveSelectedSourceDataToDestination();
+            listChanged = true;
         }
     }
 
+    /**
+     * @author megkumin
+     *
+     * @code_status Alpha
+     *
+     */
     class RemoveListener implements ActionListener
     {
         public void actionPerformed(ActionEvent e)
         {
-            moveDestinationDataToSource();
+            moveSelectedDestinationDataToSource();
+            listChanged = true;
         }
     }
+    
+    /**
+     * @author megkumin
+     *
+     * @code_status Alpha
+     *
+     */
     class AddAllListener implements ActionListener
     {
         public void actionPerformed(ActionEvent e)
         {
             sourceList.setSelectionInterval(0, sourceList.getModel().getSize()-1);
-            moveSourceDataToDestination();
+            moveSelectedSourceDataToDestination();
+            listChanged = true;
         }
     }
 
+    /**
+     * @author megkumin
+     *
+     * @code_status Alpha
+     *
+     */
     class RemoveAllListener implements ActionListener
     {
         public void actionPerformed(ActionEvent e)
         {
             destinationList.setSelectionInterval(0, destinationList.getModel().getSize()-1);
-            moveDestinationDataToSource();
+            moveSelectedDestinationDataToSource();
+            listChanged = true;
         }
     }
+    
+    /**
+     * @param model
+     * @param newValues
+     */
     private void addDataToListModel(DefaultListModel model, Object newValues[])
     {
         for (int i = 0; i < newValues.length; i++)
@@ -392,6 +619,10 @@ public class ListSlider extends JPanel
         getDestinationData();
     }
 
+    /**
+     * @param model
+     * @param newValues
+     */
     private void removeDataFromListModel(DefaultListModel model, Object newValues[])
     {
         for (int i = 0; i < newValues.length; i++)
@@ -401,6 +632,9 @@ public class ListSlider extends JPanel
         getDestinationData();
     }
 
+    /**
+     * @param e
+     */
     private void setButtons(ListSelectionEvent e)
     {
         if (e.getValueIsAdjusting() == false)
@@ -425,7 +659,24 @@ public class ListSlider extends JPanel
             }
         }
     }
+    
+    /**
+     * @param b
+     */
+    private void enableButtons(boolean b)
+    {
+        addButton.setEnabled(b);
+        addAllButton.setEnabled(b);
+        removeButton.setEnabled(b);
+        removeAllButton.setEnabled(b);
+    }
 
+    /**
+     * @author megkumin
+     *
+     * @code_status Alpha
+     *
+     */
     class SourceListSelectionHandler implements ListSelectionListener
     {
         public void valueChanged(ListSelectionEvent e)
@@ -434,12 +685,32 @@ public class ListSlider extends JPanel
         }
     }
 
+    /**
+     * @author megkumin
+     *
+     * @code_status Alpha
+     *
+     */
     class DestinationListSelectionHandler implements ListSelectionListener
     {
         public void valueChanged(ListSelectionEvent e)
         {
             setButtons(e);
         }
+    }
+    /**
+     * @return the listChanged
+     */
+    public boolean isListChanged()
+    {
+        return listChanged;
+    }
+    /**
+     * @param listChanged the listChanged to set
+     */
+    public void setListChanged(boolean listChanged)
+    {
+        this.listChanged = listChanged;
     }
 
 }

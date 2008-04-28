@@ -39,15 +39,18 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.security.auth.Subject;
 
 import org.hibernate.annotations.Cascade;
 
 /**
  * 
  */
+@SuppressWarnings("serial")
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
@@ -56,23 +59,26 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
 {
 
     protected static SpecifyUser      currentUser = null;
+    protected static Subject          currentSubject = null;
 
     // Fields
-
     protected Integer                   specifyUserId;
     protected String                    name;
     protected String                    email;
+    protected String                    password;
     protected String                    userType;
-    protected Short                     privLevel;
+    //protected Short                     privLevel;
     protected Set<RecordSet>            recordSets;
     protected Set<Workbench>            workbenches;
     protected Set<WorkbenchTemplate>    workbenchTemplates;
     protected Set<SpAppResource>        spAppResources;
-    protected Set<UserGroup>            userGroups;
+    protected Set<SpPrincipal>          spPrincipalGroups;
     protected Set<SpAppResourceDir>     spAppResourceDirs;
-    protected Set<UserPermission>       userPermissions;
     protected Set<SpQuery>              spQuerys;
-    protected Set<Agent>                agents;
+    protected Agent                     agent;
+    //protected Set<Agent>              agents;
+
+    //protected SpPrincipal             principal;
 
     // Constructors
 
@@ -118,17 +124,16 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
         specifyUserId      = null;
         name               = null;
         email              = null;
-        privLevel          = null;
+        //privLevel          = null;
         recordSets         = new HashSet<RecordSet>();
         workbenches        = new HashSet<Workbench>();
         workbenchTemplates = new HashSet<WorkbenchTemplate>();
-        spAppResources     = new HashSet<SpAppResource>();
-        userGroups         = new HashSet<UserGroup>();
-        spAppResourceDirs  = new HashSet<SpAppResourceDir>();
-        userPermissions    = new HashSet<UserPermission>();
+        spAppResources = new HashSet<SpAppResource>();
+        spPrincipalGroups = new HashSet<SpPrincipal>();
+        spAppResourceDirs = new HashSet<SpAppResourceDir>();
         spQuerys           = new HashSet<SpQuery>();
-        agents             = new HashSet<Agent>();
-
+        agent             = null;
+        //agents             = new HashSet<Agent>();
     }
 
     // End Initializer
@@ -216,9 +221,26 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     }
 
     /**
+     * 
+     */
+    @Column(name = "Password", unique = false, nullable = false, insertable = true, updatable = true, length = 64)
+    public String getPassword()
+    {
+        return this.password;
+    }
+
+    /**
+     * @param password - 
+     * void
+     */
+    public void setPassword(String password)
+    {
+        this.password = password;
+    }
+    /**
      * @return the userType
      */
-    @Column(name = "UserType", unique = false, nullable = false, insertable = true, updatable = true, length = 32)
+    @Column(name = "UserType", unique = false, nullable = true, insertable = true, updatable = true, length = 32)
     public String getUserType()
     {
         return this.userType;
@@ -232,24 +254,24 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
         this.userType = userType;
     }
 
-    /**
-     * @return - 
-     * Short
-     */
-    @Column(name = "PrivLevel", unique = false, nullable = false, insertable = true, updatable = true)
-    public Short getPrivLevel()
-    {
-        return this.privLevel;
-    }
+//    /**
+//     * @return - 
+//     * Short
+//     */
+//    @Column(name = "PrivLevel", unique = false, nullable = false, insertable = true, updatable = true)
+//    public Short getPrivLevel()
+//    {
+//        return this.privLevel;
+//    }
 
-    /**
-     * @param privLevel - 
-     * void
-     */
-    public void setPrivLevel(Short privLevel)
-    {
-        this.privLevel = privLevel;
-    }
+//    /**
+//     * @param privLevel - 
+//     * void
+//     */
+//    public void setPrivLevel(Short privLevel)
+//    {
+//        this.privLevel = privLevel;
+//    }
 
     /**
      * 
@@ -275,23 +297,33 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
      */
     /**
      * @return - 
-     * Set<UserGroup>
+     * Set<SpPrincipal>
      */
     @ManyToMany(cascade = {}, fetch = FetchType.LAZY)
-    @JoinTable(name = "sp_usergroup", joinColumns = { @JoinColumn(name = "SpecifyUserID", unique = false, nullable = false, insertable = true, updatable = false) }, inverseJoinColumns = { @JoinColumn(name = "UserGroupID", unique = false, nullable = false, insertable = true, updatable = false) })
+    @JoinTable(name = "specifyuser_spprincipal", 
+            joinColumns = 
+            { 
+                @JoinColumn(name = "SpecifyUserID", unique = false, nullable = false, insertable = true, updatable = false) 
+            }, 
+            inverseJoinColumns = 
+            { 
+                @JoinColumn(name = "SpPrincipalID", unique = false, nullable = false, insertable = true, updatable = false) 
+            }
+    )
+    
     @Cascade( { org.hibernate.annotations.CascadeType.SAVE_UPDATE })
-    public Set<UserGroup> getUserGroup()
+    public Set<SpPrincipal> getUserGroup()
     {
-        return this.userGroups;
+        return this.spPrincipalGroups;
     }
 
     /**
-     * @param userGroup - 
+     * @param spUserGroup - 
      * void
      */
-    public void setUserGroup(Set<UserGroup> userGroup)
+    public void setUserGroup(Set<SpPrincipal> spUserGroup)
     {
-        this.userGroups = userGroup;
+        this.spPrincipalGroups = spUserGroup;
     }
 
     /**
@@ -314,25 +346,6 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
         this.spAppResourceDirs = spAppResourceDirs;
     }
 
-    /**
-     * @return - 
-     * Set<UserPermission>
-     */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "specifyUser")
-    @Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<UserPermission> getUserPermissions()
-    {
-        return this.userPermissions;
-    }
-
-    /**
-     * @param userPermissions - 
-     * void
-     */
-    public void setUserPermissions(Set<UserPermission> userPermissions)
-    {
-        this.userPermissions = userPermissions;
-    }
 
     /**
      * @return - 
@@ -392,35 +405,83 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
         return this.workbenchTemplates;
     }
 
-    /**
-     * @return - 
-     */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "specifyUser")
-    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-    public Set<Agent> getAgents()
+
+    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "AgentID", unique = false, nullable = true, insertable = true, updatable = true)
+    public Agent getAgent()
     {
-        return this.agents;
+        return this.agent;
     }
+    
+//    /**
+//     * @return - 
+//     */
+//    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "specifyUser")
+//    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+//    public Set<Agent> getAgents()
+//    {
+//        return this.agents;
+//    }
+//
+//    /**
+//     * @param agent - 
+//     * void
+//     */
+//    public void setPrincipal(SpPrincipal principal)
+//    {
+//        this.principal = principal;
+//    }
+//    /**
+//     * @return - 
+//     * Agent
+//     */
+//    @ManyToOne(cascade = {}, fetch = FetchType.EAGER)
+//    @Cascade( { org.hibernate.annotations.CascadeType.ALL })
+//    @JoinColumn(name = "SpPrincipalID", unique = false, nullable = true, insertable = true, updatable = true)
+//    public SpPrincipal getPrincipal()
+//    {
+//        return this.principal;
+//    }
 
     /**
      * @param agenta
      * 
      */
-    public void setAgents(Set<Agent> agents)
+    public void setAgent(Agent agent)
     {
-        this.agents = agents;
+        this.agent = agent;
     }
-
+    
+//    /**
+//     * @param agenta
+//     * 
+//     */
+//    public void setAgents(Set<Agent> agents)
+//    {
+//        this.agents = agents;
+//    }
     // Add Methods
     /**
      * @param userGroupArg - 
      * void
      */
-    public void addUserGroups(final UserGroup userGroupArg)
+    public void addUserToSpPrincipalGroup(final SpPrincipal userGroupArg)
     {
-        this.userGroups.add(userGroupArg);
+        this.spPrincipalGroups.add(userGroupArg);
         userGroupArg.getSpecifyUsers().add(this);
     }
+    
+//    /**
+//     * @param agent - 
+//     * void
+//     */
+//    public void addAgent(final Agent agent)
+//    { 
+//        this.agents.add(agent);
+//        agent.setSpecifyUser(this);
+//        //agent.
+//        //agent.getSpecifyUsers().add(this);
+//    }
     
     /**
      * @return the spQuerys
@@ -430,6 +491,13 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     public Set<SpQuery> getSpQuerys()
     {
         return spQuerys;
+    }
+
+
+    public void removeUserGroups(final SpPrincipal userGroupArg)
+    {
+        this.spPrincipalGroups.remove(userGroupArg);
+        userGroupArg.getSpecifyUsers().remove(this);
     }
 
     /**
@@ -481,5 +549,21 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     {
         if (name != null) return name;
         return super.getIdentityTitle();       
+    }
+
+    /**
+     * @return the currentSubject
+     */
+    public static Subject getCurrentSubject()
+    {
+        return currentSubject;
+    }
+
+    /**
+     * @param currentSubject the currentSubject to set
+     */
+    public static void setCurrentSubject(Subject currentSubject)
+    {
+        SpecifyUser.currentSubject = currentSubject;
     }
 }

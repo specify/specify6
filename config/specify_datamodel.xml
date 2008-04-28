@@ -184,7 +184,7 @@
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Project" relationshipname="projects" othersidename="agent" updatable="false" required="false"/>
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.RepositoryAgreement" relationshipname="repositoryAgreements" othersidename="originator" updatable="false" required="false"/>
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Shipment" relationshipname="shipments" othersidename="shippedBy" updatable="false" required="false"/>
-      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.SpecifyUser" relationshipname="specifyUser" columnname="SpecifyUserID" othersidename="agents" updatable="false" required="false"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.SpecifyUser" relationshipname="specifyUsers" othersidename="agent" updatable="false" required="false"/>
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.AgentVariant" relationshipname="variants" othersidename="agent" updatable="false" required="false"/>
     </table>
     <table classname="edu.ku.brc.specify.datamodel.AgentAttachment" table="agentattachment" tableid="109" searchable="true" businessrule="edu.ku.brc.specify.datamodel.busrules.AttachmentReferenceBaseBusRules" abbrv="agat">
@@ -1091,7 +1091,6 @@
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.SpLocaleContainer" relationshipname="spLocaleContainers" othersidename="discipline" updatable="false" required="false"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.StorageTreeDef" relationshipname="storageTreeDef" columnname="StorageTreeDefID" othersidename="disciplines" updatable="false" required="false"/>
       <relationship type="one-to-one" classname="edu.ku.brc.specify.datamodel.TaxonTreeDef" relationshipname="taxonTreeDef" columnname="TaxonTreeDefID" othersidename="discipline" updatable="false" required="false"/>
-      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.UserPermission" relationshipname="userPermissions" othersidename="discipline" updatable="false" required="false"/>
     </table>
     <table classname="edu.ku.brc.specify.datamodel.Division" table="division" tableid="96" searchable="true" abbrv="dv">
       <display view="Division"/>
@@ -2116,7 +2115,7 @@
       <id column="RecordSetID" name="recordSetId" type="java.lang.Integer"/>
       <tableindex indexName="RecordSetNameIDX" columnNames="name"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="createdByAgent" columnname="CreatedByAgentID" updatable="false" required="false"/>
-      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.UserGroup" relationshipname="group" columnname="UserGroupID" othersidename="recordsets" updatable="false" required="false"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.SpPrincipal" relationshipname="group" columnname="SpPrincipalID" othersidename="recordsets" updatable="false" required="false"/>
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.InfoRequest" relationshipname="infoRequests" othersidename="recordSet" updatable="false" required="false"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="modifiedByAgent" columnname="ModifiedByAgentID" updatable="false" required="false"/>
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.RecordSetItem" relationshipname="recordSetItems" othersidename="recordSet" updatable="false" required="false"/>
@@ -2249,7 +2248,7 @@
       <tableindex indexName="SpAppResNameIDX" columnNames="Name"/>
       <tableindex indexName="SpAppResMimeTypeIDX" columnNames="MimeType"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="createdByAgent" columnname="CreatedByAgentID" updatable="false" required="false"/>
-      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.UserGroup" relationshipname="group" columnname="UserGroupID" othersidename="spAppResources" updatable="false" required="false"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.SpPrincipal" relationshipname="group" columnname="SpPrincipalID" othersidename="spAppResources" updatable="false" required="false"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="modifiedByAgent" columnname="ModifiedByAgentID" updatable="false" required="false"/>
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.SpAppResourceData" relationshipname="spAppResourceDatas" othersidename="spAppResource" updatable="false" required="false"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.SpAppResourceDir" relationshipname="spAppResourceDir" columnname="SpAppResourceDirID" othersidename="spPersistedAppResources" updatable="false" required="true"/>
@@ -2355,6 +2354,24 @@
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.SpLocaleContainerItem" relationshipname="itemName" columnname="SpLocaleContainerItemNameID" othersidename="names" updatable="false" required="false"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="modifiedByAgent" columnname="ModifiedByAgentID" updatable="false" required="false"/>
     </table>
+    <table classname="edu.ku.brc.specify.datamodel.SpPermission" table="sppermission" tableid="521" searchable="false" abbrv="spper">
+      <field column="Actions" name="actions" type="java.lang.String" length="256" updatable="true" required="false" unique="false" indexed="false"/>
+      <field column="Name" name="name" type="java.lang.String" length="64" updatable="true" required="false" unique="false" indexed="false"/>
+      <field column="PermissionClass" name="permissionClass" type="java.lang.String" length="256" updatable="true" required="true" unique="false" indexed="false"/>
+      <id column="SpPermissionID" name="permissionId" type="java.lang.Integer"/>
+      <relationship type="many-to-many" classname="edu.ku.brc.specify.datamodel.SpPrincipal" relationshipname="principals" othersidename="permissions" updatable="false" required="false"/>
+    </table>
+    <table classname="edu.ku.brc.specify.datamodel.SpPrincipal" table="SpPrincipal" tableid="522" searchable="false" abbrv="spprin">
+      <field column="GroupSubClass" name="groupSubClass" type="java.lang.String" length="255" updatable="true" required="true" unique="false" indexed="false"/>
+      <field column="Name" name="name" type="java.lang.String" length="64" updatable="true" required="true" unique="true" indexed="false"/>
+      <field column="Remarks" name="remarks" type="text" updatable="true" required="false" unique="false" indexed="false"/>
+      <id column="SpPrincipalID" name="userGroupId" type="java.lang.Integer"/>
+      <relationship type="many-to-many" classname="edu.ku.brc.specify.datamodel.SpPermission" relationshipname="permissions" othersidename="principals" updatable="false" required="false" jointable="spprincipal_sppermission"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.RecordSet" relationshipname="recordsets" othersidename="group" updatable="false" required="false"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.SpAppResource" relationshipname="spAppResources" othersidename="group" updatable="false" required="false"/>
+      <relationship type="many-to-many" classname="edu.ku.brc.specify.datamodel.SpecifyUser" relationshipname="specifyUsers" othersidename="userGroup" updatable="false" required="false"/>
+      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Workbench" relationshipname="workbenches" othersidename="group" updatable="false" required="false"/>
+    </table>
     <table classname="edu.ku.brc.specify.datamodel.SpQuery" table="spquery" tableid="517" searchable="false" abbrv="sq">
       <field column="ContextName" name="contextName" type="java.lang.String" length="64" updatable="true" required="true" unique="false" indexed="false"/>
       <field column="ContextTableId" name="contextTableId" type="java.lang.Short" updatable="true" required="true" unique="false" indexed="false"/>
@@ -2429,21 +2446,20 @@
     <table classname="edu.ku.brc.specify.datamodel.SpecifyUser" table="specifyuser" tableid="72" searchable="false" abbrv="spu">
       <field column="EMail" name="email" type="java.lang.String" length="64" updatable="true" required="false" unique="false" indexed="false"/>
       <field column="Name" name="name" type="java.lang.String" length="64" updatable="true" required="true" unique="true" indexed="false"/>
-      <field column="PrivLevel" name="privLevel" type="java.lang.Short" updatable="true" required="true" unique="false" indexed="false"/>
+      <field column="Password" name="password" type="java.lang.String" length="64" updatable="true" required="true" unique="false" indexed="false"/>
       <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" updatable="false" required="true" unique="false" indexed="false"/>
       <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" updatable="true" required="false" unique="false" indexed="false"/>
-      <field column="UserType" name="userType" type="java.lang.String" length="32" updatable="true" required="true" unique="false" indexed="false"/>
+      <field column="UserType" name="userType" type="java.lang.String" length="32" updatable="true" required="false" unique="false" indexed="false"/>
       <field column="Version" name="version" type="java.lang.Integer" updatable="true" required="false" unique="false" indexed="false"/>
       <id column="SpecifyUserID" name="specifyUserId" type="java.lang.Integer"/>
-      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="agents" othersidename="specifyUser" updatable="false" required="false"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="agent" columnname="AgentID" othersidename="specifyUsers" updatable="false" required="false"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="createdByAgent" columnname="CreatedByAgentID" updatable="false" required="false"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="modifiedByAgent" columnname="ModifiedByAgentID" updatable="false" required="false"/>
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.RecordSet" relationshipname="recordSets" othersidename="specifyUser" updatable="false" required="false"/>
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.SpAppResourceDir" relationshipname="spAppResourceDirs" othersidename="specifyUser" updatable="false" required="false"/>
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.SpAppResource" relationshipname="spAppResources" othersidename="specifyUser" updatable="false" required="false"/>
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.SpQuery" relationshipname="spQuerys" othersidename="specifyUser" updatable="false" required="false"/>
-      <relationship type="many-to-many" classname="edu.ku.brc.specify.datamodel.UserGroup" relationshipname="userGroup" othersidename="specifyUsers" updatable="false" required="false" jointable="sp_usergroup"/>
-      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.UserPermission" relationshipname="userPermissions" othersidename="specifyUser" updatable="false" required="false"/>
+      <relationship type="many-to-many" classname="edu.ku.brc.specify.datamodel.SpPrincipal" relationshipname="userGroup" othersidename="specifyUsers" updatable="false" required="false" jointable="specifyuser_spprincipal"/>
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.WorkbenchTemplate" relationshipname="workbenchTemplates" othersidename="specifyUser" updatable="false" required="false"/>
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Workbench" relationshipname="workbenches" othersidename="specifyUser" updatable="false" required="false"/>
     </table>
@@ -2657,32 +2673,6 @@
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Division" relationshipname="division" columnname="DivisionID" othersidename="treatmentEvents" updatable="false" required="false"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="modifiedByAgent" columnname="ModifiedByAgentID" updatable="false" required="false"/>
     </table>
-    <table classname="edu.ku.brc.specify.datamodel.UserGroup" table="usergroup" tableid="78" searchable="false" abbrv="spug">
-      <field column="Name" name="name" type="java.lang.String" length="64" updatable="true" required="true" unique="true" indexed="false"/>
-      <field column="Remarks" name="remarks" type="text" length="4096" updatable="true" required="false" unique="false" indexed="false"/>
-      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" updatable="false" required="true" unique="false" indexed="false"/>
-      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" updatable="true" required="false" unique="false" indexed="false"/>
-      <field column="Version" name="version" type="java.lang.Integer" updatable="true" required="false" unique="false" indexed="false"/>
-      <id column="UserGroupID" name="userGroupId" type="java.lang.Integer"/>
-      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="createdByAgent" columnname="CreatedByAgentID" updatable="false" required="false"/>
-      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="modifiedByAgent" columnname="ModifiedByAgentID" updatable="false" required="false"/>
-      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.RecordSet" relationshipname="recordsets" othersidename="group" updatable="false" required="false"/>
-      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.SpAppResource" relationshipname="spAppResources" othersidename="group" updatable="false" required="false"/>
-      <relationship type="many-to-many" classname="edu.ku.brc.specify.datamodel.SpecifyUser" relationshipname="specifyUsers" othersidename="userGroup" updatable="false" required="false"/>
-      <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.Workbench" relationshipname="workbenches" othersidename="group" updatable="false" required="false"/>
-    </table>
-    <table classname="edu.ku.brc.specify.datamodel.UserPermission" table="sp_userpermission" tableid="89" searchable="false" abbrv="spup">
-      <field column="AdminPrivilege" name="adminPrivilege" type="java.lang.Boolean" updatable="true" required="false" unique="false" indexed="false"/>
-      <field column="DataAccessPrivilege" name="dataAccessPrivilege" type="java.lang.Boolean" updatable="true" required="false" unique="false" indexed="false"/>
-      <field column="TimestampCreated" name="timestampCreated" type="java.sql.Timestamp" updatable="false" required="true" unique="false" indexed="false"/>
-      <field column="TimestampModified" name="timestampModified" type="java.sql.Timestamp" updatable="true" required="false" unique="false" indexed="false"/>
-      <field column="Version" name="version" type="java.lang.Integer" updatable="true" required="false" unique="false" indexed="false"/>
-      <id column="UserPermissionID" name="userPermissionId" type="java.lang.Integer"/>
-      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="createdByAgent" columnname="CreatedByAgentID" updatable="false" required="false"/>
-      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Discipline" relationshipname="discipline" columnname="DisciplineID" othersidename="userPermissions" updatable="false" required="true"/>
-      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="modifiedByAgent" columnname="ModifiedByAgentID" updatable="false" required="false"/>
-      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.SpecifyUser" relationshipname="specifyUser" columnname="SpecifyUserID" othersidename="userPermissions" updatable="false" required="true"/>
-    </table>
     <table classname="edu.ku.brc.specify.datamodel.Workbench" table="workbench" tableid="79" searchable="false" abbrv="wb">
       <field column="AllPermissionLevel" name="allPermissionLevel" type="java.lang.Integer" updatable="true" required="false" unique="false" indexed="false"/>
       <field column="TableID" name="dbTableId" type="java.lang.Integer" updatable="true" required="false" unique="false" indexed="false"/>
@@ -2699,7 +2689,7 @@
       <id column="WorkbenchID" name="workbenchId" type="java.lang.Integer"/>
       <tableindex indexName="WorkbenchNameIDX" columnNames="name"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="createdByAgent" columnname="CreatedByAgentID" updatable="false" required="false"/>
-      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.UserGroup" relationshipname="group" columnname="UserGroupID" othersidename="workbenches" updatable="false" required="false"/>
+      <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.SpPrincipal" relationshipname="group" columnname="SpPrincipalID" othersidename="workbenches" updatable="false" required="false"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="modifiedByAgent" columnname="ModifiedByAgentID" updatable="false" required="false"/>
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.SpecifyUser" relationshipname="specifyUser" columnname="SpecifyUserID" othersidename="workbenches" updatable="false" required="true"/>
       <relationship type="one-to-many" classname="edu.ku.brc.specify.datamodel.WorkbenchRow" relationshipname="workbenchRows" othersidename="workbench" updatable="false" required="false"/>

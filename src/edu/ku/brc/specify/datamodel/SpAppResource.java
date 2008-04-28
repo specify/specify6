@@ -93,7 +93,7 @@ public class SpAppResource extends DataModelObjBase implements java.io.Serializa
      protected SpAppResourceDir          spAppResourceDir;
      protected Set<SpReport>             spReports;
      protected SpecifyUser               specifyUser;
-     protected UserGroup                 group;
+     protected SpPrincipal                 group;
      
      // Non Persisted Fields
      protected String                    fileName     = null;
@@ -395,12 +395,12 @@ public class SpAppResource extends DataModelObjBase implements java.io.Serializa
      * 
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "UserGroupID", unique = false, nullable = true, insertable = true, updatable = true)
-    public UserGroup getGroup() {
+    @JoinColumn(name = "SpPrincipalID", unique = false, nullable = true, insertable = true, updatable = true)
+    public SpPrincipal getGroup() {
         return this.group;
     }
     
-    public void setGroup(UserGroup group) {
+    public void setGroup(SpPrincipal group) {
         this.group = group;
     }
     

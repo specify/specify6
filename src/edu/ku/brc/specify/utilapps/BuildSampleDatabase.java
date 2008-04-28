@@ -8,9 +8,11 @@
 package edu.ku.brc.specify.utilapps;
 
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
+
 import static edu.ku.brc.specify.config.init.DataBuilder.createAccession;
 import static edu.ku.brc.specify.config.init.DataBuilder.createAccessionAgent;
 import static edu.ku.brc.specify.config.init.DataBuilder.createAddress;
+import static edu.ku.brc.specify.config.init.DataBuilder.createAdminPrincipal;
 import static edu.ku.brc.specify.config.init.DataBuilder.createAgent;
 import static edu.ku.brc.specify.config.init.DataBuilder.createAgentVariant;
 import static edu.ku.brc.specify.config.init.DataBuilder.createAttachment;
@@ -28,6 +30,7 @@ import static edu.ku.brc.specify.config.init.DataBuilder.createDataType;
 import static edu.ku.brc.specify.config.init.DataBuilder.createDetermination;
 import static edu.ku.brc.specify.config.init.DataBuilder.createDeterminationStatus;
 import static edu.ku.brc.specify.config.init.DataBuilder.createDiscipline;
+import static edu.ku.brc.specify.config.init.DataBuilder.createDisciplineGroup;
 import static edu.ku.brc.specify.config.init.DataBuilder.createDivision;
 import static edu.ku.brc.specify.config.init.DataBuilder.createGeography;
 import static edu.ku.brc.specify.config.init.DataBuilder.createGeographyChildren;
@@ -61,11 +64,12 @@ import static edu.ku.brc.specify.config.init.DataBuilder.createStorageTreeDefIte
 import static edu.ku.brc.specify.config.init.DataBuilder.createTaxon;
 import static edu.ku.brc.specify.config.init.DataBuilder.createTaxonChildren;
 import static edu.ku.brc.specify.config.init.DataBuilder.createTaxonTreeDef;
-import static edu.ku.brc.specify.config.init.DataBuilder.createUserGroup;
+//import static edu.ku.brc.specify.config.init.DataBuilder.createUserGroup;
 import static edu.ku.brc.specify.config.init.DataBuilder.createWorkbench;
 import static edu.ku.brc.specify.config.init.DataBuilder.createWorkbenchDataItem;
 import static edu.ku.brc.specify.config.init.DataBuilder.createWorkbenchMappingItem;
 import static edu.ku.brc.specify.config.init.DataBuilder.createWorkbenchTemplate;
+
 import static edu.ku.brc.ui.UIHelper.createButton;
 import static edu.ku.brc.ui.UIHelper.createCheckBox;
 import static edu.ku.brc.ui.UIHelper.createComboBox;
@@ -206,7 +210,7 @@ import edu.ku.brc.specify.datamodel.TaxonCitation;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.Treeable;
-import edu.ku.brc.specify.datamodel.UserGroup;
+import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.Workbench;
 import edu.ku.brc.specify.datamodel.WorkbenchDataItem;
 import edu.ku.brc.specify.datamodel.WorkbenchRow;
@@ -324,18 +328,22 @@ public class BuildSampleDatabase
     {
         Vector<Object> dataObjects = new Vector<Object>();
 
-        
-        int createStep = 0;
+        int createStep = 0;    
         
         frame.setProcess(0, 14);
         
         frame.setProcess(++createStep);
+        
 
         Institution    institution    = createInstitution(config.getInstName());
         Division       division       = createDivision(institution, config.getDiscipline().getName(), config.getDivName(), config.getDivAbbrev(), config.getDivTitle());
         
         Agent            userAgent        = createAgent(config.getLastName(), config.getFirstName(), "", config.getLastName(), "", config.getEmail());
-        UserGroup        userGroup        = createUserGroup(config.getDiscipline().getTitle());
+
+        SpPrincipal admin = createAdminPrincipal("Administrator");
+        List<SpPrincipal> groups = new ArrayList<SpPrincipal>();
+        groups.add(admin);
+        
         
         institution.setTitle(config.getInstTitle());
         
@@ -343,12 +351,16 @@ public class BuildSampleDatabase
         frame.setProcess(++createStep);
 
         startTx();
-        persist(userGroup);
+        //persist(groups);
         persist(institution);
         persist(division);
         
-        SpecifyUser      user             = createSpecifyUser(config.getUsername(), config.getEmail(), (short) 0, userGroup, config.getUserType());
+        SpecifyUser      user             = createSpecifyUser(config.getUsername(), config.getEmail(),  config.getPassword(), config.getUserType());
         persist(user);
+        
+        SpPrincipal     userPrincipal = DataBuilder.createUserPrincipal(user);
+        groups.add(userPrincipal);
+        user.addUserToSpPrincipalGroup(userPrincipal);
         
         DataType         dataType         = createDataType(config.getDiscipline().getTitle());
         persist(dataType);
@@ -379,7 +391,11 @@ public class BuildSampleDatabase
                                                  lithoStratTreeDef);
         Discipline.setCurrentDiscipline(discipline);
         
+        SpPrincipal disciplineGroup = DataBuilder.createDisciplineGroup(discipline);
+        groups.add(disciplineGroup);
+        
         persist(discipline);
+        persist(groups);
         persist(userAgent);
         
         frame.setDesc("Localizing Schema...");
@@ -708,8 +724,15 @@ public class BuildSampleDatabase
                                                              locTreeDef, lithoStratTreeDef);
         Discipline.setCurrentDiscipline(discipline);
         
+        List<SpPrincipal> groups = new ArrayList<SpPrincipal>();
+        
+        
+        SpPrincipal disciplineGroup = createDisciplineGroup(discipline);
+        groups.add(disciplineGroup);
+        
         persist(division);
         persist(discipline);
+        
 
         loadSchemaLocalization(discipline, SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
 
@@ -723,6 +746,7 @@ public class BuildSampleDatabase
         String           abbrev           = initPrefs.getProperty("useragent.abbrev", "rs");
         String           email            = initPrefs.getProperty("useragent.email", "rods@ku.edu");
         String           userType         = initPrefs.getProperty("useragent.usertype", "CollectionManager");
+        String           password         = initPrefs.getProperty("useragent.password", "rods");
         
         System.out.println("----- User Agent -----");
         System.out.println("Title:     "+title);
@@ -733,14 +757,30 @@ public class BuildSampleDatabase
         System.out.println("Email:     "+email);
         System.out.println("UserType:  "+userType);
         
-        Agent userAgent = createAgent(title, firstName, midInit, lastName, abbrev, email);
+        Agent userAgent = createAgent(title, firstName, midInit, lastName, abbrev, email);        
         
         discipline.addReference(userAgent, "agents");
-        user.addReference(userAgent, "agents");
+        user.addReference(userAgent, "agent");
+        user.addUserToSpPrincipalGroup(disciplineGroup);
         
-        persist(discipline);
         persist(userAgent);
         persist(user);
+
+        Agent botonyUserAgent = createAgent("Mr.", "Bob", "", "Botony", "", "botanyuser@ku.edu");
+        SpecifyUser      botonyUser             = createSpecifyUser("botanyuser", "botanyuser@ku.edu", /*(short) 0,*/ "botanyuser", disciplineGroup, "Guest");        
+        
+        discipline.addReference(botonyUserAgent, "agents");
+        botonyUser.addReference(botonyUserAgent, "agent");
+        
+        SpPrincipal     userPrincipal = DataBuilder.createUserPrincipal(botonyUser);
+        groups.add(userPrincipal);
+        botonyUser.addUserToSpPrincipalGroup(userPrincipal);
+        
+        persist(groups);
+        
+        persist(discipline);
+        persist(botonyUserAgent);
+        persist(botonyUser);
         
         frame.setProcess(++createStep);
         
@@ -768,8 +808,7 @@ public class BuildSampleDatabase
         //loadSchemaLocalization(discipline, SpLocaleContainer, schema);
         
         SpecifyUser.setCurrentUser(user);
-        user.addReference(userAgent, "agents");
-        
+        user.addReference(userAgent, "agent");        
         persist(user);
 
         Journal journal = createJournalsAndReferenceWork();
@@ -1879,8 +1918,16 @@ public class BuildSampleDatabase
                                                              locTreeDef, lithoStratTreeDef);
         Discipline.setCurrentDiscipline(discipline);
         
+        //List<SpPrincipal> groups = new ArrayList<SpPrincipal>();
+        SpPrincipal disciplineGroup = DataBuilder.createDisciplineGroup(discipline);
+        //groups.add(disciplineGroup);   
+        
+        List<SpPrincipal> groups = new ArrayList<SpPrincipal>();
+        groups.add(disciplineGroup);
+        
         persist(division);
         persist(discipline);
+        //persist(disciplineGroup);
 
         loadSchemaLocalization(discipline, SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
 
@@ -1904,11 +1951,27 @@ public class BuildSampleDatabase
         System.out.println("Email:     "+email);
         System.out.println("UserType:  "+userType);
         
-        Agent userAgent = createAgent(title, firstName, midInit, lastName, abbrev, email);
-        
+        Agent userAgent = createAgent(title, firstName, midInit, lastName, abbrev, email);        
         discipline.addReference(userAgent, "agents");
-        user.addReference(userAgent, "agents");
+        user.addReference(userAgent, "agent");
+        user.addUserToSpPrincipalGroup(disciplineGroup);
         
+        
+        Agent invertPaleoUserAgent = createAgent("Mr.", "Joe", "", "InvertPaleo", "", "InvertPaleo@ku.edu");
+        SpecifyUser      invertPaleoUser             = createSpecifyUser("ivpuser", "InvertPaleo@ku.edu", /*(short) 0,*/ "ivpuser", disciplineGroup, "Guest");        
+        invertPaleoUser.addReference(invertPaleoUserAgent, "agent");
+        discipline.addReference(invertPaleoUserAgent, "agents");
+        
+        SpPrincipal     userPrincipal = DataBuilder.createUserPrincipal(invertPaleoUser);
+        groups.add(userPrincipal);
+        invertPaleoUser.addUserToSpPrincipalGroup(userPrincipal);
+        
+//        SpPrincipal     userPrincipal2 = DataBuilder.createUserPrincipal(user);
+//        groups.add(userPrincipal2);
+        
+        persist(invertPaleoUserAgent);
+        persist(invertPaleoUser);
+        persist(groups);
         persist(discipline);
         persist(userAgent);
         persist(user);
@@ -1948,7 +2011,7 @@ public class BuildSampleDatabase
         //loadSchemaLocalization(discipline, SpLocaleContainer, schema);
         
         SpecifyUser.setCurrentUser(user);
-        user.addReference(userAgent, "agents");
+        user.addReference(userAgent, "agent");
         
         persist(user);
 
@@ -2897,9 +2960,10 @@ public class BuildSampleDatabase
                                                              dataType, taxonTreeDef, geoTreeDef, gtpTreeDef, 
                                                              locTreeDef, lithoStratTreeDef);
         Discipline.setCurrentDiscipline(discipline);
-        
+        SpPrincipal disciplineGroup = DataBuilder.createDisciplineGroup(discipline); 
         persist(division);
         persist(discipline);
+        persist(disciplineGroup);
 
         loadSchemaLocalization(discipline, SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
 
@@ -2926,7 +2990,8 @@ public class BuildSampleDatabase
         Agent userAgent = createAgent(title, firstName, midInit, lastName, abbrev, email);
         
         discipline.addReference(userAgent, "agents");
-        user.addReference(userAgent, "agents");
+        user.addReference(userAgent, "agent");
+        user.addUserToSpPrincipalGroup(disciplineGroup);
         
         persist(discipline);
         persist(userAgent);
@@ -2961,7 +3026,7 @@ public class BuildSampleDatabase
         //loadSchemaLocalization(discipline, SpLocaleContainer, schema);
         
         SpecifyUser.setCurrentUser(user);
-        user.addReference(userAgent, "agents");
+        user.addReference(userAgent, "agent");
         
         persist(user);
 
@@ -3740,12 +3805,12 @@ public class BuildSampleDatabase
      */
     public void createFishCollection(final DisciplineType disciplineType,
                                      final Institution    institution,
-                                     final SpecifyUser    user,
-                                     final UserGroup      userGroup)
+                                     final SpecifyUser    user)
     {
         frame.setDesc("Creating Fish Collection Overhead...");
         
         startTx();
+        
         DataType dataType = createDataType(disciplineType.getTitle());
         persist(dataType);
 
@@ -3757,8 +3822,7 @@ public class BuildSampleDatabase
         GeographyTreeDef          geoTreeDef        = createGeographyTreeDef("Geography");
         GeologicTimePeriodTreeDef gtpTreeDef        = createGeologicTimePeriodTreeDef("Chronos Stratigraphy");
         LithoStratTreeDef         lithoStratTreeDef = createLithoStratTreeDef("LithoStrat");
-        StorageTreeDef            locTreeDef        = createStorageTreeDef("Storage");
-        
+        StorageTreeDef            locTreeDef        = createStorageTreeDef("Storage");        
         lithoStratTreeDef.setRemarks("A simple super, group, formation, member, bed Litho Stratigraphy tree");
         
         Discipline discipline = createDiscipline(division, 
@@ -3770,8 +3834,7 @@ public class BuildSampleDatabase
                                                  gtpTreeDef, 
                                                  locTreeDef, 
                                                  lithoStratTreeDef);
-        Discipline.setCurrentDiscipline(discipline);
-        
+        Discipline.setCurrentDiscipline(discipline);        
         persist(discipline);
         commitTx();
         
@@ -3794,32 +3857,46 @@ public class BuildSampleDatabase
         System.out.println("Abbrev:    "+abbrev);
         System.out.println("Email:     "+email);
         System.out.println("UserType:  "+userType);
+        
+        SpPrincipal disciplineGroup = DataBuilder.createDisciplineGroup(discipline);
+        //persist(disciplineGroup);
+        
+        List<SpPrincipal> groups = new ArrayList<SpPrincipal>();
+        groups.add(disciplineGroup);
+
+        
         Agent userAgent = createAgent(title, firstName, midInit, lastName, abbrev, email);
         userAgent.setDivision(division);
         
-        SpecifyUser user2 = createSpecifyUser("tester", "tester@brc.ku.edu", (short) 0, userGroup, user.getUserType());
-        startTx();
-        persist(user2);
-        commitTx();
+        Agent testerAgent = createAgent("Tester", "Test", "", "Tester", "", "tester@brc.ku.edu");
+        testerAgent.setDivision(division);
+    
+        SpecifyUser testerUser = createSpecifyUser("tester", "tester@brc.ku.edu","tester", disciplineGroup, user.getUserType());
+        SpPrincipal     userPrincipal = DataBuilder.createUserPrincipal(testerUser);
+        groups.add(userPrincipal);
+        testerUser.addUserToSpPrincipalGroup(userPrincipal);
         
-        startTx();
-        Agent userAgent2 = createAgent("Tester", "Test", "", "Tester", "", "tester@brc.ku.edu");
-        userAgent2.setDivision(division);
+        SpPrincipal     userPrincipal2 = DataBuilder.createUserPrincipal(user);
+        //groups.add(userPrincipal2);
+        groups.add(userPrincipal2);
+        user.addUserToSpPrincipalGroup(userPrincipal2);
         
-
         discipline.addReference(userAgent, "agents");
+        discipline.addReference(testerAgent, "agents");
         
-        user.addReference(userAgent, "agents");
-        user2.addReference(userAgent2, "agents");
+        user.addReference(userAgent, "agent");
+        user.addUserToSpPrincipalGroup(disciplineGroup);
         
-        persist(discipline);
-        persist(userAgent);
+        testerUser.addReference(testerAgent, "agent");
+        
+        startTx();
+        persist(discipline);               
         persist(user);
-        persist(user2);
-
         persist(userAgent);
-        persist(userAgent2);
-        
+        persist(testerUser);
+        persist(testerAgent);
+        persist(groups);
+             
         loadSchemaLocalization(discipline, SpLocaleContainer.CORE_SCHEMA, DBTableIdMgr.getInstance());
         
         commitTx();
@@ -3836,8 +3913,7 @@ public class BuildSampleDatabase
         List<Object> gtps        = createSimpleGeologicTimePeriod(gtpTreeDef);
         List<Object> lithoStrats = createSimpleLithoStrat(lithoStratTreeDef);
         
-        startTx();
-        
+        startTx();        
         persist(journal);
         persist(taxa);
         persist(geos);
@@ -4023,7 +4099,7 @@ public class BuildSampleDatabase
         
         SpecifyUser.setCurrentUser(user);
         
-        user.addReference(userAgent, "agents");
+        user.addReference(userAgent, "agent");
         
         persist(user);
 
@@ -5043,22 +5119,28 @@ public class BuildSampleDatabase
         String           username         = initPrefs.getProperty("initializer.username", "rods");
         String           email            = initPrefs.getProperty("useragent.email", "rods@ku.edu");
         String           userType         = initPrefs.getProperty("useragent.usertype", "CollectionManager");
+        String           password         = initPrefs.getProperty("useragent.password", "rods");
         
         System.out.println("----- User Agent -----");
         System.out.println("Userame:   "+username);
         
-        Institution    institution    = createInstitution("Natural History Museum");
+        List<SpPrincipal> groups = new ArrayList<SpPrincipal>();
         
-        UserGroup        userGroup        = createUserGroup(disciplineType.getTitle());
+        Institution    institution    = createInstitution("Natural History Museum");        
         
+        SpecifyUser user = createSpecifyUser(username, email, password, userType);
+//        SpPrincipal     userPrincipal = DataBuilder.createUserPrincipal(user);
+//        groups.add(userPrincipal);
+        
+        SpPrincipal admin = createAdminPrincipal("Administrator");
+        groups.add(admin);
+        user.addUserToSpPrincipalGroup(admin);
         
         startTx();
-        persist(userGroup);
-        persist(institution);
-        
-        SpecifyUser user = createSpecifyUser(username, email, (short) 0, userGroup, userType);
-        persist(user);
-        
+        persist(institution);        
+        persist(user); 
+        persist(groups);
+        //persist(admin);
         commitTx();
         
         frame.setProcess(++createStep);
@@ -5067,7 +5149,7 @@ public class BuildSampleDatabase
         if (isChoosen(DisciplineType.STD_DISCIPLINES.fish, false) ||
             isChoosen(DisciplineType.STD_DISCIPLINES.fish, true))
         {
-            createFishCollection(DisciplineType.getDiscipline("fish"), institution, user, userGroup);
+            createFishCollection(DisciplineType.getDiscipline("fish"), institution, user);/*, groupPrincipal);*/
             //done = true;
         }
         
@@ -6345,7 +6427,13 @@ public class BuildSampleDatabase
                     frame.setOverall(steps++);
                     
                     File attLoc = UIRegistry.getAppDataSubDir("AttachmentStorage", true);
-                    FileUtils.cleanDirectory(attLoc);
+                    try {
+                        FileUtils.cleanDirectory(attLoc);
+                    }
+                    catch(IOException e)
+                    {
+                        log.warn("failed to connect to directory location to delete directory: " + attLoc);
+                    }
                     AttachmentManagerIface attachMgr = new FileStoreAttachmentManager(attLoc);
                     
                     AttachmentUtils.setAttachmentManager(attachMgr);
@@ -6398,6 +6486,7 @@ public class BuildSampleDatabase
                     frame.setDesc("Build Completed.");
                     frame.setOverall(steps++);
 
+                    assignPermssions();
                     
                     log.info("Done");
                 }
@@ -6424,6 +6513,14 @@ public class BuildSampleDatabase
         }
         
         System.out.println("All done");
+    }
+    
+    public static void assignPermssions()
+    {
+/*        setSession(HibernateUtil.getCurrentSession());
+        SpecifyUser u = SpecifyUser.getCurrentUser();
+        List<?> users       = HibernateUtil.getCurrentSession().createQuery("SELECT u FROM SpecifyUser u WHERE t.name = 'Ammocrypta'").list();
+        SpSecurtyPermissionMgr.setupTestTreePermissions(u);*/
     }
     
     public static void turnOnHibernateLogging(Level level)

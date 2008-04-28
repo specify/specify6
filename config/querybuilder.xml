@@ -161,8 +161,6 @@
     <table name="Discipline"/>
     <table name="TaxonTreeDefItem" id="77">
     </table>
-    <table name="UserGroup" id="78"/>
-    <table name="UserPermission" id="89"/>
     <table name="ViewSetObj" id="86"/>
     <table name="SpecifyUser" id="72"/>
     <table name="RecordSet" id="68"/>

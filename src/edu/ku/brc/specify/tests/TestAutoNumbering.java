@@ -109,6 +109,7 @@ public class TestAutoNumbering extends TestCase
         }
     }
     
+
     /** 
      * Drops, Creates and Builds the Database.
      * 
@@ -189,6 +190,7 @@ public class TestAutoNumbering extends TestCase
         {
             log.info("Creating Empty Database");
             
+
             BuildSampleDatabase bsd = new BuildSampleDatabase();
             
             bsd.setSession(session);

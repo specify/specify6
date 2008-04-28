@@ -80,7 +80,7 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
     protected WorkbenchTemplate      workbenchTemplate;
     protected Set<WorkbenchRow>      workbenchRows;
     protected SpecifyUser            specifyUser;
-    protected UserGroup              group;
+    protected SpPrincipal            group;
     protected String                 srcFilePath;
 
      // Transient Data
@@ -349,13 +349,13 @@ public class Workbench extends DataModelObjBase implements java.io.Serializable,
      * 
      */
     @ManyToOne
-    @JoinColumn(name = "UserGroupID")
+    @JoinColumn(name = "SpPrincipalID")
     @Cascade( {CascadeType.MERGE, CascadeType.LOCK} )
-    public UserGroup getGroup() {
+    public SpPrincipal getGroup() {
         return this.group;
     }
     
-    public void setGroup(UserGroup group) {
+    public void setGroup(SpPrincipal group) {
         this.group = group;
     }
     

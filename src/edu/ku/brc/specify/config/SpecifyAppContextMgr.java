@@ -271,17 +271,20 @@ public class SpecifyAppContextMgr extends AppContextMgr
         SpecifyUser     spUser = SpecifyUser.getCurrentUser();
         if (spUser != null)
         {
+            //Meg had to change to accomodate changes to Agent/SpecifyUser
             sessionArg.attach(spUser);
-            for (Agent agent : spUser.getAgents())
+            Agent agent = spUser.getAgent();
+            sessionArg.attach(agent);
+            // for (Agent agent : spUser.getAgents())
+            // {            
+            for (Discipline discipline : agent.getDisciplines())
             {
-                for (Discipline discipline : agent.getDisciplines())
+                for (Collection collection : discipline.getCollections())
                 {
-                    for (Collection collection : discipline.getCollections())
-                    {
-                        list.add(collection.getCollectionId().intValue());
-                    }
+                    list.add(collection.getCollectionId().intValue());
                 }
             }
+            // }
         } else
         {
             log.error("SpecifyUser was null!");
@@ -302,19 +305,19 @@ public class SpecifyAppContextMgr extends AppContextMgr
                                                 final SpecifyUser user,
                                                 final boolean startingOver)
     {
+
         if (sessionArg == null)
         {
             UIRegistry.showLocalizedError("SESSION_WAS_NULL");
             System.exit(0);
         }
-        
         try
         {
             final String prefName = mkUserDBPrefName("recent_collection_id");
             
             // First get the Collections the User has access to.
             Hashtable<String, Collection> collectionHash = new Hashtable<String, Collection>();
-            String sqlStr = "SELECT cs From Discipline as ct Inner Join ct.agents cta Inner Join cta.specifyUser as user Inner Join ct.collections as cs where user.specifyUserId = "+user.getSpecifyUserId();
+            String sqlStr = "SELECT cs From Discipline as ct Inner Join ct.agents cta Inner Join cta.specifyUsers as user Inner Join ct.collections as cs where user.specifyUserId = "+user.getSpecifyUserId();
             for (Object obj : sessionArg.getDataList(sqlStr))
             {
                 Collection cs = (Collection)obj; 
@@ -330,12 +333,19 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 List<?> list = sessionArg.getDataList("FROM Collection WHERE collectionId = " + recentIds);
                 if (list.size() == 1)
                 {
+
                     collection = (Collection)list.get(0);
+
+                }
+                else
+                {
+                    log.debug("could NOT find recent ids");
                 }
             }
             
             if (collection != null && collectionHash.get(collection.getCollectionName()) == null)
             {
+
                 collection = null;
             }
             
@@ -419,15 +429,11 @@ public class SpecifyAppContextMgr extends AppContextMgr
                 Discipline discipline = collection.getDiscipline();
                 if (discipline != null)
                 {
-                    for (Agent uAgent : discipline.getAgents())
-                    {
-                        SpecifyUser spu = uAgent.getSpecifyUser();
-                        if (spu != null && spu.getSpecifyUserId().equals(user.getSpecifyUserId()))
-                        {
-                            Agent.setUserAgent(uAgent);
-                            break;
-                        }
-                    }
+                    // The line below replaces the calls to:
+                	//   SpecifyUser spu = uAgent.getSpecifyUser();
+                	//   Agent.setUserAgent(spu);
+                	// That's required as per Meg's change of cardinality on relationship between agents and users
+                	Agent.setUserAgent(user, discipline.getAgents());
                     TaxonTreeDef.setCurrentTaxonTreeDef(discipline.getTaxonTreeDef());
                     GeologicTimePeriodTreeDef.setCurrentGeologicTimePeriodTreeDef(discipline.getGeologicTimePeriodTreeDef());
                     StorageTreeDef.setCurrentStorageTreeDef(discipline.getStorageTreeDef());
@@ -837,8 +843,10 @@ public class SpecifyAppContextMgr extends AppContextMgr
             if (list.size() == 1)
             {       
                 user = (SpecifyUser)list.get(0);
-                user.getAgents(); // makes sure the Agent is not lazy loaded
-                session.evict( user.getAgents());
+                //user.getAgents(); // makes sure the Agent is not lazy loaded
+                //session.evict( user.getAgents());
+                user.getAgent();
+                session.evict( user.getAgent());
                 SpecifyUser.setCurrentUser(user);
     
             } else

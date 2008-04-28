@@ -154,16 +154,16 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
         
         levelsVec.add(user.getUserType());
 
-        for (Agent agent : user.getAgents())
-        {
-            // XXX Commented Out
-            /*Discipline ct = agent.getDiscipline();
-            if (usedColTypes.get(ct) == null)
-            {
-                levelsVec.add(ct.getName());
-                usedColTypes.put(ct, true);
-            }*/
-        }
+//        for (Agent agent : user.getAgents())
+//        {
+//            // XXX Commented Out
+//            /*Discipline ct = agent.getDiscipline();
+//            if (usedColTypes.get(ct) == null)
+//            {
+//                levelsVec.add(ct.getName());
+//                usedColTypes.put(ct, true);
+//            }*/
+//        }
         levelsVec.add("BackStop");
         
         addBtn = UIHelper.createIconBtn("PlusSign", "", new ActionListener() {

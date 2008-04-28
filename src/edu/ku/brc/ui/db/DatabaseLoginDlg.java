@@ -22,6 +22,9 @@ import java.awt.Window;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 
+import org.apache.log4j.Logger;
+
+import edu.ku.brc.af.auth.JaasContext;
 import edu.ku.brc.ui.UIRegistry;
 
 /**
@@ -36,6 +39,7 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
 {
+    private static final Logger          log            = Logger.getLogger(DatabaseLoginDlg.class);
      protected DatabaseLoginPanel    dbPanel;
      protected DatabaseLoginListener listener;
      protected boolean               doAutoLogin = false;
@@ -66,6 +70,31 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
 
         pack();
     }
+    
+//    /**
+//     * Constructor that has the form created from the view system.
+//     * @param frame the parent frame
+//     * @param listener the listener usually the parent like the Dialog
+//     */
+//    public DatabaseLoginDlg(final Frame frame, final DatabaseLoginListener listener)
+//    {
+//        super(frame);
+//        
+//        this.listener = listener;
+//
+//        setTitle(getResourceString("logintitle"));
+//
+//        dbPanel = new DatabaseLoginPanel(this, true);
+//        setContentPane(dbPanel);
+//
+//        setLocationRelativeTo(UIRegistry.get(UIRegistry.FRAME));
+//        setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+//        this.setModal(true);
+//
+//        getRootPane().setDefaultButton(dbPanel.getLoginBtn());
+//
+//        pack();
+//    }
 
     /**
      * Return whether dialog was cancelled
@@ -147,6 +176,7 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
      */
     public void loggedIn(final Window window, final String databaseName, final String userName)
     {
+        log.debug("loggedIn");
         setVisible(false);
         dispose();
         if (listener != null)
@@ -169,6 +199,22 @@ public class DatabaseLoginDlg extends JDialog implements DatabaseLoginListener
         }
         //this.setGlassPane(null);
     }
+//
+//    /**
+//     * @return the jaasContext
+//     */
+//    public JaasContext getJaasContext()
+//    {
+//        return jaasContext;
+//    }
+//
+//    /**
+//     * @param jaasContext the jaasContext to set
+//     */
+//    public void setJaasContext(JaasContext jaasEmbedder)
+//    {
+//        this.jaasContext = jaasEmbedder;
+//    }
 
 
 

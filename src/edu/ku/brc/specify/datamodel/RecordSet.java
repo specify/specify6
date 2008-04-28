@@ -80,7 +80,7 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
      protected Integer                 ownerPermissionLevel;
      protected Integer                 groupPermissionLevel;
      protected Integer                 allPermissionLevel;
-     protected UserGroup               group;
+     protected SpPrincipal               group;
      
      protected Set<InfoRequest>        infoRequests;
      
@@ -330,14 +330,12 @@ public class RecordSet extends DataModelObjBase implements java.io.Serializable,
      * 
      */
     @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "UserGroupID", unique = false, nullable = true, insertable = true, updatable = true)
-    public UserGroup getGroup() 
-    {
+    @JoinColumn(name = "SpPrincipalID", unique = false, nullable = true, insertable = true, updatable = true)
+    public SpPrincipal getGroup() {
         return this.group;
     }
     
-    public void setGroup(UserGroup group) 
-    {
+    public void setGroup(SpPrincipal group) {
         this.group = group;
     }
     /* (non-Javadoc)

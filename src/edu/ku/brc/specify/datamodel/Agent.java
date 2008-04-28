@@ -58,6 +58,7 @@ import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 /**
 
  */
+@SuppressWarnings("serial")
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert=true, dynamicUpdate=true)
 @org.hibernate.annotations.Proxy(lazy = false)
@@ -123,6 +124,9 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     protected Division                      division;
     protected Institution                   instTechContact;
     protected Institution                   instContentContact;
+    
+    protected Set<SpecifyUser>              specifyUsers;
+//    //protected SpecifyUser                   specifyUser;
 
     // From AgentAddress
     protected String                        jobTitle;
@@ -133,7 +137,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     protected Set<AgentVariant>             variants;
     
     protected Set<Discipline>               disciplines;
-    protected SpecifyUser                   specifyUser;
+    //protected SpecifyUser                   specifyUser;
 
     
     /*
@@ -223,7 +227,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
         instTechContact           = null;
         instContentContact        = null;
         disciplines               = new HashSet<Discipline>();
-        specifyUser               = null;
+        //specifyUser               = null;
         
         // Agent
         jobTitle                       = null;
@@ -235,6 +239,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
         agentAttachments               = new HashSet<AgentAttachment>();
         variants                       = new HashSet<AgentVariant>();
 
+        specifyUsers                   = new HashSet<SpecifyUser>();
         /*
         loanAgents                     = new HashSet<LoanAgent>();
         shipmentsByShipper             = new HashSet<Shipment>();
@@ -549,23 +554,23 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
         this.organization = organization;
     }
 
-    /**
-     * @return the specifyUser
-     */
-    @ManyToOne
-    @JoinColumn(name = "SpecifyUserID", unique = false, nullable = true, insertable = true, updatable = true)
-    public SpecifyUser getSpecifyUser()
-    {
-        return specifyUser;
-    }
-
-    /**
-     * @param specifyUser the specifyUser to set
-     */
-    public void setSpecifyUser(SpecifyUser specifyUser)
-    {
-        this.specifyUser = specifyUser;
-    }
+//    /**
+//     * @return the specifyUser
+//     */
+//    @ManyToOne
+//    @JoinColumn(name = "SpecifyUserID", unique = false, nullable = true, insertable = true, updatable = true)
+//    public SpecifyUser getSpecifyUser()
+//    {
+//        return specifyUser;
+//    }
+//
+//    /**
+//     * @param specifyUser the specifyUser to set
+//     */
+//    public void setSpecifyUser(SpecifyUser specifyUser)
+//    {
+//        this.specifyUser = specifyUser;
+//    }
 
     /**
      *
@@ -744,6 +749,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
            { 
                @JoinColumn(name = "DisciplineID", unique = false, nullable = false, insertable = true, updatable = false) 
            })
+           
     public Set<Discipline> getDisciplines()
     {
         return disciplines;
@@ -1065,18 +1071,37 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
 //    public void setExchangeOutSentToOrganizations(Set<ExchangeOut> exchangeOutSentToOrganizations) {
 //        this.exchangeOutSentToOrganizations = exchangeOutSentToOrganizations;
 //    }
-//    /**
-//     * 
-//     */
-//    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
+   /**
+     * 
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
+    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
+    public Set<SpecifyUser> getSpecifyUsers() {
+        return this.specifyUsers;
+    }
+    
+    public void setSpecifyUsers(Set<SpecifyUser> specifyUsers) {
+        this.specifyUsers = specifyUsers;
+    } 
+    /**
+     * 
+     */
+    
+//    @OneToOne(mappedBy="agent", fetch=FetchType.EAGER)
 //    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-//    public Set<SpecifyUser> getSpecifyUsers() {
-//        return this.specifyUsers;
+   // @OneToOne
+//    @OneToOne(cascade = {}, fetch = FetchType.LAZY)
+//    @JoinColumn(name="SpecifyUserID", unique = false, nullable = true, insertable = true, updatable = true)
+//    public SpecifyUser getSpecifyUser()
+//    {
+//        return this.specifyUser;
 //    }
-//    
-//    public void setSpecifyUsers(Set<SpecifyUser> specifyUser) {
-//        this.specifyUsers = specifyUser;
-//    } 
+//
+//    public void setSpecifyUser(SpecifyUser specifyUser)
+//    {
+//        this.specifyUser = specifyUser;
+//    }    
+    
 //    
 //    /**
 //    *
@@ -1325,6 +1350,32 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     }
 
     /**
+     *
+     *
+     * This replaces the call to former agent.getSpecifyUser()
+	 *
+     * @param user
+     * @param agents
+     */
+	public static void setUserAgent(SpecifyUser user, Set<Agent> agents)
+	{
+        for (Agent uAgent : agents)
+        {
+        	// the code below replaces the call: SpecifyUser spu = uAgent.getSpecifyUser();
+            //Meg changed, is this correct?  added for loop over users on agent in lieu of the above line.
+            for (SpecifyUser spu : uAgent.getSpecifyUsers())
+            {
+                if (spu != null && spu.getSpecifyUserId().equals(user.getSpecifyUserId()))
+                {
+                    Agent.setUserAgent(uAgent);
+                    break;
+                }
+            }
+        }
+	}
+
+    
+    /**
      * @param userAgent the userAgent to set
      */
     public static void setUserAgent(Agent userAgent)
@@ -1332,4 +1383,24 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
         Agent.userAgent = userAgent;
     }
 
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (obj instanceof Agent)
+        {
+            Agent item = (Agent)obj;
+            if (item.agentId != null)
+            {
+                if (item.agentId.equals(this.agentId))
+                {
+                    return true;
+                }
+                // else
+                return false;
+            }
+            // else
+            return super.equals(obj);
+        }
+        return false;
+    }
 }
