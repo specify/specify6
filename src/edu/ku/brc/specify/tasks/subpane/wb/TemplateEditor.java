@@ -1146,7 +1146,10 @@ public class TemplateEditor extends CustomDialog
         for (int m=0; m<mapModel.getSize(); m++)
         {
             FieldMappingPanel fmp = mapModel.getElementAt(m);
-            result.add(fmp.getFieldInfo().getTableinfo().getTableId());
+            if (fmp != null && fmp.getFieldInfo() != null)
+            {
+                result.add(fmp.getFieldInfo().getTableinfo().getTableId());
+            }
         }
         
         return result;
