@@ -34,6 +34,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.swing.BorderFactory;
@@ -1099,6 +1100,10 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
             
         } else
         {
+            if (value != null && Set.class.isAssignableFrom(value.getClass()))
+            {
+                UIRegistry.showError("The QueryComboBox cannot handle Sets! field name["+cellName+"]");   
+            }
             throw new RuntimeException("Data does not extend FormDataObjIFace ["+ value + "] " + (value != null ? value.getClass() : ""));
         }
     }
