@@ -60,6 +60,7 @@ public class DateConverter
                     return null;
                 }
                 Calendar result = new GregorianCalendar();
+                result.setLenient(false);
                 result.setTime(df.parse(dateStr));
                 return result;
             }
@@ -91,6 +92,7 @@ public class DateConverter
                     return null;
                 }
                 Calendar result = new GregorianCalendar();
+                result.setLenient(false);
                 result.setTime(df.parse(dateStr));
                 return result;
             }
@@ -123,6 +125,7 @@ public class DateConverter
                     return null;
                 }
                 Calendar result = new GregorianCalendar();
+                result.setLenient(false);
                 result.setTime(df.parse(dateStr));
                 return result;
             }
@@ -154,6 +157,7 @@ public class DateConverter
                     return null;
                 }
                 Calendar result = new GregorianCalendar();
+                result.setLenient(false);
                 result.setTime(df.parse(dateStr));
                 return result;
             }
