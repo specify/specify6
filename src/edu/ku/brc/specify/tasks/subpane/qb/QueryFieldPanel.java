@@ -412,6 +412,40 @@ public class QueryFieldPanel extends JPanel
     
     
     /**
+     * @param escapee
+     * @param escaper
+     * WRONG:@return escapee with occurrences of escapee preceded by '\'. Pike's Peak -> Pike\'s Peak
+     * @return escapee with occurrences of escapee doubled. Pike's Peak -> Pike''s Peak
+     * 
+     * This actually only works for "'". 
+     * Hibernate (but not MySQL) complains when % and \' are both contained in a criteriummmm
+     * 
+     * Too bad if the escaper is already escaped.
+     */
+    protected Object escape(final Object escapee, final char escaper)
+    {
+        //XXX may be MySQL -specific?
+        if (escaper == ' ')
+        {
+            return escapee;
+        }
+        if (!(escapee instanceof String))
+        {
+            throw new RuntimeException("Escapee is not a String!");
+        }
+        String escapeeStr = (String)escapee;
+        StringBuilder result = new StringBuilder();
+        for (int c = 0; c < escapeeStr.length(); c++)
+        {
+            if (escapeeStr.charAt(c) == escaper)
+            {
+                result.append(escaper);
+            }
+            result.append(escapeeStr.charAt(c));
+        }
+        return result.toString();
+    }
+    /**
      * @param criteriaObjs
      * @param operatorStr
      * @param quote - if true then items will be surrounded with single quotes.
@@ -419,17 +453,78 @@ public class QueryFieldPanel extends JPanel
      */
     protected String concatCriteria(final Object[] criteriaObjs, final String operatorStr, final boolean quote)
     {
-        String quoteStr = quote ? "'" : "";
-        String result = quoteStr + criteriaObjs[0] + quoteStr;
-        if (SpQueryField.OperatorType.getOrdForName(operatorStr) == SpQueryField.OperatorType.BETWEEN.getOrdinal())
+        //XXX '%' as wildcard may be db vendor -specific??
+        
+        char quoteStr = quote ? '\'' : ' ';
+        String result = quoteStr + escape(criteriaObjs[0], quoteStr).toString() + quoteStr;
+        if (SpQueryField.OperatorType.getOrdForName(operatorStr) == SpQueryField.OperatorType.LIKE.getOrdinal())
         {
-            result += " and " + quoteStr + criteriaObjs[1] + quoteStr;
+            //for Specify 5 compatibility...?
+            //replaced unescaped '*' with '%'
+            if (result.contains("*"))
+            {
+                //grrrrrrrr
+                StringBuilder newResult = new StringBuilder();
+                int skip = -1;
+                for (int s = 0; s < result.length(); s++)
+                {
+                  
+                    if (skip != s && result.charAt(s) == '\\')
+                    {
+                        skip = s+1;
+                    }
+                    if (skip != s && result.charAt(s) == '*')
+                    {
+                        newResult.append('%');
+                    }
+                    else
+                    {
+                        newResult.append(result.charAt(s));
+                    }
+                    if (skip == s)
+                    {
+                        skip = -1;
+                    }
+                }
+                result = newResult.toString();
+            }
+            
+            boolean unEscapedWildcard = false;
+            boolean skip = false;
+            int s = 0;
+            while (!unEscapedWildcard && s < result.length())
+            {
+                if (skip)
+                {
+                    skip = false;
+                }
+                else if (result.charAt(s) == '\\')
+                {
+                    skip = true;
+                }
+                else if (result.charAt(s) == '%')
+                {
+                    unEscapedWildcard = true;
+                }
+                s++;
+            }
+            
+            if (!unEscapedWildcard)
+            {
+                //if user didn't purposely include a wildcard then add them
+                result = quoteStr + "%" + result.substring(1, result.length()-1) + "%" + quoteStr;
+            }
+
+        }
+        else if (SpQueryField.OperatorType.getOrdForName(operatorStr) == SpQueryField.OperatorType.BETWEEN.getOrdinal())
+        {
+            result += " and " + quoteStr + escape(criteriaObjs[1], quoteStr) + quoteStr;
         }
         else if (SpQueryField.OperatorType.getOrdForName(operatorStr) == SpQueryField.OperatorType.IN.getOrdinal())
         {
             for (int p = 1; p < criteriaObjs.length; p++)
             {
-                result += ", " + quoteStr + criteriaObjs[p] + quoteStr; 
+                result += ", " + quoteStr + escape(criteriaObjs[p], quoteStr) + quoteStr; 
             }
             result = "(" + result + ")";
         }
