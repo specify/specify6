@@ -3,6 +3,7 @@
  */
 package edu.ku.brc.af.auth.specify.policy;
 
+import java.security.CodeSource;
 import java.security.Permission;
 import java.security.PermissionCollection;
 import java.security.Permissions;
@@ -56,6 +57,15 @@ public class DatabasePolicy extends java.security.Policy
             }
         } 
         return permissions;
+    }
+
+    /* (non-Javadoc)
+     * @see java.security.Policy#getPermissions(java.security.CodeSource)
+     */
+    @Override
+    public PermissionCollection getPermissions(CodeSource arg0)
+    {
+        return null;
     }
 
     /*

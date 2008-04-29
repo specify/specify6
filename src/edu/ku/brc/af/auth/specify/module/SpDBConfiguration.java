@@ -47,4 +47,13 @@ public class SpDBConfiguration extends Configuration {
 		return entries;
 	}
 
+    /* (non-Javadoc)
+     * @see javax.security.auth.login.Configuration#refresh()
+     */
+    @Override
+    public void refresh()
+    {
+        
+    }
+
 }
