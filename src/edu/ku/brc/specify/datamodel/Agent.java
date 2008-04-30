@@ -125,8 +125,7 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     protected Institution                   instTechContact;
     protected Institution                   instContentContact;
     
-    protected Set<SpecifyUser>              specifyUsers;
-//    //protected SpecifyUser                   specifyUser;
+    protected SpecifyUser                   specifyUser;
 
     // From AgentAddress
     protected String                        jobTitle;
@@ -227,8 +226,8 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
         instTechContact           = null;
         instContentContact        = null;
         disciplines               = new HashSet<Discipline>();
-        //specifyUser               = null;
-        
+        specifyUser               = null;
+       
         // Agent
         jobTitle                       = null;
         email                          = null;
@@ -239,7 +238,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
         agentAttachments               = new HashSet<AgentAttachment>();
         variants                       = new HashSet<AgentVariant>();
 
-        specifyUsers                   = new HashSet<SpecifyUser>();
         /*
         loanAgents                     = new HashSet<LoanAgent>();
         shipmentsByShipper             = new HashSet<Shipment>();
@@ -554,23 +552,23 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
         this.organization = organization;
     }
 
-//    /**
-//     * @return the specifyUser
-//     */
-//    @ManyToOne
-//    @JoinColumn(name = "SpecifyUserID", unique = false, nullable = true, insertable = true, updatable = true)
-//    public SpecifyUser getSpecifyUser()
-//    {
-//        return specifyUser;
-//    }
-//
-//    /**
-//     * @param specifyUser the specifyUser to set
-//     */
-//    public void setSpecifyUser(SpecifyUser specifyUser)
-//    {
-//        this.specifyUser = specifyUser;
-//    }
+    /**
+     * @return the specifyUser
+     */
+    @ManyToOne
+    @JoinColumn(name = "SpecifyUserID", unique = false, nullable = true, insertable = true, updatable = true)
+    public SpecifyUser getSpecifyUser()
+    {
+        return specifyUser;
+    }
+
+    /**
+     * @param specifyUser the specifyUser to set
+     */
+    public void setSpecifyUser(SpecifyUser specifyUser)
+    {
+        this.specifyUser = specifyUser;
+    }
 
     /**
      *
@@ -1071,22 +1069,6 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
 //    public void setExchangeOutSentToOrganizations(Set<ExchangeOut> exchangeOutSentToOrganizations) {
 //        this.exchangeOutSentToOrganizations = exchangeOutSentToOrganizations;
 //    }
-   /**
-     * 
-     */
-    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "agent")
-    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
-    public Set<SpecifyUser> getSpecifyUsers() {
-        return this.specifyUsers;
-    }
-    
-    public void setSpecifyUsers(Set<SpecifyUser> specifyUsers) {
-        this.specifyUsers = specifyUsers;
-    } 
-    /**
-     * 
-     */
-    
 //    @OneToOne(mappedBy="agent", fetch=FetchType.EAGER)
 //    @Cascade( { CascadeType.ALL, CascadeType.DELETE_ORPHAN })
    // @OneToOne
@@ -1350,30 +1332,22 @@ public class Agent extends DataModelObjBase implements java.io.Serializable, Att
     }
 
     /**
-     *
-     *
-     * This replaces the call to former agent.getSpecifyUser()
-	 *
-     * @param user
-     * @param agents
+     * Make all agents in a set point to a single specifyUser 
+     * @param user User that agents will point to
+     * @param agents Agents that will all point to the given user
      */
-	public static void setUserAgent(SpecifyUser user, Set<Agent> agents)
-	{
+    public static void setUserAgent(SpecifyUser user, Set<Agent> agents)
+    {
         for (Agent uAgent : agents)
         {
-        	// the code below replaces the call: SpecifyUser spu = uAgent.getSpecifyUser();
-            //Meg changed, is this correct?  added for loop over users on agent in lieu of the above line.
-            for (SpecifyUser spu : uAgent.getSpecifyUsers())
-            {
-                if (spu != null && spu.getSpecifyUserId().equals(user.getSpecifyUserId()))
-                {
-                    Agent.setUserAgent(uAgent);
-                    break;
-                }
-            }
+        	SpecifyUser spu = uAgent.getSpecifyUser();
+        	if (spu != null && spu.getSpecifyUserId().equals(user.getSpecifyUserId()))
+        	{
+        		Agent.setUserAgent(uAgent);
+        		break;
+        	}
         }
-	}
-
+    }
     
     /**
      * @param userAgent the userAgent to set

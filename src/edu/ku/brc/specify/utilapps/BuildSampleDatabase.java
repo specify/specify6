@@ -760,7 +760,7 @@ public class BuildSampleDatabase
         Agent userAgent = createAgent(title, firstName, midInit, lastName, abbrev, email);        
         
         discipline.addReference(userAgent, "agents");
-        user.addReference(userAgent, "agent");
+        user.addReference(userAgent, "agents");
         user.addUserToSpPrincipalGroup(disciplineGroup);
         
         persist(userAgent);
@@ -770,7 +770,7 @@ public class BuildSampleDatabase
         SpecifyUser      botonyUser             = createSpecifyUser("botanyuser", "botanyuser@ku.edu", /*(short) 0,*/ "botanyuser", disciplineGroup, "Guest");        
         
         discipline.addReference(botonyUserAgent, "agents");
-        botonyUser.addReference(botonyUserAgent, "agent");
+        botonyUser.addReference(botonyUserAgent, "agents");
         
         SpPrincipal     userPrincipal = DataBuilder.createUserPrincipal(botonyUser);
         groups.add(userPrincipal);
@@ -808,7 +808,7 @@ public class BuildSampleDatabase
         //loadSchemaLocalization(discipline, SpLocaleContainer, schema);
         
         SpecifyUser.setCurrentUser(user);
-        user.addReference(userAgent, "agent");        
+        user.addReference(userAgent, "agents");        
         persist(user);
 
         Journal journal = createJournalsAndReferenceWork();
@@ -1953,13 +1953,13 @@ public class BuildSampleDatabase
         
         Agent userAgent = createAgent(title, firstName, midInit, lastName, abbrev, email);        
         discipline.addReference(userAgent, "agents");
-        user.addReference(userAgent, "agent");
+        user.addReference(userAgent, "agents");
         user.addUserToSpPrincipalGroup(disciplineGroup);
         
         
         Agent invertPaleoUserAgent = createAgent("Mr.", "Joe", "", "InvertPaleo", "", "InvertPaleo@ku.edu");
         SpecifyUser      invertPaleoUser             = createSpecifyUser("ivpuser", "InvertPaleo@ku.edu", /*(short) 0,*/ "ivpuser", disciplineGroup, "Guest");        
-        invertPaleoUser.addReference(invertPaleoUserAgent, "agent");
+        invertPaleoUser.addReference(invertPaleoUserAgent, "agents");
         discipline.addReference(invertPaleoUserAgent, "agents");
         
         SpPrincipal     userPrincipal = DataBuilder.createUserPrincipal(invertPaleoUser);
@@ -2011,7 +2011,7 @@ public class BuildSampleDatabase
         //loadSchemaLocalization(discipline, SpLocaleContainer, schema);
         
         SpecifyUser.setCurrentUser(user);
-        user.addReference(userAgent, "agent");
+        user.addReference(userAgent, "agents");
         
         persist(user);
 
@@ -2990,7 +2990,7 @@ public class BuildSampleDatabase
         Agent userAgent = createAgent(title, firstName, midInit, lastName, abbrev, email);
         
         discipline.addReference(userAgent, "agents");
-        user.addReference(userAgent, "agent");
+        user.addReference(userAgent, "agents");
         user.addUserToSpPrincipalGroup(disciplineGroup);
         
         persist(discipline);
@@ -3026,7 +3026,7 @@ public class BuildSampleDatabase
         //loadSchemaLocalization(discipline, SpLocaleContainer, schema);
         
         SpecifyUser.setCurrentUser(user);
-        user.addReference(userAgent, "agent");
+        user.addReference(userAgent, "agents");
         
         persist(user);
 
@@ -3884,10 +3884,10 @@ public class BuildSampleDatabase
         discipline.addReference(userAgent, "agents");
         discipline.addReference(testerAgent, "agents");
         
-        user.addReference(userAgent, "agent");
+        user.addReference(userAgent, "agents");
         user.addUserToSpPrincipalGroup(disciplineGroup);
         
-        testerUser.addReference(testerAgent, "agent");
+        testerUser.addReference(testerAgent, "agents");
         
         startTx();
         persist(discipline);               
@@ -4099,7 +4099,7 @@ public class BuildSampleDatabase
         
         SpecifyUser.setCurrentUser(user);
         
-        user.addReference(userAgent, "agent");
+        user.addReference(userAgent, "agents");
         
         persist(user);
 

@@ -75,8 +75,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     protected Set<SpPrincipal>          spPrincipalGroups;
     protected Set<SpAppResourceDir>     spAppResourceDirs;
     protected Set<SpQuery>              spQuerys;
-    protected Agent                     agent;
-    //protected Set<Agent>              agents;
+    protected Set<Agent>              	agents;
 
     //protected SpPrincipal             principal;
 
@@ -132,8 +131,7 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
         spPrincipalGroups = new HashSet<SpPrincipal>();
         spAppResourceDirs = new HashSet<SpAppResourceDir>();
         spQuerys           = new HashSet<SpQuery>();
-        agent             = null;
-        //agents             = new HashSet<Agent>();
+        agents             = new HashSet<Agent>();
     }
 
     // End Initializer
@@ -406,23 +404,16 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
     }
 
 
-    @ManyToOne(cascade = {}, fetch = FetchType.LAZY)
-    @JoinColumn(name = "AgentID", unique = false, nullable = true, insertable = true, updatable = true)
-    public Agent getAgent()
+    /**
+     * @return - 
+     */
+    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "specifyUser")
+    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
+    public Set<Agent> getAgents()
     {
-        return this.agent;
+        return this.agents;
     }
-    
-//    /**
-//     * @return - 
-//     */
-//    @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "specifyUser")
-//    @org.hibernate.annotations.Cascade( { org.hibernate.annotations.CascadeType.ALL, org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
-//    public Set<Agent> getAgents()
-//    {
-//        return this.agents;
-//    }
-//
+
 //    /**
 //     * @param agent - 
 //     * void
@@ -447,19 +438,11 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
      * @param agenta
      * 
      */
-    public void setAgent(Agent agent)
+    public void setAgents(Set<Agent> agents)
     {
-        this.agent = agent;
+        this.agents = agents;
     }
-    
-//    /**
-//     * @param agenta
-//     * 
-//     */
-//    public void setAgents(Set<Agent> agents)
-//    {
-//        this.agents = agents;
-//    }
+
     // Add Methods
     /**
      * @param userGroupArg - 
@@ -471,17 +454,17 @@ public class SpecifyUser extends DataModelObjBase implements java.io.Serializabl
         userGroupArg.getSpecifyUsers().add(this);
     }
     
-//    /**
-//     * @param agent - 
-//     * void
-//     */
-//    public void addAgent(final Agent agent)
-//    { 
-//        this.agents.add(agent);
-//        agent.setSpecifyUser(this);
-//        //agent.
-//        //agent.getSpecifyUsers().add(this);
-//    }
+    /**
+     * @param agent - 
+     * void
+     */
+    public void addAgent(final Agent agent)
+    { 
+        this.agents.add(agent);
+        agent.setSpecifyUser(this);
+        //agent.
+        //agent.getSpecifyUsers().add(this);
+    }
     
     /**
      * @return the spQuerys
