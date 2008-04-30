@@ -522,7 +522,7 @@
             settable="edu.ku.brc.ui.forms.DataSetterForObj">
             <desc><![CDATA[Form For Appraisal]]></desc>
             
-            <columnDef>125px,2px,125px,2px,125px,2px,125px,2px,125px,2px,125px,p:g</columnDef>
+            <columnDef>100px,2px,p,2px,125px,2px,125px,2px,125px,2px,125px,p:g</columnDef>
             <rowDef auto="true" sep="2px" cell="p"/>
             <rows>
                 <row>
