@@ -242,7 +242,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
      */
     public int getNumOfCollectionsForUser()
     {
-        String sqlStr = "select count(cs) From Discipline as ct Inner Join ct.agents cta Inner Join cta.specifyUser as user Inner Join ct.collections as cs where user.specifyUserId = "+user.getSpecifyUserId();
+        String sqlStr = "select count(cos) From SpecifyUser as spu Inner Join spu.agent spua Inner Join spua.disciplines as dsp Inner Join dsp.collections as cos where spu.specifyUserId = "+user.getSpecifyUserId();
         
         DataProviderSessionIFace session = null;
         try
@@ -253,6 +253,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
             
         } catch (Exception ex)
         {
+            ex.printStackTrace();
             
         } finally
         {
