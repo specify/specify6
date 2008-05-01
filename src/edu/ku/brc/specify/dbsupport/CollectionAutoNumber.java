@@ -22,6 +22,7 @@ import edu.ku.brc.dbsupport.AutoNumberGeneric;
 import edu.ku.brc.specify.datamodel.CatalogNumberingScheme;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
+import edu.ku.brc.util.Pair;
 
 /**
  * Note: 'getHighestObject' from the base class never gets called. This class' getHighestObject gets called directly from
@@ -57,15 +58,23 @@ public class CollectionAutoNumber extends AutoNumberGeneric
     }
 
     /* (non-Javadoc)
-     * @see edu.ku.brc.dbsupport.AutoNumberGeneric#getHighestObject(org.hibernate.Session)
+     * @see edu.ku.brc.dbsupport.AutoNumberGeneric#getHighestObject(org.hibernate.Session, java.lang.String, edu.ku.brc.util.Pair, edu.ku.brc.util.Pair)
      */
-    protected Object getHighestObject(final Session session) throws Exception
+    @Override
+    protected Object getHighestObject(final Session session,
+                                      final String value,
+                                      final Pair<Integer, Integer> yearPos,
+                                      final Pair<Integer, Integer> pos) throws Exception
     {
+        boolean doDebug = false;
+        
         CatalogNumberingScheme cns = Collection.getCurrentCollection().getCatalogNumberingScheme();
         
+        if (doDebug) System.out.println("CatNumScheme: "+cns.getSchemeName());
         Vector<Integer> ids = new Vector<Integer>();
         for (Collection collection : cns.getCollections())
         {
+            if (doDebug) System.out.println("adding ID: "+collection.getCollectionId()+"  "+collection.getCollectionName());
             ids.add(collection.getCollectionId());
         }
         
@@ -73,9 +82,11 @@ public class CollectionAutoNumber extends AutoNumberGeneric
         criteria.addOrder( Order.desc(fieldName) );
         criteria.createCriteria("collection").add(Restrictions.in("collectionId", ids));
         criteria.setMaxResults(1);
+        if (doDebug) System.out.println("Criteria ID: "+criteria.toString());
         List<?> list = criteria.list();
         if (list.size() == 1)
         {
+            if (doDebug) System.out.println("Mac Obj: "+list.get(0));
             return list.get(0);
         }
         return null;

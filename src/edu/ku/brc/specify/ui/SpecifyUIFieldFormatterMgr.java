@@ -122,7 +122,7 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr
     @Override
     protected UIFieldFormatterIFace getFormatterInternal(final String name)
     {
-        if (StringUtils.isNotEmpty(name) && name.equals("CatalogNumber"))
+        if (StringUtils.isNotEmpty(name) && (name.equals("CatalogNumber") || name.equals("CatalogNumberNumeric")))
         {
             CatalogNumberingScheme cns = Collection.getCurrentCollection().getCatalogNumberingScheme();
             if (cns != null)
