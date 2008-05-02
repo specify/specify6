@@ -7,5 +7,4 @@
     <preptype name="Nest" isloanable="false"/>
     <preptype name="Skel" isloanable="false"/>
     <preptype name="Skin" isloanable="false"/>
-    <preptype name="Egg" isloanable="false"/>
 </vector>
