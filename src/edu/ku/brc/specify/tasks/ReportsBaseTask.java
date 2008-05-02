@@ -220,7 +220,7 @@ public class ReportsBaseTask extends BaseTask
                 }
                 else
                 {
-                    log.error("Interaction Command is missing the table id");
+                    log.error("Report Command is missing the table id");
                 }
             }
             navBoxes.add(navBox);
@@ -282,7 +282,16 @@ public class ReportsBaseTask extends BaseTask
         
         //XXX work out appResource/SpReport details...
         RolloverCommand roc = (RolloverCommand)nbi;
-        roc.addDropDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
+        String tblIdStr = tcd.getParams().getProperty("tableid");
+        if (StringUtils.isEmpty(tblIdStr))
+        {
+            roc.addDropDataFlavor(RecordSetTask.RECORDSET_FLAVOR);
+        } else
+        {
+            DataFlavorTableExt dfx = new DataFlavorTableExt(RecordSetTask.RECORDSET_FLAVOR.getDefaultRepresentationClass(), 
+                    RecordSetTask.RECORDSET_FLAVOR.getHumanPresentableName(), new int[] {Integer.parseInt(tblIdStr)});
+            roc.addDropDataFlavor(dfx);
+        }
         
         //roc.addDragDataFlavor(defaultFlavor);
         
@@ -1107,7 +1116,7 @@ public class ReportsBaseTask extends BaseTask
         
         if (toRun != null)
         {
-            QueryBldrPane.runReport(toRun, repAction.getPropertyAsString("title"), rs);
+            QueryBldrPane.runReport(toRun, "XXX", rs);
         }
     }
     

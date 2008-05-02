@@ -83,6 +83,7 @@ public class IdMapperMgr
     {
         log.debug("addTableMapper called for table: " + tableName);
         log.debug("addTableMapper called for sql: " + sql);
+        
         if (oldConn == null || newConn == null)
         {
             throw new RuntimeException("setDBs MUST be called on IdMapperMgr before using it! oldConn["+oldConn+"]  newConn["+newConn+"]");

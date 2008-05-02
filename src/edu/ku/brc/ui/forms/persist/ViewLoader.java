@@ -1249,7 +1249,7 @@ public class ViewLoader
     
     public static void displayFieldVerInfo()
     {
-        if (instance.fldVerTableModel.getRowCount() > 0)
+        if (instance.fldVerTableModel != null && instance.fldVerTableModel.getRowCount() > 0)
         {
             JTable table = new JTable(instance.fldVerTableModel);
             UIHelper.calcColumnWidths(table);

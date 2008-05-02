@@ -120,7 +120,6 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.dom4j.Element;
-import org.hibernate.Query;
 import org.hibernate.Session;
 
 import com.jgoodies.forms.builder.PanelBuilder;
@@ -3685,6 +3684,112 @@ public class BuildSampleDatabase
         // done
         log.info("Done creating "+disciplineType.getTitle()+" disciplineType database: " + disciplineType.getTitle());
         return dataObjects;
+    }
+    /**
+     * @param treeDef
+     * @param disciplineType
+     */
+    @SuppressWarnings("unchecked")
+    public void createStorageTreeDefFromXML(final Vector<Object> storageList, 
+                                            final File domFile,
+                                            final StorageTreeDef treeDef) throws Exception
+    {
+        StorageTreeDefItem parent = null;
+        
+        Element root = XMLHelper.readFileToDOM4J(domFile);
+        for (Element node : (List<Element>)root.selectNodes("/tree/treedef/level"))
+        {
+            String  name       = getAttr(node, "name", null);
+            int     rankId     = getAttr(node, "rank", 0);
+            boolean infullname = getAttr(node, "infullname", false);
+            boolean isEnforced = getAttr(node,  "enforced", false);
+            
+            StorageTreeDefItem tdi = new StorageTreeDefItem();
+            tdi.initialize();
+            tdi.setName(name);
+            tdi.setRankId(rankId);
+            tdi.setIsEnforced(isEnforced);
+            tdi.setIsInFullName(infullname);
+            treeDef.getTreeDefItems().add(tdi);
+            tdi.setParent(parent);
+            if (parent != null)
+            {
+                parent.getChildren().add(tdi);
+            }
+            tdi.setTreeDef(treeDef);
+            persist(tdi);
+            parent = tdi;
+        }
+        
+        createStorageTreeFromXML(storageList, root, treeDef);
+
+    }
+    
+    @SuppressWarnings("unchecked")
+    protected void createStorageTreeFromXML(final Vector<Object> storageList, 
+                                            final Element        root,
+                                            final StorageTreeDef treeDef)
+    {
+        StorageTreeDefItem rootTTD = null;
+        Hashtable<Integer, StorageTreeDefItem> treeDefItemHash = new Hashtable<Integer, StorageTreeDefItem>();
+        for (StorageTreeDefItem ttdi : treeDef.getTreeDefItems())
+        {
+            treeDefItemHash.put(ttdi.getRankId(), ttdi);
+            if (ttdi.getRankId() == 0)
+            {
+                rootTTD = ttdi;
+            }
+        }
+        
+        Storage storage = new Storage();
+        storage.initialize();
+        
+        storage.setRankId(0);
+        storage.setName("Storage Root");
+        storage.setDefinition(treeDef);
+        storage.setDefinitionItem(rootTTD);
+        rootTTD.getTreeEntries().add(storage);
+        storage.setParent(null);
+        persist(storage);
+        storageList.add(storage);
+        
+        for (Element node : (List<Element>)root.selectNodes("/tree/nodes/node"))
+        {
+            traverseTree(storageList, treeDefItemHash, treeDef, node, storage);
+        }
+        
+        TreeHelper.fixFullnameForNodeAndDescendants(storage);
+        storage.setNodeNumber(1);
+        fixNodeNumbersFromRoot(storage);
+    }
+    
+    @SuppressWarnings("unchecked")
+    protected void traverseTree(final Vector<Object> storageList, 
+                                final Hashtable<Integer, StorageTreeDefItem> treeDefItemHash,
+                                final StorageTreeDef treeDef,
+                                final Element root,
+                                final Storage parent)
+    {
+        String name   = getAttr(root, "name", null);
+        int    rankId = getAttr(root, "rank", 0);
+        
+        Storage storage = new Storage();
+        storage.initialize();
+        
+        storage.setRankId(rankId);
+        storage.setName(name);
+        storage.setDefinition(treeDef);
+        storage.setDefinitionItem(treeDefItemHash.get(rankId));
+        storage.setParent(parent);
+        parent.getChildren().add(storage);
+        treeDefItemHash.get(rankId).getTreeEntries().add(storage);
+        persist(storage);
+        storageList.add(storage);
+        
+        for (Element node : (List<Element>)root.selectNodes("node"))
+        {
+            traverseTree(storageList, treeDefItemHash, treeDef, node, storage);
+        } 
     }
     
     /**

@@ -33,6 +33,14 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JRExporterParameter;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.export.JRHtmlExporter;
+import net.sf.jasperreports.engine.export.JRHtmlExporterParameter;
+import net.sf.jasperreports.engine.export.JRPdfExporter;
+import net.sf.jasperreports.engine.export.JRRtfExporter;
+import net.sf.jasperreports.j2ee.servlets.ImageServlet;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -62,6 +70,7 @@ import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.DatabaseDriverInfo;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
@@ -75,6 +84,7 @@ import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.LithoStratTreeDef;
 import edu.ku.brc.specify.datamodel.Locality;
+import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.StorageTreeDef;
@@ -85,6 +95,7 @@ import edu.ku.brc.specify.datamodel.Treeable;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.tests.SpecifyAppPrefs;
 import edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.DataGetterForObj;
@@ -110,13 +121,18 @@ public class SpecifyExplorer extends HttpServlet
     
     protected String DATABASE_NAME = "fish_kansas";
     
-    protected static String contentTag = "<!-- Content -->";
+    public static String contentTag  = "<!-- Content -->";
+    public static String servletURL  = "http://localhost:8080/examples/servlets/servlet/SpecifyExplorer";
+    public static String baseURLSite = "http://localhost/specifyexplorer";
     
     protected String packageName = "edu.ku.brc.specify.datamodel.";
     
-    protected static Session  session = null;
-    protected static MyFmtMgr fmtMgr  = null;
+    protected static Session   session = null;
+    protected static MyFmtMgr  fmtMgr  = null;
     protected SimpleDateFormat dateFormatter;
+    protected static String    template        = "";
+    protected static int       contentTagIndex = -1;
+
     
     protected Hashtable<String, ClassDisplayInfo>   classHash       = new Hashtable<String, ClassDisplayInfo>();
     protected Vector<ClassDisplayInfo>              sortedClassList = new Vector<ClassDisplayInfo>();
@@ -125,15 +141,13 @@ public class SpecifyExplorer extends HttpServlet
     
     //protected Vector<String> classList = new Vector<String>();
     
-    protected String template = "";
-    
     protected DataGetterForObj getter = new DataGetterForObj();
     
     protected ExpressSearchTask expressSearch         = null;
     protected ExplorerESPanel   expressSearchExplorer = null;
     
-    protected String baseURL = "http://localhost:8080/examples/servlets/servlet/SpecifyExplorer";
-
+    protected QueryReportHandler      queryHandler;
+    
     
     /**
      * 
@@ -161,8 +175,9 @@ public class SpecifyExplorer extends HttpServlet
         try
         {
             File templateFile = new File(UIRegistry.getDefaultWorkingPath() + File.separator + "site/template.html");
-            template = FileUtils.readFileToString(templateFile);
-            
+            template        = FileUtils.readFileToString(templateFile);
+            contentTagIndex = template.indexOf(contentTag);
+
         } catch (IOException ex)
         {
             ex.printStackTrace();
@@ -180,6 +195,24 @@ public class SpecifyExplorer extends HttpServlet
         setUp();
         
         setUpClasses();
+    }
+    
+    /**
+     * @param out
+     * @param title
+     */
+    public static void writeTitle(final PrintWriter out, final String title)
+    {
+        String subContent = template.substring(0, contentTagIndex);
+        out.println(StringUtils.replace(subContent, "<!-- Title -->", title));
+    }
+    
+    /**
+     * @param out
+     */
+    public static void writeToEnd(final PrintWriter out)
+    {
+        out.println(template.substring(contentTagIndex+contentTag.length()+1, template.length()));
     }
     
     /**
@@ -267,17 +300,20 @@ public class SpecifyExplorer extends HttpServlet
                     for (Object fld : clsElement.selectNodes("skip/field"))
                     {
                         Element fldElement = (Element)fld;
-                        boolean  isAvailForSeaarch = XMLHelper.getAttr(fldElement, "search", true);
+                        boolean  isAvailForSearch = XMLHelper.getAttr(fldElement, "search", false);
                         
-                        cdi.addSkipped(new FieldDisplayInfo(fldElement.getTextTrim(), isAvailForSeaarch));
+                        cdi.addSkipped(new FieldDisplayInfo(fldElement.getTextTrim(), false, isAvailForSearch));
                     }
                     
                     int inx = 0;
                     for (Object fld : clsElement.selectNodes("order/field"))
                     {
-                        Element fldElement = (Element)fld;
-                        String  pickList  = XMLHelper.getAttr(clsElement, "pl", "");
-                        cdi.addOrdered(new FieldDisplayInfo(inx, fldElement.getTextTrim(), pickList));
+                        Element fldElement       = (Element)fld;
+                        String  pickList         = XMLHelper.getAttr(clsElement, "pl", "");
+                        //boolean isAvailForSearch = XMLHelper.getAttr(fldElement, "skip", false);
+                        boolean isForDisplay     = XMLHelper.getAttr(fldElement, "display", true);
+
+                        cdi.addOrdered(new FieldDisplayInfo(inx, fldElement.getTextTrim(), pickList, isForDisplay, true));
                         inx++;
                     }
 
@@ -288,6 +324,7 @@ public class SpecifyExplorer extends HttpServlet
                         String  type  = XMLHelper.getAttr(fldElement, "type", "");
                         String  label = XMLHelper.getAttr(fldElement, "label", "");
                         String  level = XMLHelper.getAttr(fldElement, "labellevel", "");
+
                         AdditionalDisplayField adf = new AdditionalDisplayField(inx, type, label, level, name);
                         cdi.addAdditional(adf);
                         inx++;
@@ -449,6 +486,8 @@ public class SpecifyExplorer extends HttpServlet
         }         
         
         session = HibernateUtil.getCurrentSession();
+        
+        queryHandler = new QueryReportHandler(session);
 
         log.info("Creating database "+dbName+"....");
         
@@ -573,6 +612,7 @@ public class SpecifyExplorer extends HttpServlet
     public void setUp()
     {
         UIRegistry.setAppName("Specify");
+        IconManager.setApplicationClass(Specify.class);
         
         //UIRegistry.setJavaDBDir(derbyPath != null ? derbyPath : UIRegistry.getDefaultWorkingPath() + File.separator + "DerbyDatabases");
         
@@ -661,7 +701,7 @@ public class SpecifyExplorer extends HttpServlet
                                  final String           title, 
                                  final Properties       props) 
     {
-        StringBuffer sb = new StringBuffer("<a href=\""+baseURL+"?");
+        StringBuffer sb = new StringBuffer("<a href=\""+servletURL+"?");
         if (fdi != null)
         {
             sb.append("cls=");
@@ -762,7 +802,7 @@ public class SpecifyExplorer extends HttpServlet
     protected String processDataObjAsSet(final DBTableInfo       tableInfo,
                                          final DBTableChildIFace childInfo,
                                          final String            fieldName,
-                                         final Set<?>            dataObjSet)
+                                         final Vector<?>         dataObjSet)
     
     {
         
@@ -934,7 +974,7 @@ public class SpecifyExplorer extends HttpServlet
                 FieldDisplayInfo fdi = cdi.getField(fieldName);
                 
                 
-                if (fdi != null && fdi.isSkipped())
+                if (fdi != null && (fdi.isSkipped() || !fdi.isForDisplay()))
                 {
                     continue;
                 }
@@ -1043,7 +1083,7 @@ public class SpecifyExplorer extends HttpServlet
                     String           fieldName = field.getName();
                     FieldDisplayInfo fdi       = cdi.getField(fieldName);
                     
-                    if (fdi != null && fdi.isSkipped())
+                    if (fdi != null && (fdi.isSkipped() || !fdi.isForDisplay()))
                     {
                         continue;
                     }
@@ -1072,14 +1112,36 @@ public class SpecifyExplorer extends HttpServlet
                                         continue;
                                     }
 
+                                    Vector<?> setAsList = null;
                                     if (fieldName.equals("collectionObjects"))
                                     {
                                         StringBuilder sb = new StringBuilder();
                                         getCollectionObjectList(set, sb);
                                         row = sb.toString();
+                                        
+                                    } else if (fieldName.equals("determinations"))
+                                    {
+                                        Vector<Determination> dets = new Vector<Determination>();
+                                        for (Object obj : set.toArray())
+                                        {
+                                            dets.add((Determination)obj);
+                                        }
+                                        Collections.sort(dets, new Comparator<Determination>() {
+                                            public int compare(Determination d1, Determination d2)
+                                            {
+                                                return d1.getStatus().compareTo(d2.getStatus());
+                                            }
+                                            
+                                        });
+                                        setAsList = dets;
                                     } else
                                     {
-                                        row = processDataObjAsSet(tableInfo, childInfo, fieldName, set);
+                                        setAsList = new Vector<Object>(set);
+                                    }
+                                    
+                                    if (setAsList != null)
+                                    {
+                                        row = processDataObjAsSet(tableInfo, childInfo, fieldName, setAsList);
                                     }
                                 }
                             }
@@ -1171,7 +1233,7 @@ public class SpecifyExplorer extends HttpServlet
             String imgName = fakeGetImageName(dataObj);
             if (imgName != null)
             {
-                out.println("<img src=\"http://localhost/specifyexplorer/AttachImageCache/"+imgName+"\">\n");
+                out.println("<img border=\"1\" src=\"http://localhost/specifyexplorer/AttachImageCache/"+imgName+"\">\n");
             }
             out.println("</td>\n");
             
@@ -1322,7 +1384,7 @@ public class SpecifyExplorer extends HttpServlet
                     String fieldName = field.getName();
                     FieldDisplayInfo fdi = cdi.getField(fieldName);
                     
-                    if (fdi != null && fdi.isSkipped())
+                    if (fdi != null && (fdi.isSkipped() || !fdi.isForDisplay()))
                     {
                         continue;
                     }
@@ -1659,7 +1721,7 @@ public class SpecifyExplorer extends HttpServlet
             }
         }
         
-        out.println("<br/><a href=\""+baseURL+"?id=map&points="+getLocalityMapString(locHash)+"\">Map Collection Objects</a>");
+        out.println("<br/><a href=\""+servletURL+"?id=map&points="+getLocalityMapString(locHash)+"\">Map Collection Objects</a>");
     }
     
     /**
@@ -1673,12 +1735,20 @@ public class SpecifyExplorer extends HttpServlet
     {
         Vector<Integer> indexes = new Vector<Integer>(ordered.keySet());
         Collections.sort(indexes);
+        int cnt = 1;
         for (Integer index : indexes)
         {
             String row = ordered.get(index);
             if (row != null)
             {
-                out.println(row);
+                if (StringUtils.contains(row, "BRDRODDEVEN"))
+                {
+                    out.println(StringUtils.replace(row, "BRDRODDEVEN", "brdr"+(((cnt+1) % 2 == 0) ? "even" : "odd")));
+                } else
+                {
+                    out.println(row);
+                }
+                cnt++;
             }
         }
         
@@ -1686,7 +1756,14 @@ public class SpecifyExplorer extends HttpServlet
         {
             for (String row : unOrdered)
             {
-                out.println(row);
+                if (StringUtils.contains(row, "BRDRODDEVEN"))
+                {
+                    out.println(StringUtils.replace(row, "BRDRODDEVEN", "brdr"+(((cnt+1) % 2 == 0) ? "even" : "odd")));
+                } else
+                {
+                    out.println(row);
+                }
+                cnt++;
             }
         }
     }
@@ -1796,7 +1873,7 @@ public class SpecifyExplorer extends HttpServlet
             String subContent = template.substring(0, inx);
             out.println(StringUtils.replace(subContent, "<!-- Title -->", className+ " Search Form"));
             
-            out.println("<form name=plcform action=\""+baseURL+"\" method=\"GET\" onsubmit=\"\"><br/>\n");
+            out.println("<form name=plcform action=\""+servletURL+"\" method=\"GET\" onsubmit=\"\"><br/>\n");
             out.println("<input type=\"hidden\" name=\"cls\" value=\""+className+"\">\n");
             out.println("<input type=\"hidden\" name=\"id\" value=\"dosearch\">\n");
             
@@ -1816,16 +1893,17 @@ public class SpecifyExplorer extends HttpServlet
             Vector<String>             unOrdered  = new Vector<String>();
             
             StringBuilder sb = new StringBuilder();
-            int cnt = 1;
             for (Field field : clsObj.getDeclaredFields())
             {
                 sb.setLength(0);
                 
-                String fieldName = field.getName();
-                FieldDisplayInfo fdi = cdi.getField(fieldName);
+                String           fieldName = field.getName();
+                FieldDisplayInfo fdi       = cdi.getField(fieldName);
                 
-                if (fdi != null && (fdi.isSkipped() || !fdi.isAvailForSearch()))
+                //System.out.println(fieldName + "  "+fdi+"  "+(fdi != null ? (fdi.isSkipped()+"  "+fdi.isForDisplay()+"  "+fdi.isAvailForSearch()) : ""));
+                if (fdi != null && (fdi.isSkipped() && !fdi.isAvailForSearch()))
                 {
+                    //System.out.println("skipping");
                     continue;
                 }
                 
@@ -1856,12 +1934,15 @@ public class SpecifyExplorer extends HttpServlet
                                 labelStr = UIHelper.makeNamePretty(fieldName);
                             }
                             
-                            sb.append("<tr><td class=\"brdr"+(((cnt+1) % 2 == 0) ? "even" : "odd")+"\" align=\"right\" nowrap=\"nowrap\" style=\"border-bottom: 1px gray solid;\"><b>"+labelStr+ ":</b></td>");
-                            sb.append("<td class=\"brdr"+(((cnt+1) % 2 == 0) ? "even" : "odd")+"\" nowrap=\"nowrap\" style=\"border-bottom: 1px gray solid;\">"+getControlPanel(field)+"</td>");
-                            sb.append("<td class=\"brdr"+(((cnt+1) % 2 == 0) ? "even" : "odd")+"\" align=\"center\" style=\"border-bottom: 1px gray solid;\">"+getInput(fieldName + "Hide", "checkbox", null)+"</td></tr>\n");
+                            Integer index = fdi != null ? fdi.getOrder() : null;
+                            
+                            int cnt = index == null ? unOrdered.size() : ordered.size();
+                            
+                            sb.append("<tr><td class=\"BRDRODDEVEN"+"\" align=\"right\" nowrap=\"nowrap\" style=\"border-bottom: 1px gray solid;\"><b>"+labelStr+ ":</b></td>");
+                            sb.append("<td class=\"BRDRODDEVEN"+"\" nowrap=\"nowrap\" style=\"border-bottom: 1px gray solid;\">"+getControlPanel(field)+"</td>");
+                            sb.append("<td class=\"BRDRODDEVEN"+"\" align=\"center\" style=\"border-bottom: 1px gray solid;\">"+getInput(fieldName + "Hide", "checkbox", null)+"</td></tr>\n");
                             cnt++;
                             
-                            Integer index = fdi != null ? fdi.getOrder() : null;
                             if (index == null)
                             {
                                 unOrdered.add(sb.toString());
@@ -1963,6 +2044,7 @@ public class SpecifyExplorer extends HttpServlet
                 String fieldName = field.getName();
                 FieldDisplayInfo fdi = cdi.getField(fieldName);
                 
+                System.out.println(fieldName + "  "+fdi+"  "+(fdi != null ? (fdi.isSkipped()+"  "+fdi.isForDisplay()+"  "+fdi.isAvailForSearch()) : ""));
                 if (fdi != null && (fdi.isSkipped() || !fdi.isAvailForSearch()))
                 {
                     continue;
@@ -2255,6 +2337,7 @@ public class SpecifyExplorer extends HttpServlet
             " ORDER BY "+fieldName+" ASC";
         sql = QueryAdjusterForDomain.getInstance().adjustSQL(sql);
         System.out.println(sql);
+        
         doAlphaIndexPageSQL(out, className, letter, numLetters, fmt, sql);
     }
     
@@ -2417,7 +2500,10 @@ public class SpecifyExplorer extends HttpServlet
             
             if (doingIndex)
             {
-                out.println("<center><br/><span style=\"font-size: 14pt;\">Index For "+className+"</span><br/><table class=\"brdr\" border=\"0\" cellpadding=\4\" cellspacing=\"0\">\n");
+                DBTableInfo ti = DBTableIdMgr.getInstance().getByShortClassName(className);
+                
+                out.println("<center><br/><span style=\"font-size: 14pt;\">Index For "+ti.getTitle()+"</span><br/>");
+                out.println("<table class=\"brdr\" border=\"0\" cellpadding=\"4\" cellspacing=\"0\">\n");
                 out.println("<tr><th class=\"brdr\" align=\"center\" nowrap=\"nowrap\">Index</th>");
                 out.println("<th class=\"brdr\" align=\"center\" nowrap=\"nowrap\">Count</th></tr>\n");
                 int i = 0;
@@ -2425,9 +2511,10 @@ public class SpecifyExplorer extends HttpServlet
                 {
                     String ltrStr = nis.getNum() != null ? Integer.toString(nis.getNum() * 1000) : nis.getName().toUpperCase();
                     out.println("<tr>");
-                    out.println("<td nowrap=\"nowrap\" class=\"brdr"+(((i+1) % 2 == 0) ? "even" : "odd")+"\" align=\"center\">&nbsp;&nbsp;<a href=\""+baseURL+"?cls="+className+"&ltr="+ltrStr+"\">" +ltrStr+ "</a>&nbsp;&nbsp;</td>\n");  
-                    out.println("<td nowrap=\"nowrap\" class=\"brdr"+(((i+1) % 2 == 0) ? "even" : "odd")+"\"  align=\"center\"><a href=\""+baseURL+"?cls="+className+"&ltr="+ltrStr+"\">" +nis.getId()+ "</a></td>\n");  
+                    out.println("<td nowrap=\"nowrap\" class=\"brdr"+(((i+1) % 2 == 0) ? "even" : "odd")+"\" align=\"center\">&nbsp;&nbsp;<a href=\""+servletURL+"?cls="+className+"&ltr="+ltrStr+"\">" +ltrStr+ "</a>&nbsp;&nbsp;</td>\n");  
+                    out.println("<td nowrap=\"nowrap\" class=\"brdr"+(((i+1) % 2 == 0) ? "even" : "odd")+"\"  align=\"center\"><a href=\""+servletURL+"?cls="+className+"&ltr="+ltrStr+"\">" +nis.getId()+ "</a></td>\n");  
                     out.println("</tr>");
+                    i++;
                 }
                 out.println("</table></center>\n");
             } else
@@ -2444,7 +2531,7 @@ public class SpecifyExplorer extends HttpServlet
                     {
                         out.println("<tr>");
                         out.println("<td nowrap=\"nowrap\" class=\"brdr"+(((i+1) % 2 == 0) ? "even" : "odd")+"\" >");  
-                        out.println("<a href=\""+baseURL+"?cls="+className+"&id="+nis.getId()+"\">" +nis.getName()+ "</a>");
+                        out.println("<a href=\""+servletURL+"?cls="+className+"&id="+nis.getId()+"\">" +nis.getName()+ "</a>");
                         out.println("</td></tr>\n");
                         i++;
                     }   
@@ -2529,7 +2616,7 @@ public class SpecifyExplorer extends HttpServlet
                 }
                 if (okDisplay)
                 {
-                    out.println("<a href=\""+baseURL+"?cls="+className+"&id="+id+"\">" +name+ "</a><br/>\n");
+                    out.println("<a href=\""+servletURL+"?cls="+className+"&id="+id+"\">" +name+ "</a><br/>\n");
                 }
             }
         } catch (Exception ex)
@@ -2564,6 +2651,22 @@ public class SpecifyExplorer extends HttpServlet
     }
     
     /**
+     * @param path
+     * @return
+     */
+    protected String getRelativeImagePath(final String path)
+    {
+        String key = "WEB-INF/classes/edu/ku/brc/specify/";
+        int inx = path.indexOf(key);
+        if (inx > -1)
+        {
+            inx += key.length();
+            return baseURLSite + "/" + path.substring(inx);
+        }
+        return null;
+    }
+    
+    /**
      * @param out
      */
     protected void displayAllSearchables(final PrintWriter out)
@@ -2589,11 +2692,17 @@ public class SpecifyExplorer extends HttpServlet
             out.println("    <th class=\"brdr\" align=\"center\" nowrap=\"nowrap\">Statistics</th></tr>\n");
             out.println("</tr>\n");
             
+            String formIconPath  = getRelativeImagePath(IconManager.getIconEntryByName("Search").getUrl().toString());
+            String statsIconPath = getRelativeImagePath(IconManager.getIconEntryByName("Statistics").getUrl().toString());
+            String indexIcon     = baseURLSite + "/index.png";
+            
             int cnt = 1;
             for (ClassDisplayInfo cdi : sortedClassList)
             {
                 String className = cdi.getClassName();
                 String indexName = cdi.getIndexName();
+                
+                DBTableInfo ti = DBTableIdMgr.getInstance().getByShortClassName(className);
                 
                 if (StringUtils.isEmpty(indexName))
                 {
@@ -2602,19 +2711,20 @@ public class SpecifyExplorer extends HttpServlet
                 
                 String brdCls = " class=\"brdr"+((cnt % 2 == 0) ? "even" : "odd")+"\"";
                 		
-                out.println("<tr><td "+brdCls+">"+className+"</td>");
-                out.println("    <td "+brdCls+" align=\"center\" ><a href=\""+baseURL+"?cls="+className+"&id=dspsrch\">"+className+"</a></td>");
+                out.println("<tr><td nowrap=\"nowrap\" "+brdCls+">"+ti.getTitle()+"</td>");
+                //out.println("    <td nowrap=\"nowrap\" "+brdCls+" align=\"center\" ><a href=\""+baseURL+"?cls="+className+"&id=dspsrch\"><img src=\""+formIconPath+"\"/> "+ti.getTitle()+"</a></td>");
+                out.println("    <td nowrap=\"nowrap\" "+brdCls+" align=\"center\" ><a href=\""+servletURL+"?cls="+className+"&id=dspsrch\"><img border=\"0\" height=\"24\" src=\""+formIconPath+"\"/></a></td>");
                 if (StringUtils.isNotEmpty(cdi.getLinkField()))
                 {
-                    out.println("    <td "+brdCls+" align=\"center\"><a href=\""+baseURL+"?cls="+className+"\">"+className+"</a></td>");
+                    out.println("    <td nowrap=\"nowrap\" "+brdCls+" align=\"center\"><a href=\""+servletURL+"?cls="+className+"\"><img border=\"0\" height=\"24\" src=\""+indexIcon+"\"/></a></a></td>");
                 } else
                 {
-                    out.println("    <td "+brdCls+" align=\"center\">&nbsp;</td>");
+                    out.println("    <td nowrap=\"nowrap\" "+brdCls+" align=\"center\">&nbsp;</td>");
                 }
-                out.println("    <td "+brdCls+">");
+                out.println("    <td nowrap=\"nowrap\" "+brdCls+">");
                 for (StatsDisplayInfo stat : cdi.getStats())
                 {
-                    out.println("    <a href=\""+stat.getUrl()+"\">"+stat.getTitle()+"</a><br/>");
+                    out.println("    <a href=\""+stat.getUrl()+"\"><img border=\"0\" height=\"24\" src=\""+statsIconPath+"\"/> "+stat.getTitle()+"</a><br/>");
                 }
                 out.println("    </td>");
                 out.println("</tr>");
@@ -2681,7 +2791,7 @@ public class SpecifyExplorer extends HttpServlet
         
         Hashtable<Locality, CollectingEvent> locToCE = new Hashtable<Locality, CollectingEvent>();
         
-        boolean drawLines = true;
+        boolean drawLines = false;
 
         Hashtable<CollectingEvent, CEForPoly> hash = new Hashtable<CollectingEvent, CEForPoly>();
         StringBuilder locStr = new StringBuilder();
@@ -3065,6 +3175,9 @@ public class SpecifyExplorer extends HttpServlet
                     true, true, false);
         }
         
+        //chart.getCategoryPlot().setRenderer(new CustomColorBarChartRenderer());
+
+        
         response.setContentType("image/png"); 
         try
         {
@@ -3212,6 +3325,49 @@ public class SpecifyExplorer extends HttpServlet
         return null;
     }
     
+    protected String getTaxonImage(final String fullName)
+    {
+        if (fullName != null)
+        {
+            String[] rows = {
+            "6792,Lutjanus sebae,Emperor red snapper",
+            "6794,Trachinotus blochii,Snubnose pompano",
+            "6796,Caranx sexfasciatus,Bigeye trevally",
+            "6797,Gerres longirostris,Longtail silverbiddy",
+            "6799,Hyporhamphus affinis,Tropical halfbeak",
+            "6804,Chaetodon trifasciatus,Melon butterflyfish ",
+            "6806,Cephalopholis miniata,Coral hind",
+            "6810,Apolemichthys trimaculatus,Threespot angelfish",
+            "6813,Parupeneus ciliatus,Whitesaddle goatfish",
+            "6814,Zebrasoma scopas,Twotone tang ",
+            "6854,Pomacanthus semicirculatus,Semicircle angelfish ",
+            "6871,Pterois radiata,Radial firefish ",
+            "6881,Oxymonacanthus longirostris,Harlequin filefish",
+            "6887,Priacanthus blochii,Paeony bulleye",
+            "6907,Sargocentron seychellense,Yellow-tipped squirrelfish",
+            "6926,Myripristis berndti,Blotcheye soldierfish",
+            "6927,Pempheris vanicolensis,Vanikoro sweeper",
+            "6931,Pseudanthias squamipinnis,Sea goldie",
+            "6960,Archamia fucata,Orangelined cardinalfish",
+            "6961,Archamia fucata,Orangelined cardinalfish",
+            "6964,Lutjanus bohar,Two-spot red snapper",
+            "6965,Lutjanus kasmira,Common bluestripe snapper",
+            "7031,Pempheris vanicolensis,Vanikoro sweeper",
+            "7039,Myripristis violacea,Lattice soldierfish",
+            };
+            
+            for (String row : rows)
+            {
+                String[] cols = StringUtils.split(row, ",");
+                if (fullName.trim().equals(cols[1].trim()))
+                {
+                    return "T"+cols[0]+".jpg";
+                }
+            }
+        }
+        return null;
+    }
+    
     /**
      * @param dataObj
      * @return
@@ -3239,6 +3395,9 @@ public class SpecifyExplorer extends HttpServlet
             } else if (fullName.equals("Ammocrypta beanii"))
             {
                 return "NakedSandDarterLarge.jpg";
+            } else
+            {
+                return getTaxonImage(tx.getFullName());
             }
         } else if (dataObj instanceof Locality)
         {
@@ -3398,21 +3557,24 @@ public class SpecifyExplorer extends HttpServlet
         String treeType   = request.getParameter("tree");
         String detail     = request.getParameter("detail");
         
-        System.out.println("detail["+detail+"]");
+        System.out.println("detail cls["+detail+"]");
         if (StringUtils.isNotEmpty(detail))
         {
             String className = request.getParameter("cls");
             String idStr     = request.getParameter("id");
             
-            System.out.println("["+className+"]["+idStr+"]");
+            System.out.println("cls["+className+"] id["+idStr+"]");
             
             idStr = "4222";
             response.setContentType("text/html");
-            PrintWriter out = response.getWriter();
-            Object dataObj = SpecifyExplorer.session.createQuery("from "+className+" where id = "+idStr).list().get(0);
+            PrintWriter out     = response.getWriter();
+            Object      dataObj = SpecifyExplorer.session.createQuery("FROM "+className+" WHERE id = "+idStr).list().get(0);
+            System.out.println(dataObj);
             if (dataObj != null)
             {
                 processDataObj(out, (FormDataObjIFace)dataObj,  true);
+                SpecifyExplorer.session.evict(dataObj);
+                
             } else
             {
                 out.println("ID "+idStr + "couldn't be found.");
@@ -3522,6 +3684,134 @@ public class SpecifyExplorer extends HttpServlet
         out.println(template.substring(inx+contentTag.length()+1, template.length()));
 
     }
+    
+    protected void doReport(final HttpServletRequest request, 
+                            final HttpServletResponse response)
+    {
+        JasperReportHelper jrh = new JasperReportHelper(new JasperReportHelper.JasperReportHelperListener() 
+        {
+            public void complete(JasperPrint jasperPrint)
+            {
+                PrintWriter out = null;
+                try
+                {
+                    out = response.getWriter();
+    
+                    if (false)
+                    {
+                        response.setHeader("Expires", "0");
+                        response.setHeader("Cache-Control","must-revalidate, post-check=0, pre-check=0");
+                        response.setHeader("Pragma", "public");
+                        
+                        response.setContentType("application/pdf");
+                        JRPdfExporter exporter = new JRPdfExporter();
+                        exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
+                        exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, out);
+                        exporter.exportReport();
+                        
+                    } 
+                    
+                    if (false)
+                    {
+                        response.setContentType("application/rtf");
+                        response.setHeader("Content-Disposition", "inline; filename=\"file.rtf\"");
+
+                        JRRtfExporter exporter = new JRRtfExporter();
+                        exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint);
+                        exporter.setParameter(JRExporterParameter.OUTPUT_STREAM, out);
+                        exporter.exportReport();
+                    }
+                    
+                    if (true)
+                    {
+                        response.setHeader("Expires", "0");
+                        response.setHeader("Cache-Control","must-revalidate, post-check=0, pre-check=0");
+                        response.setHeader("Pragma", "public");
+
+
+                        JRHtmlExporter exporter = new JRHtmlExporter();
+                        request.getSession().setAttribute(ImageServlet.DEFAULT_JASPER_PRINT_SESSION_ATTRIBUTE, jasperPrint);
+                        exporter.setParameter(JRExporterParameter.JASPER_PRINT, jasperPrint); 
+                        exporter.setParameter(JRExporterParameter.OUTPUT_WRITER, out);                   
+                         
+                        // gonna set url pattern given for Image servlet with a reponse parameter <url-pattern>/image</url-pattern> 
+                         
+                        exporter.setParameter(JRHtmlExporterParameter.IMAGES_URI, "http://localhost/specifyexplorer/");         
+        
+                        exporter.exportReport();
+                    }
+    
+                    out.close();
+                    
+                } catch (JRException ex)
+                {
+                    ex.printStackTrace();
+                    out.println(ex.toString());
+                    
+                } catch (IOException ex)
+                {
+                    ex.printStackTrace();
+                }
+                
+            }
+
+            public void completedWithError()
+            {
+                try
+                {
+                    response.setContentType("text/html");
+                    PrintWriter out = response.getWriter();
+                    out.println(" Error creating report.");
+                    
+                } catch (IOException ex)
+                {
+                    ex.printStackTrace();
+                }
+            }
+
+            public void status(int status)
+            {
+                // TODO Auto-generated method stub
+                
+            }
+            
+        }, false);
+        
+        try
+        {
+            //RecordSet rs = (RecordSet)SpecifyExplorer.session.createQuery("from RecordSet where name = \"Beanii RS\"").list().get(0);
+            RecordSet rs = (RecordSet)SpecifyExplorer.session.createQuery("from RecordSet where id = 1").list().get(0);
+            if (rs != null)
+            {
+                Properties params = new Properties();
+                
+                String reportName = "fish_label.jrxml";
+                params.put("name", reportName);
+                params.put("file", reportName);
+                params.put("reqrs", "true");
+                params.put("title", "Fish Label");
+                
+                jrh.createReport(reportName, rs, params);
+                
+            } else
+            {
+                try
+                {
+                    response.setContentType("text/html");
+                    PrintWriter out = response.getWriter();
+                    out.println("Couldn't Locate RecordSet");
+                    
+                } catch (IOException ex)
+                {
+                    ex.printStackTrace();
+                }
+            }
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+        }
+    }
 
     /* (non-Javadoc)
      * @see javax.servlet.http.HttpServlet#doGet(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
@@ -3536,8 +3826,35 @@ public class SpecifyExplorer extends HttpServlet
         String letter    = request.getParameter("ltr");
         String treeStr   = request.getParameter("tree");
         String query     = request.getParameter("query");
+        String cmd       = request.getParameter("cmd");
+        
+        
         
         //System.out.println("doGet -------------------------------["+treeStr+"]["+idStr+"]");
+        if (StringUtils.isNotEmpty(cmd))
+        {
+            if (cmd.equals("query"))
+            {
+                if (StringUtils.isEmpty(idStr))
+                {
+                    queryHandler.listQueries(request, response);
+                } else
+                {
+                    
+                }
+            } else if (cmd.equals("reports"))
+            {
+                if (StringUtils.isEmpty(idStr))
+                {
+                    queryHandler.listSpReports(request, response);
+                } else
+                {
+                    queryHandler.doReport(request, response);
+                }
+            }
+            return;
+        }
+
         if (StringUtils.isNotEmpty(treeStr))
         {
             response.setContentType("text/html");
@@ -3550,6 +3867,12 @@ public class SpecifyExplorer extends HttpServlet
                 out.print(createTree(tableInfo.getClassObj(), id));
             }
             out.flush();
+            return;
+        }
+        
+        if (StringUtils.isNotEmpty(idStr) && idStr.equals("report"))
+        {
+            doReport(request, response);
             return;
         }
         

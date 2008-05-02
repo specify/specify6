@@ -428,6 +428,11 @@ public final class FormHelper
         int         cnt        = 0;
         for (String name : names)
         {
+            if (cnt == 0 && name.equals(tblInfo.getName()))
+            {
+                cnt++;
+                continue;
+            }
             DBTableChildIFace item = curTblInfo.getItemByName(name);
             if (item == null)
             {

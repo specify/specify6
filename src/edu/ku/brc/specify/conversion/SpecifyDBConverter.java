@@ -12,6 +12,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Vector;
 
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -22,6 +23,7 @@ import org.apache.log4j.Logger;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
 
 import com.jgoodies.looks.plastic.Plastic3DLookAndFeel;
@@ -47,6 +49,9 @@ import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.PrepType;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.specify.datamodel.Storage;
+import edu.ku.brc.specify.datamodel.StorageTreeDef;
+import edu.ku.brc.specify.datamodel.StorageTreeDefItem;
 import edu.ku.brc.specify.datamodel.TaxonTreeDef;
 import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
@@ -495,14 +500,22 @@ public class SpecifyDBConverter
                 // NOTE: Within BasicSQLUtils the connection is for removing tables and records
                 BasicSQLUtils.setDBConnection(conversion.getNewDBConnection());
                 
+                if (false)
+                {
+                    addStorageTreeFomrXML(newConn);
+                    return;
+                }
+                
                 //---------------------------------------------------------------------------------------
                 //-- Create basic set of information.
                 //---------------------------------------------------------------------------------------
                 conversion.doInitialize();
 
-                BasicSQLUtils.deleteAllRecordsFromTable(conversion.getNewDBConnection(), "agent", BasicSQLUtils.myDestinationServerType);
-                BasicSQLUtils.deleteAllRecordsFromTable(conversion.getNewDBConnection(), "address", BasicSQLUtils.myDestinationServerType);
-
+                if (startfromScratch)
+                {
+                    BasicSQLUtils.deleteAllRecordsFromTable(conversion.getNewDBConnection(), "agent", BasicSQLUtils.myDestinationServerType);
+                    BasicSQLUtils.deleteAllRecordsFromTable(conversion.getNewDBConnection(), "address", BasicSQLUtils.myDestinationServerType);
+                }
                 conversion.initializeAgentInfo(startfromScratch);
                 
                 frame.setDesc("Mapping Tables.");
@@ -532,15 +545,12 @@ public class SpecifyDBConverter
                 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 // Really need to create or get a proper Discipline Record
                 ///////////////////////////////
-                String discipline = "fish";
                 
                 frame.setDesc("Converting CollectionObjectDefs.");
                 log.info("Converting CollectionObjectDefs.");
-                boolean convertDiscipline = false;
+                boolean convertDiscipline = true;
                 if (convertDiscipline || doAll)
                 {
-                    DataBuilder.getSession().beginTransaction();
-                    
                     String           username         = initPrefs.getProperty("initializer.username", "rods");
                     String           title            = initPrefs.getProperty("useragent.title",    "Mr.");
                     String           firstName        = initPrefs.getProperty("useragent.firstname", "Rod");
@@ -551,36 +561,56 @@ public class SpecifyDBConverter
                     String           userType         = initPrefs.getProperty("useragent.usertype", "CollectionManager");   
                     String           password         = initPrefs.getProperty("useragent.password", "rods");
                     
-                    BasicSQLUtils.deleteAllRecordsFromTable(newConn, "usergroup", BasicSQLUtils.myDestinationServerType);
-                    BasicSQLUtils.deleteAllRecordsFromTable(newConn, "specifyuser", BasicSQLUtils.myDestinationServerType);
-                    //SpPrincipal userGroup = DataBuilder.createPrincipalGroup("admin2");
+                    Agent       userAgent   = null;
+                    SpecifyUser specifyUser = null;
                     
-                    Criteria criteria = DataBuilder.getSession().createCriteria(Agent.class);
-                    criteria.add(Restrictions.eq("lastName", lastName));
-                    criteria.add(Restrictions.eq("firstName", firstName));
-                    
-                    Agent   userAgent = null;
-                    List<?> list      = criteria.list();
-                    if (list != null && list.size() == 1)
+                    if (startfromScratch)
                     {
-                        userAgent = (Agent)list.get(0);
+                        DataBuilder.getSession().beginTransaction();
+                        
+                        BasicSQLUtils.deleteAllRecordsFromTable(newConn, "usergroup", BasicSQLUtils.myDestinationServerType);
+                        BasicSQLUtils.deleteAllRecordsFromTable(newConn, "specifyuser", BasicSQLUtils.myDestinationServerType);
+                        //SpPrincipal userGroup = DataBuilder.createUserGroup("admin2");
+                        
+                        Criteria criteria = DataBuilder.getSession().createCriteria(Agent.class);
+                        criteria.add(Restrictions.eq("lastName", lastName));
+                        criteria.add(Restrictions.eq("firstName", firstName));
+                        
+                        
+                        List<?> list      = criteria.list();
+                        if (list != null && list.size() == 1)
+                        {
+                            userAgent = (Agent)list.get(0);
+                        } else
+                        {
+                            userAgent = DataBuilder.createAgent(title, firstName, midInit, lastName, abbrev, email);
+                        }
+                        
+                        specifyUser = DataBuilder.createSpecifyUser(username, email, password, userType);
+                        specifyUser.addReference(userAgent, "agents");
+                        
+                        DataBuilder.getSession().getTransaction().commit();
+                        
                     } else
                     {
-                        userAgent = DataBuilder.createAgent(title, firstName, midInit, lastName, abbrev, email);
+                        // XXX Works for a Single Convert
+                        specifyUser = (SpecifyUser)DataBuilder.getSession().createCriteria(SpecifyUser.class).list().get(0);
+                        userAgent   = specifyUser.getAgents().iterator().next();
                     }
                     
-                    //List<SpPrincipal> groups = new ArrayList<SpPrincipal>();
-                    //groups.add(userGroup);
-                    
-                    SpecifyUser specifyUser = DataBuilder.createSpecifyUser(username, email, password, userType);
-                    specifyUser.addReference(userAgent, "agents");
-                    
-                    DataBuilder.getSession().getTransaction().commit();
-
-                    boolean isEmbddedCE = false; // XXX Hard-coded for now
-                    int     catSeriesId = 0;
-                    conversion.convertCollectionObjectDefs(specifyUser.getSpecifyUserId(), isEmbddedCE, catSeriesId, userAgent);
-                    SpecifyUser.setCurrentUser(specifyUser);
+                    if (startfromScratch)
+                    {
+                        boolean isEmbddedCE = false; // XXX Hard-coded for now
+                        int     catSeriesId = 0;
+                        conversion.convertCollectionObjectDefs(specifyUser.getSpecifyUserId(), isEmbddedCE, catSeriesId, userAgent);
+                        
+                    } else
+                    {
+                        SpecifyUser.setCurrentUser(specifyUser);
+                        // XXX Works for a Single Convert
+                        Collection collection = (Collection)DataBuilder.getSession().createCriteria(Collection.class).list().get(0);
+                        Collection.setCurrentCollection(collection);
+                    }
 
                 } else
                 {
@@ -676,7 +706,8 @@ public class SpecifyDBConverter
                 boolean copyTables = false;
                 if (copyTables || doAll)
                 {
-                    conversion.copyTables();
+                    boolean doBrief  = false;
+                    conversion.copyTables(doBrief);
                 }
 
                 frame.incOverall();
@@ -689,11 +720,11 @@ public class SpecifyDBConverter
                 {
                     conversion.convertDeaccessionCollectionObject();
                 }
-                frame.incOverall();                
+                frame.incOverall();          
 
                 frame.setDesc("Converting CollectionObjects");
                 log.info("Converting CollectionObjects");
-                boolean doCollectionObjects = false;
+                boolean doCollectionObjects = true;
                 if (doCollectionObjects || doAll)
                 {
                     if (true)
@@ -705,8 +736,14 @@ public class SpecifyDBConverter
                             Query   q = session.createQuery("FROM Collection");
                             for (Object dataObj :  q.list())
                             {
-                                Collection collection = (Collection)dataObj;
+                                boolean cache = GenericDBConversion.shouldCreateMapTables();
+                                GenericDBConversion.setShouldCreateMapTables(true);
+                                
+                                Collection            collection  = (Collection)dataObj;
                                 Map<String, PrepType> prepTypeMap = conversion.createPreparationTypesFromUSys(collection);
+                                
+                                GenericDBConversion.setShouldCreateMapTables(cache);
+                                
                                 PrepType miscPT = prepTypeMap.get("misc");
                                 if (miscPT != null)
                                 {
@@ -825,7 +862,7 @@ public class SpecifyDBConverter
                 
                 frame.setDesc("Converting USYS Tables.");
                 log.info("Converting USYS Tables.");
-                boolean copyUSYSTables = true;
+                boolean copyUSYSTables = false;
                 if (copyUSYSTables || doAll)
                 {
                     frame.incOverall();
@@ -1006,11 +1043,6 @@ public class SpecifyDBConverter
             frame.setTitle("Done - " + databaseNameDest);
             frame.incOverall();
             frame.processDone();
-            
-            if (DataBuilder.getSession() != null)
-            {
-                DataBuilder.getSession().close();
-            }
 
         } catch (Exception ex)
         {
@@ -1020,8 +1052,77 @@ public class SpecifyDBConverter
             {
                 idMapperMgr.cleanup();
             }
-
+            
+        } finally
+        {
+            if (DataBuilder.getSession() != null)
+            {
+                DataBuilder.getSession().close();
+            }
         }
+    }
+    
+    /**
+     * 
+     */
+    public static void addStorageTreeFomrXML(final Connection newConn)
+    {
+        BuildSampleDatabase bsd = new BuildSampleDatabase();
+        Session tmpSession = HibernateUtil.getNewSession();
+        bsd.setSession(tmpSession);
+        
+        //BasicSQLUtils.deleteAllRecordsFromTable(newConn, "storage", BasicSQLUtils.myDestinationServerType);
+        //BasicSQLUtils.deleteAllRecordsFromTable(newConn, "storagetreedefitem", BasicSQLUtils.myDestinationServerType);
+
+        Transaction    trans = null;
+        try
+        {
+            List<?> list = tmpSession.createQuery("FROM StorageTreeDef WHERE id = 1").list();
+            if (list != null)
+            {
+                StorageTreeDef std   = (StorageTreeDef)list.iterator().next();
+                trans = tmpSession.beginTransaction();
+                for (StorageTreeDefItem item : new Vector<StorageTreeDefItem>(std.getTreeDefItems()))
+                {
+                    for (Storage s : new Vector<Storage>(item.getTreeEntries()))
+                    {
+                        item.getTreeEntries().remove(s);
+                        tmpSession.delete(s);
+                    }
+                    tmpSession.delete(item);
+                    std.getTreeDefItems().remove(item);
+                }
+                trans.commit();
+                tmpSession.flush();
+                
+                File domFile = new File("demo_files/storage_init.xml");
+                if (domFile.exists())
+                {
+                    trans = tmpSession.beginTransaction();
+                    
+                    Vector<Object> storages = new Vector<Object>();
+                    bsd.createStorageTreeDefFromXML(storages, domFile, std);
+                    trans.commit();
+                    
+                } else
+                {
+                    log.error("File["+domFile.getAbsolutePath()+"] is not found.");
+                }
+            }
+            
+        } catch (Exception ex)
+        {
+            if (trans != null)
+            {
+                trans.rollback();
+            }
+            ex.printStackTrace();
+            
+        } finally
+        {
+            tmpSession.close();
+        }
+        log.info("Done creating Storage treee.");
     }
 
     protected void testPaging()

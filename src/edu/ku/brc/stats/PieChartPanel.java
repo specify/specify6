@@ -15,9 +15,9 @@
 
 package edu.ku.brc.stats;
 
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIHelper.getInt;
 import static edu.ku.brc.ui.UIHelper.getString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import javax.swing.Icon;
 
@@ -129,6 +129,8 @@ public class PieChartPanel extends ChartPanel implements QueryResultsListener, Q
                 false // URLs?
             );
 
+        //chart.getCategoryPlot().setRenderer(new CustomColorBarChartRenderer());
+        
         // create and display a frame...
         chartPanel = new org.jfree.chart.ChartPanel(chart, true, true, true, true, true);
         //setBackground(Color.BLUE);

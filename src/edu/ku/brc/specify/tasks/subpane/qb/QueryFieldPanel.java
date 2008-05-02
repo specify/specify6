@@ -393,7 +393,7 @@ public class QueryFieldPanel extends JPanel
             }
         }
         
-        UIFieldFormatterIFace formatter = fieldQRI.getFormatter();
+        UIFieldFormatterIFace formatter = null;//fieldQRI.getFormatter();
         Object[] result = new String[raw.length];
         for (int e=0; e<raw.length; e++)
         {

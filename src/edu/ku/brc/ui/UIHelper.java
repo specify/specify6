@@ -1462,7 +1462,7 @@ public final class UIHelper
      * @param doAutoLogin whether to try to utomatically log the user in
      * @param doAutoClose hwther it should automatically close the window when it is logged in successfully
      * @param useDialog use a Dialog or a Frame
-     * @param listener a listener for when it is logged in or fails
+     * @param compileListener a listener for when it is logged in or fails
      */
     public static CustomDBConverterDlg doSpecifyConvert()
     {

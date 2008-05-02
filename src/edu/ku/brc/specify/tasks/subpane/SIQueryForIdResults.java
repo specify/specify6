@@ -71,7 +71,6 @@ public class SIQueryForIdResults implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#cleanUp()
      */
-    @Override
     public void cleanUp()
     {
         reasonList.clear();
@@ -81,7 +80,7 @@ public class SIQueryForIdResults implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#enableEditing()
      */
-    @Override
+    //@Override
     public boolean enableEditing()
     {
         return false;
@@ -90,7 +89,7 @@ public class SIQueryForIdResults implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#getBannerColor()
      */
-    @Override
+    //@Override
     public Color getBannerColor()
     {
         return new Color(255, 0, 0);
@@ -99,7 +98,7 @@ public class SIQueryForIdResults implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#getDescription()
      */
-    @Override
+    //@Override
     public String getDescription()
     {
         return UIRegistry.getResourceString("SIQueryForIdResults.DESC");
@@ -108,7 +107,7 @@ public class SIQueryForIdResults implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#getDisplayOrder()
      */
-    @Override
+    //@Override
     public Integer getDisplayOrder()
     {
         return Integer.MAX_VALUE;
@@ -117,7 +116,7 @@ public class SIQueryForIdResults implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#getIconName()
      */
-    @Override
+    //@Override
     public String getIconName()
     {
         return "Search";
@@ -126,7 +125,7 @@ public class SIQueryForIdResults implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#getParams()
      */
-    @Override
+    //@Override
     public List<Pair<String, Object>> getParams()
     {
         return null;
@@ -135,7 +134,7 @@ public class SIQueryForIdResults implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#getRecIds()
      */
-    @Override
+    //@Override
     public Vector<Integer> getRecIds()
     {
         return recIds;
@@ -144,7 +143,7 @@ public class SIQueryForIdResults implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#getSearchTerm()
      */
-    @Override
+    //@Override
     public String getSearchTerm()
     {
         return "Warnings";
@@ -153,7 +152,7 @@ public class SIQueryForIdResults implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#getSQL(java.lang.String, java.util.Vector)
      */
-    @Override
+    //@Override
     public String getSQL(String searchTerm, Vector<Integer> ids)
     {
         return null;
@@ -162,7 +161,7 @@ public class SIQueryForIdResults implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#getTableId()
      */
-    @Override
+    //@Override
     public int getTableId()
     {
         return 0;
@@ -171,7 +170,7 @@ public class SIQueryForIdResults implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#getTitle()
      */
-    @Override
+    //@Override
     public String getTitle()
     {
         return UIRegistry.getResourceString("SIQueryForIdResults.SEARCH_WARNING");
@@ -180,7 +179,7 @@ public class SIQueryForIdResults implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#getVisibleCaptionInfo()
      */
-    @Override
+    //@Override
     public List<ERTICaptionInfo> getVisibleCaptionInfo()
     {
         List<ERTICaptionInfo> list = new Vector<ERTICaptionInfo>();
@@ -192,7 +191,7 @@ public class SIQueryForIdResults implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#isExpanded()
      */
-    @Override
+    //@Override
     public boolean isExpanded()
     {
         return true;
@@ -201,7 +200,7 @@ public class SIQueryForIdResults implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#isHQL()
      */
-    @Override
+    //@Override
     public boolean isHQL()
     {
         return false;
@@ -210,7 +209,7 @@ public class SIQueryForIdResults implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#isMultipleSelection()
      */
-    @Override
+    //@Override
     public boolean isMultipleSelection()
     {
         return false;
@@ -219,7 +218,7 @@ public class SIQueryForIdResults implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#removeIds(java.util.List)
      */
-    @Override
+    //@Override
     public void removeIds(List<Integer> ids)
     {
         
@@ -228,7 +227,7 @@ public class SIQueryForIdResults implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#setMultipleSelection(boolean)
      */
-    @Override
+    //@Override
     public void setMultipleSelection(boolean isMultiple)
     {
         
@@ -237,7 +236,7 @@ public class SIQueryForIdResults implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#setSQL(java.lang.String)
      */
-    @Override
+    //@Override
     public void setSQL(String sql)
     {
         
@@ -246,7 +245,7 @@ public class SIQueryForIdResults implements QueryForIdResultsIFace
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#shouldInstallServices()
      */
-    @Override
+    //@Override
     public boolean shouldInstallServices()
     {
         return false;

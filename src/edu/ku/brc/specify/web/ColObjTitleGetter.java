@@ -38,11 +38,15 @@ public class ColObjTitleGetter implements TitleGetterIFace
         if (dataObj instanceof CollectionObject)
         {
             CollectionObject colObj = (CollectionObject)dataObj;
-            for (Determination det : colObj.getDeterminations())
+            if (colObj != null)
             {
-                if (det.getStatus().getType().equals(DeterminationStatus.CURRENT))
+                //System.out.print("Det: "+colObj.getDeterminations());
+                for (Determination det : colObj.getDeterminations())
                 {
-                    return colObj.getCatalogNumber() + " - " + det.getTaxon().getFullName();
+                    if (det.getStatus().getType().equals(DeterminationStatus.CURRENT))
+                    {
+                        return colObj.getCatalogNumber() + " - " + det.getTaxon().getFullName();
+                    }
                 }
             }
         }

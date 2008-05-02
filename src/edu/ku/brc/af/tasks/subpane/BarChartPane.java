@@ -15,10 +15,10 @@
 
 package edu.ku.brc.af.tasks.subpane;
 
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIHelper.getInt;
 import static edu.ku.brc.ui.UIHelper.getString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -156,6 +156,8 @@ public class BarChartPane extends ChartPane
         ChartPanel panel = new ChartPanel(chart, true, true, true, true, true); 
         panel.setMaximumSize(new Dimension(100,100));
         panel.setPreferredSize(new Dimension(100,100));
+        
+        //chart.getCategoryPlot().setRenderer(new CustomColorBarChartRenderer());
         
         addCompletedComp(panel);
 

@@ -585,6 +585,15 @@ public class IconManager extends Component
     {
         return instance.appClass.getResource(relativePath + (subdirPath != null ? subdirPath : "") + imageName);
     }
+    
+    /**
+     * @param iconName
+     * @return
+     */
+    public static IconEntry getIconEntryByName(final String iconName)
+    {
+        return instance.defaultEntries.get(iconName);
+    }
 
     /**
      * Returns a Standard Size icon (32x32 pixels).

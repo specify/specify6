@@ -72,13 +72,19 @@
 			<field>visibility</field>
 			<field>visibilitySetBy</field>
 			<field>groupPermittedToView</field>
-			<field>catalogNumber</field>
 			<field>collectionObjectAttrs</field>
 			<field>collectionObjectAttribute</field>
 			<field>modifier</field>
 			<field>attrs</field>
+			<field>yesNo1</field>
+			<field>yesNo2</field>
+			<field>yesNo3</field>
+			<field>yesNo4</field>
+			<field>yesNo5</field>
+			<field>yesNo6</field>
 		</skip>
 		<order>
+			<field display="false">catalogNumber</field>
 			<field>fieldNumber</field>
 			<field>catalogedDate</field>
 			<field>catalogedDateVerbatim</field>

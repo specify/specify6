@@ -138,6 +138,8 @@ public class PieChartPane extends ChartPane
                 false // URLs?
             );
         
+        //chart.getCategoryPlot().setRenderer(new CustomColorBarChartRenderer());
+        
         PiePlot plot = (PiePlot) chart.getPlot();
         plot.setLabelFont(new Font("SansSerif", Font.PLAIN, 11));
         

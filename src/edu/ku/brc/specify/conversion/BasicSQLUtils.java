@@ -1088,7 +1088,7 @@ public class BasicSQLUtils
         List<String> fromFieldNameList = new ArrayList<String>();
         getFieldNamesFromSchema(fromConn, fromTableName, fromFieldNameList, sourceServerType);
 
-        String sqlStr = sql + " order by " +  fromTableName + "." + fromFieldNameList.get(0);
+        String sqlStr = sql + " ORDER BY " +  fromTableName + "." + fromFieldNameList.get(0);
         log.debug(sqlStr);
         setProcess(0, getNumRecords(fromConn, fromTableName));
 
@@ -1101,7 +1101,6 @@ public class BasicSQLUtils
             Statement         stmt = fromConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
             ResultSet         rs   = stmt.executeQuery(sqlStr);
             ResultSetMetaData rsmd = rs.getMetaData();
-
             
             System.out.println(toTableName);
             Hashtable<String, Integer> fromHash = new Hashtable<String, Integer>();
@@ -1159,8 +1158,6 @@ public class BasicSQLUtils
                         }
                     }
                 }
-
-
                 
                 // OK here we make sure that both the created dated ad modified date are not null
                 // and we copy the date if one has a value and the other does not.
@@ -1231,11 +1228,6 @@ public class BasicSQLUtils
                     String        oldMappedColName = null;
                     
                     //System.out.println("["+newFieldName.getName()+"]");
-                    if (newFieldName.getName().equals("DisciplineID"))
-                    {
-                        int x = 0;
-                        x++;
-                    }
 
                     // Get the Old Column Index from the New Name
                     Integer columnIndex = fromHash.get(colName);
@@ -1275,6 +1267,16 @@ public class BasicSQLUtils
                             {
 
                                 int oldPrimaryKeyId = rs.getInt(columnIndex);
+                                
+                                /*if (toTableName.equalsIgnoreCase("AccessionAgent"))
+                                {
+                                    System.err.println(oldMappedColName+"  "+oldPrimaryKeyId);
+                                }
+                                if (oldPrimaryKeyId == 1333898773)
+                                {
+                                    int x = 0;
+                                    x++;
+                                }*/
 
                                 // if the value was null, getInt() returns 0
                                 // use wasNull() to distinguish real 0 from a null return

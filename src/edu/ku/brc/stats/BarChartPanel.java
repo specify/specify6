@@ -15,10 +15,10 @@
 
 package edu.ku.brc.stats;
 
-import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIHelper.getInt;
 import static edu.ku.brc.ui.UIHelper.getString;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
 
@@ -161,18 +161,22 @@ public class BarChartPanel extends ChartPanel implements QueryResultsListener, Q
                 true,       // tooltips?
                 false       // URLs?
             );
+        
         // create and display a frame...
         chartPanel = new org.jfree.chart.ChartPanel(jgChart, true, true, true, true, true);
-        /*
-        chartPanel.setBackground(Color.WHITE);
         
-        if (maxChartSize != null)
+        /*CustomColorBarChartRenderer ccbcr = new CustomColorBarChartRenderer()
+        jgChart.getCategoryPlot().setRenderer(ccbcr);
+        //Collection<LegendItem> items = jgChart.getCategoryPlot().getLegendItems();
+        for (int i=0;i<jgChart.getCategoryPlot().getLegendItems().getItemCount();i++)
         {
-            chartPanel.setMaximumSize(maxChartSize);
-            chartPanel.setPreferredSize(maxChartSize);
+            LegendItem item = jgChart.getCategoryPlot().getLegendItems().get(i);
+            item.setFillPaintTransformer(transformer)
         }
-        addCompletedComp(chartPanel);
-        */
+        //jgChart.getCategoryPlot().setRenderer(new CustomColorBarChartRenderer());
+         
+         */
+        
         removeAll();
         setLayout(new ChartLayoutManager(this));
         

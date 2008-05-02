@@ -13,23 +13,28 @@ public class FieldDisplayInfo
     protected String   name;
     protected String   pickList       = null;
     protected boolean  isSkipped      = false;
+    protected boolean  forDisplay     = true;
     protected boolean  availForSearch = true;
     
     public FieldDisplayInfo(final Integer order, 
                             final String  name, 
-                            final String  pickList)
+                            final String  pickList, 
+                            final boolean forDisplay, 
+                            final boolean availForSearch)
     {
         super();
         this.order = order;
         this.name = name;
         this.pickList = pickList;
+        this.forDisplay = forDisplay;
+        this.availForSearch = availForSearch;
     }
 
     public FieldDisplayInfo(final String name, 
+                            final boolean forDisplay, 
                             final boolean availForSearch)
     {
-        this(null, name, null);
-        this.availForSearch = availForSearch;
+        this(null, name, null, forDisplay, availForSearch);
     }
     
     /**
@@ -54,6 +59,14 @@ public class FieldDisplayInfo
     public String getPickList()
     {
         return pickList;
+    }
+
+    /**
+     * @return the forDisplay
+     */
+    public boolean isForDisplay()
+    {
+        return forDisplay;
     }
 
     /**

@@ -1153,10 +1153,10 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      * @param mimeType the MimeType to use
      * @param classTableId the Table Id
      */
-    protected List<TaskCommandDef> getAppResourceCommandsByMimeType(final String mimeType, 
-                                                       final String reportType,
-                                                       final String defaultIcon,
-                                                       final Integer classTableId)
+    public static List<TaskCommandDef> getAppResourceCommandsByMimeType(final String mimeType, 
+                                                                        final String reportType,
+                                                                        final String defaultIcon,
+                                                                        final Integer classTableId)
     {
         List<TaskCommandDef> result = new LinkedList<TaskCommandDef>();
         for (AppResourceIFace ap : AppContextMgr.getInstance().getResourceByMimeType(mimeType))
