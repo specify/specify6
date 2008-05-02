@@ -92,17 +92,6 @@
         </view>
         
         <view 
-            name="FieldNotebookPageSearch"
-            class="edu.ku.brc.specify.datamodel.FieldNotebookPage"
-            usedefbusrule="false"
-            resourcelabels="false">
-            <desc><![CDATA[The FieldNotebookPage Search Form]]></desc>
-            <altviews>
-                <altview name="FieldNotebookPageSearch" viewdef="FieldNotebookPageSearch" label="Edit" mode="edit" validated="true" default="true"/>
-            </altviews>
-        </view>
-
-        <view 
             name="JournalSearch"
             class="edu.ku.brc.specify.datamodel.Journal"
             usedefbusrule="false"
@@ -408,33 +397,7 @@ Good: <cell type="field" name="FieldNum" ...>
             </rows>
         </viewdef> 
 
-        <viewdef type="form"
-            name="FieldNotebookPageSearch"
-            class="edu.ku.brc.specify.datamodel.FieldNotebookPage"
-            gettable="edu.ku.brc.ui.forms.DataGetterForHashMap"
-            settable="edu.ku.brc.ui.forms.DataSetterForHashMap">
-            
-            <desc><![CDATA[The CollectingEvent Search Form]]></desc>
-            <enableRules/>
-            
-            <columnDef>p,3dlu,p</columnDef>
-            <rowDef>100px,2px,100px,2px,p</rowDef>
-            
-            <rows>
-                <row>
-                    <cell type="separator" label="Field Notebook Page" colspan="3"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="pageNumber" uitype="text"/>
-                </row>
-                <row>
-                    <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="scanDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
-                </row>
-            </rows>
-        </viewdef> 
-
+       
         <viewdef type="form"
             name="JournalSearch"
             class="edu.ku.brc.specify.datamodel.Journal"

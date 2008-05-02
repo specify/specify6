@@ -1205,7 +1205,6 @@
       <relationship type="many-to-one" classname="edu.ku.brc.specify.datamodel.Agent" relationshipname="modifiedByAgent" columnname="ModifiedByAgentID" updatable="false" required="false"/>
     </table>
     <table classname="edu.ku.brc.specify.datamodel.FieldNotebookPage" table="fieldnotebookpage" tableid="85" searchable="true" businessrule="edu.ku.brc.specify.datamodel.busrules.FieldNotebookPageBusRules" abbrv="fnbp">
-      <display view="FieldNotebookPage" searchdlg="FieldNotebookPageSearch" newobjdlg="FieldNotebookPageDisplay"/>
       <field column="Description" name="description" type="java.lang.String" length="128" updatable="true" required="false" unique="false" indexed="false"/>
       <field column="PageNumber" name="pageNumber" type="java.lang.Short" indexName="FNBPPageNumberIDX" updatable="true" required="true" unique="false" indexed="true"/>
       <field column="ScanDate" name="scanDate" type="java.util.Calendar" indexName="FNBPScanDateIDX" updatable="true" required="true" unique="false" indexed="true"/>
