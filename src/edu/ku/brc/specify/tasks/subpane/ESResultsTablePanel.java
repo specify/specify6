@@ -281,8 +281,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
             }
         });
         
-        
-        ResultSetTableModel rsm = new ResultSetTableModel(this, results);
+        ResultSetTableModel rsm = createModel();
         rsm.setPropertyListener(this);
 
         table.setRowSelectionAllowed(true);
@@ -352,16 +351,21 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
         });
     }
     
+    /**
+     * @return
+     */
+    protected ResultSetTableModel createModel()
+    {
+        return new ResultSetTableModel(this, results);
+    }
     
-    
+    /**
+     * 
+     */
     protected void addContextMenu()
     {
         MouseAdapter mouseAdapter = new MouseAdapter()
         {
-            
-            /* (non-Javadoc)
-             * @see java.awt.event.MouseAdapter#mousePressed(java.awt.event.MouseEvent)
-             */
             @Override
             public void mousePressed(MouseEvent e)
             {
@@ -704,7 +708,7 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
     /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace#propertyChange(java.beans.PropertyChangeEvent)
      */
-    public void propertyChange(PropertyChangeEvent evt)
+    public void propertyChange(final PropertyChangeEvent evt)
     {
         rowCount = (Integer)evt.getNewValue();
         setTitleBar();

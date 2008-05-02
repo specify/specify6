@@ -37,8 +37,12 @@ public interface LatLonUIIFace
      */
     public void setViewMode(boolean isViewMode);
     
-    public void set(final BigDecimal latitude, 
-                    final BigDecimal longitude);
+    /**
+     * Sest the Latitude and Longitude.
+     * @param latitude the lat
+     * @param longitude the lon
+     */
+    public void set(final BigDecimal latitude, final BigDecimal longitude);
     
     /**
      * Gets the data from the controls. 
@@ -61,20 +65,38 @@ public interface LatLonUIIFace
     public BigDecimal getLongitude();
     
     /**
-     * @return
+     * @return the char for the direction
      */
     public String getLongitudeDir();
     
+    /**
+     * @return
+     */
     public boolean hasChanged();
     
+    /**
+     * @param hasChanged
+     */
     public void setHasChanged(boolean hasChanged);
     
+    /**
+     * @param isRequired
+     */
     public void setIsRequired(boolean isRequired);
     
+    /**
+     * @param changeListener
+     */
     public void setChangeListener(final ChangeListener changeListener);
     
+    /**
+     * @return
+     */
     public ErrorType validateState();
     
+    /**
+     * 
+     */
     public void cleanUp();
     
   

@@ -123,7 +123,9 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
      * Constructor
      * @param dataObjFormatterName the formatters name
      */
-    public ValFormattedTextFieldSingle(final UIFieldFormatterIFace formatter, final boolean isViewOnly, final boolean isPartialOK)
+    public ValFormattedTextFieldSingle(final UIFieldFormatterIFace formatter, 
+                                       final boolean isViewOnly, 
+                                       final boolean isPartialOK)
     {
       super();
       
@@ -135,7 +137,9 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
      * Constructor
      * @param formatterName the formatters name
      */
-    public ValFormattedTextFieldSingle(final String formatterName, final boolean isViewOnly, final boolean isPartialOK)
+    public ValFormattedTextFieldSingle(final String formatterName, 
+                                       final boolean isViewOnly, 
+                                       final boolean isPartialOK)
     {
         super();
 
@@ -525,7 +529,13 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
                 
             } else
             {
-                valState = data.length() != requiredLength ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
+                    if (!document.isIgnoreLenForValidation())
+                {
+                    valState = data.length() != requiredLength ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
+                } else
+                {
+                    valState = UIValidatable.ErrorType.Valid;
+                }
             }
         } else
         {
@@ -535,6 +545,27 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
         return valState;
     }
     
+    /**
+     * Checks the number aginst the min and max in the formatter (they are not required).
+     * @param val the value in question
+     * @return true if within the min and max
+     */
+    protected boolean isMinMaxOK(final Number val)
+    {
+        if (val != null)
+        {
+            Number   maxValue = formatter.getMaxValue();
+            Number   minValue = formatter.getMinValue();
+            //System.err.println("isMinMaxOK - min["+minValue+"] v["+val+"] max["+maxValue+"]");
+            if (minValue != null && maxValue != null)
+            {
+                boolean  ok = !(val.doubleValue() > maxValue.doubleValue() || val.doubleValue() < minValue.doubleValue());
+                //System.err.println("isMinMaxOK - ok["+ok+"]");
+                return !(val.doubleValue() > maxValue.doubleValue() || val.doubleValue() < minValue.doubleValue());
+            }
+        }
+        return true;
+    }
     
     /**
      * @param value
@@ -542,44 +573,45 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
      */
     protected UIValidatable.ErrorType validateNumeric(final String value)
     {
-        Class<?> cls = formatter.getDataClass();
+        Class<?> cls      = formatter.getDataClass();
+        
         try
         {
             if (cls == Long.class)
             {
                 Long val  = Long.parseLong(value);
-                return val > Long.MAX_VALUE || val < -(Long.MAX_VALUE) ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
+                    return !isMinMaxOK(val) || (val > Long.MAX_VALUE || val < -(Long.MAX_VALUE)) ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
                 
             } else if (cls == Integer.class)
             {
                 Integer val  = Integer.parseInt(value);
-                return val > Integer.MAX_VALUE || val < -(Integer.MAX_VALUE) ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
+                return !isMinMaxOK(val) || (val > Integer.MAX_VALUE || val < -(Integer.MAX_VALUE)) ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
     
             } else if (cls == Short.class)
             {
                 Short val  = Short.parseShort(value);
-                return val > Short.MAX_VALUE || val < -(Short.MAX_VALUE) ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
+                return !isMinMaxOK(val) || (val > Short.MAX_VALUE || val < -(Short.MAX_VALUE)) ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
     
             } else if (cls == Byte.class)
             {
                 Byte val  = Byte.parseByte(value);
-                return val > Byte.MAX_VALUE || val < -(Byte.MAX_VALUE) ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
+                return !isMinMaxOK(val) || (val > Byte.MAX_VALUE || val < -(Byte.MAX_VALUE)) ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
     
             } else if (cls == Double.class)
             {
                 Double val  = Double.parseDouble(value);
-                return val > Double.MAX_VALUE || val < -(Double.MAX_VALUE) ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
+                return !isMinMaxOK(val) || (val > Double.MAX_VALUE || val < -(Double.MAX_VALUE)) ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
     
             } else if (cls == Float.class)
             {
                 Float val  = Float.parseFloat(value);
-                return val.floatValue() > Float.MAX_VALUE || val < -(Float.MAX_VALUE) ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
+                return !isMinMaxOK(val) || (val.floatValue() > Float.MAX_VALUE || val < -(Float.MAX_VALUE)) ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
     
             } else if (cls == BigDecimal.class)
             {
                 // XXX This needs to be redone
                 Double val  = Double.parseDouble(value);
-                return val > Double.MAX_VALUE || val < Double.MIN_VALUE ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
+                return !isMinMaxOK(val) || (val > Double.MAX_VALUE || val < Double.MIN_VALUE) ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
     
             } else
             {
@@ -771,14 +803,17 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
         protected ValFormattedTextFieldSingle   textField;
         protected UIFieldFormatterIFace   docFormatter;
         protected UIFieldFormatterField[] docFields;
+        protected boolean                 ignoreLenForValidation = false;
 
         /**
          * CReate a special formatted document
          * @param textField the textfield the document is associated with
          * @param formatter the formatter
-         * @param limit the lengthof the format
+         * @param limit the length of the format
          */
-        public JFormattedDoc(ValFormattedTextFieldSingle textField, UIFieldFormatterIFace formatter, int limit)
+        public JFormattedDoc(final ValFormattedTextFieldSingle textField, 
+                             final UIFieldFormatterIFace formatter, 
+                             final int limit)
         {
             super();
             this.textField    = textField;
@@ -793,6 +828,22 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
                     docFields[inx++] = f;
                 }
             }
+        }
+
+        /**
+         * @return the ignoreLenForValidation
+         */
+        public boolean isIgnoreLenForValidation()
+        {
+            return ignoreLenForValidation;
+        }
+
+        /**
+         * @param ignoreLenForValidation the ignoreLenForValidation to set
+         */
+        public void setIgnoreLenForValidation(boolean ignoreLenForValidation)
+        {
+            this.ignoreLenForValidation = ignoreLenForValidation;
         }
 
         /**

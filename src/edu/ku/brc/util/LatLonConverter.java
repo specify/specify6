@@ -129,8 +129,8 @@ public class LatLonConverter
         sb.append(' ');
         
         // round to 2 decimal places precision
-        seconds = Math.round(seconds * 100);
-        seconds = seconds / 100.00;
+        seconds = Math.round(seconds * 1000);
+        seconds = seconds / 1000.00;
         
         sb.append(StringUtils.stripEnd(decFormatter.format(seconds), "0"));
         

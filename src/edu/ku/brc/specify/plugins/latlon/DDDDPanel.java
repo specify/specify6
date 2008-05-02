@@ -20,9 +20,9 @@ import java.util.Vector;
 
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.event.ChangeListener;
 
 import org.apache.commons.lang.StringUtils;
@@ -32,10 +32,11 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.ui.forms.ViewFactory;
+import edu.ku.brc.ui.forms.formatters.NumberMinMaxFormatter;
 import edu.ku.brc.ui.forms.validation.DataChangeListener;
 import edu.ku.brc.ui.forms.validation.DataChangeNotifier;
 import edu.ku.brc.ui.forms.validation.UIValidatable;
-import edu.ku.brc.ui.forms.validation.ValTextField;
+import edu.ku.brc.ui.forms.validation.ValFormattedTextFieldSingle;
 import edu.ku.brc.ui.forms.validation.UIValidatable.ErrorType;
 import edu.ku.brc.util.LatLonConverter;
 
@@ -60,8 +61,8 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
     protected BigDecimal     minusOne      = new BigDecimal("-1.0");
 
     protected boolean        isViewMode = false;
-    protected ValTextField   latitudeDD; 
-    protected ValTextField   longitudeDD;
+    protected ValFormattedTextFieldSingle latitudeDD; 
+    protected ValFormattedTextFieldSingle longitudeDD;
     
     protected BigDecimal     latitude;
     protected BigDecimal     longitude;
@@ -75,8 +76,8 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
     protected boolean        isRequired = false;
     protected ChangeListener changeListener = null;
     
-    protected Vector<ValTextField>       textFields  = new Vector<ValTextField>();
-    protected Vector<DataChangeNotifier> dcNotifiers = new Vector<DataChangeNotifier>();
+    protected Vector<ValFormattedTextFieldSingle> textFields  = new Vector<ValFormattedTextFieldSingle>();
+    protected Vector<DataChangeNotifier>          dcNotifiers = new Vector<DataChangeNotifier>();
 
 
     /**
@@ -117,8 +118,8 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
                                     final int lonCols,
                                     final int cbxIndex)
     {
-        latitudeDD    = createTextField(latCols);
-        longitudeDD   = createTextField(lonCols);
+        latitudeDD    = createTextField(Double.class, latCols, 0.0, 90.0);
+        longitudeDD   = createTextField(Double.class, lonCols, 0.0, 180.0);
 
         PanelBuilder    builder    = new PanelBuilder(new FormLayout(colDef, "p, 1px, p, c:p:g"), this);
         CellConstraints cc         = new CellConstraints();
@@ -147,11 +148,11 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
             lonDir = longitudeDir;
         }
 
-        builder.add(createLabel("Latitude:", JLabel.RIGHT), cc.xy(1, 1)); // I18N
+        builder.add(createLabel("Latitude:", SwingConstants.RIGHT), cc.xy(1, 1)); // I18N
         builder.add(latitudeDD, cc.xy(3, 1));
         builder.add(latDir, cc.xy(cbxIndex, 1));
         
-        builder.add(createLabel("Longitude:", JLabel.RIGHT), cc.xy(1, 3)); // I18N
+        builder.add(createLabel("Longitude:", SwingConstants.RIGHT), cc.xy(1, 3)); // I18N
         builder.add(longitudeDD, cc.xy(3, 3));
         builder.add(lonDir, cc.xy(cbxIndex, 3));
      
@@ -241,10 +242,13 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
      * @param columns the number of columns
      * @return the textfield
      */
-    protected ValTextField createTextField(final int columns)
+    protected ValFormattedTextFieldSingle createTextField(final Class<?> dataCls,
+                                                          final int      columns,
+                                                          final Number   minValue,
+                                                          final Number   maxValue)
     {
-        
-        ValTextField textField = new ValTextField(columns);
+        NumberMinMaxFormatter fmt = new NumberMinMaxFormatter(dataCls, columns, minValue, maxValue);
+        ValFormattedTextFieldSingle textField = new ValFormattedTextFieldSingle(fmt, false, false);
         
         if (isViewMode)
         {
@@ -399,7 +403,7 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
     {
         
         UIValidatable.ErrorType valState = UIValidatable.ErrorType.Valid;
-        for (ValTextField vtf : textFields)
+        for (ValFormattedTextFieldSingle vtf : textFields)
         {
             UIValidatable.ErrorType errType = vtf.validateState();
             if (errType.ordinal() > valState.ordinal())
@@ -433,4 +437,5 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
     {
         doDataChanged();
     }
+
 }

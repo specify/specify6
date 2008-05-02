@@ -214,6 +214,16 @@ public interface UIFieldFormatterIFace
      * @return true if numeric formatter
      */
     public abstract boolean isNumeric();
+    
+    /**
+     * @return returns the maximum value (when it is numeric)
+     */
+    public abstract Number getMaxValue();
+
+    /**
+     * @return returns the minimum value (when it is numeric)
+     */
+    public abstract Number getMinValue();
 
     /**
      * @return the dateWrapper the DateWrapper object for this formatter.

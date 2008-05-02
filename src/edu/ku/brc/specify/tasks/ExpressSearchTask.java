@@ -76,6 +76,7 @@ import edu.ku.brc.specify.tasks.subpane.ESResultsSubPane;
 import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace;
 import edu.ku.brc.specify.tasks.subpane.ExpressSearchResultsPaneIFace;
 import edu.ku.brc.specify.tasks.subpane.ExpressTableResultsFromQuery;
+import edu.ku.brc.specify.tasks.subpane.SIQueryForIdResults;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.specify.web.ExplorerESPanel;
 import edu.ku.brc.ui.CommandAction;
@@ -103,6 +104,8 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     // Static Data Members
     private static final Logger log = Logger.getLogger(ExpressSearchTask.class);
 
+    private static final int RESULTS_THRESHOLD   = 5000;
+    
     public static final String EXPRESSSEARCH      = "Express_Search";
     public static final String CHECK_INDEXER_PATH = "CheckIndexerPath";
     
@@ -124,6 +127,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     protected int                           sqlResultsCount  = 0;
     
     protected ESResultsSubPane              queryResultsPane = null;
+    protected SIQueryForIdResults           searchWarningsResults = null;
 
 
     /**
@@ -196,7 +200,11 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
             String searchTerm = searchText.getText();
             if (isNotEmpty(searchTerm))
             {
-                if (QueryAdjusterForDomain.getInstance().isUserInputNotInjectable(searchTerm.toLowerCase()))
+                if (searchTerm.length() == 1)
+                {
+                    UIRegistry.showLocalizedError("ExpressSearchTask.NO_SINGLE_CHAR");
+                    
+                } else if (QueryAdjusterForDomain.getInstance().isUserInputNotInjectable(searchTerm.toLowerCase()))
                 {
                     ESResultsSubPane expressSearchPane = new ESResultsSubPane(searchTerm, this, true);
                     doQuery(searchText, null, badSearchColor, expressSearchPane);
@@ -283,6 +291,8 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                                final Color      badSearchColor,
                                final ExpressSearchResultsPaneIFace esrPane)
     {
+        instance.searchWarningsResults = null;
+        
         String searchTerm = (searchText != null ? searchTerm = searchText.getText() : searchTextStr).toLowerCase();
 
         //boolean hasResults = true;
@@ -434,7 +444,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                                          final Hashtable<String, QueryForIdResultsSQL> resultsForJoinsMap)
     {
         // For Debug Only
-        if (false)
+        if (false && resultsForJoinsMap != null)
         {
             for (Enumeration<QueryForIdResultsSQL> e=resultsForJoinsMap.elements();e.hasMoreElements();)
             {
@@ -460,14 +470,17 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
             esrPane.addSearchResults(queryResults);
         }
         
-        for (QueryForIdResultsSQL rs : resultsForJoinsMap.values())
+        if (resultsForJoinsMap != null)
         {
-            if (rs.getRecIds().size() > 0)
+            for (QueryForIdResultsSQL rs : resultsForJoinsMap.values())
             {
-                esrPane.addSearchResults(rs);
+                if (rs.getRecIds().size() > 0)
+                {
+                    esrPane.addSearchResults(rs);
+                }
             }
+            resultsForJoinsMap.clear();
         }
-        resultsForJoinsMap.clear();
     }
     
     /**
@@ -830,11 +843,32 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                         
                         SearchConfig config = SearchConfigService.getInstance().getSearchConfig();
 
+                        int cnt = 0;
                         do
                         {
-                            collectResults(config, tblInfo.getTableId(), searchTerm, resultSet, null, joinIdToTableInfohash, resultsForJoinsHash);
-                            
+                            if (cnt < RESULTS_THRESHOLD)
+                            {
+                                collectResults(config, tblInfo.getTableId(), searchTerm, resultSet, null, joinIdToTableInfohash, resultsForJoinsHash);
+                            }
+                            cnt++;
                         } while(resultSet.next());
+                        
+                        System.err.println("SQLExecutionProcessor: "+cnt);
+                        
+                        if (cnt >= RESULTS_THRESHOLD)
+                        {
+                            String reason = String.format(getResourceString("ExpressSearchTask.MAX_SEARCH_RESULTS_EXCEEDED"), RESULTS_THRESHOLD, cnt);
+                            if (searchWarningsResults == null)
+                            {
+                                searchWarningsResults = new SIQueryForIdResults();
+                                searchWarningsResults.addReason(searchTableConfig, reason);
+                                displayResults(esrPane, searchWarningsResults, resultsForJoinsHash);
+                                
+                            } else
+                            {
+                                searchWarningsResults.addReason(searchTableConfig, reason);
+                            }
+                        }
                         
                         if (resultsForJoinsHash.size() > 0)
                         {
@@ -957,9 +991,32 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                 SearchConfig config = SearchConfigService.getInstance().getSearchConfig();
                 
                 String tableIdStr = Integer.toString(searchTableConfig.getTableInfo().getTableId());
+                
+                int cnt = 0;
                 for (Object idObj : list)
                 {
-                    collectResults(config, tableIdStr, searchTerm, null, (Integer)idObj, joinIdToTableInfoHash, resultsForJoinsHash);
+                    if (cnt < RESULTS_THRESHOLD)
+                    {
+                        collectResults(config, tableIdStr, searchTerm, null, (Integer)idObj, joinIdToTableInfoHash, resultsForJoinsHash);
+                    }
+                    cnt++;
+                }
+                
+                System.err.println("CustomQueryIFace: "+cnt);
+                
+                if (cnt >= RESULTS_THRESHOLD)
+                {
+                    String reason = String.format("%d hits returned of %d maximum allowed. ", RESULTS_THRESHOLD, cnt);
+                    if (searchWarningsResults == null)
+                    {
+                        searchWarningsResults = new SIQueryForIdResults();
+                        searchWarningsResults.addReason(searchTableConfig, reason);
+                        displayResults(esrPane, searchWarningsResults, resultsForJoinsHash);
+                        
+                    } else
+                    {
+                        searchWarningsResults.addReason(searchTableConfig, reason);
+                    }
                 }
                 
                 QueryForIdResultsHQL results = new QueryForIdResultsHQL(searchTableConfig, new Color(30, 144, 255), searchTerm, list);

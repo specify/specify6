@@ -29,6 +29,8 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
@@ -95,6 +97,7 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
     protected Border             panelBorder = BorderFactory.createEtchedBorder();
     protected JLabel             typeLabel   = null;
     protected boolean            isViewMode  = false;
+    protected int                currentInx  = -1;
     
     protected Locality           locality;
     protected LatLonUIIFace[]    panels;
@@ -173,7 +176,7 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
         Dimension preferredSize = new Dimension(0,0);
         cardSubPanes =  new JPanel[formats.length * 2];
         panels       = new LatLonUIIFace[formats.length * 2];
-        int paneInx = 0;
+        int paneInx  = 0;
         for (int i=0;i<formats.length;i++)
         {
             cardSubPanes[i] = new JPanel(new BorderLayout());
@@ -198,7 +201,7 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
 
                 panels[paneInx++] = latlon2;
                 
-                JTabbedPane tabbedPane = new JTabbedPane(UIHelper.getOSType() == UIHelper.OSTYPE.MacOSX ? JTabbedPane.BOTTOM :  JTabbedPane.RIGHT);
+                JTabbedPane tabbedPane = new JTabbedPane(UIHelper.getOSType() == UIHelper.OSTYPE.MacOSX ? SwingConstants.BOTTOM :  SwingConstants.RIGHT);
                 tabbedPane.addTab(null, pointImages[0], (JComponent)panels[paneInx-2]);
                 tabbedPane.addTab(null, pointImages[0], (JComponent)panels[paneInx-1]);
                 latLonPanes[i] = tabbedPane;
@@ -275,8 +278,27 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
      * @param formInx the index of the format that is being used.
      * @param type the type of point, line or Rect being used
      */
-    protected void swapForm(final int formInx, LatLonUIIFace.LatLonType type)
+    protected void swapForm(final int formInx, final LatLonUIIFace.LatLonType type)
     {
+        if (currentInx != -1)
+        {
+            LatLonUIIFace prevPanel1 = panels[(currentInx*2)];
+            LatLonUIIFace prevPanel2 = panels[(currentInx*2)+1];
+            
+            LatLonUIIFace nextPanel1 = panels[(formInx*2)];
+            LatLonUIIFace nextPanel2 = panels[(formInx*2)+1];
+            
+            if (prevPanel1.hasChanged() && prevPanel1.validateState() == UIValidatable.ErrorType.Valid)
+            {
+                nextPanel1.set(prevPanel1.getLatitude(), prevPanel1.getLongitude());
+            }
+            
+            if (prevPanel2.hasChanged() && prevPanel2.validateState() == UIValidatable.ErrorType.Valid)
+            {
+                nextPanel2.set(prevPanel2.getLatitude(), prevPanel2.getLongitude());
+            }
+        }
+        
         // Set the radio button accordingly
         for (BorderedRadioButton rb : selectedTypeHash.keySet())
         {
@@ -311,6 +333,8 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
         cardPanel.validate();
         cardPanel.doLayout();
         cardPanel.repaint();
+        
+        currentInx = formInx;
     }
     
     /**
@@ -377,6 +401,7 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
         {
             currFormatterIndex  = locality.getOriginalLatLongUnit();
             currentType = convertLatLongType(locality.getLatLongType());
+            
             setLatLon(locality.getLatitude1(), locality.getLongitude1(), 
                       locality.getLatitude2(), locality.getLongitude2());
         } else
@@ -408,18 +433,18 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
             locality.setLatLongType(typeMapper.get(currentType));
             locality.setOriginalLatLongUnit(formatSelector.getSelectedIndex());
             
-            int currentInx = formatSelector.getSelectedIndex() * 2;
+            int curInx = formatSelector.getSelectedIndex() * 2;
             
-            panels[currentInx].getDataFromUI();   // get data for Lat/Long One
-            panels[currentInx+1].getDataFromUI(); // get data for Lat/Long Two
+            panels[curInx].getDataFromUI();   // get data for Lat/Long One
+            panels[curInx+1].getDataFromUI(); // get data for Lat/Long Two
             
             // Panel One 
-            locality.setLatitude1(panels[currentInx].getLatitude());
-            locality.setLongitude1(panels[currentInx].getLongitude());
+            locality.setLatitude1(panels[curInx].getLatitude());
+            locality.setLongitude1(panels[curInx].getLongitude());
             
             // Panel Two
-            locality.setLatitude2(panels[currentInx+1].getLatitude());
-            locality.setLongitude2(panels[currentInx+1].getLongitude());
+            locality.setLatitude2(panels[curInx+1].getLatitude());
+            locality.setLongitude2(panels[curInx+1].getLongitude());
         }
         return locality;
     }
@@ -431,9 +456,9 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.UIPluginable#initialize(java.util.Properties, boolean)
      */
-    public void initialize(final Properties properties, final boolean isViewMode)
+    public void initialize(final Properties properties, final boolean isViewModeArg)
     {
-        this.isViewMode = isViewMode;
+        this.isViewMode = isViewModeArg;
         createEditUI();
     }
     

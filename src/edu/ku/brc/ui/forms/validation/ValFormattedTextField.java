@@ -1020,7 +1020,7 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
          * CReate a special formatted document
          * @param textField the textfield the document is associated with
          * @param formatter the formatter
-         * @param limit the lengthof the format
+         * @param docLenLimit the lengthof the format
          */
         public JFormattedDoc(final JTextField            textField, 
                              final UIFieldFormatterIFace formatter,

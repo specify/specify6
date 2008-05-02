@@ -60,6 +60,9 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
     
     protected int                  precision = 0;
     protected int                  scale     = 0;
+    
+    protected Number               minValue = null;
+    protected Number               maxValue = null;
 
     /**
      * Default constructor
@@ -97,6 +100,9 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
         this.isIncrementer   = isIncrementer;
     }
 
+    /**
+     * @return the BG text
+     */
     public String getText()
     {
     	return toPattern();
@@ -240,6 +246,22 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
         }
     }
     
+    /**
+     * @param minValue the minValue to set
+     */
+    public void setMinValue(Number minValue)
+    {
+        this.minValue = minValue;
+    }
+
+    /**
+     * @param maxValue the maxValue to set
+     */
+    public void setMaxValue(Number maxValue)
+    {
+        this.maxValue = maxValue;
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#setName(java.lang.String)
      */
@@ -270,6 +292,22 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
     public boolean isNumeric()
     {
         return type == FormatterType.numeric;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getMaxValue()
+     */
+    public Number getMaxValue()
+    {
+        return maxValue;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getMinValue()
+     */
+    public Number getMinValue()
+    {
+        return minValue;
     }
 
     /* (non-Javadoc)

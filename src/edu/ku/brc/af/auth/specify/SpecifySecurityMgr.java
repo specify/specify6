@@ -74,7 +74,7 @@ public class SpecifySecurityMgr
         {
             Class.forName(driverClass);
             conn = DriverManager.getConnection(url, embeddedSpecifyAppRootUser, embeddedSpecifyAppRootPwd);
-            String query = "SELECT * FROM SPECIFYUSER where name='" + user + "'";
+            String query = "SELECT * FROM specifyuser where name='" + user + "'";
             stmt = conn.createStatement();
             ResultSet result = stmt.executeQuery(query);
             String dbPassword = null;

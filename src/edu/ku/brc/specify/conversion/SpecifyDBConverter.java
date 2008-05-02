@@ -227,8 +227,7 @@ public class SpecifyDBConverter
                     {
                         String currentDBName = dbNamesToConvert.get(currentIndex++);
                         frame.setTitle("Converting "+currentDBName+"...");
-                        convertDB(old2NewDBNames.get(currentDBName), 
-                                  currentDBName.toLowerCase());
+                        convertDB(old2NewDBNames.get(currentDBName),  currentDBName.toLowerCase());
                         
                     } catch (Exception ex)
                     {
@@ -320,8 +319,8 @@ public class SpecifyDBConverter
                               final DatabaseConnectionProperties sourceDbProps,
                               final DatabaseConnectionProperties destDbProps) throws Exception
     {
-        boolean doAll            = false; 
-        boolean startfromScratch = false; 
+        boolean doAll            = true; 
+        boolean startfromScratch = true; 
         
         System.out.println("************************************************************");
         System.out.println("From "+databaseNameSource+" to "+databaseNameDest);
@@ -483,7 +482,7 @@ public class SpecifyDBConverter
 
                 conversion.setFrame(frame);
 
-               /* idMapperMgr = IdMapperMgr.getInstance();
+               idMapperMgr = IdMapperMgr.getInstance();
                 Connection oldConn = conversion.getOldDBConnection();
                 Connection newConn = conversion.getNewDBConnection();
                 if (oldConn == null || newConn == null)
@@ -822,7 +821,7 @@ public class SpecifyDBConverter
                     
                 	conversion.copyTaxonRecords();
                 }
-                frame.incOverall();*/
+                frame.incOverall();
                 
                 frame.setDesc("Converting USYS Tables.");
                 log.info("Converting USYS Tables.");

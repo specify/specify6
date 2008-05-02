@@ -362,6 +362,24 @@ public class CatalogNumberUIFieldFormatter implements UIFieldFormatterIFace
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getMaxValue()
+     */
+    @Override
+    public Number getMaxValue()
+    {
+        return isNumericCatalogNumber ? Integer.MAX_VALUE : null;
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#getMinValue()
+     */
+    @Override
+    public Number getMinValue()
+    {
+        return isNumericCatalogNumber ? 0 : null;
+    }
+
+    /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     public String toString()

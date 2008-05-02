@@ -122,6 +122,22 @@ public class LatLonConversionTest extends TestCase
     /**
      * Test method for {@link edu.ku.brc.util.LatLonConverter#convertDDDDToDDDD(java.lang.String)}.
      */
+    public void testOneMinute()
+    {
+        BigDecimal latitude = LatLonConverter.convertDDMMMMToDDDD("1 1", "N");
+        String     ddmmVal  = LatLonConverter.convertToDDMMMM(latitude);
+        
+        String s1 = String.format("%10.7f", latitude);
+        String s2 = String.format("%10.7f", 1.01666666667);
+        log.info(s1+"  "+s2+"  "+ddmmVal);
+        
+        assertTrue(s1.equals(s2));
+        //LatLonConverter
+    }
+
+    /**
+     * Test method for {@link edu.ku.brc.util.LatLonConverter#convertDDDDToDDDD(java.lang.String)}.
+     */
     public void testConvertDDDDToDDDDString()
     {
         BigDecimal before = new BigDecimal("38.95402");
@@ -187,6 +203,5 @@ public class LatLonConversionTest extends TestCase
         log.info(str);
         
         assertTrue(true);
- 
     }
 }

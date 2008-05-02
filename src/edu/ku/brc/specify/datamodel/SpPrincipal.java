@@ -54,7 +54,7 @@ import org.hibernate.annotations.Cascade;
 @Entity
 @org.hibernate.annotations.Entity(dynamicInsert = true, dynamicUpdate = true)
 @org.hibernate.annotations.Proxy(lazy = false)
-@Table(name = "SpPrincipal")
+@Table(name = "spprincipal")
 public class SpPrincipal implements java.io.Serializable, Principal
 {
 

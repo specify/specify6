@@ -9,14 +9,12 @@ package edu.ku.brc.specify.plugins.latlon;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.util.LatLonConverter.stripZeroes;
 
-import javax.swing.JLabel;
-
 import org.apache.commons.lang.StringUtils;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 
-import edu.ku.brc.ui.forms.validation.ValTextField;
+import edu.ku.brc.ui.forms.validation.ValFormattedTextFieldSingle;
 import edu.ku.brc.util.LatLonConverter;
 
 /**
@@ -31,8 +29,8 @@ import edu.ku.brc.util.LatLonConverter;
  */
 public class DDMMSSPanel extends DDMMMMPanel
 {
-    protected ValTextField latitudeSS;
-    protected ValTextField longitudeSS;
+    protected ValFormattedTextFieldSingle latitudeSS;
+    protected ValFormattedTextFieldSingle longitudeSS;
 
     /**
      * Constructor. 
@@ -50,8 +48,8 @@ public class DDMMSSPanel extends DDMMMMPanel
     {
         PanelBuilder builder = createUI("p, p, p, p, p, p, p, 2px, p", 3, 3, 9);
         
-        latitudeSS   = createTextField(6);
-        longitudeSS  = createTextField(6);
+        latitudeSS   = createTextField(Double.class, 6, 0.0, 59.99999999);
+        longitudeSS  = createTextField(Double.class, 6, 0.0, 59.99999999);
         
         latitudeMM.setColumns(3);
         longitudeMM.setColumns(3);

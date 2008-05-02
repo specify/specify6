@@ -3856,17 +3856,15 @@ public class GenericDBConversion
                                             final boolean usePrefix)
     {
         idMapperMgr.dumpKeys();
-        IdHashMapper colObjTaxonMapper = (IdHashMapper)idMapperMgr.get("ColObjCatToTaxonType"
-                .toLowerCase());
-        IdHashMapper colObjAttrMapper = (IdHashMapper)idMapperMgr
-                .get("biologicalobjectattributes_BiologicalObjectAttributesID");
-        colObjTaxonMapper.setShowLogErrors(false); // NOTE: TURN THIS ON FOR DEBUGGING or running
-                                                    // new Databases through it
+        IdHashMapper colObjTaxonMapper = (IdHashMapper)idMapperMgr.get("ColObjCatToTaxonType".toLowerCase());
+        IdHashMapper colObjAttrMapper  = (IdHashMapper)idMapperMgr.get("biologicalobjectattributes_BiologicalObjectAttributesID");
+        IdHashMapper colObMapper       = (IdHashMapper)idMapperMgr.get("collectionobject", "CollectionObjectID");
+        
+        colObjTaxonMapper.setShowLogErrors(false); // NOTE: TURN THIS ON FOR DEBUGGING or running  new Databases through it
         colObjAttrMapper.setShowLogErrors(false);
 
-        IdHashMapper stratMapper = (IdHashMapper)idMapperMgr.get("stratigraphy_StratigraphyID");
-        IdHashMapper stratGTPMapper = (IdHashMapper)idMapperMgr
-                .get("stratigraphy_GeologicTimePeriodID");
+        //IdHashMapper stratMapper = (IdHashMapper)idMapperMgr.get("stratigraphy_StratigraphyID");
+        //IdHashMapper stratGTPMapper = (IdHashMapper)idMapperMgr.get("stratigraphy_GeologicTimePeriodID");
 
         String[] fieldsToSkip = { "CatalogedDateVerbatim", "ContainerID", "ContainerItemID",
                                   "AltCatalogNumber",
@@ -3909,7 +3907,7 @@ public class GenericDBConversion
             sql.append(buildSelectFieldList(names, "collectionobjectcatalog"));
             oldFieldNames.addAll(names);
 
-            sql.append(" From collectionobject Inner Join collectionobjectcatalog ON collectionobject.CollectionObjectID = collectionobjectcatalog.CollectionObjectCatalogID Where collectionobject.CollectionObjectTypeID = 10");
+            sql.append(" From collectionobject Inner Join collectionobjectcatalog ON collectionobject.CollectionObjectID = collectionobjectcatalog.CollectionObjectCatalogID Where collectionobject.CollectionObjectTypeID = 10 ORDER BY collectionobject.CollectionObjectID");
 
             log.info(sql);
 
@@ -4046,11 +4044,17 @@ public class GenericDBConversion
 
                     if (i == 0)
                     {
-                        Integer recId = count + 1;
+                        int     oldId = rs.getInt(1);
+                        Integer newId = colObMapper.get(oldId);
+                        if (newId == null)
+                        {
+                            throw new RuntimeException("Couldn't find Old ID["+oldId+"] in ColObjMapper.");
+                        }
+                        
+                        //Integer recId = count + 1;
 
-                        str.append(getStrValue(recId));
-
-                        colObjId = getStrValue(recId);
+                        colObjId = getStrValue(newId);
+                        str.append(colObjId);
 
                         if (useNumericCatNumbers)
                         {

@@ -482,7 +482,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
     {
         protected JTextField                      textField;
         protected UIFieldFormatterField.FieldType fieldType;
-        protected int                             limit;
+        protected int                             docLenLimit;
         
         /**
          * Create a special formatted document
@@ -498,7 +498,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
             super();
             this.textField    = textField;
             this.fieldType    = fieldType;
-            this.limit        = limit;
+            this.docLenLimit  = limit;
         }
 
         /**
@@ -509,7 +509,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
          */
         protected boolean isCharOK(final String text)
         {
-            int    len = Math.min(text.length(), limit);
+            int    len = Math.min(text.length(), docLenLimit);
             String str = text.substring(0, len);
 
             if (fieldType == UIFieldFormatterField.FieldType.alpha && !StringUtils.isAlpha(str))
@@ -560,7 +560,7 @@ public class ValTextField extends JAutoCompTextField implements UIValidatable,
             }
 
             int len = getLength() + 1;
-            if (len <= limit)
+            if (len <= docLenLimit)
             {
                 if (!isCharOK(str))
                 {

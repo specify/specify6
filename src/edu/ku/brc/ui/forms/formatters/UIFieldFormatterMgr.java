@@ -297,7 +297,7 @@ public class UIFieldFormatterMgr
     		Set<String> names = hash.keySet();
     		String prefix = formatter.getFieldName();
     		name = prefix + "." + Integer.toString(i);
-    		while (names.contains((String) name))
+    		while (names.contains(name))
     		{
         		name = prefix + "." + Integer.toString(++i);
     		}
@@ -338,15 +338,13 @@ public class UIFieldFormatterMgr
         if (escAppRes != null)
         {
             return AppContextMgr.getInstance().getResourceAsDOM(escAppRes);
-           
-        } else
-        {
-            // Get the default resource by name and copy it to a new User Area Resource
-            AppResourceIFace newAppRes = AppContextMgr.getInstance().copyToDirAppRes("Collection", "UIFormatters");
-            // Save it in the User Area
-            AppContextMgr.getInstance().saveResource(newAppRes);
-            return AppContextMgr.getInstance().getResourceAsDOM(newAppRes);
-        }
+        } 
+        
+        // Get the default resource by name and copy it to a new User Area Resource
+        AppResourceIFace newAppRes = AppContextMgr.getInstance().copyToDirAppRes("Collection", "UIFormatters");
+        // Save it in the User Area
+        AppContextMgr.getInstance().saveResource(newAppRes);
+        return AppContextMgr.getInstance().getResourceAsDOM(newAppRes);
     }
     
     /**

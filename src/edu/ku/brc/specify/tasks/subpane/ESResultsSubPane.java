@@ -41,6 +41,7 @@ import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.tasks.subpane.BaseSubPane;
 import edu.ku.brc.specify.tasks.ExpressSearchTask;
 import edu.ku.brc.specify.ui.HelpMgr;
+import edu.ku.brc.specify.ui.db.ResultSetTableModel;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CommandListener;
@@ -158,12 +159,27 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
      */
     public void addSearchResults(final QueryForIdResultsIFace results)
     {
-        // This will start itself up and if there are results from the query 
-        // it will add itself to the pane (So it is OK that it isn't referenced)
-        @SuppressWarnings("unused")
-        ESResultsTablePanel resultsTable = new ESResultsTablePanel(this, results, results.shouldInstallServices(), results.isExpanded());
+        if (results instanceof SIQueryForIdResults)
+        {
+            int x = 0;
+            x++;
+            @SuppressWarnings("unused")
+            ESResultsTablePanel resultsTable = new ESResultsTablePanel(this, results, results.shouldInstallServices(), results.isExpanded())
+            {
+                protected ResultSetTableModel createModel()
+                {
+                    return new SearchInfoTableResults(this, (SIQueryForIdResults)results);
+                }
+            };
+        } else
+        {
+            // This will start itself up and if there are results from the query 
+            // it will add itself to the pane (So it is OK that it isn't referenced)
+            @SuppressWarnings("unused")
+            ESResultsTablePanel resultsTable = new ESResultsTablePanel(this, results, results.shouldInstallServices(), results.isExpanded());
+        }
     }
-
+    
     /**
      * Removes all the panels.
      */

@@ -10,15 +10,14 @@ package edu.ku.brc.specify.plugins.latlon;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.util.LatLonConverter.stripZeroes;
 
-import javax.swing.JLabel;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 
-import edu.ku.brc.ui.forms.validation.ValTextField;
+import edu.ku.brc.ui.forms.validation.UIValidatable;
+import edu.ku.brc.ui.forms.validation.ValFormattedTextFieldSingle;
 import edu.ku.brc.util.LatLonConverter;
 
 /**
@@ -35,8 +34,8 @@ public class DDMMMMPanel extends DDDDPanel
 {
     protected static final Logger log = Logger.getLogger(DDMMMMPanel.class);
     
-    protected ValTextField   latitudeMM;
-    protected ValTextField   longitudeMM;
+    protected ValFormattedTextFieldSingle latitudeMM;
+    protected ValFormattedTextFieldSingle longitudeMM;
     
     
     /**
@@ -68,8 +67,8 @@ public class DDMMMMPanel extends DDDDPanel
         PanelBuilder    builder = super.createUI(colDef, latCols, lonCols, cbxIndex);
         CellConstraints cc      = new CellConstraints();
 
-        latitudeMM   = createTextField(8);
-        longitudeMM  = createTextField(8);
+        latitudeMM   = createTextField(Double.class, 8, 0.0, 59.99999999);
+        longitudeMM  = createTextField(Double.class, 8, 0.0, 59.99999999);
 
         builder.add(createLabel(" "), cc.xy(4,1));
         builder.add(latitudeMM, cc.xy(5,1));
@@ -163,6 +162,32 @@ public class DDMMMMPanel extends DDDDPanel
     {
         getDataFromUI(true);
         getDataFromUI(false);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.plugins.latlon.DDDDPanel#doDataChanged()
+     */
+    @Override
+    protected void doDataChanged()
+    {
+        if (latitudeDD.getText().length() == 0)
+        {
+            if (latitudeDD.getState().ordinal() < UIValidatable.ErrorType.Error.ordinal())
+            {
+                latitudeDD.setState(UIValidatable.ErrorType.Error);
+                latitudeDD.repaint();
+            }
+        }
+        
+        if (longitudeDD.getText().length() == 0)
+        {
+            if (longitudeDD.getState().ordinal() < UIValidatable.ErrorType.Error.ordinal())
+            {
+                longitudeDD.setState(UIValidatable.ErrorType.Error);
+                longitudeDD.repaint();
+            }
+        }
+        super.doDataChanged();
     }
     
 }
