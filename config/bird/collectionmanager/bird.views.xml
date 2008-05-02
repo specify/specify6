@@ -368,7 +368,7 @@
                     <cell type="separator" label="Attachments" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="localityAttachments" colspan="12" initialize="btn=true;icon=Locality"/>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="localityAttachments" colspan="12" initialize="btn=true;icon=LocalityAttachment"/>
                 </row>
             </rows>
         </viewdef>
