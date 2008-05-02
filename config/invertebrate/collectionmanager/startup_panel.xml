@@ -34,7 +34,7 @@
             </item>
             <item title="Open Loans">
                 <sql type="jpa" name="OpenLoans">
-                    <statement><![SELECT count(loanId) as OpenLoanCount FROM Loan l INNER JOIN l.discipline dsp WHERE (isClosed = 0 OR isClosed is null) AND 
+                    <statement><![CDATA[SELECT count(loanId) as OpenLoanCount FROM Loan l INNER JOIN l.discipline dsp WHERE (isClosed = 0 OR isClosed is null) AND 
  dsp.disciplineId = DSPLNID ]]></statement></sql>
                 <link>OpenLoans</link>
             </item>
