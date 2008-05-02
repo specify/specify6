@@ -944,7 +944,7 @@
     		</rows>
     	</viewdef>
     	
-    	<viewdef 
+      <viewdef 
             type="form" 
             name="FieldNotebook" 
             class="edu.ku.brc.specify.datamodel.FieldNotebook" 
@@ -962,9 +962,9 @@
                     <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="name" uitype="text" isrequired="true"/>
                     <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="startDate" uitype="formattedtext" uifieldformatter="Date" default="today" isrequired="true"/>
+                    <cell type="field" id="5" name="startDate" uitype="formattedtext" uifieldformatter="Date" isrequired="true"/>
                     <cell type="label" labelfor="2"/>
-                    <cell type="field" id="2" name="endDate" uitype="formattedtext" uifieldformatter="Date" default="today" isrequired="true"/>
+                    <cell type="field" id="2" name="endDate" uitype="formattedtext" uifieldformatter="Date" isrequired="true"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="8"/>
@@ -1018,7 +1018,7 @@
                     <cell type="label" labelfor="2"/>
                     <cell type="field" id="2" name="pageNumber" uitype="text"/>
                     <cell type="label" labelfor="3"/>
-                    <cell type="field" id="3" name="scanDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
+                    <cell type="field" id="3" name="scanDate" uitype="formattedtext" uifieldformatter="Date"/>
 
                     <!-- 
                     <cell type="label" labelfor="7"/>
@@ -1028,12 +1028,6 @@
                 <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="description" uitype="textarea" colspan="10" rows="3"/>
-                </row>
-                <row>
-                    <cell type="separator" label="Attachments"/>
-                </row>
-                <row>
-                    <cell type="subview" id="4" name="attachments" viewname="ObjectAttachment" initialize="btn=true;icon=FieldNotebookPageAttachment;addsearch=true"/>
                 </row>
              <!--   <row>
                     <cell type="separator" label="Collection Objects" collapse="collectionObjects" colspan="12"/>
@@ -1064,16 +1058,18 @@
                     <cell type="separator" label="Page Set" colspan="12"/>
                 </row>
                 <row>
-                    <cell type="label" labelfor="5"/>
-                    <cell type="field" id="5" name="pages" uitype="querycbx" initialize="name=FieldNotebookPage;title=FieldNotebookPage" colspan="4"/>
-                </row>
-                <row>
                     <cell type="label" labelfor="4"/>
                     <cell type="field" id="4" name="orderNumber" uitype="text"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="1"/>
                     <cell type="field" id="1" name="description" uitype="textarea" colspan="10"/>
+                </row>
+                <row>
+                    <cell type="separator" label="Page" colspan="12"/>
+                </row>
+                <row>
+                    <cell type="subview" id="6" name="pages" viewname="FieldNotebookPage" colspan="12"/>
                 </row>
 
             <!--     <row>
@@ -1086,6 +1082,7 @@
                     </row> -->
             </rows>
         </viewdef>
+
 
         <viewdef
             type="form"
