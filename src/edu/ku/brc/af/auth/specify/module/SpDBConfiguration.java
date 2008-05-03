@@ -1,6 +1,7 @@
 package edu.ku.brc.af.auth.specify.module;
 
 import java.util.Collections;
+import java.util.Map;
 
 import javax.security.auth.login.AppConfigurationEntry;
 import javax.security.auth.login.Configuration;
@@ -34,15 +35,16 @@ public class SpDBConfiguration extends Configuration {
 	}
 
 	/**
-	 * Returns a single copnfiguration entry hard-coded to the Specify JAAS Login Module
+	 * Returns a single configuration entry hard-coded to the Specify JAAS Login Module
 	 * This method is overridden from Configuration base class
 	 */
 	public AppConfigurationEntry[] getAppConfigurationEntry(String name) {
 
 		AppConfigurationEntry[] entries = new AppConfigurationEntry[1];
 		
+		Map<String, ?> emptyMap = Collections.emptyMap();
 		entries[0] = new AppConfigurationEntry(SpDBLoginModule.class.getName(),
-    			AppConfigurationEntry.LoginModuleControlFlag.REQUIRED, Collections.EMPTY_MAP);
+    			AppConfigurationEntry.LoginModuleControlFlag.REQUIRED, emptyMap);
 
 		return entries;
 	}

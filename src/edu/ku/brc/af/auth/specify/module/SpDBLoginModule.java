@@ -56,8 +56,6 @@ public class SpDBLoginModule implements LoginModule
     // initial state
     private CallbackHandler       callbackHandler;
     private Subject               subject;
-    private Map                   sharedState;
-    private Map                   options;
 
     // variable options
     private String                username;
@@ -92,8 +90,6 @@ public class SpDBLoginModule implements LoginModule
         log.debug("initialize");
         this.callbackHandler = callbackHandler;
         this.subject = subject;
-        this.sharedState = sharedState;
-        this.options = options;   
     }
 
     /* 
@@ -183,7 +179,7 @@ public class SpDBLoginModule implements LoginModule
         try
         {
             Set<SpPrincipal> groups = UserPrincipalSQLService.getUsersGroupsByUsername(username);
-            for (Iterator itr = groups.iterator(); itr.hasNext();)
+            for (Iterator<SpPrincipal> itr = groups.iterator(); itr.hasNext();)
             {
                 SpPrincipal ug = (SpPrincipal)itr.next();
                 String s = "class " + ug.getGroupSubClass();

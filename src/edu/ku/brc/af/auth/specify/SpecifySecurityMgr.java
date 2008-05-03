@@ -209,7 +209,7 @@ public class SpecifySecurityMgr
     	if (!(BasicSpPermission.class.isAssignableFrom(permissionClass)))
     		throw new SecurityException(permissionClass.getName() + " class is not part of Specify permission hierarchy.");
 
-    	Constructor constructor = null;
+    	Constructor<?> constructor = null;
     	BasicSpPermission perm = null;
     	try
     	{

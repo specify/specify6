@@ -32,10 +32,10 @@ public class PermissionService
     protected static final Logger      log             = Logger.getLogger(PermissionService.class);
     private static boolean             debug           = false;
     static private final Certificate[] EMPTY_CERTS     = new Certificate[0];
-    static private final Class[]       ZERO_ARGS       = {};
+    static private final Class<?>[]    ZERO_ARGS       = {};
     static private final Object[]      ZERO_OBJS       = {};
-    static private final Class[]       ONE_STRING_ARG  = { String.class };
-    static private final Class[]       TWO_STRING_ARGS = { String.class, String.class };
+    static private final Class<?>[]    ONE_STRING_ARG  = { String.class };
+    static private final Class<?>[]    TWO_STRING_ARGS = { String.class, String.class };
 
     /**
      * @param id
@@ -50,7 +50,7 @@ public class PermissionService
      * @param ids
      * @throws SQLException
      */
-    static public void removePrincipalPermissions(Set ids) throws SQLException
+    static public void removePrincipalPermissions(Set<?> ids) throws SQLException
     {
         Connection conn = null;
         PreparedStatement tiePstmt = null;
@@ -62,7 +62,7 @@ public class PermissionService
             String sql = "DELETE FROM spprincipal_sppermission WHERE SpPermissionID = ?";
             tiePstmt = conn.prepareStatement(sql);
             permPstmt = conn.prepareStatement("DELETE FROM sppermission WHERE SpPermissionID= ?");
-            for (Iterator itr = ids.iterator(); itr.hasNext();)
+            for (Iterator<?> itr = ids.iterator(); itr.hasNext();)
             {
                 Integer id = (Integer)itr.next();
                 tiePstmt.setString(1, ""+ id +"");
@@ -94,11 +94,11 @@ public class PermissionService
      * @return
      * @throws SQLException
      */
-    static public List findPrincipalPermissions(Set<Integer> principalIds) 
+    static public List<Permission> findPrincipalPermissions(Set<Integer> principalIds) 
     {
         if(debug)log.debug("findPrincipalPermissions");
         List<Permission> permissions = new ArrayList<Permission>();
-        for (Iterator itr = principalIds.iterator(); itr.hasNext();)
+        for (Iterator<Integer> itr = principalIds.iterator(); itr.hasNext();)
         {
             Integer principalId = (Integer)itr.next();
             if(debug)log.debug("findPrincipalPermissions - principalID" + principalId);
@@ -208,18 +208,20 @@ public class PermissionService
             {
                 if (name == null && actions == null)
                 {
-                    Constructor con = clazz.getConstructor(ZERO_ARGS);
+                    Constructor<?> con = clazz.getConstructor(ZERO_ARGS);
                     perm = (Permission)con.newInstance(ZERO_OBJS);
                 } else if (actions == null)
                 {
-                    Constructor con = clazz.getConstructor(ONE_STRING_ARG);
-                    perm = (Permission)con.newInstance(new String[] { name });
+                    Constructor<?> con = clazz.getConstructor(ONE_STRING_ARG);
+                    String[] args = new String[] { name };
+                    perm = (Permission)con.newInstance((Object[]) args);
                 }
                 // BasicPermission types
                 else if (name != null && actions != null)
                 {
-                    Constructor con = clazz.getConstructor(TWO_STRING_ARGS);
-                    perm = (Permission)con.newInstance(new String[] { name, actions });
+                    Constructor<?> con = clazz.getConstructor(TWO_STRING_ARGS);
+                    String[] args = new String[] { name, actions };
+                    perm = (Permission)con.newInstance((Object[]) args);
                 } else
                 {
                     log.error("findPermissions() No suitable constructor (default, one String, or two String args) found to create Permission of type ["+clazz+"]. Skipping");

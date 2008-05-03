@@ -28,7 +28,6 @@ import edu.ku.brc.af.auth.specify.principal.BasicPrincipal;
 public class DatabasePolicy extends java.security.Policy
 {
     protected static final Logger log   = Logger.getLogger(DatabasePolicy.class);
-    private static boolean        debug = false;
     
     /*
      * (non-Javadoc)

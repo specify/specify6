@@ -32,11 +32,11 @@ public class CompositePolicy extends Policy
     public PermissionCollection getPermissions(ProtectionDomain domain)
     {
         Permissions perms = new Permissions();
-        for (Iterator itr = policies.iterator(); itr.hasNext();)
+        for (Iterator<Policy> itr = policies.iterator(); itr.hasNext();)
         {
             Policy p = (Policy)itr.next();
             PermissionCollection permCol = p.getPermissions(domain);
-            for (Enumeration en = permCol.elements(); en.hasMoreElements();)
+            for (Enumeration<Permission> en = permCol.elements(); en.hasMoreElements();)
             {
                 Permission p1 = (Permission)en.nextElement();
                 perms.add(p1);
@@ -53,7 +53,7 @@ public class CompositePolicy extends Policy
         
        //log.debug("ProtectionDomain=" + JaasStringHelper.principalsToString(domain));
        //log.debug("Permission=" + permission);
-        for (Iterator itr = policies.iterator(); itr.hasNext();)
+        for (Iterator<Policy> itr = policies.iterator(); itr.hasNext();)
         {
             Policy p = (Policy)itr.next();
             if (p.implies(domain, permission)) { return true; }
@@ -68,11 +68,11 @@ public class CompositePolicy extends Policy
     public PermissionCollection getPermissions(CodeSource codesource)
     {
         Permissions perms = new Permissions();
-        for (Iterator itr = policies.iterator(); itr.hasNext();)
+        for (Iterator<Policy> itr = policies.iterator(); itr.hasNext();)
         {
             Policy p = (Policy)itr.next();
             PermissionCollection permsCol = p.getPermissions(codesource);
-            for (Enumeration en = permsCol.elements(); en.hasMoreElements();)
+            for (Enumeration<Permission> en = permsCol.elements(); en.hasMoreElements();)
             {
                 Permission p1 = (Permission)en.nextElement();
                 perms.add(p1);
@@ -86,7 +86,7 @@ public class CompositePolicy extends Policy
      */
     public void refresh()
     {
-        for (Iterator itr = policies.iterator(); itr.hasNext();)
+        for (Iterator<Policy> itr = policies.iterator(); itr.hasNext();)
         {
             Policy p = (Policy)itr.next();
             p.refresh();
