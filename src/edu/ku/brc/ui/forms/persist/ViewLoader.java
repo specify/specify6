@@ -489,9 +489,10 @@ public class ViewLoader
 
     /**
      * Gets the string (or creates one) from a columnDef
-     * @param element the DOM lement to process
+     * @param element the DOM element to process
      * @param attrName the name of the element to go get all the elements (strings) from
      * @param numRows the number of rows
+     * @param item
      * @return the String representing the column definition for JGoodies
      */
     protected static String createDef(final Element element, 
@@ -499,7 +500,69 @@ public class ViewLoader
                                       final int numRows,
                                       final FormViewDef.JGDefItem item)
     {
-        Element cellDef = (Element)element.selectSingleNode(attrName);
+        Element cellDef = null;
+        if (attrName.equals("columnDef"))
+        {
+            // For columnDef(s) we can mark one or more as being platform specific
+            // but if we can't find a default one (no 'os' defined)
+            // then we ultimately pick the first one.
+            List<?> list = element.selectNodes(attrName);
+            if (list.size() == 1)
+            {
+                cellDef = (Element)list.get(0); // pick the first one if there is only one.
+            } else
+            {
+                Element defCD = null;
+                for (Object obj : list)
+                {
+                    Element ce     = (Element)obj;
+                    String  osType = getAttr(ce, "os", null);
+                    if (osType == null)
+                    {
+                        defCD = ce; // ok we found the default one
+                        
+                    } else 
+                    {
+                        // Look for the Platform specific one
+                        switch (UIHelper.getOSType())
+                        {
+                            case Windows:
+                                if (osType.equals("win"))
+                                {
+                                    cellDef = ce;
+                                }
+                                break;
+                                
+                            case MacOSX:
+                                if (osType.equals("mac"))
+                                {
+                                    cellDef = ce;
+                                }
+                                break;
+                                
+                            case Linux:
+                                if (osType.equals("lnx"))
+                                {
+                                    cellDef = ce;
+                                }
+                                break;
+                        } // switch
+                    }
+                }
+                
+                // ok, we couldn't find one for our platform, so use the default
+                // or pick the first one.
+                if (cellDef == null)
+                {
+                    cellDef = defCD != null ? defCD : (Element)list.get(0);
+                }
+            }
+        } else
+        {
+            // this is for rowDef
+            cellDef = (Element)element.selectSingleNode(attrName);
+        }
+        
         if (cellDef != null)
         {
             String cellText = cellDef.getText();
