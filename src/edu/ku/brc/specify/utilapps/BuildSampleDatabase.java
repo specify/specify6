@@ -3866,15 +3866,15 @@ public class BuildSampleDatabase
     }
     
     @SuppressWarnings("unchecked")
-    protected void traverseTree(final Vector<Object> taxonList, 
+    protected void traverseTree(final Vector<Object>   taxonList, 
                                 final Hashtable<Integer, TaxonTreeDefItem> treeDefItemHash,
-                                final TaxonTreeDef treeDef,
-                                final Element root,
-                                final Taxon parent)
+                                final TaxonTreeDef     treeDef,
+                                final Element          root,
+                                final Taxon            parent)
     {
-        String name   = getAttr(root, "name", null);
+        String name   = getAttr(root, "name",   null);
         String common = getAttr(root, "common", null);
-        int    rankId = getAttr(root, "rank", 0);
+        int    rankId = getAttr(root, "rank",   0);
         
         Taxon taxon = new Taxon();
         taxon.initialize();
