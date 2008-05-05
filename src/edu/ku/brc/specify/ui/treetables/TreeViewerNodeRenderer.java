@@ -612,14 +612,14 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
                 Color disabledTextColor = uid.getColor("textInactiveText");
                 g.setColor(disabledTextColor);
             }
-            Graphics2D g2d = (Graphics2D)g;
-            FontMetrics fm = g.getFontMetrics();
-            int cellHeight = list.getFixedCellHeight();
-            StringBuilder name = new StringBuilder(treeNode.getName());
-            int baselineAdj = (int)(1.0/2.0*fm.getAscent() + 1.0/2.0*cellHeight);
+            Graphics2D    g2d         = (Graphics2D)g;
+            FontMetrics   fm          = g.getFontMetrics();
+            int           cellHeight  = list.getFixedCellHeight();
+            StringBuilder name        = new StringBuilder(treeNode.getName());
+            int           baselineAdj = (int)(1.0/2.0*fm.getAscent() + 1.0/2.0*cellHeight);
             Pair<Integer,Integer> stringBounds = getTextBoundsForRank(treeNode.getRank());
             int stringStartX = stringBounds.getFirst();
-            int stringEndX = stringBounds.getSecond();
+            int stringEndX   = stringBounds.getSecond();
             int stringLength = stringEndX - stringStartX;
             int stringY = baselineAdj;
             if( selected )
@@ -641,6 +641,23 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
             {
                 name.append(" (");
                 name.append(treeNode.getAssociatedRecordCount());
+            }
+            
+            // Draw the Line from the start of the column to the text.
+            if (!treeNode.isHasChildren())
+            {
+                Pair<Integer,Integer> colBnds = getColumnBoundsForRank(treeNode.getRank());
+                
+                Stroke origStroke = g2d.getStroke();
+                g2d.setStroke(lineStroke);
+                Color origColor = g.getColor();
+                g.setColor(lineColor);
+                
+                g.drawLine(colBnds.first+1, cellHeight/2, stringStartX-4, cellHeight/2);
+                
+                // reset the color and stroke to original values
+                g2d.setStroke(origStroke);
+                g.setColor(origColor);
             }
             
             if (treeNode.getAssociatedRecordCount2() > 0 && treeNode.isHasChildren())

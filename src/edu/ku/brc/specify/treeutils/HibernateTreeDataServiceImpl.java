@@ -19,8 +19,10 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 
+import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
 import edu.ku.brc.dbsupport.CustomQueryListener;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace.QueryIFace;
@@ -74,9 +76,12 @@ public class HibernateTreeDataServiceImpl <T extends Treeable<T,D,I>,
         Session session = getNewSession(treeDef);
         try
         {
-            Query q = session.createQuery("FROM "+nodeClass.getSimpleName()+" as node WHERE node.name LIKE :name");
-            q.setParameter("name",name);
-            for( Object o: q.list() )
+            DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(nodeClass.getName());
+            String      columns   = QueryAdjusterForDomain.getInstance().getSpecialColumns(tableInfo, true);
+            String      sql       = "FROM "+nodeClass.getSimpleName()+" as node WHERE "+columns+" AND node.name LIKE :name";
+            Query q = session.createQuery(sql);
+            q.setParameter("name", name);
+            for (Object o: q.list())
             {
                 T t = (T)o;
                 

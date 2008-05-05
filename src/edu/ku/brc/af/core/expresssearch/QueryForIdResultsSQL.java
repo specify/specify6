@@ -103,10 +103,16 @@ public class QueryForIdResultsSQL implements QueryForIdResultsIFace
     {
         tableInfo = null;
         
-        recIds.clear();
-        recIds = null;
+        if (recIds != null)
+        {
+            recIds.clear();
+            recIds = null;
+        }
         
-        duplicateRecId.clear();
+        if (duplicateRecId != null)
+        {
+            duplicateRecId.clear();
+        }
     }
     
     /**

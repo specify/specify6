@@ -1176,24 +1176,31 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		
 		final TreeNode firstMatchNode = listModel.getNodeById(firstMatch.getTreeId());
 		
-        lastFoundNodeId = firstMatchNode.getId();
-		if ((where & DualViewSearchable.TOPVIEW) != 0)
+		if (firstMatchNode != null)
 		{
-		    setSelectedNode(0, firstMatchNode);
-            scrollToShowNode(firstMatchNode, 0);
-            
-		}
-		
-		if ((where & DualViewSearchable.BOTTOMVIEW) != 0)
-		{
-            if (mode == SINGLE_VIEW_MODE)
-            {
-                toggleViewMode();
+            lastFoundNodeId = firstMatchNode.getId();
+    		if ((where & DualViewSearchable.TOPVIEW) != 0)
+    		{
+    		    setSelectedNode(0, firstMatchNode);
+                scrollToShowNode(firstMatchNode, 0);
+                
+    		}
+    		
+    		if ((where & DualViewSearchable.BOTTOMVIEW) != 0)
+    		{
+                if (mode == SINGLE_VIEW_MODE)
+                {
+                    toggleViewMode();
+                }
+                setSelectedNode(1, firstMatchNode);
+                
+                scrollToShowNode(firstMatchNode, 1);
             }
-            setSelectedNode(1, firstMatchNode);
-            
-            scrollToShowNode(firstMatchNode, 1);
-        }
+		} else
+		{
+		    // We only get here is something serious has gone wrong
+		    setStatusBarText("TTV_FIND_NO_RESULTS", nodeName);
+		}
 	}
     
 	protected void scrollToShowNode(final TreeNode node, final int listIndex)
@@ -1441,16 +1448,13 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	    // Get the list of parents from the found node up to the root
 	    List<T> pathToNode = node.getAllAncestors();
 	    
-	    // Get the visible root node.
-	    TreeNode visRoot = listModel.getVisibleRoot();
-
 	    // Now add the 'found' node as the last node in the list
 	    List<T> fullList = new Vector<T>(pathToNode);
 	    fullList.add(node);
 	    
 	    // Check the list of nodes from the found node to against the
 	    // visual list model to see of the entire list of node is visible
-	    T lastVisiblenode = findLastVisibleNode(fullList, visRoot);
+	    T lastVisiblenode = findLastVisibleNode(fullList, listModel.getVisibleRoot());
 	    if (node == lastVisiblenode)
 	    {
 	        // This means the 'found' node was visible
@@ -1459,13 +1463,15 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 
 	    // Now expose the rest of the nodes from the last one that was visible
 	    // down to the 'found' node
-	    for( int i = pathToNode.indexOf(lastVisiblenode); i < pathToNode.size(); ++i )
+	    if (lastVisiblenode != null)
 	    {
-	        T pathRecord = pathToNode.get(i);
-	        List<TreeNode> childNodes = showChildren(pathRecord);
-	        showCounts(pathRecord, childNodes);
+	        for( int i = pathToNode.indexOf(lastVisiblenode); i < pathToNode.size(); ++i )
+    	    {
+    	        T pathRecord = pathToNode.get(i);
+    	        List<TreeNode> childNodes = showChildren(pathRecord);
+    	        showCounts(pathRecord, childNodes);
+    	    }
 	    }
-	    
 	    return true;
 	}
 
