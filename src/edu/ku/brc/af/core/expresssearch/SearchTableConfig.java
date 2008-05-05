@@ -249,8 +249,8 @@ public class SearchTableConfig implements DisplayOrderingIFace,
     public String getSQL(final String searchTermArg, final boolean idsOnly, final Vector<Integer> ids, final boolean isHQL)
     {
         DateWrapper scrDateFormat = AppPrefsCache.getDateWrapper("ui", "formatting", "scrdateformat");
-        
-        String searchTerm = searchTermArg;
+        int         currentYear   = Calendar.getInstance().get(Calendar.YEAR); 
+        String      searchTerm    = searchTermArg;
         
         // Check to see if it is date
         boolean    isDate     = false;
@@ -334,6 +334,11 @@ public class SearchTableConfig implements DisplayOrderingIFace,
         StringBuilder orderBy = new StringBuilder();
         int orderByCnt = 0;
         
+        //----------------------------------------------------------------------------------------------
+        // NOTE: If a full date was type in and it was parsed as such
+        // and it couldn't be something else, then it only searches date fields.
+        //----------------------------------------------------------------------------------------------
+        
         int cnt = 0;
         
         if (searchTerm.length() > 0)
@@ -349,46 +354,63 @@ public class SearchTableConfig implements DisplayOrderingIFace,
             {
                 terms = StringUtils.split(searchTerm, ' ');
             }
+            
             for (String term : terms)
             {
                 //log.debug(term);
                 boolean isNumeric;
-                boolean hasDecimalPoint = false;
+                boolean isYearOnly;
+                boolean hasDecimalPoint;
                 
                 if (!StringUtils.isNumeric(term))
                 {
-                    isNumeric = false;
+                    isNumeric       = false;
+                    isYearOnly      = false;
+                    hasDecimalPoint = false;
+                    
                 } else
                 {
                     isNumeric       = true;
                     hasDecimalPoint = StringUtils.contains(term, '.');
+                    if (!hasDecimalPoint && term.length() == 4)
+                    {
+                        int year = Integer.parseInt(term);
+                        isYearOnly = year > 1000 && year <= currentYear;
+                    } else
+                    {
+                        isYearOnly = false;
+                    }
                 }
     
                 String abbrev = tableInfo.getAbbrev(); 
 
                 for (SearchFieldConfig searchField : searchFields)
                 {
-                    String clause;
-                    DBFieldInfo fi = searchField.getFieldInfo();
-                    
-                    String fieldName = isHQL ? fi.getName() : fi.getColumn();
+                    String      clause      = null;
+                    DBFieldInfo fi          = searchField.getFieldInfo();
+                    boolean     isFieldDate = fi.getDataClass() == Date.class || searchField.getFieldInfo().getDataClass() == Calendar.class;
+                    String      fieldName   = isHQL ? fi.getName() : fi.getColumn();
                     
                     if (ids == null)
                     {
-                        if (fi.getDataClass() == Date.class || searchField.getFieldInfo().getDataClass() == Calendar.class)
+                        if (isDate || (isYearOnly && isFieldDate))
                         {
-                            if (!isDate)
+                            if (isDate)
                             {
-                                if (isNumeric && ! hasDecimalPoint && term.length() == 4)
+                                if (isFieldDate)
                                 {
-                                    clause = "YEAR("+abbrev + '.' + fi.getName()+") = " + term;
+                                    clause = abbrev + '.' + fieldName + " = " + "'" + term + "'";
                                 } else
                                 {
                                     continue;
                                 }
+                                
+                            } else if (isYearOnly)
+                            {
+                                clause = "YEAR("+abbrev + '.' + fi.getName()+") = " + term;
                             } else
                             {
-                                clause = abbrev + '.' + fieldName + " = " + "'" + term + "'";
+                                continue;
                             }
                             
                         } else if (fi.getDataClass() == Float.class || fi.getDataClass() == Double.class || fi.getDataClass() == BigDecimal.class)
@@ -414,11 +436,14 @@ public class SearchTableConfig implements DisplayOrderingIFace,
                             {
                                 log.error("Handling class ["+fi.getDataClass()+"] as a String");
                             }*/
-                            clause = "lower(" + abbrev + '.' + fieldName + ") like " + "'%" + term + "%'";
+                            clause = "LOWER(" + abbrev + '.' + fieldName + ") LIKE " + "'%" + term + "%'";
                         }
         
-                        if (cnt > 0) sqlStr.append(" OR ");
-                        sqlStr.append(clause);
+                        if (clause != null)
+                        {
+                            if (cnt > 0) sqlStr.append(" OR ");
+                            sqlStr.append(clause);
+                        }
                     }
                     
                     cnt++;
@@ -464,7 +489,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
             sqlStr.append(orderBy);
         }
 
-        //System.err.println(sqlStr.toString());
+        System.err.println(sqlStr.toString());
         return sqlStr.toString();
 
     }
