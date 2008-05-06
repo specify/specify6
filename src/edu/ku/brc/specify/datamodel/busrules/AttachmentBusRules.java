@@ -23,6 +23,15 @@ import edu.ku.brc.util.thumbnails.Thumbnailer;
  */
 public class AttachmentBusRules extends BaseBusRules
 {
+    String[] tableNames = {"accessionattachment",          "agentattachment",             "collectingeventattachment",
+                          "collectionobjectattachment",    "conservdescriptionattachment","conserveventattachment",
+                          "dnasequenceattachment",         "fieldnotebookattachment",     "fieldnotebookpageattachment",
+                          "fieldnotebookpagesetattachment","loanattachment",              "localityattachment",
+                          "permitattachment",              "preparationattachment",       "repositoryagreementattachment",
+                          "taxonattachment"};
+    /**
+     * 
+     */
     public AttachmentBusRules()
     {
         super(Attachment.class);
@@ -43,43 +52,34 @@ public class AttachmentBusRules extends BaseBusRules
                 return true;
             }
             
-            // just check the foreign keys
-            boolean noAccession = super.okToDelete("accessionattachment",           "AttachmentID", id);
-            boolean noAgent     = super.okToDelete("agentattachment",               "AttachmentID", id);
-            boolean noCollEvt   = super.okToDelete("collectingeventattachment",     "AttachmentID", id);
-            boolean noCollObj   = super.okToDelete("collectionobjectattachment",    "AttachmentID", id);
-            boolean noConsDesc  = super.okToDelete("conservdescriptionattachment",  "AttachmentID", id);
-            boolean noConsEvt   = super.okToDelete("conserveventattachment",        "AttachmentID", id);
-            boolean noDNA       = super.okToDelete("dnasequenceattachment",         "AttachmentID", id);
-            boolean noNotebooks = super.okToDelete("fieldnotebookattachment",       "AttachmentID", id);
-            boolean noPages     = super.okToDelete("fieldnotebookpageattachment",   "AttachmentID", id);
-            boolean noPageSets  = super.okToDelete("fieldnotebookpagesetattachment","AttachmentID", id);
-            boolean noLoan      = super.okToDelete("loanattachment",                "AttachmentID", id);
-            boolean noLoc       = super.okToDelete("localityattachment",            "AttachmentID", id);
-            boolean noPermit    = super.okToDelete("permitattachment",              "AttachmentID", id);
-            boolean noPrep      = super.okToDelete("preparationattachment",         "AttachmentID", id);
-            boolean noRepoAg    = super.okToDelete("repositoryagreementattachment", "AttachmentID", id);
-            boolean noTaxon     = super.okToDelete("taxonattachment",               "AttachmentID", id);
-
-            return noAccession &&
-                   noAgent &&
-                   noCollEvt &&
-                   noCollObj &&
-                   noConsDesc &&
-                   noConsEvt &&
-                   noDNA &&
-                   noNotebooks &&
-                   noPages &&
-                   noPageSets &&
-                   noLoan &&
-                   noLoc &&
-                   noPermit &&
-                   noPrep &&
-                   noRepoAg &&
-                   noTaxon;
+            for (String tName : tableNames)
+            {
+                if (!super.okToDelete(tName, "AttachmentID", id))
+                {
+                    return false;
+                }
+            }
         }
         
         return true;
+    }
+    
+    /**
+     * Returns a count of how many times this attachment is attached.
+     * @param ids the id of the attachment(s)
+     * @return the count of how many times it is attached
+     */
+    public Integer getTotalCountOfAttachments(final Integer...ids)
+    {
+        String[] tableColCombos = new String[tableNames.length*2];
+        int inx = 0;
+        for (String tName : tableNames)
+        {
+            tableColCombos[inx++] = tName;
+            tableColCombos[inx++] = "AttachmentID";
+        }
+        
+        return getTotalCount(tableColCombos, ids);
     }
     
     /* (non-Javadoc)

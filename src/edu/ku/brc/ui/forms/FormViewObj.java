@@ -3890,6 +3890,9 @@ public class FormViewObj implements Viewable,
                         {
                             ((SubViewBtn)fieldInfo.getComp()).setValue(data, null);
                         }
+                    } else if (fieldInfo.getComp() instanceof MultiView)
+                    {
+                        ((MultiView)fieldInfo.getComp()).setData(data);
                     }
                 }
             }

@@ -536,7 +536,7 @@ public class SearchTableConfig implements DisplayOrderingIFace,
             sqlStr.append(orderBy);
         }
 
-        System.err.println(sqlStr.toString());
+        //System.err.println(sqlStr.toString());
         return sqlStr.toString();
 
     }

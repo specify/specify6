@@ -1,6 +1,8 @@
 package edu.ku.brc.specify.datamodel.busrules;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.swing.JOptionPane;
 
@@ -39,20 +41,27 @@ public abstract class AttachmentOwnerBaseBusRules extends BaseBusRules
             // now check to see if the attachments referenced by this owner have no other
             // references in the DB
             
+            Set<?> hashSet = new HashSet<Object>(owner.getAttachmentReferences());
             AttachmentBusRules attachBusRules = new AttachmentBusRules();
-            for (ObjectAttachmentIFace<?> attachRef: owner.getAttachmentReferences())
+            for (Object attachRefObj : hashSet)
             {
-                Attachment attach = attachRef.getAttachment();
-                boolean canDelete = attachBusRules.okToEnableDelete(attach);
+                ObjectAttachmentIFace<?> attachRef = (ObjectAttachmentIFace<?>)attachRefObj;
                 
-                int option = JOptionPane.showOptionDialog(UIRegistry.getMostRecentWindow(), 
-                        "Delete the attachment file from disk?", 
-                        "Confirm file deletion", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, JOptionPane.NO_OPTION); // I18N
+                Attachment attach     = attachRef.getAttachment();
+                Integer    totalCount = attachBusRules.getTotalCountOfAttachments(attach.getId());
                 
-                if (canDelete && option == JOptionPane.YES_OPTION)
+                if (totalCount != null && totalCount == 1)
                 {
-                    System.out.println("delete the file from disk: " + attach.getAttachmentLocation());
-                    session.delete(attach);
+                    int option = JOptionPane.showOptionDialog(UIRegistry.getMostRecentWindow(), 
+                            "Delete the attachment file from disk?", 
+                            "Confirm file deletion", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, JOptionPane.NO_OPTION); // I18N
+                    
+                    if (option == JOptionPane.YES_OPTION)
+                    {
+                        log.debug("delete the file from disk: " + attach.getAttachmentLocation());
+                        session.delete(attach);
+                        owner.getAttachmentReferences().remove(attach);
+                    }
                 }
             }
         }

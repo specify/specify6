@@ -189,6 +189,98 @@ public class BaseBusRules implements BusinessRulesIFace
     }
 
     /**
+     * @param stmt
+     * @param tableName
+     * @param columnName
+     * @param ids
+     * @return
+     */
+    public Integer getCount(final Statement  stmt,
+                            final String     tableName, 
+                            final String     columnName,
+                            final Integer... ids)
+    {
+        Integer count = null;
+        try
+        {
+            StringBuilder idString = new StringBuilder();
+            for (Integer i: ids)
+            {
+                idString.append(i);
+                idString.append(", ");
+            }
+            idString.deleteCharAt(idString.length()-2);
+            String queryString = "select count(*) from " + tableName + " where " + tableName + "." + columnName + " in (" + idString.toString() + ")";
+            
+            ResultSet rs = stmt.executeQuery(queryString);
+            if (rs.next())
+            {
+                count = rs.getInt(1);
+            }
+            rs.close();
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            
+        }
+        return count;
+    }
+    
+    /**
+     * Helper to check a list of tables at one time.
+     * @param nameCombos a list of names combinations "table name/Foreign Key name"
+     * @param id the id to be checked
+     * @return true if ok to delete
+     */
+    protected Integer getTotalCount(final String[] nameCombos, final Integer...ids)
+    {
+        Connection conn = null;
+        Statement  stmt = null;
+        try
+        {
+            conn = DBConnection.getInstance().createConnection();
+            stmt = conn.createStatement();
+
+            int total = 0;
+            for (int i=0;i<nameCombos.length;i++)
+            {
+                Integer count = getCount(stmt, nameCombos[i], nameCombos[i+1], ids);
+                if (count != null)
+                {
+                    total += count;
+                }
+                i++;
+            }
+            return total;
+            
+        } catch (Exception ex)
+        {
+            ex.printStackTrace();
+            
+        } finally
+        {
+            try 
+            {
+                if (stmt != null)
+                {
+                    stmt.close();
+                }
+                if (conn != null)
+                {
+                    conn.close();
+                }
+                
+            } catch (Exception ex)
+            {
+                ex.printStackTrace();
+            }
+        }
+        return null;
+    }
+
+    
+    /**
      * Checks to see if it can be deleted.
      * @param connection db connection
      * @param stmt db statement
@@ -203,27 +295,8 @@ public class BaseBusRules implements BusinessRulesIFace
                                                              final String columnName,
                                                              final Integer...ids)
     {
-        try
-        {
-            StringBuilder idString = new StringBuilder();
-            for (Integer i: ids)
-            {
-                idString.append(i);
-                idString.append(", ");
-            }
-            idString.deleteCharAt(idString.length()-2);
-            String queryString = "select count(*) from " + tableName + " where " + tableName + "." + columnName + " in (" + idString.toString() + ")";
-            ResultSet rs = stmt.executeQuery(queryString);
-            boolean isOK = rs.next() && rs.getInt(1) == 0;
-            rs.close();
-            return isOK;
-            
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-            
-        }
-        return false; // err on the side of not enabling the delete btn
+        Integer count = getCount(stmt, tableName, columnName, ids);
+        return count != null && count > 0;
     }
     
     /**

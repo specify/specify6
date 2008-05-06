@@ -1002,7 +1002,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                     cnt++;
                 }
                 
-                System.err.println("CustomQueryIFace: "+cnt);
+                //System.err.println("CustomQueryIFace: "+cnt);
                 
                 if (cnt >= RESULTS_THRESHOLD)
                 {
