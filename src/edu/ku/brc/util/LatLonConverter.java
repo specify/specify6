@@ -123,14 +123,28 @@ public class LatLonConverter
         {
             sb.append("\u00B0");
         }
-        sb.append(whole);
-        sb.append(' ');
-        sb.append(minutesWhole);
-        sb.append(' ');
+        
+        if (minutesWhole == 60)
+        {
+            whole += 1;
+            minutesWhole = 0;
+        }
         
         // round to 2 decimal places precision
         seconds = Math.round(seconds * 1000);
         seconds = seconds / 1000.00;
+        
+        int secondsWhole = (int)Math.floor(seconds);
+        if (secondsWhole == 60)
+        {
+            minutesWhole += 1;
+            seconds = 0.0;
+        }
+
+        sb.append(whole);
+        sb.append(' ');
+        sb.append(minutesWhole);
+        sb.append(' ');
         
         sb.append(StringUtils.stripEnd(decFormatter.format(seconds), "0"));
         
