@@ -94,7 +94,6 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
         {
             eastWest = new String[] {getResourceString(EAST_WEST[0]), getResourceString(EAST_WEST[1])};
         }
-
     }
     
     /**

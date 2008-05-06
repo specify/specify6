@@ -14,6 +14,7 @@ import org.apache.commons.lang.StringUtils;
 import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 
+import edu.ku.brc.ui.forms.validation.UIValidatable;
 import edu.ku.brc.ui.forms.validation.ValFormattedTextFieldSingle;
 import edu.ku.brc.util.LatLonConverter;
 
@@ -140,5 +141,33 @@ public class DDMMSSPanel extends DDMMMMPanel
             }
         }
     }
+    
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.plugins.latlon.DDDDPanel#doDataChanged()
+     */
+    @Override
+    protected void doDataChanged()
+    {
+        if (latitudeDD.getText().length() > 0 && latitudeSS.getText().length() == 0)
+        {
+            if (latitudeSS.getState().ordinal() < UIValidatable.ErrorType.Error.ordinal())
+            {
+                latitudeSS.setState(UIValidatable.ErrorType.Error);
+                latitudeSS.repaint();
+            }
+        }
+        
+        if (longitudeDD.getText().length() > 0 && longitudeSS.getText().length() == 0)
+        {
+            if (longitudeSS.getState().ordinal() < UIValidatable.ErrorType.Error.ordinal())
+            {
+                longitudeSS.setState(UIValidatable.ErrorType.Error);
+                longitudeSS.repaint();
+            }
+        }
+        super.doDataChanged();
+    }
+
 }
 

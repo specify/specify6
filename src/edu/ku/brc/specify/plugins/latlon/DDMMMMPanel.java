@@ -170,7 +170,7 @@ public class DDMMMMPanel extends DDDDPanel
     @Override
     protected void doDataChanged()
     {
-        if (latitudeDD.getText().length() == 0)
+        if (latitudeMM.getText().length() > 0 && latitudeDD.getText().length() == 0)
         {
             if (latitudeDD.getState().ordinal() < UIValidatable.ErrorType.Error.ordinal())
             {
@@ -179,7 +179,7 @@ public class DDMMMMPanel extends DDDDPanel
             }
         }
         
-        if (longitudeDD.getText().length() == 0)
+        if (longitudeMM.getText().length() > 0 && longitudeDD.getText().length() == 0)
         {
             if (longitudeDD.getState().ordinal() < UIValidatable.ErrorType.Error.ordinal())
             {
