@@ -688,19 +688,6 @@ public class SpecifyDBConverter
                 }
                 frame.incOverall();
                 
-                frame.setDesc("Converting LoanPreparations Records");
-                log.info("Converting LoanPreparations Records");
-                boolean doLoanPreparations = false;
-                if (doLoanPreparations || doAll)
-                {
-                    conversion.convertLoanPreparations();
-                    frame.incOverall();
-                    
-                } else
-                {
-                    frame.incOverall();
-                }
-
                 frame.setDesc("Copying Tables");
                 log.info("Copying Tables");
                 boolean copyTables = false;
@@ -768,6 +755,19 @@ public class SpecifyDBConverter
                             throw new RuntimeException(ex);
                             
                         }
+                    }
+                    
+                    frame.setDesc("Converting LoanPreparations Records");
+                    log.info("Converting LoanPreparations Records");
+                    boolean doLoanPreparations = false;
+                    if (doLoanPreparations || doAll)
+                    {
+                        conversion.convertLoanPreparations();
+                        frame.incOverall();
+                        
+                    } else
+                    {
+                        frame.incOverall();
                     }
                     
                     // Arg1 - Use Numeric Catalog Number

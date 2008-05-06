@@ -4157,12 +4157,8 @@ public class GenericDBConversion
                     if (i == 0)
                     {
                         Integer oldColObjId = rs.getInt(1);
-                        if (oldColObjId == 23421)
-                        {
-                            int x = 0;
-                            x++;
-                        }
                         Integer newColObjId = colObjMapper.get(oldColObjId);
+                        
                         if (newColObjId == null)
                         {
                             throw new RuntimeException("Couldn't find new ColObj Id for old ["+oldColObjId+"]");
@@ -4173,13 +4169,13 @@ public class GenericDBConversion
 
                         if (useNumericCatNumbers)
                         {
-                            catalogNumber = String.format("%09d", rs.getInt(catNumInx + 1));
+                            catalogNumber = "\"" + String.format("%09d", rs.getInt(catNumInx + 1)) + "\"";
 
                         } else
                         {
                             float catNum = rs.getFloat(catNumInx + 1);
-                            catalogNumber = (usePrefix && StringUtils.isNotEmpty(prefix) ? (prefix + "-") : "")
-                                            + String.format("%9.0f", catNum).trim();
+                            catalogNumber = "\"" + (usePrefix && StringUtils.isNotEmpty(prefix) ? (prefix + "-") : "")
+                                            + String.format("%9.0f", catNum).trim() + "\"";
                         }
 
                         int subNumber = rs.getInt(oldNameIndex.get("SubNumber") + 1);
@@ -4352,6 +4348,8 @@ public class GenericDBConversion
                             BasicSQLUtils.removeForeignKeyConstraints(newDBConn, BasicSQLUtils.myDestinationServerType);
                         }
                         // updateStatement.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
+                        if (count < 50) System.err.println(str.toString());
+                        
                         updateStatement.executeUpdate(str.toString());
                         updateStatement.clearBatch();
                         updateStatement.close();
