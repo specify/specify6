@@ -422,7 +422,28 @@ public class DBObjSearchPanel extends JPanel implements ExpressSearchResultsPane
                                 strBuf.append(" OR ");
                             }
                             
-                            strBuf.append(" LOWER("+captionInfo.getColName()+") like '#$#"+valStr+"#$#'");
+                            boolean startWildCard   = false;
+                            boolean endWildCard     = false;
+                            
+                            if (valStr.startsWith("*"))
+                            {
+                                startWildCard = true;
+                                valStr = valStr.substring(1);
+                            }
+                            
+                            if (valStr.endsWith("*"))
+                            {
+                                endWildCard = true;
+                                valStr = valStr.substring(0, valStr.length()-1);
+                            }
+
+                            if (startWildCard || endWildCard)
+                            {
+                                strBuf.append(" LOWER("+captionInfo.getColName()+") like "+ (startWildCard ? "'#$#" : "'") + valStr + (endWildCard ? "#$#'" : "'"));
+                            } else
+                            {
+                                strBuf.append(" LOWER("+captionInfo.getColName()+") = "+ "'" + valStr + "'");
+                            }
                             cnt++;
                         } else
                         {
