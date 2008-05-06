@@ -230,13 +230,13 @@ public class TestAutoNumbering extends TestCase
     protected void myTester()
     {
         StringBuilder  sql = new StringBuilder("From CollectionObject c Join c.collection col Join col.catalogNumberingScheme cns where cns.catalogNumberingSchemeId = 1");
-        Session session = HibernateUtil.getNewSession();
+        Session localSession = HibernateUtil.getNewSession();
         
         try
         {
             
             System.out.println(sql.toString());
-            List<?> list = session.createQuery(sql.toString()).setMaxResults(1).list();
+            List<?> list = localSession.createQuery(sql.toString()).setMaxResults(1).list();
             if (list.size() == 1)
             {
                 Object[] obj = (Object[])list.get(0);
@@ -248,7 +248,7 @@ public class TestAutoNumbering extends TestCase
             ex.printStackTrace();
         } finally
         {
-            session.close();
+            localSession.close();
         }
         int x = 0;
         x++;

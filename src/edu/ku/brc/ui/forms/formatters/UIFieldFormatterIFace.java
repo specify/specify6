@@ -194,6 +194,13 @@ public interface UIFieldFormatterIFace
     public abstract boolean isUserInputNeeded();
     
     /**
+     * Checks to see if the value string matches the formatter
+     * @param value the value
+     * @return true it is valid
+     */
+    public abstract boolean isValid(String value);
+    
+    /**
      * Appends a presentation of itself in XML to the StringBuilder
      * @param sb the stringbuilder
      */

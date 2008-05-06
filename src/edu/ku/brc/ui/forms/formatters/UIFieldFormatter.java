@@ -15,6 +15,10 @@
 package edu.ku.brc.ui.forms.formatters;
 
 import static edu.ku.brc.helpers.XMLHelper.xmlAttr;
+import static org.apache.commons.lang.StringUtils.isAlpha;
+import static org.apache.commons.lang.StringUtils.isAlphanumeric;
+import static org.apache.commons.lang.StringUtils.isEmpty;
+import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -499,7 +503,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
     {
         boolean isStr = data instanceof String;
         
-        if (autoNumber != null && isStr && StringUtils.isEmpty((String)data))
+        if (autoNumber != null && isStr && isEmpty((String)data))
         {
            String pattern = toPattern();
            UIFieldFormatterField yearField = getYear();
@@ -597,6 +601,79 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
     }
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#isValid(java.lang.String)
+     */
+    public boolean isValid(final String text)
+    {
+        return isValid(this, text);
+    }
+    
+    /**
+     * Validates with any formatter that has fields defined and an inputed string
+     * @param formatter the formatter 
+     * @param text the text to be validated.
+     * @return true if it is valid
+     */
+    public static boolean isValid(final UIFieldFormatterIFace formatter, final String text)
+    {
+        if (isNotEmpty(text))
+        {
+            int txtLen = text.length();
+            int len    = formatter.getLength();
+            if (txtLen == len)
+            {
+                int inx    = 0;
+                int pos    = 0;
+                for (UIFieldFormatterField field : formatter.getFields())
+                {
+                    if (pos < txtLen)
+                    {
+                        //numeric, alphanumeric, alpha, separator, year
+                        String val = text.substring(pos, Math.min(pos+field.getSize(), txtLen));
+                        switch (field.getType())
+                        {
+                            case numeric:
+                                if (!StringUtils.isNumeric(val))
+                                {
+                                    return false;
+                                }
+                                break;
+                                
+                            case alphanumeric:
+                                if (!isAlphanumeric(val))
+                                {
+                                    return false;
+                                }
+                                break;
+                                
+                            case alpha:
+                                if (!isAlpha(val))
+                                {
+                                    return false;
+                                }
+                                break;
+                                
+                            case separator:
+                                if (!val.equals(field.getValue()))
+                                {
+                                    return false;
+                                }
+                                break;
+                        }
+                    } else
+                    {
+                        return false;
+                    }
+                    pos += field.getSize();
+                    inx++;
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace#toXML(java.lang.StringBuilder)
      */
     public void toXML(final StringBuilder sb)
@@ -609,7 +686,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
         {
             xmlAttr(sb, "class", dataClass.getName());
         }
-        if (StringUtils.isNotEmpty(fieldName) && !fieldName.equals("*"))
+        if (isNotEmpty(fieldName) && !fieldName.equals("*"))
         {
             xmlAttr(sb, "fieldname", fieldName);
         }
@@ -631,7 +708,7 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
         
         sb.append(">\n");
         if (autoNumber != null)
-        {
+        { 
             autoNumber.toXML(sb);
         }
         

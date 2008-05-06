@@ -77,6 +77,12 @@ public class UIFieldFormatterField
         }
     }
     
+    /**
+     * @param type
+     * @param size
+     * @param value
+     * @param incrementer
+     */
     public UIFieldFormatterField(final FieldType type, 
                                  final int       size, 
                                  final String    value, 
@@ -93,9 +99,7 @@ public class UIFieldFormatterField
      * 
      * Note: use one of the constructors to get a separator field
      */
-    public static UIFieldFormatterField factory(
-    		final String   formattingString) 
-    throws UIFieldFormatterParsingException 
+    public static UIFieldFormatterField factory(final String   formattingString) throws UIFieldFormatterParsingException 
     {
     	UIFieldFormatterField field = new UIFieldFormatterField();
     	
