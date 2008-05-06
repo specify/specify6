@@ -179,18 +179,18 @@ public class UIFileFilter extends FileFilter
         {
             if (description == null || isExtensionListInDescription())
             {
-                fullDescription = description == null ? "(" : description + " (";
+                fullDescription = description == null ? "(" : description + " ("; //$NON-NLS-1$ //$NON-NLS-2$
                 // build the description from the extension list
                 Enumeration<?> extensions = filters.keys();
                 if (extensions != null)
                 {
-                    fullDescription += "." + (String) extensions.nextElement();
+                    fullDescription += "." + (String) extensions.nextElement(); //$NON-NLS-1$
                     while (extensions.hasMoreElements())
                     {
-                        fullDescription += ", ." + (String) extensions.nextElement();
+                        fullDescription += ", ." + (String) extensions.nextElement(); //$NON-NLS-1$
                     }
                 }
-                fullDescription += ")";
+                fullDescription += ")"; //$NON-NLS-1$
             } else
             {
                 fullDescription = description;

@@ -35,28 +35,28 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "country",
-    "state",
-    "county",
-    "localityString",
-    "wgs84Latitude",
-    "wgs84Longitude"
+@XmlType(name = "", propOrder = { //$NON-NLS-1$
+    "country", //$NON-NLS-1$
+    "state", //$NON-NLS-1$
+    "county", //$NON-NLS-1$
+    "localityString", //$NON-NLS-1$
+    "wgs84Latitude", //$NON-NLS-1$
+    "wgs84Longitude" //$NON-NLS-1$
 })
-@XmlRootElement(name = "SnapPointToNearestFoundWaterBody2")
+@XmlRootElement(name = "SnapPointToNearestFoundWaterBody2") //$NON-NLS-1$
 public class SnapPointToNearestFoundWaterBody2 {
 
-    @XmlElement(name = "Country", namespace = "http://www.museum.tulane.edu/webservices/")
+    @XmlElement(name = "Country", namespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
     protected String country;
-    @XmlElement(name = "State", namespace = "http://www.museum.tulane.edu/webservices/")
+    @XmlElement(name = "State", namespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
     protected String state;
-    @XmlElement(name = "County", namespace = "http://www.museum.tulane.edu/webservices/")
+    @XmlElement(name = "County", namespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
     protected String county;
-    @XmlElement(name = "LocalityString", namespace = "http://www.museum.tulane.edu/webservices/")
+    @XmlElement(name = "LocalityString", namespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
     protected String localityString;
-    @XmlElement(name = "WGS84Latitude", namespace = "http://www.museum.tulane.edu/webservices/")
+    @XmlElement(name = "WGS84Latitude", namespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
     protected double wgs84Latitude;
-    @XmlElement(name = "WGS84Longitude", namespace = "http://www.museum.tulane.edu/webservices/")
+    @XmlElement(name = "WGS84Longitude", namespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
     protected double wgs84Longitude;
 
     /**

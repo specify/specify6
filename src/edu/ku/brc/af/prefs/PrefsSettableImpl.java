@@ -52,7 +52,7 @@ public class PrefsSettableImpl implements DataObjectSettable
         
         if (dataObj instanceof AppPreferences)
         {
-            ((AppPreferences)dataObj).put(fieldName, newData == null ? "" : newData.toString());
+            ((AppPreferences)dataObj).put(fieldName, newData == null ? "" : newData.toString()); //$NON-NLS-1$
         }
     }
     

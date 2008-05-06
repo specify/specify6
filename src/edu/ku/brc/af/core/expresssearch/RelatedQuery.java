@@ -34,8 +34,8 @@ public class RelatedQuery implements Comparable<RelatedQuery>, DisplayOrderingIF
     protected static boolean          addRealtedQueryTitle = true;
     protected static boolean          addActiveTitle       = false;
     
-    protected static String           relatedQueryTitle    = UIRegistry.getResourceString("ES_RELATED_QUERY");
-    protected static String           activeTitle          = UIRegistry.getResourceString("ES_RELATED_ACTIVE");
+    protected static String           relatedQueryTitle    = UIRegistry.getResourceString("ES_RELATED_QUERY"); //$NON-NLS-1$
+    protected static String           activeTitle          = UIRegistry.getResourceString("ES_RELATED_ACTIVE"); //$NON-NLS-1$
     
     protected String                  id;
     protected Integer                 displayOrder;
@@ -180,7 +180,7 @@ public class RelatedQuery implements Comparable<RelatedQuery>, DisplayOrderingIF
     @Override
     public String toString()
     {
-        return getPlainTitle() + (addRealtedQueryTitle ? (" " + relatedQueryTitle) : "") + (addActiveTitle && getIsActive() ? (" (" + activeTitle + ")") : "");
+        return getPlainTitle() + (addRealtedQueryTitle ? (" " + relatedQueryTitle) : "") + (addActiveTitle && getIsActive() ? (" (" + activeTitle + ")") : ""); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
     }
 
     /* (non-Javadoc)
@@ -189,7 +189,7 @@ public class RelatedQuery implements Comparable<RelatedQuery>, DisplayOrderingIF
     //@Override
     public String getIconName()
     {
-        return tableInfo == null ? "RelatedTable" : tableInfo.getClassObj().getSimpleName();
+        return tableInfo == null ? "RelatedTable" : tableInfo.getClassObj().getSimpleName(); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)

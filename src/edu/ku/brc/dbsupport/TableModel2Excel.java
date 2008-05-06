@@ -68,8 +68,8 @@ public class TableModel2Excel
      */
     public static File getTempExcelName()
     {
-        String prefix = "collection_items_";
-        String ext    = ".xls";
+        String prefix = "collection_items_"; //$NON-NLS-1$
+        String ext    = ".xls"; //$NON-NLS-1$
         try
         {
             String fileName = getFileNameWithoutExt(File.createTempFile(prefix, null).getName());
@@ -208,7 +208,7 @@ public class TableModel2Excel
                 
             } catch (Exception ex)
             {
-                log.error("convertToExcel", ex);
+                log.error("convertToExcel", ex); //$NON-NLS-1$
             }
         }
         return toFile;
@@ -223,17 +223,17 @@ public class TableModel2Excel
     public static StringBuilder convertToHTML(String title, TableModel tableModel)
     {
         StringBuilder strBuilder = new StringBuilder(512);
-        strBuilder.append("<table border=1>");
+        strBuilder.append("<table border=1>"); //$NON-NLS-1$
         if (tableModel != null && tableModel.getRowCount() > 0)
         {
             for (int i=0;i<tableModel.getColumnCount();i++)
             {    
                 //add the date to the header cell
-                strBuilder.append("<td align=center>");
+                strBuilder.append("<td align=center>"); //$NON-NLS-1$
                 strBuilder.append(tableModel.getColumnName(i));
-                strBuilder.append("</td>");
+                strBuilder.append("</td>"); //$NON-NLS-1$
             }
-            strBuilder.append("</tr>\n");
+            strBuilder.append("</tr>\n"); //$NON-NLS-1$
             
             //--------------------------
             // done header
@@ -241,17 +241,17 @@ public class TableModel2Excel
             
             for (int rownum = 0; rownum < tableModel.getRowCount(); rownum++)
             {
-                strBuilder.append("<tr>\n");
+                strBuilder.append("<tr>\n"); //$NON-NLS-1$
                 for (short cellnum = (short) 0; cellnum < tableModel.getColumnCount(); cellnum++)
                 {
                     //add the date to the header cell
-                    strBuilder.append("<td align=center>");
+                    strBuilder.append("<td align=center>"); //$NON-NLS-1$
                     strBuilder.append(tableModel.getValueAt(rownum, cellnum).toString());
-                    strBuilder.append("</td>");
+                    strBuilder.append("</td>"); //$NON-NLS-1$
                 }
-                strBuilder.append("</tr>\n");
+                strBuilder.append("</tr>\n"); //$NON-NLS-1$
             }
-            strBuilder.append("</table>\n");
+            strBuilder.append("</table>\n"); //$NON-NLS-1$
         }
         return strBuilder;
         

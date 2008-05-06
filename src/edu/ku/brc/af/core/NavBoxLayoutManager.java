@@ -61,7 +61,7 @@ public class NavBoxLayoutManager implements LayoutManager2
     {
         if (arg1 == null)
         {
-            throw new NullPointerException("Null component in addLayoutComponent");
+            throw new NullPointerException("Null component in addLayoutComponent"); //$NON-NLS-1$
         }
         comps.addElement(arg1);
 
@@ -76,7 +76,7 @@ public class NavBoxLayoutManager implements LayoutManager2
         {
             if (target == null)
             {
-                throw new NullPointerException("Null component in removeLayoutComponent");
+                throw new NullPointerException("Null component in removeLayoutComponent"); //$NON-NLS-1$
             }
             comps.removeElement(target);
         }
@@ -203,7 +203,7 @@ public class NavBoxLayoutManager implements LayoutManager2
     {
         if (comp == null)
         {
-            throw new NullPointerException("Null component in addLayoutComponent");
+            throw new NullPointerException("Null component in addLayoutComponent"); //$NON-NLS-1$
         }
         comps.addElement(comp);
     }

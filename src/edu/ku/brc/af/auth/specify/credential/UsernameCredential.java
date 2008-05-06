@@ -1,8 +1,10 @@
 package edu.ku.brc.af.auth.specify.credential;
 
+import edu.ku.brc.ui.UIRegistry;
 
 
-@SuppressWarnings("serial")
+
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class UsernameCredential extends Credential
 {
     private String name;
@@ -11,7 +13,7 @@ public class UsernameCredential extends Credential
     {
         if (name == null)
         {
-            throw new NullPointerException("name and/or id may not be null.");
+            throw new NullPointerException("name and/or id may not be null."); //$NON-NLS-1$
         } 
         else
         {
@@ -52,10 +54,10 @@ public class UsernameCredential extends Credential
     public String toString()
     {
         StringBuffer buf = new StringBuffer();
-        buf.append("(");
-        buf.append("UsernameCredential: name=");
+        buf.append("("); //$NON-NLS-1$
+        buf.append("UsernameCredential: name="); //$NON-NLS-1$
         buf.append(getName());
-        buf.append(")");
+        buf.append(")"); //$NON-NLS-1$
         return buf.toString();
     }
 }

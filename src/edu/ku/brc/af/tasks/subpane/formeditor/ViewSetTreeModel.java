@@ -61,19 +61,19 @@ public class ViewSetTreeModel implements TreeModel
      */
     public Object getChild(Object parent, int index)
     {
-        System.out.println(parent + " " + index);
+        System.out.println(parent + " " + index); //$NON-NLS-1$
         
-        if (parent.toString().equals("Views"))
+        if (parent.toString().equals("Views")) //$NON-NLS-1$
         {
             return views.get(index);
             
-        } else if (parent.toString().equals("ViewDefs"))
+        } else if (parent.toString().equals("ViewDefs")) //$NON-NLS-1$
         {
             return viewDefs.get(index);
             
         } else if (parent instanceof ViewSet)
         {
-            return index == 0 ? "Views" : "ViewDefs";
+            return index == 0 ? "Views" : "ViewDefs"; //$NON-NLS-1$ //$NON-NLS-2$
             
         } else if (parent instanceof FormViewDef)
         {
@@ -106,11 +106,11 @@ public class ViewSetTreeModel implements TreeModel
      */
     public int getChildCount(Object parent)
     {
-        if (parent.toString().equals("Views"))
+        if (parent.toString().equals("Views")) //$NON-NLS-1$
         {
             return viewSet.getViews().size();
             
-        } else if (parent.toString().equals("ViewDefs"))
+        } else if (parent.toString().equals("ViewDefs")) //$NON-NLS-1$
         {
             return viewSet.getViewDefs().size();
             
@@ -166,11 +166,11 @@ public class ViewSetTreeModel implements TreeModel
      */
     public boolean isLeaf(Object node)
     {
-        if (node.toString().equals("Views"))
+        if (node.toString().equals("Views")) //$NON-NLS-1$
         {
             return viewSet.getViews().size() == 0;
             
-        } else if (node.toString().equals("ViewDefs"))
+        } else if (node.toString().equals("ViewDefs")) //$NON-NLS-1$
         {
             return viewSet.getViewDefs().size() == 0;
             

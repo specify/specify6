@@ -50,7 +50,7 @@ public class DBConnection
     
     protected Connection connection = null;
      
-    protected String     errMsg = "";
+    protected String     errMsg = ""; //$NON-NLS-1$
     
     // Static Data Members
     protected static final DBConnection instance = new DBConnection();
@@ -87,27 +87,27 @@ public class DBConnection
             {
                 if (StringUtils.isEmpty(dbConnectionStr))
                 {
-                    errMsg = getResourceString("NO_DB_NAME");
+                    errMsg = getResourceString("DBConnection.NO_DB_NAME"); //$NON-NLS-1$
                     return null;
                 }
                 if (StringUtils.isEmpty(dbConnectionStr))
                 {
-                    errMsg = getResourceString("NO_DB_CONN_STR");
+                    errMsg = getResourceString("DBConnection.NO_DB_CONN_STR"); //$NON-NLS-1$
                     return null;
                 }
                 if (StringUtils.isEmpty(dbUsername))
                 {
-                    errMsg = getResourceString("NO_DB_USERNAME");//"The Username is empty.";
+                    errMsg = getResourceString("DBConnection.NO_DB_USERNAME");//"The Username is empty."; //$NON-NLS-1$
                     return null;
                 }
                 if (StringUtils.isEmpty(dbPassword))
                 {
-                    errMsg = getResourceString("NO_DB_PASSWORD");//"The Password is empty.";
+                    errMsg = getResourceString("DBConnection.NO_DB_PASSWORD");//"The Password is empty."; //$NON-NLS-1$
                     return null;
                 }
                 if (StringUtils.isEmpty(dbDriver))
                 {
-                    errMsg = getResourceString("NO_DB_DRIVER");
+                    errMsg = getResourceString("DBConnection.NO_DB_DRIVER"); //$NON-NLS-1$
                     return null;
                 }
                 argHaveBeenChecked = true;

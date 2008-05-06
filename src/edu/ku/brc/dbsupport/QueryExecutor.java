@@ -57,10 +57,10 @@ public class QueryExecutor
     public static void executeQuery(final CustomQueryIFace customQuery)
     {
         // create a background thread to do the web service work
-        @SuppressWarnings("unused")
+        @SuppressWarnings("unused") //$NON-NLS-1$
         Callable<CustomQueryIFace> customQueryWorker = new Callable<CustomQueryIFace>()
         {
-            @SuppressWarnings("synthetic-access")
+            @SuppressWarnings("synthetic-access") //$NON-NLS-1$
             public CustomQueryIFace call() throws Exception
             {
                 customQuery.execute();
@@ -77,10 +77,10 @@ public class QueryExecutor
     public static void executeQuery(final SQLExecutionProcessor sqlExeProc)
     {
         // create a background thread to do the web service work
-        @SuppressWarnings("unused")
+        @SuppressWarnings("unused") //$NON-NLS-1$
         Callable<SQLExecutionProcessor> sqlExeProcWorker = new Callable<SQLExecutionProcessor>()
         {
-            @SuppressWarnings("synthetic-access")
+            @SuppressWarnings("synthetic-access") //$NON-NLS-1$
             public SQLExecutionProcessor call() throws Exception
             {
                 sqlExeProc.execute();

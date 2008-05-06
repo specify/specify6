@@ -75,12 +75,12 @@ import edu.ku.brc.ui.forms.validation.DataChangeNotifier;
  * @author rods
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class PreferencesDlg extends CustomDialog implements DataChangeListener
 {
     protected static final Logger log = Logger.getLogger(PreferencesDlg.class);
     
-    public static final String PREFERENCES = "Preferences";
+    public static final String PREFERENCES = "Preferences"; //$NON-NLS-1$
     
     protected JTextField    searchText;
     protected JButton       searchBtn;
@@ -104,7 +104,7 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
      */
     public PreferencesDlg(final boolean addSearchUI)
     {
-        super((Frame)UIRegistry.getTopWindow(), getResourceString("PREFERENCES"), true, OKCANCELHELP, null);
+        super((Frame)UIRegistry.getTopWindow(), getResourceString("PreferencesDlg.PREFERENCES"), true, OKCANCELHELP, null); //$NON-NLS-1$
 
         createUI();
         initAsToolbar(addSearchUI);
@@ -124,7 +124,7 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
         
         if (prefsToolbar.getNumPrefs() > 1)
         {
-            PanelBuilder    builder    = new PanelBuilder(new FormLayout("l:p, p, r:p:g", "p"));
+            PanelBuilder    builder    = new PanelBuilder(new FormLayout("l:p, p, r:p:g", "p")); //$NON-NLS-1$ //$NON-NLS-2$
             CellConstraints cc         = new CellConstraints();
     
             builder.add( prefsToolbar, cc.xy(1,1));
@@ -174,7 +174,7 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
         SwingUtilities.invokeLater(new Runnable() {
             public void run()
             {
-                CommandAction cmdAction = new CommandAction(PREFERENCES, "Updated", AppPreferences.getRemote());
+                CommandAction cmdAction = new CommandAction(PREFERENCES, "Updated", AppPreferences.getRemote()); //$NON-NLS-1$
                 cmdAction.addProperties(changesHash);
                 CommandDispatcher.dispatch(cmdAction);
             }
@@ -225,10 +225,10 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
     protected void initAsGrid(final boolean addSearchUI)
     {
 
-        PanelBuilder    builder    = new PanelBuilder(new FormLayout("l:p, p:g, r:p:g", "p"));
+        PanelBuilder    builder    = new PanelBuilder(new FormLayout("l:p, p:g, r:p:g", "p")); //$NON-NLS-1$ //$NON-NLS-2$
         CellConstraints cc         = new CellConstraints();
 
-        JButton showAllBtn = createButton(getResourceString("showall"));
+        JButton showAllBtn = createButton(getResourceString("PreferencesDlg.SHOW_ALL")); //$NON-NLS-1$
 
         builder.add(showAllBtn, cc.xy(1,1));
         if (addSearchUI)
@@ -241,7 +241,7 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
 
         prefsPane = new PrefsToolbar(this);
 
-        firstPanelName = "Main";
+        firstPanelName = "Main"; //$NON-NLS-1$
         addPanel(firstPanelName, prefsPane);
         
         showPanel(firstPanelName);
@@ -392,11 +392,11 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
         GridBagConstraints c = new GridBagConstraints();
 
         JPanel     searchPanel = new JPanel(gridbag);
-        JLabel     spacer      = createLabel(" ");
+        JLabel     spacer      = createLabel(" "); //$NON-NLS-1$
 
-        searchBtn   = createButton(getResourceString("Search"));
+        searchBtn   = createButton(getResourceString("PreferencesDlg.SEARCH")); //$NON-NLS-1$
 
-        searchText  = createTextField("", 10);
+        searchText  = createTextField("", 10); //$NON-NLS-1$
         textBGColor = searchText.getBackground();
 
         searchText.setMinimumSize(new Dimension(50, searchText.getPreferredSize().height));
@@ -471,7 +471,7 @@ public class PreferencesDlg extends CustomDialog implements DataChangeListener
             // but check all the forms
             if (!pp.isFormValid())
             {
-                log.debug("false="+pp.getValidator().getName());
+                log.debug("false="+pp.getValidator().getName()); //$NON-NLS-1$
                 okToEnable = false;
                 break;
             }

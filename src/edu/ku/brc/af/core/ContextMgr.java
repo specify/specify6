@@ -124,7 +124,7 @@ public class ContextMgr
     {
         if (name == null)
         {
-            throw new NullPointerException("Name arg is null in getTaskByName");
+            throw new NullPointerException("Name arg is null in getTaskByName"); //$NON-NLS-1$
         }
 
         // Sequential search (Could use binary but list is short)
@@ -135,7 +135,7 @@ public class ContextMgr
                 return task;
             }
         }
-        log.error("Couldn't find task by name["+name+"]");
+        log.error("Couldn't find task by name["+name+"]"); //$NON-NLS-1$ //$NON-NLS-2$
         return null;
     }
 
@@ -148,7 +148,7 @@ public class ContextMgr
     {
         if (theClass == null)
         {
-            throw new NullPointerException("Class arg is null in getTaskByClass");
+            throw new NullPointerException("Class arg is null in getTaskByClass"); //$NON-NLS-1$
         }
 
         // Sequential search (Could use binary but list is short)
@@ -159,7 +159,7 @@ public class ContextMgr
                 return task;
             }
         }
-        log.error("Couldn't find task by class ["+theClass.getSimpleName()+"]");
+        log.error("Couldn't find task by class ["+theClass.getSimpleName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
         return null;
     }
 

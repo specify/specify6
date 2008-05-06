@@ -32,19 +32,19 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "localityDescription",
-    "hwyX",
-    "findWaterbody"
+@XmlType(name = "", propOrder = { //$NON-NLS-1$
+    "localityDescription", //$NON-NLS-1$
+    "hwyX", //$NON-NLS-1$
+    "findWaterbody" //$NON-NLS-1$
 })
-@XmlRootElement(name = "Georef")
+@XmlRootElement(name = "Georef") //$NON-NLS-1$
 public class Georef {
 
-    @XmlElement(name = "LocalityDescription", namespace = "http://www.museum.tulane.edu/webservices/", required = true)
+    @XmlElement(name = "LocalityDescription", namespace = "http://www.museum.tulane.edu/webservices/", required = true) //$NON-NLS-1$ //$NON-NLS-2$
     protected LocalityDescription localityDescription;
-    @XmlElement(name = "HwyX", namespace = "http://www.museum.tulane.edu/webservices/")
+    @XmlElement(name = "HwyX", namespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
     protected boolean hwyX;
-    @XmlElement(name = "FindWaterbody", namespace = "http://www.museum.tulane.edu/webservices/")
+    @XmlElement(name = "FindWaterbody", namespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
     protected boolean findWaterbody;
 
     /**

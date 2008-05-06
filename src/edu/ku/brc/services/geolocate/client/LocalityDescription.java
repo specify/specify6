@@ -30,21 +30,21 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "LocalityDescription", propOrder = {
-    "localityString",
-    "country",
-    "state",
-    "county"
+@XmlType(name = "LocalityDescription", propOrder = { //$NON-NLS-1$
+    "localityString", //$NON-NLS-1$
+    "country", //$NON-NLS-1$
+    "state", //$NON-NLS-1$
+    "county" //$NON-NLS-1$
 })
 public class LocalityDescription {
 
-    @XmlElement(name = "LocalityString", namespace = "http://www.museum.tulane.edu/webservices/")
+    @XmlElement(name = "LocalityString", namespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
     protected String localityString;
-    @XmlElement(name = "Country", namespace = "http://www.museum.tulane.edu/webservices/")
+    @XmlElement(name = "Country", namespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
     protected String country;
-    @XmlElement(name = "State", namespace = "http://www.museum.tulane.edu/webservices/")
+    @XmlElement(name = "State", namespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
     protected String state;
-    @XmlElement(name = "County", namespace = "http://www.museum.tulane.edu/webservices/")
+    @XmlElement(name = "County", namespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
     protected String county;
 
     /**

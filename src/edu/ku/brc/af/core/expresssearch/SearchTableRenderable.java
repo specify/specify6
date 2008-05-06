@@ -67,7 +67,7 @@ class SearchTableRenderable extends TableInfoRenderable
             
         } else
         {
-            throw new RuntimeException("Can't set display order fields");
+            throw new RuntimeException("Can't set display order fields"); //$NON-NLS-1$
         }
     }
 
@@ -112,7 +112,7 @@ class SearchTableRenderable extends TableInfoRenderable
             
         } else
         {
-            throw new RuntimeException("Can't sort fields");
+            throw new RuntimeException("Can't sort fields"); //$NON-NLS-1$
         }
     }
 }

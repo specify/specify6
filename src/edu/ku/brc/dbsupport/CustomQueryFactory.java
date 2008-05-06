@@ -19,7 +19,7 @@ import java.security.PrivilegedAction;
  */
 public abstract class CustomQueryFactory
 {
-    public static final String factoryName = "edu.ku.brc.dbsupport.CustomQueryFactory";
+    public static final String factoryName = "edu.ku.brc.dbsupport.CustomQueryFactory"; //$NON-NLS-1$
     
     protected static CustomQueryFactory instance = null;
     
@@ -58,7 +58,7 @@ public abstract class CustomQueryFactory
                  
             } catch (Exception e) 
             {
-                InternalError error = new InternalError("Can't instantiate CustomQueryFactory factory " + factoryNameStr);
+                InternalError error = new InternalError("Can't instantiate CustomQueryFactory factory " + factoryNameStr); //$NON-NLS-1$
                 error.initCause(e);
                 throw error;
             }

@@ -28,15 +28,15 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "GeographicPoint", propOrder = {
-    "latitude",
-    "longitude"
+@XmlType(name = "GeographicPoint", propOrder = { //$NON-NLS-1$
+    "latitude", //$NON-NLS-1$
+    "longitude" //$NON-NLS-1$
 })
 public class GeographicPoint {
 
-    @XmlElement(name = "Latitude", namespace = "http://www.museum.tulane.edu/webservices/")
+    @XmlElement(name = "Latitude", namespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
     protected double latitude;
-    @XmlElement(name = "Longitude", namespace = "http://www.museum.tulane.edu/webservices/")
+    @XmlElement(name = "Longitude", namespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
     protected double longitude;
 
     /**

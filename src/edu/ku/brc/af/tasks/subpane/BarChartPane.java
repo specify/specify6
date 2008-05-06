@@ -48,7 +48,7 @@ import edu.ku.brc.ui.IconManager;
  * @author rods
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class BarChartPane extends ChartPane
 {
     // Static Data Members
@@ -66,7 +66,7 @@ public class BarChartPane extends ChartPane
                         final Taskable task)
     {
         super(name, task);
-        progressLabel.setText(getResourceString("BuildingBarChart"));
+        progressLabel.setText(getResourceString("BarChartPane.BUILD_BARCHART")); //$NON-NLS-1$
     }
     
     /*
@@ -76,7 +76,7 @@ public class BarChartPane extends ChartPane
     @Override
     public Icon getIcon()
     {
-        return IconManager.getIcon("Bar_Chart", IconManager.IconSize.Std16);
+        return IconManager.getIcon("Bar_Chart", IconManager.IconSize.Std16); //$NON-NLS-1$
     }
     
     //--------------------------------------
@@ -129,7 +129,7 @@ public class BarChartPane extends ChartPane
     public synchronized void allResultsBack(final QueryResultsContainerIFace qrc)
     {
         // create a dataset... 
-        String cat = "";
+        String cat = ""; //$NON-NLS-1$
         DefaultCategoryDataset dataset = new DefaultCategoryDataset(); 
         
         java.util.List<Object> list = handler.getDataObjects();
@@ -169,7 +169,7 @@ public class BarChartPane extends ChartPane
     public void resultsInError(final QueryResultsContainerIFace qrc)
     {
         //JOptionPane.showMessageDialog(this, getResourceString("ERROR_CREATNG_BARCHART"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); // XXX LOCALIZE
-        JLabel lbl = createLabel(getResourceString("ERROR_CREATNG_BARCHART"), SwingConstants.CENTER);
+        JLabel lbl = createLabel(getResourceString("BarChartPane.ERROR_CREATNG_BARCHART"), SwingConstants.CENTER); //$NON-NLS-1$
         addCompletedComp(lbl);
     }
 }

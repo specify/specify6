@@ -12,6 +12,8 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
+import edu.ku.brc.ui.UIRegistry;
+
 /**
  * An implementation of {@link TableModel} for use in presenting an array of {@link BioGeomancerResultStruct}s
  * for display in a {@link JTable}.
@@ -60,47 +62,47 @@ public class BioGeomancerResultsTableModel extends AbstractTableModel
         {
             case 0:
             {
-                return getResourceString("Id");
+                return getResourceString("BioGeomancerResultsTableModel.ID"); //$NON-NLS-1$
             }
             case 1:
             {
-                return getResourceString("Country");
+                return getResourceString("BioGeomancerResultsTableModel.COUNTRY"); //$NON-NLS-1$
             }
             case 2:
             {
-                return getResourceString("Adm1");
+                return getResourceString("BioGeomancerResultsTableModel.ADM1"); //$NON-NLS-1$
             }
             case 3:
             {
-                return getResourceString("Adm2");
+                return getResourceString("BioGeomancerResultsTableModel.ADM2"); //$NON-NLS-1$
             }
             case 4:
             {
-                return getResourceString("FeatureName");
+                return getResourceString("BioGeomancerResultsTableModel.FEATURE_NAME"); //$NON-NLS-1$
             }
             case 5:
             {
-                return getResourceString("FeatureType");
+                return getResourceString("BioGeomancerResultsTableModel.FEATURE_TYPE"); //$NON-NLS-1$
             }
             case 6:
             {
-                return getResourceString("Gazetteer");
+                return getResourceString("BioGeomancerResultsTableModel.GASETTEER"); //$NON-NLS-1$
             }
             case 7:
             {
-                return getResourceString("Coordinates");
+                return getResourceString("BioGeomancerResultsTableModel.COORDINATES"); //$NON-NLS-1$
             }
             case 8:
             {
-                return getResourceString("Offset");
+                return getResourceString("BioGeomancerResultsTableModel.OFFSET"); //$NON-NLS-1$
             }
             case 9:
             {
-                return getResourceString("BoundingBox");
+                return getResourceString("BioGeomancerResultsTableModel.BOUNDINGBOX"); //$NON-NLS-1$
             }
             case 10:
             {
-                return getResourceString("Locality");
+                return getResourceString("BioGeomancerResultsTableModel.LOCALITY"); //$NON-NLS-1$
             }
         }
         

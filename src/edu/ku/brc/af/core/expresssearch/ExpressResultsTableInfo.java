@@ -16,6 +16,7 @@
 package edu.ku.brc.af.core.expresssearch;
 
 import static edu.ku.brc.helpers.XMLHelper.getAttr;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Color;
 import java.util.Iterator;
@@ -30,6 +31,7 @@ import org.dom4j.Element;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.ERTICaptionInfo;
 
 /**
@@ -87,22 +89,22 @@ public class ExpressResultsTableInfo
     public void fill(final Element        tableElement,
                      final ResourceBundle resBundle)
     {
-        id              = tableElement.attributeValue("id");
-        tableId         = tableElement.attributeValue("tableid");
-        name            = tableElement.attributeValue("name");
-        color           = UIHelper.parseRGB(tableElement.attributeValue("color"));
+        id              = tableElement.attributeValue("id"); //$NON-NLS-1$
+        tableId         = tableElement.attributeValue("tableid"); //$NON-NLS-1$
+        name            = tableElement.attributeValue("name"); //$NON-NLS-1$
+        color           = UIHelper.parseRGB(tableElement.attributeValue("color")); //$NON-NLS-1$
 
         if (isExpressSearch)
         {
             title = resBundle.getString(name);
             if (StringUtils.isEmpty(title))
             {
-                log.error("Express Search with name["+name+"] is missing it's title in the expressearch properties file.");
+                log.error("Express Search with name["+name+"] is missing it's title in the expressearch properties file."); //$NON-NLS-1$ //$NON-NLS-2$
             }
-            description = resBundle.getString(name + "_desc");
+            description = resBundle.getString(name + "_desc"); //$NON-NLS-1$
             if (StringUtils.isEmpty(description))
             {
-                log.error("Express Search with name["+name+"] is missing it's description in the expressearch properties file.");
+                log.error("Express Search with name["+name+"] is missing it's description in the expressearch properties file."); //$NON-NLS-1$ //$NON-NLS-2$
             }
         } else
         {
@@ -115,17 +117,17 @@ public class ExpressResultsTableInfo
         
         if (StringUtils.isEmpty(title))
         {
-            title = "(No Title)";  // XXX This should never happen! I18N
+            title = getResourceString("ExpressResultsTableInfo.NOTITLE");  // XXX This should never happen! //$NON-NLS-1$
         }
         
-        Element viewElement   = (Element)tableElement.selectSingleNode("detailView");
-        Element sqlElement    = (Element)viewElement.selectSingleNode("sql");
+        Element viewElement   = (Element)tableElement.selectSingleNode("detailView"); //$NON-NLS-1$
+        Element sqlElement    = (Element)viewElement.selectSingleNode("sql"); //$NON-NLS-1$
         
-        isFieldNameOnlyForSQL = getAttr(sqlElement, "fieldnameonly", false);
+        isFieldNameOnlyForSQL = getAttr(sqlElement, "fieldnameonly", false); //$NON-NLS-1$
         viewSql               = StringUtils.strip(sqlElement.getText());
-        iconName              = viewElement.attributeValue("icon");
+        iconName              = viewElement.attributeValue("icon"); //$NON-NLS-1$
 
-        List<?> captionItems = viewElement.selectNodes("captions/caption");
+        List<?> captionItems = viewElement.selectNodes("captions/caption"); //$NON-NLS-1$
         if (captionItems.size() > 0)
         {
             int captionCount = captionItems.size();
@@ -159,10 +161,10 @@ public class ExpressResultsTableInfo
             
         } else
         {
-            throw new RuntimeException("No Captions!");
+            throw new RuntimeException("No Captions!"); //$NON-NLS-1$
         }
         
-        List<?> joinColItems = tableElement.selectNodes("joins/join");
+        List<?> joinColItems = tableElement.selectNodes("joins/join"); //$NON-NLS-1$
         if (joinColItems != null && joinColItems.size() > 0)
         {
             joinCols = new ERTIJoinColInfo[joinColItems.size()];

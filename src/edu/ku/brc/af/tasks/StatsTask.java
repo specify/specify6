@@ -49,15 +49,15 @@ import edu.ku.brc.ui.ToolBarDropDownBtn;
 public class StatsTask extends BaseTask
 {
     // Static Data Members
-    public static final String STATISTICS = "Statistics";
+    public static final String STATISTICS = "Statistics"; //$NON-NLS-1$
 
     private static final Logger log = Logger.getLogger(StatsTask.class);
 
-    protected static final String DISPLAY   = "display";
-    protected static final String BAR_CHART = "bar chart";
-    protected static final String PIE_CHART = "pie chart";
-    protected static final String TABLE     = "table";
-    protected static final String FORM      = "form";
+    protected static final String DISPLAY   = "display"; //$NON-NLS-1$
+    protected static final String BAR_CHART = "bar chart"; //$NON-NLS-1$
+    protected static final String PIE_CHART = "pie chart"; //$NON-NLS-1$
+    protected static final String TABLE     = "table"; //$NON-NLS-1$
+    protected static final String FORM      = "form"; //$NON-NLS-1$
 
 
     // Data Members
@@ -83,42 +83,42 @@ public class StatsTask extends BaseTask
             
             try
             {
-                panelDOM = AppContextMgr.getInstance().getResourceAsDOM("StatisticsPanel");   // contains a description of the NavBoxes
+                panelDOM = AppContextMgr.getInstance().getResourceAsDOM("StatisticsPanel");   // contains a description of the NavBoxes //$NON-NLS-1$
                 if (panelDOM == null)
                 {
-                    log.error("Couldn't load StatisticsPanel");
+                    log.error("Couldn't load StatisticsPanel"); //$NON-NLS-1$
                     return;
                 }
             } catch (Exception ex)
             {
-                log.error("Couldn't load `StatisticsPanel` " +ex);
+                log.error("Couldn't load `StatisticsPanel` " +ex); //$NON-NLS-1$
             }
     
             // Process the NavBox Panel and create all the commands
             // XXX This needs to be made generic so everyone can use it
             //
-            List<?> boxes = panelDOM.selectNodes("/boxes/box");
+            List<?> boxes = panelDOM.selectNodes("/boxes/box"); //$NON-NLS-1$
             for ( Iterator<?> iter = boxes.iterator(); iter.hasNext(); )
             {
                 Element box = (Element) iter.next();
-                NavBox navBox = new NavBox(box.attributeValue("title"));
+                NavBox navBox = new NavBox(box.attributeValue("title")); //$NON-NLS-1$
     
-                List<?> items = box.selectNodes("item");
+                List<?> items = box.selectNodes("item"); //$NON-NLS-1$
                 for ( Iterator<?> iter2 = items.iterator(); iter2.hasNext(); )
                 {
                     Element item = (Element) iter2.next();
-                    String boxName  = item.attributeValue("name");
-                    String boxTitle = item.attributeValue("title");
-                    String type     = item.attributeValue("type");
+                    String boxName  = item.attributeValue("name"); //$NON-NLS-1$
+                    String boxTitle = item.attributeValue("title"); //$NON-NLS-1$
+                    String type     = item.attributeValue("type"); //$NON-NLS-1$
                     ActionListener action = null;
                     if (type.toLowerCase().equals(PIE_CHART))
                     {
-                        type = "Pie_Chart";
+                        type = "Pie_Chart"; //$NON-NLS-1$
                         action = new DisplayAction(boxName);
     
                     } else if (type.toLowerCase().equals(BAR_CHART))
                     {
-                        type = "Bar_Chart";
+                        type = "Bar_Chart"; //$NON-NLS-1$
                         action = new DisplayAction(boxName);
                     }
     
@@ -135,7 +135,7 @@ public class StatsTask extends BaseTask
     @Override
     public SubPaneIFace getStarterPane()
     {
-        return starterPane = new StatsPane(name, this, "StatsSummaryPanel", true, null);
+        return starterPane = new StatsPane(name, this, "StatsSummaryPanel", true, null); //$NON-NLS-1$
     }
 
     /**
@@ -169,7 +169,7 @@ public class StatsTask extends BaseTask
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
         String label = getResourceString(name);
         String iconName = name;
-        String hint = getResourceString("stats_hint");
+        String hint = getResourceString("stats_hint"); //$NON-NLS-1$
         ToolBarDropDownBtn      btn  = createToolbarButton(label, iconName, hint);
 
 

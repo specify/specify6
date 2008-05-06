@@ -35,7 +35,7 @@ import edu.ku.brc.ui.dnd.DataActionEvent;
  */
 public class NavBoxAction implements ActionListener
 {
-    public static final String ORGINATING_TASK = "OriginatingTask";
+    public static final String ORGINATING_TASK = "OriginatingTask"; //$NON-NLS-1$
     
     private static final Logger log = Logger.getLogger(NavBoxAction.class);
     
@@ -61,8 +61,8 @@ public class NavBoxAction implements ActionListener
     public NavBoxAction(final TaskCommandDef tcd, Taskable origTask)
     {
         this.originatingTask = origTask;
-        this.type            = tcd.getParams().getProperty("type");
-        this.action          = tcd.getParams().getProperty("action");
+        this.type            = tcd.getParams().getProperty("type"); //$NON-NLS-1$
+        this.action          = tcd.getParams().getProperty("action"); //$NON-NLS-1$
         
         this.properties = new Properties();
         this.properties.putAll(tcd.getParams());
@@ -198,7 +198,7 @@ public class NavBoxAction implements ActionListener
                 
             } else
             {
-                log.debug("Type and/or Action was NULL!");
+                log.debug("Type and/or Action was NULL!"); //$NON-NLS-1$
             }
         }
     }

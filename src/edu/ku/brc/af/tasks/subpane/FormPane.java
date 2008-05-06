@@ -33,7 +33,7 @@ import edu.ku.brc.ui.forms.persist.ViewIFace;
  * @author rods
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class FormPane extends DroppableTaskPane
 {
     protected String         viewSetName   = null;
@@ -99,7 +99,7 @@ public class FormPane extends DroppableTaskPane
                     final int      options,
                     final FormPaneAdjusterIFace adjuster)
     {
-        this(name, task, "");
+        this(name, task, ""); //$NON-NLS-1$
 
         this.viewSetName = viewSetName;
         this.viewName    = viewName;
@@ -123,7 +123,7 @@ public class FormPane extends DroppableTaskPane
                     final Object    data,
                     final int       options)
     {
-        this(name, task, "");
+        this(name, task, ""); //$NON-NLS-1$
 
         this.viewSetName = view.getViewSetName();
         this.viewName    = view.getName();
@@ -383,7 +383,7 @@ public class FormPane extends DroppableTaskPane
             }
         } else
         {
-            throw new RuntimeException("The View was null!");
+            throw new RuntimeException("The View was null!"); //$NON-NLS-1$
         }
     }
     

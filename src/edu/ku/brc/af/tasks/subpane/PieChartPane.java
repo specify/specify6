@@ -45,16 +45,16 @@ import edu.ku.brc.ui.IconManager;
  * @author rods
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class PieChartPane extends ChartPane
 {
     // Static Data Members
     //private static final Logger log = Logger.getLogger(BarChartPane.class);
 
     // Data Members
-    @SuppressWarnings("unused")
+    @SuppressWarnings("unused") //$NON-NLS-1$
     private QueryResultsGetter       getter;
-    @SuppressWarnings("unused")
+    @SuppressWarnings("unused") //$NON-NLS-1$
     private QueryResultsContainer    qrContainer;
     private QueryResultsHandlerIFace handler = null;
 
@@ -69,7 +69,7 @@ public class PieChartPane extends ChartPane
     {
         super(name, task);
 
-        progressLabel.setText(getResourceString("BuildingPieChart"));
+        progressLabel.setText(getResourceString("PieChartPane.BUILD_PIECHART")); //$NON-NLS-1$
 
         getter      = new QueryResultsGetter(this);
         qrContainer = new QueryResultsContainer(name);
@@ -82,7 +82,7 @@ public class PieChartPane extends ChartPane
     @Override
     public Icon getIcon()
     {
-        return IconManager.getIcon("Pie_Chart", IconManager.IconSize.Std16);
+        return IconManager.getIcon("Pie_Chart", IconManager.IconSize.Std16); //$NON-NLS-1$
     }
 
 
@@ -141,7 +141,7 @@ public class PieChartPane extends ChartPane
         //chart.getCategoryPlot().setRenderer(new CustomColorBarChartRenderer());
         
         PiePlot plot = (PiePlot) chart.getPlot();
-        plot.setLabelFont(new Font("SansSerif", Font.PLAIN, 11));
+        plot.setLabelFont(new Font("SansSerif", Font.PLAIN, 11)); //$NON-NLS-1$
         
         /*
         PiePlot3D plot = (PiePlot3D) chart.getPlot();

@@ -19,7 +19,9 @@ import java.security.Principal;
 
 import org.apache.log4j.Logger;
 
-@SuppressWarnings("serial")
+import edu.ku.brc.ui.UIRegistry;
+
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class BasicPrincipal implements Principal, Serializable
 {
     protected static final Logger log = Logger.getLogger(BasicPrincipal.class);
@@ -36,7 +38,7 @@ public class BasicPrincipal implements Principal, Serializable
     public BasicPrincipal()
     {
     	this.id = null;
-        this.name = "";
+        this.name = ""; //$NON-NLS-1$
     }
     
 	public Integer getId() {
@@ -70,7 +72,7 @@ public class BasicPrincipal implements Principal, Serializable
     public String toString()
     {
         String className = getClass().getName();
-        return className.substring(className.lastIndexOf('.') + 1) + ": " + name + " [" + getName() + "]";
+        return className.substring(className.lastIndexOf('.') + 1) + ": " + name + " [" + getName() + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     /**
@@ -90,7 +92,7 @@ public class BasicPrincipal implements Principal, Serializable
 
         if (name.equals(null))
         {
-            log.debug("BasicPrincipal.equals - Name is null");
+            log.debug("BasicPrincipal.equals - Name is null"); //$NON-NLS-1$
         }
         if (o instanceof AdminPrincipal)
         {

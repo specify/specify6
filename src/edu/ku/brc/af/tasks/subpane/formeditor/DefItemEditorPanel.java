@@ -74,11 +74,11 @@ public class DefItemEditorPanel extends JPanel
         String sepStr  = item.getSepDefStr();
         if (StringUtils.isEmpty(cellStr))
         {
-            cellStr = "p";
+            cellStr = "p"; //$NON-NLS-1$
         }
         if (StringUtils.isEmpty(sepStr))
         {
-            sepStr = "2px";
+            sepStr = "2px"; //$NON-NLS-1$
         }
         cellItem = new JGoodiesDefItem(cellStr, isRow);
         sepItem  = new JGoodiesDefItem(sepStr, isRow);
@@ -119,7 +119,7 @@ public class DefItemEditorPanel extends JPanel
         autoCB.setSelected(true);
         
         CellConstraints cc = new CellConstraints();
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g,p,16px,p,f:p:g", "p"));
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g,p,16px,p,f:p:g", "p")); //$NON-NLS-1$ //$NON-NLS-2$
         pb.add(listCB, cc.xy(2, 1));
         pb.add(autoCB, cc.xy(4, 1));
         
@@ -145,7 +145,7 @@ public class DefItemEditorPanel extends JPanel
         sepItemPanel = new DefItemPropPanel(numInUse, isRow);
         
         CellConstraints cc = new CellConstraints();
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,16px,p", "p,2px,p"));
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,16px,p", "p,2px,p")); //$NON-NLS-1$ //$NON-NLS-2$
 
         pb.addSeparator((isRow ? "Row" : "Column") + " Item", cc.xy(1, 1));
         pb.add(cellItemPanel, cc.xy(1,3));

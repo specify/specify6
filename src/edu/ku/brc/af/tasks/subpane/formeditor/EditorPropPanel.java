@@ -6,6 +6,8 @@
  */
 package edu.ku.brc.af.tasks.subpane.formeditor;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -129,7 +131,7 @@ public class EditorPropPanel extends JPanel
                     }
                     if (pcl != null)
                     {
-                        pcl.propertyChange(new PropertyChangeEvent(EditorPropPanel.this, "accept", data, data));
+                        pcl.propertyChange(new PropertyChangeEvent(EditorPropPanel.this, "accept", data, data)); //$NON-NLS-1$
                     }
                 }
             });
@@ -180,7 +182,7 @@ public class EditorPropPanel extends JPanel
             {
                 if (data instanceof ViewDefIFace)
                 {
-                    JTextField typeLabel = (JTextField)formViewObj.getControlByName("type");
+                    JTextField typeLabel = (JTextField)formViewObj.getControlByName("type"); //$NON-NLS-1$
                     typeLabel.setText(UIHelper.makeNamePretty(data.getClass().getSimpleName()));
                     
                 } else if (data instanceof AltView)
@@ -196,7 +198,7 @@ public class EditorPropPanel extends JPanel
      */
     protected void setDataIntoUI(final AltView altView)
     {
-        ValComboBox cbx = (ValComboBox)formViewObj.getControlByName("defaultMode");
+        ValComboBox cbx = (ValComboBox)formViewObj.getControlByName("defaultMode"); //$NON-NLS-1$
         DefaultComboBoxModel model = (DefaultComboBoxModel)cbx.getModel();
         model.removeAllElements();
         
@@ -239,7 +241,7 @@ public class EditorPropPanel extends JPanel
      */
     protected void getDataFromUI(final AltView altView)
     {
-        ValComboBox cbx = (ValComboBox)formViewObj.getControlByName("defaultMode");
+        ValComboBox cbx = (ValComboBox)formViewObj.getControlByName("defaultMode"); //$NON-NLS-1$
         altView.setMode((AltViewIFace.CreationMode)cbx.getComboBox().getSelectedItem());
     }
     
@@ -268,7 +270,7 @@ public class EditorPropPanel extends JPanel
     protected void addSaveBtn(final MultiView mv)
     {
         CellConstraints cc = new CellConstraints();
-        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g,p" + (saveBtn != null ? ",5px,p" : ""), "p"));
+        PanelBuilder pb = new PanelBuilder(new FormLayout("f:p:g,p" + (saveBtn != null ? ",5px,p" : ""), "p")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         
         int x = 2;
         
@@ -323,7 +325,7 @@ public class EditorPropPanel extends JPanel
             
         } else
         {
-            log.error("Couldn't load panel for ["+viewName+"]");
+            log.error("Couldn't load panel for ["+viewName+"]"); //$NON-NLS-1$ //$NON-NLS-2$
         }
         validate();
         repaint();
@@ -357,7 +359,7 @@ public class EditorPropPanel extends JPanel
         
         setDataIntoBase(fc, rows, rowDefs, rowInx, cols, colDefs, colInx, false);
         
-        JTextField typeLabel = (JTextField)formViewObj.getControlByName("type");
+        JTextField typeLabel = (JTextField)formViewObj.getControlByName("type"); //$NON-NLS-1$
         typeLabel.setText(fc.getType().toString());
         
         if (fc instanceof FormCellLabel)
@@ -368,10 +370,10 @@ public class EditorPropPanel extends JPanel
             
             processImageNameCBX(fcl.getIconName());
             
-            ValCheckBox chkbx = (ValCheckBox)formViewObj.getControlByName("isRecordObj");
+            ValCheckBox chkbx = (ValCheckBox)formViewObj.getControlByName("isRecordObj"); //$NON-NLS-1$
             chkbx.setSelected(fcl.isRecordObj());
             
-            ((ValTextField)formViewObj.getControlByName("label")).setText(((FormCellLabel)fc).getLabel());
+            ((ValTextField)formViewObj.getControlByName("label")).setText(((FormCellLabel)fc).getLabel()); //$NON-NLS-1$
         }
         
         multiView.validateAll();
@@ -384,11 +386,11 @@ public class EditorPropPanel extends JPanel
      */
     protected ValComboBox processImageNameCBX(final String imageName)
     {
-        List<Pair<String, ImageIcon>> icons = IconManager.getListByType("datamodel", IconManager.IconSize.Std16);
+        List<Pair<String, ImageIcon>> icons = IconManager.getListByType("datamodel", IconManager.IconSize.Std16); //$NON-NLS-1$
         
-        ValComboBox cbx = (ValComboBox)formViewObj.getControlByName("imageNameCBX");
+        ValComboBox cbx = (ValComboBox)formViewObj.getControlByName("imageNameCBX"); //$NON-NLS-1$
         DefaultComboBoxModel model = (DefaultComboBoxModel)cbx.getModel();
-        model.addElement("None"); // I18N
+        model.addElement(getResourceString("EditorPropPanel.NONE")); //$NON-NLS-1$
         int inx = 0;
         int cnt = 1;
         for (Pair<String, ImageIcon> iconPair : icons)
@@ -410,10 +412,10 @@ public class EditorPropPanel extends JPanel
      */
     protected ValComboBox getIdCombobox(final String labelFor)
     {
-        ValComboBox cbx = (ValComboBox)formViewObj.getControlByName("labelForCBX");
+        ValComboBox cbx = (ValComboBox)formViewObj.getControlByName("labelForCBX"); //$NON-NLS-1$
     
         DefaultComboBoxModel model = (DefaultComboBoxModel)cbx.getModel();
-        model.addElement("None"); // I18N
+        model.addElement(getResourceString("EditorPropPanel.NONE")); //$NON-NLS-1$
         int inx = 0;
         if (StringUtils.isNotEmpty(labelFor))
         {
@@ -455,7 +457,7 @@ public class EditorPropPanel extends JPanel
         int cnt;
         
         String      fName   = fc.getName();
-        ValComboBox nameCBX = (ValComboBox)formViewObj.getControlByName("namecbx");
+        ValComboBox nameCBX = (ValComboBox)formViewObj.getControlByName("namecbx"); //$NON-NLS-1$
         if (StringUtils.isNotEmpty(fName) || enableNaming)
         {
             DefaultComboBoxModel model = (DefaultComboBoxModel)nameCBX.getModel();
@@ -464,7 +466,7 @@ public class EditorPropPanel extends JPanel
             for (DBFieldInfo fi : tableInfo.getFields())
             {
                 model.addElement(fi.getTitle());
-                System.out.println("["+fi.getName()+"]["+fName+"]");
+                System.out.println("["+fi.getName()+"]["+fName+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 if (fi.getTitle().equals(fName) || fi.getName().equals(fName))
                 {
                     inx = cnt;
@@ -499,11 +501,11 @@ public class EditorPropPanel extends JPanel
         {
             int rowDefsLeft = rowDefs - rows;
             
-            ValComboBox rowSpanCBX = (ValComboBox)formViewObj.getControlByName("rowspancbx");
+            ValComboBox rowSpanCBX = (ValComboBox)formViewObj.getControlByName("rowspancbx"); //$NON-NLS-1$
             DefaultComboBoxModel model = (DefaultComboBoxModel)rowSpanCBX.getModel();
             if (rowDefsLeft == 0)
             {
-                model.addElement("1");
+                model.addElement("1"); //$NON-NLS-1$
                 inx = 0;
                 rowSpanCBX.setEnabled(false);
                 
@@ -523,12 +525,12 @@ public class EditorPropPanel extends JPanel
                 rowSpanCBX.getComboBox().setSelectedIndex(inx);
             }
     
-            ValComboBox colSpanCBX = (ValComboBox)formViewObj.getControlByName("colspancbx");
+            ValComboBox colSpanCBX = (ValComboBox)formViewObj.getControlByName("colspancbx"); //$NON-NLS-1$
             model = (DefaultComboBoxModel)colSpanCBX.getModel();
             int colDefsLeft = colDefs - cols;
             if (colDefsLeft == 0)
             {
-                model.addElement("1");
+                model.addElement("1"); //$NON-NLS-1$
                 inx = 1;
                 colSpanCBX.setEnabled(false);
                 
@@ -549,10 +551,10 @@ public class EditorPropPanel extends JPanel
             }
         }
         
-        ValCheckBox chkbx = (ValCheckBox)formViewObj.getControlByName("ignoreSetGet");
+        ValCheckBox chkbx = (ValCheckBox)formViewObj.getControlByName("ignoreSetGet"); //$NON-NLS-1$
         chkbx.setSelected(fc.isIgnoreSetGet());
 
-        chkbx = (ValCheckBox)formViewObj.getControlByName("changeListenerOnly");
+        chkbx = (ValCheckBox)formViewObj.getControlByName("changeListenerOnly"); //$NON-NLS-1$
         chkbx.setSelected(fc.isChangeListenerOnly());
     }
     
@@ -561,10 +563,10 @@ public class EditorPropPanel extends JPanel
      */
     public void setDataIntoBase(final FormCellField fcf)
     {
-        ValCheckBox chkbx = (ValCheckBox)formViewObj.getControlByName("isRequired");
+        ValCheckBox chkbx = (ValCheckBox)formViewObj.getControlByName("isRequired"); //$NON-NLS-1$
         chkbx.setSelected(fcf.isRequired());
         
-        chkbx = (ValCheckBox)formViewObj.getControlByName("isReadOnly");
+        chkbx = (ValCheckBox)formViewObj.getControlByName("isReadOnly"); //$NON-NLS-1$
         chkbx.setSelected(fcf.isReadOnly());
     }
     
@@ -602,7 +604,7 @@ public class EditorPropPanel extends JPanel
         setDataIntoBase(fcf, rows, rowDefs, rowInx, cols, colDefs, colInx, true);
         setDataIntoBase(fcf);
         
-        JTextField typeLabel = (JTextField)formViewObj.getControlByName("type");
+        JTextField typeLabel = (JTextField)formViewObj.getControlByName("type"); //$NON-NLS-1$
         typeLabel.setText(fcf.getUiType().toString());
         
         /*
@@ -627,7 +629,7 @@ public class EditorPropPanel extends JPanel
         {
             DataProviderSessionIFace session    = DataProviderFactory.getInstance().createSession();
             List<?> pickLists = session.getDataList(PickList.class);
-            ValComboBox pickListCBX = (ValComboBox)formViewObj.getControlByName("picklistcbx");
+            ValComboBox pickListCBX = (ValComboBox)formViewObj.getControlByName("picklistcbx"); //$NON-NLS-1$
             DefaultComboBoxModel model = (DefaultComboBoxModel)pickListCBX.getModel();
             inx = 0;
             cnt = 1;
@@ -635,7 +637,7 @@ public class EditorPropPanel extends JPanel
             String dataPickListName = fcf.getPickListName();
     
             pickList.clear();
-            model.addElement("None"); // I18N
+            model.addElement(getResourceString("EditorPropPanel.NONE")); //$NON-NLS-1$
             for (Iterator<?> iter=pickLists.iterator();iter.hasNext();)
             {
                 PickList pl = (PickList)iter.next();
@@ -651,8 +653,8 @@ public class EditorPropPanel extends JPanel
             session.close();
             pickListCBX.getComboBox().setSelectedIndex(inx);
             
-            ValTextArea textArea = (ValTextArea)formViewObj.getControlByName("list");
-            String list = fcf.getProperty("list");
+            ValTextArea textArea = (ValTextArea)formViewObj.getControlByName("list"); //$NON-NLS-1$
+            String list = fcf.getProperty("list"); //$NON-NLS-1$
             if (list != null)
             {
                 textArea.setText(list);
@@ -667,14 +669,14 @@ public class EditorPropPanel extends JPanel
      */
     protected void getDataFromUIBase(final FormCell fc)
     {
-        ValComboBox cbx = (ValComboBox)formViewObj.getControlByName("namecbx");
+        ValComboBox cbx = (ValComboBox)formViewObj.getControlByName("namecbx"); //$NON-NLS-1$
         String fName = (String)cbx.getComboBox().getSelectedItem();
         if (StringUtils.isNotEmpty(fName))
         {
             boolean fnd = false;
             for (DBFieldInfo fi : tableInfo.getFields())
             {
-                System.out.println("["+fi.getName()+"]["+fName+"]");
+                System.out.println("["+fi.getName()+"]["+fName+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 if (fi.getTitle().equals(fName) || fi.getName().equals(fName))
                 {
                     fc.setName(fi.getName());
@@ -704,10 +706,10 @@ public class EditorPropPanel extends JPanel
      */
     protected void getDataFromUIBase(final FormCellField fcf)
     {
-        ValCheckBox chkbx = (ValCheckBox)formViewObj.getControlByName("isRequired");
+        ValCheckBox chkbx = (ValCheckBox)formViewObj.getControlByName("isRequired"); //$NON-NLS-1$
         fcf.setRequired(chkbx.isSelected());
 
-        chkbx = (ValCheckBox)formViewObj.getControlByName("isReadOnly");
+        chkbx = (ValCheckBox)formViewObj.getControlByName("isReadOnly"); //$NON-NLS-1$
         fcf.setReadOnly(chkbx.isSelected());
 
     }
@@ -723,21 +725,21 @@ public class EditorPropPanel extends JPanel
         {
             FormCellLabel fcl = (FormCellLabel)fc;
             
-            ValComboBox cbx = (ValComboBox)formViewObj.getControlByName("labelForCBX");
+            ValComboBox cbx = (ValComboBox)formViewObj.getControlByName("labelForCBX"); //$NON-NLS-1$
             int inx = cbx.getComboBox().getSelectedIndex();
             if (inx == 0)
             {
-                fcl.setLabelFor("");
+                fcl.setLabelFor(""); //$NON-NLS-1$
             } else
             {
                 fcl.setLabelFor(getIdForName((String)cbx.getComboBox().getSelectedItem()));
             }
             
-            cbx = (ValComboBox)formViewObj.getControlByName("imageNameCBX");
+            cbx = (ValComboBox)formViewObj.getControlByName("imageNameCBX"); //$NON-NLS-1$
             inx = cbx.getComboBox().getSelectedIndex();
             if (inx == 0)
             {
-                fcl.setIconName("");
+                fcl.setIconName(""); //$NON-NLS-1$
             } else
             {
                 String imgName = (String)cbx.getComboBox().getSelectedItem();
@@ -746,13 +748,13 @@ public class EditorPropPanel extends JPanel
                     fcl.setIconName(getIdForName(imgName));
                 } else
                 {
-                    fcl.setIconName(getIdForName(""));
+                    fcl.setIconName(getIdForName("")); //$NON-NLS-1$
                 }
             }
-            ValCheckBox chkbx = (ValCheckBox)formViewObj.getControlByName("isRecordObj");
+            ValCheckBox chkbx = (ValCheckBox)formViewObj.getControlByName("isRecordObj"); //$NON-NLS-1$
             fcl.setRecordObj(chkbx.isSelected());
             
-            fcl.setLabel(((ValTextField)formViewObj.getControlByName("label")).getText());
+            fcl.setLabel(((ValTextField)formViewObj.getControlByName("label")).getText()); //$NON-NLS-1$
         }
 
     }
@@ -767,18 +769,18 @@ public class EditorPropPanel extends JPanel
         
         if (fcf.getUiType() == FormCellFieldIFace.FieldType.combobox)
         {
-            ValComboBox cbx = (ValComboBox)formViewObj.getControlByName("picklistcbx");
+            ValComboBox cbx = (ValComboBox)formViewObj.getControlByName("picklistcbx"); //$NON-NLS-1$
             int         inx = cbx.getComboBox().getSelectedIndex();
             if (inx == 0)
             {
-                fcf.setPickListName("");
+                fcf.setPickListName(""); //$NON-NLS-1$
             } else
             {
                 fcf.setPickListName((String)cbx.getComboBox().getSelectedItem());
             }
             
-            ValTextArea textArea = (ValTextArea)formViewObj.getControlByName("list");
-            fcf.getProperties().put("list", textArea.getText());
+            ValTextArea textArea = (ValTextArea)formViewObj.getControlByName("list"); //$NON-NLS-1$
+            fcf.getProperties().put("list", textArea.getText()); //$NON-NLS-1$
         }
 
     }

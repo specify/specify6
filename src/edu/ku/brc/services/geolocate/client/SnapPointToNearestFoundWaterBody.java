@@ -31,16 +31,16 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "localityDescription",
-    "wgs84Coordinate"
+@XmlType(name = "", propOrder = { //$NON-NLS-1$
+    "localityDescription", //$NON-NLS-1$
+    "wgs84Coordinate" //$NON-NLS-1$
 })
-@XmlRootElement(name = "SnapPointToNearestFoundWaterBody")
+@XmlRootElement(name = "SnapPointToNearestFoundWaterBody") //$NON-NLS-1$
 public class SnapPointToNearestFoundWaterBody {
 
-    @XmlElement(name = "LocalityDescription", namespace = "http://www.museum.tulane.edu/webservices/", required = true)
+    @XmlElement(name = "LocalityDescription", namespace = "http://www.museum.tulane.edu/webservices/", required = true) //$NON-NLS-1$ //$NON-NLS-2$
     protected LocalityDescription localityDescription;
-    @XmlElement(name = "WGS84Coordinate", namespace = "http://www.museum.tulane.edu/webservices/", required = true)
+    @XmlElement(name = "WGS84Coordinate", namespace = "http://www.museum.tulane.edu/webservices/", required = true) //$NON-NLS-1$ //$NON-NLS-2$
     protected GeographicPoint wgs84Coordinate;
 
     /**

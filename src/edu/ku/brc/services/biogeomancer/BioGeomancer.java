@@ -42,7 +42,7 @@ public class BioGeomancer
     public static int getResultsCount(final String bioGeomancerResponseString) throws Exception
     {
         Element responseAsXml = XMLHelper.readStrToDOM4J(bioGeomancerResponseString);
-        List<?> records = responseAsXml.selectNodes("//record");
+        List<?> records = responseAsXml.selectNodes("//record"); //$NON-NLS-1$
         return (records != null) ? records.size() : 0;
     }
 
@@ -67,25 +67,25 @@ public class BioGeomancer
         String retVal = null;
 
         HttpClient httpClient = new HttpClient();
-        PostMethod postMethod = new PostMethod("http://130.132.27.130/cgi-bin/bgm-0.2/batch_test.pl");
+        PostMethod postMethod = new PostMethod("http://130.132.27.130/cgi-bin/bgm-0.2/batch_test.pl"); //$NON-NLS-1$
         StringBuilder strBuf = new StringBuilder(128);
-        strBuf.append("\""+ id + "\",");
-        strBuf.append("\""+ country + "\",");
-        strBuf.append("\""+ adm1 + "\",");
-        strBuf.append("\""+ (adm2 != null ? adm2 : "") + "\",");
-        strBuf.append("\""+ localityArg + "\"\r\n");
+        strBuf.append("\""+ id + "\","); //$NON-NLS-1$ //$NON-NLS-2$
+        strBuf.append("\""+ country + "\","); //$NON-NLS-1$ //$NON-NLS-2$
+        strBuf.append("\""+ adm1 + "\","); //$NON-NLS-1$ //$NON-NLS-2$
+        strBuf.append("\""+ (adm2 != null ? adm2 : "") + "\","); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        strBuf.append("\""+ localityArg + "\"\r\n"); //$NON-NLS-1$ //$NON-NLS-2$
 
         NameValuePair[] postData = {
                 //new NameValuePair("batchtext", "\"12931\",\"Mexico\",\"Veracruz\",\"\",\"12 km NW of Catemaco\"\r\n"),
-                new NameValuePair("batchtext", strBuf.toString()),
-                new NameValuePair("format", "xml") };
+                new NameValuePair("batchtext", strBuf.toString()), //$NON-NLS-1$
+                new NameValuePair("format", "xml") }; //$NON-NLS-1$ //$NON-NLS-2$
 
         // the 2.0 beta1 version has a
         // PostMethod.setRequestBody(NameValuePair[])
         // method, as addParameters is deprecated
         postMethod.addParameters(postData);
 
-        String responseBody = "";
+        String responseBody = ""; //$NON-NLS-1$
 
         httpClient.executeMethod(postMethod);
         responseBody = postMethod.getResponseBodyAsString();
@@ -133,47 +133,47 @@ public class BioGeomancer
     {
         // read the string into a DOM
         Element root = XMLHelper.readStrToDOM4J(bgResponse);
-        Element summary = (Element)root.selectSingleNode("//summary");
+        Element summary = (Element)root.selectSingleNode("//summary"); //$NON-NLS-1$
         if (summary == null)
         {
-            throw new Exception("BioGeomancer response is missing required data");
+            throw new Exception("BioGeomancer response is missing required data"); //$NON-NLS-1$
         }
 
         BioGeomancerQuerySummaryStruct querySummary = new BioGeomancerQuerySummaryStruct();
 
         // get all of the data from the summary section
-        querySummary.id                                  = XMLHelper.getValue(summary,"queryId");
-        querySummary.country                             = XMLHelper.getValue(summary,"queryCountry");
-        querySummary.adm1                                = XMLHelper.getValue(summary,"queryAdm1");
-        querySummary.adm2                                = XMLHelper.getValue(summary,"queryAdm2");
-        querySummary.localityStr                         = XMLHelper.getValue(summary,"queryString");
-        querySummary.countryBoundingBox                  = XMLHelper.getValue(summary,"countryBoundingBox");
-        querySummary.matchedRecordCount                  = XMLHelper.getValue(summary,"matchedRecordCount");
-        querySummary.boundingBox                         = XMLHelper.getValue(summary,"boundingBox");
-        querySummary.boundingBoxCentroid                 = XMLHelper.getValue(summary,"boundingBoxCentroid");
-        querySummary.boundingBoxCentroidErrorRadius      = XMLHelper.getValue(summary,"boundingBoxCentroidErrorRadius");
-        querySummary.boundingBoxCentroidErrorRadiusUnits = XMLHelper.getValue(summary,"boundingBoxCentroidErrorRadiusUnits");
-        querySummary.multiPointMatch                     = XMLHelper.getValue(summary,"multiPointMatch");
-        querySummary.weightedCentroid                    = XMLHelper.getValue(summary,"weightedCentroid");
+        querySummary.id                                  = XMLHelper.getValue(summary,"queryId"); //$NON-NLS-1$
+        querySummary.country                             = XMLHelper.getValue(summary,"queryCountry"); //$NON-NLS-1$
+        querySummary.adm1                                = XMLHelper.getValue(summary,"queryAdm1"); //$NON-NLS-1$
+        querySummary.adm2                                = XMLHelper.getValue(summary,"queryAdm2"); //$NON-NLS-1$
+        querySummary.localityStr                         = XMLHelper.getValue(summary,"queryString"); //$NON-NLS-1$
+        querySummary.countryBoundingBox                  = XMLHelper.getValue(summary,"countryBoundingBox"); //$NON-NLS-1$
+        querySummary.matchedRecordCount                  = XMLHelper.getValue(summary,"matchedRecordCount"); //$NON-NLS-1$
+        querySummary.boundingBox                         = XMLHelper.getValue(summary,"boundingBox"); //$NON-NLS-1$
+        querySummary.boundingBoxCentroid                 = XMLHelper.getValue(summary,"boundingBoxCentroid"); //$NON-NLS-1$
+        querySummary.boundingBoxCentroidErrorRadius      = XMLHelper.getValue(summary,"boundingBoxCentroidErrorRadius"); //$NON-NLS-1$
+        querySummary.boundingBoxCentroidErrorRadiusUnits = XMLHelper.getValue(summary,"boundingBoxCentroidErrorRadiusUnits"); //$NON-NLS-1$
+        querySummary.multiPointMatch                     = XMLHelper.getValue(summary,"multiPointMatch"); //$NON-NLS-1$
+        querySummary.weightedCentroid                    = XMLHelper.getValue(summary,"weightedCentroid"); //$NON-NLS-1$
 
         // get each of the results records
-        List<?> records = root.selectNodes("//record");
+        List<?> records = root.selectNodes("//record"); //$NON-NLS-1$
         BioGeomancerResultStruct[] results = new BioGeomancerResultStruct[records.size()];
         int index = 0;
         for (Object o: records)
         {
             Element record = (Element)o;
             BioGeomancerResultStruct result = new BioGeomancerResultStruct();
-            result.country     = XMLHelper.getValue(record, "country");
-            result.adm1        = XMLHelper.getValue(record, "adm1");
-            result.adm2        = XMLHelper.getValue(record, "adm2");
-            result.featureName = XMLHelper.getValue(record, "featureName");
-            result.featureType = XMLHelper.getValue(record, "featureType");
-            result.gazetteer   = XMLHelper.getValue(record, "gazetteerSource");
-            result.coordinates = XMLHelper.getValue(record, "InterpretedCoordinates");
-            result.offset      = XMLHelper.getValue(record, "offsetVector");
-            result.boundingBox = XMLHelper.getValue(record, "boundingBox");
-            result.locality    = XMLHelper.getValue(record, "InterpretedString");
+            result.country     = XMLHelper.getValue(record, "country"); //$NON-NLS-1$
+            result.adm1        = XMLHelper.getValue(record, "adm1"); //$NON-NLS-1$
+            result.adm2        = XMLHelper.getValue(record, "adm2"); //$NON-NLS-1$
+            result.featureName = XMLHelper.getValue(record, "featureName"); //$NON-NLS-1$
+            result.featureType = XMLHelper.getValue(record, "featureType"); //$NON-NLS-1$
+            result.gazetteer   = XMLHelper.getValue(record, "gazetteerSource"); //$NON-NLS-1$
+            result.coordinates = XMLHelper.getValue(record, "InterpretedCoordinates"); //$NON-NLS-1$
+            result.offset      = XMLHelper.getValue(record, "offsetVector"); //$NON-NLS-1$
+            result.boundingBox = XMLHelper.getValue(record, "boundingBox"); //$NON-NLS-1$
+            result.locality    = XMLHelper.getValue(record, "InterpretedString"); //$NON-NLS-1$
             results[index++] = result;
         }
         querySummary.results = results;

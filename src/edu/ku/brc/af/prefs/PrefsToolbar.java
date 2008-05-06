@@ -45,15 +45,15 @@ import edu.ku.brc.ui.ToolbarLayoutManager;
  * @author rods
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class PrefsToolbar extends JPanel
 {
     private static final Logger log = Logger.getLogger(PrefsToolbar.class);
     
-    public static final String NAME        = "name";
-    public static final String TITLE       = "title";
-    public static final String PANEL_CLASS = "panelClass";
-    public static final String ICON_PATH   = "iconPath";
+    public static final String NAME        = "name"; //$NON-NLS-1$
+    public static final String TITLE       = "title"; //$NON-NLS-1$
+    public static final String PANEL_CLASS = "panelClass"; //$NON-NLS-1$
+    public static final String ICON_PATH   = "iconPath"; //$NON-NLS-1$
 
     protected PreferencesDlg prefsDlg;
     protected int           iconSize = 24;  // XXX PREF (Possible???)
@@ -84,22 +84,22 @@ public class PrefsToolbar extends JPanel
     {
         try
         {
-            Element root = XMLHelper.readDOMFromConfigDir("prefs_init.xml");
+            Element root = XMLHelper.readDOMFromConfigDir("prefs_init.xml"); //$NON-NLS-1$
             if (root == null)
             {
                 return; // XXX FIXME
             }
 
-            List<?> sections = root.selectNodes("/prefs/section");
+            List<?> sections = root.selectNodes("/prefs/section"); //$NON-NLS-1$
             numPrefs = sections.size();
             for ( Iterator<?> iter = sections.iterator(); iter.hasNext(); )
             {
                 org.dom4j.Element section = (org.dom4j.Element)iter.next();
 
-                String title = getAttr(section, "title", null);
+                String title = getAttr(section, "title", null); //$NON-NLS-1$
                 if (StringUtils.isNotEmpty(title))
                 {
-                    if (!getAttr(section, "isApp", false))
+                    if (!getAttr(section, "isApp", false)) //$NON-NLS-1$
                     {
                         loadSectionPrefs(section);
                     }
@@ -125,25 +125,25 @@ public class PrefsToolbar extends JPanel
         //int totalWidth = 0;
         try
         {
-            List<?> prefs = sectionElement.selectNodes("pref");
+            List<?> prefs = sectionElement.selectNodes("pref"); //$NON-NLS-1$
             //numPrefs = prefs.size();
             for ( Iterator<?> iterPrefs = prefs.iterator(); iterPrefs.hasNext(); )
             {
                 org.dom4j.Element pref = (org.dom4j.Element)iterPrefs.next();
 
-                String prefTitle   = pref.attributeValue("title");
-                String iconPath    = pref.attributeValue("icon");
-                String panelClass  = pref.attributeValue("panelClass");
-                String viewSetName = pref.attributeValue("viewsetname");
-                String viewName    = pref.attributeValue("viewname");
-                String hContext    = pref.attributeValue("help");
+                String prefTitle   = pref.attributeValue("title"); //$NON-NLS-1$
+                String iconPath    = pref.attributeValue("icon"); //$NON-NLS-1$
+                String panelClass  = pref.attributeValue("panelClass"); //$NON-NLS-1$
+                String viewSetName = pref.attributeValue("viewsetname"); //$NON-NLS-1$
+                String viewName    = pref.attributeValue("viewname"); //$NON-NLS-1$
+                String hContext    = pref.attributeValue("help"); //$NON-NLS-1$
 
                 if (StringUtils.isNotEmpty(prefTitle) && 
                     StringUtils.isNotEmpty(iconPath) && 
                     StringUtils.isNotEmpty(panelClass))
                 {
                     ImageIcon icon;
-                    if (iconPath.startsWith("http") || iconPath.startsWith("file"))
+                    if (iconPath.startsWith("http") || iconPath.startsWith("file")) //$NON-NLS-1$ //$NON-NLS-2$
                     {
                         icon = new ImageIcon(new URL(iconPath));
                     } else
@@ -160,7 +160,7 @@ public class PrefsToolbar extends JPanel
                     }
                     if (icon == null)
                     {
-                        log.error("Icon was created - path["+iconPath+"]");
+                        log.error("Icon was created - path["+iconPath+"]"); //$NON-NLS-1$ //$NON-NLS-2$
                     }
 
                     NavBoxButton btn = new NavBoxButton(getResourceString(prefTitle), icon);
@@ -184,7 +184,7 @@ public class PrefsToolbar extends JPanel
                                 
                             } else
                             {
-                                log.error("ViewSetName["+viewSetName+"] or ViewName["+viewName+"] is empty!");
+                                log.error("ViewSetName["+viewSetName+"] or ViewName["+viewName+"] is empty!"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                             }
                         }
                         prefsDlg.addPanel(prefTitle, comp);

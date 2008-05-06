@@ -14,6 +14,8 @@
  */
 package edu.ku.brc.af.tasks;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.awt.Cursor;
 import java.awt.Font;
 import java.awt.datatransfer.DataFlavor;
@@ -90,16 +92,16 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     // Static Data Members
     //private static final Logger log = Logger.getLogger(BaseTask.class);
     
-    protected static final String APP_CMD_TYPE      = "App";
-    protected static final String APP_RESTART_ACT   = "Restart";
-    protected static final String DB_CMD_TYPE       = "Database";
+    protected static final String APP_CMD_TYPE      = "App"; //$NON-NLS-1$
+    protected static final String APP_RESTART_ACT   = "Restart"; //$NON-NLS-1$
+    protected static final String DB_CMD_TYPE       = "Database"; //$NON-NLS-1$
 
     
-    protected static final String SAVE_CMD_ACT      = "Save";
-    protected static final String INSERT_CMD_ACT    = "Insert";
-    protected static final String DELETE_CMD_ACT    = "Delete";
-    protected static final String UPDATE_CMD_ACT    = "Update";
-    protected static final String OPEN_FORM_CMD_ACT = "OPEN_FORM";
+    protected static final String SAVE_CMD_ACT      = "Save"; //$NON-NLS-1$
+    protected static final String INSERT_CMD_ACT    = "Insert"; //$NON-NLS-1$
+    protected static final String DELETE_CMD_ACT    = "Delete"; //$NON-NLS-1$
+    protected static final String UPDATE_CMD_ACT    = "Update"; //$NON-NLS-1$
+    protected static final String OPEN_FORM_CMD_ACT = "OPEN_FORM"; //$NON-NLS-1$
 
     protected static Font         toolbarBtnFont = null;
 
@@ -918,7 +920,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
      */
     public boolean isShowDefault()
     {
-        return AppPreferences.getRemote().getBoolean("task.isShowDefault."+name, isShowDefault);
+        return AppPreferences.getRemote().getBoolean("task.isShowDefault."+name, isShowDefault); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)
@@ -1002,10 +1004,10 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
                 if (formData instanceof RecordSetIFace)
                 {
                     RecordSetIFace rs = (RecordSetIFace)formData;
-                    createFormPanel(formData.getIdentityTitle(), "edit", formData, rs.getDataClassFormItems(), getImageIcon());
+                    createFormPanel(formData.getIdentityTitle(), "edit", formData, rs.getDataClassFormItems(), getImageIcon()); //$NON-NLS-1$
                 } else
                 {
-                    createFormPanel(formData.getIdentityTitle(), "edit", formData, getImageIcon());
+                    createFormPanel(formData.getIdentityTitle(), "edit", formData, getImageIcon()); //$NON-NLS-1$
                 }
                 cmdActionArg.setConsumed(true);
                 
@@ -1083,7 +1085,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
     public JPopupMenu getPopupMenu()
     {
         JPopupMenu popupMenu = new JPopupMenu();
-        JMenuItem mi = new JMenuItem(UIRegistry.getResourceString("Configure"));
+        JMenuItem mi = new JMenuItem(getResourceString("BaseTask.CONFIGURE")); //$NON-NLS-1$
         popupMenu.add(mi);
         
         mi.addActionListener(new ActionListener() {
@@ -1115,7 +1117,7 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
             {
                 if (commands == null)
                 {
-                    throw new RuntimeException("this should never have happened.");
+                    throw new RuntimeException("this should never have happened."); //$NON-NLS-1$
                 }
                 commands.addAll(cmds);
             }
@@ -1163,21 +1165,21 @@ public abstract class BaseTask implements Taskable, CommandListener, SubPaneMgrL
         {
             Properties params = ap.getMetaDataMap();
             
-            String tableid = params.getProperty("tableid");
-            String rptType = params.getProperty("reporttype");
+            String tableid = params.getProperty("tableid"); //$NON-NLS-1$
+            String rptType = params.getProperty("reporttype"); //$NON-NLS-1$
             
             if (StringUtils.isNotEmpty(tableid) && 
                (classTableId == null || (Integer.parseInt(tableid) == classTableId.intValue())) &&
                StringUtils.isEmpty(reportType) || (StringUtils.isNotEmpty(rptType) && reportType.equals(rptType)))
             {
-                params.put("name", ap.getName());
-                params.put("title", ap.getDescription());
-                params.put("file", ap.getName());
-                params.put("mimetype", mimeType);
+                params.put("name", ap.getName()); //$NON-NLS-1$
+                params.put("title", ap.getDescription()); //$NON-NLS-1$
+                params.put("file", ap.getName()); //$NON-NLS-1$
+                params.put("mimetype", mimeType); //$NON-NLS-1$
                 
                 //log.debug("["+ap.getDescription()+"]["+ap.getName()+"]");
                 
-                String iconName = params.getProperty("icon");
+                String iconName = params.getProperty("icon"); //$NON-NLS-1$
                 if (StringUtils.isEmpty(iconName))
                 {
                     iconName = defaultIcon;

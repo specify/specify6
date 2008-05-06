@@ -38,9 +38,9 @@ public class HtmlDescPane extends SimpleDescPane implements HyperlinkListener
                         final Taskable task,
                         final String htmlDesc)
     {
-        super(name,task,"");
+        super(name,task,""); //$NON-NLS-1$
         this.removeAll();
-        JEditorPane htmlPane   = new JEditorPane("text/html", htmlDesc);
+        JEditorPane htmlPane   = new JEditorPane("text/html", htmlDesc); //$NON-NLS-1$
         final JScrollPane scrollPane = new JScrollPane(htmlPane, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         this.add(scrollPane, BorderLayout.CENTER);
         htmlPane.setEditable(false);

@@ -17,7 +17,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTree;
@@ -48,7 +47,7 @@ import edu.ku.brc.ui.forms.persist.ViewSetIFace;
  */
 public class EditorTask extends BaseTask
 {
-    public static final String EDITOR = "FORMEDITOR";
+    public static final String EDITOR = "FORMEDITOR"; //$NON-NLS-1$
     
     protected ViewSetSelectorPanel viewSetSelectorPanel;
     protected JTree                tree          = null;
@@ -60,12 +59,12 @@ public class EditorTask extends BaseTask
     public EditorTask()
     {
         super(EDITOR, getResourceString(EDITOR));
-        icon = IconManager.getImage("Form", IconManager.IconSize.Std16);
+        icon = IconManager.getImage("Form", IconManager.IconSize.Std16); //$NON-NLS-1$
     }
     
     protected JPanel createChooseViewSetPanel()
     {
-        PanelBuilder pb = new PanelBuilder(new FormLayout("p", "p,4px,p"));
+        PanelBuilder pb = new PanelBuilder(new FormLayout("p", "p,4px,p")); //$NON-NLS-1$ //$NON-NLS-2$
         CellConstraints cc = new CellConstraints();
         
         Hashtable<String, List<ViewSetIFace>> hash = AppContextMgr.getInstance().getViewSetHash();
@@ -75,7 +74,7 @@ public class EditorTask extends BaseTask
         
         JList viewSetList = new JList(viewSetNames);
         
-        pb.add(createLabel("Choose a ViewSet"), cc.xy(1,1));
+        pb.add(createLabel(getResourceString("EditorTask.CHOOSE_VIEWSET")), cc.xy(1,1)); //$NON-NLS-1$
         pb.add(viewSetList, cc.xy(1,3));
 
         return pb.getPanel();
@@ -101,14 +100,14 @@ public class EditorTask extends BaseTask
     @Override
     public SubPaneIFace getStarterPane()
     {
-        SimpleDescPane pane = new SimpleDescPane(name, this, "Editor");
+        SimpleDescPane pane = new SimpleDescPane(name, this, getResourceString("EditorTask.EDITOR")); //$NON-NLS-1$
         
         
         pane.removeAll();
         pane.setLayout(new BorderLayout());
         
         BasicFormPreviewPanel previewPanel = new BasicFormPreviewPanel();
-        CustomFrame frame = new CustomFrame("Layout Preview", previewPanel);
+        CustomFrame frame = new CustomFrame(getResourceString("EditorTask.LAYOUT_PREVIEW"), previewPanel); //$NON-NLS-1$
         
         viewSetSelectorPanel = new ViewSetSelectorPanel(previewPanel);
         
@@ -184,7 +183,7 @@ public class EditorTask extends BaseTask
     public List<ToolBarItemDesc> getToolBarItems()
     {
         Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
-        ToolBarDropDownBtn      btn  = createToolbarButton("FormEditor", "Form",  getResourceString("FORM_EDITOR_HINT"));
+        ToolBarDropDownBtn      btn  = createToolbarButton("FormEditor", "Form",  getResourceString("EditorTask.FORM_EDITOR_HINT")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         list.add(new ToolBarItemDesc(btn));
         return list;
     }

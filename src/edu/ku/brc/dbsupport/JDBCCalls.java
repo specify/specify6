@@ -53,13 +53,13 @@ public class JDBCCalls
 	
 	public static void createDatabaseMySQL(String databaseName)
 	{
-		String queryString = "CREATE DATABASE IF NOT EXISTS " + databaseName;
+		String queryString = "CREATE DATABASE IF NOT EXISTS " + databaseName; //$NON-NLS-1$
         executeQuery(queryString);
 	}
     
     public static void deleteDatabaseMySQL(String databaseName)
     {
-        String queryString = "DROP DATABASE IF EXISTS " + databaseName;
+        String queryString = "DROP DATABASE IF EXISTS " + databaseName; //$NON-NLS-1$
         executeQuery(queryString);
     }
 

@@ -40,6 +40,7 @@ import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToggleButtonChooserPanel;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author rods
@@ -81,7 +82,7 @@ public class DigirABCConfigPanel extends JPanel
         
         tableList = new JList(tiRenderList);
         TableNameRenderer nameRender = new TableNameRenderer(IconManager.IconSize.Std24);
-        nameRender.setUseIcon("PlaceHolder");
+        nameRender.setUseIcon("PlaceHolder"); //$NON-NLS-1$
         tableList.setCellRenderer(nameRender);
         
         tableList.setVisibleRowCount(10);
@@ -119,11 +120,11 @@ public class DigirABCConfigPanel extends JPanel
         });        
         displayList.createUI();
         
-        PanelBuilder    builder = new PanelBuilder(new FormLayout("p,2px,p", "p,2px,f:p:g"), this);
+        PanelBuilder    builder = new PanelBuilder(new FormLayout("p,2px,p", "p,2px,f:p:g"), this); //$NON-NLS-1$ //$NON-NLS-2$
         CellConstraints cc      = new CellConstraints();
 
-        builder.add(createLabel(getResourceString("DIGIR_AVAIL_TABLES"), SwingConstants.CENTER), cc.xy(1,1));
-        builder.add(createLabel(getResourceString("DIGIR_FIELDNAME"), SwingConstants.CENTER), cc.xy(3,1));
+        builder.add(createLabel(getResourceString("DigirABCConfigPanel.DIGIR_AVAIL_TABLES"), SwingConstants.CENTER), cc.xy(1,1)); //$NON-NLS-1$
+        builder.add(createLabel(getResourceString("DigirABCConfigPanel.DIGIR_FIELDNAME"), SwingConstants.CENTER), cc.xy(3,1)); //$NON-NLS-1$
         builder.add(sp, cc.xy(1,3));
 
         JScrollPane dspSp = new JScrollPane(displayList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);

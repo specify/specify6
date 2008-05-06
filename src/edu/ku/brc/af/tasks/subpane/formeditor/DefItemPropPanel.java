@@ -13,6 +13,7 @@ import static edu.ku.brc.ui.UIHelper.createCheckBox;
 import static edu.ku.brc.ui.UIHelper.createComboBox;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIHelper.setControlSize;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
@@ -110,34 +111,34 @@ public class DefItemPropPanel extends JPanel
 
         setControlSize(sizeSpinner);
         
-        growCB          = createCheckBox("Should Grow");
-        preferredSizeCB = createCheckBox("Use Preferred Size");
+        growCB          = createCheckBox(getResourceString("DefItemPropPanel.SHOULD_GROW")); //$NON-NLS-1$
+        preferredSizeCB = createCheckBox(getResourceString("DefItemPropPanel.USE_PREF_SIZE")); //$NON-NLS-1$
         
         CellConstraints cc = new CellConstraints();
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,p:g", "p,2px,p,2px,p,2px,p,2px,p,2px,p,5px"));
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,p:g", "p,2px,p,2px,p,2px,p,2px,p,2px,p,5px")); //$NON-NLS-1$ //$NON-NLS-2$
         
         int y = 1;
-        pb.add(createLabel("Min/Max:", SwingConstants.RIGHT), cc.xy(1, y));
+        pb.add(createLabel(getResourceString("DefItemPropPanel.MIN_MAX"), SwingConstants.RIGHT), cc.xy(1, y)); //$NON-NLS-1$
         pb.add(minMaxCBX, cc.xy(3,y));
         y += 2;
         
-        pb.add(createLabel("Alignment:", SwingConstants.RIGHT), cc.xy(1, y));
+        pb.add(createLabel(getResourceString("DefItemPropPanel.ALIGNMENT"), SwingConstants.RIGHT), cc.xy(1, y)); //$NON-NLS-1$
         pb.add(alignCBX, cc.xy(3,y));
         y += 2;
         
-        pb.add(createLabel(" ", SwingConstants.RIGHT), cc.xy(1, y));
+        pb.add(createLabel(" ", SwingConstants.RIGHT), cc.xy(1, y)); //$NON-NLS-1$
         pb.add(preferredSizeCB, cc.xy(3,y));
         y += 2;
         
-        pb.add(createLabel("Size:", SwingConstants.RIGHT), cc.xy(1, y));
+        pb.add(createLabel(getResourceString("DefItemPropPanel.SIZE"), SwingConstants.RIGHT), cc.xy(1, y)); //$NON-NLS-1$
         pb.add(sizeSpinner, cc.xy(3,y));
         y += 2;
         
-        pb.add(createLabel("Unit:", SwingConstants.RIGHT), cc.xy(1, y));
+        pb.add(createLabel(getResourceString("DefItemPropPanel.UNIT"), SwingConstants.RIGHT), cc.xy(1, y)); //$NON-NLS-1$
         pb.add(unitCBX, cc.xy(3,y));
         y += 2;
         
-        pb.add(createLabel("", SwingConstants.RIGHT), cc.xy(1, y));
+        pb.add(createLabel("", SwingConstants.RIGHT), cc.xy(1, y)); //$NON-NLS-1$
         pb.add(growCB, cc.xy(3,y));
         y += 2;
 

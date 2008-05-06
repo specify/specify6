@@ -16,7 +16,9 @@ package edu.ku.brc.af.auth.specify.permission;
 
 import org.apache.log4j.Logger;
 
-@SuppressWarnings("serial")
+import edu.ku.brc.ui.UIRegistry;
+
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class TreeTaskPermission extends BasicSpPermission
 {
     protected static final Logger log = Logger.getLogger(TreeTaskPermission.class);

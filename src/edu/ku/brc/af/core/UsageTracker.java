@@ -30,7 +30,7 @@ public class UsageTracker
     public synchronized static void incrUsageCount(String featureName)
     {
         AppPreferences appPrefs = AppPreferences.getLocalPrefs();
-        String usagePrefName = "Usage." + featureName;
+        String usagePrefName = "Usage." + featureName; //$NON-NLS-1$
         int currentUsageCount = appPrefs.getInt(usagePrefName, 0);
         appPrefs.putInt(usagePrefName, ++currentUsageCount);
     }
@@ -50,7 +50,7 @@ public class UsageTracker
         for (Object o: prefNames)
         {
             String prefName = (String)o;
-            if (prefName.startsWith("Usage."))
+            if (prefName.startsWith("Usage.")) //$NON-NLS-1$
             {
                 int count = appPrefs.getInt(prefName, 0);
                 Pair<String,Integer> stat = new Pair<String, Integer>(prefName.substring(6),count);
@@ -73,7 +73,7 @@ public class UsageTracker
         for (Object o: prefNamesCopy)
         {
             String prefName = (String)o;
-            if (prefName.startsWith("Usage."))
+            if (prefName.startsWith("Usage.")) //$NON-NLS-1$
             {
                 appPrefs.remove(prefName);
             }
@@ -104,19 +104,19 @@ public class UsageTracker
         AppPreferences appPrefs = AppPreferences.getLocalPrefs();
         
         // get the first part of the install ID
-        String installIdStart = appPrefs.get("InstallIdStart", null);
+        String installIdStart = appPrefs.get("InstallIdStart", null); //$NON-NLS-1$
         if (installIdStart == null)
         {
             // create a new ID start (this is the first time the app has run)
             Random r = new Random(System.currentTimeMillis());
             UUID idStart = new UUID(r.nextLong(),r.nextLong());
             installIdStart = idStart.toString();
-            appPrefs.put("InstallIdStart", installIdStart);
+            appPrefs.put("InstallIdStart", installIdStart); //$NON-NLS-1$
         }
         
         // get the last part of the install ID
-        String installIdEnd = appPrefs.get("InstallIdEnd", null);
-        File pluginRegFile = XMLHelper.getConfigDir("plugin_registry.xml");
+        String installIdEnd = appPrefs.get("InstallIdEnd", null); //$NON-NLS-1$
+        File pluginRegFile = XMLHelper.getConfigDir("plugin_registry.xml"); //$NON-NLS-1$
         long  lastMod = pluginRegFile.lastModified();
         String lastModString = Long.toHexString(lastMod);
         
@@ -125,10 +125,10 @@ public class UsageTracker
             // somebody must have copied this install to a new storage
             // reset the InstallIdEnd preference
             clearUsageStats();
-            appPrefs.put("InstallIdEnd", lastModString);
+            appPrefs.put("InstallIdEnd", lastModString); //$NON-NLS-1$
             installIdEnd = lastModString;
         }
-        String installId = installIdStart + "--" + installIdEnd; 
+        String installId = installIdStart + "--" + installIdEnd;  //$NON-NLS-1$
         return installId;
     }
 }

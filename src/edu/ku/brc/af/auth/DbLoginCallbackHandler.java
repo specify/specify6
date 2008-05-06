@@ -28,6 +28,8 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.ui.UIRegistry;
+
 /**
  * 
  * DbLoginCallbackHandler has constructor that takes 
@@ -43,10 +45,10 @@ import org.apache.log4j.Logger;
 public class DbLoginCallbackHandler  implements CallbackHandler 
 {
     protected static final Logger log    = Logger.getLogger(DbLoginCallbackHandler.class);
-    protected String              user   = "";
-    protected String              pass   = "";
-    protected String              url    = "";
-    protected String              driver = "";
+    protected String              user   = ""; //$NON-NLS-1$
+    protected String              pass   = ""; //$NON-NLS-1$
+    protected String              url    = ""; //$NON-NLS-1$
+    protected String              driver = ""; //$NON-NLS-1$
     
     /**
      * Creates a callback handler for connection to a database
@@ -57,7 +59,7 @@ public class DbLoginCallbackHandler  implements CallbackHandler
         this.pass = pass;
         this.url = url;
         this.driver = driver;
-        log.debug("DbLoginCallbackHandler() created");
+        log.debug("DbLoginCallbackHandler() created"); //$NON-NLS-1$
     }
     
     /**
@@ -76,45 +78,45 @@ public class DbLoginCallbackHandler  implements CallbackHandler
      */
     public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException
     {
-        log.debug("handle");
+        log.debug("handle"); //$NON-NLS-1$
         try
         {
             for (int i = 0; i < callbacks.length; i++) {
 
                 if (callbacks[i] instanceof NameCallback) 
                 {
-                    log.debug("handle - [NameCallback]");
-                    log.debug("handle - got user:" + user);
+                    log.debug("handle - [NameCallback]"); //$NON-NLS-1$
+                    log.debug("handle - got user:" + user); //$NON-NLS-1$
                     ((NameCallback)callbacks[i]).setName(user);
                 } 
                 else if (callbacks[i] instanceof PasswordCallback) 
                 {
-                    log.debug("handle - [PasswordCallback]");
-                    log.debug("handle - got password:" + pass);
+                    log.debug("handle - [PasswordCallback]"); //$NON-NLS-1$
+                    log.debug("handle - got password:" + pass); //$NON-NLS-1$
                     ((PasswordCallback)callbacks[i]).setPassword(pass.toCharArray());
                 } 
                 else if (callbacks[i] instanceof TextInputCallback) 
                 {
-                    log.debug("handle - [TextInputCallback]");
-                    if ((((TextInputCallback)callbacks[i]).getPrompt()).equals("Url:"))
+                    log.debug("handle - [TextInputCallback]"); //$NON-NLS-1$
+                    if ((((TextInputCallback)callbacks[i]).getPrompt()).equals("Url:")) //$NON-NLS-1$
                     {
-                        log.debug("handle - got url:" + url);
+                        log.debug("handle - got url:" + url); //$NON-NLS-1$
                         ((TextInputCallback)callbacks[i]).setText(url);
-                    } else if ((((TextInputCallback)callbacks[i]).getPrompt()).equals("Driver:"))
+                    } else if ((((TextInputCallback)callbacks[i]).getPrompt()).equals("Driver:")) //$NON-NLS-1$
                     {
-                        log.debug("handle - got driver:" + driver);
+                        log.debug("handle - got driver:" + driver); //$NON-NLS-1$
                         ((TextInputCallback)callbacks[i]).setText(driver);
                     }
                 }
                 else
                 {
                     throw (new UnsupportedCallbackException(callbacks[i],
-                            "Callback class not supported"));
+                            "Callback class not supported")); //$NON-NLS-1$
                 }
             }
         } catch (Exception e)
         {
-            log.error("Exception: " + e.getMessage());
+            log.error("Exception: " + e.getMessage()); //$NON-NLS-1$
             e.printStackTrace();
         }
     }

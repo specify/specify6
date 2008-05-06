@@ -20,6 +20,7 @@ package edu.ku.brc.af.core.expresssearch;
 import static edu.ku.brc.ui.UIHelper.createButton;
 import static edu.ku.brc.ui.UIHelper.createCheckBox;
 import static edu.ku.brc.ui.UIHelper.createI18NLabel;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
@@ -95,20 +96,20 @@ public class RelatedTableInfoPanel extends JPanel
         
         relatedTablesList = new JList(relatedTablesModel);
         TableNameRenderer nameRender = new TableNameRenderer(IconManager.IconSize.Std24);
-        nameRender.setUseIcon("PlaceHolder");
+        nameRender.setUseIcon("PlaceHolder"); //$NON-NLS-1$
         relatedTablesList.setCellRenderer(nameRender);
         
         CellConstraints cc = new CellConstraints();
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("p:g,8px,p,2px,f:p:g", 
-                                                             "p,2px,p,2px,p,2px,t:p:g,f:p:g,2px,p"), this);
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("p:g,8px,p,2px,f:p:g",  //$NON-NLS-1$
+                                                             "p,2px,p,2px,p,2px,t:p:g,f:p:g,2px,p"), this); //$NON-NLS-1$
         //pb.add(createI18NLabel("ES_RELATED_ACTIVATE"), cc.xy(1, 1));
         
         JScrollPane sp = new JScrollPane(relatedTablesList, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        pb.add(createI18NLabel("ES_RELATED_SEARCHES"), cc.xy(1, 1));
+        pb.add(createI18NLabel("RelatedTableInfoPanel.ES_RELATED_SEARCHES"), cc.xy(1, 1)); //$NON-NLS-1$
         pb.add(sp, cc.xywh(1, 3, 1, 6));
         
-        activeCBX = createCheckBox("                      ");
-        pb.add(activeLbl = createI18NLabel("ES_RELATED_ACTIVATE", SwingConstants.RIGHT), cc.xy(3, 3));
+        activeCBX = createCheckBox("                      "); //$NON-NLS-1$
+        pb.add(activeLbl = createI18NLabel("RelatedTableInfoPanel.ES_RELATED_ACTIVATE", SwingConstants.RIGHT), cc.xy(3, 3)); //$NON-NLS-1$
         pb.add(activeCBX, cc.xy(5, 3));
         
         relatedTableDescTA = new JTextArea(8, 40);
@@ -117,12 +118,12 @@ public class RelatedTableInfoPanel extends JPanel
         relatedTableDescTA.setBackground(Color.WHITE);
         relatedTableDescTA.setLineWrap(true);
         sp = new JScrollPane(relatedTableDescTA, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        pb.add(descLbl = createI18NLabel("ES_RELATED_DESC", SwingConstants.RIGHT), cc.xy(3, 5));
+        pb.add(descLbl = createI18NLabel("RelatedTableInfoPanel.ES_RELATED_DESC", SwingConstants.RIGHT), cc.xy(3, 5)); //$NON-NLS-1$
         pb.add(sp, cc.xy(5, 5));
         
-        PanelBuilder btnPB = new PanelBuilder(new FormLayout("p,f:p:g,p", "p"));
-        selectAllBtn   = createButton(UIRegistry.getResourceString("SelectAll"));
-        deselectAllBtn = createButton(UIRegistry.getResourceString("DeselectAll"));
+        PanelBuilder btnPB = new PanelBuilder(new FormLayout("p,f:p:g,p", "p")); //$NON-NLS-1$ //$NON-NLS-2$
+        selectAllBtn   = createButton(getResourceString("RelatedTableInfoPanel.SELECTALL")); //$NON-NLS-1$
+        deselectAllBtn = createButton(getResourceString("RelatedTableInfoPanel.DESELECTALL")); //$NON-NLS-1$
         btnPB.add(selectAllBtn, cc.xy(1, 1));
         btnPB.add(deselectAllBtn, cc.xy(3, 1));
         pb.add(btnPB.getPanel(), cc.xy(1, 10));
@@ -215,12 +216,12 @@ public class RelatedTableInfoPanel extends JPanel
                 relatedTableDescTA.setText(erti.getDescription());
             } else
             {
-                relatedTableDescTA.setText("");
+                relatedTableDescTA.setText(""); //$NON-NLS-1$
             }
         } else
         {
-            relatedTableDescTA.setText("");
-            activeCBX.setText("");
+            relatedTableDescTA.setText(""); //$NON-NLS-1$
+            activeCBX.setText(""); //$NON-NLS-1$
             activeCBX.setSelected(false);
         }
     }

@@ -99,7 +99,7 @@ public abstract class AuditInterceptor extends EmptyInterceptor
         String factoryName = AccessController.doPrivileged(new PrivilegedAction<String>() {
                 public String run() {
                     return System.getProperty(
-                    "edu.ku.brc.dbsupport.AuditInterceptor");}});
+                    "edu.ku.brc.dbsupport.AuditInterceptor");}}); //$NON-NLS-1$
             
         if (factoryName != null) 
         {
@@ -110,7 +110,7 @@ public abstract class AuditInterceptor extends EmptyInterceptor
                  
             } catch (Exception e) 
             {
-                InternalError error = new InternalError("Can't instantiate AuditInterceptor factory " + factoryName);
+                InternalError error = new InternalError("Can't instantiate AuditInterceptor factory " + factoryName); //$NON-NLS-1$
                 error.initCause(e);
                 throw error;
             }

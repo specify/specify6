@@ -18,6 +18,7 @@ import edu.ku.brc.af.auth.specify.permission.BasicSpPermission;
 import edu.ku.brc.af.auth.specify.permission.PermissionService;
 import edu.ku.brc.af.auth.specify.principal.AdminPrincipal;
 import edu.ku.brc.af.auth.specify.principal.BasicPrincipal;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author megkumin
@@ -33,7 +34,7 @@ public class DatabasePolicy extends java.security.Policy
      * (non-Javadoc)
      * @see java.security.Policy#getPermissions(java.security.ProtectionDomain)
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked") //$NON-NLS-1$
     public PermissionCollection getPermissions(final ProtectionDomain domain)
     {
     	// TODO: Cache permissions by principals to avoid retrieving them every time
@@ -102,26 +103,26 @@ public class DatabasePolicy extends java.security.Policy
      * @param principals
      * @return
      */
-    @SuppressWarnings("unused")
+    @SuppressWarnings("unused") //$NON-NLS-1$
     private String toString(Principal[] principals)
     {
-        if (principals == null || principals.length == 0) { return "DatabasePolicy <empty principals>"; }
+        if (principals == null || principals.length == 0) { return "DatabasePolicy <empty principals>"; } //$NON-NLS-1$
         StringBuffer buf = new StringBuffer();
-        buf.append("DatabasePolicy <");
+        buf.append("DatabasePolicy <"); //$NON-NLS-1$
         for (int i = 0; i < principals.length; i++)
         {
             Principal p = principals[i];
-            buf.append("(class=");
+            buf.append("(class="); //$NON-NLS-1$
             buf.append(p.getClass().getName());
-            buf.append(", name=");
+            buf.append(", name="); //$NON-NLS-1$
             buf.append(p.getName());
-            buf.append(")");
+            buf.append(")"); //$NON-NLS-1$
             if (i < principals.length - 1)
             {
-                buf.append(", ");
+                buf.append(", "); //$NON-NLS-1$
             }
         }
-        buf.append(">");
+        buf.append(">"); //$NON-NLS-1$
         return buf.toString();
     }
 

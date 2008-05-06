@@ -59,7 +59,7 @@ public class AppPrefsDiskIOIImpl implements AppPrefsIOIFace
     {
         if (appPrefsMgr == null)
         {
-            throw new RuntimeException("The AppPreferences is null for " + this.getClass().getCanonicalName());
+            throw new RuntimeException("The AppPreferences is null for " + this.getClass().getCanonicalName()); //$NON-NLS-1$
         }  
     }
     
@@ -72,7 +72,7 @@ public class AppPrefsDiskIOIImpl implements AppPrefsIOIFace
         
         if (appPrefsMgr.getDirPath() == null || appPrefsMgr.getDirPath().length() == 0)
         {
-            throw new RuntimeException("The directory path for the prefs ["+appPrefsMgr.getDirPath()+"] ["+appPrefsMgr.getLocalFileName()+"] cannot be empty!");
+            throw new RuntimeException("The directory path for the prefs ["+appPrefsMgr.getDirPath()+"] ["+appPrefsMgr.getLocalFileName()+"] cannot be empty!"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         } 
     }
     
@@ -109,7 +109,7 @@ public class AppPrefsDiskIOIImpl implements AppPrefsIOIFace
         {
             if (!appPrefsMgr.getDirPath().equals(appPrefsMgr.getDirPath()))
             {
-                throw new RuntimeException("The AppPrefs have already been loaded! ["+appPrefsMgr.getDirPath()+"]");
+                throw new RuntimeException("The AppPrefs have already been loaded! ["+appPrefsMgr.getDirPath()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
             }
         } else
         {
@@ -143,14 +143,14 @@ public class AppPrefsDiskIOIImpl implements AppPrefsIOIFace
         
         if (appPrefsMgr.getProperties() == null)
         {
-            throw new RuntimeException("AppPrefs properties has not been initialized or loaded. "+appPrefsMgr.getLocalFileName());
+            throw new RuntimeException("AppPrefs properties has not been initialized or loaded. "+appPrefsMgr.getLocalFileName()); //$NON-NLS-1$
         }
         if (appPrefsMgr.isChanged())
         {
             try
             {
                 String fullName = appPrefsMgr.getDirPath() + File.separator + appPrefsMgr.getLocalFileName();
-                appPrefsMgr.getProperties().store(new FileOutputStream(fullName), "User Prefs");
+                appPrefsMgr.getProperties().store(new FileOutputStream(fullName), "User Prefs"); //$NON-NLS-1$
                 appPrefsMgr.setChanged(false);
                 
             } catch (IOException ex)

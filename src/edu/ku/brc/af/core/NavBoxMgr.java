@@ -40,7 +40,7 @@ import edu.ku.brc.ui.dnd.Trash;
   * @author rods
  *
 */
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class NavBoxMgr extends JPanel
 {
     // Static Data Members
@@ -211,7 +211,7 @@ public class NavBoxMgr extends JPanel
     {
         if (box == null)
         {
-            throw new NullPointerException("Null pane when adding to NavBoxMgr");
+            throw new NullPointerException("Null pane when adding to NavBoxMgr"); //$NON-NLS-1$
         }
         
         if (!exists(box.getName()))
@@ -234,7 +234,7 @@ public class NavBoxMgr extends JPanel
             
         } else if (ignoreAlreadyThere)
         {
-            throw new ConfigurationException("Adding a new NavBox with duplicate name["+box.getName()+"]");
+            throw new ConfigurationException("Adding a new NavBox with duplicate name["+box.getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
     
@@ -277,7 +277,7 @@ public class NavBoxMgr extends JPanel
             
         } else if (notify)
         {
-            throw new ConfigurationException("Can't find an existing NavBox with name["+box.getName()+"] to remove.");
+            throw new ConfigurationException("Can't find an existing NavBox with name["+box.getName()+"] to remove."); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }    
 }

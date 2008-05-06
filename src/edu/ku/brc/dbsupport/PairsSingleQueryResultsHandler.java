@@ -52,7 +52,7 @@ public class PairsSingleQueryResultsHandler implements QueryResultsHandlerIFace
      */
     public void init(final QueryResultsListener listenerArg, final java.util.List<QueryResultsContainerIFace> list)
     {
-        throw new RuntimeException("PairsSingleQueryResultsHandler can't handle more than one QueryResultsContainer!");
+        throw new RuntimeException("PairsSingleQueryResultsHandler can't handle more than one QueryResultsContainer!"); //$NON-NLS-1$
     }
     
     /* (non-Javadoc)

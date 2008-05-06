@@ -94,7 +94,7 @@ public class QueryResultsSerializedGetter implements QRCProcessorListener
     {
         if (hasProcessingStarted)
         {
-            throw new RuntimeException("Processing has already started!.");
+            throw new RuntimeException("Processing has already started!."); //$NON-NLS-1$
         }
         
         if (connection == null)
@@ -120,7 +120,7 @@ public class QueryResultsSerializedGetter implements QRCProcessorListener
         {
             if (hasProcessingStarted)
             {
-                throw new RuntimeException("Processing has already been started!");
+                throw new RuntimeException("Processing has already been started!"); //$NON-NLS-1$
             }
             hasProcessingStarted   = true;
             currentProcessingIndex = 0;

@@ -67,41 +67,41 @@ public class BioGeomancerResultsDisplay extends JPanel implements MapperListener
      */
     public BioGeomancerResultsDisplay()
     {
-        String rowDef = UIHelper.createDuplicateJGoodiesDef("p", "2px", 13) + ",20px,p:g";
-        setLayout(new FormLayout("p,10px,400px,10px,C:p:g", rowDef));
+        String rowDef = UIHelper.createDuplicateJGoodiesDef("p", "2px", 13) + ",20px,p:g"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        setLayout(new FormLayout("p,10px,400px,10px,C:p:g", rowDef)); //$NON-NLS-1$
 
         CellConstraints cc = new CellConstraints();
 
         int rowIndex = 1;
-        idField       = addRow(cc, getResourceString("ID"),        1, rowIndex);
+        idField       = addRow(cc, getResourceString("BioGeomancerResultsDisplay.ID"),        1, rowIndex); //$NON-NLS-1$
         rowIndex+=2;
-        countryField  = addRow(cc, getResourceString("Country"),   1, rowIndex);
+        countryField  = addRow(cc, getResourceString("BioGeomancerResultsDisplay.COUNTRY"),   1, rowIndex); //$NON-NLS-1$
         rowIndex+=2;
-        adm1Field     = addRow(cc, getResourceString("Adm1"),      1, rowIndex);
+        adm1Field     = addRow(cc, getResourceString("BioGeomancerResultsDisplay.ADM1"),      1, rowIndex); //$NON-NLS-1$
         rowIndex+=2;
-        adm2Field     = addRow(cc, getResourceString("Adm2"),      1, rowIndex);
+        adm2Field     = addRow(cc, getResourceString("BioGeomancerResultsDisplay.ADM2"),      1, rowIndex); //$NON-NLS-1$
         rowIndex+=2;
-        localityField = addRow(cc, getResourceString("Locality"),  1, rowIndex);
-        rowIndex+=2;
-
-        countryBoundingBoxField       = addRow(cc, getResourceString("CountryBoundingBox"),       1, rowIndex);
-        rowIndex+=2;
-        matchedCountField             = addRow(cc, getResourceString("MatchedCount"),             1, rowIndex);
-        rowIndex+=2;
-        boundingBoxField              = addRow(cc, getResourceString("BoundingBox"),              1, rowIndex);
-        rowIndex+=2;
-        boundingBoxCentroidField      = addRow(cc, getResourceString("BoundingBoxCentroid"),      1, rowIndex);
-        rowIndex+=2;
-        centroidErrorRadiusField      = addRow(cc, getResourceString("CentroidErrorRadius"),      1, rowIndex);
-        rowIndex+=2;
-        centroidErrorRadiusUnitsField = addRow(cc, getResourceString("CentroidErrorRadiusUnits"), 1, rowIndex);
-        rowIndex+=2;
-        multiPointMatchField          = addRow(cc, getResourceString("MultiPointMatch"),          1, rowIndex);
-        rowIndex+=2;
-        weightedCentroidField         = addRow(cc, getResourceString("WeightedCentroid"),         1, rowIndex);
+        localityField = addRow(cc, getResourceString("BioGeomancerResultsDisplay.LOCALITY"),  1, rowIndex); //$NON-NLS-1$
         rowIndex+=2;
 
-        mapLabel = createLabel(getResourceString("LOADING_MAP"));
+        countryBoundingBoxField       = addRow(cc, getResourceString("BioGeomancerResultsDisplay.COUNTRY_BOUNDING_BOX"),       1, rowIndex); //$NON-NLS-1$
+        rowIndex+=2;
+        matchedCountField             = addRow(cc, getResourceString("BioGeomancerResultsDisplay.MATCHED_CNT"),             1, rowIndex); //$NON-NLS-1$
+        rowIndex+=2;
+        boundingBoxField              = addRow(cc, getResourceString("BioGeomancerResultsDisplay.BOUNDING_BOX"),              1, rowIndex); //$NON-NLS-1$
+        rowIndex+=2;
+        boundingBoxCentroidField      = addRow(cc, getResourceString("BioGeomancerResultsDisplay.BOUNDING_BOX_CENTROID"),      1, rowIndex); //$NON-NLS-1$
+        rowIndex+=2;
+        centroidErrorRadiusField      = addRow(cc, getResourceString("BioGeomancerResultsDisplay.CENTROID_ERROR_RADIUS"),      1, rowIndex); //$NON-NLS-1$
+        rowIndex+=2;
+        centroidErrorRadiusUnitsField = addRow(cc, getResourceString("BioGeomancerResultsDisplay.CENTROID_ERROR_RADIUS_UNITS"), 1, rowIndex); //$NON-NLS-1$
+        rowIndex+=2;
+        multiPointMatchField          = addRow(cc, getResourceString("BioGeomancerResultsDisplay.MULTI_POINT_MATCH"),          1, rowIndex); //$NON-NLS-1$
+        rowIndex+=2;
+        weightedCentroidField         = addRow(cc, getResourceString("BioGeomancerResultsDisplay.WEIGHTED_CENTROID"),         1, rowIndex); //$NON-NLS-1$
+        rowIndex+=2;
+
+        mapLabel = createLabel(getResourceString("BioGeomancerResultsDisplay.LOADING_MAP")); //$NON-NLS-1$
         add(mapLabel, cc.xywh(5,1,1,25));
 
         mapLabel.setPreferredSize(new Dimension(MAP_WIDTH, MAP_HEIGHT));
@@ -111,7 +111,7 @@ public class BioGeomancerResultsDisplay extends JPanel implements MapperListener
         bgResultsTable.setShowHorizontalLines(false);
         bgResultsTable.setRowSelectionAllowed(true);
 
-        mapLabel.setText("");
+        mapLabel.setText(""); //$NON-NLS-1$
 
         JScrollPane scrollPane = new JScrollPane(bgResultsTable, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         add(scrollPane, cc.xywh(1,rowIndex, 5, 1));
@@ -132,7 +132,7 @@ public class BioGeomancerResultsDisplay extends JPanel implements MapperListener
                                 final int column,
                                 final int row)
     {
-        add(createLabel(labelStr+":", SwingConstants.RIGHT), cc.xy(column,row));
+        add(createLabel(labelStr+":", SwingConstants.RIGHT), cc.xy(column,row)); //$NON-NLS-1$
         JTextField tf = createTextField();
         tf.setEditable(false);
         add(tf, cc.xy(column+2,row));
@@ -165,7 +165,7 @@ public class BioGeomancerResultsDisplay extends JPanel implements MapperListener
     public void setBioGeomancerResultsData(String bgXmlResponse) throws Exception
     {
         mapLabel.setIcon(null);
-        mapLabel.setText(getResourceString("LOADING_MAP"));
+        mapLabel.setText(getResourceString("BioGeomancerResultsDisplay.LOADING_MAP")); //$NON-NLS-1$
         
         summary = BioGeomancer.parseBioGeomancerResponse(bgXmlResponse);
         
@@ -264,7 +264,7 @@ public class BioGeomancerResultsDisplay extends JPanel implements MapperListener
     public void exceptionOccurred(Exception e)
     {
         // blame this on the map service
-        String errorMsg = getResourceString("WB_MAP_SERVICE_CONNECTION_FAILURE");
+        String errorMsg = getResourceString("BioGeomancerResultsDisplay.WB_MAP_SERVICE_CONNECTION_FAILURE"); //$NON-NLS-1$
         mapLabel.setText(errorMsg);
     }
 

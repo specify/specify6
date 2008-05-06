@@ -44,12 +44,12 @@ import edu.ku.brc.ui.UIHelper;
  */
 public class AppPreferences
 {
-    public static final String factoryName = "edu.ku.brc.af.prefs.AppPrefsIOIFace";
+    public static final String factoryName = "edu.ku.brc.af.prefs.AppPrefsIOIFace"; //$NON-NLS-1$
 
     // Static Data Memebers
-    public final static String LOCALFILENAME  = "user.properties";
+    public final static String LOCALFILENAME  = "user.properties"; //$NON-NLS-1$
     
-    private   static final String NOT_INIT = "AppPrefs have not been initialized!";
+    private   static final String NOT_INIT = "AppPrefs have not been initialized!"; //$NON-NLS-1$
     
     protected static final Logger log                 = Logger.getLogger(AppPreferences.class);
             
@@ -81,7 +81,7 @@ public class AppPreferences
             this.remoteSaverClassName = System.getProperty(factoryName, null);
             if (remoteSaverClassName == null)
             {
-                throw new InternalError("System Property '"+factoryName+"' must be set!");
+                throw new InternalError("System Property '"+factoryName+"' must be set!"); //$NON-NLS-1$ //$NON-NLS-2$
                 
             }
             // else
@@ -94,7 +94,7 @@ public class AppPreferences
                 
             } catch (Exception e) 
             {
-                InternalError error = new InternalError("Can't instantiate "+factoryName+" factory " + remoteSaverClassName);
+                InternalError error = new InternalError("Can't instantiate "+factoryName+" factory " + remoteSaverClassName); //$NON-NLS-1$ //$NON-NLS-2$
                 error.initCause(e);
                 throw error;
             }
@@ -486,7 +486,7 @@ public class AppPreferences
      */
     public void putColor(final String name, final Color color)
     {
-        put(name, String.format("%d, %d, %d", color.getRed(), color.getGreen(), color.getBlue()));
+        put(name, String.format("%d, %d, %d", color.getRed(), color.getGreen(), color.getBlue())); //$NON-NLS-1$
     }
 
     /**
@@ -592,7 +592,7 @@ public class AppPreferences
         for (Enumeration<?> e=properties.propertyNames();e.hasMoreElements();)
         {
             String name = (String)e.nextElement();
-            log.info("["+name+"]");
+            log.info("["+name+"]"); //$NON-NLS-1$ //$NON-NLS-2$
             if (name.startsWith(nodeName))
             {
                 String nm = name.substring(len+1, name.length());
@@ -721,12 +721,12 @@ public class AppPreferences
     /**
      * Sync interval in seconds.
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked") //$NON-NLS-1$
     private static final int SYNC_INTERVAL = Math.max(1,
         Integer.parseInt((String)
             AccessController.doPrivileged(new PrivilegedAction() {
                 public Object run() {
-                    return System.getProperty("java.util.prefs.syncInterval", "30");
+                    return System.getProperty("java.util.prefs.syncInterval", "30"); //$NON-NLS-1$ //$NON-NLS-2$
                 }
         })));
 
@@ -782,7 +782,7 @@ public class AppPreferences
             
         } catch(BackingStoreException e) 
         {
-            log.error("Couldn't flush the local prefs: " + e);
+            log.error("Couldn't flush the local prefs: " + e); //$NON-NLS-1$
             e.printStackTrace();
         }
         
@@ -794,7 +794,7 @@ public class AppPreferences
             }
         } catch(BackingStoreException e) 
         {
-            log.error("Couldn't flush the remote prefs: " + e);
+            log.error("Couldn't flush the remote prefs: " + e); //$NON-NLS-1$
             e.printStackTrace();
         }
     }

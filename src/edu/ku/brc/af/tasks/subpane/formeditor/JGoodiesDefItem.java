@@ -21,7 +21,7 @@ import org.apache.commons.lang.StringUtils;
  */
 public class JGoodiesDefItem
 {
-    private String[]     prefixes    = {"f", "fill", "l", "left", "r", "right", "c", "center", "t", "top", "b", "bottom"};
+    private String[]     prefixes    = {"f", "fill", "l", "left", "r", "right", "c", "center", "t", "top", "b", "bottom"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$ //$NON-NLS-9$ //$NON-NLS-10$ //$NON-NLS-11$ //$NON-NLS-12$
     private ALIGN_TYPE[] prefixeVals = {ALIGN_TYPE.Fill,ALIGN_TYPE.Fill, ALIGN_TYPE.Left,ALIGN_TYPE.Left, ALIGN_TYPE.Right,ALIGN_TYPE.Right, ALIGN_TYPE.Center,ALIGN_TYPE.Center, ALIGN_TYPE.Top,ALIGN_TYPE.Top, ALIGN_TYPE.Bottom,ALIGN_TYPE.Bottom};
     
     public enum MINMAX_TYPE  {None, Min, Max}
@@ -60,18 +60,18 @@ public class JGoodiesDefItem
         String def = defArg;
         if (StringUtils.isEmpty(def))
         {
-            def = "p";
+            def = "p"; //$NON-NLS-1$
         } else
         {
             def = defArg.toLowerCase();
         }
         
-        if (def.startsWith("min"))
+        if (def.startsWith("min")) //$NON-NLS-1$
         {
             minMax = MINMAX_TYPE.Min;
             parseMinMax(def);
             
-        } else if (def.startsWith("max"))
+        } else if (def.startsWith("max")) //$NON-NLS-1$
         {
             minMax = MINMAX_TYPE.Max;
             parseMinMax(def);
@@ -100,19 +100,19 @@ public class JGoodiesDefItem
                 isPreferredSize = true;
             }
         }
-        isGrow = def.endsWith(":g") || def.endsWith(":grow");
+        isGrow = def.endsWith(":g") || def.endsWith(":grow"); //$NON-NLS-1$ //$NON-NLS-2$
     }
     
     protected void parseNum(final String def)
     {
-        int inx = def.indexOf("px");
+        int inx = def.indexOf("px"); //$NON-NLS-1$
         if (inx > -1)
         {
             len = Integer.parseInt(def.substring(0, inx));
             type = SIZE_TYPE.Pixels;
         } else
         {
-            inx = def.indexOf("dlu");
+            inx = def.indexOf("dlu"); //$NON-NLS-1$
             if (inx > -1)
             {
                 len = Integer.parseInt(def.substring(0, inx));
@@ -120,14 +120,14 @@ public class JGoodiesDefItem
                 
             } else
             {
-                throw new RuntimeException("Can't parse ["+def+"]");
+                throw new RuntimeException("Can't parse ["+def+"]"); //$NON-NLS-1$ //$NON-NLS-2$
             }
         }
     }
     
     protected void parseMinMax(final String def)
     {
-        String[] toks = StringUtils.split(def, "();");
+        String[] toks = StringUtils.split(def, "();"); //$NON-NLS-1$
         parseNum(toks[1]);
     }
     
@@ -138,21 +138,21 @@ public class JGoodiesDefItem
         if (inx > -1)
         {
             String val = def.substring(0, inx);
-            if (val.equals("f") || val.equals("fill"))
+            if (val.equals("f") || val.equals("fill")) //$NON-NLS-1$ //$NON-NLS-2$
             {
                 align = ALIGN_TYPE.Fill;
                 
             } else if (isRow)
             {
-                if (val.equals("t") || val.equals("top"))
+                if (val.equals("t") || val.equals("top")) //$NON-NLS-1$ //$NON-NLS-2$
                 {
                     align = ALIGN_TYPE.Top;
                     
-                } else if (val.equals("c") || val.equals("center"))
+                } else if (val.equals("c") || val.equals("center")) //$NON-NLS-1$ //$NON-NLS-2$
                 {
                     align = ALIGN_TYPE.Center;
                     
-                } else if (val.equals("b") || val.equals("bottom"))
+                } else if (val.equals("b") || val.equals("bottom")) //$NON-NLS-1$ //$NON-NLS-2$
                 {
                     align = ALIGN_TYPE.Bottom;
                 } else
@@ -162,15 +162,15 @@ public class JGoodiesDefItem
                     
             } else
             {
-                if (val.equals("l") || val.equals("left"))
+                if (val.equals("l") || val.equals("left")) //$NON-NLS-1$ //$NON-NLS-2$
                 {
                     align = ALIGN_TYPE.Left;
                     
-                } else if (val.equals("c") || val.equals("center"))
+                } else if (val.equals("c") || val.equals("center")) //$NON-NLS-1$ //$NON-NLS-2$
                 {
                     align = ALIGN_TYPE.Center;
                     
-                } else if (val.equals("r") || val.equals("right"))
+                } else if (val.equals("r") || val.equals("right")) //$NON-NLS-1$ //$NON-NLS-2$
                 {
                     align = ALIGN_TYPE.Right;
                 } else
@@ -190,24 +190,24 @@ public class JGoodiesDefItem
         sb.append(getAlignStr(align));
         if (len == -1)
         {
-            sb.append("p");
+            sb.append("p"); //$NON-NLS-1$
             
         } else if (minMax != MINMAX_TYPE.None)
         {
-            sb.append(minMax == MINMAX_TYPE.Min ? "min(" : "max(");
+            sb.append(minMax == MINMAX_TYPE.Min ? "min(" : "max("); //$NON-NLS-1$ //$NON-NLS-2$
             sb.append(len);
-            sb.append(type == SIZE_TYPE.Pixels ? "px" : "dlu");
-            sb.append(";p)");
+            sb.append(type == SIZE_TYPE.Pixels ? "px" : "dlu"); //$NON-NLS-1$ //$NON-NLS-2$
+            sb.append(";p)"); //$NON-NLS-1$
             
         } else
         {
             sb.append(len);
-            sb.append(type == SIZE_TYPE.Pixels ? "px" : "dlu");
+            sb.append(type == SIZE_TYPE.Pixels ? "px" : "dlu"); //$NON-NLS-1$ //$NON-NLS-2$
         }
         
         if (isGrow)
         {
-            sb.append(":g");
+            sb.append(":g"); //$NON-NLS-1$
         }
         
         return sb.toString();
@@ -224,17 +224,17 @@ public class JGoodiesDefItem
         {
             switch (align)
             {
-                case None   : return "";
-                case Fill   : return "f:";
-                case Left   : return "l:";
-                case Center : return "c:";
-                case Right  : return "r:";
-                case Top    : return "t:";
-                case Bottom : return "b:";
+                case None   : return ""; //$NON-NLS-1$
+                case Fill   : return "f:"; //$NON-NLS-1$
+                case Left   : return "l:"; //$NON-NLS-1$
+                case Center : return "c:"; //$NON-NLS-1$
+                case Right  : return "r:"; //$NON-NLS-1$
+                case Top    : return "t:"; //$NON-NLS-1$
+                case Bottom : return "b:"; //$NON-NLS-1$
             }
         }
         
-        return "";
+        return ""; //$NON-NLS-1$
     }
 
     /**

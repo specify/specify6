@@ -49,7 +49,7 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace
 {
     private static final Logger log = Logger.getLogger(GeoCoordGeoLocateProvider.class);
     
-    protected static final String GEOLOCATE_RESULTS_VIEW_CONFIRM = "GEOLOCATE_RESULTS_VIEW_CONFIRM";
+    //protected static final String GEOLOCATE_RESULTS_VIEW_CONFIRM = UIRegistry.getString("GeoCoordGeoLocateProvider.GEOLOCATE_RESULTS_VIEW_CONFIRM"); //$NON-NLS-1$
     
     protected GeoCoordProviderListenerIFace listener    = null;
     protected String                        helpContext = null;
@@ -72,13 +72,13 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace
         this.listener    = listenerArg;
         this.helpContext = helpContextArg;
         
-        UsageTracker.incrUsageCount("WB.GeoLocateRows");
+        UsageTracker.incrUsageCount("WB.GeoLocateRows"); //$NON-NLS-1$
         
-        log.info("Performing GeoLocate lookup of selected records");
+        log.info("Performing GeoLocate lookup of selected records"); //$NON-NLS-1$
         
         // create a progress bar dialog to show the network progress
-        final ProgressDialog progressDialog = new ProgressDialog(getResourceString("GEOLOC_PROGRESS"), false, true);
-        progressDialog.getCloseBtn().setText(getResourceString("Cancel"));
+        final ProgressDialog progressDialog = new ProgressDialog(getResourceString("GeoCoordGeoLocateProvider.GEOLOC_PROGRESS"), false, true); //$NON-NLS-1$
+        progressDialog.getCloseBtn().setText(getResourceString("GeoCoordGeoLocateProvider.CANCEL")); //$NON-NLS-1$
         progressDialog.setModal(true);
         progressDialog.setProcess(0, items.size());
 
@@ -107,7 +107,7 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace
             // create a background thread to do the web service work
             Callable<Pair<GeoCoordDataIFace, GeorefResultSet>> wsClientWorker = new Callable<Pair<GeoCoordDataIFace, GeorefResultSet>>()
             {
-                @SuppressWarnings("synthetic-access")
+                @SuppressWarnings("synthetic-access") //$NON-NLS-1$
                 public Pair<GeoCoordDataIFace, GeorefResultSet> call() throws Exception
                 {
                     // get the locality data
@@ -119,7 +119,7 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace
                     String county  = item.getCounty();
                     
                     // make the web service request
-                    log.info("Making call to GEOLocate web service: " + localityNameStr);
+                    log.info("Making call to GEOLocate web service: " + localityNameStr); //$NON-NLS-1$
                     final GeorefResultSet glResults = GeoLocate.getGeoLocateResults(country, state, county, localityNameStr);
 
                     // update the progress bar
@@ -142,12 +142,12 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace
                                 try
                                 {
                                     int rowNumber = item.getId();
-                                    log.info("Requesting map of GEOLocate results for workbench row " + rowNumber);
+                                    log.info("Requesting map of GEOLocate results for workbench row " + rowNumber); //$NON-NLS-1$
                                     GeoLocate.getMapOfGeographicPoints(glResults.getResultSet(), null);
                                 }
                                 catch (Exception e)
                                 {
-                                    log.warn("Failed to pre-cache GEOLocate results map",e);
+                                    log.warn("Failed to pre-cache GEOLocate results map",e); //$NON-NLS-1$
                                 }
                             }
                         };
@@ -168,7 +168,7 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace
         // this thread simply gets the 'waiting for all results' part off of the Swing thread
         final Thread waitingForExecutors = new Thread(new Runnable()
         {
-            @SuppressWarnings("synthetic-access")
+            @SuppressWarnings("synthetic-access") //$NON-NLS-1$
             public void run()
             {
                 // a big list of the query results
@@ -185,14 +185,14 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace
                     catch (InterruptedException e)
                     {
                         // ignore this query since results were not available
-                        log.warn("Process cancelled by user",e);
+                        log.warn("Process cancelled by user",e); //$NON-NLS-1$
                         mapGrabExecServ.shutdown();
                         return;
                     }
                     catch (ExecutionException e)
                     {
                         // ignore this query since results were not available
-                        log.error(completedQuery.toString() + " had an execution error",e);
+                        log.error(completedQuery.toString() + " had an execution error",e); //$NON-NLS-1$
                     }
                 }
                 
@@ -208,16 +208,16 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace
                 });
             }
         });
-        waitingForExecutors.setName("GEOLocate UI update thread");
+        waitingForExecutors.setName("GEOLocate UI update thread"); //$NON-NLS-1$
         waitingForExecutors.start();
         
         // if the user hits close, stop the worker thread
         progressDialog.getCloseBtn().addActionListener(new ActionListener()
         {
-            @SuppressWarnings("synthetic-access")
+            @SuppressWarnings("synthetic-access") //$NON-NLS-1$
             public void actionPerformed(ActionEvent ae)
             {
-                log.debug("Stopping the GEOLocate service worker threads");
+                log.debug("Stopping the GEOLocate service worker threads"); //$NON-NLS-1$
                 glExecServ.shutdownNow();
                 mapGrabExecServ.shutdownNow();
                 waitingForExecutors.interrupt();
@@ -252,7 +252,7 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace
         
         if (withResults.size() == 0)
         {
-            statusBar.setText(getResourceString("NO_GL_RESULTS"));
+            statusBar.setText(getResourceString("GeoCoordGeoLocateProvider.NO_GL_RESULTS")); //$NON-NLS-1$
             return;
         }
         
@@ -262,20 +262,20 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace
         }
         
         // ask the user if they want to review the results
-        String message = String.format(getResourceString(GEOLOCATE_RESULTS_VIEW_CONFIRM), String.valueOf(withResults.size()));
+        String message = String.format(getResourceString("GeoCoordGeoLocateProvider.GEOLOCATE_RESULTS_VIEW_CONFIRM"), String.valueOf(withResults.size())); //$NON-NLS-1$
         int userChoice = JOptionPane.showConfirmDialog(UIRegistry.getTopWindow(), message,
-                getResourceString("GEO_CONTINUE"), JOptionPane.YES_NO_OPTION);
+                getResourceString("GeoCoordGeoLocateProvider.GEO_CONTINUE"), JOptionPane.YES_NO_OPTION); //$NON-NLS-1$
         
         if (userChoice != JOptionPane.YES_OPTION)
         {
-            statusBar.setText("GEOLocate process terminated by user");
+            statusBar.setText(getResourceString("GeoCoordGeoLocateProvider.USER_TERMINATED")); //$NON-NLS-1$
             return;
         }
 
         // create the UI for displaying the BG results
         JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
         GeoLocateResultsChooser bgResChooser = new GeoLocateResultsChooser(topFrame, 
-                getResourceString("GEOLOC_RES_CHOOSER_TITLE"), withResults);
+                getResourceString("GeoCoordGeoLocateProvider.GEOLOC_RES_CHOOSER_TITLE"), withResults); //$NON-NLS-1$
         
         List<GeorefResult> results = bgResChooser.getResultsChosen();
         
@@ -290,7 +290,7 @@ public class GeoCoordGeoLocateProvider implements GeoCoordServiceProviderIFace
             {
                 Double latitude = chosenResult.getWGS84Coordinate().getLatitude();
                 Double longitude = chosenResult.getWGS84Coordinate().getLongitude();
-                item.set(String.format("%7.5f", latitude), String.format("%7.5f", longitude));
+                item.set(String.format("%7.5f", latitude), String.format("%7.5f", longitude)); //$NON-NLS-1$ //$NON-NLS-2$
                 
                 itemsUpdated++;
             }

@@ -63,23 +63,23 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener
     {
         super();
         
-        setLayout(new FormLayout("p,10px,400px,10px,C:p:g", "p,2px,p,2px,p,2px,p,10px,p:g"));
+        setLayout(new FormLayout("p,10px,400px,10px,C:p:g", "p,2px,p,2px,p,2px,p,10px,p:g")); //$NON-NLS-1$ //$NON-NLS-2$
         
         CellConstraints cc = new CellConstraints();
         
         // add the query fields to the display
         int rowIndex = 1;
-        localityStringField = addRow(cc, getResourceString("LocalityString"),      1, rowIndex);
+        localityStringField = addRow(cc, getResourceString("GeoLocateResultsDisplay.LOCALITY_DESC"),      1, rowIndex); //$NON-NLS-1$
         rowIndex+=2;
-        countyField         = addRow(cc, getResourceString("County"), 1, rowIndex);
+        countyField         = addRow(cc, getResourceString("GeoLocateResultsDisplay.COUNTY"), 1, rowIndex); //$NON-NLS-1$
         rowIndex+=2;
-        stateField          = addRow(cc, getResourceString("State"),    1, rowIndex);
+        stateField          = addRow(cc, getResourceString("GeoLocateResultsDisplay.STATE"),    1, rowIndex); //$NON-NLS-1$
         rowIndex+=2;
-        countryField        = addRow(cc, getResourceString("Country"),    1, rowIndex);
+        countryField        = addRow(cc, getResourceString("GeoLocateResultsDisplay.COUNTRY"),    1, rowIndex); //$NON-NLS-1$
         rowIndex+=2;
 
         // add the JLabel to show the map
-        mapLabel = createLabel(getResourceString("LOADING_MAP"));
+        mapLabel = createLabel(getResourceString("GeoLocateResultsDisplay.LOADING_MAP")); //$NON-NLS-1$
         mapLabel.setPreferredSize(new Dimension(MAP_WIDTH, MAP_HEIGHT));
         add(mapLabel, cc.xywh(5,1,1,9));
 
@@ -125,7 +125,7 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener
         
         tableModel.setResultSet(georefResults.getResultSet());
         
-        mapLabel.setText(getResourceString("LOADING_MAP"));
+        mapLabel.setText(getResourceString("GeoLocateResultsDisplay.LOADING_MAP")); //$NON-NLS-1$
         GeoLocate.getMapOfGeographicPoints(georefResults.getResultSet(), GeoLocateResultsDisplay.this);
 
         // set the table height to at most 10 rows
@@ -176,9 +176,9 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener
      */
     public void exceptionOccurred(Exception e)
     {
-        mapLabel.setText("Error while grabbing map"); // XXX i18n
+        mapLabel.setText(getResourceString("GeoLocateResultsDisplay.ERROR_GETTING_MAP")); //$NON-NLS-1$
         JStatusBar statusBar = UIRegistry.getStatusBar();
-        statusBar.setErrorMessage("Error while grabbing map", e);
+        statusBar.setErrorMessage(getResourceString("GeoLocateResultsDisplay.ERROR_GETTING_MAP"), e); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)
@@ -187,7 +187,7 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener
     public void mapReceived(Icon map)
     {
         JStatusBar statusBar = UIRegistry.getStatusBar();
-        statusBar.setText("");
+        statusBar.setText(""); //$NON-NLS-1$
         mapLabel.setText(null);
         mapLabel.setIcon(map);
         repaint();
@@ -207,7 +207,7 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener
                                 final int column,
                                 final int row)
     {
-        add(createLabel(labelStr+":", SwingConstants.RIGHT), cc.xy(column,row));
+        add(createLabel(labelStr+":", SwingConstants.RIGHT), cc.xy(column,row)); //$NON-NLS-1$
         JTextField tf = createTextField();
         tf.setEditable(false);
         add(tf, cc.xy(column+2,row));
@@ -274,19 +274,19 @@ public class GeoLocateResultsDisplay extends JPanel implements MapperListener
             {
                 case 0:
                 {
-                    return getResourceString("Number");
+                    return getResourceString("GeoLocateResultsDisplay.NUMBER"); //$NON-NLS-1$
                 }
                 case 1:
                 {
-                    return getResourceString("Latitude");
+                    return getResourceString("GeoLocateResultsDisplay.LATITUDE"); //$NON-NLS-1$
                 }
                 case 2:
                 {
-                    return getResourceString("Longitude");
+                    return getResourceString("GeoLocateResultsDisplay.LONGITUDE"); //$NON-NLS-1$
                 }
                 case 3:
                 {
-                    return getResourceString("ParsePattern");
+                    return getResourceString("GeoLocateResultsDisplay.PARSE_PATTERN"); //$NON-NLS-1$
                 }
             }
             return null;

@@ -38,10 +38,10 @@ public class ERTIJoinColInfo
     
     public ERTIJoinColInfo(final Element element)
     {
-        joinTableId      = getAttr(element, "tableid", null);
-        joinTableIdAsInt = getAttr(element, "tableid", -1);
+        joinTableId      = getAttr(element, "tableid", null); //$NON-NLS-1$
+        joinTableIdAsInt = getAttr(element, "tableid", -1); //$NON-NLS-1$
         colName          = element.getTextTrim();
-        isPrimary        = getAttr(element, "primary", false);
+        isPrimary        = getAttr(element, "primary", false); //$NON-NLS-1$
     }
 
     public String getJoinTableId()

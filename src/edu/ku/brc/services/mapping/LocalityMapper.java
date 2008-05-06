@@ -30,6 +30,7 @@ import org.jdesktop.animation.timing.Animator.RepeatBehavior;
 
 import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.SimpleCircleIcon;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.util.Pair;
 import edu.ku.brc.util.services.MapGrabber;
 
@@ -197,7 +198,7 @@ public class LocalityMapper implements TimingTarget
         // check the sizes
         if (locations.size() != labels.size())
         {
-            throw new IllegalArgumentException("Locations and labels list must be the same size");
+            throw new IllegalArgumentException("Locations and labels list must be the same size"); //$NON-NLS-1$
         }
 
 		this.mapLocations.addAll(mapLocations);
@@ -1083,7 +1084,7 @@ public class LocalityMapper implements TimingTarget
 	 */
 	public void getMap(final MapperListener callback)
 	{
-		Thread mapGrabberThread = new Thread("Map Grabber")
+		Thread mapGrabberThread = new Thread("Map Grabber") //$NON-NLS-1$
 		{
 			@Override
             public void run()
@@ -1133,9 +1134,9 @@ public class LocalityMapper implements TimingTarget
 //                    "states,rivers",
 //                    mapMinLat, mapMinLong, mapMaxLat, mapMaxLong, maxMapHeight, maxMapWidth);
 
-            Image mapImage = getMapFromService("lifemapper.org",
-                    "/pymod/sdl.py/ogc?map=specify.map&service=WMS&request=GetMap&srs=EPSG:4326&version=1.0.0&format=image/png&transparent=TRUE",
-                    "global_mosaic,states,rivers",
+            Image mapImage = getMapFromService("lifemapper.org", //$NON-NLS-1$
+                    "/pymod/sdl.py/ogc?map=specify.map&service=WMS&request=GetMap&srs=EPSG:4326&version=1.0.0&format=image/png&transparent=TRUE", //$NON-NLS-1$
+                    "global_mosaic,states,rivers", //$NON-NLS-1$
                     mapMinLat, mapMinLong, mapMaxLat, mapMaxLong, maxMapHeight, maxMapWidth);
 
             mapIcon     = new ImageIcon(mapImage);
@@ -1147,7 +1148,7 @@ public class LocalityMapper implements TimingTarget
             
             if (mapWidth < 0 || mapHeight < 0)
             {
-                throw new IOException("Request for map failed.  Received map has negative width or height.");
+                throw new IOException("Request for map failed.  Received map has negative width or height."); //$NON-NLS-1$
             }
 
             mapLatRange = mapMaxLat-mapMinLat;
@@ -1193,12 +1194,12 @@ public class LocalityMapper implements TimingTarget
 
 					if( markerLoc == null )
 					{
-						log.error("A marker location is null");
+						log.error("A marker location is null"); //$NON-NLS-1$
 						continue;
 					}
 					if( !pointIsOnMapIcon(x+markerLoc.x, y+markerLoc.y) )
 					{
-						log.error("A marker location is off the map");
+						log.error("A marker location is off the map"); //$NON-NLS-1$
 						continue;
 					}
 					if( showArrows && lastLoc != null )

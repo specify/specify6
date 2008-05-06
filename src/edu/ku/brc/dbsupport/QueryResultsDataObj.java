@@ -32,7 +32,7 @@ public class QueryResultsDataObj
     protected int     row           = 0;
     protected int     col           = 0;
     protected boolean isProcessable = true;
-    protected String  formatStr     = "";
+    protected String  formatStr     = ""; //$NON-NLS-1$
     
     /**
      * Constructs with row and column.

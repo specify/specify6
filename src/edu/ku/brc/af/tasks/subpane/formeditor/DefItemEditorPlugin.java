@@ -61,9 +61,9 @@ public class DefItemEditorPlugin extends JPanel implements GetSetValueIFace, UIP
         defStr = null;
         
         CellConstraints cc = new CellConstraints();
-        PanelBuilder pb = new PanelBuilder(new FormLayout("p:g,4px,p", "p"), this);
+        PanelBuilder pb = new PanelBuilder(new FormLayout("p:g,4px,p", "p"), this); //$NON-NLS-1$ //$NON-NLS-2$
 
-        label   = createLabel("        ");
+        label   = createLabel("        "); //$NON-NLS-1$
         editBtn = createButton("Edit");
         
         pb.add(label,   cc.xy(1, 1));

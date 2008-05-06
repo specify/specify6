@@ -204,19 +204,19 @@ public class DBFieldInfo extends DBInfoBase implements DBTableChildIFace
         {
             if (StringUtils.isNotEmpty(type))
             {
-                if (type.equals("calendar_date"))
+                if (type.equals("calendar_date")) //$NON-NLS-1$
                 {
                     dataClass = Calendar.class;
                     
-                } else if (type.equals("text"))
+                } else if (type.equals("text")) //$NON-NLS-1$
                 {
                     dataClass = String.class;
                     
-                } else if (type.equals("boolean"))
+                } else if (type.equals("boolean")) //$NON-NLS-1$
                 {
                     dataClass = Boolean.class;
                     
-                } else if (type.equals("byte"))
+                } else if (type.equals("byte")) //$NON-NLS-1$
                 {
                     dataClass = Byte.class;
                     

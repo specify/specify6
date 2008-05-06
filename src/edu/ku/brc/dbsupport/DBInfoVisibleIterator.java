@@ -72,7 +72,7 @@ class DBInfoVisibleIterator<T extends DBInfoBase> implements Iterator<DBInfoBase
      */
     public void remove()
     {
-        throw new RuntimeException("Not implemented.");
+        throw new RuntimeException("Not implemented."); //$NON-NLS-1$
     }
     
 }

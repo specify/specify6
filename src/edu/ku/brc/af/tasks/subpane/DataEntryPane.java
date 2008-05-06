@@ -25,7 +25,7 @@ import edu.ku.brc.af.core.Taskable;
  * @author rods
  * 
  */
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class DataEntryPane extends BaseSubPane
 {
     /**

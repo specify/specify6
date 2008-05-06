@@ -45,11 +45,11 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public abstract class SchemaI18NService
 {
-    public static final String factoryName = "edu.ku.brc.af.core.SchemaI18NService";
+    public static final String factoryName = "edu.ku.brc.af.core.SchemaI18NService"; //$NON-NLS-1$
     
     protected static SchemaI18NService instance        = null;
     protected static Locale            currentLocale;
-    protected static String[]          priorityLocales = {"en", "de", "sv", "pt", "da"};
+    protected static String[]          priorityLocales = {"en", "de", "sv", "pt", "da"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
     
     
     // Locale Data Members
@@ -59,7 +59,7 @@ public abstract class SchemaI18NService
     static
     {
         Locale defLocale = Locale.getDefault();
-        currentLocale    = new Locale(defLocale.getLanguage(), "", "");
+        currentLocale    = new Locale(defLocale.getLanguage(), "", ""); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     
@@ -90,12 +90,12 @@ public abstract class SchemaI18NService
                  
             } catch (Exception e) 
             {
-                InternalError error = new InternalError("Can't instantiate SchemaI18NService factory " + factoryNameStr);
+                InternalError error = new InternalError("Can't instantiate SchemaI18NService factory " + factoryNameStr); //$NON-NLS-1$
                 error.initCause(e);
                 throw error;
             }
         }
-        throw new RuntimeException("The System porpoerty ["+factoryName+"] has not been set up!");
+        throw new RuntimeException("The System porpoerty ["+factoryName+"] has not been set up!"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /**
@@ -168,7 +168,7 @@ public abstract class SchemaI18NService
      */
     public JMenu createLocaleMenu(final ActionListener al)
     {
-        JMenu menu = new JMenu("Locale");
+        JMenu menu = new JMenu("Locale"); //$NON-NLS-1$
         
         Hashtable<String, Boolean> priorityHash = new Hashtable<String, Boolean>();
         for (String ps : priorityLocales)
@@ -261,7 +261,7 @@ public abstract class SchemaI18NService
                 checkCurrentLocaleMenu();
 
                 UIRegistry.pushWindow(frame);
-                pcl.propertyChange(new PropertyChangeEvent(this, "locale", currentLocale, newLocale));
+                pcl.propertyChange(new PropertyChangeEvent(this, "locale", currentLocale, newLocale)); //$NON-NLS-1$
                 UIRegistry.popWindow(frame);
             }  
         });

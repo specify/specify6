@@ -28,15 +28,15 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Georef_Result", propOrder = {
-    "wgs84Coordinate",
-    "parsePattern"
+@XmlType(name = "Georef_Result", propOrder = { //$NON-NLS-1$
+    "wgs84Coordinate", //$NON-NLS-1$
+    "parsePattern" //$NON-NLS-1$
 })
 public class GeorefResult {
 
-    @XmlElement(name = "WGS84Coordinate", namespace = "http://www.museum.tulane.edu/webservices/", required = true)
+    @XmlElement(name = "WGS84Coordinate", namespace = "http://www.museum.tulane.edu/webservices/", required = true) //$NON-NLS-1$ //$NON-NLS-2$
     protected GeographicPoint wgs84Coordinate;
-    @XmlElement(name = "ParsePattern", namespace = "http://www.museum.tulane.edu/webservices/")
+    @XmlElement(name = "ParsePattern", namespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
     protected String parsePattern;
 
     /**

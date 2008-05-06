@@ -274,8 +274,8 @@ public class QueryForIdResultsSQL implements QueryForIdResultsIFace
                 }
             }
             
-            String critiera = (tableInfo.isFieldNameOnlyForSQL() ? StringUtils.substringAfterLast(joinIdName, ".") : joinIdName)
-                              + " in (" + idsStr.toString() + ")";
+            String critiera = (tableInfo.isFieldNameOnlyForSQL() ? StringUtils.substringAfterLast(joinIdName, ".") : joinIdName) //$NON-NLS-1$
+                              + " in (" + idsStr.toString() + ")"; //$NON-NLS-1$ //$NON-NLS-2$
             
             //System.out.println("["+critiera+"]");
             sqlStr = String.format(tableInfo.getViewSql(), new Object[] {joinIdName, critiera});
@@ -285,7 +285,7 @@ public class QueryForIdResultsSQL implements QueryForIdResultsIFace
         } else
         {
             String vsql = getTableInfo().getViewSql();
-            sqlStr = idsStr.length() > 0 ? vsql.replace("%s", idsStr.toString()) : vsql;
+            sqlStr = idsStr.length() > 0 ? vsql.replace("%s", idsStr.toString()) : vsql; //$NON-NLS-1$
         }
         return sqlStr;
     }

@@ -13,7 +13,7 @@ import javax.swing.JPanel;
  * @author rods
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class UIPrefsPanel extends JPanel
 {
 

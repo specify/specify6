@@ -9,6 +9,8 @@
  */
 package edu.ku.brc.af.tasks.subpane.formeditor;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Frame;
@@ -24,6 +26,7 @@ import org.apache.log4j.Logger;
 
 import com.jgoodies.forms.layout.CellConstraints;
 
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.persist.AltViewIFace;
 import edu.ku.brc.ui.forms.persist.FormCell;
@@ -414,7 +417,7 @@ public class BasicFormPreviewPanel extends JPanel
         
         if (viewDef == null)
         {
-            add(new JLabel("Preview is Not Available"), BorderLayout.CENTER);
+            add(new JLabel(getResourceString("BasicFormPreviewPanel.PREVIEW_UNAVAILABLE")), BorderLayout.CENTER); //$NON-NLS-1$
             return;
         }
         
@@ -433,13 +436,13 @@ public class BasicFormPreviewPanel extends JPanel
                 
             } else
             {
-                log.error("Couldn't load Multiview from View["+view+"]");
+                log.error("Couldn't load Multiview from View["+view+"]"); //$NON-NLS-1$ //$NON-NLS-2$
                 return;
             }
             
         } else
         {
-            log.error("Couldn't load Multiview the view was null");
+            log.error("Couldn't load Multiview the view was null"); //$NON-NLS-1$
             return;
 
         }

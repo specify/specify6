@@ -19,7 +19,6 @@ import java.util.Vector;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -80,11 +79,11 @@ public class ViewViewSetEditorPanel extends JPanel
     {
         this.viewSet = viewSet;
         
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g,max(200;p),10px,p,f:p:g", 
-                                                             "p,2px,p,2px,p,2px,p,2px,p,2px,p,10px, p,5px,p,2px,p,2px,p,p:g"), this);
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g,max(200;p),10px,p,f:p:g",  //$NON-NLS-1$
+                                                             "p,2px,p,2px,p,2px,p,2px,p,2px,p,10px, p,5px,p,2px,p,2px,p,p:g"), this); //$NON-NLS-1$
         CellConstraints cc = new CellConstraints();
         
-        viewsFormView = AppContextMgr.getInstance().getView("SystemSetup", "ViewProps");
+        viewsFormView = AppContextMgr.getInstance().getView("SystemSetup", "ViewProps"); //$NON-NLS-1$ //$NON-NLS-2$
         
         viewsMultiView = new MultiView(null,
                                   null, 
@@ -92,7 +91,7 @@ public class ViewViewSetEditorPanel extends JPanel
                                   AltViewIFace.CreationMode.EDIT,
                                   MultiView.IS_EDITTING, null);
 
-        altViewsFormView = AppContextMgr.getInstance().getView("SystemSetup", "AltViewProps");
+        altViewsFormView = AppContextMgr.getInstance().getView("SystemSetup", "AltViewProps"); //$NON-NLS-1$ //$NON-NLS-2$
         
         altViewsMultiView = new MultiView(null,
                                   null, 
@@ -100,7 +99,7 @@ public class ViewViewSetEditorPanel extends JPanel
                                   AltViewIFace.CreationMode.EDIT,
                                   MultiView.IS_EDITTING, null);
 
-        viewDefFormView = AppContextMgr.getInstance().getView("SystemSetup", "ViewDefProps");
+        viewDefFormView = AppContextMgr.getInstance().getView("SystemSetup", "ViewDefProps"); //$NON-NLS-1$ //$NON-NLS-2$
         
         viewDefMultiView = new MultiView(null,
                                   null, 
@@ -109,8 +108,8 @@ public class ViewViewSetEditorPanel extends JPanel
                                   MultiView.IS_EDITTING, null);
 
         cardPanel = new JPanel(cardLayout);
-        cardPanel.add("View",    viewsMultiView);
-        cardPanel.add("AltView", altViewsMultiView);
+        cardPanel.add("View",    viewsMultiView); //$NON-NLS-1$
+        cardPanel.add("AltView", altViewsMultiView); //$NON-NLS-1$
         
         //setLayout(new BorderLayout());
         setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 10));
@@ -146,9 +145,9 @@ public class ViewViewSetEditorPanel extends JPanel
 
         pb.add(cardPanel,               cc.xywh(4, 1, 1, 11));
         
-        pb.addSeparator("",             cc.xywh(1, 13, 5, 1));
+        pb.addSeparator("",             cc.xywh(1, 13, 5, 1)); //$NON-NLS-1$
         
-        pb.add(createLabel("View Defs"), cc.xy(2, 15));
+        pb.add(createLabel("View Defs"), cc.xy(2, 15)); //$NON-NLS-1$
         pb.add(vdsp,                    cc.xy(2, 17));
         pb.add(viewDefBtnBar,           cc.xy(2, 19));
         
@@ -203,7 +202,7 @@ public class ViewViewSetEditorPanel extends JPanel
                 altViewModel.addElement(av);
             }
         }
-        cardLayout.show(cardPanel, "View");
+        cardLayout.show(cardPanel, "View"); //$NON-NLS-1$
     }
     
     /**
@@ -217,7 +216,7 @@ public class ViewViewSetEditorPanel extends JPanel
             selectedAltView = altView;
             altViewsMultiView.setData(selectedAltView);
         }
-        cardLayout.show(cardPanel, "AltView");
+        cardLayout.show(cardPanel, "AltView"); //$NON-NLS-1$
     }
     
     /**
@@ -246,7 +245,7 @@ public class ViewViewSetEditorPanel extends JPanel
             {
             }
         };
-        return UIHelper.createAddRemoveEditBtnBar(addAL, "", removeAL, "", null, null);
+        return UIHelper.createAddRemoveEditBtnBar(addAL, "", removeAL, "", null, null); //$NON-NLS-1$ //$NON-NLS-2$
     }
     
     /**
@@ -266,7 +265,7 @@ public class ViewViewSetEditorPanel extends JPanel
             {
             }
         };
-        return UIHelper.createAddRemoveEditBtnBar(addAL, "", removeAL, "", null, null);
+        return UIHelper.createAddRemoveEditBtnBar(addAL, "", removeAL, "", null, null); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
 }

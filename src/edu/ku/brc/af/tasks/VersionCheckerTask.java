@@ -54,7 +54,7 @@ public class VersionCheckerTask extends BaseTask
     /** A {@link Logger} for all messages emitted from this class. */
     private static final Logger log = Logger.getLogger(VersionCheckerTask.class);
     
-    public static final String VERSION_CHECK = "VersionChecker";
+    public static final String VERSION_CHECK = "VersionChecker"; //$NON-NLS-1$
     
     /**
      * Constructor.
@@ -84,7 +84,7 @@ public class VersionCheckerTask extends BaseTask
         super.initialize();
         
         // setup a background task to check for udpates at startup and/or send usage stats at startup
-        Timer timer = new Timer("VersionCheckingThread", true);
+        Timer timer = new Timer("VersionCheckingThread", true); //$NON-NLS-1$
         TimerTask task = new TimerTask()
         {
             @Override
@@ -118,23 +118,23 @@ public class VersionCheckerTask extends BaseTask
     {
         // create a menu item for "Check for updates now"
         
-        String label    = getResourceString("CheckNow");
+        String label    = getResourceString("VersionCheckerTask.CHECK_NOW"); //$NON-NLS-1$
         
         JMenuItem checkNow = new JMenuItem(label);
         checkNow.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
             {
-                UsageTracker.incrUsageCount("UpdateNow");
+                UsageTracker.incrUsageCount("UpdateNow"); //$NON-NLS-1$
                 
                 // then perform the check
                 connectToServerNow(true);
             }
         });
         
-        MenuItemDesc  miDesc = new MenuItemDesc(checkNow, getResourceString("Help"));
+        MenuItemDesc  miDesc = new MenuItemDesc(checkNow, getResourceString("VersionCheckerTask.HELP")); //$NON-NLS-1$
         
-        miDesc.setPosition(MenuItemDesc.Position.Before, getResourceString("About"));
+        miDesc.setPosition(MenuItemDesc.Position.Before, getResourceString("VersionCheckerTask.ABOUT")); //$NON-NLS-1$
         miDesc.setSepPosition(MenuItemDesc.Position.After);
         
         List<MenuItemDesc> menuItems = new Vector<MenuItemDesc>();
@@ -172,11 +172,11 @@ public class VersionCheckerTask extends BaseTask
     {
         // see if the user is allowing us to send back usage data
         AppPreferences appPrefs  = AppPreferences.getRemote();
-        Boolean        sendStats = appPrefs.getBoolean("usage_tracking.send_stats", null);
+        Boolean        sendStats = appPrefs.getBoolean("usage_tracking.send_stats", null); //$NON-NLS-1$
         if (sendStats == null)
         {
             sendStats = true;
-            appPrefs.putBoolean("usage_tracking.send_stats", sendStats);
+            appPrefs.putBoolean("usage_tracking.send_stats", sendStats); //$NON-NLS-1$
         }
         
         return sendStats;
@@ -191,11 +191,11 @@ public class VersionCheckerTask extends BaseTask
     {
         // see if the user is allowing us to check for updates
         AppPreferences appPrefs        = AppPreferences.getRemote();
-        Boolean        checkForUpdates = appPrefs.getBoolean("version_check.auto", null);
+        Boolean        checkForUpdates = appPrefs.getBoolean("version_check.auto", null); //$NON-NLS-1$
         if (checkForUpdates == null)
         {
             checkForUpdates = true;
-            appPrefs.putBoolean("version_check.auto", checkForUpdates);
+            appPrefs.putBoolean("version_check.auto", checkForUpdates); //$NON-NLS-1$
         }
         
         return checkForUpdates;
@@ -231,7 +231,7 @@ public class VersionCheckerTask extends BaseTask
                 }
             }
             
-            @SuppressWarnings("unchecked")
+            @SuppressWarnings("unchecked") //$NON-NLS-1$
             @Override
             public void finished()
             {
@@ -252,11 +252,11 @@ public class VersionCheckerTask extends BaseTask
                             String errorString = null;
                             if (retVal instanceof ConnectionException)
                             {
-                                errorString = getResourceString("ConnectionError");
+                                errorString = getResourceString("VersionCheckerTask.CONNECTION_ERROR"); //$NON-NLS-1$
                             }
                             else
                             {
-                                errorString = getResourceString("UpdateCheckParseError");
+                                errorString = getResourceString("VersionCheckerTask.UPDATE_CHECK_PARSE_ERROR"); //$NON-NLS-1$
                             }
                             showErrorPopup(errorString);
                         }
@@ -291,7 +291,7 @@ public class VersionCheckerTask extends BaseTask
     {
         // check the website for the info about the latest version
         HttpClient httpClient = new HttpClient();
-        httpClient.getParams().setParameter("http.useragent", getClass().getName());
+        httpClient.getParams().setParameter("http.useragent", getClass().getName()); //$NON-NLS-1$
         
         // get the URL of the website to check, with usage info appended, if allowed
         String versionCheckURL = getVersionCheckURL();
@@ -328,7 +328,7 @@ public class VersionCheckerTask extends BaseTask
      */
     protected String getVersionCheckURL()
     {
-        String baseURL = getResourceString("VERSION_CHECK_URL");
+        String baseURL = getResourceString("VersionCheckerTask.VERSION_CHECK_URL"); //$NON-NLS-1$
         return baseURL;
     }
     
@@ -344,15 +344,15 @@ public class VersionCheckerTask extends BaseTask
 
         // get the install ID
         String installID = UsageTracker.getInstallId();
-        postParams.add(new NameValuePair("id",installID));
+        postParams.add(new NameValuePair("id",installID)); //$NON-NLS-1$
 
         // get the OS name and version
-        String os = System.getProperty("os.name");
+        String os = System.getProperty("os.name"); //$NON-NLS-1$
         os = StringUtils.deleteWhitespace(os);
-        postParams.add(new NameValuePair("os",os));
-        String version = System.getProperty("os.version");
+        postParams.add(new NameValuePair("os",os)); //$NON-NLS-1$
+        String version = System.getProperty("os.version"); //$NON-NLS-1$
         version = StringUtils.deleteWhitespace(version);
-        postParams.add(new NameValuePair("version",version));
+        postParams.add(new NameValuePair("version",version)); //$NON-NLS-1$
 
         if (sendUsageStats)
         {
@@ -380,7 +380,7 @@ public class VersionCheckerTask extends BaseTask
     {
         JOptionPane.showMessageDialog(UIRegistry.getTopWindow(),
                                       localizedErrorString,
-                                      getResourceString("Error"),
+                                      getResourceString("VersionCheckerTask.ERROR"), //$NON-NLS-1$
                                       JOptionPane.ERROR_MESSAGE);
         return;
     }
@@ -397,17 +397,17 @@ public class VersionCheckerTask extends BaseTask
     {
         List<String> availUpdates = new Vector<String>();
         
-        Element installInfoDOM = XMLHelper.readDOMFromConfigDir("install_info.xml");
+        Element installInfoDOM = XMLHelper.readDOMFromConfigDir("install_info.xml"); //$NON-NLS-1$
         Element latestInfoDOM  = XMLHelper.readStrToDOM4J(latestVersionInfo);
         
         List<Pair<String,String>> installedVersions = new Vector<Pair<String, String>>();
         
         // list out the versions of each of the installed modules
-        for (Object instModInfo: installInfoDOM.selectNodes("Module"))
+        for (Object instModInfo: installInfoDOM.selectNodes("Module")) //$NON-NLS-1$
         {
             Element instModInfoNode = (Element)instModInfo;
-            String modName    = instModInfoNode.attributeValue("name");
-            String modVersion = instModInfoNode.attributeValue("version");
+            String modName    = instModInfoNode.attributeValue("name"); //$NON-NLS-1$
+            String modVersion = instModInfoNode.attributeValue("version"); //$NON-NLS-1$
             installedVersions.add(new Pair<String, String>(modName,modVersion));
         }
         
@@ -417,7 +417,7 @@ public class VersionCheckerTask extends BaseTask
             String installedVersion = instModVersion.second;
             
             // find the latest version string for the installed module
-            String xpathToNode = "./Module[@name='" + instModName + "']";
+            String xpathToNode = "./Module[@name='" + instModName + "']"; //$NON-NLS-1$ //$NON-NLS-2$
             Node latestModVersionNode = latestInfoDOM.selectSingleNode(xpathToNode);
             if (latestModVersionNode == null)
             {
@@ -426,7 +426,7 @@ public class VersionCheckerTask extends BaseTask
                 continue;
             }
             
-            String latestVersion = ((Element)latestModVersionNode).attributeValue("version");
+            String latestVersion = ((Element)latestModVersionNode).attributeValue("version"); //$NON-NLS-1$
             
             if (!installedVersion.equalsIgnoreCase(latestVersion))
             {
@@ -476,8 +476,8 @@ public class VersionCheckerTask extends BaseTask
          */
         public UpdatesAvailableDialog()
         {
-            super((JFrame)UIRegistry.getTopWindow(), getResourceString("VER_CHK_TITLE"), false, CustomDialog.OK_BTN, null);
-            content.setContentType("text/html");
+            super((JFrame)UIRegistry.getTopWindow(), getResourceString("VersionCheckerTask.VER_CHK_TITLE"), false, CustomDialog.OK_BTN, null); //$NON-NLS-1$
+            content.setContentType("text/html"); //$NON-NLS-1$
             content.setEditable(false);
             content.setOpaque(false);
             JScrollPane scroller = new JScrollPane(content);
@@ -486,7 +486,7 @@ public class VersionCheckerTask extends BaseTask
 
             content.addHyperlinkListener(new HyperlinkListener()
             {
-                @SuppressWarnings("synthetic-access")
+                @SuppressWarnings("synthetic-access") //$NON-NLS-1$
                 public void hyperlinkUpdate(HyperlinkEvent e)
                 {
                     if (e.getEventType() != HyperlinkEvent.EventType.ACTIVATED)
@@ -502,7 +502,7 @@ public class VersionCheckerTask extends BaseTask
                     }
                     catch (Exception ex)
                     {
-                        log.error("Exception occurred while opening update website", ex);
+                        log.error("Exception occurred while opening update website", ex); //$NON-NLS-1$
                     }
                 }
             });
@@ -518,25 +518,25 @@ public class VersionCheckerTask extends BaseTask
          */
         public void setAvailableUpdates(List<String> availableUpdates)
         {
-            StringBuilder popupMessage = new StringBuilder("<html><div style=\"font-family: sans-serif; font-size: 12pt\"><table width=\"100%\" border=\"0\">");
+            StringBuilder popupMessage = new StringBuilder("<html><div style=\"font-family: sans-serif; font-size: 12pt\"><table width=\"100%\" border=\"0\">"); //$NON-NLS-1$
             if (availableUpdates.size() == 0)
             {
                 // no updates available
-                popupMessage.append("<tr><td align=\"center\"><br>" + getResourceString("NO_UPDATES_AVAILABLE") + "<br></td></tr>");
+                popupMessage.append("<tr><td align=\"center\"><br>" + getResourceString("VersionCheckerTask.NO_UPDATES_AVAILABLE") + "<br></td></tr>"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             }
             else
             {
-                popupMessage.append("<tr><td>Update versions are available for the following modules:<ul>");
+                popupMessage.append("<tr><td>Update versions are available for the following modules:<ul>"); //$NON-NLS-1$
                 for (String update: availableUpdates)
                 {
-                    popupMessage.append("<li>" + update + "</li>");;
+                    popupMessage.append("<li>" + update + "</li>");; //$NON-NLS-1$ //$NON-NLS-2$
                 }
-                popupMessage.append("</ul><br>");
-                String downloadSiteURL = getResourceString("DOWNLOAD_SITE_URL");
-                popupMessage.append("<a href=\"" + downloadSiteURL + "\">" + downloadSiteURL + "</a>");
-                popupMessage.append("<br></td</tr>");
+                popupMessage.append("</ul><br>"); //$NON-NLS-1$
+                String downloadSiteURL = getResourceString("VersionCheckerTask.DOWNLOAD_SITE_URL"); //$NON-NLS-1$
+                popupMessage.append("<a href=\"" + downloadSiteURL + "\">" + downloadSiteURL + "</a>"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                popupMessage.append("<br></td</tr>"); //$NON-NLS-1$
             }
-            popupMessage.append("</table></div></html>");
+            popupMessage.append("</table></div></html>"); //$NON-NLS-1$
             content.setText(popupMessage.toString());
         } 
     }

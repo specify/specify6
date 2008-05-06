@@ -112,7 +112,7 @@ public class ServiceInfo
             icons.put(iconSize.toString(), icon);
         } else
         {
-            log.error("Couldn't load icon for size ["+iconSize+"]");
+            log.error("Couldn't load icon for size ["+iconSize+"]"); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 
@@ -187,7 +187,7 @@ public class ServiceInfo
      */
     public static String getHashKey(final String name, final int tableId)
     {
-        return name + "_" + Integer.toString(tableId);
+        return name + "_" + Integer.toString(tableId); //$NON-NLS-1$
     }
 
     

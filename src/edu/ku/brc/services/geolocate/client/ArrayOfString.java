@@ -29,12 +29,12 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ArrayOfString", propOrder = {
-    "string"
+@XmlType(name = "ArrayOfString", propOrder = { //$NON-NLS-1$
+    "string" //$NON-NLS-1$
 })
 public class ArrayOfString {
 
-    @XmlElement(namespace = "http://www.museum.tulane.edu/webservices/", required = true, nillable = true)
+    @XmlElement(namespace = "http://www.museum.tulane.edu/webservices/", required = true, nillable = true) //$NON-NLS-1$
     protected List<String> string;
 
     /**

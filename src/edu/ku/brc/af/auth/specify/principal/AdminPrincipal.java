@@ -19,6 +19,8 @@ package edu.ku.brc.af.auth.specify.principal;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.ui.UIRegistry;
+
 
 
 /**
@@ -27,7 +29,7 @@ import org.apache.log4j.Logger;
  * @code_status Alpha
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class AdminPrincipal extends BasicPrincipal
 {
     protected static final Logger log = Logger.getLogger(AdminPrincipal.class);

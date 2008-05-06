@@ -94,8 +94,8 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
         String connStr = connectionFormats.get(type);
         if (connStr != null)
         {
-            connStr = connStr.replaceFirst("DATABASE", database);
-            return StringUtils.isNotEmpty(server) ? connStr.replaceFirst("SERVER", server) : connStr;
+            connStr = connStr.replaceFirst("DATABASE", database); //$NON-NLS-1$
+            return StringUtils.isNotEmpty(server) ? connStr.replaceFirst("SERVER", server) : connStr; //$NON-NLS-1$
         }
         return null;
     }
@@ -110,24 +110,24 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
         String connStr = connectionFormats.get(type);
         if (connStr != null)
         {
-            if (serverType.equals("SQLServer"))
+            if (serverType.equals("SQLServer")) //$NON-NLS-1$
             {
                 if(StringUtils.isNotEmpty(database))
                 {
-                        connStr = connStr.replaceFirst("DATABASE",  database);
+                        connStr = connStr.replaceFirst("DATABASE",  database); //$NON-NLS-1$
                 }
                 else
                 {
-                    connStr = connStr.replaceFirst("DATABASE", "");
+                    connStr = connStr.replaceFirst("DATABASE", ""); //$NON-NLS-1$ //$NON-NLS-2$
                 }
-                connStr = connStr.replaceFirst("USERNAME", username);
-                connStr = connStr.replaceFirst("PASSWORD", password);
-                return StringUtils.isNotEmpty(server) ? connStr.replaceFirst("SERVER", server): connStr;
+                connStr = connStr.replaceFirst("USERNAME", username); //$NON-NLS-1$
+                connStr = connStr.replaceFirst("PASSWORD", password); //$NON-NLS-1$
+                return StringUtils.isNotEmpty(server) ? connStr.replaceFirst("SERVER", server): connStr; //$NON-NLS-1$
             }
-            connStr = connStr.replaceFirst("DATABASE", database);
-            connStr = connStr.replaceFirst("USERNAME", username);
-            connStr = connStr.replaceFirst("PASSWORD", password);
-            return StringUtils.isNotEmpty(server) ? connStr.replaceFirst("SERVER", server): connStr;
+            connStr = connStr.replaceFirst("DATABASE", database); //$NON-NLS-1$
+            connStr = connStr.replaceFirst("USERNAME", username); //$NON-NLS-1$
+            connStr = connStr.replaceFirst("PASSWORD", password); //$NON-NLS-1$
+            return StringUtils.isNotEmpty(server) ? connStr.replaceFirst("SERVER", server): connStr; //$NON-NLS-1$
         }
         return null;
     }
@@ -148,24 +148,24 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
         
         if (connStr != null)
         {
-            if (serverType.equals("SQLServer"))
+            if (serverType.equals("SQLServer")) //$NON-NLS-1$
             {
                 if(StringUtils.isNotEmpty(database))
                 {
-                        connStr = connStr.replaceFirst("DATABASE", database);
+                        connStr = connStr.replaceFirst("DATABASE", database); //$NON-NLS-1$
                 }
                 else
                 {
-                    connStr = connStr.replaceFirst("DATABASE", "");
+                    connStr = connStr.replaceFirst("DATABASE", ""); //$NON-NLS-1$ //$NON-NLS-2$
                 }
-                connStr = connStr.replaceFirst("USERNAME", username);
-                connStr = connStr.replaceFirst("PASSWORD", password);
-                return StringUtils.isNotEmpty(server) ? connStr.replaceFirst("SERVER", server): connStr;
+                connStr = connStr.replaceFirst("USERNAME", username); //$NON-NLS-1$
+                connStr = connStr.replaceFirst("PASSWORD", password); //$NON-NLS-1$
+                return StringUtils.isNotEmpty(server) ? connStr.replaceFirst("SERVER", server): connStr; //$NON-NLS-1$
             }
-            connStr = connStr.replaceFirst("DATABASE", database);
-            connStr = connStr.replaceFirst("USERNAME", username);
-            connStr = connStr.replaceFirst("PASSWORD", password);
-            return StringUtils.isNotEmpty(server) ? connStr.replaceFirst("SERVER", server): connStr;
+            connStr = connStr.replaceFirst("DATABASE", database); //$NON-NLS-1$
+            connStr = connStr.replaceFirst("USERNAME", username); //$NON-NLS-1$
+            connStr = connStr.replaceFirst("PASSWORD", password); //$NON-NLS-1$
+            return StringUtils.isNotEmpty(server) ? connStr.replaceFirst("SERVER", server): connStr; //$NON-NLS-1$
         }        
         return null;
     }
@@ -285,61 +285,61 @@ public class DatabaseDriverInfo implements Comparable<DatabaseDriverInfo>
         Vector<DatabaseDriverInfo> dbDrivers = new Vector<DatabaseDriverInfo>();
         try
         {
-            Element root = XMLHelper.readFileToDOM4J(new FileInputStream(XMLHelper.getConfigDirPath("dbdrivers.xml")));
+            Element root = XMLHelper.readFileToDOM4J(new FileInputStream(XMLHelper.getConfigDirPath("dbdrivers.xml"))); //$NON-NLS-1$
             if (root != null)
             {
                 Hashtable<String, String> hash = new Hashtable<String, String>();
 
-                for ( Iterator<?> i = root.elementIterator( "db" ); i.hasNext(); ) 
+                for ( Iterator<?> i = root.elementIterator( "db" ); i.hasNext(); )  //$NON-NLS-1$
                 {
                     Element dbElement = (Element) i.next();
-                    String  name      = getAttr(dbElement, "name", null);
+                    String  name      = getAttr(dbElement, "name", null); //$NON-NLS-1$
                     
                     if (hash.get(name) == null)
                     {
                         hash.put(name, name);
                         
-                        String driver  = getAttr(dbElement, "driver", null);
-                        String dialect = getAttr(dbElement, "dialect", null);
+                        String driver  = getAttr(dbElement, "driver", null); //$NON-NLS-1$
+                        String dialect = getAttr(dbElement, "dialect", null); //$NON-NLS-1$
                         
                        // these can go away once we validate the XML
                         if (StringUtils.isEmpty(driver))
                         {
-                            throw new RuntimeException("Driver cannot be null!");
+                            throw new RuntimeException("Driver cannot be null!"); //$NON-NLS-1$
                         }
                         if (StringUtils.isEmpty(driver))
                         {
-                            throw new RuntimeException("Dialect cannot be null!");
+                            throw new RuntimeException("Dialect cannot be null!"); //$NON-NLS-1$
                         }                       
                         
                         DatabaseDriverInfo drv = new DatabaseDriverInfo(name, driver, dialect);
                         
                         // Load up the Connection Types
-                        for ( Iterator<?> connIter = dbElement.elementIterator( "connection" ); connIter.hasNext(); ) 
+                        for ( Iterator<?> connIter = dbElement.elementIterator( "connection" ); connIter.hasNext(); )  //$NON-NLS-1$
                         {
                             Element connElement = (Element) connIter.next();
-                            String  typeStr     = getAttr(connElement, "type", null);
+                            String  typeStr     = getAttr(connElement, "type", null); //$NON-NLS-1$
                             String  connFormat  = connElement.getTextTrim();
                             ConnectionType type = ConnectionType.valueOf(StringUtils.capitalize(typeStr));
                             drv.addFormat(type, connFormat);
                         }
                         
-                        if (drv.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, " ", " ", " ", " ", " ") == null)
+                        if (drv.getConnectionStr(DatabaseDriverInfo.ConnectionType.Open, " ", " ", " ", " ", " ") == null) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
                         {
-                            log.error("Meg might've screwed up generating connection strings, contact her if you get this error");
-                            throw new RuntimeException("Dialect ["+name+"] has no 'Open' connection type!");
+                            log.error("Meg might've screwed up generating connection strings, contact her if you get this error"); //$NON-NLS-1$
+                            throw new RuntimeException("Dialect ["+name+"] has no 'Open' connection type!"); //$NON-NLS-1$ //$NON-NLS-2$
                         }
                         
                         dbDrivers.add(drv);
                         
                     } else
                     {
-                        log.error("Database Driver Name["+name+"] is in use.");
+                        log.error("Database Driver Name["+name+"] is in use."); //$NON-NLS-1$ //$NON-NLS-2$
                     }
                 }
             } else
             {
-                String msg = "The root element for the document was null!";
+                String msg = "The root element for the document was null!"; //$NON-NLS-1$
                 log.error(msg);
                 throw new ConfigurationException(msg);
             } 

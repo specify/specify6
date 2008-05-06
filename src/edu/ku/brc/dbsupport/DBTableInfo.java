@@ -89,7 +89,7 @@ public class DBTableInfo extends DBInfoBase
             //Class.
         } catch (ClassNotFoundException e)
         {
-            log.error("Trying to find class: " + className + " but class was not found");
+            log.error("Trying to find class: " + className + " but class was not found"); //$NON-NLS-1$ //$NON-NLS-2$
             //e.printStackTrace();
         }
         relationships = new Vector<DBRelationshipInfo>();
@@ -332,14 +332,14 @@ public class DBTableInfo extends DBInfoBase
      */
     public DBFieldInfo getFieldByColumnName(final String columnName)
     {
-        String      fName     = columnName.indexOf('.') > -1 ? StringUtils.substringAfterLast(columnName, ".") : columnName;
+        String      fName     = columnName.indexOf('.') > -1 ? StringUtils.substringAfterLast(columnName, ".") : columnName; //$NON-NLS-1$
         String      fieldName = fName.substring(0,1).toLowerCase() + fName.substring(1, fName.length());
         DBFieldInfo fi        = getFieldByName(fieldName);
         if (fi == null)
         {
-            if (!fieldName.endsWith("ID"))
+            if (!fieldName.endsWith("ID")) //$NON-NLS-1$
             {
-                log.error("Couldn't find FieldName["+fieldName+"] in table ["+getTitle()+"]");
+                log.error("Couldn't find FieldName["+fieldName+"] in table ["+getTitle()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             }
         }
         return fi;

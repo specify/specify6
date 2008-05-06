@@ -31,11 +31,14 @@ package edu.ku.brc.helpers;
 // Public Domain Software -- Free to Use as You Like
 //
 /////////////////////////////////////////////////////////
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.lang.reflect.Method;
 
 import javax.swing.JOptionPane;
 
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * Taken from the Web (Bare Bones Launcher). This is a cross platform approach for launching browsers from java Apps
@@ -48,7 +51,7 @@ import edu.ku.brc.ui.UIHelper;
 public class BrowserLauncher
 {
 
-    private static final String errMsg = "Error attempting to launch web browser"; // I18N
+    private static final String errMsg = getResourceString("BrowserLauncher.ERROR_LAUNCH_BROWSER");  //$NON-NLS-1$
 
     /**
      * Opens an URL in a browser.
@@ -61,34 +64,34 @@ public class BrowserLauncher
         {
             if (osType == UIHelper.OSTYPE.MacOSX)
             {
-                Class<?> fileMgr = Class.forName("com.apple.eio.FileManager");
-                Method openURL = fileMgr.getDeclaredMethod("openURL", new Class<?>[] { String.class });
+                Class<?> fileMgr = Class.forName("com.apple.eio.FileManager"); //$NON-NLS-1$
+                Method openURL = fileMgr.getDeclaredMethod("openURL", new Class<?>[] { String.class }); //$NON-NLS-1$
                 openURL.invoke(null, new Object[] { url });
 
             } else if (osType == UIHelper.OSTYPE.Windows)
             {
-                Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url);
+                Runtime.getRuntime().exec("rundll32 url.dll,FileProtocolHandler " + url); //$NON-NLS-1$
 
             } else
             { // assume Unix or Linux
-                String[] browsers = { "firefox", "mozilla", "epiphany", "opera", "konqueror", "netscape" };
+                String[] browsers = { "firefox", "mozilla", "epiphany", "opera", "konqueror", "netscape" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
                 String browser = null;
                 for (int count = 0; count < browsers.length && browser == null; count++)
                 {
-                    if (Runtime.getRuntime().exec(new String[] { "which", browsers[count] }).waitFor() == 0)
+                    if (Runtime.getRuntime().exec(new String[] { "which", browsers[count] }).waitFor() == 0) //$NON-NLS-1$
                     {
                         browser = browsers[count];
                     }
                 }
                 if (browser == null)
                 {
-                    throw new Exception("Could not find web browser");
+                    throw new Exception("Could not find web browser"); //$NON-NLS-1$
                 }
                 Runtime.getRuntime().exec(new String[] { browser, url });
             }
         } catch (Exception e)
         {
-            JOptionPane.showMessageDialog(null, errMsg + ":\n" + e.getLocalizedMessage());
+            JOptionPane.showMessageDialog(null, errMsg + ":\n" + e.getLocalizedMessage()); //$NON-NLS-1$
         }
     }
 

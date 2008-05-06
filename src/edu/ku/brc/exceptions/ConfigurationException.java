@@ -14,6 +14,7 @@
 
 package edu.ku.brc.exceptions;
 
+
 /**
  * This exception is used to mark (fatal) failures in the initialization and configuration
  * 
@@ -21,7 +22,7 @@ package edu.ku.brc.exceptions;
  * 
  * @author rods
  */
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class ConfigurationException extends RuntimeException
 {
     /**

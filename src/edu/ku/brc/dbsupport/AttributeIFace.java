@@ -50,7 +50,7 @@ public interface AttributeIFace
         public void set(final short  ord) { this.ord = ord; }
         public static String getString(final short ord)
         {
-            String[] names = {"Integer", "Float", "Double", "Boolean", "String"};
+            String[] names = {"Integer", "Float", "Double", "Boolean", "String"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
             return names[ord];
         }
     }

@@ -6,14 +6,14 @@
  */
 package edu.ku.brc.helpers;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.io.File;
 import java.util.Hashtable;
 
 import javax.swing.filechooser.FileFilter;
 
 import org.apache.commons.io.FilenameUtils;
-
-import edu.ku.brc.ui.UIRegistry;
 
 /**
  * Class for filtering image types by extension.
@@ -27,17 +27,17 @@ import edu.ku.brc.ui.UIRegistry;
  */
 public class ImageFilter extends FileFilter implements java.io.FilenameFilter
 {
-    public final static String jpeg = "jpeg";
-    public final static String jpg  = "jpg";
-    public final static String gif  = "gif";
-    public final static String png  = "png";
+    public final static String jpeg = "jpeg"; //$NON-NLS-1$
+    public final static String jpg  = "jpg"; //$NON-NLS-1$
+    public final static String gif  = "gif"; //$NON-NLS-1$
+    public final static String png  = "png"; //$NON-NLS-1$
     
     protected static String[] types = {jpeg, jpg, gif, png};
     
     // Unsupported at this time
-    public final static String tiff = "tiff";
-    public final static String tif  = "tif";
-    public final static String bmp  = "bmp";
+    public final static String tiff = "tiff"; //$NON-NLS-1$
+    public final static String tif  = "tif"; //$NON-NLS-1$
+    public final static String bmp  = "bmp"; //$NON-NLS-1$
     
     protected Hashtable<String, Boolean> hash = new Hashtable<String, Boolean>();
     
@@ -88,6 +88,6 @@ public class ImageFilter extends FileFilter implements java.io.FilenameFilter
     //The description of this filter
     public String getDescription()
     {
-        return UIRegistry.getResourceString("Images");
+        return getResourceString("ImageFilter.IMAGES"); //$NON-NLS-1$
     }
 }

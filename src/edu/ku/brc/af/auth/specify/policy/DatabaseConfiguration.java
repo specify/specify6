@@ -32,6 +32,8 @@ import javax.security.auth.login.AppConfigurationEntry.LoginModuleControlFlag;
 
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.ui.UIRegistry;
+
 
 
 /**
@@ -44,15 +46,15 @@ public class DatabaseConfiguration extends Configuration
 {
     static private DatabaseConfiguration spDbConfig;
     protected static final Logger log = Logger.getLogger(DatabaseConfiguration.class);
-    static private String url = "";
-    static private String driver = "";
+    static private String url = ""; //$NON-NLS-1$
+    static private String driver = ""; //$NON-NLS-1$
 //    /**
 //     * 
 //     */
     public DatabaseConfiguration(String url, String driver)
     {
-        log.debug("url: " + url);
-        log.debug("driver: " + driver);
+        log.debug("url: " + url); //$NON-NLS-1$
+        log.debug("driver: " + driver); //$NON-NLS-1$
         DatabaseConfiguration.url = url;
         DatabaseConfiguration.driver = driver;
     }
@@ -62,7 +64,7 @@ public class DatabaseConfiguration extends Configuration
      */
     static void init(String url, String driver)
     {
-        log.debug("init");
+        log.debug("init"); //$NON-NLS-1$
         spDbConfig = new DatabaseConfiguration(url, driver);
         Configuration.setConfiguration(spDbConfig);
     }
@@ -78,14 +80,14 @@ public class DatabaseConfiguration extends Configuration
     public boolean deleteAppConfigurationEntry(String appName, String loginModuleName, String url, String driver)
             throws SQLException
     {
-        log.debug("deleteAppConfigurationEntry: appName[" + appName + "] loginModuleName[" +loginModuleName + "] url[" + url +"] driver[" + driver + "]");
+        log.debug("deleteAppConfigurationEntry: appName[" + appName + "] loginModuleName[" +loginModuleName + "] url[" + url +"] driver[" + driver + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
         Connection conn = null;
         try
         {
             conn = DatabaseService.getAdminLevelConnection(url, driver);//.getInstance().getConnection();;
-            String sql = "DELETE FROM sp_app_configuration "
-                    + "WHERE appName=\""+appName+"\" AND loginModuleClass=\""+loginModuleName+"\"";
-            log.debug("executing SQL: " + sql);
+            String sql = "DELETE FROM sp_app_configuration " //$NON-NLS-1$
+                    + "WHERE appName=\""+appName+"\" AND loginModuleClass=\""+loginModuleName+"\""; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            log.debug("executing SQL: " + sql); //$NON-NLS-1$
             
             //            conn = DatabaseService.getAdminLevelConnection(url, driver);//.getInstance().getConnection();;
             //String sql = "DELETE FROM app_configuration "
@@ -114,15 +116,15 @@ public class DatabaseConfiguration extends Configuration
     //{
             throws SQLException
     {
-        log.debug("addAppConfigurationEntry: appName[" + appName + "] entry.getLoginModuleName()[" +entry.getLoginModuleName() + "] url[" + url +"] driver[" + driver + "]");//" + appName + " " +entry.getLoginModuleName() + " " + url +" " + driver);
+        log.debug("addAppConfigurationEntry: appName[" + appName + "] entry.getLoginModuleName()[" +entry.getLoginModuleName() + "] url[" + url +"] driver[" + driver + "]");//" + appName + " " +entry.getLoginModuleName() + " " + url +" " + driver); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
         // insert an entry into the database for the LoginModule
         // indicated by the passed in AppConfigurationEntry
         Connection conn = null;
         try
         {
             conn = DatabaseService.getAdminLevelConnection(url, driver);//.getInstance().getConnection();;
-            String sql = "INSERT INTO sp_app_configuration VALUES (\""+appName+"\", \""+entry.getLoginModuleName()+"\", \""+controlFlagString(entry.getControlFlag())+"\")";
-            log.debug("executing SQL: " + sql);
+            String sql = "INSERT INTO sp_app_configuration VALUES (\""+appName+"\", \""+entry.getLoginModuleName()+"\", \""+controlFlagString(entry.getControlFlag())+"\")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+            log.debug("executing SQL: " + sql); //$NON-NLS-1$
             //String sql = "INSERT INTO app_configuration VALUES (?, ?, ?)";
             
             PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -147,24 +149,24 @@ public class DatabaseConfiguration extends Configuration
     {
         if (LoginModuleControlFlag.REQUIRED.equals(flag))
         {
-            return "required";
+            return "required"; //$NON-NLS-1$
         } 
         else if (LoginModuleControlFlag.REQUISITE.equals(flag))
         {
-            return "requisite";
+            return "requisite"; //$NON-NLS-1$
         } 
         else if (LoginModuleControlFlag.SUFFICIENT.equals(flag))
         {
-            return "sufficient";
+            return "sufficient"; //$NON-NLS-1$
         } 
         else if (LoginModuleControlFlag.OPTIONAL.equals(flag))
         {
-            return "optional";
+            return "optional"; //$NON-NLS-1$
         } 
         else
         {
-            log.warn("resolveControlFlag is an unknown LoginModuleControlFlag. Returning LoginModuleControlFlag.OPTIONAL; flagpassed[" + flag+"]");
-            return "OPTIONAL";
+            log.warn("resolveControlFlag is an unknown LoginModuleControlFlag. Returning LoginModuleControlFlag.OPTIONAL; flagpassed[" + flag+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+            return "OPTIONAL"; //$NON-NLS-1$
         }
 
     }
@@ -182,29 +184,29 @@ public class DatabaseConfiguration extends Configuration
     @Override
     public AppConfigurationEntry[] getAppConfigurationEntry(String applicationName)
     {
-        log.debug("getAppConfigurationEntry: appName[" +applicationName + "]");
-        log.debug("getAppConfigurationEntry: url[" +url + "]");
-        log.debug("getAppConfigurationEntry: driver[" +driver + "]");
+        log.debug("getAppConfigurationEntry: appName[" +applicationName + "]"); //$NON-NLS-1$ //$NON-NLS-2$
+        log.debug("getAppConfigurationEntry: url[" +url + "]"); //$NON-NLS-1$ //$NON-NLS-2$
+        log.debug("getAppConfigurationEntry: driver[" +driver + "]"); //$NON-NLS-1$ //$NON-NLS-2$
         if (applicationName == null) 
         { 
-            log.error("getAppConfigurationEntry: Throwing Null pointer exception: applicationName passed in was null." );
-            throw new NullPointerException("applicationName passed in was null."); 
+            log.error("getAppConfigurationEntry: Throwing Null pointer exception: applicationName passed in was null." ); //$NON-NLS-1$
+            throw new NullPointerException("applicationName passed in was null.");  //$NON-NLS-1$
         }
 
         Connection conn = null;
         try
         {
             conn = DatabaseService.getAdminLevelConnection(url, driver);//.getInstance().getConnection();;
-            String sql = "SELECT loginModuleClass, controlFlag "
-                    + "FROM app_configuration WHERE appName=\""+applicationName+"\"";
+            String sql = "SELECT loginModuleClass, controlFlag " //$NON-NLS-1$
+                    + "FROM app_configuration WHERE appName=\""+applicationName+"\""; //$NON-NLS-1$ //$NON-NLS-2$
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, applicationName);
             ResultSet rs = pstmt.executeQuery();
             List<AppConfigurationEntry> entries = new ArrayList<AppConfigurationEntry>();
             while (rs.next())
             {
-                String loginModuleClass = rs.getString("loginModuleClass");
-                String controlFlagValue = rs.getString("controlFlag");
+                String loginModuleClass = rs.getString("loginModuleClass"); //$NON-NLS-1$
+                String controlFlagValue = rs.getString("controlFlag"); //$NON-NLS-1$
                 AppConfigurationEntry.LoginModuleControlFlag controlFlag = resolveControlFlag(controlFlagValue);
                 AppConfigurationEntry entry = new AppConfigurationEntry(loginModuleClass,
                         controlFlag, new HashMap<String, Object>());
@@ -213,14 +215,14 @@ public class DatabaseConfiguration extends Configuration
 
             if (entries.isEmpty())
             {
-                log.debug("getAppConfigurationEntry()  No AppConfigurationEntrys found for applicationName: " + applicationName);
+                log.debug("getAppConfigurationEntry()  No AppConfigurationEntrys found for applicationName: " + applicationName); //$NON-NLS-1$
             }
             return (AppConfigurationEntry[])entries.toArray(new AppConfigurationEntry[entries.size()]);
         } 
         catch (SQLException e)
         {
-            log.error("getAppConfigurationEntry: SQLException retrieving for applicationName="+ applicationName, e);
-            throw new RuntimeException("SQLException retrieving for applicationName="+ applicationName, e);
+            log.error("getAppConfigurationEntry: SQLException retrieving for applicationName="+ applicationName, e); //$NON-NLS-1$
+            throw new RuntimeException("SQLException retrieving for applicationName="+ applicationName, e); //$NON-NLS-1$
         } 
         finally
         {
@@ -232,7 +234,7 @@ public class DatabaseConfiguration extends Configuration
                     conn.close();
                 } catch (SQLException e)
                 {
-                    log.error("getAppConfigurationEntry() Couldn't close connection. SQLException: " + e.getSQLState());
+                    log.error("getAppConfigurationEntry() Couldn't close connection. SQLException: " + e.getSQLState()); //$NON-NLS-1$
                 }
             }
         }
@@ -288,28 +290,28 @@ public class DatabaseConfiguration extends Configuration
     }
     public LoginModuleControlFlag resolveControlFlag(String name)
     {
-        if (name == null) { throw new NullPointerException("control flag name passed in is null."); }
+        if (name == null) { throw new NullPointerException("control flag name passed in is null."); } //$NON-NLS-1$
 
         String uppedName = name.toUpperCase(Locale.US);
-        if ("REQUIRED".equals(uppedName))
+        if ("REQUIRED".equals(uppedName)) //$NON-NLS-1$
         {
             return LoginModuleControlFlag.REQUIRED;
         } 
-        else if ("REQUISITE".equals(uppedName))
+        else if ("REQUISITE".equals(uppedName)) //$NON-NLS-1$
         {
             return LoginModuleControlFlag.REQUISITE;
         } 
-        else if ("SUFFICIENT".equals(uppedName))
+        else if ("SUFFICIENT".equals(uppedName)) //$NON-NLS-1$
         {
             return LoginModuleControlFlag.SUFFICIENT;
         } 
-        else if ("OPTIONAL".equals(uppedName))
+        else if ("OPTIONAL".equals(uppedName)) //$NON-NLS-1$
         {
             return LoginModuleControlFlag.OPTIONAL;
         } 
         else
         {
-            log.error("resolveControlFlag (up-cased) is an unknown String controlFlag. Returning OPTIONAL flag["+  uppedName +"]");
+            log.error("resolveControlFlag (up-cased) is an unknown String controlFlag. Returning OPTIONAL flag["+  uppedName +"]"); //$NON-NLS-1$ //$NON-NLS-2$
             return AppConfigurationEntry.LoginModuleControlFlag.OPTIONAL;
         }
     }

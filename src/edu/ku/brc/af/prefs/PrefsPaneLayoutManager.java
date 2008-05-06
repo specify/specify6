@@ -70,7 +70,7 @@ public class PrefsPaneLayoutManager implements LayoutManager, LayoutManager2
     {
         if (arg1 == null)
         {
-            throw new NullPointerException("Null component in addLayoutComponent");
+            throw new NullPointerException("Null component in addLayoutComponent"); //$NON-NLS-1$
         }
         
         if (arg1 instanceof PrefPanelRow)
@@ -87,7 +87,7 @@ public class PrefsPaneLayoutManager implements LayoutManager, LayoutManager2
     {
         if (arg0 == null)
         {
-            throw new NullPointerException("Null component in removeLayoutComponent");
+            throw new NullPointerException("Null component in removeLayoutComponent"); //$NON-NLS-1$
         }
         comps.remove(arg0);
 
@@ -203,7 +203,7 @@ public class PrefsPaneLayoutManager implements LayoutManager, LayoutManager2
     {
         if (comp == null)
         {
-            throw new NullPointerException("Null component in addLayoutComponent");
+            throw new NullPointerException("Null component in addLayoutComponent"); //$NON-NLS-1$
         }
         
         if (comp instanceof PrefPanelRow)

@@ -162,10 +162,10 @@ public class JPAQuery implements CustomQueryIFace
         {
             try
             {
-                log.debug("["+sqlStr+"]");
-                if (sqlStr.startsWith("SELECT gtp.geologicTimePeriodId"))
+                log.debug("["+sqlStr+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+                if (sqlStr.startsWith("SELECT gtp.geologicTimePeriodId")) //$NON-NLS-1$
                 {
-                    sqlStr = "SELECT gtp.geologicTimePeriodId FROM GeologicTimePeriod as gtp WHERE lower(gtp.fullName) like '%taylor%' OR lower(gtp.name) like '%taylor%'";
+                    sqlStr = "SELECT gtp.geologicTimePeriodId FROM GeologicTimePeriod as gtp WHERE lower(gtp.fullName) like '%taylor%' OR lower(gtp.name) like '%taylor%'"; //$NON-NLS-1$
                 }
                 Query qry = query != null ? query : session.createQuery(sqlStr);
                 
@@ -204,7 +204,7 @@ public class JPAQuery implements CustomQueryIFace
             
         } catch (Exception ex)
         {
-            log.error("** In Exception ["+sqlStr+"]");
+            log.error("** In Exception ["+sqlStr+"]"); //$NON-NLS-1$ //$NON-NLS-2$
             log.error(ex);
             ex.printStackTrace();
             inError = true;
@@ -273,7 +273,7 @@ public class JPAQuery implements CustomQueryIFace
      */
     public List<QueryResultsContainerIFace> getQueryDefinition()
     {
-        throw new RuntimeException("Not Implemented");
+        throw new RuntimeException("Not Implemented"); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)
@@ -281,7 +281,7 @@ public class JPAQuery implements CustomQueryIFace
      */
     public List<QueryResultsDataObj> getResults()
     {
-        throw new RuntimeException("Not Implemented");
+        throw new RuntimeException("Not Implemented"); //$NON-NLS-1$
     }
 
     /**

@@ -30,13 +30,13 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "result"
+@XmlType(name = "", propOrder = { //$NON-NLS-1$
+    "result" //$NON-NLS-1$
 })
-@XmlRootElement(name = "GeorefResponse")
+@XmlRootElement(name = "GeorefResponse") //$NON-NLS-1$
 public class GeorefResponse {
 
-    @XmlElement(name = "Result", namespace = "http://www.museum.tulane.edu/webservices/", required = true)
+    @XmlElement(name = "Result", namespace = "http://www.museum.tulane.edu/webservices/", required = true) //$NON-NLS-1$ //$NON-NLS-2$
     protected GeorefResultSet result;
 
     /**

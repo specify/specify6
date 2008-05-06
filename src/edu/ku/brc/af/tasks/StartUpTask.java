@@ -44,7 +44,7 @@ import edu.ku.brc.ui.ToolBarDropDownBtn;
  */
 public class StartUpTask extends BaseTask
 {
-    public static final String STARTUP = "Startup";
+    public static final String STARTUP = "Startup"; //$NON-NLS-1$
 
     protected Vector<ToolBarDropDownBtn> tbList = new Vector<ToolBarDropDownBtn>();
     protected SubPaneIFace blankPanel = null;
@@ -69,7 +69,7 @@ public class StartUpTask extends BaseTask
      */
     public void createStartUpStatPanel()
     {
-        StatsPane pane = new StatsPane(title, this, "StartUpPanel", true, null);
+        StatsPane pane = new StatsPane(title, this, "StartUpPanel", true, null); //$NON-NLS-1$
         SubPaneMgr.getInstance().removePane(blankPanel);
         SubPaneMgr.getInstance().addPane(pane);
         blankPanel = null;
@@ -90,7 +90,7 @@ public class StartUpTask extends BaseTask
     @Override
     public SubPaneIFace getStarterPane()
     {
-        return new StatsPane(title, this, "StartUpPanel", true, null);
+        return new StatsPane(title, this, "StartUpPanel", true, null); //$NON-NLS-1$
     }
 
     //-------------------------------------------------------

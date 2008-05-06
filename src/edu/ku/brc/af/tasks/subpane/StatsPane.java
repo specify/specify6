@@ -56,7 +56,7 @@ import edu.ku.brc.ui.CommandAction;
  * @author rods
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class StatsPane extends BaseSubPane
 {
     protected enum QueryType {SQL, JPA, CUSTOM}
@@ -126,10 +126,10 @@ public class StatsPane extends BaseSubPane
         CommandAction cmdAction = null;
         if (command != null)
         {
-            String typeStr   = getAttr(command, "type",  null);
-            String actionStr = getAttr(command, "action", null);
-            String className = getAttr(command, "class",  null);
-            String data      = getAttr(command, "data",  null);
+            String typeStr   = getAttr(command, "type",  null); //$NON-NLS-1$
+            String actionStr = getAttr(command, "action", null); //$NON-NLS-1$
+            String className = getAttr(command, "class",  null); //$NON-NLS-1$
+            String data      = getAttr(command, "data",  null); //$NON-NLS-1$
             
             
             
@@ -173,30 +173,30 @@ public class StatsPane extends BaseSubPane
             rootElement = AppContextMgr.getInstance().getResourceAsDOM(resourceName);
             if (rootElement == null)
             {
-                throw new RuntimeException("Couldn't find resource ["+resourceName+"]");
+                throw new RuntimeException("Couldn't find resource ["+resourceName+"]"); //$NON-NLS-1$ //$NON-NLS-2$
             }
 
             // count up rows and column
             StringBuilder rowsDef = new StringBuilder(128);
 
-            List<?> rows = rootElement.selectNodes("/panel/row");
+            List<?> rows = rootElement.selectNodes("/panel/row"); //$NON-NLS-1$
             int maxCols = 0;
             for (Object obj : rows)
             {
                 Element rowElement = (Element)obj;
-                List<?>    boxes   = rowElement.selectNodes("box");
+                List<?>    boxes   = rowElement.selectNodes("box"); //$NON-NLS-1$
                 maxCols = Math.max(maxCols, boxes.size());
                 if (rowsDef.length() > 0)
                 {
-                    rowsDef.append(",15dlu,");
+                    rowsDef.append(",15dlu,"); //$NON-NLS-1$
                 }
-                rowsDef.append("top:p");
+                rowsDef.append("top:p"); //$NON-NLS-1$
             }
 
             int preferredWidth = PREFERREDWIDTH;
             int spacing        = SPACING;
 
-            FormLayout      formLayout = new FormLayout(createDuplicateJGoodiesDef("f:min("+preferredWidth+"px;p)", spacing+"px", maxCols), rowsDef.toString());
+            FormLayout      formLayout = new FormLayout(createDuplicateJGoodiesDef("f:min("+preferredWidth+"px;p)", spacing+"px", maxCols), rowsDef.toString()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             PanelBuilder    builder    = new PanelBuilder(formLayout);
             CellConstraints cc         = new CellConstraints();
 
@@ -206,18 +206,18 @@ public class StatsPane extends BaseSubPane
                 Element rowElement = (Element)obj;
 
                 int x = 1;
-                List<?> boxes = rowElement.selectNodes("box");
+                List<?> boxes = rowElement.selectNodes("box"); //$NON-NLS-1$
                 for (Object bo : boxes)
                 {
                     Element boxElement = (Element)bo;
 
-                    String type = getAttr(boxElement, "type", "box");
-                    int colSpan = getAttr(boxElement, "colspan", 1);
+                    String type = getAttr(boxElement, "type", "box"); //$NON-NLS-1$ //$NON-NLS-2$
+                    int colSpan = getAttr(boxElement, "colspan", 1); //$NON-NLS-1$
 
                     Component comp = null;
-                    if (type.equalsIgnoreCase("bar chart"))
+                    if (type.equalsIgnoreCase("bar chart")) //$NON-NLS-1$
                     {
-                        String statName = getAttr(boxElement, "name", null);
+                        String statName = getAttr(boxElement, "name", null); //$NON-NLS-1$
 
                         if (isNotEmpty(statName))
                         {
@@ -253,16 +253,16 @@ public class StatsPane extends BaseSubPane
                             
                         }*/
                         
-                        int    descCol   = getAttr(boxElement, "desccol", -1);
-                        int    valCol    = getAttr(boxElement, "valcol", -1);
-                        String descTitle = getAttr(boxElement, "desctitle", " ");
-                        String title     = getAttr(boxElement, "title", " ");
-                        String noresults = getAttr(boxElement, "noresults", null);
+                        int    descCol   = getAttr(boxElement, "desccol", -1); //$NON-NLS-1$
+                        int    valCol    = getAttr(boxElement, "valcol", -1); //$NON-NLS-1$
+                        String descTitle = getAttr(boxElement, "desctitle", " "); //$NON-NLS-1$ //$NON-NLS-2$
+                        String title     = getAttr(boxElement, "title", " "); //$NON-NLS-1$ //$NON-NLS-2$
+                        String noresults = getAttr(boxElement, "noresults", null); //$NON-NLS-1$
                         
                         String[] colNames = null;
                         if (valCol != -1 && descCol == -1)
                         {
-                            colNames = new String[] {getAttr(boxElement, "valtitle", " ")};
+                            colNames = new String[] {getAttr(boxElement, "valtitle", " ")}; //$NON-NLS-1$ //$NON-NLS-2$
                             
                         } else if (descCol != -1 && valCol == -1 && StringUtils.isNotEmpty(descTitle))
                         {
@@ -271,21 +271,21 @@ public class StatsPane extends BaseSubPane
                         } else
                         {
                             colNames = new String[] {descTitle,
-                                                     getAttr(boxElement, "valtitle", " ")};
+                                                     getAttr(boxElement, "valtitle", " ")}; //$NON-NLS-1$ //$NON-NLS-2$
                         }
 
-                        Element sqlElement = (Element)boxElement.selectSingleNode("sql");
+                        Element sqlElement = (Element)boxElement.selectSingleNode("sql"); //$NON-NLS-1$
                         if (valCol > -1 && sqlElement != null)
                         {
-                            QueryType queryType = getQueryType(getAttr(sqlElement, "type", "sql"));
+                            QueryType queryType = getQueryType(getAttr(sqlElement, "type", "sql")); //$NON-NLS-1$ //$NON-NLS-2$
                             
-                            Element       command   = (Element)boxElement.selectSingleNode("command");
+                            Element       command   = (Element)boxElement.selectSingleNode("command"); //$NON-NLS-1$
                             int           colId     = -1;
                             CommandAction cmdAction = null;
                             
                             if (command != null)
                             {
-                                colId     = getAttr(command, "colid", -1);
+                                colId     = getAttr(command, "colid", -1); //$NON-NLS-1$
                                cmdAction = createCommandActionFromElement(command);
                             }
                             
@@ -356,7 +356,7 @@ public class StatsPane extends BaseSubPane
                         } else
                         {
                             
-                            List<?> items = boxElement.selectNodes("item");
+                            List<?> items = boxElement.selectNodes("item"); //$NON-NLS-1$
                             StatGroupTable groupTable = new StatGroupTable(title,
                                                                            colNames,
                                                                            useSeparatorTitles, 
@@ -364,32 +364,32 @@ public class StatsPane extends BaseSubPane
                             for (Object io : items)
                             {
                                 Element itemElement = (Element)io;
-                                String  itemTitle   = getAttr(itemElement, "title", "N/A");
+                                String  itemTitle   = getAttr(itemElement, "title", "N/A"); //$NON-NLS-1$ //$NON-NLS-2$
 
                                 String  formatStr  = null;
-                                Element formatNode = (Element)itemElement.selectSingleNode("sql/format");
+                                Element formatNode = (Element)itemElement.selectSingleNode("sql/format"); //$NON-NLS-1$
                                 if (formatNode != null)
                                 {
                                     formatStr = formatNode.getTextTrim();
                                 }
                                 
-                                Element       command   = (Element)itemElement.selectSingleNode("command");
+                                Element       command   = (Element)itemElement.selectSingleNode("command"); //$NON-NLS-1$
                                 CommandAction cmdAction = null;
                                 if (command != null)
                                 {
                                     cmdAction = createCommandActionFromElement(command);
                                 }
 
-                                StatDataItem statItem       = new StatDataItem(itemTitle, cmdAction, getAttr(itemElement, "useprogress", false));
-                                Element      subSqlElement  = (Element)itemElement.selectSingleNode("sql");
-                                QueryType    queryType      = getQueryType(getAttr(subSqlElement, "type", "sql"));
+                                StatDataItem statItem       = new StatDataItem(itemTitle, cmdAction, getAttr(itemElement, "useprogress", false)); //$NON-NLS-1$
+                                Element      subSqlElement  = (Element)itemElement.selectSingleNode("sql"); //$NON-NLS-1$
+                                QueryType    queryType      = getQueryType(getAttr(subSqlElement, "type", "sql")); //$NON-NLS-1$ //$NON-NLS-2$
                                 
                                 //System.out.println("["+queryType+"]");
                                 switch (queryType)
                                 {
                                     case SQL :
                                     {
-                                        List<?> statements = itemElement.selectNodes("sql/statement");
+                                        List<?> statements = itemElement.selectNodes("sql/statement"); //$NON-NLS-1$
                                         
                                         if (statements.size() == 1)
                                         {
@@ -402,9 +402,9 @@ public class StatsPane extends BaseSubPane
                                             for (Object stObj : statements)
                                             {
                                                 Element stElement = (Element)stObj;
-                                                int    vRowInx = getAttr(stElement, "row", -1);
-                                                int    vColInx = getAttr(stElement, "col", -1);
-                                                String format  = getAttr(stElement, "format", null);
+                                                int    vRowInx = getAttr(stElement, "row", -1); //$NON-NLS-1$
+                                                int    vColInx = getAttr(stElement, "col", -1); //$NON-NLS-1$
+                                                String format  = getAttr(stElement, "format", null); //$NON-NLS-1$
                                                 String sql     = QueryAdjusterForDomain.getInstance().adjustSQL(stElement.getText());
                                                 
                                                 if (vRowInx == -1 || vColInx == -1)
@@ -421,7 +421,7 @@ public class StatsPane extends BaseSubPane
                                     
                                     case JPA :
                                     {
-                                        List<?> statements = itemElement.selectNodes("sql/statement");
+                                        List<?> statements = itemElement.selectNodes("sql/statement"); //$NON-NLS-1$
                                         String sql = QueryAdjusterForDomain.getInstance().adjustSQL(((Element)statements.get(0)).getText());
                                         statItem.addCustomQuery(new JPAQuery(sql), formatStr);
 
@@ -429,14 +429,14 @@ public class StatsPane extends BaseSubPane
                                     
                                     case CUSTOM :
                                     {
-                                        String subSqlName = getAttr(subSqlElement, "name", null);
+                                        String subSqlName = getAttr(subSqlElement, "name", null); //$NON-NLS-1$
                                         if (StringUtils.isNotEmpty(subSqlName))
                                         {
                                             statItem.addCustomQuery(subSqlName, formatStr);
                                             
                                         } else
                                         {
-                                            log.error("Name is empty for box item ["+getAttr(itemElement, "title", "N/A")+"]");
+                                            log.error("Name is empty for box item ["+getAttr(itemElement, "title", "N/A")+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
                                         }
                                         
                                     } break;
@@ -476,7 +476,7 @@ public class StatsPane extends BaseSubPane
             statPanel.setBackground(Color.WHITE);
             //statPanel.setOpaque(false);
 
-            builder    = new PanelBuilder(new FormLayout("C:P:G", "p"));
+            builder    = new PanelBuilder(new FormLayout("C:P:G", "p")); //$NON-NLS-1$ //$NON-NLS-2$
             builder.add(statPanel, cc.xy(1,1));
             JPanel centerPanel = builder.getPanel();
 

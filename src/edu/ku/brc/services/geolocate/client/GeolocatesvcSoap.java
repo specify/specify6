@@ -17,7 +17,7 @@ import javax.xml.ws.ResponseWrapper;
  * Generated source version: 2.0
  * 
  */
-@WebService(name = "geolocatesvcSoap", targetNamespace = "http://www.museum.tulane.edu/webservices/")
+@WebService(name = "geolocatesvcSoap", targetNamespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
 public interface GeolocatesvcSoap {
 
 
@@ -29,16 +29,16 @@ public interface GeolocatesvcSoap {
      * @return
      *     returns edu.ku.brc.services.geolocate.client.GeorefResultSet
      */
-    @WebMethod(operationName = "Georef", action = "http://www.museum.tulane.edu/webservices/Georef")
-    @WebResult(name = "Result", targetNamespace = "http://www.museum.tulane.edu/webservices/")
-    @RequestWrapper(localName = "Georef", targetNamespace = "http://www.museum.tulane.edu/webservices/", className = "edu.ku.brc.services.geolocate.client.Georef")
-    @ResponseWrapper(localName = "GeorefResponse", targetNamespace = "http://www.museum.tulane.edu/webservices/", className = "edu.ku.brc.services.geolocate.client.GeorefResponse")
+    @WebMethod(operationName = "Georef", action = "http://www.museum.tulane.edu/webservices/Georef") //$NON-NLS-1$ //$NON-NLS-2$
+    @WebResult(name = "Result", targetNamespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
+    @RequestWrapper(localName = "Georef", targetNamespace = "http://www.museum.tulane.edu/webservices/", className = "edu.ku.brc.services.geolocate.client.Georef") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    @ResponseWrapper(localName = "GeorefResponse", targetNamespace = "http://www.museum.tulane.edu/webservices/", className = "edu.ku.brc.services.geolocate.client.GeorefResponse") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     public GeorefResultSet georef(
-        @WebParam(name = "LocalityDescription", targetNamespace = "http://www.museum.tulane.edu/webservices/")
+        @WebParam(name = "LocalityDescription", targetNamespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
         LocalityDescription localityDescription,
-        @WebParam(name = "HwyX", targetNamespace = "http://www.museum.tulane.edu/webservices/")
+        @WebParam(name = "HwyX", targetNamespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
         boolean hwyX,
-        @WebParam(name = "FindWaterbody", targetNamespace = "http://www.museum.tulane.edu/webservices/")
+        @WebParam(name = "FindWaterbody", targetNamespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
         boolean findWaterbody);
 
     /**
@@ -50,18 +50,18 @@ public interface GeolocatesvcSoap {
      * @return
      *     returns edu.ku.brc.services.geolocate.client.GeorefResultSet
      */
-    @WebMethod(operationName = "Georef3", action = "http://www.museum.tulane.edu/webservices/Georef3")
-    @WebResult(name = "Result", targetNamespace = "http://www.museum.tulane.edu/webservices/")
-    @RequestWrapper(localName = "Georef3", targetNamespace = "http://www.museum.tulane.edu/webservices/", className = "edu.ku.brc.services.geolocate.client.Georef3")
-    @ResponseWrapper(localName = "Georef3Response", targetNamespace = "http://www.museum.tulane.edu/webservices/", className = "edu.ku.brc.services.geolocate.client.Georef3Response")
+    @WebMethod(operationName = "Georef3", action = "http://www.museum.tulane.edu/webservices/Georef3") //$NON-NLS-1$ //$NON-NLS-2$
+    @WebResult(name = "Result", targetNamespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
+    @RequestWrapper(localName = "Georef3", targetNamespace = "http://www.museum.tulane.edu/webservices/", className = "edu.ku.brc.services.geolocate.client.Georef3") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    @ResponseWrapper(localName = "Georef3Response", targetNamespace = "http://www.museum.tulane.edu/webservices/", className = "edu.ku.brc.services.geolocate.client.Georef3Response") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     public GeorefResultSet georef3(
-        @WebParam(name = "vLocality", targetNamespace = "http://www.museum.tulane.edu/webservices/")
+        @WebParam(name = "vLocality", targetNamespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
         String vLocality,
-        @WebParam(name = "vGeography", targetNamespace = "http://www.museum.tulane.edu/webservices/")
+        @WebParam(name = "vGeography", targetNamespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
         String vGeography,
-        @WebParam(name = "HwyX", targetNamespace = "http://www.museum.tulane.edu/webservices/")
+        @WebParam(name = "HwyX", targetNamespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
         boolean hwyX,
-        @WebParam(name = "FindWaterbody", targetNamespace = "http://www.museum.tulane.edu/webservices/")
+        @WebParam(name = "FindWaterbody", targetNamespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
         boolean findWaterbody);
 
     /**
@@ -75,22 +75,22 @@ public interface GeolocatesvcSoap {
      * @return
      *     returns edu.ku.brc.services.geolocate.client.GeorefResultSet
      */
-    @WebMethod(operationName = "Georef2", action = "http://www.museum.tulane.edu/webservices/Georef2")
-    @WebResult(name = "Result", targetNamespace = "http://www.museum.tulane.edu/webservices/")
-    @RequestWrapper(localName = "Georef2", targetNamespace = "http://www.museum.tulane.edu/webservices/", className = "edu.ku.brc.services.geolocate.client.Georef2")
-    @ResponseWrapper(localName = "Georef2Response", targetNamespace = "http://www.museum.tulane.edu/webservices/", className = "edu.ku.brc.services.geolocate.client.Georef2Response")
+    @WebMethod(operationName = "Georef2", action = "http://www.museum.tulane.edu/webservices/Georef2") //$NON-NLS-1$ //$NON-NLS-2$
+    @WebResult(name = "Result", targetNamespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
+    @RequestWrapper(localName = "Georef2", targetNamespace = "http://www.museum.tulane.edu/webservices/", className = "edu.ku.brc.services.geolocate.client.Georef2") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    @ResponseWrapper(localName = "Georef2Response", targetNamespace = "http://www.museum.tulane.edu/webservices/", className = "edu.ku.brc.services.geolocate.client.Georef2Response") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     public GeorefResultSet georef2(
-        @WebParam(name = "Country", targetNamespace = "http://www.museum.tulane.edu/webservices/")
+        @WebParam(name = "Country", targetNamespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
         String country,
-        @WebParam(name = "State", targetNamespace = "http://www.museum.tulane.edu/webservices/")
+        @WebParam(name = "State", targetNamespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
         String state,
-        @WebParam(name = "County", targetNamespace = "http://www.museum.tulane.edu/webservices/")
+        @WebParam(name = "County", targetNamespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
         String county,
-        @WebParam(name = "LocalityString", targetNamespace = "http://www.museum.tulane.edu/webservices/")
+        @WebParam(name = "LocalityString", targetNamespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
         String localityString,
-        @WebParam(name = "HwyX", targetNamespace = "http://www.museum.tulane.edu/webservices/")
+        @WebParam(name = "HwyX", targetNamespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
         boolean hwyX,
-        @WebParam(name = "FindWaterbody", targetNamespace = "http://www.museum.tulane.edu/webservices/")
+        @WebParam(name = "FindWaterbody", targetNamespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
         boolean findWaterbody);
 
     /**
@@ -99,12 +99,12 @@ public interface GeolocatesvcSoap {
      * @return
      *     returns edu.ku.brc.services.geolocate.client.ArrayOfString
      */
-    @WebMethod(operationName = "FindWaterBodiesWithinLocality", action = "http://www.museum.tulane.edu/webservices/FindWaterBodiesWithinLocality")
-    @WebResult(name = "FindWaterBodiesWithinLocalityResult", targetNamespace = "http://www.museum.tulane.edu/webservices/")
-    @RequestWrapper(localName = "FindWaterBodiesWithinLocality", targetNamespace = "http://www.museum.tulane.edu/webservices/", className = "edu.ku.brc.services.geolocate.client.FindWaterBodiesWithinLocality")
-    @ResponseWrapper(localName = "FindWaterBodiesWithinLocalityResponse", targetNamespace = "http://www.museum.tulane.edu/webservices/", className = "edu.ku.brc.services.geolocate.client.FindWaterBodiesWithinLocalityResponse")
+    @WebMethod(operationName = "FindWaterBodiesWithinLocality", action = "http://www.museum.tulane.edu/webservices/FindWaterBodiesWithinLocality") //$NON-NLS-1$ //$NON-NLS-2$
+    @WebResult(name = "FindWaterBodiesWithinLocalityResult", targetNamespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
+    @RequestWrapper(localName = "FindWaterBodiesWithinLocality", targetNamespace = "http://www.museum.tulane.edu/webservices/", className = "edu.ku.brc.services.geolocate.client.FindWaterBodiesWithinLocality") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    @ResponseWrapper(localName = "FindWaterBodiesWithinLocalityResponse", targetNamespace = "http://www.museum.tulane.edu/webservices/", className = "edu.ku.brc.services.geolocate.client.FindWaterBodiesWithinLocalityResponse") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     public ArrayOfString findWaterBodiesWithinLocality(
-        @WebParam(name = "LocalityDescription", targetNamespace = "http://www.museum.tulane.edu/webservices/")
+        @WebParam(name = "LocalityDescription", targetNamespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
         LocalityDescription localityDescription);
 
     /**
@@ -112,13 +112,13 @@ public interface GeolocatesvcSoap {
      * @param wgs84Coordinate
      * @param localityDescription
      */
-    @WebMethod(operationName = "SnapPointToNearestFoundWaterBody", action = "http://www.museum.tulane.edu/webservices/SnapPointToNearestFoundWaterBody")
-    @RequestWrapper(localName = "SnapPointToNearestFoundWaterBody", targetNamespace = "http://www.museum.tulane.edu/webservices/", className = "edu.ku.brc.services.geolocate.client.SnapPointToNearestFoundWaterBody")
-    @ResponseWrapper(localName = "SnapPointToNearestFoundWaterBodyResponse", targetNamespace = "http://www.museum.tulane.edu/webservices/", className = "edu.ku.brc.services.geolocate.client.SnapPointToNearestFoundWaterBodyResponse")
+    @WebMethod(operationName = "SnapPointToNearestFoundWaterBody", action = "http://www.museum.tulane.edu/webservices/SnapPointToNearestFoundWaterBody") //$NON-NLS-1$ //$NON-NLS-2$
+    @RequestWrapper(localName = "SnapPointToNearestFoundWaterBody", targetNamespace = "http://www.museum.tulane.edu/webservices/", className = "edu.ku.brc.services.geolocate.client.SnapPointToNearestFoundWaterBody") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    @ResponseWrapper(localName = "SnapPointToNearestFoundWaterBodyResponse", targetNamespace = "http://www.museum.tulane.edu/webservices/", className = "edu.ku.brc.services.geolocate.client.SnapPointToNearestFoundWaterBodyResponse") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     public void snapPointToNearestFoundWaterBody(
-        @WebParam(name = "LocalityDescription", targetNamespace = "http://www.museum.tulane.edu/webservices/")
+        @WebParam(name = "LocalityDescription", targetNamespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
         LocalityDescription localityDescription,
-        @WebParam(name = "WGS84Coordinate", targetNamespace = "http://www.museum.tulane.edu/webservices/", mode = Mode.INOUT)
+        @WebParam(name = "WGS84Coordinate", targetNamespace = "http://www.museum.tulane.edu/webservices/", mode = Mode.INOUT) //$NON-NLS-1$ //$NON-NLS-2$
         Holder<GeographicPoint> wgs84Coordinate);
 
     /**
@@ -132,22 +132,22 @@ public interface GeolocatesvcSoap {
      * @return
      *     returns edu.ku.brc.services.geolocate.client.GeographicPoint
      */
-    @WebMethod(operationName = "SnapPointToNearestFoundWaterBody2", action = "http://www.museum.tulane.edu/webservices/SnapPointToNearestFoundWaterBody2")
-    @WebResult(name = "WGS84Coordinate", targetNamespace = "http://www.museum.tulane.edu/webservices/")
-    @RequestWrapper(localName = "SnapPointToNearestFoundWaterBody2", targetNamespace = "http://www.museum.tulane.edu/webservices/", className = "edu.ku.brc.services.geolocate.client.SnapPointToNearestFoundWaterBody2")
-    @ResponseWrapper(localName = "SnapPointToNearestFoundWaterBody2Response", targetNamespace = "http://www.museum.tulane.edu/webservices/", className = "edu.ku.brc.services.geolocate.client.SnapPointToNearestFoundWaterBody2Response")
+    @WebMethod(operationName = "SnapPointToNearestFoundWaterBody2", action = "http://www.museum.tulane.edu/webservices/SnapPointToNearestFoundWaterBody2") //$NON-NLS-1$ //$NON-NLS-2$
+    @WebResult(name = "WGS84Coordinate", targetNamespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
+    @RequestWrapper(localName = "SnapPointToNearestFoundWaterBody2", targetNamespace = "http://www.museum.tulane.edu/webservices/", className = "edu.ku.brc.services.geolocate.client.SnapPointToNearestFoundWaterBody2") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    @ResponseWrapper(localName = "SnapPointToNearestFoundWaterBody2Response", targetNamespace = "http://www.museum.tulane.edu/webservices/", className = "edu.ku.brc.services.geolocate.client.SnapPointToNearestFoundWaterBody2Response") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     public GeographicPoint snapPointToNearestFoundWaterBody2(
-        @WebParam(name = "Country", targetNamespace = "http://www.museum.tulane.edu/webservices/")
+        @WebParam(name = "Country", targetNamespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
         String country,
-        @WebParam(name = "State", targetNamespace = "http://www.museum.tulane.edu/webservices/")
+        @WebParam(name = "State", targetNamespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
         String state,
-        @WebParam(name = "County", targetNamespace = "http://www.museum.tulane.edu/webservices/")
+        @WebParam(name = "County", targetNamespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
         String county,
-        @WebParam(name = "LocalityString", targetNamespace = "http://www.museum.tulane.edu/webservices/")
+        @WebParam(name = "LocalityString", targetNamespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
         String localityString,
-        @WebParam(name = "WGS84Latitude", targetNamespace = "http://www.museum.tulane.edu/webservices/")
+        @WebParam(name = "WGS84Latitude", targetNamespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
         double wgs84Latitude,
-        @WebParam(name = "WGS84Longitude", targetNamespace = "http://www.museum.tulane.edu/webservices/")
+        @WebParam(name = "WGS84Longitude", targetNamespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
         double wgs84Longitude);
 
 }

@@ -160,25 +160,25 @@ public class HibernateUtil {
         // <property name="hibernate.show_sql">true</property>
         //config.setProperty("hibernate.show_sql", "false");
         
-        config.setProperty("hibernate.connection.username", userName);
-        config.setProperty("hibernate.connection.password", password);
+        config.setProperty("hibernate.connection.username", userName); //$NON-NLS-1$
+        config.setProperty("hibernate.connection.password", password); //$NON-NLS-1$
         
-        config.setProperty("hibernate.connection.autoReconnect", "true");
-        config.setProperty("hibernate.connection.autoReconnectForPools", "true");
-        config.setProperty("hibernate.connection.is-connection-validation-required", "true");
+        config.setProperty("hibernate.connection.autoReconnect", "true"); //$NON-NLS-1$ //$NON-NLS-2$
+        config.setProperty("hibernate.connection.autoReconnectForPools", "true"); //$NON-NLS-1$ //$NON-NLS-2$
+        config.setProperty("hibernate.connection.is-connection-validation-required", "true"); //$NON-NLS-1$ //$NON-NLS-2$
         
-        config.setProperty("connection.autoReconnect", "true");
-        config.setProperty("connection.autoReconnectForPools", "true");
-        config.setProperty("connection.is-connection-validation-required", "true");
+        config.setProperty("connection.autoReconnect", "true"); //$NON-NLS-1$ //$NON-NLS-2$
+        config.setProperty("connection.autoReconnectForPools", "true"); //$NON-NLS-1$ //$NON-NLS-2$
+        config.setProperty("connection.is-connection-validation-required", "true"); //$NON-NLS-1$ //$NON-NLS-2$
         
-        log.info("Using database ["+connection+"]");
+        log.info("Using database ["+connection+"]"); //$NON-NLS-1$ //$NON-NLS-2$
         
         // if not MS SQLServer
-        if (connection.indexOf("inetdae7") == -1)
+        if (connection.indexOf("inetdae7") == -1) //$NON-NLS-1$
         {
-            config.setProperty("hibernate.connection.url", connection);
-            config.setProperty("hibernate.dialect", dbConn.getDialect());
-            config.setProperty("hibernate.connection.driver_class", driver);
+            config.setProperty("hibernate.connection.url", connection); //$NON-NLS-1$
+            config.setProperty("hibernate.dialect", dbConn.getDialect()); //$NON-NLS-1$
+            config.setProperty("hibernate.connection.driver_class", driver); //$NON-NLS-1$
             
             // commenting out this line to avoid use of CGLIB
             // see http://www.hibernate.org/hib_docs/v3/reference/en/html/session-configuration.html
@@ -187,7 +187,7 @@ public class HibernateUtil {
         }  
         else 
         {
-            throw new RuntimeException("Connection string does not support SQLServer!");
+            throw new RuntimeException("Connection string does not support SQLServer!"); //$NON-NLS-1$
             
             /*config.setProperty("hibernate.connection.url", connection + "?database="+ databaseName);
             config.setProperty("hibernate.dialect","org.hibernate.dialect.SQLServerDialect");
@@ -201,9 +201,9 @@ public class HibernateUtil {
         //} 
         
         // added to ease the transition from Hibernate 3.1 to 3.2
-        config.addSqlFunction("count", new ClassicCountFunction());
-        config.addSqlFunction("avg", new ClassicAvgFunction());
-        config.addSqlFunction("sum", new ClassicSumFunction());
+        config.addSqlFunction("count", new ClassicCountFunction()); //$NON-NLS-1$
+        config.addSqlFunction("avg", new ClassicAvgFunction()); //$NON-NLS-1$
+        config.addSqlFunction("sum", new ClassicSumFunction()); //$NON-NLS-1$
     }
     
     /**
@@ -250,7 +250,7 @@ public class HibernateUtil {
         } catch (Throwable ex) {
             // We have to catch Throwable, otherwise we will miss
             // NoClassDefFoundError and other subclasses of Error
-            log.error("Building SessionFactory failed.", ex);
+            log.error("Building SessionFactory failed.", ex); //$NON-NLS-1$
             throw new ExceptionInInitializerError(ex);
         }  
     }
@@ -306,7 +306,7 @@ public class HibernateUtil {
             sf = sessionFactory;
         }
         if (sf == null)
-            throw new IllegalStateException("SessionFactory not available.");
+            throw new IllegalStateException("SessionFactory not available."); //$NON-NLS-1$
         
         //log.info("** getSessionFactory ["+Thread.currentThread().hashCode()+"]["+sf.hashCode()+"]");
         
@@ -436,7 +436,7 @@ public class HibernateUtil {
             Transaction tx = (Transaction) threadTransaction.get();
             if (tx != null && (!tx.wasCommitted() || !tx.wasRolledBack()))
             {
-                throw new IllegalStateException("Closing Session but Transaction still open!");
+                throw new IllegalStateException("Closing Session but Transaction still open!"); //$NON-NLS-1$
             }
             
             if (s != null && s.isOpen())
@@ -446,7 +446,7 @@ public class HibernateUtil {
             }
         } else
         {
-            log.warn("Using CMT/JTA, intercepted superfluous close call.");
+            log.warn("Using CMT/JTA, intercepted superfluous close call."); //$NON-NLS-1$
         }
     }
 
@@ -472,7 +472,7 @@ public class HibernateUtil {
             }
         } else
         {
-            log.warn("Using CMT/JTA, intercepted superfluous tx begin call.");
+            log.warn("Using CMT/JTA, intercepted superfluous tx begin call."); //$NON-NLS-1$
         }
     }
 
@@ -505,7 +505,7 @@ public class HibernateUtil {
             }
         } else
         {
-            log.warn("Using CMT/JTA, intercepted superfluous tx commit call.");
+            log.warn("Using CMT/JTA, intercepted superfluous tx commit call."); //$NON-NLS-1$
         }
     }
 
@@ -533,14 +533,14 @@ public class HibernateUtil {
                 }
             } catch (RuntimeException ex)
             {
-                throw new RuntimeException("Might swallow original cause, check ERROR log!", ex);
+                throw new RuntimeException("Might swallow original cause, check ERROR log!", ex); //$NON-NLS-1$
             } finally
             {
                 closeSession();
             }
         } else
         {
-            log.warn("Using CMT/JTA, intercepted superfluous tx rollback call.");
+            log.warn("Using CMT/JTA, intercepted superfluous tx rollback call."); //$NON-NLS-1$
         }
     }
 
@@ -560,7 +560,7 @@ public class HibernateUtil {
             threadSession.set(session);
         } else
         {
-            log.error("Using CMT/JTA, intercepted not supported reconnect call.");
+            log.error("Using CMT/JTA, intercepted not supported reconnect call."); //$NON-NLS-1$
         }
     }
 
@@ -575,7 +575,7 @@ public class HibernateUtil {
         {
             Transaction tx = (Transaction) threadTransaction.get();
             if (tx != null && (!tx.wasCommitted() || !tx.wasRolledBack()))
-                throw new IllegalStateException("Disconnecting Session but Transaction still open!");
+                throw new IllegalStateException("Disconnecting Session but Transaction still open!"); //$NON-NLS-1$
             Session session = getCurrentSession();
             threadSession.set(null);
             if (session.isConnected() && session.isOpen())
@@ -587,7 +587,7 @@ public class HibernateUtil {
         }
         
         // else
-        log.error("Using CMT/JTA, intercepted not supported disconnect call.");
+        log.error("Using CMT/JTA, intercepted not supported disconnect call."); //$NON-NLS-1$
         return null;
     }
 
@@ -623,7 +623,7 @@ public class HibernateUtil {
     	}
     	catch( HibernateException he )
     	{
-    		log.warn("Exception thrown in attach()", he);
+    		log.warn("Exception thrown in attach()", he); //$NON-NLS-1$
     	}
     }
 

@@ -30,16 +30,16 @@ import edu.ku.brc.dbsupport.QueryResultsProcessable;
  * @author rods
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class ChartPane extends BaseSubPane implements Chartable, QueryResultsProcessable, QueryResultsListener
 {
     // Static Data Members
     //private static final Logger log = Logger.getLogger(ChartPane.class);
     
     // Data Members
-    protected String  title       = "";
-    protected String  xAxisTitle  = "";
-    protected String  yAxisTitle  = "";
+    protected String  title       = ""; //$NON-NLS-1$
+    protected String  xAxisTitle  = ""; //$NON-NLS-1$
+    protected String  yAxisTitle  = ""; //$NON-NLS-1$
     protected boolean isVertical  = true;
     
     /**
@@ -104,7 +104,7 @@ public class ChartPane extends BaseSubPane implements Chartable, QueryResultsPro
      */
     public void setHandler(final QueryResultsHandlerIFace handler)
     {
-        throw new RuntimeException("Not Implemented.");
+        throw new RuntimeException("Not Implemented."); //$NON-NLS-1$
     }
 
     /*
@@ -113,7 +113,7 @@ public class ChartPane extends BaseSubPane implements Chartable, QueryResultsPro
      */
     public QueryResultsHandlerIFace getHandler()
     {
-        throw new RuntimeException("Not Implemented.");
+        throw new RuntimeException("Not Implemented."); //$NON-NLS-1$
     }
     
     //--------------------------------------
@@ -125,7 +125,7 @@ public class ChartPane extends BaseSubPane implements Chartable, QueryResultsPro
      */
     public synchronized void allResultsBack(final QueryResultsContainerIFace qrc)
     {
-        throw new RuntimeException("Not Implemented.");
+        throw new RuntimeException("Not Implemented."); //$NON-NLS-1$
     }
 
     /* (non-Javadoc)

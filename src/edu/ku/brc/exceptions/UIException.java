@@ -14,6 +14,7 @@
 
 package edu.ku.brc.exceptions;
 
+
 /**
  * This exception is used to mark (fatal) failures in infrastructure and system code.
  * 
@@ -21,7 +22,7 @@ package edu.ku.brc.exceptions;
  * 
  * @author rods
  */
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class UIException extends RuntimeException
 {
     // private static final long serialVersionUID = 0;

@@ -9,7 +9,7 @@
  */
 package edu.ku.brc.dbsupport;
 
-import static edu.ku.brc.helpers.XMLHelper.*;
+import static edu.ku.brc.helpers.XMLHelper.xmlNode;
 
 import java.util.Calendar;
 import java.util.List;
@@ -59,23 +59,23 @@ public class AutoNumberGeneric implements AutoNumberIFace
      */
     public void setProperties(final Properties properties)
     {
-        String className = properties.getProperty("class");
+        String className = properties.getProperty("class"); //$NON-NLS-1$
         if (StringUtils.isNotEmpty(className))
         {
-            isGeneric = StringUtils.contains(className, "Generic");
+            isGeneric = StringUtils.contains(className, "Generic"); //$NON-NLS-1$
             
             DBTableInfo tblInfo = DBTableIdMgr.getInstance().getByClassName(className);
             if (tblInfo != null)
             {
                 classObj  = tblInfo.getClassObj();
-                fieldName = properties.getProperty("field");
+                fieldName = properties.getProperty("field"); //$NON-NLS-1$
             } else
             {
-                throw new RuntimeException("Class property ["+className+"] was not found.");
+                throw new RuntimeException("Class property ["+className+"] was not found."); //$NON-NLS-1$ //$NON-NLS-2$
             }
         } else
         {
-            throw new RuntimeException("Class property was null/empty.");
+            throw new RuntimeException("Class property was null/empty."); //$NON-NLS-1$
         }
     }
     
@@ -99,20 +99,20 @@ public class AutoNumberGeneric implements AutoNumberIFace
         }
 
         //List list = session.createCriteria(classObj).addOrder( Order.desc(fieldName) ).setMaxResults(1).list();
-        StringBuilder sb = new StringBuilder(" FROM "+classObj.getSimpleName());
+        StringBuilder sb = new StringBuilder(" FROM "+classObj.getSimpleName()); //$NON-NLS-1$
         if (yearVal != null && yearPos != null)
         {
-            sb.append(" WHERE '");
+            sb.append(" WHERE '"); //$NON-NLS-1$
             sb.append(yearVal);
-            sb.append("' = substring("+fieldName+","+(yearPos.first+1)+","+yearPos.second+")");
+            sb.append("' = substring("+fieldName+","+(yearPos.first+1)+","+yearPos.second+")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         }
-        sb.append(" ORDER BY");
+        sb.append(" ORDER BY"); //$NON-NLS-1$
         
         try
         {
             if (yearPos != null)
             {
-                sb.append(" substring("+fieldName+","+(yearPos.first+1)+","+yearPos.second+") desc");
+                sb.append(" substring("+fieldName+","+(yearPos.first+1)+","+yearPos.second+") desc"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
                 
             }
             
@@ -120,9 +120,9 @@ public class AutoNumberGeneric implements AutoNumberIFace
             {
                 if (yearPos != null)
                 {
-                    sb.append(", ");
+                    sb.append(", "); //$NON-NLS-1$
                 }
-                sb.append(" substring("+fieldName+","+(pos.first+1)+","+pos.second+") desc");
+                sb.append(" substring("+fieldName+","+(pos.first+1)+","+pos.second+") desc"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
             }
             
             //System.err.println(sb.toString());
@@ -301,7 +301,7 @@ public class AutoNumberGeneric implements AutoNumberIFace
                     int incVal = yearAndIncVal.second + 1;
                     
                     StringBuilder sb        = new StringBuilder(value.substring(0, pos.first));
-                    String        formatStr = "%0" + (pos.second - pos.first) + "d";
+                    String        formatStr = "%0" + (pos.second - pos.first) + "d"; //$NON-NLS-1$ //$NON-NLS-2$
                     sb.append(String.format(formatStr, incVal));
                     if (formatter.getLength() > pos.second)
                     {
@@ -323,10 +323,10 @@ public class AutoNumberGeneric implements AutoNumberIFace
                     //throw new RuntimeException("There was an error trying to obtain the highest number, there may be a bad value in the database.");
                     return sb.toString();
                 } // else
-                throw new RuntimeException("There was an error trying to obtain the highest number, there may be a bad value in the database.");
+                throw new RuntimeException("There was an error trying to obtain the highest number, there may be a bad value in the database."); //$NON-NLS-1$
             }
             // else
-            throw new RuntimeException("Formatter ["+formatter.getName()+"] doesn't have an incrementer field.");
+            throw new RuntimeException("Formatter ["+formatter.getName()+"] doesn't have an incrementer field."); //$NON-NLS-1$ //$NON-NLS-2$
         }   
         return null;
     }
@@ -356,7 +356,7 @@ public class AutoNumberGeneric implements AutoNumberIFace
                 {
                     return buildNewNumber(formatter, formValue, yearAndIncVal);
                 }
-                throw new RuntimeException("yearAndIncVal was NULL and should NEVER be!");
+                throw new RuntimeException("yearAndIncVal was NULL and should NEVER be!"); //$NON-NLS-1$
                 
             } catch (Exception ex)
             {
@@ -371,7 +371,7 @@ public class AutoNumberGeneric implements AutoNumberIFace
             }
         }
         // This should never happen, so let's throw an exception
-        throw new RuntimeException("Value ["+formValue+"] was not the proper length to be incremented.");
+        throw new RuntimeException("Value ["+formValue+"] was not the proper length to be incremented."); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /**
@@ -387,8 +387,8 @@ public class AutoNumberGeneric implements AutoNumberIFace
      */
     public void toXML(final StringBuilder sb)
     {
-        sb.append("  ");
-        xmlNode(sb, "autonumber", getClass().getName(), false);
+        sb.append("  "); //$NON-NLS-1$
+        xmlNode(sb, "autonumber", getClass().getName(), false); //$NON-NLS-1$
         
         /*sb.append("    <autonumber");
         if (classObj != null)

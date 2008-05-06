@@ -96,7 +96,7 @@ public class DBTableIdMgr
      */
     public void initialize(final File inputFile)
     {
-		log.debug("Reading in datamodel file: " + inputFile.getAbsolutePath() + " to create and populate DBTableMgr");
+		log.debug("Reading in datamodel file: " + inputFile.getAbsolutePath() + " to create and populate DBTableMgr"); //$NON-NLS-1$ //$NON-NLS-2$
 		String classname = null;
 		try
 		{
@@ -112,122 +112,122 @@ public class DBTableIdMgr
 
 			if (databaseNode != null)
 			{
-				for (Iterator<?> i = databaseNode.elementIterator("table"); i.hasNext();)
+				for (Iterator<?> i = databaseNode.elementIterator("table"); i.hasNext();) //$NON-NLS-1$
 				{
 					Element tableNode = (Element) i.next();
-					classname = tableNode.attributeValue("classname");
+					classname = tableNode.attributeValue("classname"); //$NON-NLS-1$
                     
-					String  tablename      = tableNode.attributeValue("table");
-					int     tableId        = Integer.parseInt(tableNode.attributeValue("tableid"));
-                    boolean isSearchable   = XMLHelper.getAttr(tableNode, "searchable", false);
+					String  tablename      = tableNode.attributeValue("table"); //$NON-NLS-1$
+					int     tableId        = Integer.parseInt(tableNode.attributeValue("tableid")); //$NON-NLS-1$
+                    boolean isSearchable   = XMLHelper.getAttr(tableNode, "searchable", false); //$NON-NLS-1$
 
 					String primaryKeyField = null;
                     
 					// iterate through child elements of id nodes, there should only be 1
-					for (Iterator<?> i2 = tableNode.elementIterator("id"); i2.hasNext();)
+					for (Iterator<?> i2 = tableNode.elementIterator("id"); i2.hasNext();) //$NON-NLS-1$
 					{
 						Element idNode = (Element) i2.next();
-						primaryKeyField = idNode.attributeValue("name");
+						primaryKeyField = idNode.attributeValue("name"); //$NON-NLS-1$
 					}  
 
 					if (classname == null)
                     {
-						log.error("classname is null; check input file");
+						log.error("classname is null; check input file"); //$NON-NLS-1$
                     }
 					if (tablename == null)
                     {
-						log.error("tablename is null; check input file");
+						log.error("tablename is null; check input file"); //$NON-NLS-1$
                     }
 					if (isFullSchema && primaryKeyField == null)
                     {
-						log.error("primaryKeyField is null; check input file table["+tablename+"]");
+						log.error("primaryKeyField is null; check input file table["+tablename+"]"); //$NON-NLS-1$ //$NON-NLS-2$
                     }
 					//log.debug("Populating hashtable ID["+tableId+"]for class: " + classname+" "+ inputFile.getName());
                     
-                    DBTableInfo tblInfo = new DBTableInfo(tableId, classname, tablename, primaryKeyField, tableNode.attributeValue("abbrv"));
+                    DBTableInfo tblInfo = new DBTableInfo(tableId, classname, tablename, primaryKeyField, tableNode.attributeValue("abbrv")); //$NON-NLS-1$
                     tblInfo.setIsSearchable(isSearchable);
-                    tblInfo.setBusinessRuleName(XMLHelper.getAttr(tableNode, "businessrule", null));
+                    tblInfo.setBusinessRuleName(XMLHelper.getAttr(tableNode, "businessrule", null)); //$NON-NLS-1$
                     
                     if (hash.get(tableId) != null)
                     {
-                        log.error("Table ID used twice["+tableId+"]");
+                        log.error("Table ID used twice["+tableId+"]"); //$NON-NLS-1$ //$NON-NLS-2$
                     }
 					hash.put(tableId, tblInfo); 
                     tables.add(tblInfo);
                     
-                    Element idElement = (Element)tableNode.selectSingleNode("id");
+                    Element idElement = (Element)tableNode.selectSingleNode("id"); //$NON-NLS-1$
                     if (idElement != null)
                     {
-                        tblInfo.setIdColumnName(getAttr(idElement, "column", null));
-                        tblInfo.setIdFieldName(getAttr(idElement,  "name", null));
-                        tblInfo.setIdType(getAttr(idElement,       "type", null));
+                        tblInfo.setIdColumnName(getAttr(idElement, "column", null)); //$NON-NLS-1$
+                        tblInfo.setIdFieldName(getAttr(idElement,  "name", null)); //$NON-NLS-1$
+                        tblInfo.setIdType(getAttr(idElement,       "type", null)); //$NON-NLS-1$
                     }
                     
-                    Element displayElement = (Element)tableNode.selectSingleNode("display");
+                    Element displayElement = (Element)tableNode.selectSingleNode("display"); //$NON-NLS-1$
                     if (displayElement != null)
                     {
-                        tblInfo.setDefaultFormName(getAttr(displayElement,  "view", null));
-                        tblInfo.setUiFormatter(getAttr(displayElement,      "uiformatter", null));
-                        tblInfo.setDataObjFormatter(getAttr(displayElement, "dataobjformatter", null));
-                        tblInfo.setSearchDialog(getAttr(displayElement,     "searchdlg", null));
-                        tblInfo.setNewObjDialog(getAttr(displayElement,     "newobjdlg", null));
+                        tblInfo.setDefaultFormName(getAttr(displayElement,  "view", null)); //$NON-NLS-1$
+                        tblInfo.setUiFormatter(getAttr(displayElement,      "uiformatter", null)); //$NON-NLS-1$
+                        tblInfo.setDataObjFormatter(getAttr(displayElement, "dataobjformatter", null)); //$NON-NLS-1$
+                        tblInfo.setSearchDialog(getAttr(displayElement,     "searchdlg", null)); //$NON-NLS-1$
+                        tblInfo.setNewObjDialog(getAttr(displayElement,     "newobjdlg", null)); //$NON-NLS-1$
                         
                     } else
                     {
-                        tblInfo.setDefaultFormName("");
-                        tblInfo.setUiFormatter("");
-                        tblInfo.setDataObjFormatter("");
-                        tblInfo.setSearchDialog("");
-                        tblInfo.setNewObjDialog("");
+                        tblInfo.setDefaultFormName(""); //$NON-NLS-1$
+                        tblInfo.setUiFormatter(""); //$NON-NLS-1$
+                        tblInfo.setDataObjFormatter(""); //$NON-NLS-1$
+                        tblInfo.setSearchDialog(""); //$NON-NLS-1$
+                        tblInfo.setNewObjDialog(""); //$NON-NLS-1$
                     }
                     
-                    for (Iterator<?> ir = tableNode.elementIterator("relationship"); ir.hasNext();)
+                    for (Iterator<?> ir = tableNode.elementIterator("relationship"); ir.hasNext();) //$NON-NLS-1$
                     {
                         Element irNode = (Element) ir.next();
                         DBRelationshipInfo tblRel = new DBRelationshipInfo(
-                                                            irNode.attributeValue("relationshipname"),
-                                                            getRelationshipType(irNode.attributeValue("type")),
-                                                            irNode.attributeValue("classname"),
-                                                            irNode.attributeValue("columnname"),
-                                                            irNode.attributeValue("othersidename"),
-                                                            irNode.attributeValue("jointable"),
-                                                            getAttr(irNode, "required", false),
-                                                            getAttr(irNode, "updatable", false));
+                                                            irNode.attributeValue("relationshipname"), //$NON-NLS-1$
+                                                            getRelationshipType(irNode.attributeValue("type")), //$NON-NLS-1$
+                                                            irNode.attributeValue("classname"), //$NON-NLS-1$
+                                                            irNode.attributeValue("columnname"), //$NON-NLS-1$
+                                                            irNode.attributeValue("othersidename"), //$NON-NLS-1$
+                                                            irNode.attributeValue("jointable"), //$NON-NLS-1$
+                                                            getAttr(irNode, "required", false), //$NON-NLS-1$
+                                                            getAttr(irNode, "updatable", false)); //$NON-NLS-1$
                         tblInfo.getRelationships().add(tblRel);
                     }
                     
-                    for (Iterator<?> ir = tableNode.elementIterator("field"); ir.hasNext();)
+                    for (Iterator<?> ir = tableNode.elementIterator("field"); ir.hasNext();) //$NON-NLS-1$
                     {
                         Element irNode = (Element) ir.next();
                         
                         int len = -1;
-                        String lenStr = irNode.attributeValue("length");
+                        String lenStr = irNode.attributeValue("length"); //$NON-NLS-1$
                         if (StringUtils.isNotEmpty(lenStr) && StringUtils.isNumeric(lenStr))
                         {
                             len = Integer.parseInt(lenStr);
                         }
                         DBFieldInfo fieldInfo = new DBFieldInfo(tblInfo,
-                                                                irNode.attributeValue("column"),
-                                                                irNode.attributeValue("name"),
-                                                                irNode.attributeValue("type"),
+                                                                irNode.attributeValue("column"), //$NON-NLS-1$
+                                                                irNode.attributeValue("name"), //$NON-NLS-1$
+                                                                irNode.attributeValue("type"), //$NON-NLS-1$
                                                                 len,
-                                                                getAttr(irNode, "required", false),
-                                                                getAttr(irNode, "updatable", false),
-                                                                getAttr(irNode, "unique", false),
-                                                                getAttr(irNode, "indexed", false));
+                                                                getAttr(irNode, "required", false), //$NON-NLS-1$
+                                                                getAttr(irNode, "updatable", false), //$NON-NLS-1$
+                                                                getAttr(irNode, "unique", false), //$NON-NLS-1$
+                                                                getAttr(irNode, "indexed", false)); //$NON-NLS-1$
                         tblInfo.addField(fieldInfo);
                     }
                     //Collections.sort(tblInfo.getFields());
 				}
 			} else
 			{
-				log.error("Reading in datamodel file.  SAX parser got null for the root of the document.");
+				log.error("Reading in datamodel file.  SAX parser got null for the root of the document."); //$NON-NLS-1$
 			}
 
 		} catch (java.lang.NumberFormatException numEx)
 		{
-			log.error("Specify datamodel input file: " + DatamodelHelper.getDatamodelFilePath()
-					+ " failed to provide valid table id for class/table:" + classname);
+			log.error("Specify datamodel input file: " + DatamodelHelper.getDatamodelFilePath() //$NON-NLS-1$
+					+ " failed to provide valid table id for class/table:" + classname); //$NON-NLS-1$
 			log.error(numEx);
 		} catch (Exception ex)
 		{
@@ -235,7 +235,7 @@ public class DBTableIdMgr
 			ex.printStackTrace();
 		}
         Collections.sort(tables);
-        log.debug("Done Reading in datamodel file: " + DatamodelHelper.getDatamodelFilePath());
+        log.debug("Done Reading in datamodel file: " + DatamodelHelper.getDatamodelFilePath()); //$NON-NLS-1$
 	}
     
     /**
@@ -299,7 +299,7 @@ public class DBTableIdMgr
 				return tableInfo.getTableId();
 			}
 		}
-		throw new RuntimeException("Couldn't find table id for table name[" + name + "]");
+		throw new RuntimeException("Couldn't find table id for table name[" + name + "]"); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
     /**
@@ -318,7 +318,7 @@ public class DBTableIdMgr
                 return tableInfo.getTableId();
             }
         }
-        throw new RuntimeException("Couldn't find table id for table name[" + className + "]");
+        throw new RuntimeException("Couldn't find table id for table name[" + className + "]"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /**
@@ -356,7 +356,7 @@ public class DBTableIdMgr
                 return tableInfo;
             }
         }
-        throw new RuntimeException("Couldn't find table id for table name[" + shortClassName + "]");
+        throw new RuntimeException("Couldn't find table id for table name[" + shortClassName + "]"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /**
@@ -378,7 +378,7 @@ public class DBTableIdMgr
     {
         if (hash.get(tableId) == null)
         {
-            log.error("Couldn't find tableId["+tableId+"]");
+            log.error("Couldn't find tableId["+tableId+"]"); //$NON-NLS-1$ //$NON-NLS-2$
         }
         return hash.get(tableId);
     }
@@ -411,11 +411,11 @@ public class DBTableIdMgr
 		DBTableInfo tableInfo = hash.get(recordSet.getDbTableId());
 		if (tableInfo != null)
 		{
-			StringBuffer strBuf = new StringBuffer("from ");
+			StringBuffer strBuf = new StringBuffer("from "); //$NON-NLS-1$
 			strBuf.append(tableInfo.getName());
-			strBuf.append(" in class ");
+			strBuf.append(" in class "); //$NON-NLS-1$
 			strBuf.append(tableInfo.getShortClassName());
-			strBuf.append(" where ");
+			strBuf.append(" where "); //$NON-NLS-1$
 			strBuf.append(tableInfo.getName());
 			strBuf.append('.');
 			strBuf.append(tableInfo.getPrimaryKeyName());
@@ -436,15 +436,15 @@ public class DBTableIdMgr
 		DBTableInfo tableInfo = hash.get(tableId);
 		if (tableInfo != null)
 		{
-            StringBuffer strBuf = new StringBuffer("from ");
+            StringBuffer strBuf = new StringBuffer("from "); //$NON-NLS-1$
 			strBuf.append(tableInfo.getName());
-			strBuf.append(" in class ");
+			strBuf.append(" in class "); //$NON-NLS-1$
 			strBuf.append(tableInfo.getShortClassName());
-			strBuf.append(" where ");
+			strBuf.append(" where "); //$NON-NLS-1$
 			strBuf.append(tableInfo.getName());
 			strBuf.append('.');
 			strBuf.append(tableInfo.getPrimaryKeyName());
-			strBuf.append(" = " + recordId);
+			strBuf.append(" = " + recordId); //$NON-NLS-1$
 			log.debug(strBuf.toString());
             return strBuf.toString();
         }
@@ -461,11 +461,11 @@ public class DBTableIdMgr
 	{
 		if (recordSet != null)
 		{
-			StringBuffer strBuf = new StringBuffer(" in (");
+			StringBuffer strBuf = new StringBuffer(" in ("); //$NON-NLS-1$
 			Set<RecordSetItemIFace> set = recordSet.getItems();
 			if (set == null)
 			{
-				throw new RuntimeException("RecordSet items is null!");
+				throw new RuntimeException("RecordSet items is null!"); //$NON-NLS-1$
 			}
 			int i = 0;
 			for (Iterator<RecordSetItemIFace> iter = set.iterator(); iter.hasNext();)
@@ -473,16 +473,16 @@ public class DBTableIdMgr
 				RecordSetItemIFace rsi = iter.next();
 				if (i > 0)
 				{
-					strBuf.append(",");
+					strBuf.append(","); //$NON-NLS-1$
 				}
 				strBuf.append(rsi.getRecordId());
 				i++;
 			}
-			strBuf.append(")");
+			strBuf.append(")"); //$NON-NLS-1$
 			return strBuf.toString();
 		}
         // else
-        return "";
+        return ""; //$NON-NLS-1$
 	}
     
     /**
@@ -492,23 +492,23 @@ public class DBTableIdMgr
      */
     public static DBRelationshipInfo.RelationshipType getRelationshipType(final String relTypeStr)
     {
-        if (relTypeStr.equals("one-to-many"))
+        if (relTypeStr.equals("one-to-many")) //$NON-NLS-1$
         {
             return DBRelationshipInfo.RelationshipType.OneToMany;
             
-        } else if (relTypeStr.equals("many-to-one"))
+        } else if (relTypeStr.equals("many-to-one")) //$NON-NLS-1$
         {
             return DBRelationshipInfo.RelationshipType.ManyToOne;
             
-        } else if (relTypeStr.equals("many-to-many"))
+        } else if (relTypeStr.equals("many-to-many")) //$NON-NLS-1$
         {
             return DBRelationshipInfo.RelationshipType.ManyToMany;
             
-        } else if (relTypeStr.equals("one-to-one"))
+        } else if (relTypeStr.equals("one-to-one")) //$NON-NLS-1$
         {
             return DBRelationshipInfo.RelationshipType.OneToOne;
             
-        } else if (relTypeStr.equals("zero-to-one"))
+        } else if (relTypeStr.equals("zero-to-one")) //$NON-NLS-1$
         {
             return DBRelationshipInfo.RelationshipType.ZeroOrOne;
         }
@@ -566,7 +566,7 @@ public class DBTableIdMgr
                     
                 } catch (Exception ex)
                 {
-                    log.error("Bad Business Rule class name["+br+"]");
+                    log.error("Bad Business Rule class name["+br+"]"); //$NON-NLS-1$ //$NON-NLS-2$
                     log.error(ex);
                 }
             }

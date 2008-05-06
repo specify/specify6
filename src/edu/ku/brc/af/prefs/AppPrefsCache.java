@@ -35,8 +35,8 @@ import edu.ku.brc.ui.DateWrapper;
  */
 public class AppPrefsCache
 {
-    protected static final String NOT_INIT = "AppPrefs have not been initialized.";
-    protected static final String BAD_ARGS = "Empty fully qualified pref name.";
+    protected static final String NOT_INIT = "AppPrefs have not been initialized."; //$NON-NLS-1$
+    protected static final String BAD_ARGS = "Empty fully qualified pref name."; //$NON-NLS-1$
     
     protected static AppPrefsCache instance = new AppPrefsCache();
     
@@ -78,7 +78,7 @@ public class AppPrefsCache
      */
     protected static String makeKey(final String section, final String pref, final String attrName)
     {
-        return section + "." + pref + "." + attrName;
+        return section + "." + pref + "." + attrName; //$NON-NLS-1$ //$NON-NLS-2$
     }
     
     /**
@@ -163,7 +163,7 @@ public class AppPrefsCache
         checkName(section, pref, attrName);
         
         AppPrefsCacheEntry prefsCacheEntry = getInstance().hash.get(makeKey(section, pref, attrName));
-        return prefsCacheEntry != null ? prefsCacheEntry.getValue() : "";
+        return prefsCacheEntry != null ? prefsCacheEntry.getValue() : ""; //$NON-NLS-1$
     }
     
     /**
@@ -263,7 +263,7 @@ public class AppPrefsCache
             return colorEntry.getColorWrapper();
         }
         // else
-        throw new RuntimeException("Couldn't find Date Entry ["+makeKey(section, pref, attrName)+"]");
+        throw new RuntimeException("Couldn't find Date Entry ["+makeKey(section, pref, attrName)+"]"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
 
@@ -322,7 +322,7 @@ public class AppPrefsCache
     {
         SimpleDateFormat sdf = new SimpleDateFormat();
         
-        String[] pieces = sdf.toPattern().split(" ");
+        String[] pieces = sdf.toPattern().split(" "); //$NON-NLS-1$
         if (pieces != null)
         {
             String pattern = pieces[0];
@@ -332,15 +332,15 @@ public class AppPrefsCache
             //System.out.println("Days:   "+ StringUtils.countMatches(pattern, "d"));
             //System.out.println("Years:  "+ StringUtils.countMatches(pattern, "y"));
             
-            int months = StringUtils.countMatches(pattern, "M");
-            int days   = StringUtils.countMatches(pattern, "d");
-            int years  = StringUtils.countMatches(pattern, "y");
+            int months = StringUtils.countMatches(pattern, "M"); //$NON-NLS-1$
+            int days   = StringUtils.countMatches(pattern, "d"); //$NON-NLS-1$
+            int years  = StringUtils.countMatches(pattern, "y"); //$NON-NLS-1$
             
             if (months == 1 && days == 1 && years == 2)
             {
-                pattern = pattern.replace("M", "MM");
-                pattern = pattern.replace("d", "dd");
-                pattern = pattern.replace("yy", "yyyy");
+                pattern = pattern.replace("M", "MM"); //$NON-NLS-1$ //$NON-NLS-2$
+                pattern = pattern.replace("d", "dd"); //$NON-NLS-1$ //$NON-NLS-2$
+                pattern = pattern.replace("yy", "yyyy"); //$NON-NLS-1$ //$NON-NLS-2$
             }
             //System.out.println(pattern);
             //System.out.println("Months: "+ StringUtils.countMatches(pattern, "M"));
@@ -350,7 +350,7 @@ public class AppPrefsCache
             
         }
         
-        return new SimpleDateFormat("MM/dd/yyyy");
+        return new SimpleDateFormat("MM/dd/yyyy"); //$NON-NLS-1$
     }
 
     /**

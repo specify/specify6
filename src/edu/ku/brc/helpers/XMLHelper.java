@@ -57,7 +57,7 @@ public class XMLHelper
 {
     // Static Data Members
     private static final Logger log = Logger.getLogger(XMLHelper.class);
-    private static final String eol = System.getProperty("line.separator");
+    private static final String eol = System.getProperty("line.separator"); //$NON-NLS-1$
     
     private static boolean useChecksum = false;
     
@@ -80,16 +80,16 @@ public class XMLHelper
     {
         if (useChecksum && 
             configDir != null && 
-            !file.getName().equals("checksum.ini") && 
+            !file.getName().equals("checksum.ini") &&  //$NON-NLS-1$
             !XMLChecksumUtil.checkSignature(file))
         {
-            JOptionPane.showMessageDialog(null, getResourceString("CHECKSUM_MSG"), getResourceString("CHECKSUM_TITLE"), JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, getResourceString("XMLHelper.CHECKSUM_MSG"), getResourceString("XMLHelper.CHECKSUM_TITLE"), JOptionPane.ERROR_MESSAGE); //$NON-NLS-1$ //$NON-NLS-2$
             System.exit(0);
         }
         
         if (!file.exists())
         {
-            log.error("the file ["+file+"] doesn't exist.");
+            log.error("the file ["+file+"] doesn't exist."); //$NON-NLS-1$ //$NON-NLS-2$
             return null;
         }
 
@@ -143,28 +143,28 @@ public class XMLHelper
         if (configDir == null)
         {
         	// Check the working path.
-            File cfgDir = new File(UIRegistry.getDefaultWorkingPath() + File.separator + "config");
-            log.debug("Checking Working Path["+cfgDir.getAbsolutePath()+"]");
+            File cfgDir = new File(UIRegistry.getDefaultWorkingPath() + File.separator + "config"); //$NON-NLS-1$
+            log.debug("Checking Working Path["+cfgDir.getAbsolutePath()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
             if (!cfgDir.exists())
             {
             	// Second check to see if the config dir is a child directory
-                String path = new File(".").getAbsolutePath();
-                if (path.endsWith("."))
+                String path = new File(".").getAbsolutePath(); //$NON-NLS-1$
+                if (path.endsWith(".")) //$NON-NLS-1$
                 {
                     path = UIHelper.stripSubDirs(path, 1);
                 }
                 
                 // If not then check the working path.
-                cfgDir = new File(path + File.separator + "config");
-                log.debug("Checking Working Path["+cfgDir.getAbsolutePath()+"]");
+                cfgDir = new File(path + File.separator + "config"); //$NON-NLS-1$
+                log.debug("Checking Working Path["+cfgDir.getAbsolutePath()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
                 if (!cfgDir.exists())
                 {
-                	throw new RuntimeException("Couldn't find config path["+cfgDir.getAbsolutePath()+"]");
+                	throw new RuntimeException("Couldn't find config path["+cfgDir.getAbsolutePath()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
                 }
             }
             configDir = cfgDir;
         }
-        return configDir.getAbsolutePath() + File.separator + (fileName != null ? (File.separator + fileName) : "");
+        return configDir.getAbsolutePath() + File.separator + (fileName != null ? (File.separator + fileName) : ""); //$NON-NLS-1$
     }
 
     /**
@@ -249,10 +249,10 @@ public class XMLHelper
        if (node != null)
        {
            String data = node.getTextTrim();
-           int inx = data.indexOf("(");
+           int inx = data.indexOf("("); //$NON-NLS-1$
            if (inx != -1)
            {
-               int einx = data.indexOf(")");
+               int einx = data.indexOf(")"); //$NON-NLS-1$
                return data.substring(inx+1, einx);
            }
            return data;
@@ -260,8 +260,8 @@ public class XMLHelper
        
        // else
        // Although the name may not have been found it could be because no results came back
-       log.debug("****** ["+name+"] was not found.");
-       return "";
+       log.debug("****** ["+name+"] was not found."); //$NON-NLS-1$ //$NON-NLS-2$
+       return ""; //$NON-NLS-1$
    }
    
    /**
@@ -317,16 +317,16 @@ public class XMLHelper
     */
    public static void setContents(final File outFile, final String contents) throws FileNotFoundException, IOException
    {
-       if (outFile == null) { throw new IllegalArgumentException("File should not be null."); }
+       if (outFile == null) { throw new IllegalArgumentException("File should not be null."); } //$NON-NLS-1$
        if (outFile.exists())
        {
            if (!outFile.isFile()) 
            { 
-               throw new IllegalArgumentException("Should not be a directory: "+ outFile); 
+               throw new IllegalArgumentException("Should not be a directory: "+ outFile);  //$NON-NLS-1$
            }
            if (!outFile.canWrite()) 
            { 
-               throw new IllegalArgumentException("File cannot be written: "+ outFile); 
+               throw new IllegalArgumentException("File cannot be written: "+ outFile);  //$NON-NLS-1$
            }
        }
 
@@ -358,8 +358,8 @@ public class XMLHelper
    {
        sb.append(' ');
        sb.append(name);
-       sb.append("=\"");
-       sb.append(value == null ? "" : value);
+       sb.append("=\""); //$NON-NLS-1$
+       sb.append(value == null ? "" : value); //$NON-NLS-1$
        sb.append('\"');
    }
    
@@ -386,7 +386,7 @@ public class XMLHelper
     * @param file the html file to be read.
     * @return the file as a string
     */
-   @SuppressWarnings("deprecation")
+   @SuppressWarnings("deprecation") //$NON-NLS-1$
    public static String fixUpHTML(final File file)
    {
        String path = FilenameUtils.getFullPath(file.getAbsolutePath());
@@ -402,16 +402,16 @@ public class XMLHelper
                String line = (String)lineObj;
                if (!fndBegin)
                {
-                   if (line.indexOf("<body") > -1)
+                   if (line.indexOf("<body") > -1) //$NON-NLS-1$
                    {
                        fndBegin = true;
                    }
                    continue;
                }
-               int inx = line.indexOf("<img");
+               int inx = line.indexOf("<img"); //$NON-NLS-1$
                if (inx > -1)
                {
-                   inx = line.indexOf("src=\"", inx);
+                   inx = line.indexOf("src=\"", inx); //$NON-NLS-1$
                    
                    sb.append(line.substring(0, inx+5));
                    File f = new File(path);
@@ -419,7 +419,7 @@ public class XMLHelper
                    sb.append(line.substring(inx+5, line.length()));
                } else
                {
-                   sb.append(line+"\n");
+                   sb.append(line+"\n"); //$NON-NLS-1$
                }
            }
        } catch (IOException ex)
@@ -435,7 +435,7 @@ public class XMLHelper
        {
            sb.append(' ');
            sb.append(attr);
-           sb.append("=\"");
+           sb.append("=\""); //$NON-NLS-1$
            sb.append(val);
            sb.append('\"');
        }
@@ -477,15 +477,15 @@ public class XMLHelper
    {
        if (val != null)
        {
-           sb.append("<");
+           sb.append("<"); //$NON-NLS-1$
            sb.append(tag);
-           sb.append(">");
-           if (useCData) sb.append("<![CDATA[");
+           sb.append(">"); //$NON-NLS-1$
+           if (useCData) sb.append("<![CDATA["); //$NON-NLS-1$
            sb.append(val);
-           if (useCData) sb.append("]]>");
-           sb.append("</");
+           if (useCData) sb.append("]]>"); //$NON-NLS-1$
+           sb.append("</"); //$NON-NLS-1$
            sb.append(tag);
-           sb.append(">\n");
+           sb.append(">\n"); //$NON-NLS-1$
        }
    }
    
@@ -498,7 +498,7 @@ public class XMLHelper
            {
                if (i > 0) sb.append(';');
                sb.append(key.toString());
-               sb.append("=");
+               sb.append("="); //$NON-NLS-1$
                sb.append(props.getProperty(key.toString()));
                i++;
            }

@@ -33,22 +33,22 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "vLocality",
-    "vGeography",
-    "hwyX",
-    "findWaterbody"
+@XmlType(name = "", propOrder = { //$NON-NLS-1$
+    "vLocality", //$NON-NLS-1$
+    "vGeography", //$NON-NLS-1$
+    "hwyX", //$NON-NLS-1$
+    "findWaterbody" //$NON-NLS-1$
 })
-@XmlRootElement(name = "Georef3")
+@XmlRootElement(name = "Georef3") //$NON-NLS-1$
 public class Georef3 {
 
-    @XmlElement(namespace = "http://www.museum.tulane.edu/webservices/")
+    @XmlElement(namespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$
     protected String vLocality;
-    @XmlElement(namespace = "http://www.museum.tulane.edu/webservices/")
+    @XmlElement(namespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$
     protected String vGeography;
-    @XmlElement(name = "HwyX", namespace = "http://www.museum.tulane.edu/webservices/")
+    @XmlElement(name = "HwyX", namespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
     protected boolean hwyX;
-    @XmlElement(name = "FindWaterbody", namespace = "http://www.museum.tulane.edu/webservices/")
+    @XmlElement(name = "FindWaterbody", namespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
     protected boolean findWaterbody;
 
     /**

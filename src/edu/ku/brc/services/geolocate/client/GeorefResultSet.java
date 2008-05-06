@@ -31,18 +31,18 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Georef_Result_Set", propOrder = {
-    "numResults",
-    "exectutionTimems",
-    "resultSet"
+@XmlType(name = "Georef_Result_Set", propOrder = { //$NON-NLS-1$
+    "numResults", //$NON-NLS-1$
+    "exectutionTimems", //$NON-NLS-1$
+    "resultSet" //$NON-NLS-1$
 })
 public class GeorefResultSet {
 
-    @XmlElement(name = "NumResults", namespace = "http://www.museum.tulane.edu/webservices/")
+    @XmlElement(name = "NumResults", namespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
     protected int numResults;
-    @XmlElement(name = "ExectutionTimems", namespace = "http://www.museum.tulane.edu/webservices/")
+    @XmlElement(name = "ExectutionTimems", namespace = "http://www.museum.tulane.edu/webservices/") //$NON-NLS-1$ //$NON-NLS-2$
     protected double exectutionTimems;
-    @XmlElement(name = "ResultSet", namespace = "http://www.museum.tulane.edu/webservices/", required = true)
+    @XmlElement(name = "ResultSet", namespace = "http://www.museum.tulane.edu/webservices/", required = true) //$NON-NLS-1$ //$NON-NLS-2$
     protected List<GeorefResult> resultSet;
 
     /**

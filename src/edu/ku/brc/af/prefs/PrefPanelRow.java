@@ -32,7 +32,7 @@ import javax.swing.JPanel;
  * @author rods
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class PrefPanelRow extends JPanel
 {
 

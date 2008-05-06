@@ -28,6 +28,7 @@ import org.hibernate.Session;
 
 import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 
 /*
  * @code_status ?
@@ -43,17 +44,17 @@ public class ImportExportDB
 
     public static void main(String[] args)
     {
-        UIHelper.tryLogin("com.mysql.jdbc.Driver", "org.hibernate.dialect.MySQLDialect",
-                "testfish", "jdbc:mysql://localhost/testfish", "rods", "rods");
+        UIHelper.tryLogin("com.mysql.jdbc.Driver", "org.hibernate.dialect.MySQLDialect", //$NON-NLS-1$ //$NON-NLS-2$
+                "testfish", "jdbc:mysql://localhost/testfish", "rods", "rods"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 
         Session testSession = HibernateUtil.getCurrentSession();
-        String workingFolder = "Specify6ImportExport";
+        String workingFolder = "Specify6ImportExport"; //$NON-NLS-1$
         File wf = new File(workingFolder);
         if (!wf.exists())
         {
             wf.mkdirs();
         }
-        String dbTable = "Division";
+        String dbTable = "Division"; //$NON-NLS-1$
 
         ImportExportDB impexp = new ImportExportDB(testSession, workingFolder + File.separator);
 
@@ -71,11 +72,11 @@ public class ImportExportDB
             // impexp.getRequiredFields("Geography");
 
             // import
-            System.out.println("importing...");
+            System.out.println("importing..."); //$NON-NLS-1$
             // impexp.importTable(dbTable);
             // impexp.importTable("LoanAgent");
             // print results
-            System.out.println("printing...");
+            System.out.println("printing..."); //$NON-NLS-1$
             //impexp.printXML(dbTable);
             // impexp.printXML("Geography");
             // impexp.printXML("LoanAgent");
@@ -88,7 +89,7 @@ public class ImportExportDB
             // impexp.writeSingleRecordXML(dbTable,1);
             //impexp.exportTables();
             
-            impexp.writeXMLfile("PrepType");
+            impexp.writeXMLfile("PrepType"); //$NON-NLS-1$
 
         } catch (Exception ex)
         {
@@ -96,7 +97,7 @@ public class ImportExportDB
         } finally
         {
             impexp.close();
-            System.out.println("...done");
+            System.out.println("...done"); //$NON-NLS-1$
         }
     }
 
@@ -123,11 +124,11 @@ public class ImportExportDB
     {
         try
         {
-            File path = new File(importFolderPath + dbTable + ".xml");
+            File path = new File(importFolderPath + dbTable + ".xml"); //$NON-NLS-1$
             Element dbImport = XMLHelper.readFileToDOM4J(path);
             if (path == null)
             {
-                System.err.println("error opening file");
+                System.err.println("error opening file"); //$NON-NLS-1$
             } else
             {
                 HibernateUtil.beginTransaction();
@@ -165,18 +166,18 @@ public class ImportExportDB
             DBTableInfo info = DBTableIdMgr.getInstance().getInfoByTableName(dbTable.toLowerCase());
             String primaryKey = info.getPrimaryKeyName();
 
-            File path = new File(importFolderPath + dbTable + ".xml");
+            File path = new File(importFolderPath + dbTable + ".xml"); //$NON-NLS-1$
             Element dbImport = XMLHelper.readFileToDOM4J(path);
-            Element importMe = (Element) dbImport.selectSingleNode("//" + dbTable + "["
-                    + primaryKey + " = \"" + id + "\"]");
+            Element importMe = (Element) dbImport.selectSingleNode("//" + dbTable + "[" //$NON-NLS-1$ //$NON-NLS-2$
+                    + primaryKey + " = \"" + id + "\"]"); //$NON-NLS-1$ //$NON-NLS-2$
 
             if (path == null)
             {
-                System.err.println("error opening file");
+                System.err.println("error opening file"); //$NON-NLS-1$
             } else if (importMe == null)
             {
-                System.err.println("record with id:" + id + " does not exsist in "
-                        + importFolderPath + dbTable + ".xml");
+                System.err.println("record with id:" + id + " does not exsist in " //$NON-NLS-1$ //$NON-NLS-2$
+                        + importFolderPath + dbTable + ".xml"); //$NON-NLS-1$
             } else
             {
                 HibernateUtil.beginTransaction();
@@ -203,14 +204,14 @@ public class ImportExportDB
             DBTableInfo info = DBTableIdMgr.getInstance().getInfoByTableName(dbTable.toLowerCase());
             String primaryKey = info.getPrimaryKeyName();
 
-            File path = new File(importFolderPath + dbTable + ".xml");
+            File path = new File(importFolderPath + dbTable + ".xml"); //$NON-NLS-1$
             Element dbImport = XMLHelper.readFileToDOM4J(path);
-            Element importMe = (Element) dbImport.selectSingleNode("//" + dbTable + "["
-                    + primaryKey + " = \"" + id + "\"]");
+            Element importMe = (Element) dbImport.selectSingleNode("//" + dbTable + "[" //$NON-NLS-1$ //$NON-NLS-2$
+                    + primaryKey + " = \"" + id + "\"]"); //$NON-NLS-1$ //$NON-NLS-2$
 
             if (path == null)
             {
-                System.err.println("error opening file");
+                System.err.println("error opening file"); //$NON-NLS-1$
             } else
             {
                 long t = 0;
@@ -236,14 +237,14 @@ public class ImportExportDB
             DBTableInfo info = DBTableIdMgr.getInstance().getInfoByTableName(dbTable.toLowerCase());
             String primaryKey = info.getPrimaryKeyName();
 
-            File path = new File(importFolderPath + dbTable + ".xml");
+            File path = new File(importFolderPath + dbTable + ".xml"); //$NON-NLS-1$
             Element dbImport = XMLHelper.readFileToDOM4J(path);
-            Element importMe = (Element) dbImport.selectSingleNode("//" + dbTable + "["
-                    + primaryKey + " = \"" + id + "\"]");
+            Element importMe = (Element) dbImport.selectSingleNode("//" + dbTable + "[" //$NON-NLS-1$ //$NON-NLS-2$
+                    + primaryKey + " = \"" + id + "\"]"); //$NON-NLS-1$ //$NON-NLS-2$
 
             if (path == null)
             {
-                System.err.println("error opening file");
+                System.err.println("error opening file"); //$NON-NLS-1$
             } else
             {
                 long t = 0;
@@ -266,14 +267,14 @@ public class ImportExportDB
             DBTableInfo info = DBTableIdMgr.getInstance().getInfoByTableName(dbTable.toLowerCase());
             String primaryKey = info.getPrimaryKeyName();
 
-            File path = new File(importFolderPath + dbTable + ".xml");
+            File path = new File(importFolderPath + dbTable + ".xml"); //$NON-NLS-1$
             Element dbImport = XMLHelper.readFileToDOM4J(path);
-            Element importMe = (Element) dbImport.selectSingleNode("//" + dbTable + "["
-                    + primaryKey + " = \"" + id + "\"]");
+            Element importMe = (Element) dbImport.selectSingleNode("//" + dbTable + "[" //$NON-NLS-1$ //$NON-NLS-2$
+                    + primaryKey + " = \"" + id + "\"]"); //$NON-NLS-1$ //$NON-NLS-2$
 
             if (path == null)
             {
-                System.err.println("error opening file");
+                System.err.println("error opening file"); //$NON-NLS-1$
             } else
             {
                 long t = 0;
@@ -300,15 +301,15 @@ public class ImportExportDB
             DBTableInfo parentInfo = DBTableIdMgr.getInstance().getInfoByTableName(
                     dbTable.toLowerCase());
 
-            List records = dbImport.selectNodes("//" + dbTable);
+            List records = dbImport.selectNodes("//" + dbTable); //$NON-NLS-1$
             String lowerdbTable = lowerFirstChar(dbTable);
             // List attributes = dbImport.selectNodes("//@"+lowerdbTable+"Id");
-            List ids = dbImport.selectNodes("//" + lowerdbTable + "Id");// assume this is dbs id
+            List ids = dbImport.selectNodes("//" + lowerdbTable + "Id");// assume this is dbs id //$NON-NLS-1$ //$NON-NLS-2$
                                                                         // name
             if (records.size() < 1)
             {
-                System.err.println("Cannot import. Given database type:" + dbTable
-                        + " does not exsist in import file");
+                System.err.println("Cannot import. Given database type:" + dbTable //$NON-NLS-1$
+                        + " does not exsist in import file"); //$NON-NLS-1$
             } else
             {
                 // loop for each record
@@ -327,24 +328,24 @@ public class ImportExportDB
                     {// do for each element in the record
                         Element element = (Element) i.next();
 
-                        Object value = findType(element, dbTable, agent, " ");// the parent is
+                        Object value = findType(element, dbTable, agent, " ");// the parent is //$NON-NLS-1$
                                                                                 // itself, just a
                                                                                 // dummy variable
                         // if(value!=null && value != "collection")
-                        if (value != null && value != "OneToMany" && value != "ManyToMany")
+                        if (value != null && value != "OneToMany" && value != "ManyToMany") //$NON-NLS-1$ //$NON-NLS-2$
                         {
                             agentMap.put(element.getName(), value);
                         }
                         // ignore many-to-many for now
-                        else if (value == "OneToMany" || value == "ManyToMany")
+                        else if (value == "OneToMany" || value == "ManyToMany") //$NON-NLS-1$ //$NON-NLS-2$
                         {// RECURSE
                             // is it a collection, add all associated records
                             // get assoicated ids
                             // List collectingevent_ids =
                             // element.selectNodes("//"+dbTable+"[@"+lowerdbTable+"Id='"+id+"']/"+element.getName()+"/"+lowerElement);
                             // TODO shouldl not assume things are in order
-                            List collectingevent_ids = element.selectNodes("//" + dbTable + "["
-                                    + id + "]/" + element.getName() + "/*");// +upperElement);
+                            List collectingevent_ids = element.selectNodes("//" + dbTable + "[" //$NON-NLS-1$ //$NON-NLS-2$
+                                    + id + "]/" + element.getName() + "/*");// +upperElement); //$NON-NLS-1$ //$NON-NLS-2$
 
                             if (!collectingevent_ids.isEmpty())
                             {
@@ -363,18 +364,18 @@ public class ImportExportDB
                                     agentMap.put(element.getName(), collection);
                                 } else
                                 {
-                                    System.err.println("error on the collection "
-                                            + element.getName() + " with parent " + dbTable);
+                                    System.err.println("error on the collection " //$NON-NLS-1$
+                                            + element.getName() + " with parent " + dbTable); //$NON-NLS-1$
                                 }
                             }
                         } else
                         // else, dont add it
                         {
                             // if it is the tables id, just ignore. otherwise print out error
-                            if (!element.getName().equals(lowerdbTable + "Id"))
+                            if (!element.getName().equals(lowerdbTable + "Id")) //$NON-NLS-1$
                             {
-                                System.err.println("did not add " + element.getName()
-                                        + " to the element " + dbTable);
+                                System.err.println("did not add " + element.getName() //$NON-NLS-1$
+                                        + " to the element " + dbTable); //$NON-NLS-1$
                             }
                         }
                     } while (i.hasNext());
@@ -417,18 +418,18 @@ public class ImportExportDB
             DBTableInfo parentInfo = DBTableIdMgr.getInstance().getInfoByTableName(
                     dbTable.toLowerCase());
 
-            List records = dbImport.selectNodes("//" + dbTable);
+            List records = dbImport.selectNodes("//" + dbTable); //$NON-NLS-1$
             String lowerdbTable = lowerFirstChar(dbTable);
             // TODO: should not assume that is the id name, use getPrimaryKeyName
             DBTableInfo info = DBTableIdMgr.getInstance().getInfoByTableName(dbTable.toLowerCase());
             String primaryKey = info.getPrimaryKeyName();
             // List ids = dbImport.selectNodes("//"+lowerdbTable+"Id");//assume this is dbs id name
-            List ids = dbImport.selectNodes("//" + primaryKey);
+            List ids = dbImport.selectNodes("//" + primaryKey); //$NON-NLS-1$
 
             if (records.size() < 1)
             {
-                System.err.println("Cannot import. Given database type:" + dbTable
-                        + " does not exsist in import file");
+                System.err.println("Cannot import. Given database type:" + dbTable //$NON-NLS-1$
+                        + " does not exsist in import file"); //$NON-NLS-1$
             } else
             {
                 // loop for each record
@@ -458,20 +459,20 @@ public class ImportExportDB
                                                                                                     // dummy
                                                                                                     // variable
                         // if(value!=null && value != "collection")
-                        if (value != null && value != "OneToMany" && value != "ManyToMany")
+                        if (value != null && value != "OneToMany" && value != "ManyToMany") //$NON-NLS-1$ //$NON-NLS-2$
                         {
                             agentMap.put(element.getName(), value);
 
                         }
                         // ignore many-to-many for now
-                        else if (value == "OneToMany" || value == "ManyToMany")
+                        else if (value == "OneToMany" || value == "ManyToMany") //$NON-NLS-1$ //$NON-NLS-2$
                         {// RECURSE
                             // get assoicated ids
                             // List temp_collection_ids =
                             // element.selectNodes("//"+dbTable+"["+id+"]/"+element.getName()+"/*");//+upperElement);
                             List temp_collection_ids = element
-                                    .selectNodes("//" + dbTable + "[" + primaryKey + " = \"" + id
-                                            + "\"]/" + element.getName() + "/*");
+                                    .selectNodes("//" + dbTable + "[" + primaryKey + " = \"" + id //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                                            + "\"]/" + element.getName() + "/*"); //$NON-NLS-1$ //$NON-NLS-2$
                             // get collection info and still dont add it
                             if (!temp_collection_ids.isEmpty())
                             {
@@ -487,10 +488,10 @@ public class ImportExportDB
                         // else, dont add it
                         {
                             // if it is an id, just ignore. otherwise print out error
-                            if (!element.getName().equals(lowerdbTable + "Id"))
+                            if (!element.getName().equals(lowerdbTable + "Id")) //$NON-NLS-1$
                             {
-                                System.err.println("did not add " + element.getName()
-                                        + " to the element " + dbTable);
+                                System.err.println("did not add " + element.getName() //$NON-NLS-1$
+                                        + " to the element " + dbTable); //$NON-NLS-1$
                             }
                         }
                     } while (i.hasNext());
@@ -553,7 +554,7 @@ public class ImportExportDB
                 String primaryKey = info.getPrimaryKeyName();
 
                 // open xml file
-                File path = new File(importFolderPath + dbTable + ".xml");
+                File path = new File(importFolderPath + dbTable + ".xml"); //$NON-NLS-1$
                 Element dbImport = XMLHelper.readFileToDOM4J(path);
 
                 DBTableInfo tableInfo = DBTableIdMgr.getInstance().getInfoByTableName(
@@ -577,8 +578,8 @@ public class ImportExportDB
                         // TODO shouldl not assume things are in order
                         // Element collectingevent =
                         // (Element)dbImport.selectSingleNode("//"+dbTable+"["+id+"]");//temp_id.getText()+"]");
-                        Element collectingevent = (Element) dbImport.selectSingleNode("//"
-                                + dbTable + "[" + primaryKey + " = \"" + id + "\"]");
+                        Element collectingevent = (Element) dbImport.selectSingleNode("//" //$NON-NLS-1$
+                                + dbTable + "[" + primaryKey + " = \"" + id + "\"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                         Iterator iter = collectingevent.elementIterator();
 
                         // make the element and the agent
@@ -590,25 +591,25 @@ public class ImportExportDB
 
                             Object value2 = findTypeSequential(element, dbTable, parentId,
                                     parentName);
-                            if (value2 != null && value2 != "OneToMany" && value2 != "ManyToMany")
+                            if (value2 != null && value2 != "OneToMany" && value2 != "ManyToMany") //$NON-NLS-1$ //$NON-NLS-2$
                             {
                                 agentMap.put(element.getName(), value2);
-                            } else if (value2 == "ManyToMany")
+                            } else if (value2 == "ManyToMany") //$NON-NLS-1$
                             {
                                 Set<Object> parentSet = new HashSet<Object>();
                                 Object parentObject = genericDBObject2(parentName, parentId);
                                 parentSet.add(parentObject);
                                 agentMap.put(element.getName(), parentSet);
-                            } else if (value2 == "OneToMany")
+                            } else if (value2 == "OneToMany") //$NON-NLS-1$
                             {
                                 // RECURSE
                                 // get assoicated ids
                                 // TODO shouldl not assume things are in order
                                 // List temp_collection_ids =
                                 // element.selectNodes("//"+dbTable+"["+id+"]/"+element.getName()+"/*");//+upperElement);
-                                List temp_collection_ids = element.selectNodes("//" + dbTable + "["
-                                        + primaryKey + " = \"" + id + "\"]/" + element.getName()
-                                        + "/*");
+                                List temp_collection_ids = element.selectNodes("//" + dbTable + "[" //$NON-NLS-1$ //$NON-NLS-2$
+                                        + primaryKey + " = \"" + id + "\"]/" + element.getName() //$NON-NLS-1$ //$NON-NLS-2$
+                                        + "/*"); //$NON-NLS-1$
                                 // get collection info and still dont add it
                                 if (!temp_collection_ids.isEmpty())
                                 {
@@ -624,10 +625,10 @@ public class ImportExportDB
                             } else
                             {
                                 // if it is an id, just ignore. otherwise print out error
-                                if (!element.getName().equals(lowerdbTable + "Id"))
+                                if (!element.getName().equals(lowerdbTable + "Id")) //$NON-NLS-1$
                                 {
-                                    System.err.println("did not add " + element.getName()
-                                            + " to the element " + dbTable);
+                                    System.err.println("did not add " + element.getName() //$NON-NLS-1$
+                                            + " to the element " + dbTable); //$NON-NLS-1$
                                 }
                             }
                         } while (iter.hasNext());
@@ -707,16 +708,16 @@ public class ImportExportDB
                                                                                             // dummy
                                                                                             // variable
                 // if(value!=null && value != "collection")
-                if (value != null && value != "OneToMany" && value != "ManyToMany")
+                if (value != null && value != "OneToMany" && value != "ManyToMany") //$NON-NLS-1$ //$NON-NLS-2$
                 {
                     agentMap.put(element.getName(), value);
                 }
                 // ignore many-to-many for now
-                else if (recursion && (value == "OneToMany" || value == "ManyToMany"))
+                else if (recursion && (value == "OneToMany" || value == "ManyToMany")) //$NON-NLS-1$ //$NON-NLS-2$
                 {// RECURSE
                     // get assoicated ids
-                    List temp_collection_ids = element.selectNodes("//" + dbTable + "["
-                            + primaryKey + " = \"" + id + "\"]/" + element.getName() + "/*");
+                    List temp_collection_ids = element.selectNodes("//" + dbTable + "[" //$NON-NLS-1$ //$NON-NLS-2$
+                            + primaryKey + " = \"" + id + "\"]/" + element.getName() + "/*"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                     // get collection info and still dont add it
                     if (!temp_collection_ids.isEmpty())
                     {
@@ -732,9 +733,9 @@ public class ImportExportDB
                 // else, dont add it
                 {
                     // if it is an id, just ignore. otherwise print out error
-                    if (!element.getName().equals(lowerdbTable + "Id"))
+                    if (!element.getName().equals(lowerdbTable + "Id")) //$NON-NLS-1$
                     {
-                        System.err.println("did not add " + element.getName() + " to the element "
+                        System.err.println("did not add " + element.getName() + " to the element " //$NON-NLS-1$ //$NON-NLS-2$
                                 + dbTable);
                     }
                 }
@@ -794,18 +795,18 @@ public class ImportExportDB
                                                                                             // a
                                                                                             // dummy
                                                                                             // variable
-                if (value != null && value != "OneToMany" && value != "ManyToMany")
+                if (value != null && value != "OneToMany" && value != "ManyToMany") //$NON-NLS-1$ //$NON-NLS-2$
                 {
                     agentMap.put(element.getName(), value);
                 }
                 // ignore many-to-many for now
-                else if (value == "OneToMany" || value == "ManyToMany")
+                else if (value == "OneToMany" || value == "ManyToMany") //$NON-NLS-1$ //$NON-NLS-2$
                 {// RECURSE
                     if (recursion)
                     {
                         // get assoicated ids
-                        List temp_collection_ids = element.selectNodes("//" + dbTable + "["
-                                + primaryKey + " = \"" + id + "\"]/" + element.getName() + "/*");
+                        List temp_collection_ids = element.selectNodes("//" + dbTable + "[" //$NON-NLS-1$ //$NON-NLS-2$
+                                + primaryKey + " = \"" + id + "\"]/" + element.getName() + "/*"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                         // get collection info and still dont add it
                         if (!temp_collection_ids.isEmpty())
                         {
@@ -824,7 +825,7 @@ public class ImportExportDB
                     // if it is an id, just ignore. otherwise print out error
                     if (!element.getName().equals(primaryKey))
                     {
-                        System.err.println("did not add " + element.getName() + " to the element "
+                        System.err.println("did not add " + element.getName() + " to the element " //$NON-NLS-1$ //$NON-NLS-2$
                                 + dbTable);
                     }
                 }
@@ -888,18 +889,18 @@ public class ImportExportDB
                                                                                                 // a
                                                                                                 // dummy
                                                                                                 // variable
-                if (value != null && value != "OneToMany" && value != "ManyToMany")
+                if (value != null && value != "OneToMany" && value != "ManyToMany") //$NON-NLS-1$ //$NON-NLS-2$
                 {
                     agentMap.put(element.getName(), value);
                 }
                 // ignore many-to-many for now
-                else if (value == "OneToMany" || value == "ManyToMany")
+                else if (value == "OneToMany" || value == "ManyToMany") //$NON-NLS-1$ //$NON-NLS-2$
                 {// RECURSE
                     if (recursion)
                     {
                         // get assoicated ids
-                        List temp_collection_ids = element.selectNodes("//" + dbTable + "["
-                                + primaryKey + " = \"" + id + "\"]/" + element.getName() + "/*");
+                        List temp_collection_ids = element.selectNodes("//" + dbTable + "[" //$NON-NLS-1$ //$NON-NLS-2$
+                                + primaryKey + " = \"" + id + "\"]/" + element.getName() + "/*"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                         // get collection info and still dont add it
                         if (!temp_collection_ids.isEmpty())
                         {
@@ -918,7 +919,7 @@ public class ImportExportDB
                     // if it is an id, just ignore. otherwise print out error
                     if (!element.getName().equals(primaryKey))
                     {
-                        System.err.println("did not add " + element.getName() + " to the element "
+                        System.err.println("did not add " + element.getName() + " to the element " //$NON-NLS-1$ //$NON-NLS-2$
                                 + dbTable);
                     }
                 }
@@ -983,18 +984,18 @@ public class ImportExportDB
                                                                                                 // a
                                                                                                 // dummy
                                                                                                 // variable
-                if (value != null && value != "OneToMany" && value != "ManyToMany")
+                if (value != null && value != "OneToMany" && value != "ManyToMany") //$NON-NLS-1$ //$NON-NLS-2$
                 {
                     agentMap.put(element.getName(), value);
                 }
                 // ignore many-to-many for now
-                else if (value == "OneToMany" || value == "ManyToMany")
+                else if (value == "OneToMany" || value == "ManyToMany") //$NON-NLS-1$ //$NON-NLS-2$
                 {// RECURSE
                     if (recursion)
                     {
                         // get assoicated ids
-                        List temp_collection_ids = element.selectNodes("//" + dbTable + "["
-                                + primaryKey + " = \"" + id + "\"]/" + element.getName() + "/*");
+                        List temp_collection_ids = element.selectNodes("//" + dbTable + "[" //$NON-NLS-1$ //$NON-NLS-2$
+                                + primaryKey + " = \"" + id + "\"]/" + element.getName() + "/*"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                         // get collection info and still dont add it
                         if (!temp_collection_ids.isEmpty())
                         {
@@ -1013,7 +1014,7 @@ public class ImportExportDB
                     // if it is an id, just ignore. otherwise print out error
                     if (!element.getName().equals(primaryKey))
                     {
-                        System.err.println("did not add " + element.getName() + " to the element "
+                        System.err.println("did not add " + element.getName() + " to the element " //$NON-NLS-1$ //$NON-NLS-2$
                                 + dbTable);
                     }
                 }
@@ -1051,16 +1052,16 @@ public class ImportExportDB
             DBTableInfo parentInfo = DBTableIdMgr.getInstance().getInfoByTableName(
                     dbTable.toLowerCase());
             // get the records
-            List records = dbImport.selectNodes("//" + dbTable);
+            List records = dbImport.selectNodes("//" + dbTable); //$NON-NLS-1$
             String lowerdbTable = lowerFirstChar(dbTable);
             DBTableInfo info = DBTableIdMgr.getInstance().getInfoByTableName(dbTable.toLowerCase());
             String primaryKey = info.getPrimaryKeyName();
-            List ids = dbImport.selectNodes("//" + primaryKey);
+            List ids = dbImport.selectNodes("//" + primaryKey); //$NON-NLS-1$
 
             if (records.size() < 1)
             {
-                System.err.println("Cannot import. Given database type:" + dbTable
-                        + " does not exsist in import file");
+                System.err.println("Cannot import. Given database type:" + dbTable //$NON-NLS-1$
+                        + " does not exsist in import file"); //$NON-NLS-1$
             } else
             {
                 // loop for each record
@@ -1088,17 +1089,17 @@ public class ImportExportDB
                                                                                                     // a
                                                                                                     // dummy
                                                                                                     // variable
-                        if (value != null && value != "OneToMany" && value != "ManyToMany")
+                        if (value != null && value != "OneToMany" && value != "ManyToMany") //$NON-NLS-1$ //$NON-NLS-2$
                         {
                             agentMap.put(element.getName(), value);
                         }
                         // ignore many-to-many for now
-                        else if (value == "OneToMany" || value == "ManyToMany")
+                        else if (value == "OneToMany" || value == "ManyToMany") //$NON-NLS-1$ //$NON-NLS-2$
                         {// RECURSE
                             // get assoicated ids
                             List temp_collection_ids = element
-                                    .selectNodes("//" + dbTable + "[" + primaryKey + " = \"" + id
-                                            + "\"]/" + element.getName() + "/*");
+                                    .selectNodes("//" + dbTable + "[" + primaryKey + " = \"" + id //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                                            + "\"]/" + element.getName() + "/*"); //$NON-NLS-1$ //$NON-NLS-2$
                             // get collection info and still dont add it
                             if (!temp_collection_ids.isEmpty())
                             {
@@ -1116,8 +1117,8 @@ public class ImportExportDB
                             // if it is an id, just ignore. otherwise print out error
                             if (!element.getName().equals(primaryKey))
                             {
-                                System.err.println("did not add " + element.getName()
-                                        + " to the element " + dbTable);
+                                System.err.println("did not add " + element.getName() //$NON-NLS-1$
+                                        + " to the element " + dbTable); //$NON-NLS-1$
                             }
                         }
                     } while (i.hasNext());
@@ -1158,7 +1159,7 @@ public class ImportExportDB
         parents = getParentTables(dbTable, parents, false);
 
         // ignore agent for now
-        Element dbElement = (Element) dbImport.selectNodes("//" + dbTable);
+        Element dbElement = (Element) dbImport.selectNodes("//" + dbTable); //$NON-NLS-1$
         Iterator i = dbElement.elementIterator();
         do
         {// do for each element in the record
@@ -1168,7 +1169,7 @@ public class ImportExportDB
             if (immediateParents.contains(elementName))
             {
                 // check if three is a value
-                if (element.getText().equals("") || element.getText().equals(null))
+                if (element.getText().equals("") || element.getText().equals(null)) //$NON-NLS-1$
                 {
                     // remove from list
                     immediateParents.remove(elementName);
@@ -1195,13 +1196,13 @@ public class ImportExportDB
             DBTableInfo parentInfo = DBTableIdMgr.getInstance().getInfoByTableName(
                     dbTable.toLowerCase());
 
-            List records = dbImport.selectNodes("//" + dbTable);
+            List records = dbImport.selectNodes("//" + dbTable); //$NON-NLS-1$
             String lowerdbTable = lowerFirstChar(dbTable);
             // List ids = dbImport.selectNodes("//"+lowerdbTable+"Id");//assume this is dbs id name
             if (records.size() < 1)
             {
-                System.err.println("Cannot import. Given database type:" + dbTable
-                        + " does not exsist in import file");
+                System.err.println("Cannot import. Given database type:" + dbTable //$NON-NLS-1$
+                        + " does not exsist in import file"); //$NON-NLS-1$
             } else
             {
                 // loop for each record
@@ -1227,17 +1228,17 @@ public class ImportExportDB
                                                                                                     // dummy
                                                                                                     // variable
                         // if(value!=null && value != "collection")
-                        if (value != null && value != "OneToMany" && value != "ManyToMany")
+                        if (value != null && value != "OneToMany" && value != "ManyToMany") //$NON-NLS-1$ //$NON-NLS-2$
                         {
                             agentMap.put(element.getName(), value);
                         } else
                         // else, dont add it
                         {
                             // if it is an id, just ignore. otherwise print out error
-                            if (!element.getName().equals(lowerdbTable + "Id"))
+                            if (!element.getName().equals(lowerdbTable + "Id")) //$NON-NLS-1$
                             {
-                                System.err.println("did not add " + element.getName()
-                                        + " to the element " + dbTable);
+                                System.err.println("did not add " + element.getName() //$NON-NLS-1$
+                                        + " to the element " + dbTable); //$NON-NLS-1$
                             }
                         }
                     } while (i.hasNext());
@@ -1269,16 +1270,16 @@ public class ImportExportDB
             DBTableInfo parentInfo = DBTableIdMgr.getInstance().getInfoByTableName(
                     dbTable.toLowerCase());
 
-            List records = dbImport.selectNodes("//" + dbTable);
+            List records = dbImport.selectNodes("//" + dbTable); //$NON-NLS-1$
             String lowerdbTable = lowerFirstChar(dbTable);
             // List attributes = dbImport.selectNodes("//@"+lowerdbTable+"Id");
             // TODO shouldl not assume this is the dbprimary key, use dbtablemgr
-            List ids = dbImport.selectNodes("//" + lowerdbTable + "Id");// assume this is dbs id
+            List ids = dbImport.selectNodes("//" + lowerdbTable + "Id");// assume this is dbs id //$NON-NLS-1$ //$NON-NLS-2$
                                                                         // name
             if (records.size() < 1)
             {
-                System.err.println("Cannot import. Given database type:" + dbTable
-                        + " does not exsist in import file");
+                System.err.println("Cannot import. Given database type:" + dbTable //$NON-NLS-1$
+                        + " does not exsist in import file"); //$NON-NLS-1$
             } else
             {
                 // loop for each record
@@ -1297,23 +1298,23 @@ public class ImportExportDB
                     {// do for each element in the record
                         Element element = (Element) i.next();
 
-                        Object value = findType(element, dbTable, agent, " ");// the parent is
+                        Object value = findType(element, dbTable, agent, " ");// the parent is //$NON-NLS-1$
                                                                                 // itself, just a
                                                                                 // dummy variable
 
-                        if (value != null && value != "OneToMany" && value != "ManyToMany")
+                        if (value != null && value != "OneToMany" && value != "ManyToMany") //$NON-NLS-1$ //$NON-NLS-2$
                         {
                             agentMap.put(element.getName(), value);
 
                         }
                         // ignore many-to-many for now
-                        else if (value == "OneToMany" || value == "ManyToMany")
+                        else if (value == "OneToMany" || value == "ManyToMany") //$NON-NLS-1$ //$NON-NLS-2$
                         {// RECURSE
                             // is it a collection, add all associated records
                             // get assoicated ids
                             // TODO shouldl not assume things are in order
-                            List collectingevent_ids = element.selectNodes("//" + dbTable + "["
-                                    + id + "]/" + element.getName() + "/*");// +upperElement);
+                            List collectingevent_ids = element.selectNodes("//" + dbTable + "[" //$NON-NLS-1$ //$NON-NLS-2$
+                                    + id + "]/" + element.getName() + "/*");// +upperElement); //$NON-NLS-1$ //$NON-NLS-2$
 
                             if (!collectingevent_ids.isEmpty())
                             {
@@ -1332,18 +1333,18 @@ public class ImportExportDB
                                     agentMap.put(element.getName(), collection);
                                 } else
                                 {
-                                    System.err.println("error on the collection "
-                                            + element.getName() + " with parent " + dbTable);
+                                    System.err.println("error on the collection " //$NON-NLS-1$
+                                            + element.getName() + " with parent " + dbTable); //$NON-NLS-1$
                                 }
                             }
                         } else
                         // else, dont add it
                         {
                             // if it is an id, just ignore. otherwise print out error
-                            if (!element.getName().equals(lowerdbTable + "Id"))
+                            if (!element.getName().equals(lowerdbTable + "Id")) //$NON-NLS-1$
                             {
-                                System.err.println("did not add " + element.getName()
-                                        + " to the element " + dbTable);
+                                System.err.println("did not add " + element.getName() //$NON-NLS-1$
+                                        + " to the element " + dbTable); //$NON-NLS-1$
                             }
                         }
                     } while (i.hasNext());
@@ -1385,7 +1386,7 @@ public class ImportExportDB
                     dbTable.toLowerCase());
 
             // open the new file
-            File path = new File(importFolderPath + dbTable + ".xml");
+            File path = new File(importFolderPath + dbTable + ".xml"); //$NON-NLS-1$
             Element dbImport = XMLHelper.readFileToDOM4J(path);
 
             // add each collectingevent to locality
@@ -1395,8 +1396,8 @@ public class ImportExportDB
                 Element temp_id = (Element) ids.get(j);
                 String id2 = temp_id.getText();
                 // select the node
-                Element collectingevent = (Element) dbImport.selectSingleNode("//" + dbTable + "["
-                        + id2 + "]");// temp_id.getText()+"]");
+                Element collectingevent = (Element) dbImport.selectSingleNode("//" + dbTable + "[" //$NON-NLS-1$ //$NON-NLS-2$
+                        + id2 + "]");// temp_id.getText()+"]"); //$NON-NLS-1$
                 Iterator iter = collectingevent.elementIterator();
 
                 // make the element and the agent
@@ -1407,21 +1408,21 @@ public class ImportExportDB
                     Element secondelement = (Element) iter.next();
 
                     Object value2 = findType(secondelement, dbTable, parentObject, parentName);
-                    if (value2 != null && value2 != "OneToMany" && value2 != "ManyToMany")
+                    if (value2 != null && value2 != "OneToMany" && value2 != "ManyToMany") //$NON-NLS-1$ //$NON-NLS-2$
                     {
                         collectingEventMap.put(secondelement.getName(), value2);
-                    } else if (value2 == "ManyToMany")
+                    } else if (value2 == "ManyToMany") //$NON-NLS-1$
                     {
                         HashSet<Object> parentSet = new HashSet<Object>();
                         parentSet.add(parentObject);
                         collectingEventMap.put(secondelement.getName(), parentSet);
-                    } else if (value2 == "OneToMany")
+                    } else if (value2 == "OneToMany") //$NON-NLS-1$
                     {
                         // RECURSE
                         // is it a collection, add all associated records
                         // get assoicated ids
-                        List associated_ids = secondelement.selectNodes("//" + dbTable + "[" + id2
-                                + "]/" + secondelement.getName() + "/*");// +upperElement);
+                        List associated_ids = secondelement.selectNodes("//" + dbTable + "[" + id2 //$NON-NLS-1$ //$NON-NLS-2$
+                                + "]/" + secondelement.getName() + "/*");// +upperElement); //$NON-NLS-1$ //$NON-NLS-2$
                         if (!associated_ids.isEmpty())
                         {
                             // add all the assoctions to aDbElement
@@ -1438,17 +1439,17 @@ public class ImportExportDB
                                 collectingEventMap.put(secondelement.getName(), collection);
                             } else
                             {
-                                System.err.println("error on the collection "
-                                        + secondelement.getName() + " with parent " + dbTable);
+                                System.err.println("error on the collection " //$NON-NLS-1$
+                                        + secondelement.getName() + " with parent " + dbTable); //$NON-NLS-1$
                             }
                         }
                     } else
                     {
                         // if it is an id, just ignore. otherwise print out error
-                        if (!secondelement.getName().equals(lowerdbTable + "Id"))
+                        if (!secondelement.getName().equals(lowerdbTable + "Id")) //$NON-NLS-1$
                         {
-                            System.err.println("did not add " + secondelement.getName()
-                                    + " to the element " + dbTable);
+                            System.err.println("did not add " + secondelement.getName() //$NON-NLS-1$
+                                    + " to the element " + dbTable); //$NON-NLS-1$
                         }
                     }
                 } while (iter.hasNext());
@@ -1480,15 +1481,15 @@ public class ImportExportDB
             DBTableInfo parentInfo = DBTableIdMgr.getInstance().getInfoByTableName(
                     dbTable.toLowerCase());
             // get the records
-            List records = dbImport.selectNodes("//" + dbTable);
+            List records = dbImport.selectNodes("//" + dbTable); //$NON-NLS-1$
             DBTableInfo info = DBTableIdMgr.getInstance().getInfoByTableName(dbTable.toLowerCase());
             String primaryKey = info.getPrimaryKeyName();
-            List ids = dbImport.selectNodes("//" + primaryKey);
+            List ids = dbImport.selectNodes("//" + primaryKey); //$NON-NLS-1$
 
             if (records.size() < 1)
             {
-                System.err.println("Cannot import. Given database type:" + dbTable
-                        + " does not exsist in import file");
+                System.err.println("Cannot import. Given database type:" + dbTable //$NON-NLS-1$
+                        + " does not exsist in import file"); //$NON-NLS-1$
             } else
             {
                 // loop for each record
@@ -1518,19 +1519,19 @@ public class ImportExportDB
                                                                                                 // a
                                                                                                 // dummy
                                                                                                 // variable
-                        if (value != null && value != "OneToMany" && value != "ManyToMany")
+                        if (value != null && value != "OneToMany" && value != "ManyToMany") //$NON-NLS-1$ //$NON-NLS-2$
                         {
                             agentMap.put(element.getName(), value);
                         }
                         // ignore many-to-many for now
-                        else if (value == "OneToMany" || value == "ManyToMany")
+                        else if (value == "OneToMany" || value == "ManyToMany") //$NON-NLS-1$ //$NON-NLS-2$
                         {// RECURSE
                             if (recursion)
                             {
                                 // get assoicated ids
-                                List temp_collection_ids = element.selectNodes("//" + dbTable + "["
-                                        + primaryKey + " = \"" + id + "\"]/" + element.getName()
-                                        + "/*");
+                                List temp_collection_ids = element.selectNodes("//" + dbTable + "[" //$NON-NLS-1$ //$NON-NLS-2$
+                                        + primaryKey + " = \"" + id + "\"]/" + element.getName() //$NON-NLS-1$ //$NON-NLS-2$
+                                        + "/*"); //$NON-NLS-1$
                                 // get collection info and still dont add it
                                 if (!temp_collection_ids.isEmpty())
                                 {
@@ -1549,8 +1550,8 @@ public class ImportExportDB
                             // if it is an id, just ignore. otherwise print out error
                             if (!element.getName().equals(primaryKey))
                             {
-                                System.err.println("did not add " + element.getName()
-                                        + " to the element " + dbTable);
+                                System.err.println("did not add " + element.getName() //$NON-NLS-1$
+                                        + " to the element " + dbTable); //$NON-NLS-1$
                             }
                         }
                     } while (i.hasNext());
@@ -1595,61 +1596,61 @@ public class ImportExportDB
             // find element with compareme.getName()
             DBFieldInfo fieldInfo = info.getFieldByName(compareMe.getName());
             // if the element is an id, ignore it
-            if (!compareMe.getName().equals(lowerFirstChar(dbTable) + "Id"))
+            if (!compareMe.getName().equals(lowerFirstChar(dbTable) + "Id")) //$NON-NLS-1$
             {
                 // if it is a normal field
                 if (fieldInfo != null)
                 {
                     String type = fieldInfo.getType();
                     // check the type
-                    if (type.equals("java.lang.String") || type.equals("text"))
+                    if (type.equals("java.lang.String") || type.equals("text")) //$NON-NLS-1$ //$NON-NLS-2$
                     {
                         return compareMe.getStringValue();
 
-                    } else if (type.equals("java.util.Date"))
+                    } else if (type.equals("java.util.Date")) //$NON-NLS-1$
                     {
-                        Date dtTmp = new SimpleDateFormat("yy-MM-dd H:mm:ss").parse(compareMe
+                        Date dtTmp = new SimpleDateFormat("yy-MM-dd H:mm:ss").parse(compareMe //$NON-NLS-1$
                                 .getStringValue());
                         return dtTmp;
 
-                    } else if (type.equals("java.sql.Timestamp"))
+                    } else if (type.equals("java.sql.Timestamp")) //$NON-NLS-1$
                     {
                         Timestamp tmstmp = Timestamp.valueOf(compareMe.getStringValue());
                         return tmstmp;
-                    } else if (type.equals("java.lang.Integer"))
+                    } else if (type.equals("java.lang.Integer")) //$NON-NLS-1$
                     {
                         int num = new Integer(compareMe.getStringValue()).intValue();
                         return num;
 
-                    } else if (type.equals("java.lang.Boolean"))
+                    } else if (type.equals("java.lang.Boolean")) //$NON-NLS-1$
                     {
                         Boolean bool = Boolean.valueOf(compareMe.getStringValue());
                         return bool;
-                    } else if (type.equals("java.math.BigDecimal"))
+                    } else if (type.equals("java.math.BigDecimal")) //$NON-NLS-1$
                     {
                         BigDecimal num = new BigDecimal(compareMe.getStringValue());
                         return num;
-                    } else if (type.equals("java.lang.Double"))
+                    } else if (type.equals("java.lang.Double")) //$NON-NLS-1$
                     {
                         double num = new Double(compareMe.getStringValue()).doubleValue();
                         return num;
-                    } else if (type.equals("java.lang.Float"))
+                    } else if (type.equals("java.lang.Float")) //$NON-NLS-1$
                     {
                         float num = new Float(compareMe.getStringValue()).floatValue();
                         return num;
-                    } else if (type.equals("java.lang.Long"))
+                    } else if (type.equals("java.lang.Long")) //$NON-NLS-1$
                     {
                         long num = new Long(compareMe.getStringValue()).longValue();
                         return num;
-                    } else if (type.equals("java.lang.Short"))
+                    } else if (type.equals("java.lang.Short")) //$NON-NLS-1$
                     {
                         short num = new Short(compareMe.getStringValue()).shortValue();
                         return num;
-                    } else if (type.equals("java.lang.Byte"))
+                    } else if (type.equals("java.lang.Byte")) //$NON-NLS-1$
                     {
                         byte num = new Byte(compareMe.getStringValue()).byteValue();
                         return num;
-                    } else if (type.equals("java.util.Calendar"))
+                    } else if (type.equals("java.util.Calendar")) //$NON-NLS-1$
                     {
                         Calendar date = dateString2Calendar(compareMe.getStringValue());
                         return date;
@@ -1658,7 +1659,7 @@ public class ImportExportDB
                 // check if it is a many-to-one
                 {
                     DBRelationshipInfo tablerel = info.getRelationshipByName(compareMe.getName());
-                    if (tablerel != null && tablerel.getType().name() == "ManyToOne")
+                    if (tablerel != null && tablerel.getType().name() == "ManyToOne") //$NON-NLS-1$
                     {
                         long num = new Long(compareMe.getStringValue()).longValue();
 
@@ -1684,7 +1685,7 @@ public class ImportExportDB
                         try
                         {// if a generic exsists
                             File path = new File(importFolderPath
-                                    + capFirstChar(compareMe.getName()) + "Generic.xml");
+                                    + capFirstChar(compareMe.getName()) + "Generic.xml"); //$NON-NLS-1$
                             Element dbImport2 = XMLHelper.readFileToDOM4J(path);
                             Object tableObject = dynamicXMLImportRecReturn(dbImport2,
                                     capFirstChar(compareMe.getName()));
@@ -1705,17 +1706,17 @@ public class ImportExportDB
                          */
                         // }
                         // check if its a collection (one-to-many)
-                    } else if ((tablerel != null && tablerel.getType().name() == "OneToMany")
-                            || (tablerel != null && tablerel.getType().name() == "ManyToMany"))
+                    } else if ((tablerel != null && tablerel.getType().name() == "OneToMany") //$NON-NLS-1$
+                            || (tablerel != null && tablerel.getType().name() == "ManyToMany")) //$NON-NLS-1$
                     {
                         // if many-to-many
-                        if (compareMe.getName().equals(parentName + "s")) { return "ManyToMany"; }
+                        if (compareMe.getName().equals(parentName + "s")) { return "ManyToMany"; } //$NON-NLS-1$ //$NON-NLS-2$
                         // else one-to-many
-                        return "OneToMany";
+                        return "OneToMany"; //$NON-NLS-1$
                     } else
                     {
-                        System.err.println("could not import element: " + compareMe.getName()
-                                + ", with data:" + compareMe.getData());
+                        System.err.println("could not import element: " + compareMe.getName() //$NON-NLS-1$
+                                + ", with data:" + compareMe.getData()); //$NON-NLS-1$
                     }
                 }
             }
@@ -1744,61 +1745,61 @@ public class ImportExportDB
             // find element with compareme.getName()
             DBFieldInfo fieldInfo = info.getFieldByName(compareMe.getName());
             // if the element is an id, ignore it
-            if (!compareMe.getName().equals(lowerFirstChar(dbTable) + "Id"))
+            if (!compareMe.getName().equals(lowerFirstChar(dbTable) + "Id")) //$NON-NLS-1$
             {
                 // if it is a normal field
                 if (fieldInfo != null)
                 {
                     String type = fieldInfo.getType();
                     // check the type
-                    if (type.equals("java.lang.String") || type.equals("text"))
+                    if (type.equals("java.lang.String") || type.equals("text")) //$NON-NLS-1$ //$NON-NLS-2$
                     {
                         return compareMe.getStringValue();
 
-                    } else if (type.equals("java.util.Date"))
+                    } else if (type.equals("java.util.Date")) //$NON-NLS-1$
                     {
-                        Date dtTmp = new SimpleDateFormat("yy-MM-dd H:mm:ss").parse(compareMe
+                        Date dtTmp = new SimpleDateFormat("yy-MM-dd H:mm:ss").parse(compareMe //$NON-NLS-1$
                                 .getStringValue());
                         return dtTmp;
 
-                    } else if (type.equals("java.sql.Timestamp"))
+                    } else if (type.equals("java.sql.Timestamp")) //$NON-NLS-1$
                     {
                         Timestamp tmstmp = Timestamp.valueOf(compareMe.getStringValue());
                         return tmstmp;
-                    } else if (type.equals("java.lang.Integer"))
+                    } else if (type.equals("java.lang.Integer")) //$NON-NLS-1$
                     {
                         int num = new Integer(compareMe.getStringValue()).intValue();
                         return num;
 
-                    } else if (type.equals("java.lang.Boolean"))
+                    } else if (type.equals("java.lang.Boolean")) //$NON-NLS-1$
                     {
                         Boolean bool = Boolean.valueOf(compareMe.getStringValue());
                         return bool;
-                    } else if (type.equals("java.math.BigDecimal"))
+                    } else if (type.equals("java.math.BigDecimal")) //$NON-NLS-1$
                     {
                         BigDecimal num = new BigDecimal(compareMe.getStringValue());
                         return num;
-                    } else if (type.equals("java.lang.Double"))
+                    } else if (type.equals("java.lang.Double")) //$NON-NLS-1$
                     {
                         double num = new Double(compareMe.getStringValue()).doubleValue();
                         return num;
-                    } else if (type.equals("java.lang.Float"))
+                    } else if (type.equals("java.lang.Float")) //$NON-NLS-1$
                     {
                         float num = new Float(compareMe.getStringValue()).floatValue();
                         return num;
-                    } else if (type.equals("java.lang.Long"))
+                    } else if (type.equals("java.lang.Long")) //$NON-NLS-1$
                     {
                         long num = new Long(compareMe.getStringValue()).longValue();
                         return num;
-                    } else if (type.equals("java.lang.Short"))
+                    } else if (type.equals("java.lang.Short")) //$NON-NLS-1$
                     {
                         short num = new Short(compareMe.getStringValue()).shortValue();
                         return num;
-                    } else if (type.equals("java.lang.Byte"))
+                    } else if (type.equals("java.lang.Byte")) //$NON-NLS-1$
                     {
                         byte num = new Byte(compareMe.getStringValue()).byteValue();
                         return num;
-                    } else if (type.equals("java.util.Calendar"))
+                    } else if (type.equals("java.util.Calendar")) //$NON-NLS-1$
                     {
                         Calendar date = dateString2Calendar(compareMe.getStringValue());
                         return date;
@@ -1807,7 +1808,7 @@ public class ImportExportDB
                 // check if it is a many-to-one
                 {
                     DBRelationshipInfo tablerel = info.getRelationshipByName(compareMe.getName());
-                    if (tablerel != null && tablerel.getType().name() == "ManyToOne")
+                    if (tablerel != null && tablerel.getType().name() == "ManyToOne") //$NON-NLS-1$
                     {
                         long num = new Long(compareMe.getStringValue()).longValue();
 
@@ -1841,7 +1842,7 @@ public class ImportExportDB
                         try
                         {// if a generic exsists
                             File path = new File(importFolderPath
-                                    + capFirstChar(compareMe.getName()) + "Generic.xml");
+                                    + capFirstChar(compareMe.getName()) + "Generic.xml"); //$NON-NLS-1$
                             Element dbImport2 = XMLHelper.readFileToDOM4J(path);
                             Object tableObject = dynamicXMLImportRecReturn(dbImport2,
                                     capFirstChar(compareMe.getName()));
@@ -1863,17 +1864,17 @@ public class ImportExportDB
                          */
                         // }
                         // check if its a collection (one-to-many)
-                    } else if ((tablerel != null && tablerel.getType().name() == "OneToMany")
-                            || (tablerel != null && tablerel.getType().name() == "ManyToMany"))
+                    } else if ((tablerel != null && tablerel.getType().name() == "OneToMany") //$NON-NLS-1$
+                            || (tablerel != null && tablerel.getType().name() == "ManyToMany")) //$NON-NLS-1$
                     {
                         // if many-to-many
-                        if (compareMe.getName().equals(parentName + "s")) { return "ManyToMany"; }
+                        if (compareMe.getName().equals(parentName + "s")) { return "ManyToMany"; } //$NON-NLS-1$ //$NON-NLS-2$
                         // else one-to-many
-                        return "OneToMany";
+                        return "OneToMany"; //$NON-NLS-1$
                     } else
                     {
-                        System.err.println("could not import element: " + compareMe.getName()
-                                + ", with data:" + compareMe.getData());
+                        System.err.println("could not import element: " + compareMe.getName() //$NON-NLS-1$
+                                + ", with data:" + compareMe.getData()); //$NON-NLS-1$
                     }
                 }
             }
@@ -1899,61 +1900,61 @@ public class ImportExportDB
             DBFieldInfo fieldInfo = info.getFieldByName(compareMe.getName());
             // if the element is an id, ignore it
             // TODO: shouldl check for primary key
-            if (!compareMe.getName().equals(lowerFirstChar(dbTable) + "Id"))
+            if (!compareMe.getName().equals(lowerFirstChar(dbTable) + "Id")) //$NON-NLS-1$
             {
                 // if it is a normal field
                 if (fieldInfo != null)
                 {
                     String type = fieldInfo.getType();
                     // check the type
-                    if (type.equals("java.lang.String") || type.equals("text"))
+                    if (type.equals("java.lang.String") || type.equals("text")) //$NON-NLS-1$ //$NON-NLS-2$
                     {
                         return compareMe.getStringValue();
 
-                    } else if (type.equals("java.util.Date"))
+                    } else if (type.equals("java.util.Date")) //$NON-NLS-1$
                     {
-                        Date dtTmp = new SimpleDateFormat("yy-MM-dd H:mm:ss").parse(compareMe
+                        Date dtTmp = new SimpleDateFormat("yy-MM-dd H:mm:ss").parse(compareMe //$NON-NLS-1$
                                 .getStringValue());
                         return dtTmp;
 
-                    } else if (type.equals("java.sql.Timestamp"))
+                    } else if (type.equals("java.sql.Timestamp")) //$NON-NLS-1$
                     {
                         Timestamp tmstmp = Timestamp.valueOf(compareMe.getStringValue());
                         return tmstmp;
-                    } else if (type.equals("java.lang.Integer"))
+                    } else if (type.equals("java.lang.Integer")) //$NON-NLS-1$
                     {
                         int num = new Integer(compareMe.getStringValue()).intValue();
                         return num;
 
-                    } else if (type.equals("java.lang.Boolean"))
+                    } else if (type.equals("java.lang.Boolean")) //$NON-NLS-1$
                     {
                         Boolean bool = Boolean.valueOf(compareMe.getStringValue());
                         return bool;
-                    } else if (type.equals("java.math.BigDecimal"))
+                    } else if (type.equals("java.math.BigDecimal")) //$NON-NLS-1$
                     {
                         BigDecimal num = new BigDecimal(compareMe.getStringValue());
                         return num;
-                    } else if (type.equals("java.lang.Double"))
+                    } else if (type.equals("java.lang.Double")) //$NON-NLS-1$
                     {
                         double num = new Double(compareMe.getStringValue()).doubleValue();
                         return num;
-                    } else if (type.equals("java.lang.Float"))
+                    } else if (type.equals("java.lang.Float")) //$NON-NLS-1$
                     {
                         float num = new Float(compareMe.getStringValue()).floatValue();
                         return num;
-                    } else if (type.equals("java.lang.Long"))
+                    } else if (type.equals("java.lang.Long")) //$NON-NLS-1$
                     {
                         long num = new Long(compareMe.getStringValue()).longValue();
                         return num;
-                    } else if (type.equals("java.lang.Short"))
+                    } else if (type.equals("java.lang.Short")) //$NON-NLS-1$
                     {
                         short num = new Short(compareMe.getStringValue()).shortValue();
                         return num;
-                    } else if (type.equals("java.lang.Byte"))
+                    } else if (type.equals("java.lang.Byte")) //$NON-NLS-1$
                     {
                         byte num = new Byte(compareMe.getStringValue()).byteValue();
                         return num;
-                    } else if (type.equals("java.util.Calendar"))
+                    } else if (type.equals("java.util.Calendar")) //$NON-NLS-1$
                     {
                         Calendar date = dateString2Calendar(compareMe.getStringValue());
                         return date;
@@ -1963,15 +1964,15 @@ public class ImportExportDB
                 {
                     DBRelationshipInfo tablerel = info.getRelationshipByName(compareMe.getName());
                     // check for many to one, and make sure it has a value
-                    if (tablerel != null && tablerel.getType().name() == "ManyToOne"
-                            && !compareMe.getStringValue().equals(""))
+                    if (tablerel != null && tablerel.getType().name() == "ManyToOne" //$NON-NLS-1$
+                            && !compareMe.getStringValue().equals("")) //$NON-NLS-1$
                     {
                         long num = new Long(compareMe.getStringValue()).longValue();
 
                         String className = tablerel.getClassName().substring(29);// strip working
                                                                                     // set
                         // TODO: remove this condition for agent
-                        if (className.equals("Agent"))
+                        if (className.equals("Agent")) //$NON-NLS-1$
                         {
                             className = className.toLowerCase();
                             Object tableObject = genericDBObject2(className, num);
@@ -1980,23 +1981,23 @@ public class ImportExportDB
                         Object tableObject = getParentDBObject(className, num);
                         return tableObject;
                         // check if its a collection (one-to-many)
-                    } else if ((tablerel != null && tablerel.getType().name() == "OneToMany")
-                            || (tablerel != null && tablerel.getType().name() == "ManyToMany"))
+                    } else if ((tablerel != null && tablerel.getType().name() == "OneToMany") //$NON-NLS-1$
+                            || (tablerel != null && tablerel.getType().name() == "ManyToMany")) //$NON-NLS-1$
                     {
                         // if many-to-many
-                        if (compareMe.getName().equals(parentName + "s")) { return "ManyToMany"; }
+                        if (compareMe.getName().equals(parentName + "s")) { return "ManyToMany"; } //$NON-NLS-1$ //$NON-NLS-2$
                         // else one-to-many
-                        return "OneToMany";
+                        return "OneToMany"; //$NON-NLS-1$
                     } else
                     {
-                        System.err.println("could not import element: " + compareMe.getName()
-                                + ", with data:" + compareMe.getData());
+                        System.err.println("could not import element: " + compareMe.getName() //$NON-NLS-1$
+                                + ", with data:" + compareMe.getData()); //$NON-NLS-1$
                     }
                 }
             }
         } catch (Exception ex)
         {
-            if (ex.toString().startsWith("java.lang.NumberFormatException")) { return null; }
+            if (ex.toString().startsWith("java.lang.NumberFormatException")) { return null; } //$NON-NLS-1$
             // else
             ex.printStackTrace();
         }
@@ -2018,61 +2019,61 @@ public class ImportExportDB
             DBFieldInfo fieldInfo = info.getFieldByName(compareMe.getName());
             // if the element is an id, ignore it
             // TODO: shouldl check for primary key
-            if (!compareMe.getName().equals(lowerFirstChar(dbTable) + "Id"))
+            if (!compareMe.getName().equals(lowerFirstChar(dbTable) + "Id")) //$NON-NLS-1$
             {
                 // if it is a normal field
                 if (fieldInfo != null)
                 {
                     String type = fieldInfo.getType();
                     // check the type
-                    if (type.equals("java.lang.String") || type.equals("text"))
+                    if (type.equals("java.lang.String") || type.equals("text")) //$NON-NLS-1$ //$NON-NLS-2$
                     {
                         return compareMe.getStringValue();
 
-                    } else if (type.equals("java.util.Date"))
+                    } else if (type.equals("java.util.Date")) //$NON-NLS-1$
                     {
-                        Date dtTmp = new SimpleDateFormat("yy-MM-dd H:mm:ss").parse(compareMe
+                        Date dtTmp = new SimpleDateFormat("yy-MM-dd H:mm:ss").parse(compareMe //$NON-NLS-1$
                                 .getStringValue());
                         return dtTmp;
 
-                    } else if (type.equals("java.sql.Timestamp"))
+                    } else if (type.equals("java.sql.Timestamp")) //$NON-NLS-1$
                     {
                         Timestamp tmstmp = Timestamp.valueOf(compareMe.getStringValue());
                         return tmstmp;
-                    } else if (type.equals("java.lang.Integer"))
+                    } else if (type.equals("java.lang.Integer")) //$NON-NLS-1$
                     {
                         int num = new Integer(compareMe.getStringValue()).intValue();
                         return num;
 
-                    } else if (type.equals("java.lang.Boolean"))
+                    } else if (type.equals("java.lang.Boolean")) //$NON-NLS-1$
                     {
                         Boolean bool = Boolean.valueOf(compareMe.getStringValue());
                         return bool;
-                    } else if (type.equals("java.math.BigDecimal"))
+                    } else if (type.equals("java.math.BigDecimal")) //$NON-NLS-1$
                     {
                         BigDecimal num = new BigDecimal(compareMe.getStringValue());
                         return num;
-                    } else if (type.equals("java.lang.Double"))
+                    } else if (type.equals("java.lang.Double")) //$NON-NLS-1$
                     {
                         double num = new Double(compareMe.getStringValue()).doubleValue();
                         return num;
-                    } else if (type.equals("java.lang.Float"))
+                    } else if (type.equals("java.lang.Float")) //$NON-NLS-1$
                     {
                         float num = new Float(compareMe.getStringValue()).floatValue();
                         return num;
-                    } else if (type.equals("java.lang.Long"))
+                    } else if (type.equals("java.lang.Long")) //$NON-NLS-1$
                     {
                         long num = new Long(compareMe.getStringValue()).longValue();
                         return num;
-                    } else if (type.equals("java.lang.Short"))
+                    } else if (type.equals("java.lang.Short")) //$NON-NLS-1$
                     {
                         short num = new Short(compareMe.getStringValue()).shortValue();
                         return num;
-                    } else if (type.equals("java.lang.Byte"))
+                    } else if (type.equals("java.lang.Byte")) //$NON-NLS-1$
                     {
                         byte num = new Byte(compareMe.getStringValue()).byteValue();
                         return num;
-                    } else if (type.equals("java.util.Calendar"))
+                    } else if (type.equals("java.util.Calendar")) //$NON-NLS-1$
                     {
                         Calendar date = dateString2Calendar(compareMe.getStringValue());
                         return date;
@@ -2082,15 +2083,15 @@ public class ImportExportDB
                 {
                     DBRelationshipInfo tablerel = info.getRelationshipByName(compareMe.getName());
                     // check for many to one, and make sure it has a value
-                    if (tablerel != null && tablerel.getType().name() == "ManyToOne"
-                            && !compareMe.getStringValue().equals(""))
+                    if (tablerel != null && tablerel.getType().name() == "ManyToOne" //$NON-NLS-1$
+                            && !compareMe.getStringValue().equals("")) //$NON-NLS-1$
                     {
                         long num = new Long(compareMe.getStringValue()).longValue();
 
                         String className = tablerel.getClassName().substring(29);// strip working
                                                                                     // set
                         // TODO: remove this condition for agent
-                        if (className.equals("Agent"))
+                        if (className.equals("Agent")) //$NON-NLS-1$
                         {
                             className = className.toLowerCase();
                             Object tableObject = genericDBObject2(className, num);
@@ -2101,23 +2102,23 @@ public class ImportExportDB
                             return tableObject;
                         }
                         // check if its a collection (one-to-many)
-                    } else if ((tablerel != null && tablerel.getType().name() == "OneToMany")
-                            || (tablerel != null && tablerel.getType().name() == "ManyToMany"))
+                    } else if ((tablerel != null && tablerel.getType().name() == "OneToMany") //$NON-NLS-1$
+                            || (tablerel != null && tablerel.getType().name() == "ManyToMany")) //$NON-NLS-1$
                     {
                         // if many-to-many
-                        if (compareMe.getName().equals(parentName + "s")) { return "ManyToMany"; }
+                        if (compareMe.getName().equals(parentName + "s")) { return "ManyToMany"; } //$NON-NLS-1$ //$NON-NLS-2$
                         // else one-to-many
-                        return "OneToMany";
+                        return "OneToMany"; //$NON-NLS-1$
                     } else
                     {
-                        System.err.println("could not import element: " + compareMe.getName()
-                                + ", with data:" + compareMe.getData());
+                        System.err.println("could not import element: " + compareMe.getName() //$NON-NLS-1$
+                                + ", with data:" + compareMe.getData()); //$NON-NLS-1$
                     }
                 }
             }
         } catch (Exception ex)
         {
-            if (ex.toString().startsWith("java.lang.NumberFormatException")) { return null; }
+            if (ex.toString().startsWith("java.lang.NumberFormatException")) { return null; } //$NON-NLS-1$
             // else
             ex.printStackTrace();
         }
@@ -2152,7 +2153,7 @@ public class ImportExportDB
                 String type = new String();
                 if (fieldInfo == null)
                 {// it is an id
-                    type = "java.lang.Integer";
+                    type = "java.lang.Integer"; //$NON-NLS-1$
                     System.out.println(compareMe.getStringValue());
                 } else
                 {
@@ -2160,54 +2161,54 @@ public class ImportExportDB
                 }
 
                 // check the type
-                if (type.equals("java.lang.String") || type.equals("text"))
+                if (type.equals("java.lang.String") || type.equals("text")) //$NON-NLS-1$ //$NON-NLS-2$
                 {
                     return compareMe.getStringValue();
 
-                } else if (type.equals("java.util.Date"))
+                } else if (type.equals("java.util.Date")) //$NON-NLS-1$
                 {
-                    Date dtTmp = new SimpleDateFormat("yy-MM-dd H:mm:ss").parse(compareMe
+                    Date dtTmp = new SimpleDateFormat("yy-MM-dd H:mm:ss").parse(compareMe //$NON-NLS-1$
                             .getStringValue());
                     return dtTmp;
 
-                } else if (type.equals("java.sql.Timestamp"))
+                } else if (type.equals("java.sql.Timestamp")) //$NON-NLS-1$
                 {
                     Timestamp tmstmp = Timestamp.valueOf(compareMe.getStringValue());
                     return tmstmp;
-                } else if (type.equals("java.lang.Integer"))
+                } else if (type.equals("java.lang.Integer")) //$NON-NLS-1$
                 {
                     int num = new Integer(compareMe.getStringValue()).intValue();
                     return num;
 
-                } else if (type.equals("java.lang.Boolean"))
+                } else if (type.equals("java.lang.Boolean")) //$NON-NLS-1$
                 {
                     Boolean bool = Boolean.valueOf(compareMe.getStringValue());
                     return bool;
-                } else if (type.equals("java.math.BigDecimal"))
+                } else if (type.equals("java.math.BigDecimal")) //$NON-NLS-1$
                 {
                     BigDecimal num = new BigDecimal(compareMe.getStringValue());
                     return num;
-                } else if (type.equals("java.lang.Double"))
+                } else if (type.equals("java.lang.Double")) //$NON-NLS-1$
                 {
                     double num = new Double(compareMe.getStringValue()).doubleValue();
                     return num;
-                } else if (type.equals("java.lang.Float"))
+                } else if (type.equals("java.lang.Float")) //$NON-NLS-1$
                 {
                     float num = new Float(compareMe.getStringValue()).floatValue();
                     return num;
-                } else if (type.equals("java.lang.Long"))
+                } else if (type.equals("java.lang.Long")) //$NON-NLS-1$
                 {
                     long num = new Long(compareMe.getStringValue()).longValue();
                     return num;
-                } else if (type.equals("java.lang.Short"))
+                } else if (type.equals("java.lang.Short")) //$NON-NLS-1$
                 {
                     short num = new Short(compareMe.getStringValue()).shortValue();
                     return num;
-                } else if (type.equals("java.lang.Byte"))
+                } else if (type.equals("java.lang.Byte")) //$NON-NLS-1$
                 {
                     byte num = new Byte(compareMe.getStringValue()).byteValue();
                     return num;
-                } else if (type.equals("java.util.Calendar"))
+                } else if (type.equals("java.util.Calendar")) //$NON-NLS-1$
                 {
                     Calendar date = dateString2Calendar(compareMe.getStringValue());
                     return date;
@@ -2217,14 +2218,14 @@ public class ImportExportDB
             {
                 DBRelationshipInfo tablerel = info.getRelationshipByName(compareMe.getName());
                 // check for many to one, and make sure it has a value
-                if (tablerel != null && tablerel.getType().name() == "ManyToOne"
-                        && !compareMe.getStringValue().equals(""))
+                if (tablerel != null && tablerel.getType().name() == "ManyToOne" //$NON-NLS-1$
+                        && !compareMe.getStringValue().equals("")) //$NON-NLS-1$
                 {
                     long num = new Long(compareMe.getStringValue()).longValue();
 
                     String className = tablerel.getClassName().substring(29);// strip working set
                     // TODO: remove this condition for agent
-                    if (className.equals("Agent"))
+                    if (className.equals("Agent")) //$NON-NLS-1$
                     {
                         className = className.toLowerCase();
                         Object tableObject = genericDBObject2(className, num);
@@ -2235,23 +2236,23 @@ public class ImportExportDB
                         return tableObject;
                     }
                     // check if its a collection (one-to-many)
-                } else if ((tablerel != null && tablerel.getType().name() == "OneToMany")
-                        || (tablerel != null && tablerel.getType().name() == "ManyToMany"))
+                } else if ((tablerel != null && tablerel.getType().name() == "OneToMany") //$NON-NLS-1$
+                        || (tablerel != null && tablerel.getType().name() == "ManyToMany")) //$NON-NLS-1$
                 {
                     // if many-to-many
-                    if (compareMe.getName().equals(parentName + "s")) { return "ManyToMany"; }
+                    if (compareMe.getName().equals(parentName + "s")) { return "ManyToMany"; } //$NON-NLS-1$ //$NON-NLS-2$
                     // else one-to-many
-                    return "OneToMany";
+                    return "OneToMany"; //$NON-NLS-1$
                 } else
                 {
-                    System.err.println("could not import element: " + compareMe.getName()
-                            + ", with data:" + compareMe.getData());
+                    System.err.println("could not import element: " + compareMe.getName() //$NON-NLS-1$
+                            + ", with data:" + compareMe.getData()); //$NON-NLS-1$
                 }
             }
             // }
         } catch (Exception ex)
         {
-            if (ex.toString().startsWith("java.lang.NumberFormatException")) { return null; }
+            if (ex.toString().startsWith("java.lang.NumberFormatException")) { return null; } //$NON-NLS-1$
             // else
             ex.printStackTrace();
         }
@@ -2273,10 +2274,10 @@ public class ImportExportDB
             tableObject = manyToOneInfo.getClassObj().newInstance();
             // make a map for the object
             Map relationMap = new HashMap();
-            Timestamp tmstmp = Timestamp.valueOf("9999-08-22 10:09:05");
-            relationMap.put(className.concat("Id"), id);
-            relationMap.put("timestampCreated", tmstmp);
-            relationMap.put("timestampModified", tmstmp);
+            Timestamp tmstmp = Timestamp.valueOf("9999-08-22 10:09:05"); //$NON-NLS-1$
+            relationMap.put(className.concat("Id"), id); //$NON-NLS-1$
+            relationMap.put("timestampCreated", tmstmp); //$NON-NLS-1$
+            relationMap.put("timestampModified", tmstmp); //$NON-NLS-1$
             // populate the object
             BeanUtils.populate(tableObject, relationMap);
 
@@ -2308,12 +2309,12 @@ public class ImportExportDB
         } catch (Exception ex)
         {
 
-            if (ex.toString().startsWith("org.hibernate.NonUniqueObjectException"))
+            if (ex.toString().startsWith("org.hibernate.NonUniqueObjectException")) //$NON-NLS-1$
             {
 
                 ex.printStackTrace();
                 // return tableObject2;
-            } else if (ex.toString().startsWith("org.hibernate.ObjectNotFoundException"))
+            } else if (ex.toString().startsWith("org.hibernate.ObjectNotFoundException")) //$NON-NLS-1$
             {// just return
                 tableObject2 = genericDBObject(className, id);
                 return tableObject2;
@@ -2364,7 +2365,7 @@ public class ImportExportDB
             dbObject = session.load(temp.getClass(), num);
         } catch (Exception ex)
         {
-            if (ex.toString().startsWith("org.hibernate.ObjectNotFoundException"))
+            if (ex.toString().startsWith("org.hibernate.ObjectNotFoundException")) //$NON-NLS-1$
             {// create new parent
                 dbObject = buildSingleDataBaseObject(className, num, false);
                 // load it
@@ -2380,9 +2381,9 @@ public class ImportExportDB
                         // get the requiredFields using the classname, then make a query string from
                         // them
                         String requiredFields = constructSQLString(getRequiredFields(className));
-                        String query = "INSERT INTO " + className.toLowerCase() + " (" + primaryKey
-                                + ") VALUES (" + newParentIdInt + ") ON DUPLICATE KEY UPDATE "
-                                + primaryKey + "=" + num;
+                        String query = "INSERT INTO " + className.toLowerCase() + " (" + primaryKey //$NON-NLS-1$ //$NON-NLS-2$
+                                + ") VALUES (" + newParentIdInt + ") ON DUPLICATE KEY UPDATE " //$NON-NLS-1$ //$NON-NLS-2$
+                                + primaryKey + "=" + num; //$NON-NLS-1$
 
                         if (StringUtils.isNotEmpty(requiredFields))
                         {
@@ -2429,7 +2430,7 @@ public class ImportExportDB
         for (int i = 0; i < parents.size(); i++)
         {
             String db = parents.get(i).toString();
-            if (!db.equals("Agent"))
+            if (!db.equals("Agent")) //$NON-NLS-1$
                 parentsChildren = getChildTables(db, parentsChildren);
         }
         parentsChildren = removeDuplicates(parentsChildren);
@@ -2481,8 +2482,8 @@ public class ImportExportDB
                 String type = table.getType().name();
                 String childName = table.getClassName().substring(29);
                 // add the children
-                if (!childName.equals("Agent") && !children.contains(childName)
-                        && (type.equals("OneToMany") || type.equals("OneToOne")))
+                if (!childName.equals("Agent") && !children.contains(childName) //$NON-NLS-1$
+                        && (type.equals("OneToMany") || type.equals("OneToOne"))) //$NON-NLS-1$ //$NON-NLS-2$
                 {
                     children.add(childName);
                     // recurse and strip the working set(there should be a better way
@@ -2491,7 +2492,7 @@ public class ImportExportDB
             } while (i.hasNext());
         } catch (java.lang.NullPointerException ex)
         {
-            System.err.println("table: " + dbTable + " does not exsist");
+            System.err.println("table: " + dbTable + " does not exsist"); //$NON-NLS-1$ //$NON-NLS-2$
         }
         return children;
     }
@@ -2513,19 +2514,19 @@ public class ImportExportDB
                 DBRelationshipInfo table = (DBRelationshipInfo) i.next();
                 String type = table.getType().name();
 
-                if (type.equals("ManyToOne") || type.equals("ManyToMany"))
+                if (type.equals("ManyToOne") || type.equals("ManyToMany")) //$NON-NLS-1$ //$NON-NLS-2$
                 {
                     // System.out.println(table.getClassName()+" "+table.getType());
                     String parentName = table.getClassName().substring(29);
                     // only want to add one agent
-                    if (parentName.equals("agent") && foundAgent == false
+                    if (parentName.equals("agent") && foundAgent == false //$NON-NLS-1$
                             && !parents.contains(parentName))
                     {
                         foundAgent = true;
                         parents.add(parentName);
                         // recurse
                         parents = getParentTables(parentName, parents, foundAgent);
-                    } else if (!parentName.equals("agent") && !parents.contains(parentName))
+                    } else if (!parentName.equals("agent") && !parents.contains(parentName)) //$NON-NLS-1$
                     {
                         parents.add(parentName);
                         // recurse
@@ -2535,7 +2536,7 @@ public class ImportExportDB
             } while (i.hasNext());
         } catch (java.lang.NullPointerException ex)
         {
-            System.err.println("table: " + dbTable + " does not exsist");
+            System.err.println("table:" + dbTable + " does not exsist"); //$NON-NLS-1$ //$NON-NLS-2$
         }
         return parents;
     }
@@ -2559,17 +2560,17 @@ public class ImportExportDB
                 DBRelationshipInfo table = (DBRelationshipInfo) i.next();
                 String type = table.getType().name();
 
-                if (type.equals("ManyToOne") || type.equals("ManyToMany"))
+                if (type.equals("ManyToOne") || type.equals("ManyToMany")) //$NON-NLS-1$ //$NON-NLS-2$
                 {
                     // System.out.println(table.getClassName()+" "+table.getType());
                     String parentName = table.getClassName().substring(29);
                     // only want to add one agent
-                    if (parentName.equals("agent") && foundAgent == false
+                    if (parentName.equals("agent") && foundAgent == false //$NON-NLS-1$
                             && !parents.contains(parentName))
                     {
                         foundAgent = true;
                         parents.add(parentName);
-                    } else if (!parentName.equals("agent") && !parents.contains(parentName))
+                    } else if (!parentName.equals("agent") && !parents.contains(parentName)) //$NON-NLS-1$
                     {
                         parents.add(parentName);
                     }
@@ -2577,7 +2578,7 @@ public class ImportExportDB
             } while (i.hasNext());
         } catch (java.lang.NullPointerException ex)
         {
-            System.err.println("table: " + dbTable + " does not exsist");
+            System.err.println("table: " + dbTable + " does not exsist"); //$NON-NLS-1$ //$NON-NLS-2$
         }
         return parents;
     }
@@ -2589,7 +2590,7 @@ public class ImportExportDB
     public void printXML(String dbTable)
     {
         Session dom4jSession = session.getSession(EntityMode.DOM4J);
-        String query = "from " + dbTable;
+        String query = "from " + dbTable; //$NON-NLS-1$
 
         List userXML = dom4jSession.createQuery(query).list();
         try
@@ -2622,17 +2623,17 @@ public class ImportExportDB
         parents = getParentTables(dbTable, parents, false);
 
         // write files
-        System.out.println("----Parents------------");
+        System.out.println("----Parents------------"); //$NON-NLS-1$
         for (int i = 0; i < parents.size(); i++)
         {
             printXML(parents.get(i));
-            System.out.println("-------------------\n");
+            System.out.println("-------------------\n"); //$NON-NLS-1$
         }
-        System.out.println("----Children------------");
+        System.out.println("----Children------------"); //$NON-NLS-1$
         for (int i = 0; i < children.size(); i++)
         {
             printXML(children.get(i));
-            System.out.println("-------------------\n");
+            System.out.println("-------------------\n"); //$NON-NLS-1$
         }
     }
 
@@ -2649,29 +2650,29 @@ public class ImportExportDB
         for (int i = 0; i < allTables.size(); i++)
         {
             String table = allTables.get(i).getClassName().substring(29);
-            if (table.equals("DataType") || table.equals("Discipline") || table.equals("Division")
-                    || table.equals("GeographyTreeDef") || table.equals("GeographyTreeDefItem")
-                    || table.equals("GeologicTimePeriodTreeDef")
-                    || table.equals("GeologicTimePeriodTreeDefItem") || table.equals("Institution")
-                    || table.equals("LithoStratTreeDef") || table.equals("LithoStratTreeDefItem")
-                    || table.equals("SpecifyUser") || table.equals("SpLocaleBase")
-                    || table.equals("SpLocaleContainer") || table.equals("SpLocaleContainerItem")
-                    || table.equals("StorageTreeDef") || table.equals("StorageTreeDefItem")
-                    || table.equals("Taxon") || table.equals("TaxonTreeDef")
-                    || table.equals("TaxonTreeDefItem") || table.equals("TreatmentEvent")
-                    || table.equals("UserPermission") || table.equals("Workbench")
-                    || table.equals("WorkbenchRow") || table.equals("WorkbenchTemplate")
-                    || table.equals("WorkbenchTemplateMappingItem")
+            if (table.equals("DataType") || table.equals("Discipline") || table.equals("Division") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    || table.equals("GeographyTreeDef") || table.equals("GeographyTreeDefItem") //$NON-NLS-1$ //$NON-NLS-2$
+                    || table.equals("GeologicTimePeriodTreeDef") //$NON-NLS-1$
+                    || table.equals("GeologicTimePeriodTreeDefItem") || table.equals("Institution") //$NON-NLS-1$ //$NON-NLS-2$
+                    || table.equals("LithoStratTreeDef") || table.equals("LithoStratTreeDefItem") //$NON-NLS-1$ //$NON-NLS-2$
+                    || table.equals("SpecifyUser") || table.equals("SpLocaleBase") //$NON-NLS-1$ //$NON-NLS-2$
+                    || table.equals("SpLocaleContainer") || table.equals("SpLocaleContainerItem") //$NON-NLS-1$ //$NON-NLS-2$
+                    || table.equals("StorageTreeDef") || table.equals("StorageTreeDefItem") //$NON-NLS-1$ //$NON-NLS-2$
+                    || table.equals("Taxon") || table.equals("TaxonTreeDef") //$NON-NLS-1$ //$NON-NLS-2$
+                    || table.equals("TaxonTreeDefItem") || table.equals("TreatmentEvent") //$NON-NLS-1$ //$NON-NLS-2$
+                    || table.equals("UserPermission") || table.equals("Workbench") //$NON-NLS-1$ //$NON-NLS-2$
+                    || table.equals("WorkbenchRow") || table.equals("WorkbenchTemplate") //$NON-NLS-1$ //$NON-NLS-2$
+                    || table.equals("WorkbenchTemplateMappingItem") //$NON-NLS-1$
 
             )
             {
-                System.out.println("skipped: " + table);
+                System.out.println("skipped: " + table); //$NON-NLS-1$
             } else
             {
                 writeXMLfile(table);
             }
         }
-        System.out.println("...done");
+        System.out.println("...done"); //$NON-NLS-1$
     }
 
     /**
@@ -2685,7 +2686,7 @@ public class ImportExportDB
         // load the object by using its primary key
         DBTableInfo info = DBTableIdMgr.getInstance().getInfoByTableName(dbTable.toLowerCase());
         String primaryKey = info.getPrimaryKeyName();
-        String query = "from " + dbTable + " where " + primaryKey + " = " + id;
+        String query = "from " + dbTable + " where " + primaryKey + " = " + id; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
         List userXML = dom4jSession.createQuery(query).list();
 
@@ -2719,15 +2720,15 @@ public class ImportExportDB
         // load the object by using its primary key
         DBTableInfo info = DBTableIdMgr.getInstance().getInfoByTableName(dbTable.toLowerCase());
         String primaryKey = info.getPrimaryKeyName();
-        String query = "from " + dbTable + " where " + primaryKey + " = " + id;
+        String query = "from " + dbTable + " where " + primaryKey + " = " + id; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
         List userXML = dom4jSession.createQuery(query).list();
 
         try
         {
-            fout = new FileOutputStream(importFolderPath + dbTable + ".xml");
+            fout = new FileOutputStream(importFolderPath + dbTable + ".xml"); //$NON-NLS-1$
             PrintStream p = new PrintStream(fout);
-            p.print("<root>");
+            p.print("<root>"); //$NON-NLS-1$
             OutputFormat format = OutputFormat.createPrettyPrint();
             XMLWriter writer = new XMLWriter(fout, format);
 
@@ -2736,11 +2737,11 @@ public class ImportExportDB
                 Element writeMe = (Element) userXML.get(i);
                 writer.write(writeMe);
             }
-            p.println("\n</root>");
+            p.println("\n</root>"); //$NON-NLS-1$
             p.close();
             fout.close();
             writer.close();
-            System.out.println("Wrote: " + dbTable + ".xml");
+            System.out.println("Wrote: " + dbTable + ".xml"); //$NON-NLS-1$ //$NON-NLS-2$
         } catch (Exception ex)
         {
             ex.printStackTrace();
@@ -2758,16 +2759,16 @@ public class ImportExportDB
         FileOutputStream fout;
 
         Session dom4jSession = session.getSession(EntityMode.DOM4J);
-        String query = "from " + dataBase + " where id = 1";
+        String query = "from " + dataBase + " where id = 1"; //$NON-NLS-1$ //$NON-NLS-2$
         
         System.out.println(query);
         
         List userXML = dom4jSession.createQuery(query).list();
         try
         {
-            fout = new FileOutputStream(importFolderPath + dataBase + ".xml");
+            fout = new FileOutputStream(importFolderPath + dataBase + ".xml"); //$NON-NLS-1$
             PrintStream p = new PrintStream(fout);
-            p.print("<root>");
+            p.print("<root>"); //$NON-NLS-1$
             OutputFormat format = OutputFormat.createPrettyPrint();
             XMLWriter writer = new XMLWriter(fout, format);
 
@@ -2776,11 +2777,11 @@ public class ImportExportDB
                 Element writeMe = (Element) userXML.get(i);
                 writer.write(writeMe);
             }
-            p.println("\n</root>");
+            p.println("\n</root>"); //$NON-NLS-1$
             p.close();
             fout.close();
             writer.close();
-            System.out.println("Wrote: " + dataBase + ".xml");
+            System.out.println("Wrote: " + dataBase + ".xml"); //$NON-NLS-1$ //$NON-NLS-2$
         } catch (Exception ex)
         {
             ex.printStackTrace();
@@ -2837,7 +2838,7 @@ public class ImportExportDB
     // http://64.233.167.104/search?q=cache:Iu0nrHp8jOIJ:forums.devx.com/showthread.php%3Ft%3D143327+java+string+to+calendar&hl=en&ct=clnk&cd=1&gl=us
     protected Calendar dateString2Calendar(String newstring)
     {
-        SimpleDateFormat df = new SimpleDateFormat("dd MMMMMMMMM yyyy");
+        SimpleDateFormat df = new SimpleDateFormat("dd MMMMMMMMM yyyy"); //$NON-NLS-1$
         Calendar cal = Calendar.getInstance();
         try
         {
@@ -2878,7 +2879,7 @@ public class ImportExportDB
         {
             if (relFields.get(i).isRequired())
             {
-                String name = relFields.get(i).getClassName().substring(29) + "ID";//strip working set
+                String name = relFields.get(i).getClassName().substring(29) + "ID";//strip working set //$NON-NLS-1$
                 //requiredFields.add(relFields.get(i).getName());   
                 requiredFields.add(name);
             }
@@ -2900,7 +2901,7 @@ public class ImportExportDB
             for (int i = 0; i < requiredFields.size(); i++)
             {
                 String field = requiredFields.get(i);
-                query = query.concat(", " + field + "=" + field);
+                query = query.concat(", " + field + "=" + field); //$NON-NLS-1$ //$NON-NLS-2$
             }
             return query;
         }

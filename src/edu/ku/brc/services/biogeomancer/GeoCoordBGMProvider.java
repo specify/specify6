@@ -39,8 +39,6 @@ public class GeoCoordBGMProvider implements GeoCoordServiceProviderIFace
 {
     private static final Logger log = Logger.getLogger(GeoCoordBGMProvider.class);
     
-    protected static final String BGM_VIEW_RESULTS_CONFIRM = "BGM_VIEW_RESULTS_CONFIRM";
-    
     protected GeoCoordProviderListenerIFace listener    = null;
     protected String                        helpContext = null;
     /**
@@ -61,13 +59,13 @@ public class GeoCoordBGMProvider implements GeoCoordServiceProviderIFace
         this.listener    = listenerArg;
         this.helpContext = helpContextArg;
         
-        UsageTracker.incrUsageCount("Tools.BioGeomancerData");
+        UsageTracker.incrUsageCount("Tools.BioGeomancerData"); //$NON-NLS-1$
         
-        log.info("Performing BioGeomancer lookup of selected records");
+        log.info("Performing BioGeomancer lookup of selected records"); //$NON-NLS-1$
         
         // create a progress bar dialog to show the network progress
-        final ProgressDialog progressDialog = new ProgressDialog("BioGeomancer Progress", false, true); // I18N
-        progressDialog.getCloseBtn().setText(getResourceString("Cancel"));
+        final ProgressDialog progressDialog = new ProgressDialog(UIRegistry.getResourceString("GeoCoordBGMProvider.BIOGEOMANCER_PROGRESS"), false, true); // I18N //$NON-NLS-1$
+        progressDialog.getCloseBtn().setText(getResourceString("CANCEL")); //$NON-NLS-1$
         progressDialog.setModal(true);
         progressDialog.setProcess(0, items.size());
         
@@ -87,7 +85,7 @@ public class GeoCoordBGMProvider implements GeoCoordServiceProviderIFace
                 cancelled = true;
             }
                         
-            @SuppressWarnings("synthetic-access")
+            @SuppressWarnings("synthetic-access") //$NON-NLS-1$
             @Override
             public Object construct()
             {
@@ -110,7 +108,7 @@ public class GeoCoordBGMProvider implements GeoCoordServiceProviderIFace
                     String state   = item.getState();
                     String county  = item.getCounty();
                     
-                    log.info("Making call to BioGeomancer service: " + localityNameStr);
+                    log.info("Making call to BioGeomancer service: " + localityNameStr); //$NON-NLS-1$
                     String bgResults;
                     BioGeomancerQuerySummaryStruct bgQuerySummary;
                     try
@@ -120,9 +118,9 @@ public class GeoCoordBGMProvider implements GeoCoordServiceProviderIFace
                     }
                     catch (IOException ex1)
                     {
-                        String warning = getResourceString("WB_BIOGEOMANCER_UNAVAILABLE");
+                        String warning = getResourceString("GeoCoordBGMProvider.WB_BIOGEOMANCER_UNAVAILABLE"); //$NON-NLS-1$
                         statusBar.setWarningMessage(warning, ex1);
-                        log.error("A network error occurred while contacting the BioGeomancer service", ex1);
+                        log.error("A network error occurred while contacting the BioGeomancer service", ex1); //$NON-NLS-1$
                         
                         // update the progress bar UI and move on
                         progressDialog.setProcess(++progress);
@@ -132,9 +130,9 @@ public class GeoCoordBGMProvider implements GeoCoordServiceProviderIFace
                     {
                         // right now we'll simply blame this on BG
                         // in the future we might get more specific about this error
-                        String warning = getResourceString("WB_BIOGEOMANCER_UNAVAILABLE");
+                        String warning = getResourceString("GeoCoordBGMProvider.WB_BIOGEOMANCER_UNAVAILABLE"); //$NON-NLS-1$
                         statusBar.setWarningMessage(warning, ex2);
-                        log.warn("Failed to get result count from BioGeomancer respsonse", ex2);
+                        log.warn("Failed to get result count from BioGeomancer respsonse", ex2); //$NON-NLS-1$
                         
                         // update the progress bar UI and move on
                         progressDialog.setProcess(++progress);
@@ -154,17 +152,17 @@ public class GeoCoordBGMProvider implements GeoCoordServiceProviderIFace
                             {
                                 try
                                 {
-                                    log.info("Requesting map of BioGeomancer results for workbench row " + rowNumber);
+                                    log.info("Requesting map of BioGeomancer results for workbench row " + rowNumber); //$NON-NLS-1$
                                     BioGeomancer.getMapOfQuerySummary(summaryStruct, null);
                                 }
                                 catch (Exception e)
                                 {
-                                    log.warn("Failed to pre-cache BioGeomancer results map",e);
+                                    log.warn("Failed to pre-cache BioGeomancer results map",e); //$NON-NLS-1$
                                 }
                             }
                         });
-                        t.setName("Map Pre-Caching Thread: row " + item.getId()); // I18N
-                        log.debug("Starting map pre-caching thread");
+                        t.setName("Map Pre-Caching Thread: row " + item.getId()); // I18N //$NON-NLS-1$
+                        log.debug("Starting map pre-caching thread"); //$NON-NLS-1$
                         t.start();
                     }
                     
@@ -210,7 +208,7 @@ public class GeoCoordBGMProvider implements GeoCoordServiceProviderIFace
                     int numRecordsWithResults = rowsWithResults.size();
                     if (numRecordsWithResults == 0)
                     {
-                        statusBar.setText(getResourceString("NO_BG_RESULTS"));
+                        statusBar.setText(getResourceString("GeoCoordBGMProvider.NO_BG_RESULTS")); //$NON-NLS-1$
 //                        JOptionPane.showMessageDialog(UIRegistry.getTopWindow(),
 //                                getResourceString("NO_BG_RESULTS"),
 //                                getResourceString("NO_RESULTS"), JOptionPane.INFORMATION_MESSAGE);
@@ -223,13 +221,13 @@ public class GeoCoordBGMProvider implements GeoCoordServiceProviderIFace
                     }
                     
                     // ask the user if they want to review the results
-                    String message = String.format(getResourceString(BGM_VIEW_RESULTS_CONFIRM), String.valueOf(numRecordsWithResults));
+                    String message = String.format(getResourceString("GeoCoordBGMProvider.BGM_VIEW_RESULTS_CONFIRM"), String.valueOf(numRecordsWithResults));
                     int userChoice = JOptionPane.showConfirmDialog(UIRegistry.getTopWindow(), message,
-                            "Continue?", JOptionPane.YES_NO_OPTION); // I18N
+                            getResourceString("GeoCoordBGMProvider.CONTINUE"), JOptionPane.YES_NO_OPTION);//$NON-NLS-1$
                     
                     if (userChoice != JOptionPane.YES_OPTION)
                     {
-                        statusBar.setText("BioGeomancer process terminated by user");
+                        statusBar.setText(getResourceString("GeoCoordBGMProvider.BIOGEOMANCER_TERMINATED")); //$NON-NLS-1$
                         return;
                     }
 
@@ -241,15 +239,15 @@ public class GeoCoordBGMProvider implements GeoCoordServiceProviderIFace
         // if the user hits close, stop the worker thread
         progressDialog.getCloseBtn().addActionListener(new ActionListener()
         {
-            @SuppressWarnings("synthetic-access")
+            @SuppressWarnings("synthetic-access") //$NON-NLS-1$
             public void actionPerformed(ActionEvent ae)
             {
-                log.debug("Stopping the BioGeomancer service worker thread");
+                log.debug("Stopping the BioGeomancer service worker thread"); //$NON-NLS-1$
                 bgTask.interrupt();
             }
         });
         
-        log.debug("Starting the BioGeomancer service worker thread");
+        log.debug("Starting the BioGeomancer service worker thread"); //$NON-NLS-1$
         bgTask.start();
         UIHelper.centerAndShow(progressDialog);
     }
@@ -267,7 +265,7 @@ public class GeoCoordBGMProvider implements GeoCoordServiceProviderIFace
         // create the UI for displaying the BG results
         JFrame topFrame = (JFrame)UIRegistry.getTopWindow();
         BioGeomancerResultsChooser bgResChooser = new BioGeomancerResultsChooser(topFrame, 
-                "BioGeomancer Results Chooser", 
+                getResourceString("GeoCoordBGMProvider.BIOGEOMANCER_CHOOSER"),  //$NON-NLS-1$
                 items, 
                 helpContext); // I18N
         

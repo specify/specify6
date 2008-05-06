@@ -104,7 +104,7 @@ public class SQLExecutionProcessor
      */
     protected String trimStr(final String str)
     {
-        return str.replace("\n", "").replace("\t", "").replace("\r", "").trim();
+        return str.replace("\n", "").replace("\t", "").replace("\r", "").trim(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
     }
 
     /**
@@ -201,8 +201,8 @@ public class SQLExecutionProcessor
                 
                 dbStatement = dbConnection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
 
-                log.debug("SQL ["+sqlStr+"]");
-                if (sqlStr.trim().toLowerCase().startsWith("select"))
+                log.debug("SQL ["+sqlStr+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+                if (sqlStr.trim().toLowerCase().startsWith("select")) //$NON-NLS-1$
                 {
                     ResultSet rs = dbStatement.executeQuery(sqlStr);
                     //log.debug("SQL*%["+sqlStr+"]");
@@ -226,7 +226,7 @@ public class SQLExecutionProcessor
 
         } catch (java.sql.SQLException ex)
         {
-            log.error("Error in run["+sqlStr+"]", ex);
+            log.error("Error in run["+sqlStr+"]", ex); //$NON-NLS-1$ //$NON-NLS-2$
             if (listener != null)
             {
                 listener.executionError(this, ex);
@@ -234,7 +234,7 @@ public class SQLExecutionProcessor
 
         } catch (Exception ex)
         {
-            log.error("Error in run["+sqlStr+"]", ex);
+            log.error("Error in run["+sqlStr+"]", ex); //$NON-NLS-1$ //$NON-NLS-2$
             if (listener != null)
             {
                 listener.executionError(this, ex);

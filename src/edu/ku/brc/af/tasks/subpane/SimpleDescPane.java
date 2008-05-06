@@ -37,7 +37,7 @@ import edu.ku.brc.af.core.Taskable;
  * @author rods
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class SimpleDescPane extends BaseSubPane
 {
     //private static final Logger log = Logger.getLogger(SimpleDescPane.class);

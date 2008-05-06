@@ -25,6 +25,7 @@ import javax.security.auth.Subject;
 import org.apache.log4j.Logger;
 
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * @author megkumin
@@ -72,11 +73,11 @@ public class PermissionHelper
 
         if (allowed)
         {
-            log.debug("permission was granted");
+            log.debug("permission was granted"); //$NON-NLS-1$
         } 
         else
         {
-            log.error("permission was denied" + myPerm.toString());
+            log.error("permission was denied" + myPerm.toString()); //$NON-NLS-1$
             System.exit(0);
         }
     }

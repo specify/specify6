@@ -15,7 +15,7 @@ import javax.xml.ws.WebServiceClient;
  * Generated source version: 2.0
  * 
  */
-@WebServiceClient(name = "geolocatesvc", targetNamespace = "http://www.museum.tulane.edu/webservices/", wsdlLocation = "http://www.museum.tulane.edu:8080/webservices/geolocatesvc/geolocatesvc.asmx?wsdl")
+@WebServiceClient(name = "geolocatesvc", targetNamespace = "http://www.museum.tulane.edu/webservices/", wsdlLocation = "http://www.museum.tulane.edu:8080/webservices/geolocatesvc/geolocatesvc.asmx?wsdl") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 public class Geolocatesvc
     extends Service
 {
@@ -25,7 +25,7 @@ public class Geolocatesvc
     static {
         URL url = null;
         try {
-            url = new URL("http://www.museum.tulane.edu:8080/webservices/geolocatesvc/geolocatesvc.asmx?wsdl");
+            url = new URL("http://www.museum.tulane.edu:8080/webservices/geolocatesvc/geolocatesvc.asmx?wsdl"); //$NON-NLS-1$
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
@@ -37,7 +37,7 @@ public class Geolocatesvc
     }
 
     public Geolocatesvc() {
-        super(GEOLOCATESVC_WSDL_LOCATION, new QName("http://www.museum.tulane.edu/webservices/", "geolocatesvc"));
+        super(GEOLOCATESVC_WSDL_LOCATION, new QName("http://www.museum.tulane.edu/webservices/", "geolocatesvc")); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     /**
@@ -45,9 +45,9 @@ public class Geolocatesvc
      * @return
      *     returns GeolocatesvcSoap
      */
-    @WebEndpoint(name = "geolocatesvcSoap")
+    @WebEndpoint(name = "geolocatesvcSoap") //$NON-NLS-1$
     public GeolocatesvcSoap getGeolocatesvcSoap() {
-        return (GeolocatesvcSoap)super.getPort(new QName("http://www.museum.tulane.edu/webservices/", "geolocatesvcSoap"), GeolocatesvcSoap.class);
+        return (GeolocatesvcSoap)super.getPort(new QName("http://www.museum.tulane.edu/webservices/", "geolocatesvcSoap"), GeolocatesvcSoap.class); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
 }

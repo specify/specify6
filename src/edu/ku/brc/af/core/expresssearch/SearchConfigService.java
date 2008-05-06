@@ -50,7 +50,7 @@ public class SearchConfigService
     //private static final Logger log = Logger.getLogger(SearchConfigService.class);
     
     protected static SearchConfigService   instance = new SearchConfigService();
-    protected static final String          resourceName = "ExpressSearchConfig";
+    protected static final String          resourceName = "ExpressSearchConfig"; //$NON-NLS-1$
         
     protected SearchConfig                 searchConfig    = null;
     protected SearchTableConfig            searchContext   = null;
@@ -138,13 +138,13 @@ public class SearchConfigService
      */
     protected void loadConfig()
     {
-        Element root = XMLHelper.readDOMFromConfigDir("es_skipfields.xml");
-        for (Object tblObj : root.selectNodes("/tables/table"))
+        Element root = XMLHelper.readDOMFromConfigDir("es_skipfields.xml"); //$NON-NLS-1$
+        for (Object tblObj : root.selectNodes("/tables/table")) //$NON-NLS-1$
         {
             Element tbl = (Element)tblObj;
-            String name = XMLHelper.getAttr(tbl, "name", null);
+            String name = XMLHelper.getAttr(tbl, "name", null); //$NON-NLS-1$
             Hashtable<String, Boolean> fields = new Hashtable<String, Boolean>();
-            for (Object fldObj : tbl.selectNodes("field"))
+            for (Object fldObj : tbl.selectNodes("field")) //$NON-NLS-1$
             {
                 Element fld = (Element)fldObj;
                 fields.put(fld.getTextTrim().toLowerCase(), true);
@@ -156,7 +156,7 @@ public class SearchConfigService
         SearchConfig.configXStream(xstream);
         
         String           xmlStr    = null;
-        AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromDir("Personal", resourceName);
+        AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromDir("Personal", resourceName); //$NON-NLS-1$
         if (escAppRes != null)
         {
             xmlStr = escAppRes.getDataAsString();
@@ -164,7 +164,7 @@ public class SearchConfigService
         } else
         {
             // Get the default resource by name and copy it to a new User Area Resource
-            AppResourceIFace newAppRes = AppContextMgr.getInstance().copyToDirAppRes("Personal", resourceName);
+            AppResourceIFace newAppRes = AppContextMgr.getInstance().copyToDirAppRes("Personal", resourceName); //$NON-NLS-1$
             // Save it in the User Area
             AppContextMgr.getInstance().saveResource(newAppRes);
             xmlStr = newAppRes.getDataAsString();
@@ -191,7 +191,7 @@ public class SearchConfigService
     {
         List<DBFieldInfo> availFields = tblInfo.getFields();
         
-        Hashtable<String, Boolean> allHash = skipFieldHash.get("all");
+        Hashtable<String, Boolean> allHash = skipFieldHash.get("all"); //$NON-NLS-1$
         Hashtable<String, Boolean> tblHash = skipFieldHash.get(tblInfo.getName());
         if (allHash != null || tblHash != null)
         {
@@ -223,14 +223,14 @@ public class SearchConfigService
         // This is for testing only RELEASE
         try
         {
-            FileUtils.writeStringToFile(new File("config.xml"), xstream.toXML(searchConfig));
+            FileUtils.writeStringToFile(new File("config.xml"), xstream.toXML(searchConfig)); //$NON-NLS-1$
             
         } catch (IOException ex)
         {
             ex.printStackTrace();
         }
         
-        AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromDir("Personal", resourceName);
+        AppResourceIFace escAppRes = AppContextMgr.getInstance().getResourceFromDir("Personal", resourceName); //$NON-NLS-1$
         if (escAppRes != null)
         {
             escAppRes.setDataAsString(xstream.toXML(searchConfig));
@@ -241,7 +241,7 @@ public class SearchConfigService
             AppContextMgr.getInstance().putResourceAsXML(resourceName, xstream.toXML(searchConfig));     
         }
         
-        PropertyChangeEvent pce = new PropertyChangeEvent(this, "contentsChanged", null, null);
+        PropertyChangeEvent pce = new PropertyChangeEvent(this, "contentsChanged", null, null); //$NON-NLS-1$
         for (PropertyChangeListener pcl : changeListeners)
         {
             pcl.propertyChange(pce);
@@ -260,7 +260,7 @@ public class SearchConfigService
         if (!foundContext)
         {
             searchContext = null;
-            pce = new PropertyChangeEvent(this, "noContext", searchContext, null);
+            pce = new PropertyChangeEvent(this, "noContext", searchContext, null); //$NON-NLS-1$
             for (PropertyChangeListener pcl : changeListeners)
             {
                 pcl.propertyChange(pce);

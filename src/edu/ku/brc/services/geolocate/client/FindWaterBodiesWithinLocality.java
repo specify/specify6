@@ -30,13 +30,13 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "localityDescription"
+@XmlType(name = "", propOrder = { //$NON-NLS-1$
+    "localityDescription" //$NON-NLS-1$
 })
-@XmlRootElement(name = "FindWaterBodiesWithinLocality")
+@XmlRootElement(name = "FindWaterBodiesWithinLocality") //$NON-NLS-1$
 public class FindWaterBodiesWithinLocality {
 
-    @XmlElement(name = "LocalityDescription", namespace = "http://www.museum.tulane.edu/webservices/", required = true)
+    @XmlElement(name = "LocalityDescription", namespace = "http://www.museum.tulane.edu/webservices/", required = true) //$NON-NLS-1$ //$NON-NLS-2$
     protected LocalityDescription localityDescription;
 
     /**

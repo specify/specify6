@@ -122,7 +122,7 @@ public class TaskMgr
             instance.defaultTask.requestContext();
         } else
         {
-            Taskable startUpTask = ContextMgr.getTaskByName(getResourceString("Startup"));
+            Taskable startUpTask = ContextMgr.getTaskByName(getResourceString("TaskMgr.STARTUP")); //$NON-NLS-1$
             if (startUpTask != null)
             {
                 startUpTask.requestContext();
@@ -159,11 +159,11 @@ public class TaskMgr
 
             } else
             {
-                throw new RuntimeException("Registering a plugin with an existing name["+plugin.getName()+"]");
+                throw new RuntimeException("Registering a plugin with an existing name["+plugin.getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
             }
         } else
         {
-            throw new NullPointerException("Trying to register a null plugin!");
+            throw new NullPointerException("Trying to register a null plugin!"); //$NON-NLS-1$
         }
     }
 
@@ -189,11 +189,11 @@ public class TaskMgr
                 }
             } else
             {
-                throw new RuntimeException("Unregistering a plugin that has been registered ["+taskable.getName()+"]");
+                throw new RuntimeException("Unregistering a plugin that has been registered ["+taskable.getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
             }
         } else
         {
-            throw new NullPointerException("Trying to unregister a null plugin!");
+            throw new NullPointerException("Trying to unregister a null plugin!"); //$NON-NLS-1$
         }
     }
     
@@ -258,7 +258,7 @@ public class TaskMgr
             }
         } else
         {
-            throw new NullPointerException("The Toolbar component cannot be null!");
+            throw new NullPointerException("The Toolbar component cannot be null!"); //$NON-NLS-1$
         }
         
         // Load all the menu Items
@@ -267,12 +267,12 @@ public class TaskMgr
         {
             for (MenuItemDesc menuItem : plugin.getMenuItems())
             {
-                String[] menuPath = split(menuItem.getMenuPath(), "/");
+                String[] menuPath = split(menuItem.getMenuPath(), "/"); //$NON-NLS-1$
                 buildMenuTree(menuBar, menuItem, menuPath, 0);
             }
         } else
         {
-            throw new NullPointerException("The MenuBar component cannot be null!");
+            throw new NullPointerException("The MenuBar component cannot be null!"); //$NON-NLS-1$
         }
         
         if (isVisible)
@@ -373,7 +373,7 @@ public class TaskMgr
             MenuElement menuElement = getMenuByName(parent, label);
             if (menuElement == null)
             {
-                throw new RuntimeException("Couldn't find menu element ["+label+"]");
+                throw new RuntimeException("Couldn't find menu element ["+label+"]"); //$NON-NLS-1$ //$NON-NLS-2$
             }
             buildMenuTree(menuElement, menuItemDesc, menuPath, currIndex+1);
         }
@@ -464,15 +464,15 @@ public class TaskMgr
         {
             try
             {
-                Element root  = readDOMFromConfigDir("plugin_registry.xml");
+                Element root  = readDOMFromConfigDir("plugin_registry.xml"); //$NON-NLS-1$
     
-                List<?> boxes = root.selectNodes("/plugins/core/plugin");
+                List<?> boxes = root.selectNodes("/plugins/core/plugin"); //$NON-NLS-1$
                 for ( Iterator<?> iter = boxes.iterator(); iter.hasNext(); )
                 {
                     org.dom4j.Element pluginElement = (org.dom4j.Element)iter.next();
     
                     Object newObj = null;
-                    String name   = pluginElement.attributeValue("class");
+                    String name   = pluginElement.attributeValue("class"); //$NON-NLS-1$
                     try
                     {
     
@@ -492,7 +492,7 @@ public class TaskMgr
                     {
                         Taskable tp = (Taskable)newObj;
                         
-                        boolean isTaskDefault = getAttr(pluginElement, "default", false);
+                        boolean isTaskDefault = getAttr(pluginElement, "default", false); //$NON-NLS-1$
                         if (isTaskDefault)
                         {
                             if (instance.defaultTask == null)
@@ -500,31 +500,31 @@ public class TaskMgr
                                 instance.defaultTask = tp;
                             } else
                             {
-                                log.error("More than one plugin thinks it is the default["+tp.getName()+"]");
+                                log.error("More than one plugin thinks it is the default["+tp.getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
                             }
                         }
                         
-                        register(tp, getAttr(pluginElement, "addui", false));
+                        register(tp, getAttr(pluginElement, "addui", false)); //$NON-NLS-1$
 
                     } else
                     {
-                        log.error("Oops, the plugin is not instance of Taskable ["+newObj+"]");
+                        log.error("Oops, the plugin is not instance of Taskable ["+newObj+"]"); //$NON-NLS-1$ //$NON-NLS-2$
                         // XXX Need to display an error
                     }
                 }
                 
-                for ( Iterator<?> iter = root.selectNodes("/plugins/uiplugins/plugin").iterator(); iter.hasNext(); )
+                for ( Iterator<?> iter = root.selectNodes("/plugins/uiplugins/plugin").iterator(); iter.hasNext(); ) //$NON-NLS-1$
                 {
                     Element pluginElement = (Element)iter.next();
     
-                    String name      = XMLHelper.getAttr(pluginElement, "name", null);
-                    String className = XMLHelper.getAttr(pluginElement, "class", null);
+                    String name      = XMLHelper.getAttr(pluginElement, "name", null); //$NON-NLS-1$
+                    String className = XMLHelper.getAttr(pluginElement, "class", null); //$NON-NLS-1$
                     if (StringUtils.isNotEmpty(name) && StringUtils.isNotEmpty(className))
                     {
                         try
                         {
                             Class<?> cls = Class.forName(className).asSubclass(UIPluginable.class);
-                            log.debug("Registering ["+name+"] Class["+cls.getName()+"]");
+                            log.debug("Registering ["+name+"] Class["+cls.getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                             instance.uiPluginHash.put(name, cls);
         
                         } catch (Exception ex)
@@ -554,7 +554,7 @@ public class TaskMgr
      */
     public static Class<?> getUIPluginClassForName(final String pluginName)
     {
-        log.debug("Looing up["+pluginName+"]["+instance.uiPluginHash.get(pluginName)+"]");
+        log.debug("Looing up["+pluginName+"]["+instance.uiPluginHash.get(pluginName)+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         return instance.uiPluginHash.get(pluginName);
     }
     
@@ -580,25 +580,25 @@ public class TaskMgr
         {
             if (instance.commandDOMRoot == null)
             {
-                instance.commandDOMRoot = readDOMFromConfigDir("command_registry.xml");
+                instance.commandDOMRoot = readDOMFromConfigDir("command_registry.xml"); //$NON-NLS-1$
             }
 
-            List<?> cmds = instance.commandDOMRoot.selectNodes("/commands/command[@class='"+classObj.getName()+"']");
+            List<?> cmds = instance.commandDOMRoot.selectNodes("/commands/command[@class='"+classObj.getName()+"']"); //$NON-NLS-1$ //$NON-NLS-2$
 
             for ( Iterator<?> iter = cmds.iterator(); iter.hasNext(); )
             {
                 Element cmdElement = (Element)iter.next();
 
-                String cmdName     = getAttr(cmdElement, "name", null);
-                String cmdIconName = getAttr(cmdElement, "icon", null);
+                String cmdName     = getAttr(cmdElement, "name", null); //$NON-NLS-1$
+                String cmdIconName = getAttr(cmdElement, "icon", null); //$NON-NLS-1$
                 if (StringUtils.isNotEmpty(cmdName) && StringUtils.isNotEmpty(cmdIconName))
                 {
                     Properties params = null;
-                    List<?> paramsList = cmdElement.selectNodes("param");
+                    List<?> paramsList = cmdElement.selectNodes("param"); //$NON-NLS-1$
                     for ( Iterator<?> iterServices = paramsList.iterator(); iterServices.hasNext(); )
                     {
                         Element paramElement = (Element)iterServices.next();
-                        String name  = getAttr(paramElement, "name", null);
+                        String name  = getAttr(paramElement, UIRegistry.getResourceString("TaskMgr.0"), null); //$NON-NLS-1$
                         String value = paramElement.getTextTrim();
                         if (StringUtils.isNotEmpty(name) && StringUtils.isNotEmpty(value))
                         {

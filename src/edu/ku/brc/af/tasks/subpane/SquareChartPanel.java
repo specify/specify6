@@ -28,7 +28,7 @@ import org.jfree.chart.JFreeChart;
  * @author rods
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class SquareChartPanel extends ChartPanel
 {
 

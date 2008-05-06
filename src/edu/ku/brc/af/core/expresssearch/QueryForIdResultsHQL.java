@@ -54,7 +54,7 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
     protected RecordSetIFace        recordSet;
     protected boolean               isMultipleSelection   = true;
     
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked") //$NON-NLS-1$
     public QueryForIdResultsHQL(final SearchTableConfig searchTableConfig,
                                 final Color             bannerColor,
                                 final String            searchTerm,
@@ -82,7 +82,7 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
     {
         this.searchTableConfig = searchTableConfig;
         this.bannerColor       = bannerColor;
-        this.searchTerm        = "";
+        this.searchTerm        = ""; //$NON-NLS-1$
         this.recordSet         = recordSet;
 
         for (RecordSetItemIFace item : recordSet.getItems())

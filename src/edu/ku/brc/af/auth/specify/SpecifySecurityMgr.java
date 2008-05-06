@@ -34,6 +34,7 @@ import edu.ku.brc.af.auth.specify.permission.BasicSpPermission;
 import edu.ku.brc.af.auth.specify.permission.PermissionService;
 import edu.ku.brc.specify.datamodel.SpPrincipal;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * 
@@ -49,8 +50,8 @@ public class SpecifySecurityMgr
     protected static final SpecifySecurityMgr instance = new SpecifySecurityMgr();
     
     // XXX TODO SECURITY- make secure Specify Admin user and pwd
-    public static final String embeddedSpecifyAppRootUser = "rods";
-    public static final String embeddedSpecifyAppRootPwd = "rods";
+    public static final String embeddedSpecifyAppRootUser = "rods"; //$NON-NLS-1$
+    public static final String embeddedSpecifyAppRootPwd = "rods"; //$NON-NLS-1$
 
     /** 
      * 
@@ -74,7 +75,7 @@ public class SpecifySecurityMgr
         {
             Class.forName(driverClass);
             conn = DriverManager.getConnection(url, embeddedSpecifyAppRootUser, embeddedSpecifyAppRootPwd);
-            String query = "SELECT * FROM specifyuser where name='" + user + "'";
+            String query = "SELECT * FROM specifyuser where name='" + user + "'"; //$NON-NLS-1$ //$NON-NLS-2$
             stmt = conn.createStatement();
             ResultSet result = stmt.executeQuery(query);
             String dbPassword = null;
@@ -83,14 +84,14 @@ public class SpecifySecurityMgr
             {
                 if (!result.isFirst())
                 {
-                    throw new LoginException("authenticateDB - Ambiguous user (located more than once): " + user);
+                    throw new LoginException("authenticateDB - Ambiguous user (located more than once): " + user); //$NON-NLS-1$
                 }                    
-                dbPassword = result.getString(result.findColumn("Password"));
+                dbPassword = result.getString(result.findColumn("Password")); //$NON-NLS-1$
             }
 
             if (dbPassword == null)
             {
-                throw new LoginException("authenticateDB - Password for User " + user + " undefined.");
+                throw new LoginException("authenticateDB - Password for User " + user + " undefined."); //$NON-NLS-1$ //$NON-NLS-2$
             }
             if (pass != null && pass.equals(dbPassword))
             {
@@ -101,16 +102,16 @@ public class SpecifySecurityMgr
         } 
         catch (java.lang.ClassNotFoundException e)
         {
-            log.error("authenticateDB - Could not connect to database, driverclass - ClassNotFoundException: ");
+            log.error("authenticateDB - Could not connect to database, driverclass - ClassNotFoundException: "); //$NON-NLS-1$
             log.error(e.getMessage());
             e.printStackTrace();
-            throw new LoginException("authenticateDB -  Database driver class not found: " + driverClass);
+            throw new LoginException("authenticateDB -  Database driver class not found: " + driverClass); //$NON-NLS-1$
         }
         catch (SQLException ex)
         {
-            log.error("authenticateDB - SQLException: " + ex.toString());
-            log.error("authenticateDB - " + ex.getMessage());
-            throw new LoginException("authenticateDB - SQLException: " + ex.getMessage());
+            log.error("authenticateDB - SQLException: " + ex.toString()); //$NON-NLS-1$
+            log.error("authenticateDB - " + ex.getMessage()); //$NON-NLS-1$
+            throw new LoginException("authenticateDB - SQLException: " + ex.getMessage()); //$NON-NLS-1$
         }
         finally
         {
@@ -120,7 +121,7 @@ public class SpecifySecurityMgr
                 if (stmt != null)  stmt.close(); 
             } catch (SQLException e)
             {
-                log.error("Exception caught: " + e.toString());
+                log.error("Exception caught: " + e.toString()); //$NON-NLS-1$
                 e.printStackTrace();
             }
         }
@@ -138,22 +139,22 @@ public class SpecifySecurityMgr
     // XXX should be moved to PermissionService class
     public static void grantPermission(Subject currentSubject, Principal principalToMatchTo, Permission perm)
     {
-        log.debug("grantPermission");
+        log.debug("grantPermission"); //$NON-NLS-1$
         if (currentSubject == null)
         {
-            log.error("grantPermission - subject is null - cannot grant permission");
+            log.error("grantPermission - subject is null - cannot grant permission"); //$NON-NLS-1$
             return;
         }
         if (perm == null)
         {
-            log.error("grantPermission - permission is null - cannot grant permission");
+            log.error("grantPermission - permission is null - cannot grant permission"); //$NON-NLS-1$
             return;
         }
         Set<Principal> p = currentSubject.getPrincipals();
         if (p == null)
         {
             log
-                    .error("grantPermission - there are no principals associated with this user - cannot grant permission");
+                    .error("grantPermission - there are no principals associated with this user - cannot grant permission"); //$NON-NLS-1$
             return;
         }
         
@@ -207,7 +208,7 @@ public class SpecifySecurityMgr
     protected static boolean checkPermission(final Class<?> permissionClass, String name, String actions)
     {
     	if (!(BasicSpPermission.class.isAssignableFrom(permissionClass)))
-    		throw new SecurityException(permissionClass.getName() + " class is not part of Specify permission hierarchy.");
+    		throw new SecurityException(permissionClass.getName() + " class is not part of Specify permission hierarchy."); //$NON-NLS-1$
 
     	Constructor<?> constructor = null;
     	BasicSpPermission perm = null;
@@ -241,7 +242,7 @@ public class SpecifySecurityMgr
         }
         else
         {
-            log.error("doesCurrentUserHavePermission - either current subject or permission passed is null, should not happen");
+            log.error("doesCurrentUserHavePermission - either current subject or permission passed is null, should not happen"); //$NON-NLS-1$
         }
 
         return false;

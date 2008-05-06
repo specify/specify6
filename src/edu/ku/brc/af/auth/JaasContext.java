@@ -44,8 +44,8 @@ import edu.ku.brc.specify.datamodel.SpecifyUser;
 public class JaasContext
 {
     private static final Logger log    = Logger.getLogger(JaasContext.class);
-    public static String        url    = "";
-    public static String        driver = "";
+    public static String        url    = ""; //$NON-NLS-1$
+    public static String        driver = ""; //$NON-NLS-1$
 
     /**
      * Composite policy will allow us to piggy back our own policy definition onto of the 
@@ -86,18 +86,18 @@ public class JaasContext
         	Configuration.setConfiguration(SpDBConfiguration.getInstance());
             createDatabaseBackedPolicyDefinition();
             DbLoginCallbackHandler spcbh = new DbLoginCallbackHandler(user, pass, url, driver);
-            LoginContext lc = new LoginContext("SpLogin", spcbh);
+            LoginContext lc = new LoginContext("SpLogin", spcbh); //$NON-NLS-1$
             lc.login();
             loginSuccess = true;
             SpecifyUser.setCurrentSubject(lc.getSubject());
             
         } catch (LoginException lex)
         {
-            log.error("jaasLogin() - " + lex.getClass().getName() + ": " + lex.getMessage());
-            log.error("jaasLogin() - user failed to login using through jaas framework");
+            log.error("jaasLogin() - " + lex.getClass().getName() + ": " + lex.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
+            log.error("jaasLogin() - user failed to login using through jaas framework"); //$NON-NLS-1$
         } catch (Exception ex)
         {
-            log.error("jaasLogin() - " + ex.getClass().getName() + ": " + ex.getMessage());
+            log.error("jaasLogin() - " + ex.getClass().getName() + ": " + ex.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
         }
         return loginSuccess;
     }

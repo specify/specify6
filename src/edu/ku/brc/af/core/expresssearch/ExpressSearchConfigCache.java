@@ -176,12 +176,12 @@ public class ExpressSearchConfigCache
                     
                 } else
                 {
-                    log.error("Duplicate express Search name["+erti.getName()+"]");
+                    log.error("Duplicate express Search name["+erti.getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
                 }
 
             } else
             {
-                log.error("Duplicate Search Id["+erti.getId()+"]");
+                log.error("Duplicate Search Id["+erti.getId()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
             }
         } 
     }
@@ -198,20 +198,20 @@ public class ExpressSearchConfigCache
             Hashtable<String, ExpressResultsTableInfo>       idToTableInfoHash     = new Hashtable<String, ExpressResultsTableInfo>();
             Hashtable<String, List<ExpressResultsTableInfo>> joinIdToTableInfoHash = new Hashtable<String, List<ExpressResultsTableInfo>>();
             
-            ResourceBundle resBundle = ResourceBundle.getBundle("expresssearch");
+            ResourceBundle resBundle = ResourceBundle.getBundle("expresssearch"); //$NON-NLS-1$
 
             try
             {
-                Element esDOM = AppContextMgr.getInstance().getResourceAsDOM("SearchConfig"); // Describes the definitions of the full text search
+                Element esDOM = AppContextMgr.getInstance().getResourceAsDOM("SearchConfig"); // Describes the definitions of the full text search //$NON-NLS-1$
                 
-                intializeTableInfo(esDOM.selectNodes("/searches/express/table"), 
+                intializeTableInfo(esDOM.selectNodes("/searches/express/table"),  //$NON-NLS-1$
                                    tables, 
                                    idToTableInfoHash, 
                                    joinIdToTableInfoHash, 
                                    true,
                                    resBundle);
                 
-                intializeTableInfo(esDOM.selectNodes("/searches/generic/table"), 
+                intializeTableInfo(esDOM.selectNodes("/searches/generic/table"),  //$NON-NLS-1$
                                                      tables, 
                                                      idToTableInfoHash, 
                                                      joinIdToTableInfoHash, 
@@ -241,7 +241,7 @@ public class ExpressSearchConfigCache
             
         } catch (MissingResourceException ex) 
         {
-            log.error("Couldn't find key["+key+"] in resource bundle ["+key+"]");
+            log.error("Couldn't find key["+key+"] in resource bundle ["+key+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             return key;
         }
     }

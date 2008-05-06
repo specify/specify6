@@ -41,7 +41,7 @@ import org.apache.log4j.Logger;
 public class Encryption
 {
     private static final Logger log  = Logger.getLogger(Encryption.class);
-    private static String encryptDecryptPassword = "KU BRC Specify";
+    private static String encryptDecryptPassword = "KU BRC Specify"; //$NON-NLS-1$
 
     /*
      * The "iteration count" for the key generation algorithm. Basically, this means that the
@@ -55,7 +55,7 @@ public class Encryption
     static final int    SALT_LENGTH     = 8;
 
     /* Which encryption algorithm we're using. */
-    static final String ALGORITHM       = "PBEWithMD5AndDES";
+    static final String ALGORITHM       = "PBEWithMD5AndDES"; //$NON-NLS-1$
 
     /*
      * The name of a provider class to add to the system before running, if using a provider that's
@@ -75,7 +75,7 @@ public class Encryption
         /*
          * Get ourselves a random number generator, needed in a number of places for encrypting.
          */
-        SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
+        SecureRandom sr = SecureRandom.getInstance("SHA1PRNG"); //$NON-NLS-1$
 
         /*
          * A "salt" is considered an essential part of password-based encryption. The salt is
@@ -185,7 +185,7 @@ public class Encryption
         {
             String s = Integer.toHexString(bytes[i] & 0xFF);
             if (s.length() == 1)
-                s = "0" + s;
+                s = "0" + s; //$NON-NLS-1$
             strBuf.append(s.toUpperCase());
         }
         return strBuf.toString();
@@ -219,7 +219,7 @@ public class Encryption
     {
         if (str == null || str.length() == 0)
         {
-            return "";
+            return ""; //$NON-NLS-1$
         }
 
         // decrypt the password
@@ -229,7 +229,7 @@ public class Encryption
 
         } catch (Exception ex)
         {
-            log.error("Error decrypting password."); // XXX FIXME Probably want to display a dialog here
+            log.error("Error decrypting password."); // XXX FIXME Probably want to display a dialog here //$NON-NLS-1$
             return str;
         }
     }
@@ -243,7 +243,7 @@ public class Encryption
     {
         if (str == null || str.length() == 0)
         {
-            return "";
+            return ""; //$NON-NLS-1$
         }
 
         // Encrypt the password before setting it into the pref
@@ -253,7 +253,7 @@ public class Encryption
 
         } catch (Exception ex)
         {
-            log.error("Error endcrypting password."); // XXX FIXME Probably want to display a dialog here
+            log.error("Error endcrypting password."); // XXX FIXME Probably want to display a dialog here //$NON-NLS-1$
             return str;
         }
     }
@@ -285,8 +285,8 @@ public class Encryption
          * you're concerned about security, but for a test case, a String works fine.
          */
         /* Our input text and password. */
-        String input           = "Hello World!";
-        String password        = "abcd";
+        String input           = "Hello World!"; //$NON-NLS-1$
+        String password        = "abcd"; //$NON-NLS-1$
 
 
         byte[] inputBytes    = input.getBytes();
@@ -295,7 +295,7 @@ public class Encryption
         /* Encrypt the data. */
         byte[] ciphertext = encrypt(inputBytes, passwordChars);
 
-        System.out.println("Ciphertext:");
+        System.out.println("Ciphertext:"); //$NON-NLS-1$
 
         /*
          * This is just a little loop I made up which displays the encrypted data in hexadecimal, 30
@@ -311,7 +311,7 @@ public class Encryption
         {
             String s = Integer.toHexString(ciphertext[i] & 0xFF);
             if (s.length() == 1)
-                s = "0" + s;
+                s = "0" + s; //$NON-NLS-1$
             System.out.print(s);
             if (i % 30 == 29)
                 System.out.println();
@@ -320,8 +320,8 @@ public class Encryption
             System.out.println();
 
         String hexText = makeHEXStr(ciphertext);
-        System.out.println("To:   ["+hexText+"]");
-        System.out.println("From: ["+reverseHEXStr(hexText)+"]****");
+        System.out.println("To:   ["+hexText+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+        System.out.println("From: ["+reverseHEXStr(hexText)+"]****"); //$NON-NLS-1$ //$NON-NLS-2$
 
         /*
          * Now, decrypt the data. Note that all we need is the password and the ciphertext.
@@ -332,6 +332,6 @@ public class Encryption
         String sOutput = new String(output);
 
         /* Display it. */
-        System.out.println("Plaintext:\n" + sOutput);
+        System.out.println("Plaintext:\n" + sOutput); //$NON-NLS-1$
     }
 }

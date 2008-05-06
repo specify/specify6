@@ -46,7 +46,7 @@ import edu.ku.brc.ui.forms.MultiView;
  * @author rods
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class BaseSubPane extends JPanel implements SubPaneIFace
 {
     //private static final Logger log = Logger.getLogger(BaseSubPane.class);
@@ -97,14 +97,14 @@ public class BaseSubPane extends JPanel implements SubPaneIFace
 
             progressBar = createProgressBar();
             progressBar.setIndeterminate(true);
-            FormLayout      formLayout = new FormLayout("f:max(100px;p):g", "center:p:g, p, center:p:g");
+            FormLayout      formLayout = new FormLayout("f:max(100px;p):g", "center:p:g, p, center:p:g"); //$NON-NLS-1$ //$NON-NLS-2$
             PanelBuilder    builder    = new PanelBuilder(formLayout);
             CellConstraints cc         = new CellConstraints();
     
             builder.add(progressBar, cc.xy(1,1));
-            builder.add(progressLabel = createLabel("", SwingConstants.CENTER), cc.xy(1,3));
+            builder.add(progressLabel = createLabel("", SwingConstants.CENTER), cc.xy(1,3)); //$NON-NLS-1$
     
-            PanelBuilder    builder2    = new PanelBuilder(new FormLayout("center:p:g", "center:p:g"));
+            PanelBuilder    builder2    = new PanelBuilder(new FormLayout("center:p:g", "center:p:g")); //$NON-NLS-1$ //$NON-NLS-2$
             builder2.add(builder.getPanel(), cc.xy(1,1));
     
             progressBarPanel = builder2.getPanel();

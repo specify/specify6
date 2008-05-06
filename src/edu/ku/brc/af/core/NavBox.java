@@ -53,7 +53,7 @@ import edu.ku.brc.ui.dnd.GhostGlassPane;
  * @author rods
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class NavBox extends JPanel implements NavBoxIFace
 {
     private static final Logger      log      = Logger.getLogger(NavBox.class);
@@ -586,7 +586,7 @@ public class NavBox extends JPanel implements NavBoxIFace
             comp.doLayout();
             comp.setSize(comp.getPreferredSize());
             comp.repaint();
-            log.debug("comp "+comp.getPreferredSize()+" "+comp.getSize());
+            log.debug("comp "+comp.getPreferredSize()+" "+comp.getSize()); //$NON-NLS-1$ //$NON-NLS-2$
             
             Container parentComp = nbi.getUIComponent().getParent();
             if (parentComp instanceof NavBox)

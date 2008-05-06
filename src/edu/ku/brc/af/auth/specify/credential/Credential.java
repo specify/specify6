@@ -17,13 +17,15 @@
  */
 package edu.ku.brc.af.auth.specify.credential;
 import java.util.Properties;
+
+import edu.ku.brc.ui.UIRegistry;
 /**
  * @author megkumin
  *
  * @code_status Alpha
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class Credential extends Properties
 {
     public Credential()

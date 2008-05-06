@@ -30,13 +30,13 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "wgs84Coordinate"
+@XmlType(name = "", propOrder = { //$NON-NLS-1$
+    "wgs84Coordinate" //$NON-NLS-1$
 })
-@XmlRootElement(name = "SnapPointToNearestFoundWaterBodyResponse")
+@XmlRootElement(name = "SnapPointToNearestFoundWaterBodyResponse") //$NON-NLS-1$
 public class SnapPointToNearestFoundWaterBodyResponse {
 
-    @XmlElement(name = "WGS84Coordinate", namespace = "http://www.museum.tulane.edu/webservices/", required = true)
+    @XmlElement(name = "WGS84Coordinate", namespace = "http://www.museum.tulane.edu/webservices/", required = true) //$NON-NLS-1$ //$NON-NLS-2$
     protected GeographicPoint wgs84Coordinate;
 
     /**

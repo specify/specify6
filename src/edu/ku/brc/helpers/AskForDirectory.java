@@ -14,11 +14,15 @@
  */
 package edu.ku.brc.helpers;
 
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
+
 import java.util.NoSuchElementException;
 
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
+
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * Implementation of the ExternalFileRepositoryIFace for a local directory/disk based external repository
@@ -50,9 +54,9 @@ public class AskForDirectory
     {
         JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        if (chooser.showDialog(parent, "Select Directory") == JFileChooser.CANCEL_OPTION) // XXX LOCALIZE
+        if (chooser.showDialog(parent, getResourceString("AskForDirectory.SELECT_DIR")) == JFileChooser.CANCEL_OPTION) //$NON-NLS-1$
         {
-            throw new NoSuchElementException("The External File Repository needs a valid directory.");// XXX LOCALIZE
+            throw new NoSuchElementException("The External File Repository needs a valid directory."); //$NON-NLS-1$
         }
         // else
         return chooser.getSelectedFile().getAbsolutePath();
@@ -64,6 +68,6 @@ public class AskForDirectory
      */
     public void showErrorDialog(String msg)
     {
-        JOptionPane.showMessageDialog(parent, msg, "Error", JOptionPane.ERROR_MESSAGE);   // XXX LOCALIZE
+        JOptionPane.showMessageDialog(parent, msg, getResourceString("AskForDirectory.ERROR"), JOptionPane.ERROR_MESSAGE);  //$NON-NLS-1$
     }    
 }

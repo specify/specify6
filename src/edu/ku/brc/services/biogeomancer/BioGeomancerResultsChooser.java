@@ -67,9 +67,9 @@ public class BioGeomancerResultsChooser extends CustomDialog
         
         setContentPanel(resultsDisplayPanel);
         
-        this.cancelLabel = getResourceString("Skip");
-        this.applyLabel  = getResourceString("Accept");
-        this.okLabel     = getResourceString("Quit");
+        this.cancelLabel = getResourceString("SKIP"); //$NON-NLS-1$
+        this.applyLabel  = getResourceString("ACCEPT"); //$NON-NLS-1$
+        this.okLabel     = getResourceString("QUIT"); //$NON-NLS-1$
         
         rowIndex = -1;
     }
@@ -184,7 +184,7 @@ public class BioGeomancerResultsChooser extends CustomDialog
     {
         rowIndex++;
 
-        setTitle(baseTitle + ": " + (rowIndex+1) + " " + getResourceString("of") + " " + items.size());
+        setTitle(baseTitle + ": " + (rowIndex+1) + " " + getResourceString("BioGeomancerResultsChooser.OF") + " " + items.size()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         
         try
         {
@@ -193,7 +193,7 @@ public class BioGeomancerResultsChooser extends CustomDialog
         }
         catch (Exception e)
         {
-            UIRegistry.getStatusBar().setErrorMessage("Error while displaying BioGeomancer results", e); // i18n
+            UIRegistry.getStatusBar().setErrorMessage(getResourceString("BioGeomancerResultsChooser.RESULTS_ERROR"), e); //$NON-NLS-1$
             super.setVisible(false);
         }
     }

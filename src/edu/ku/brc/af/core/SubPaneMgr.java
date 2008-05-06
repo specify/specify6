@@ -48,7 +48,7 @@ import edu.ku.brc.ui.UIRegistry;
  * @author rods
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
 {
     private static final Logger log = Logger.getLogger(SubPaneMgr.class);
@@ -97,7 +97,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         int     index     = 2;
         while (nameInUse)
         {
-            title = paneName + "("+index+")";
+            title = paneName + "("+index+")"; //$NON-NLS-1$ //$NON-NLS-2$
             nameInUse = (panes.get(title) != null) ? true : false;
             index++;
         }
@@ -114,10 +114,10 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
     {
         if (pane == null)
         {
-            throw new NullPointerException("Null name or pane when adding to SubPaneMgr");
+            throw new NullPointerException("Null name or pane when adding to SubPaneMgr"); //$NON-NLS-1$
         }
         
-        int maxNumPanes = AppPreferences.getRemote().getInt("SubPaneMgr.MaxPanes", 12);
+        int maxNumPanes = AppPreferences.getRemote().getInt("SubPaneMgr.MaxPanes", 12); //$NON-NLS-1$
         if (getComponentCount() >= maxNumPanes)
         {
             SwingUtilities.invokeLater(new Runnable() {
@@ -127,12 +127,12 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
                  */
                 public void run()
                 {
-                    Object[] options = { getResourceString("SUBPANE_OPTIONS_CLOSE_ALLBUT"), 
-                            getResourceString("SUBPANE_OPTIONS_CLOSE_OLDEST") 
+                    Object[] options = { getResourceString("SubPaneMgr.SUBPANE_OPTIONS_CLOSE_ALLBUT"),  //$NON-NLS-1$
+                            getResourceString("SubPaneMgr.SUBPANE_OPTIONS_CLOSE_OLDEST")  //$NON-NLS-1$
                           };
                     int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
-                                                                 getResourceString("SUBPANE_OPTIONS"), 
-                                                                 getResourceString("SUBPANE_OPTIONS_TITLE"), 
+                                                                 getResourceString("SubPaneMgr.SUBPANE_OPTIONS_MAX_TABS"),  //$NON-NLS-1$
+                                                                 getResourceString("SubPaneMgr.SUBPANE_OPTIONS_TOO_MANY"),  //$NON-NLS-1$
                                                                  JOptionPane.YES_NO_CANCEL_OPTION,
                                                                  JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
                     if (userChoice == JOptionPane.YES_OPTION)
@@ -159,7 +159,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             pane.getUIComponent().addComponentListener(new TabSelectionFocusGainListener(firstFocusable));
         }
         
-        UIRegistry.getStatusBar().setText("");
+        UIRegistry.getStatusBar().setText(""); //$NON-NLS-1$
         
         if (instance.panes.contains(pane))
         {
@@ -192,19 +192,19 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
      */
     protected void adjustCloseAllMenu()
     {
-        Action closeCurrent = UIRegistry.getAction("CloseCurrent");
+        Action closeCurrent = UIRegistry.getAction("CloseCurrent"); //$NON-NLS-1$
         if (closeCurrent != null)
         {
             closeCurrent.setEnabled(panes.size() > 0);//  || TaskMgr.getToolbarTaskCount() > 1);
         }        
         
-        Action closeAll = UIRegistry.getAction("CloseAll");
+        Action closeAll = UIRegistry.getAction("CloseAll"); //$NON-NLS-1$
         if (closeAll != null)
         {
             closeAll.setEnabled(panes.size() > 0);//  || TaskMgr.getToolbarTaskCount() > 1);
         }        
         
-        Action closeAllBut = UIRegistry.getAction("CloseAllBut");
+        Action closeAllBut = UIRegistry.getAction("CloseAllBut"); //$NON-NLS-1$
         if (closeAllBut != null)
         {
             closeAllBut.setEnabled(panes.size() > 1);//  || TaskMgr.getToolbarTaskCount() > 1);
@@ -226,11 +226,11 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         String newNameStr = newName;
         while (panes.get(newNameStr) != null)
         {
-            newNameStr = newName + " " + Integer.toString(cnt);
+            newNameStr = newName + " " + Integer.toString(cnt); //$NON-NLS-1$
             cnt++;
         }
         
-        UIRegistry.getStatusBar().setText("");
+        UIRegistry.getStatusBar().setText(""); //$NON-NLS-1$
         
         if (panes.get(pane.getPaneName()) != null)
         {
@@ -244,7 +244,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             
         } else
         {
-            log.error("Couldn't find pane named["+pane.getPaneName()+"]");
+            log.error("Couldn't find pane named["+pane.getPaneName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
         }
         
         return pane;
@@ -259,7 +259,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
      */
     public synchronized SubPaneIFace replacePane(final SubPaneIFace oldPane, final SubPaneIFace newPane)
     {
-        UIRegistry.getStatusBar().setText("");
+        UIRegistry.getStatusBar().setText(""); //$NON-NLS-1$
         
         //System.err.println("SubPaneMgr::replacePane ************************************************");
 
@@ -277,7 +277,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
         final int index = this.indexOfComponent(oldPane.getUIComponent());
         if (index < 0 && index >= this.getComponentCount())
         {
-            log.error("Couldn't find index for panel ["+oldPane.getPaneName()+"] index was["+index+"] number tab["+this.getComponentCount()+"]");
+            log.error("Couldn't find index for panel ["+oldPane.getPaneName()+"] index was["+index+"] number tab["+this.getComponentCount()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         }
         
         if (panes.get(oldPane.getPaneName()) != null)
@@ -307,7 +307,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             
         } 
         // else
-        log.error("Couldn't find pane named["+oldPane.getPaneName()+"]");
+        log.error("Couldn't find pane named["+oldPane.getPaneName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
         
         return null;
     }
@@ -319,7 +319,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
     {
         if (currentPane != null)
         {
-            Action configTaskAction = UIRegistry.getAction("ConfigureTask");
+            Action configTaskAction = UIRegistry.getAction("ConfigureTask"); //$NON-NLS-1$
             if (configTaskAction != null)
             {
                 configTaskAction.setEnabled(currentPane.getTask().isConfigurable());
@@ -364,7 +364,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
                                  final boolean      askForSave,
                                  final boolean      doAboutToShutdown)
     {
-        UIRegistry.getStatusBar().setText("");
+        UIRegistry.getStatusBar().setText(""); //$NON-NLS-1$
         
         if (currentPane == pane)
         {
@@ -409,7 +409,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             
         } else
         {
-            log.error("Couldn't find pane named["+pane.getPaneName()+"]");
+            log.error("Couldn't find pane named["+pane.getPaneName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
             
             // Note: We should never get here, but if we do....
             //
@@ -538,7 +538,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
       */
     public SubPaneIFace showPane(final String name)
     {
-        UIRegistry.getStatusBar().setText("");
+        UIRegistry.getStatusBar().setText(""); //$NON-NLS-1$
         
         // Look the the desired pane
         SubPaneIFace pane = panes.get(name);
@@ -594,7 +594,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
                 return sp;
             }
         }
-        log.error("Couldn't find SubPane for Component ["+comp.hashCode()+"]["+comp+"]");
+        log.error("Couldn't find SubPane for Component ["+comp.hashCode()+"]["+comp+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         return null;
     }
 
@@ -714,7 +714,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
                     int index = this.indexOfComponent(subPane.getUIComponent());
                     if (index < 0)
                     {
-                        log.error("Couldn't find index for panel ["+subPane.getPaneName()+"] ");
+                        log.error("Couldn't find index for panel ["+subPane.getPaneName()+"] "); //$NON-NLS-1$ //$NON-NLS-2$
                     }
                     
                     replacePane(subPane, task.getStarterPane());

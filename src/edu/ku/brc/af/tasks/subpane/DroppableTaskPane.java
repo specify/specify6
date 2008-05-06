@@ -39,11 +39,11 @@ import edu.ku.brc.ui.dnd.GhostMouseInputAdapter;
  * @author rods
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public abstract class DroppableTaskPane extends BaseSubPane implements GhostActionable, CommandListener
 {
     // Static Data Members
-    public static final DataFlavor DROPPABLE_PANE_FLAVOR = new DataFlavor(DroppableTaskPane.class, "DroppablePane");
+    public static final DataFlavor DROPPABLE_PANE_FLAVOR = new DataFlavor(DroppableTaskPane.class, "DroppablePane"); //$NON-NLS-1$
     
     // Data Members
     protected String                 desc                 = null; 
@@ -131,7 +131,7 @@ public abstract class DroppableTaskPane extends BaseSubPane implements GhostActi
      */
     public void createMouseInputAdapter()
     {
-        mouseDropAdapter = new GhostMouseInputAdapter(UIRegistry.getGlassPane(), "action", this);
+        mouseDropAdapter = new GhostMouseInputAdapter(UIRegistry.getGlassPane(), "action", this); //$NON-NLS-1$
         addMouseListener(mouseDropAdapter);
         addMouseMotionListener(mouseDropAdapter);
     }

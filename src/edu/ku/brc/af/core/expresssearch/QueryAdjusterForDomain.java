@@ -34,7 +34,7 @@ import edu.ku.brc.dbsupport.DBTableInfo;
  */
 public class QueryAdjusterForDomain
 {
-    public static final String factoryName = "edu.ku.brc.af.core.ExpressSearchSQLAdjuster";
+    public static final String factoryName = "edu.ku.brc.af.core.ExpressSearchSQLAdjuster"; //$NON-NLS-1$
     
     //private static final Logger log = Logger.getLogger(ExpressSearchSQLAdjuster.class);
     
@@ -74,7 +74,7 @@ public class QueryAdjusterForDomain
                  
             } catch (Exception e) 
             {
-                InternalError error = new InternalError("Can't instantiate ExpressSearchSQLAdjuster factory " + factoryNameStr);
+                InternalError error = new InternalError("Can't instantiate ExpressSearchSQLAdjuster factory " + factoryNameStr); //$NON-NLS-1$
                 error.initCause(e);
                 throw error;
             }
@@ -139,10 +139,10 @@ public class QueryAdjusterForDomain
     {
         if (isNotEmpty(userInputStr))
         {
-            if (contains(userInputStr, ";") ||
-                contains(userInputStr.toLowerCase(), "select") ||
-                contains(userInputStr.toLowerCase(), "'") ||
-                (contains(userInputStr.toLowerCase(), "drop") && contains(userInputStr.toLowerCase(), "table")))
+            if (contains(userInputStr, ";") || //$NON-NLS-1$
+                contains(userInputStr.toLowerCase(), "select") || //$NON-NLS-1$
+                contains(userInputStr.toLowerCase(), "'") || //$NON-NLS-1$
+                (contains(userInputStr.toLowerCase(), "drop") && contains(userInputStr.toLowerCase(), "table"))) //$NON-NLS-1$ //$NON-NLS-2$
             {
                 return false;
             }

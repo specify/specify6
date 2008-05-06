@@ -47,7 +47,7 @@ public class GeoLocateResultsChooser extends CustomDialog
         
         if (rowsAndResults.size() == 0)
         {
-            throw new IllegalArgumentException("WorkbenchRow set must be non-empty");
+            throw new IllegalArgumentException("WorkbenchRow set must be non-empty"); //$NON-NLS-1$
         }
         
         // create a vector for all of the user choices
@@ -60,9 +60,9 @@ public class GeoLocateResultsChooser extends CustomDialog
         
         setContentPanel(resultsDisplayPanel);
         
-        this.cancelLabel = getResourceString("Skip");
-        this.applyLabel  = getResourceString("Accept");
-        this.okLabel     = getResourceString("Quit");
+        this.cancelLabel = getResourceString("GeoLocateResultsChooser.SKIP"); //$NON-NLS-1$
+        this.applyLabel  = getResourceString("GeoLocateResultsChooser.ACCEPT"); //$NON-NLS-1$
+        this.okLabel     = getResourceString("GeoLocateResultsChooser.QUIT"); //$NON-NLS-1$
         
         rowIndex = -1;
     }
@@ -86,7 +86,7 @@ public class GeoLocateResultsChooser extends CustomDialog
             hasBeenShown = true;
             createUI();
 
-            HelpMgr.registerComponent(this.helpBtn, "WorkbenchSpecialTools");
+            HelpMgr.registerComponent(this.helpBtn, "WorkbenchSpecialTools"); //$NON-NLS-1$
 
             showNextRecord();
 
@@ -170,7 +170,7 @@ public class GeoLocateResultsChooser extends CustomDialog
             showNextRecord();
         }
 
-        setTitle(baseTitle + ": " + (rowIndex+1) + " " + getResourceString("of") + " " + rowsAndResults.size());
+        setTitle(baseTitle + ": " + (rowIndex+1) + " " + getResourceString("GeoLocateResultsChooser.OF") + " " + rowsAndResults.size()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         
         try
         {
@@ -185,7 +185,7 @@ public class GeoLocateResultsChooser extends CustomDialog
         }
         catch (Exception e)
         {
-            UIRegistry.getStatusBar().setErrorMessage("Error while displaying GEOLocate results", e); // TODO i18n
+            UIRegistry.getStatusBar().setErrorMessage(getResourceString("GeoLocateResultsChooser.ERROR_DISPLAY_GL_RESULTS"), e);//$NON-NLS-1$
             super.setVisible(false);
         }
     }

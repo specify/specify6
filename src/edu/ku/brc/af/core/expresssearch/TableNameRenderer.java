@@ -45,7 +45,7 @@ public class TableNameRenderer extends DefaultListCellRenderer
         // Don't paint behind the component
         this.setOpaque(false);
         this.iconSize  = iconSize;
-        this.blankIcon = IconManager.getIcon("Blank", iconSize);
+        this.blankIcon = IconManager.getIcon("Blank", iconSize); //$NON-NLS-1$
     }
 
     public Component getListCellRendererComponent(JList list,

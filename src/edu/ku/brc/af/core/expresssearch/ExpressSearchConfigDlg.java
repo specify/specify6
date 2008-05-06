@@ -87,7 +87,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
     public static String ASCENDING  = null;
     public static String DESCENDING = null;
     
-    protected static final String[] TAB_HELP_CONTEXT = {"ESConfigSerachFields", "ESConfigResultsOrdering", "ESConfigRelatedTables"};
+    protected static final String[] TAB_HELP_CONTEXT = {"ESConfigSerachFields", "ESConfigResultsOrdering", "ESConfigRelatedTables"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     
     protected JTabbedPane                    tabbedPane;
     protected JList                          tableList;
@@ -113,9 +113,9 @@ public class ExpressSearchConfigDlg extends CustomDialog
     
     static
     {
-        NONE       = getResourceString("ES_NONE");
-        ASCENDING  = getResourceString("ES_ASCENDING");
-        DESCENDING = getResourceString("ES_DESCENDING");
+        NONE       = getResourceString("ExpressSearchConfigDlg.ES_NONE"); //$NON-NLS-1$
+        ASCENDING  = getResourceString("ExpressSearchConfigDlg.ES_ASCENDING"); //$NON-NLS-1$
+        DESCENDING = getResourceString("ExpressSearchConfigDlg.ES_DESCENDING"); //$NON-NLS-1$
     }
     
     /**
@@ -123,9 +123,9 @@ public class ExpressSearchConfigDlg extends CustomDialog
      */
     public ExpressSearchConfigDlg()
     {
-        super((Frame)UIRegistry.getTopWindow(), getResourceString("ES_DLG_TITLE"), true, OKHELP, null);
+        super((Frame)UIRegistry.getTopWindow(), getResourceString("ExpressSearchConfigDlg.ES_DLG_TITLE"), true, OKHELP, null); //$NON-NLS-1$
         
-        setOkLabel(getResourceString("Close"));
+        setOkLabel(getResourceString("ExpressSearchConfigDlg.7")); //$NON-NLS-1$
         
         /*
         Locale german = new Locale("de", "", "");
@@ -243,7 +243,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
         
         tableList = new JList(tiRenderList);
         TableNameRenderer nameRender = new TableNameRenderer(IconManager.IconSize.Std24);
-        nameRender.setUseIcon("PlaceHolder");
+        nameRender.setUseIcon("PlaceHolder"); //$NON-NLS-1$
         tableList.setCellRenderer(nameRender);
         
         //----------------------------------------
@@ -274,7 +274,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
         searchFieldsTable.setRowHeight(createComboBox().getPreferredSize().height);
         col.setCellRenderer(new MyComboBoxRenderer(values));
         
-        orderUpBtn = createIconBtn("ReorderUp", "WB_MOVE_UP", new ActionListener()
+        orderUpBtn = createIconBtn("ReorderUp", "WB_MOVE_UP", new ActionListener() //$NON-NLS-1$ //$NON-NLS-2$
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -284,7 +284,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
                 updateEnabledState();
             }
         });
-        orderDwnBtn = createIconBtn("ReorderDown", "WB_MOVE_DOWN", new ActionListener()
+        orderDwnBtn = createIconBtn("ReorderDown", "WB_MOVE_DOWN", new ActionListener() //$NON-NLS-1$ //$NON-NLS-2$
         {
             public void actionPerformed(ActionEvent ae)
             {
@@ -297,16 +297,16 @@ public class ExpressSearchConfigDlg extends CustomDialog
         
         // Build Layout
 
-        PanelBuilder    outer   = new PanelBuilder(new FormLayout("p,6px,f:max(250px;p):g", "p,2px,f:p:g"));
-        PanelBuilder    builder = new PanelBuilder(new FormLayout("f:p:g", "p,10px,f:p:g"));
+        PanelBuilder    outer   = new PanelBuilder(new FormLayout("p,6px,f:max(250px;p):g", "p,2px,f:p:g")); //$NON-NLS-1$ //$NON-NLS-2$
+        PanelBuilder    builder = new PanelBuilder(new FormLayout("f:p:g", "p,10px,f:p:g")); //$NON-NLS-1$ //$NON-NLS-2$
         CellConstraints cc      = new CellConstraints();
 
-        PanelBuilder innerBuilder = new PanelBuilder(new FormLayout("max(250px;p):g, 2px, p, 10px, max(250px;p):g", "p,2px,f:min(250px;p):g"));
+        PanelBuilder innerBuilder = new PanelBuilder(new FormLayout("max(250px;p):g, 2px, p, 10px, max(250px;p):g", "p,2px,f:min(250px;p):g")); //$NON-NLS-1$ //$NON-NLS-2$
 
-        innerBuilder.add(createI18NLabel("ES_SEARCHFIELDS",   SwingConstants.CENTER), cc.xy(1, 1));
-        innerBuilder.add(createI18NLabel("ES_DISPLAYFIELDS",  SwingConstants.CENTER), cc.xy(5, 1));
+        innerBuilder.add(createI18NLabel("ExpressSearchConfigDlg.ES_SEARCHFIELDS",   SwingConstants.CENTER), cc.xy(1, 1)); //$NON-NLS-1$
+        innerBuilder.add(createI18NLabel("ExpressSearchConfigDlg.ES_DISPLAYFIELDS",  SwingConstants.CENTER), cc.xy(5, 1)); //$NON-NLS-1$
         
-        PanelBuilder upDownPanel = new PanelBuilder(new FormLayout("p", "f:p:g, p, 2px, p, f:p:g"));        
+        PanelBuilder upDownPanel = new PanelBuilder(new FormLayout("p", "f:p:g, p, 2px, p, f:p:g"));         //$NON-NLS-1$ //$NON-NLS-2$
         upDownPanel.add(orderUpBtn,       cc.xy(1, 2));
         upDownPanel.add(orderDwnBtn,      cc.xy(1, 4));
         innerBuilder.add(upDownPanel.getPanel(), cc.xy(3, 3));
@@ -364,9 +364,9 @@ public class ExpressSearchConfigDlg extends CustomDialog
             }
         });
 
-        outer.add(createI18NLabel("ES_AVAIL_TABLES", SwingConstants.CENTER), cc.xy(1,1));
+        outer.add(createI18NLabel("ExpressSearchConfigDlg.ES_AVAIL_TABLES", SwingConstants.CENTER), cc.xy(1,1)); //$NON-NLS-1$
         outer.add(builder.getPanel(), cc.xy(1,3));
-        outer.add(createI18NLabel("ES_FLDS_TO_SEARCH", SwingConstants.CENTER), cc.xy(3,1));
+        outer.add(createI18NLabel("ExpressSearchConfigDlg.ES_FLDS_TO_SEARCH", SwingConstants.CENTER), cc.xy(3,1)); //$NON-NLS-1$
         outer.add(sp, cc.xy(3,3));
         
         orderPanel = new ESTableOrderPanel(config);
@@ -391,9 +391,9 @@ public class ExpressSearchConfigDlg extends CustomDialog
         
         // Create TabbedPane and add tabs
         tabbedPane = new JTabbedPane();
-        tabbedPane.add(getResourceString("ES_SEARCH_FIELDS"), outer.getPanel());
-        tabbedPane.add(getResourceString("ES_RELATED_TABLES"), new RelatedTableInfoPanel(config));
-        tabbedPane.add(getResourceString("ES_RESULTS_ORDERING"), orderPanel);
+        tabbedPane.add(getResourceString("ExpressSearchConfigDlg.ES_SEARCH_FIELDS"), outer.getPanel()); //$NON-NLS-1$
+        tabbedPane.add(getResourceString("ExpressSearchConfigDlg.ES_RELATED_TABLES"), new RelatedTableInfoPanel(config)); //$NON-NLS-1$
+        tabbedPane.add(getResourceString("ExpressSearchConfigDlg.ES_RESULTS_ORDERING"), orderPanel); //$NON-NLS-1$
 
         tabbedPane.addChangeListener(new ChangeListener() {
             //@Override
@@ -405,7 +405,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
         
         JPanel tPanel = new JPanel(new BorderLayout());
         tPanel.setBorder(BorderFactory.createEmptyBorder(4, 0, 4, 0));
-        tPanel.add(createI18NLabel("ES_EXPLAIN", SwingConstants.CENTER), BorderLayout.NORTH);
+        tPanel.add(createI18NLabel("ExpressSearchConfigDlg.ES_EXPLAIN", SwingConstants.CENTER), BorderLayout.NORTH); //$NON-NLS-1$
         tPanel.add(tabbedPane, BorderLayout.CENTER);
         
         contentPanel = tPanel;
@@ -606,7 +606,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
         // This is for testing only RELEASE
         try
         {
-            FileUtils.writeStringToFile(new File("esconfig.xml"), xstream.toXML(config));
+            FileUtils.writeStringToFile(new File("esconfig.xml"), xstream.toXML(config)); //$NON-NLS-1$
             //System.out.println(xstream.toXML(config));
             
         } catch (IOException ex)
@@ -626,7 +626,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
     {
         public int getSize() { return toBeSearchedVect.size(); }
         public Object getElementAt(int index) { return toBeSearchedVect.get(index); }
-        public void fireChange(@SuppressWarnings("unused")final DBFieldInfo field)
+        public void fireChange(@SuppressWarnings("unused")final DBFieldInfo field) //$NON-NLS-1$
         {
             fireContentsChanged(this, 0, toBeSearchedVect.size());
         }
@@ -641,7 +641,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
         
         public SearchFieldsTableModel()
         {
-            String[] heads = {"Search", "ES_FIELDNAME", "ES_SORTING"};
+            String[] heads = {"ExpressSearchConfigDlg.SEARCH","ExpressSearchConfigDlg.ES_FIELDNAME", "ExpressSearchConfigDlg.ES_SORTING"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             for (String key : heads)
             {
                 headings.add(getResourceString(key));
@@ -744,7 +744,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
                     }
                 }
             }
-            return "";
+            return ""; //$NON-NLS-1$
         }
 
         /* (non-Javadoc)

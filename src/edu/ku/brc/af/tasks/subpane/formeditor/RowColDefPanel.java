@@ -76,7 +76,7 @@ public class RowColDefPanel extends JPanel
 
         DefaultListModel model = (DefaultListModel)itemList.getModel();
         int cnt = 0;
-        for (String tok : StringUtils.split(item.getDefStr(), ","))
+        for (String tok : StringUtils.split(item.getDefStr(), ",")) //$NON-NLS-1$
         {
             JGoodiesDefItem jgItem = new JGoodiesDefItem(tok, isRow);
             jgItem.setInUse(cnt < numInUse);
@@ -90,7 +90,7 @@ public class RowColDefPanel extends JPanel
                             final boolean isRow)
     {
         CellConstraints cc = new CellConstraints();
-        PanelBuilder pb = new PanelBuilder(new FormLayout("max(125px;p):g,16px,p", "p,2px,p,2px,p:g"));
+        PanelBuilder pb = new PanelBuilder(new FormLayout("max(125px;p):g,16px,p", "p,2px,p,2px,p:g")); //$NON-NLS-1$ //$NON-NLS-2$
 
         propsPanel = new DefItemPropPanel(numInUse, isRow);
         
@@ -116,11 +116,11 @@ public class RowColDefPanel extends JPanel
         itemList = new JList(new DefaultListModel());
         itemList.setCellRenderer(new DefItemRenderer(IconManager.IconSize.Std16));
         JScrollPane sp = new JScrollPane(itemList, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        pb.addSeparator((isRow ? "Row" : "Column") + " Items", cc.xy(1, 1));
+        pb.addSeparator((isRow ? "Row" : "Column") + " Items", cc.xy(1, 1)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         pb.add(sp, cc.xy(1,3));
         pb.add(controlPanel, cc.xy(1,5));
         
-        pb.addSeparator("Properties", cc.xy(3, 1));
+        pb.addSeparator("Properties", cc.xy(3, 1)); //$NON-NLS-1$
         pb.add(propsPanel, cc.xywh(3,3,1,3));
 
         
@@ -140,7 +140,7 @@ public class RowColDefPanel extends JPanel
     public void addItem()
     {
         DefaultListModel model = (DefaultListModel)itemList.getModel();
-        JGoodiesDefItem item = new JGoodiesDefItem("p", isRow);
+        JGoodiesDefItem item = new JGoodiesDefItem("p", isRow); //$NON-NLS-1$
         item.setInUse(false);
         items.add(item);
         model.addElement(item);
@@ -181,7 +181,7 @@ public class RowColDefPanel extends JPanel
         
         for (JGoodiesDefItem item : items)
         {
-            if (sb.length() > 0) sb.append(",");
+            if (sb.length() > 0) sb.append(","); //$NON-NLS-1$
             sb.append(item.toString());
         }
         

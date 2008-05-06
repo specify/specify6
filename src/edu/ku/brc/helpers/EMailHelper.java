@@ -18,7 +18,6 @@ import static edu.ku.brc.ui.UIHelper.createCheckBox;
 import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIHelper.createPasswordField;
 import static edu.ku.brc.ui.UIHelper.createTextField;
-import static edu.ku.brc.ui.UIHelper.setControlSize;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 import static org.apache.commons.lang.StringUtils.isNotEmpty;
 
@@ -77,15 +76,15 @@ public class EMailHelper
 
     public enum AccountType {Unknown, POP3, IMAP}
 
-    public static final String POP3_STR   = "POP3";
-    public static final String IMAP_STR   = "IMAP";
-    public static final String PLAIN_TEXT = "text/plain";
-    public static final String HTML_TEXT  = "text/html";
+    public static final String POP3_STR   = "POP3"; //$NON-NLS-1$
+    public static final String IMAP_STR   = "IMAP"; //$NON-NLS-1$
+    public static final String PLAIN_TEXT = "text/plain"; //$NON-NLS-1$
+    public static final String HTML_TEXT  = "text/html"; //$NON-NLS-1$
 
     protected static final EMailHelper instance     = new EMailHelper();
 
     // Data Members
-    protected String            lastErrorMsg = "";
+    protected String            lastErrorMsg = ""; //$NON-NLS-1$
     protected boolean           isDebugging  = true;
     protected List<MailBoxInfo> mailBoxCache = new ArrayList<MailBoxInfo>();
 
@@ -131,20 +130,20 @@ public class EMailHelper
         ArrayList<String> userAndPass = new ArrayList<String>();
         
         Properties props = System.getProperties();
-        props.put("mail.smtp.host", host);
-        props.put( "mail.smtp.auth", "true");
+        props.put("mail.smtp.host", host); //$NON-NLS-1$
+        props.put( "mail.smtp.auth", "true"); //$NON-NLS-1$ //$NON-NLS-2$
 
         Session session = Session.getInstance(props, null);
 
         session.setDebug(instance.isDebugging);
         if (instance.isDebugging)
         {
-            log.debug("Host:     " + host);
-            log.debug("UserName: " + userName);
-            log.debug("Password: " + password);
-            log.debug("From:     " + fromEMailAddr);
-            log.debug("To:       " + toEMailAddr);
-            log.debug("Subject:  " + subject);
+            log.debug("Host:     " + host); //$NON-NLS-1$
+            log.debug("UserName: " + userName); //$NON-NLS-1$
+            log.debug("Password: " + password); //$NON-NLS-1$
+            log.debug("From:     " + fromEMailAddr); //$NON-NLS-1$
+            log.debug("To:       " + toEMailAddr); //$NON-NLS-1$
+            log.debug("Subject:  " + subject); //$NON-NLS-1$
         }
 
 
@@ -154,9 +153,9 @@ public class EMailHelper
             MimeMessage msg = new MimeMessage(session);
 
             msg.setFrom(new InternetAddress(fromEMailAddr));
-            if (toEMailAddr.indexOf(",") > -1)
+            if (toEMailAddr.indexOf(",") > -1) //$NON-NLS-1$
             {
-                StringTokenizer st = new StringTokenizer(toEMailAddr, ",");
+                StringTokenizer st = new StringTokenizer(toEMailAddr, ","); //$NON-NLS-1$
                 InternetAddress[] address = new InternetAddress[st.countTokens()];
                 int i = 0;
                 while (st.hasMoreTokens())
@@ -212,7 +211,7 @@ public class EMailHelper
             do
             {
                 cnt++;
-                SMTPTransport t = (SMTPTransport)session.getTransport("smtp");
+                SMTPTransport t = (SMTPTransport)session.getTransport("smtp"); //$NON-NLS-1$
                 try {
                     t.connect(host, userName, password);
     
@@ -228,11 +227,11 @@ public class EMailHelper
                     if ((ex = mex.getNextException()) != null) 
                     {
                       ex.printStackTrace();
-                      instance.lastErrorMsg = instance.lastErrorMsg + ", " + ex.toString();
+                      instance.lastErrorMsg = instance.lastErrorMsg + ", " + ex.toString(); //$NON-NLS-1$
                     }
                     
                     //wrong username or password, get new one
-                    if (mex.toString().equals("javax.mail.AuthenticationFailedException"))
+                    if (mex.toString().equals("javax.mail.AuthenticationFailedException")) //$NON-NLS-1$
                     {
                         fail = true;
                         userAndPass = askForUserAndPassword((Frame)UIRegistry.getTopWindow());
@@ -246,7 +245,7 @@ public class EMailHelper
                     }
                 } finally
                 {
-                     log.debug("Response: " + t.getLastServerResponse());
+                     log.debug("Response: " + t.getLastServerResponse()); //$NON-NLS-1$
                      t.close();
                 }
                 
@@ -261,7 +260,7 @@ public class EMailHelper
             if ((ex = mex.getNextException()) != null) 
             {
               ex.printStackTrace();
-              instance.lastErrorMsg = instance.lastErrorMsg + ", " + ex.toString();
+              instance.lastErrorMsg = instance.lastErrorMsg + ", " + ex.toString(); //$NON-NLS-1$
             }
             return false;
             
@@ -285,17 +284,17 @@ public class EMailHelper
      */
     public static String askForPassword(final Frame topframe)
     {
-        PanelBuilder    builder   = new PanelBuilder(new FormLayout("p,2px,p", "p,2px,p"));
+        PanelBuilder    builder   = new PanelBuilder(new FormLayout("p,2px,p", "p,2px,p")); //$NON-NLS-1$ //$NON-NLS-2$
         CellConstraints cc        = new CellConstraints();
-        JLabel          label     = createLabel(getResourceString("password")+":", SwingConstants.RIGHT);
+        JLabel          label     = createLabel(getResourceString("EMailHelper.PASSWORD")+":", SwingConstants.RIGHT); //$NON-NLS-1$ //$NON-NLS-2$
         JPasswordField  passField = createPasswordField(25);
-        JCheckBox       savePassword = createCheckBox(getResourceString("SAVE_PASSWORD"));
+        JCheckBox       savePassword = createCheckBox(getResourceString("EMailHelper.SAVE_PASSWORD")); //$NON-NLS-1$
 
         builder.add(label, cc.xy(1,1));
         builder.add(passField, cc.xy(3,1));
         builder.add(savePassword, cc.xy(3,3));
         JOptionPane.showConfirmDialog(topframe, builder.getPanel(), 
-                getResourceString("PASSWORD_TITLE"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+                getResourceString("EMailHelper.PASSWORD_TITLE"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE); //$NON-NLS-1$
        
         
         String passwordText = new String(passField.getPassword());
@@ -304,7 +303,7 @@ public class EMailHelper
             AppPreferences appPrefs = AppPreferences.getRemote();
             if (StringUtils.isNotEmpty(passwordText))
             {
-                appPrefs.put("settings.email.password", Encryption.encrypt(passwordText));
+                appPrefs.put("settings.email.password", Encryption.encrypt(passwordText)); //$NON-NLS-1$
             }
         }
 
@@ -322,15 +321,15 @@ public class EMailHelper
         //get remote prefs
         AppPreferences remotePrefs = AppPreferences.getRemote();
         //get remote password
-        String remoteUsername = remotePrefs.get("settings.email.username",null );
+        String remoteUsername = remotePrefs.get("settings.email.username",null ); //$NON-NLS-1$
         
-        PanelBuilder    builder   = new PanelBuilder(new FormLayout("p,2px,p", "p,2px,p,2px,p"));
+        PanelBuilder    builder   = new PanelBuilder(new FormLayout("p,2px,p", "p,2px,p,2px,p")); //$NON-NLS-1$ //$NON-NLS-2$
         CellConstraints cc        = new CellConstraints();
-        JLabel          plabel    = createLabel(getResourceString("password")+":", SwingConstants.RIGHT);
-        JLabel          ulabel    = createLabel(getResourceString("username")+":", SwingConstants.RIGHT);
+        JLabel          plabel    = createLabel(getResourceString("EMailHelper.PASSWORD")+":", SwingConstants.RIGHT); //$NON-NLS-1$ //$NON-NLS-2$
+        JLabel          ulabel    = createLabel(getResourceString("EMailHelper.USERNAME")+":", SwingConstants.RIGHT); //$NON-NLS-1$ //$NON-NLS-2$
         JPasswordField  passField = createPasswordField(25);
         JTextField      userField = createTextField(remoteUsername, 25);
-        JCheckBox       savePassword = createCheckBox(getResourceString("SAVE_PASSWORD"));
+        JCheckBox       savePassword = createCheckBox(getResourceString("EMailHelper.SAVE_PASSWORD")); //$NON-NLS-1$
         
         builder.add(ulabel, cc.xy(1,1));
         builder.add(userField, cc.xy(3,1));
@@ -339,7 +338,7 @@ public class EMailHelper
         builder.add(savePassword, cc.xy(3,5));
         
         Integer option = JOptionPane.showConfirmDialog(topframe, builder.getPanel(), 
-                getResourceString("PASSWORD_TITLE"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+                getResourceString("EMailHelper.PASSWORD_TITLE"), JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE); //$NON-NLS-1$
 
         String passwordText = new String(passField.getPassword());
         String userText     = new String(userField.getText());
@@ -349,7 +348,7 @@ public class EMailHelper
             
             if (StringUtils.isNotEmpty(passwordText))
             {
-                remotePrefs.put("settings.email.password", Encryption.encrypt(passwordText));
+                remotePrefs.put("settings.email.password", Encryption.encrypt(passwordText)); //$NON-NLS-1$
             }
         }
         
@@ -373,32 +372,32 @@ public class EMailHelper
     {
         AppPreferences appPrefs       = AppPreferences.getRemote();
         boolean        allOK          = true;
-        String[]       emailPrefNames = { "servername", "username", "password", "email"};
+        String[]       emailPrefNames = { "servername", "username", "password", "email"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         
         for (String pName : emailPrefNames)
         {
-            String key   = "settings.email."+pName;
-            String value = appPrefs.get(key, "");
-            if (StringUtils.isNotEmpty(value) || pName.equals("password"))
+            String key   = "settings.email."+pName; //$NON-NLS-1$
+            String value = appPrefs.get(key, ""); //$NON-NLS-1$
+            if (StringUtils.isNotEmpty(value) || pName.equals("password")) //$NON-NLS-1$
             {
                 emailPrefs.put(pName, value);
                 
             } else
             {
-                log.info("Key["+key+"] is empty");
+                log.info("Key["+key+"] is empty"); //$NON-NLS-1$ //$NON-NLS-2$
                 allOK = false;
                 
                 // XXX For Demo
                 if (true)
                 {
-                    emailPrefs.put("accountname", "IMAP");
-                    emailPrefs.put("servername",  "imap.ku.edu");
-                    emailPrefs.put("username",    "rods");
-                    emailPrefs.put("password",    appPrefs.get("settings.email.password", ""));
-                    emailPrefs.put("email",       "rods@ku.edu");
+                    emailPrefs.put("accountname", "IMAP"); //$NON-NLS-1$ //$NON-NLS-2$
+                    emailPrefs.put("servername",  "imap.ku.edu"); //$NON-NLS-1$ //$NON-NLS-2$
+                    emailPrefs.put("username",    "rods"); //$NON-NLS-1$ //$NON-NLS-2$
+                    emailPrefs.put("password",    appPrefs.get("settings.email.password", "")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    emailPrefs.put("email",       "rods@ku.edu"); //$NON-NLS-1$ //$NON-NLS-2$
                     for (String n : emailPrefs.keySet())
                     {
-                        appPrefs.put("settings.email."+n, emailPrefs.get(n));
+                        appPrefs.put("settings.email."+n, emailPrefs.get(n)); //$NON-NLS-1$
                     }
                     allOK = true;
                 }
@@ -471,13 +470,13 @@ public class EMailHelper
      */
     public static boolean hasEMailSettings()
     {
-        String usernameStr     = AppPreferences.getRemote().get("settings.email.username", null);
-        String passwordStr     = Encryption.decrypt(AppPreferences.getRemote().get("settings.email.password", null));
-        String emailStr        = AppPreferences.getRemote().get("settings.email.email", null);
-        String smtpStr         = AppPreferences.getRemote().get("settings.email.smtp", null);
-        String serverNameStr   = AppPreferences.getRemote().get("settings.email.servername", null);
-        String acctTypeStr     = AppPreferences.getRemote().get("settings.email.accounttype", null);
-        String localMailBoxStr = AppPreferences.getRemote().get("settings.email.localmailbox", null);
+        String usernameStr     = AppPreferences.getRemote().get("settings.email.username", null); //$NON-NLS-1$
+        String passwordStr     = Encryption.decrypt(AppPreferences.getRemote().get("settings.email.password", null)); //$NON-NLS-1$
+        String emailStr        = AppPreferences.getRemote().get("settings.email.email", null); //$NON-NLS-1$
+        String smtpStr         = AppPreferences.getRemote().get("settings.email.smtp", null); //$NON-NLS-1$
+        String serverNameStr   = AppPreferences.getRemote().get("settings.email.servername", null); //$NON-NLS-1$
+        String acctTypeStr     = AppPreferences.getRemote().get("settings.email.accounttype", null); //$NON-NLS-1$
+        String localMailBoxStr = AppPreferences.getRemote().get("settings.email.localmailbox", null); //$NON-NLS-1$
 
         return hasEMailSettings(usernameStr, passwordStr, emailStr, smtpStr, serverNameStr, acctTypeStr, localMailBoxStr);
     }
@@ -493,7 +492,7 @@ public class EMailHelper
     {
         try
         {
-            Folder inbox = store.getDefaultFolder().getFolder("Inbox");
+            Folder inbox = store.getDefaultFolder().getFolder("Inbox"); //$NON-NLS-1$
             inbox.open(Folder.READ_ONLY);
 
             javax.mail.Message[] messages = inbox.getMessages();
@@ -527,30 +526,30 @@ public class EMailHelper
 
         try
         {
-            String usernameStr     = AppPreferences.getRemote().get("settings.email.username", null);
-            String passwordStr     = Encryption.decrypt(AppPreferences.getRemote().get("settings.email.password", null));
-            String emailStr        = AppPreferences.getRemote().get("settings.email.email", null);
-            String smtpStr         = AppPreferences.getRemote().get("settings.email.smtp", null);
-            String serverNameStr   = AppPreferences.getRemote().get("settings.email.servername", null);
-            String acctTypeStr     = AppPreferences.getRemote().get("settings.email.accounttype", null);
-            String localMailBoxStr = AppPreferences.getRemote().get("settings.email.localmailbox", null);
+            String usernameStr     = AppPreferences.getRemote().get("settings.email.username", null); //$NON-NLS-1$
+            String passwordStr     = Encryption.decrypt(AppPreferences.getRemote().get("settings.email.password", null)); //$NON-NLS-1$
+            String emailStr        = AppPreferences.getRemote().get("settings.email.email", null); //$NON-NLS-1$
+            String smtpStr         = AppPreferences.getRemote().get("settings.email.smtp", null); //$NON-NLS-1$
+            String serverNameStr   = AppPreferences.getRemote().get("settings.email.servername", null); //$NON-NLS-1$
+            String acctTypeStr     = AppPreferences.getRemote().get("settings.email.accounttype", null); //$NON-NLS-1$
+            String localMailBoxStr = AppPreferences.getRemote().get("settings.email.localmailbox", null); //$NON-NLS-1$
 
             EMailHelper.AccountType acctType = EMailHelper.getAccountType(acctTypeStr);
 
             if (!hasEMailSettings(usernameStr, passwordStr, emailStr, smtpStr, serverNameStr, acctTypeStr, localMailBoxStr))
             {
-                JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow(), getResourceString("emailsetnotvalid"));
+                JOptionPane.showMessageDialog(UIRegistry.getMostRecentWindow(), getResourceString("EMailHelper.EMAIL_SET_NOT_VALID")); //$NON-NLS-1$
             }
 
             // Open Local Box if POP
-            if (acctTypeStr.equals(getResourceString("pop3")))
+            if (acctTypeStr.equals(getResourceString("EMailHelper.POP3"))) //$NON-NLS-1$
             {
                 try
                 {
                     Properties props = new Properties();
                     Session session = Session.getDefaultInstance(props);
 
-                    Store store = session.getStore(new URLName("mstor:"+localMailBoxStr));
+                    Store store = session.getStore(new URLName("mstor:"+localMailBoxStr)); //$NON-NLS-1$
                     store.connect();
                     status = getMessagesFromInbox(store, msgList); // closes everything
 
@@ -563,7 +562,7 @@ public class EMailHelper
                 }
             } else
             {
-                throw new RuntimeException("Unknown Account Type ["+acctTypeStr+"] must be POP3 or IMAP"); // XXX FIXME
+                throw new RuntimeException("Unknown Account Type ["+acctTypeStr+"] must be POP3 or IMAP"); // XXX FIXME //$NON-NLS-1$ //$NON-NLS-2$
             }
 
             // Try to download message from pop account
@@ -574,19 +573,22 @@ public class EMailHelper
 
                 if (acctType == AccountType.POP3)
                 {
-                    Store store = session.getStore("pop3");
+                    Store store = session.getStore("pop3"); //$NON-NLS-1$
                     store.connect(serverNameStr, usernameStr, passwordStr);
                     status = getMessagesFromInbox(store, msgList); // closes everything
 
                 } else if (acctType == AccountType.IMAP)
                 {
-                    Store store = session.getStore("imap");
+                    Store store = session.getStore("imap"); //$NON-NLS-1$
                     store.connect(serverNameStr, usernameStr, passwordStr);
                     status = getMessagesFromInbox(store, msgList); // closes everything
 
                 } else
                 {
-                    String msgStr = "Unknown Account Type ["+acctTypeStr+"] must be POP3 or IMAP"; // XXX I18N
+                    String msgStr = getResourceString("EMailHelper.UNKNOWN_ACCT_TYPE")// //$NON-NLS-1$
+                            + acctTypeStr + getResourceString("EMailHelper.ACCT_TYPE_MUST_BE"); // XXX// //$NON-NLS-2$
+                                                                                                
+                                                                                                
                     instance.lastErrorMsg  = msgStr;
                     throw new RuntimeException(msgStr); // XXX FIXME
                 }
@@ -702,16 +704,16 @@ public class EMailHelper
         
         Properties props = System.getProperties();
         
-        props.put("mail.smtp.host", host);
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.port", "587");
-        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.host", host); //$NON-NLS-1$
+        props.put("mail.smtp.auth", "true"); //$NON-NLS-1$ //$NON-NLS-2$
+        props.put("mail.smtp.port", "587"); //$NON-NLS-1$ //$NON-NLS-2$
+        props.put("mail.smtp.starttls.enable", "true"); //$NON-NLS-1$ //$NON-NLS-2$
         
         boolean usingSSL = false;
         if (usingSSL)
         {
-            props.put("mail.smtps.port", "587");
-            props.put("mail.smtp.starttls.enable", "true");
+            props.put("mail.smtps.port", "587"); //$NON-NLS-1$ //$NON-NLS-2$
+            props.put("mail.smtp.starttls.enable", "true"); //$NON-NLS-1$ //$NON-NLS-2$
             
         }
 
@@ -720,12 +722,12 @@ public class EMailHelper
         session.setDebug(instance.isDebugging);
         if (instance.isDebugging)
         {
-            log.debug("Host:     " + host);
-            log.debug("UserName: " + userName);
-            log.debug("Password: " + password);
-            log.debug("From:     " + fromEMailAddr);
-            log.debug("To:       " + toEMailAddr);
-            log.debug("Subject:  " + subject);
+            log.debug("Host:     " + host); //$NON-NLS-1$
+            log.debug("UserName: " + userName); //$NON-NLS-1$
+            log.debug("Password: " + password); //$NON-NLS-1$
+            log.debug("From:     " + fromEMailAddr); //$NON-NLS-1$
+            log.debug("To:       " + toEMailAddr); //$NON-NLS-1$
+            log.debug("Subject:  " + subject); //$NON-NLS-1$
         }
 
 
@@ -735,9 +737,9 @@ public class EMailHelper
             MimeMessage msg = new MimeMessage(session);
 
             msg.setFrom(new InternetAddress(fromEMailAddr));
-            if (toEMailAddr.indexOf(",") > -1)
+            if (toEMailAddr.indexOf(",") > -1) //$NON-NLS-1$
             {
-                StringTokenizer st = new StringTokenizer(toEMailAddr, ",");
+                StringTokenizer st = new StringTokenizer(toEMailAddr, ","); //$NON-NLS-1$
                 InternetAddress[] address = new InternetAddress[st.countTokens()];
                 int i = 0;
                 while (st.hasMoreTokens())
@@ -793,7 +795,7 @@ public class EMailHelper
             do
             {
                 cnt++;
-                SMTPTransport t = (SMTPTransport)session.getTransport("smtp");
+                SMTPTransport t = (SMTPTransport)session.getTransport("smtp"); //$NON-NLS-1$
                 try 
                 {
                     t.connect(host, userName, password);
@@ -810,11 +812,11 @@ public class EMailHelper
                     if ((ex = mex.getNextException()) != null) 
                     {
                       ex.printStackTrace();
-                      instance.lastErrorMsg = instance.lastErrorMsg + ", " + ex.toString();
+                      instance.lastErrorMsg = instance.lastErrorMsg + ", " + ex.toString(); //$NON-NLS-1$
                     }
                     
                     //wrong username or password, get new one
-                    if (mex.toString().equals("javax.mail.AuthenticationFailedException"))
+                    if (mex.toString().equals("javax.mail.AuthenticationFailedException")) //$NON-NLS-1$
                     {
                         fail = true;
                         userAndPass = askForUserAndPassword((Frame)UIRegistry.getTopWindow());
@@ -832,7 +834,7 @@ public class EMailHelper
                 finally
                 {
     
-                     log.debug("Response: " + t.getLastServerResponse());
+                     log.debug("Response: " + t.getLastServerResponse()); //$NON-NLS-1$
                      t.close();
                 }
             } while (fail && cnt < 6);
@@ -846,7 +848,7 @@ public class EMailHelper
             if ((ex = mex.getNextException()) != null) 
             {
               ex.printStackTrace();
-              instance.lastErrorMsg = instance.lastErrorMsg + ", " + ex.toString();
+              instance.lastErrorMsg = instance.lastErrorMsg + ", " + ex.toString(); //$NON-NLS-1$
             }
             return false;
             
@@ -910,9 +912,9 @@ public class EMailHelper
     public static boolean isGmailEmail()
     {
         
-         String smtpStr  = AppPreferences.getRemote().get("settings.email.smtp", null);
+         String smtpStr  = AppPreferences.getRemote().get("settings.email.smtp", null); //$NON-NLS-1$
          
-         if (StringUtils.isNotEmpty(smtpStr) && smtpStr.equals("smtp.gmail.com"))
+         if (StringUtils.isNotEmpty(smtpStr) && smtpStr.equals("smtp.gmail.com")) //$NON-NLS-1$
          {
              return true;
          }

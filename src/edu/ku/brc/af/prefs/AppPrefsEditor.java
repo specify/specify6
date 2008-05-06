@@ -38,6 +38,7 @@ import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * Allows user to edit a properties file
@@ -83,11 +84,11 @@ public class AppPrefsEditor extends JPanel implements TableModelListener, ListSe
         table.setRowSelectionAllowed(true);
         table.setColumnSelectionAllowed(false);
         
-        addBtn    = UIHelper.createButton("Add Property");
-        removeBtn = UIHelper.createButton("Remove Property");
+        addBtn    = UIHelper.createButton(UIRegistry.getResourceString("AppPrefsEditor.ADD_PROPERTY")); //$NON-NLS-1$
+        removeBtn = UIHelper.createButton(UIRegistry.getResourceString("AppPrefsEditor.REMOVE_PROPERTY")); //$NON-NLS-1$
         removeBtn.setEnabled(false);
         
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g,p,f:p:g", "p,10px"));
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g,p,f:p:g,p,f:p:g", "p,10px")); //$NON-NLS-1$ //$NON-NLS-2$
         CellConstraints cc = new CellConstraints();
         pb.add(addBtn, cc.xy(2, 1));
         pb.add(removeBtn, cc.xy(4, 1));
@@ -134,7 +135,7 @@ public class AppPrefsEditor extends JPanel implements TableModelListener, ListSe
     
     protected void addItem()
     {
-        String newKey = "New Item" + items.size();
+        String newKey = "New Item" + items.size(); //$NON-NLS-1$
         items.add(newKey);
         model.fireChange();
         table.repaint();
@@ -197,14 +198,14 @@ public class AppPrefsEditor extends JPanel implements TableModelListener, ListSe
         public Object getValueAt(int row, int column)
         {
             String key = rowData.get(row);
-            return column == 0 ? key : appPrefs.get(key, "");
+            return column == 0 ? key : appPrefs.get(key, ""); //$NON-NLS-1$
         }
 
         public boolean isCellEditable(int row, int column)
         {
             if (column == 0)
             {
-                return rowData.get(row).startsWith("New Item");
+                return rowData.get(row).startsWith("New Item"); //$NON-NLS-1$
             }
             return true;
         }

@@ -44,7 +44,7 @@ import edu.ku.brc.ui.forms.persist.ViewSetIFace;
  */
 public abstract class AppContextMgr
 {
-    public static final String factoryName = "edu.ku.brc.af.core.AppContextMgrFactory";
+    public static final String factoryName = "edu.ku.brc.af.core.AppContextMgrFactory"; //$NON-NLS-1$
     
     public enum CONTEXT_STATUS {OK, Error, Ignore, Initial}
     
@@ -239,7 +239,7 @@ public abstract class AppContextMgr
                  
             } catch (Exception e) 
             {
-                InternalError error = new InternalError("Can't instantiate AppContextMgr factory " + factoryNameStr);
+                InternalError error = new InternalError("Can't instantiate AppContextMgr factory " + factoryNameStr); //$NON-NLS-1$
                 error.initCause(e);
                 throw error;
             }

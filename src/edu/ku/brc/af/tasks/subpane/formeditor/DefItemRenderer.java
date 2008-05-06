@@ -41,10 +41,10 @@ public class DefItemRenderer implements ListCellRenderer
     public DefItemRenderer(final IconManager.IconSize iconSize) 
     {
         this.iconSize  = iconSize;
-        this.blankIcon = IconManager.getIcon("BlankIcon", iconSize);
+        this.blankIcon = IconManager.getIcon("BlankIcon", iconSize); //$NON-NLS-1$
 
         this.iconLabel = new JLabel(blankIcon);
-        this.label     = createLabel("  ");
+        this.label     = createLabel("  "); //$NON-NLS-1$
         
         panel = new JPanel(new BorderLayout());
         panel.add(iconLabel, BorderLayout.WEST);
@@ -60,7 +60,7 @@ public class DefItemRenderer implements ListCellRenderer
                                                   boolean chf)    // the list and the cell have the focus
     {
         JGoodiesDefItem item = (JGoodiesDefItem)value;
-        ImageIcon icon = item.isInUse() ? IconManager.getIcon("Checkmark", iconSize) : blankIcon;
+        ImageIcon icon = item.isInUse() ? IconManager.getIcon("Checkmark", iconSize) : blankIcon; //$NON-NLS-1$
         iconLabel.setIcon(icon != null ? icon : blankIcon);
         
         if (iss) {

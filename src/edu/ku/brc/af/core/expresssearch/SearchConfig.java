@@ -95,30 +95,30 @@ public class SearchConfig
     public static void configXStream(final XStream xstream)
     {
         // Aliases
-        xstream.alias("search",       SearchConfig.class);
-        xstream.alias("searchtable",  SearchTableConfig.class);
-        xstream.alias("searchfield",  SearchFieldConfig.class);
-        xstream.alias("displayfield", DisplayFieldConfig.class);
-        xstream.alias("relatedquery", RelatedQuery.class);
+        xstream.alias("search",       SearchConfig.class); //$NON-NLS-1$
+        xstream.alias("searchtable",  SearchTableConfig.class); //$NON-NLS-1$
+        xstream.alias("searchfield",  SearchFieldConfig.class); //$NON-NLS-1$
+        xstream.alias("displayfield", DisplayFieldConfig.class); //$NON-NLS-1$
+        xstream.alias("relatedquery", RelatedQuery.class); //$NON-NLS-1$
         
-        xstream.aliasAttribute(RelatedQuery.class, "isActive", "isactive");
+        xstream.aliasAttribute(RelatedQuery.class, "isActive", "isactive"); //$NON-NLS-1$ //$NON-NLS-2$
         
         // Things to omit
-        xstream.omitField(SearchConfig.class,       "searcher");
+        xstream.omitField(SearchConfig.class,       "searcher"); //$NON-NLS-1$
         
-        xstream.omitField(SearchFieldConfig.class,  "isInUse");
-        xstream.omitField(SearchFieldConfig.class,  "fieldInfo");
-        xstream.omitField(SearchFieldConfig.class,  "stc");
+        xstream.omitField(SearchFieldConfig.class,  "isInUse"); //$NON-NLS-1$
+        xstream.omitField(SearchFieldConfig.class,  "fieldInfo"); //$NON-NLS-1$
+        xstream.omitField(SearchFieldConfig.class,  "stc"); //$NON-NLS-1$
         
-        xstream.omitField(DisplayFieldConfig.class, "isInUse");
-        xstream.omitField(DisplayFieldConfig.class, "fieldInfo");
-        xstream.omitField(DisplayFieldConfig.class, "stc");
+        xstream.omitField(DisplayFieldConfig.class, "isInUse"); //$NON-NLS-1$
+        xstream.omitField(DisplayFieldConfig.class, "fieldInfo"); //$NON-NLS-1$
+        xstream.omitField(DisplayFieldConfig.class, "stc"); //$NON-NLS-1$
         
-        xstream.omitField(RelatedQuery.class, "erti");
-        xstream.omitField(RelatedQuery.class, "isInUse");
-        xstream.omitField(RelatedQuery.class,  "tableInfo");
+        xstream.omitField(RelatedQuery.class, "erti"); //$NON-NLS-1$
+        xstream.omitField(RelatedQuery.class, "isInUse"); //$NON-NLS-1$
+        xstream.omitField(RelatedQuery.class,  "tableInfo"); //$NON-NLS-1$
 
-        xstream.omitField(SearchTableConfig.class,  "tableInfo");
+        xstream.omitField(SearchTableConfig.class,  "tableInfo"); //$NON-NLS-1$
     }
     
     /**
@@ -206,7 +206,7 @@ public class SearchConfig
             }
         } else
         {
-            log.error("Couldn't find table by name["+tableName+"]");
+            log.error("Couldn't find table by name["+tableName+"]"); //$NON-NLS-1$ //$NON-NLS-2$
         }
         return null;
     }
@@ -232,7 +232,7 @@ public class SearchConfig
             }
         } else
         {
-            log.error("Couldn't find table by name["+tableName+"]");
+            log.error("Couldn't find table by name["+tableName+"]"); //$NON-NLS-1$ //$NON-NLS-2$
         }
         return null;
     }
@@ -262,7 +262,7 @@ public class SearchConfig
         
         if (createWhenNotFound)
         {
-            DisplayFieldConfig dfc =  new DisplayFieldConfig(fieldName, "", Integer.MAX_VALUE);
+            DisplayFieldConfig dfc =  new DisplayFieldConfig(fieldName, "", Integer.MAX_VALUE); //$NON-NLS-1$
             dfc.setInUse(false);
             if (searchTableConfig != null)
             {
@@ -390,7 +390,7 @@ public class SearchConfig
             }
         } else
         {
-            log.error("Couldn't find table by name["+tableName+"]");
+            log.error("Couldn't find table by name["+tableName+"]"); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 
@@ -430,7 +430,7 @@ public class SearchConfig
             }
         } else
         {
-            log.error("Couldn't find table by name["+tableName+"]");
+            log.error("Couldn't find table by name["+tableName+"]"); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
     

@@ -45,7 +45,7 @@ public class MenuItemPropertyChangeListener implements PropertyChangeListener
             String text = (String) e.getNewValue();
             menuItem.setText(text);
             
-        } else if (propertyName.equals("enabled"))
+        } else if (propertyName.equals("enabled")) //$NON-NLS-1$
         {
             Boolean enabledState = (Boolean) e.getNewValue();
             menuItem.setEnabled(enabledState.booleanValue());

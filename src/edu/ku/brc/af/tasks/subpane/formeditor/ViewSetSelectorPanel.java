@@ -7,6 +7,7 @@
 package edu.ku.brc.af.tasks.subpane.formeditor;
 
 import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -143,7 +144,7 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
     /**
      * 
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked") //$NON-NLS-1$
     public ViewSetSelectorPanel(final BasicFormPreviewPanel previewPanel)
     {
         this.previewPanel = previewPanel;
@@ -164,16 +165,16 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
 //                usedColTypes.put(ct, true);
 //            }*/
 //        }
-        levelsVec.add("BackStop");
+        levelsVec.add("BackStop"); //$NON-NLS-1$
         
-        addBtn = UIHelper.createIconBtn("PlusSign", "", new ActionListener() {
+        addBtn = UIHelper.createIconBtn("PlusSign", "", new ActionListener() { //$NON-NLS-1$ //$NON-NLS-2$
             public void actionPerformed(ActionEvent arg0)
             {
                 addControl();
             }
         });
         
-        delBtn = UIHelper.createIconBtn("MinusSign", "", new ActionListener() {
+        delBtn = UIHelper.createIconBtn("MinusSign", "", new ActionListener() { //$NON-NLS-1$ //$NON-NLS-2$
             public void actionPerformed(ActionEvent arg0)
             {
                 delControl(TYPE.SelectedObj);
@@ -235,7 +236,7 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
             }
         };
         AddRemoveEditPanel saveControlPanel = new AddRemoveEditPanel(saveAL, null, null);
-        saveControlPanel.getAddBtn().setIcon(IconManager.getIcon("Save", IconManager.IconSize.Std16));
+        saveControlPanel.getAddBtn().setIcon(IconManager.getIcon("Save", IconManager.IconSize.Std16)); //$NON-NLS-1$
         saveControlPanel.getAddBtn().setEnabled(true);
         
         setLayout(new BorderLayout());
@@ -244,10 +245,10 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
         panel      = new EditorPropPanel(controlHash, subcontrolHash, null, true, this);
         //panel.setFormViewDef(null);
         
-        PanelBuilder pb = new PanelBuilder(new FormLayout("p,4px,p, 6px,10px,6px, p,6px,p, 6px,10px,6px, p,f:p:g", "p,2px,f:p:g,2px,p,10px,p,4px"));
+        PanelBuilder pb = new PanelBuilder(new FormLayout("p,4px,p, 6px,10px,6px, p,6px,p, 6px,10px,6px, p,f:p:g", "p,2px,f:p:g,2px,p,10px,p,4px")); //$NON-NLS-1$ //$NON-NLS-2$
         CellConstraints cc = new CellConstraints();
         
-        String[] labels = new String[] {"User Level", "ViewSets", " ", "Views", "AltViews", " ", "View Defs"};
+        String[] labels = new String[] {"User Level", "ViewSets", " ", "Views", "AltViews", " ", "View Defs"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
         int x = 1;
         for (String label : labels)
         {
@@ -303,19 +304,19 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
         //pb.add(createLabel(" "),     cc.xy(11, 5));
         pb.add(viewDefControlPanel, cc.xy(13, 5));
 
-        pb.addSeparator("View Def Editor", cc.xywh(1, 7, 13, 1));
+        pb.addSeparator("View Def Editor", cc.xywh(1, 7, 13, 1)); //$NON-NLS-1$
         
         add(pb.getPanel(), BorderLayout.NORTH);
         
-        pb = new PanelBuilder(new FormLayout("max(250px;p),4px,f:p:g", "t:p"));
+        pb = new PanelBuilder(new FormLayout("max(250px;p),4px,f:p:g", "t:p")); //$NON-NLS-1$ //$NON-NLS-2$
 
-        PanelBuilder inner = new PanelBuilder(new FormLayout("max(250px;p)", "t:p,2px,t:p"));
+        PanelBuilder inner = new PanelBuilder(new FormLayout("max(250px;p)", "t:p,2px,t:p")); //$NON-NLS-1$ //$NON-NLS-2$
         tree = new JTree();
         ((DefaultTreeModel)tree.getModel()).setRoot(null);
         sp   = new JScrollPane(tree);
         inner.add(sp, cc.xy(1, 1));
         
-        PanelBuilder btnPb = new PanelBuilder(new FormLayout("f:p:g,p,2px,p", "p"));
+        PanelBuilder btnPb = new PanelBuilder(new FormLayout("f:p:g,p,2px,p", "p")); //$NON-NLS-1$ //$NON-NLS-2$
         btnPb.add(delBtn, cc.xy(2,1));
         btnPb.add(addBtn, cc.xy(4,1));
         inner.add(btnPb.getPanel(), cc.xy(1, 3));
@@ -422,25 +423,25 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
         });
         
         XStream xstream = new XStream();
-        xstream.alias("control",       Control.class);
-        xstream.useAttributeFor(Control.class, "type");
-        xstream.useAttributeFor(Attr.class, "type");
-        xstream.useAttributeFor(Attr.class, "name");
-        xstream.useAttributeFor(Attr.class, "required");
-        xstream.useAttributeFor(Attr.class, "defaultValue");
-        xstream.aliasAttribute("default", "defaultValue");
+        xstream.alias("control",       Control.class); //$NON-NLS-1$
+        xstream.useAttributeFor(Control.class, "type"); //$NON-NLS-1$
+        xstream.useAttributeFor(Attr.class, "type"); //$NON-NLS-1$
+        xstream.useAttributeFor(Attr.class, "name"); //$NON-NLS-1$
+        xstream.useAttributeFor(Attr.class, "required"); //$NON-NLS-1$
+        xstream.useAttributeFor(Attr.class, "defaultValue"); //$NON-NLS-1$
+        xstream.aliasAttribute("default", "defaultValue"); //$NON-NLS-1$ //$NON-NLS-2$
         
-        xstream.alias("uicontrols",    Vector.class);
-        xstream.alias("attr",          Attr.class);
-        xstream.alias("param",         Param.class);
-        xstream.alias("subcontrol",    SubControl.class);
-        xstream.aliasAttribute("desc", "desc");
-        xstream.aliasAttribute(Attr.class, "values", "values");
-        xstream.useAttributeFor(SubControl.class, "type");
+        xstream.alias("uicontrols",    Vector.class); //$NON-NLS-1$
+        xstream.alias("attr",          Attr.class); //$NON-NLS-1$
+        xstream.alias("param",         Param.class); //$NON-NLS-1$
+        xstream.alias("subcontrol",    SubControl.class); //$NON-NLS-1$
+        xstream.aliasAttribute("desc", "desc"); //$NON-NLS-1$ //$NON-NLS-2$
+        xstream.aliasAttribute(Attr.class, "values", "values"); //$NON-NLS-1$ //$NON-NLS-2$
+        xstream.useAttributeFor(SubControl.class, "type"); //$NON-NLS-1$
         
         try
         {
-            controls = (Vector<Control>)xstream.fromXML(FileUtils.readFileToString(new File("UIControls.xml")));
+            controls = (Vector<Control>)xstream.fromXML(FileUtils.readFileToString(new File("UIControls.xml"))); //$NON-NLS-1$
             for (Control control : controls)
             {
                 controlHash.put(control.getType(), control);
@@ -562,7 +563,7 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
     {
         List<ControlIFace> list = getControlsList(true);
 
-        ToggleButtonChooserDlg<ControlIFace> dlg = new ToggleButtonChooserDlg<ControlIFace>((Frame)UIRegistry.getTopWindow(), "Choose A Control", list, ToggleButtonChooserPanel.Type.RadioButton);
+        ToggleButtonChooserDlg<ControlIFace> dlg = new ToggleButtonChooserDlg<ControlIFace>((Frame)UIRegistry.getTopWindow(), getResourceString("ViewSetSelectorPanel.CHOOSE_A_CONTROL"), list, ToggleButtonChooserPanel.Type.RadioButton); //$NON-NLS-1$
         dlg.setUseScrollPane(true);
         dlg.setVisible(true);
         
@@ -732,7 +733,7 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
         {
             Control  control  = (Control)selectedControl;
             
-            if (control.getType().equals("label"))
+            if (control.getType().equals("label")) //$NON-NLS-1$
             {
                 formCell = new FormCellLabel();
                 formCell.setIdent(Integer.toString(getNextId()));
@@ -760,9 +761,9 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
             SubControl  subControl  = (SubControl)selectedControl;
             
             FormCellField fcf = null;
-            if (subControl.getType().equals("combobox"))
+            if (subControl.getType().equals("combobox")) //$NON-NLS-1$
             {
-                fcf = new FormCellField(FormCell.CellType.field, Integer.toString(getNextId()), "", 1, 1);
+                fcf = new FormCellField(FormCell.CellType.field, Integer.toString(getNextId()), "", 1, 1); //$NON-NLS-1$
                 fcf.setUiType(FormCellFieldIFace.FieldType.combobox);
                 setDefaultDspUIType(fcf);
                 formCell = fcf;
@@ -785,7 +786,7 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
         
         if (!skip && formCell != null)
         {
-            CustomDialog propDlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), "Create", true, panel);
+            CustomDialog propDlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), getResourceString("ViewSetSelectorPanel.CREATE"), true, panel); //$NON-NLS-1$
             propDlg.createUI();
             //panel.getViewDefMultiView().getCurrentView().getValidator().addEnableItem(propDlg.getOkBtn());
             propDlg.pack();
@@ -842,7 +843,7 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
                     ((DefaultTreeModel)tree.getModel()).insertNodeInto(newNode, parentNode, position+1);
                 }
                 
-                System.out.println("******* ADDING ["+formCell.getIdent()+"]");
+                System.out.println("******* ADDING ["+formCell.getIdent()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
                 
                 idHash.put(formCell.getIdent(), true);
                 
@@ -1056,7 +1057,7 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
             
             if (treePath.getPathCount() == 1)
             {
-                panel.loadView("ViewDefProps", null);
+                panel.loadView("ViewDefProps", null); //$NON-NLS-1$
                 panel.setData(selectedViewDef);
                 
                 return;
@@ -1316,7 +1317,7 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
         previewPanel.setFormViewDef((ViewDef)viewDef);
         previewPanel.rebuild(mode == AltViewIFace.CreationMode.EDIT);
         
-        panel.loadView("ViewDefProps", null);
+        panel.loadView("ViewDefProps", null); //$NON-NLS-1$
         panel.setData(selectedViewDef);
         
         validate();
@@ -1340,7 +1341,7 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
             viewDefSelected(selectedView, selectedAltView.getViewDef(), selectedAltView.getMode());
             
             
-            panel.loadView("AltViewProps", null);
+            panel.loadView("AltViewProps", null); //$NON-NLS-1$
             panel.setData(selectedAltView);
             
             validate();
@@ -1406,7 +1407,7 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
     protected void buildTreeModel(Vector<ViewDefIFace> viewDefs)
     {
         DefaultTreeModel model = (DefaultTreeModel)tree.getModel();
-        DefaultMutableTreeNode root = new DefaultMutableTreeNode("ViewDefs");
+        DefaultMutableTreeNode root = new DefaultMutableTreeNode("ViewDefs"); //$NON-NLS-1$
         model.setRoot(root);
         
         for (ViewDefIFace vd : viewDefs)
@@ -1522,7 +1523,7 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
     {
         List<ControlIFace> list = getControlsList(true);
 
-        ToggleButtonChooserDlg<ControlIFace> dlg = new ToggleButtonChooserDlg<ControlIFace>((Frame)UIRegistry.getTopWindow(), "Choose A Control", list, ToggleButtonChooserPanel.Type.RadioButton);
+        ToggleButtonChooserDlg<ControlIFace> dlg = new ToggleButtonChooserDlg<ControlIFace>((Frame)UIRegistry.getTopWindow(), getResourceString("ViewSetSelectorPanel.CHOOSE_A_CONTROL"), list, ToggleButtonChooserPanel.Type.RadioButton); //$NON-NLS-1$
         dlg.setUseScrollPane(true);
         dlg.setVisible(true);
         
@@ -1547,7 +1548,7 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
     {
         if (selectedViewSet != null)
         {
-            File file = new File("viewset.xml");
+            File file = new File("viewset.xml"); //$NON-NLS-1$
             StringBuilder sb = new StringBuilder();
             selectedViewSet.toXML(sb);
             
@@ -1562,7 +1563,7 @@ public class ViewSetSelectorPanel extends JPanel implements PropertyChangeListen
                     if (viewDef instanceof FormViewDef)
                     {
                         FormViewDef fvd = (FormViewDef)viewDef;
-                        System.out.println(viewDef.getName()+" " + fvd.getRows().size());
+                        System.out.println(viewDef.getName()+" " + fvd.getRows().size()); //$NON-NLS-1$
                     }
                 }
                 

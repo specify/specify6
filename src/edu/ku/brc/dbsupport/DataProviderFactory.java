@@ -17,7 +17,7 @@ import java.security.PrivilegedAction;
  */
 public class DataProviderFactory
 {
-    protected static final String propName = "edu.ku.brc.dbsupport.DataProvider";
+    protected static final String propName = "edu.ku.brc.dbsupport.DataProvider"; //$NON-NLS-1$
     
     private static DataProviderIFace instance = null;
    
@@ -48,12 +48,12 @@ public class DataProviderFactory
                  
             } catch (Exception e) 
             {
-                InternalError error = new InternalError("Can't instantiate DataProviderFactory factory " + factoryName);
+                InternalError error = new InternalError("Can't instantiate DataProviderFactory factory " + factoryName); //$NON-NLS-1$
                 error.initCause(e);
                 throw error;
             }
         }
         
-        throw new InternalError("Can't instantiate DataProviderFactory factory becase " + propName + " has not been set.");
+        throw new InternalError("Can't instantiate DataProviderFactory factory becase " + propName + " has not been set."); //$NON-NLS-1$ //$NON-NLS-2$
     }
 }

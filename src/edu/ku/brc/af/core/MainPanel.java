@@ -28,7 +28,7 @@ import javax.swing.SwingConstants;
  * @author rods
  *
  */
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class MainPanel extends JSplitPane
 {
 

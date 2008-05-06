@@ -21,6 +21,8 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.log4j.Logger;
 
+import edu.ku.brc.ui.UIRegistry;
+
 /**
  * The BasicSpPermission (Specify Permission) extends BasicPermission to implement
  * permissions for the various Specify objects. An instance of this defines  
@@ -41,16 +43,16 @@ import org.apache.log4j.Logger;
  * </ul>
  */
 
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class BasicSpPermission extends BasicPermission
 {
     protected static final Logger log = Logger.getLogger(BasicSpPermission.class);
     //private Integer id;
     private String actions;
-    public static String view   = "view";
-    public static String modify = "modify";
-    public static String add    = "add";
-    public static String delete = "delete";
+    public static String view   = "view"; //$NON-NLS-1$
+    public static String modify = "modify"; //$NON-NLS-1$
+    public static String add    = "add"; //$NON-NLS-1$
+    public static String delete = "delete"; //$NON-NLS-1$
 
     /**
      * @param id
@@ -119,11 +121,11 @@ public class BasicSpPermission extends BasicPermission
     public String toString()
     {
         final StringBuffer buf = new StringBuffer();
-        buf.append("(name=");
+        buf.append("(name="); //$NON-NLS-1$
         buf.append(getName());
-        buf.append(", actions=");
+        buf.append(", actions="); //$NON-NLS-1$
         buf.append(getActions());
-        buf.append(")");
+        buf.append(")"); //$NON-NLS-1$
         return buf.toString();
     }
 

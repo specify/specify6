@@ -97,11 +97,11 @@ public class HTTPGetter implements Runnable
         GetMethod mthod = new GetMethod(url);
         //method.setQueryString("q=xxx");
 
-        log.debug("getting " + mthod.getURI());
+        log.debug("getting " + mthod.getURI()); //$NON-NLS-1$
         // execute the method
         httpClient.executeMethod(mthod);
         
-        log.debug("Len: "+mthod.getResponseContentLength());
+        log.debug("Len: "+mthod.getResponseContentLength()); //$NON-NLS-1$
         return iStream = mthod.getResponseBodyAsStream();
     }
     
@@ -135,44 +135,44 @@ public class HTTPGetter implements Runnable
         try
         {
 
-            log.debug("getting " + mthod.getURI());
+            log.debug("getting " + mthod.getURI()); //$NON-NLS-1$
             // execute the method
             httpClient.executeMethod(mthod);
 
-            System.out.println("Get executed");
+            System.out.println("Get executed"); //$NON-NLS-1$
             // get the response body as an array of bytes
             bytes = mthod.getResponseBody();
 
-            log.debug(bytes.length + " bytes read");
+            log.debug(bytes.length + " bytes read"); //$NON-NLS-1$
 
         } catch (ConnectException ce)
         {
-            log.error("Could not make HTTP connection.  ("
-                    + ce.toString() + ")");
+            log.error("Could not make HTTP connection.  (" //$NON-NLS-1$
+                    + ce.toString() + ")"); //$NON-NLS-1$
             status = ErrorCode.HttpError;
 
         } catch (HttpException he)
         {
-            log.error("Http problem making request.  ("
-                    + he.toString() + ")");
+            log.error("Http problem making request.  (" //$NON-NLS-1$
+                    + he.toString() + ")"); //$NON-NLS-1$
             status = ErrorCode.HttpError;
 
         } catch (IOException ioe)
         {
-            log.error("IO problem making request.  (" + ioe.toString()
-                    + ")");
+            log.error("IO problem making request.  (" + ioe.toString() //$NON-NLS-1$
+                    + ")"); //$NON-NLS-1$
             status = ErrorCode.IOError;
 
         } catch (Exception e)
         {
-            log.error("Error: " + e);
+            log.error("Error: " + e); //$NON-NLS-1$
             status = ErrorCode.Error;
 
         } finally
         {
             // always release the connection after we're done
             mthod.releaseConnection();
-            log.debug("Connection released");
+            log.debug("Connection released"); //$NON-NLS-1$
         }
         return bytes;
     }
