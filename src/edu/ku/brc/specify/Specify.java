@@ -1389,6 +1389,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
      */
     protected void doExit()
     {
+        boolean okToShutdown = true;
         try
         {
             if (AttachmentUtils.getAttachmentManager() != null)
@@ -1396,7 +1397,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 AttachmentUtils.getAttachmentManager().cleanup();
             }
             
-            if (SubPaneMgr.getInstance().aboutToShutdown())
+            okToShutdown = SubPaneMgr.getInstance().aboutToShutdown();
+            if (okToShutdown)
             {
         		log.info("Application shutdown");
         
@@ -1441,7 +1443,10 @@ public class Specify extends JPanel implements DatabaseLoginListener
             
         } finally
         {
-            System.exit(0);
+            if (okToShutdown)
+            {
+                System.exit(0);
+            }
         }
     }
 
