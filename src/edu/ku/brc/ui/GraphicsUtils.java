@@ -305,6 +305,7 @@ public class GraphicsUtils
      * @return
      */
     public static BufferedImage generateScaledImage(final BufferedImage bufImg, 
+                                                    @SuppressWarnings("unused")
                                                     final Object hintsArg,
                                                     final int size)
     {
@@ -312,8 +313,8 @@ public class GraphicsUtils
         int srcWidth  = sourceImage.getWidth();
         int srcHeight = sourceImage.getHeight();
         
-        double longSideForSource = (double) Math.max(srcWidth, srcHeight);
-        double longSideForDest   = (double) size;
+        double longSideForSource = Math.max(srcWidth, srcHeight);
+        double longSideForDest   = size;
         
         double multiplier = longSideForDest / longSideForSource;
         int destWidth = (int) (srcWidth * multiplier);
@@ -412,17 +413,33 @@ public class GraphicsUtils
      * @param scaledIconSize the new scaled size in pixels
      * @return the scaled icon
      */
-    public static Image getScaledImage(final ImageIcon icon, final int newMaxWidth, final int newMaxHeight)
+    public static Image getScaledImage(final ImageIcon icon, 
+                                       final int     newMaxWidth, 
+                                       final int     newMaxHeight, 
+                                       final boolean maintainRatio)
     {
         if (icon != null)
         {
-            int width  = newMaxWidth;
-            int height = newMaxHeight;
+            int dstWidth  = newMaxWidth;
+            int dstHeight = newMaxHeight;
+            
+            int srcWidth  = icon.getIconWidth();
+            int srcHeight = icon.getIconHeight();
                     
-            if ((width < 0) || (height < 0))
+            if ((dstWidth < 0) || (dstHeight < 0))
             {   //image is nonstd, revert to original size
-                width  = icon.getIconWidth();
-                height = icon.getIconHeight();
+                dstWidth  = icon.getIconWidth();
+                dstHeight = icon.getIconHeight();
+            }
+            
+            if (maintainRatio)
+            {
+                double longSideForSource = Math.max(srcWidth, srcHeight);
+                double longSideForDest   = Math.max(dstWidth, dstHeight);
+                
+                double multiplier = longSideForDest / longSideForSource;
+                dstWidth  = (int) (srcWidth * multiplier);
+                dstHeight = (int) (srcHeight * multiplier);
             }
             
             Image imgMemory = icon.getImage();
@@ -430,18 +447,14 @@ public class GraphicsUtils
             //make sure all pixels in the image were loaded
             imgMemory = new ImageIcon(imgMemory).getImage();
             
-            BufferedImage thumbImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+            BufferedImage thumbImage = new BufferedImage(dstWidth, dstHeight, BufferedImage.TYPE_INT_ARGB);
             
             Graphics2D    graphics2D = thumbImage.createGraphics();
             graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, 
                                         RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-            graphics2D.drawImage(imgMemory, 0, 0, 
-                                width, 
-                                height, null);
+            graphics2D.drawImage(imgMemory, 0, 0, dstWidth, dstHeight, 0, 0, srcWidth, srcHeight, null);
             graphics2D.dispose();
-            
-            imgMemory = thumbImage;
-            return imgMemory;
+            return thumbImage;
             
         }
         return null;

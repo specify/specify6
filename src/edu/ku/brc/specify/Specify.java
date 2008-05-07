@@ -87,6 +87,7 @@ import edu.ku.brc.af.prefs.AppPreferences;
 import edu.ku.brc.af.prefs.AppPrefsEditor;
 import edu.ku.brc.af.prefs.PreferencesDlg;
 import edu.ku.brc.af.tasks.BaseTask;
+import edu.ku.brc.af.tasks.StartUpTask;
 import edu.ku.brc.af.tasks.subpane.FormPane;
 import edu.ku.brc.dbsupport.CustomQueryFactory;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
@@ -198,7 +199,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private String               appName             = "Specify";
     private String               appVersion          = "6.0";
 
-    private String               appBuildVersion     = "200804221000 (SVN: 3935)";
+    private String               appBuildVersion     = "200805061130 (SVN: 4000)";
     
     protected static CacheManager cacheManager        = new CacheManager();
 
@@ -595,6 +596,15 @@ public class Specify extends JPanel implements DatabaseLoginListener
         
         setAppIcon(AppPreferences.getRemote().get("ui.formatting.user_icon_image", null));
         toolBar.add(appIcon);
+        
+        appIcon.addMouseListener(new MouseAdapter() 
+        {
+            //@Override
+            public void mouseClicked(MouseEvent e)
+            {
+                TaskMgr.getTask(StartUpTask.STARTUP).requestContext();
+            }
+        });
         
         CommandDispatcher.register("Preferences", new CommandListener() {
             public void doCommand(CommandAction cmdAction)

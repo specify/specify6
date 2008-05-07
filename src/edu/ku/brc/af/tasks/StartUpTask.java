@@ -16,14 +16,21 @@ package edu.ku.brc.af.tasks;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
+import java.awt.BorderLayout;
+import java.awt.Image;
 import java.util.List;
 import java.util.Vector;
+
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 import edu.ku.brc.af.core.MenuItemDesc;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.subpane.StatsPane;
+import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 
@@ -46,8 +53,8 @@ public class StartUpTask extends BaseTask
 {
     public static final String STARTUP = "Startup"; //$NON-NLS-1$
 
-    protected Vector<ToolBarDropDownBtn> tbList = new Vector<ToolBarDropDownBtn>();
-    protected SubPaneIFace blankPanel = null;
+    protected Vector<ToolBarDropDownBtn> tbList     = new Vector<ToolBarDropDownBtn>();
+    protected SubPaneIFace               blankPanel = null;
 
     // XXX Demo Only
     StatsPane statPane;
@@ -60,8 +67,18 @@ public class StartUpTask extends BaseTask
     public StartUpTask()
     {
         super(STARTUP, getResourceString(STARTUP));
-
         icon = IconManager.getImage(STARTUP, IconManager.IconSize.Std16);
+    }
+    
+    /**
+     * @return
+     */
+    public static JPanel createSplashPanel()
+    {
+        Image img = GraphicsUtils.getScaledImage(IconManager.getIcon("SpecifySplash"), 300, 500, true);
+        JPanel splashPanel = new JPanel(new BorderLayout());
+        splashPanel.add(new JLabel(new ImageIcon(img)), BorderLayout.CENTER);
+        return splashPanel;
     }
 
     /**
@@ -69,7 +86,7 @@ public class StartUpTask extends BaseTask
      */
     public void createStartUpStatPanel()
     {
-        StatsPane pane = new StatsPane(title, this, "StartUpPanel", true, null); //$NON-NLS-1$
+        StatsPane pane = new StatsPane(title, this, "StartUpPanel", true, null, createSplashPanel()); //$NON-NLS-1$
         SubPaneMgr.getInstance().removePane(blankPanel);
         SubPaneMgr.getInstance().addPane(pane);
         blankPanel = null;
@@ -90,7 +107,11 @@ public class StartUpTask extends BaseTask
     @Override
     public SubPaneIFace getStarterPane()
     {
-        return new StatsPane(title, this, "StartUpPanel", true, null); //$NON-NLS-1$
+        if (starterPane == null)
+        {
+            starterPane = new StatsPane(title, this, "StartUpPanel", true, null, createSplashPanel()); //$NON-NLS-1$
+        }
+        return starterPane;
     }
 
     //-------------------------------------------------------
@@ -103,16 +124,7 @@ public class StartUpTask extends BaseTask
     @Override
     public List<ToolBarItemDesc> getToolBarItems()
     {
-        Vector<ToolBarItemDesc> list = new Vector<ToolBarItemDesc>();
-
-        /*ToolBarDropDownBtn btn = createToolbarButton(name, "queryIt.gif", "search_hint");
-        if (tbList.size() == 0)
-        {
-            tbList.add(btn);
-        }
-        list.add(new ToolBarItemDesc(btn));
-        */
-        return list;
+        return new Vector<ToolBarItemDesc>();
 
     }
 
@@ -122,10 +134,7 @@ public class StartUpTask extends BaseTask
     @Override
     public List<MenuItemDesc> getMenuItems()
     {
-        Vector<MenuItemDesc> list = new Vector<MenuItemDesc>();
-
-        return list;
-
+        return new Vector<MenuItemDesc>();
     }
 
     /* (non-Javadoc)

@@ -33,15 +33,17 @@ public class GeographyTreeTask extends BaseTreeTask<Geography,GeographyTreeDef,G
 	public GeographyTreeTask()
 	{
         super(GEOGRAPHY, getResourceString(GEOGRAPHY));
-        treeDefClass = GeographyTreeDef.class;
-        icon = IconManager.getIcon(GEOGRAPHY,IconManager.IconSize.Std16);
         
-        menuItemText     = getResourceString("GeographyMenu");
-        menuItemMnemonic = getResourceString("GeographyMnemonic");
-        starterPaneText  = getResourceString("GeographyStarterPaneText");
+        treeClass         = Geography.class;
+        treeDefClass      = GeographyTreeDef.class;
+        icon              = IconManager.getIcon(GEOGRAPHY,IconManager.IconSize.Std16);
+        
+        menuItemText      = getResourceString("GeographyMenu");
+        menuItemMnemonic  = getResourceString("GeographyMnemonic");
+        starterPaneText   = getResourceString("GeographyStarterPaneText");
         commandTypeString = GEOGRAPHY;
         
-        businessRules = new GeographyBusRules();
+        businessRules     = new GeographyBusRules();
         
         initialize();
 	}

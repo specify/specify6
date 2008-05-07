@@ -8,9 +8,6 @@
       <box title="Pre-Catalog Works Benches" desccol="1" valcol="1">
 		<sql><![CDATA[SELECT name FROM workbench WHERE SpecifyUserID = SPECIFYUSERID]]></sql>
       </box>
-  </row>
-
-   <row>
       <box title="Loans">
         <item title="Items On Loan">
             <sql><statement><![CDATA[SELECT count(loanpreparationid) AS ItemsOnLoanCount FROM loanpreparation AS lpo INNER JOIN loan ON loan.loanid = lpo.loanid where quantityresolved < quantity and loan.CollectioMemeberId = COLMEMID AND (IsClosed = false or IsClosed is null)]]></statement></sql>
@@ -34,9 +31,6 @@
           (IsClosed = false or IsClosed is null) AND datediff(CURDATE(), currentduedate) > 0)  GROUP BY LoanNumber]]></sql>
 		  <link colid="6">OverdueLookup</link>
       </box>
-   </row>
-
-    <row>
       <box title="Data Entry">
         <item title="Cataloged in Last 7 Days">
             <sql><statement><![CDATA[select count(*) from collectionobject where DATE_SUB(CURDATE(), INTERVAL 7 DAY) <= TimestampCreated]]></statement></sql>

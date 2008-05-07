@@ -7,14 +7,10 @@
 		<sql><![CDATA[SELECT name FROM workbench WHERE SpecifyUserID = SPECIFYUSERID]]></sql>
       </box>
       -->
-      <box title="Workbench DataSets" valcol="1" valtitle="Workbench">
+        <box title="Workbench DataSets" valcol="1" valtitle="Workbench">
           <sql><![CDATA[SELECT Name,WorkbenchID FROM workbench WHERE SpecifyUserID = SPECIFYUSERID]]></sql>
           <command type="Workbench" action="WB.SelectedWorkbench" colid="2" class="edu.ku.brc.specify.datamodel.Workbench"/>
-      </box>
-  </row>
-    
-    
-    <row>
+        </box>
         <box title="Loans">
             <item title="Items On Loan">
                 <sql><statement><![CDATA[SELECT count(loanpreparationid) AS ItemsOnLoanCount FROM loanpreparation AS lpo 
@@ -39,8 +35,8 @@
                 <link>OpenLoans</link>
             </item>
         </box>
-    </row>   
-<!--
+      <!--    </row>   
+
    <row>
       <box title="Loans">
         <item title="Items On Loan">
@@ -61,9 +57,9 @@
 		  <link colid="6">OverdueLookup</link>
       </box>
    </row>
--->
 
-    <row>
+
+<row> -->
         <box title="Data Entry">
             <item title="Cataloged in Last 7 Days">
                 <sql type="custom" name="CatalogedLast7Days"/>

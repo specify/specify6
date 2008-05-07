@@ -300,7 +300,7 @@ public class FormattingPrefsPanel extends GenericPrefsPanel implements PrefsPane
                         {
                             if (icon.getIconWidth() >32 || icon.getIconHeight() > 32)
                             {
-                                Image img = GraphicsUtils.getScaledImage(icon, 32, 32);
+                                Image img = GraphicsUtils.getScaledImage(icon, 32, 32, false);
                                 if (img != null)
                                 {
                                     newIcon = new ImageIcon(img);

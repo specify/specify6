@@ -977,19 +977,18 @@ public class InteractionsTask extends BaseTask
         {
             return (String)invoiceReports.get(0).getMetaDataMap().get("file");
 
-        } else
+        }
+        
+        ChooseFromListDlg<AppResourceIFace> dlg = new ChooseFromListDlg<AppResourceIFace>((Frame)UIRegistry.getTopWindow(),
+                                                                                        getResourceString("ChooseInvoice"), 
+                                                                                        invoiceReports, 
+                                                                                        IconManager.getIcon(name, IconManager.IconSize.Std24));
+        dlg.setMultiSelect(false);
+        dlg.setModal(true);
+        dlg.setVisible(true);
+        if (!dlg.isCancelled())
         {
-            ChooseFromListDlg<AppResourceIFace> dlg = new ChooseFromListDlg<AppResourceIFace>((Frame)UIRegistry.getTopWindow(),
-                                                                                            getResourceString("ChooseInvoice"), 
-                                                                                            invoiceReports, 
-                                                                                            IconManager.getIcon(name, IconManager.IconSize.Std24));
-            dlg.setMultiSelect(false);
-            dlg.setModal(true);
-            dlg.setVisible(true);
-            if (!dlg.isCancelled())
-            {
-                return  (String)dlg.getSelectedObject().getMetaDataMap().get("file");
-            }
+            return  (String)dlg.getSelectedObject().getMetaDataMap().get("file");
         }
         return null;
     }

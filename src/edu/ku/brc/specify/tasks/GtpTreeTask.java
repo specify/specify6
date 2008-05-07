@@ -35,8 +35,9 @@ public class GtpTreeTask extends BaseTreeTask<GeologicTimePeriod,GeologicTimePer
 	{
         super(GTP, getResourceString(GTP));
         
-        treeDefClass = GeologicTimePeriodTreeDef.class;
-        icon         = IconManager.getIcon(GTP,IconManager.IconSize.Std16);
+        treeClass        = GeologicTimePeriod.class;
+        treeDefClass     = GeologicTimePeriodTreeDef.class;
+        icon             = IconManager.getIcon(GTP,IconManager.IconSize.Std16);
         
         menuItemText     = getResourceString("GeoTimePeriodMenu");
         menuItemMnemonic = getResourceString("GeoTimePeriodMnemonic");
@@ -62,7 +63,7 @@ public class GtpTreeTask extends BaseTreeTask<GeologicTimePeriod,GeologicTimePer
      * @see edu.ku.brc.specify.tasks.BaseTreeTask#isTreeOnByDefault()
      */
     @Override
-    protected boolean isTreeOnByDefault()
+    public boolean isTreeOnByDefault()
     {
         return Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.paleobotany) ||
                Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.invertpaleo) ||

@@ -25,6 +25,7 @@ import java.awt.Component;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 
 import org.apache.commons.lang.StringUtils;
@@ -79,12 +80,14 @@ public class StatsPane extends BaseSubPane
      * @param resourceName the name of the resource that contains the configuration
      * @param useSeparatorTitles indicates the group panels should use separator titles instead of boxes
      * @param bgColor the background color
+     * @param upperDisplayComp a display component for the upper half of the screen
     */
     public StatsPane(final String   name,
                      final Taskable task,
                      final String   resourceName,
                      final boolean  useSeparatorTitles,
-                     final Color    bgColor)
+                     final Color    bgColor,
+                     final JComponent upperDisplayComp)
     {
         super(name, task);
 
@@ -101,7 +104,7 @@ public class StatsPane extends BaseSubPane
         setBackground(this.bgColor);
         setLayout(new BorderLayout());
 
-        init();
+        init(upperDisplayComp);
     }
     
     /**
@@ -121,6 +124,10 @@ public class StatsPane extends BaseSubPane
         return QueryType.SQL;
     }
     
+    /**
+     * @param command
+     * @return
+     */
     protected CommandAction createCommandActionFromElement(final Element command)
     {
         CommandAction cmdAction = null;
@@ -163,9 +170,9 @@ public class StatsPane extends BaseSubPane
 
     /**
      * Loads all the panels
-     *
+     * @param upperDisplayComp upper half display component
      */
-    protected void init()
+    protected void init(final JComponent upperDisplayComp)
     {
         Element rootElement = null;
         try
@@ -196,7 +203,8 @@ public class StatsPane extends BaseSubPane
             int preferredWidth = PREFERREDWIDTH;
             int spacing        = SPACING;
 
-            FormLayout      formLayout = new FormLayout(createDuplicateJGoodiesDef("f:min("+preferredWidth+"px;p)", spacing+"px", maxCols), rowsDef.toString()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            String          colDefs    = createDuplicateJGoodiesDef("f:min("+preferredWidth+"px;p)", spacing+"px", maxCols); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            FormLayout      formLayout = new FormLayout(colDefs, rowsDef.toString());
             PanelBuilder    builder    = new PanelBuilder(formLayout);
             CellConstraints cc         = new CellConstraints();
 
@@ -474,10 +482,22 @@ public class StatsPane extends BaseSubPane
 
             JPanel statPanel = builder.getPanel();
             statPanel.setBackground(Color.WHITE);
-            //statPanel.setOpaque(false);
+            
+            boolean hasUpper = upperDisplayComp != null;
 
-            builder    = new PanelBuilder(new FormLayout("C:P:G", "p")); //$NON-NLS-1$ //$NON-NLS-2$
-            builder.add(statPanel, cc.xy(1,1));
+            builder    = new PanelBuilder(new FormLayout("C:P:G", hasUpper ? "50px,p,20px,p" : "p")); //$NON-NLS-1$ //$NON-NLS-2$
+            
+            if (hasUpper)
+            {
+                y = 2;
+                builder.add(upperDisplayComp, cc.xy(1, y));
+                y += 2;
+                
+            } else
+            {
+                y = 1;
+            }
+            builder.add(statPanel, cc.xy(1, y));
             JPanel centerPanel = builder.getPanel();
 
             centerPanel.setBackground(Color.WHITE);

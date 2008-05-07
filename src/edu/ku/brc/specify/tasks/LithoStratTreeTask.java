@@ -34,8 +34,10 @@ public class LithoStratTreeTask extends BaseTreeTask<LithoStrat,LithoStratTreeDe
 	public LithoStratTreeTask()
 	{
         super(LITHO, getResourceString(LITHO));
-        treeDefClass = LithoStratTreeDef.class;
-        icon         = IconManager.getIcon(LITHO, IconManager.IconSize.Std24);
+        
+        treeClass        = LithoStrat.class;
+        treeDefClass     = LithoStratTreeDef.class;
+        icon             = IconManager.getIcon(LITHO, IconManager.IconSize.Std24);
         
         menuItemText     = getResourceString("LithoStratMenu");
         menuItemMnemonic = getResourceString("LithoStratMnemonic");
@@ -63,7 +65,7 @@ public class LithoStratTreeTask extends BaseTreeTask<LithoStrat,LithoStratTreeDe
      * @see edu.ku.brc.specify.tasks.BaseTreeTask#isTreeOnByDefault()
      */
     @Override
-    protected boolean isTreeOnByDefault()
+    public boolean isTreeOnByDefault()
     {
         return Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.paleobotany) ||
                Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.invertpaleo) ||

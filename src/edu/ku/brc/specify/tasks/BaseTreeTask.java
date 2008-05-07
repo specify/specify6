@@ -4,40 +4,17 @@
  * [INSERT KU-APPROVED LICENSE TEXT HERE]
  * 
  */
-/**
- * @author rod
- *
- * @code_status Alpha
- *
- * Feb 19, 2008
- *
- */
-/**
- * @author rod
- *
- * @code_status Alpha
- *
- * Feb 19, 2008
- *
- */
-/**
- * @author rod
- *
- * @code_status Alpha
- *
- * Feb 19, 2008
- *
- */
 package edu.ku.brc.specify.tasks;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Collections;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
@@ -71,13 +48,6 @@ import edu.ku.brc.ui.forms.BusinessRulesIFace;
  *
  * @code_status Beta
  * @author jstewart
- */
-/**
- * @author rod
- *
- * @code_status Alpha
- *
- * Feb 19, 2008
  *
  * @param <T>
  * @param <D>
@@ -98,6 +68,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     
     /** The class of {@link TreeDefIface} handled by this task. */
     protected Class<D> treeDefClass;
+    protected Class<T> treeClass;
     
     protected D currentDef;
     
@@ -126,6 +97,7 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
 	protected BaseTreeTask(final String name, final String title)
 	{
 		super(name,title);
+		
         CommandDispatcher.register(DataEntryTask.DATA_ENTRY, this);
         CommandDispatcher.register(APP_CMD_TYPE, this);
 	}
@@ -152,6 +124,22 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
         }
 	}
     
+    /**
+     * @return the Class for the Tree Def
+     */
+    public Class<D> getTreeDefClass()
+    {
+        return treeDefClass;
+    }
+
+    /**
+     * @return the class for tree
+     */
+    public Class<T> getTreeClass()
+    {
+        return treeClass;
+    }
+
     protected abstract D getCurrentTreeDef();
     
     /**
@@ -189,9 +177,9 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
      * @param isEditMode whether it is in edit mode
      * @return the AL
      */
-    protected ActionListener createALForTreeEditing(final boolean isEditMode)
+    protected Action createActionForTreeEditing(final boolean isEditMode)
     {
-        return new ActionListener()
+        return new AbstractAction()
         {
             @SuppressWarnings("synthetic-access")
             public void actionPerformed(ActionEvent ae)
@@ -230,61 +218,14 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
     }
     
     /**
-     * Returns whether the tree is on by default for a discipline.
-     * @return whether the tree is on by default for a discipline.
+     * @return the action for tree editing
      */
-    protected boolean isTreeOnByDefault()
+    private Action createActionForTreeDefEditing()
     {
-        return true;
-    }
-    
-    /**
-     * Enables / Disables the menus depending on the discipline.
-     */
-    protected void adjustMenus()
-    {
-        String clsName    = treeDefClass.getSimpleName();
-        String discipline = Discipline.getCurrentDiscipline().getName();
-        
-        String prefName = "Trees.Menu." + discipline + "." + clsName;
-        
-        boolean isMenuEnabled = AppPreferences.getRemote().getBoolean(prefName, isTreeOnByDefault(), true);
-        subMenu.setEnabled(isMenuEnabled);
-    }
-	
-	/**
-     * Creates a simple menu item that brings this task into context.
-     * 
-	 * @param defs a list of tree definitions handled by this task
-	 */
-	protected List<MenuItemDesc> createMenus()
-	{
-        Vector<MenuItemDesc> menus = new Vector<MenuItemDesc>();
-        subMenu = new JMenu(menuItemText);
-        
-        MenuItemDesc treeSubMenuMI = new MenuItemDesc(subMenu, "AdvMenu");
-        menus.add(treeSubMenuMI);
-        
-        showTreeMenuItem = new JMenuItem(getResourceString("TTV_SHOW_TREE_MENU_ITEM"));
-        showTreeMenuItem.addActionListener(createALForTreeEditing(false));
-        
-        // XXX SECURITY - Check to see if they can edit
-        boolean canEdit = true;
-        if (canEdit)
+        return new AbstractAction()
         {
-            editTreeMenuItem = new JMenuItem(getResourceString("TTV_EDIT_TREE_MENU_ITEM"));
-            editTreeMenuItem.addActionListener(createALForTreeEditing(true));
-        } else
-        {
-            editTreeMenuItem = null;
-        }
-        
-        // XXX SECURITY - Check to see if they can edit the tree def
-        editDefMenuItem = new JMenuItem(getResourceString("TTV_EDIT_DEF_MENU_ITEM"));
-        editDefMenuItem.addActionListener(new ActionListener()
-        {
-            @SuppressWarnings("synthetic-access")
-            public void actionPerformed(ActionEvent ae)
+            //@Override
+            public void actionPerformed(ActionEvent e)
             {
                 if (!currentDefInUse)
                 {
@@ -325,13 +266,63 @@ public abstract class BaseTreeTask <T extends Treeable<T,D,I>,
                     }
                 }
             }
-        });
+        };
+    }
+    
+    /**
+     * Returns whether the tree is on by default for a discipline.
+     * @return whether the tree is on by default for a discipline.
+     */
+    public boolean isTreeOnByDefault()
+    {
+        return true;
+    }
+    
+    /**
+     * Enables / Disables the menus depending on the discipline.
+     */
+    protected void adjustMenus()
+    {
+        String clsName    = treeDefClass.getSimpleName();
+        String discipline = Discipline.getCurrentDiscipline().getName();
+        
+        String prefName = "Trees.Menu." + discipline + "." + clsName;
+        
+        boolean isMenuEnabled = AppPreferences.getRemote().getBoolean(prefName, isTreeOnByDefault(), true);
+        subMenu.setEnabled(isMenuEnabled);
+    }
+	
+	/**
+	 * @return the text for the menu or NavBox Button
+	 */
+	public String getMenuItemText()
+    {
+        return menuItemText;
+    }
 
-        if (editTreeMenuItem != null)
-        {
-            subMenu.add(editTreeMenuItem);
-        }
-        subMenu.add(showTreeMenuItem);
+    /**
+     * Creates a simple menu item that brings this task into context.
+     * 
+	 * @param defs a list of tree definitions handled by this task
+	 */
+	protected List<MenuItemDesc> createMenus()
+	{
+        Vector<MenuItemDesc> menus = new Vector<MenuItemDesc>();
+        subMenu = new JMenu(menuItemText);
+        
+        MenuItemDesc treeSubMenuMI = new MenuItemDesc(subMenu, "AdvMenu");
+        menus.add(treeSubMenuMI);
+        
+        boolean hasPermissionToEdit = true;
+        
+        Action treeEditAction = createActionForTreeEditing(hasPermissionToEdit);
+        UIRegistry.registerAction("TreeEditing_"+treeClass.getSimpleName(), treeEditAction);
+        
+        // XXX SECURITY - Check to see if they can edit the tree def
+        Action treeDefEditAction = createActionForTreeDefEditing();
+        editDefMenuItem = new JMenuItem(getResourceString("TTV_EDIT_DEF_MENU_ITEM"));
+        editDefMenuItem.addActionListener(treeDefEditAction);
+        UIRegistry.registerAction("TreeDefEditing_"+treeDefClass.getSimpleName(), treeDefEditAction);
         subMenu.add(editDefMenuItem);
 
         adjustMenus();

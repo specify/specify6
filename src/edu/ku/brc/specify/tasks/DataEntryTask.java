@@ -24,6 +24,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.Action;
 import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
 
@@ -45,6 +46,7 @@ import edu.ku.brc.af.core.NavBoxMgr;
 import edu.ku.brc.af.core.ServiceInfo;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
+import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.prefs.AppPreferences;
@@ -110,6 +112,7 @@ public class DataEntryTask extends BaseTask
     
     protected Vector<NavBoxIFace> extendedNavBoxes = new Vector<NavBoxIFace>();
     protected NavBox              viewsNavBox      = null;
+    protected NavBox              treeNavBox       = null;
     
     protected Vector<DataEntryView> stdViews       = null;
     protected Vector<DataEntryView> miscViews      = null;
@@ -134,7 +137,7 @@ public class DataEntryTask extends BaseTask
         
         // Do this here instead of in initialize because the static method will need to access the icon mapping first
         viewsNavBox = new NavBox(getResourceString("CreateAndUpdate"));
-        
+        treeNavBox  = new NavBox(getResourceString("DataEntryTask.Trees"));
     }
 
     /* (non-Javadoc)
@@ -153,8 +156,30 @@ public class DataEntryTask extends BaseTask
             //navBoxes.add(navBox);
            
             navBoxes.add(viewsNavBox);
+            navBoxes.add(treeNavBox);
+            
+            // Add Tree NavBoxes
+            createTreeEditNB((BaseTreeTask)TaskMgr.getTask(TaxonTreeTask.TAXON));
+            createTreeEditNB((BaseTreeTask)TaskMgr.getTask(GeographyTreeTask.GEOGRAPHY));
+            createTreeEditNB((BaseTreeTask)TaskMgr.getTask(LithoStratTreeTask.LITHO));
+            createTreeEditNB((BaseTreeTask)TaskMgr.getTask(GtpTreeTask.GTP));
+            createTreeEditNB((BaseTreeTask)TaskMgr.getTask(StorageTreeTask.STORAGE));
+
         }
         isShowDefault = true;
+    }
+    
+    /**
+     * @param treeTask
+     */
+    private void createTreeEditNB(final BaseTreeTask treeTask)
+    {
+        if (treeTask != null && treeTask.isTreeOnByDefault())
+        {
+            Action treeEditAction = UIRegistry.getAction("TreeEditing_" + treeTask.getTreeClass().getSimpleName());
+            NavBoxItemIFace nbi = NavBox.createBtnWithTT(treeTask.getMenuItemText(), "TreePref", "", IconManager.STD_ICON_SIZE, treeEditAction);
+            treeNavBox.add(nbi);
+        } 
     }
     
     /**

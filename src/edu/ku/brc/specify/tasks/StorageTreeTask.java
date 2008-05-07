@@ -25,21 +25,23 @@ import edu.ku.brc.ui.IconManager;
  */
 public class StorageTreeTask extends BaseTreeTask<Storage, StorageTreeDef, StorageTreeDefItem>
 {
-	public static final String LOCATION = "StorageTree";
+	public static final String STORAGE = "StorageTree";
 	
 	/**
 	 * Constructor.
 	 */
 	public StorageTreeTask()
 	{
-        super(LOCATION, getResourceString(LOCATION));
-        treeDefClass = StorageTreeDef.class;
-        icon         = IconManager.getIcon(LOCATION,IconManager.IconSize.Std16);
+        super(STORAGE, getResourceString(STORAGE));
+        
+        treeClass         = Storage.class;
+        treeDefClass      = StorageTreeDef.class;
+        icon              = IconManager.getIcon(STORAGE,IconManager.IconSize.Std16);
         
         menuItemText      = getResourceString("StorageMenu");
         menuItemMnemonic  = getResourceString("StorageMnemonic");
         starterPaneText   = getResourceString("StorageStarterPaneText");
-        commandTypeString = LOCATION;
+        commandTypeString = STORAGE;
         
         businessRules     = new StorageBusRules();
         
