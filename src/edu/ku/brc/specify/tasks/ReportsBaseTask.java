@@ -871,42 +871,44 @@ public class ReportsBaseTask extends BaseTask
     
     protected void updateIReportConfig()
     {
-        Element root = XMLHelper.readDOMFromConfigDir("ireportconfig.xml");
-        List<?> props = root.selectNodes("/iReportProperties/iReportProperty");
-        boolean writeIt = true;
-        for (Object propObj : props)
-        {
-            Element prop = (Element)propObj;
-            if (prop.attributeValue("name").equals("LookAndFeel"))
-            {
-                if (prop.getText().equals(UIManager.getLookAndFeel().getID()))
-                {
-                    writeIt = false;
-                }
-                else
-                {
-                    prop.clearContent();
-                    //List<? extends Object> content = prop.content();
-                    //content.add(new FlyweightCDATA(UIManager.getLookAndFeel().getID()));
-                    prop.add(new FlyweightCDATA(UIManager.getLookAndFeel().getID()));
-                    
-                }
-                break;
-            }
-        }
-        if (writeIt)
-        {
-            try
-            {
-                FileWriter out = new FileWriter(XMLHelper.getConfigDirPath("ireportconfig.xml"));
-                root.getDocument().write(out);
-                out.close();
-            }
-            catch (IOException ex)
-            {
-                throw new RuntimeException(ex);
-            }
-        }
+        //no need to do anything when using in-house-compiled iReport.jar
+        
+//        Element root = XMLHelper.readDOMFromConfigDir("ireportconfig.xml");
+//        List<?> props = root.selectNodes("/iReportProperties/iReportProperty");
+//        boolean writeIt = true;
+//        for (Object propObj : props)
+//        {
+//            Element prop = (Element)propObj;
+//            if (prop.attributeValue("name").equals("LookAndFeel"))
+//            {
+//                if (prop.getText().equals(UIManager.getLookAndFeel().getID()))
+//                {
+//                    writeIt = false;
+//                }
+//                else
+//                {
+//                    prop.clearContent();
+//                    //List<? extends Object> content = prop.content();
+//                    //content.add(new FlyweightCDATA(UIManager.getLookAndFeel().getID()));
+//                    prop.add(new FlyweightCDATA(UIManager.getLookAndFeel().getID()));
+//                    
+//                }
+//                break;
+//            }
+//        }
+//        if (writeIt)
+//        {
+//            try
+//            {
+//                FileWriter out = new FileWriter(XMLHelper.getConfigDirPath("ireportconfig.xml"));
+//                root.getDocument().write(out);
+//                out.close();
+//            }
+//            catch (IOException ex)
+//            {
+//                throw new RuntimeException(ex);
+//            }
+//        }
     }
     /**
      * Open the IReport editor.

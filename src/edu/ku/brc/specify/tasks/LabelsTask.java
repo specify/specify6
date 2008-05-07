@@ -226,11 +226,12 @@ public class LabelsTask extends ReportsBaseTask
                 }
             } else
             {
-                String mimeTypeStr = (String)cmdAction.getProperty("mimetype");
-                if (StringUtils.isNotEmpty(mimeTypeStr) && mimeTypeStr.equals(navMimeDefs.get(0).getSecond()))
-                {
-                    super.doCommand(cmdAction);
-                }
+//                No need to call super.doCommand() since Labels/Reports merger. I think...
+//                String mimeTypeStr = (String)cmdAction.getProperty("mimetype");
+//                if (StringUtils.isNotEmpty(mimeTypeStr) && mimeTypeStr.equals(navMimeDefs.get(0).getSecond()))
+//                {
+//                    super.doCommand(cmdAction);
+//                }
                 
                 /*if (cmdAction.isType(APP_CMD_TYPE) && cmdAction.isAction(APP_RESTART_ACT))
                 {

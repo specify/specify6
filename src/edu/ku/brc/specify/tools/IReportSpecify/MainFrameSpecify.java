@@ -154,6 +154,8 @@ public class MainFrameSpecify extends MainFrame
     public static Map<String, String> getArgs()
     {
         Map<String, String> map = new HashMap<String, String>();
+        //Don't really need to worry about these args when using in-house iReport.jar
+        
         map.put("config-file", XMLHelper.getConfigDirPath("ireportconfig.xml"));
         // "noPlaf" prevents iReport from setting it's preferred theme. Don't think we need to worry
         //about the theme since laf changes should be prevented by settings in ireportconfig.xml
