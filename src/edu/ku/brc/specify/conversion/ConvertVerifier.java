@@ -224,7 +224,7 @@ public class ConvertVerifier
         String[] tableNames = {"CollectingEvent", "CollectingEvent", "Locality", "Locality"};
         for (int i=0;i<tableNames.length;i+=2)
         {
-            verifyTableCounts(tableNames[i], tableNames[i+1]);
+            verifyTableCounts(tableNames[i].toLowerCase(), tableNames[i+1].toLowerCase());
         }
         
         out.println("<H3>Collection Objects</H3>");
@@ -519,9 +519,6 @@ public class ConvertVerifier
     
     protected boolean verifyDeterminer(final int oldCatNum, final String newCatNum) throws SQLException
     {
-       //log.debug("New SQL: "+newSQL);
-        //log.debug("Old SQL: "+oldSQL);
-        
          newSQL = "SELECT agent.FirstName, agent.MiddleInitial, agent.LastName " +
                   "FROM collectionobject INNER JOIN determination ON collectionobject.CollectionObjectID = determination.CollectionObjectID " +
                   "INNER JOIN agent ON determination.DeterminerID = agent.AgentID " +
@@ -532,6 +529,9 @@ public class ConvertVerifier
                   "INNER JOIN determination ON determination.BiologicalObjectID = collectionobject.CollectionObjectID " + 
                   "INNER JOIN agent ON determination.DeterminerID = agent.AgentID WHERE CatalogNumber = " + oldCatNum;
         
+         log.debug("New SQL: "+newSQL);
+         log.debug("Old SQL: "+oldSQL);
+         
         return compareRecords("Determiner", oldCatNum, newCatNum, oldSQL, newSQL);
     }
 
@@ -736,7 +736,7 @@ public class ConvertVerifier
      */
     protected String convertCatNum(final int oldCatNum)
     {
-        int size = 0;
+        int size = 9;
         
         String fmt = size == 0 ? "%d" : ("%0" + size + "d");
         return String.format(fmt, oldCatNum);
@@ -1034,7 +1034,7 @@ public class ConvertVerifier
                         try
                         {
                             ConvertVerifier cv = new ConvertVerifier();
-                            cv.verifyDB( oldName, dbNamesToConvert.get(0));
+                            cv.verifyDB( oldName, dbNamesToConvert.get(0).toLowerCase());
                             
                         } catch (Exception ex)
                         {
