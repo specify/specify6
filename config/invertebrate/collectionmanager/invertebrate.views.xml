@@ -119,7 +119,10 @@
     		<!--	<row>
     				<cell type="subview" viewname="Appraisal" id="30" name="appraisal" colspan="16" />
     			</row> -->
-    			<row>
+                <row>
+			  <cell type="separator" label="Attachments" colspan="12"/>
+                </row>
+    		    <row>
                     <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectionObjectAttachments" colspan="16" initialize="btn=true;icon=CollectionObjectAttachment"/>
                 </row>
     			<row>
@@ -181,7 +184,7 @@
                     <cell type="field" id="11" name="groupPermittedToView" uitype="text"/>
                 </row>
                 <row>
-                    <cell type="separator" label="Attachments" collapse="collectingEventAttachments" colspan="12"/>
+                    <cell type="separator" label="Attachments" colspan="12"/>
                 </row>
                 <row>
                     <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectingEventAttachments" colspan="12" initialize="btn=true;icon=CollectingEventAttachment"/>

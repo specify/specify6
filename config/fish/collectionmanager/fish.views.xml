@@ -108,6 +108,9 @@
                     <cell type="subview" viewname="Preparation" id="8" name="preparations" defaulttype="table" colspan="12"/>
                 </row>
                 <row>
+			  <cell type="separator" label="Attachments" colspan="12"/>
+                </row>
+                <row>
                     <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectionObjectAttachments" colspan="12" initialize="btn=true;icon=CollectionObjectAttachment"/>
                 </row>
                 <row>
@@ -161,7 +164,7 @@
                     <cell type="subview" viewname="Collectors" id="5" name="collectors" colspan="10"/>
                 </row>
                 <row>
-                    <cell type="separator" label="Attachments" collapse="collectingEventAttachments" colspan="12"/>
+                    <cell type="separator" label="Attachments" colspan="12"/>
                 </row>
                 <row>
                     <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectingEventAttachments" colspan="12" initialize="btn=true;icon=CollectingEventAttachment"/>
