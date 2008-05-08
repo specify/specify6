@@ -125,7 +125,7 @@ public class ExpressSearchConfigDlg extends CustomDialog
     {
         super((Frame)UIRegistry.getTopWindow(), getResourceString("ExpressSearchConfigDlg.ES_DLG_TITLE"), true, OKHELP, null); //$NON-NLS-1$
         
-        setOkLabel(getResourceString("ExpressSearchConfigDlg.7")); //$NON-NLS-1$
+        setOkLabel(getResourceString("ExpressSearchConfigDlg.CLOSE")); //$NON-NLS-1$
         
         /*
         Locale german = new Locale("de", "", "");
