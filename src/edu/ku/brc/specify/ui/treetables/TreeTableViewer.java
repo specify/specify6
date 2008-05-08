@@ -6,7 +6,7 @@
  */
 package edu.ku.brc.specify.ui.treetables;
 
-import static edu.ku.brc.ui.UIHelper.*;
+import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -1519,29 +1519,27 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	 * @param title the title of the dialog window
      * @param isNewObject indicates that the object is new
      */
-    @SuppressWarnings("unchecked")
     protected void showEditDialog(final T node, final String title, final boolean isNewObject)
 	{
 	    // TODO: double check these choices
 	    // gather all the info needed to create a form in a dialog
-	    Pair<String,String> formsNames = TreeFactory.getAppropriateFormsetAndViewNames(node);
-		Frame parentFrame = (Frame)UIRegistry.get(UIRegistry.FRAME);
-		String viewSetName = formsNames.first;
-		String viewName = formsNames.second;
-		String displayName = "NODE_EDIT_DISPLAY_NAME";
-        boolean isEdit = true;
-		String closeBtnText = (isEdit) ? getResourceString("Save") : getResourceString("Close");
-		String className = node.getClass().getName();
+	    String      viewName      = TreeFactory.getAppropriateViewName(node);
+		Frame       parentFrame   = (Frame)UIRegistry.get(UIRegistry.FRAME);
+		String      displayName   = "NODE_EDIT_DISPLAY_NAME";
+        boolean     isEdit        = true;
+		String      closeBtnText  = (isEdit) ? getResourceString("Save") : getResourceString("Close");
+		String      className     = node.getClass().getName();
         DBTableInfo nodeTableInfo = DBTableIdMgr.getInstance().getInfoById(node.getTableId());
-		String idFieldName = nodeTableInfo.getIdFieldName();
-		int options = MultiView.HIDE_SAVE_BTN;
+		String      idFieldName   = nodeTableInfo.getIdFieldName();
+		int         options       = MultiView.HIDE_SAVE_BTN;
 		if (isNewObject)
 		{
 		    options |= MultiView.IS_NEW_OBJECT;
 		}
 		
 		// create the form dialog
-		ViewBasedDisplayDialog dialog = new ViewBasedDisplayDialog(parentFrame,viewSetName,viewName,displayName,title,closeBtnText,className,idFieldName,isEdit,options);
+		ViewBasedDisplayDialog dialog = new ViewBasedDisplayDialog(parentFrame, null, viewName, displayName, title, 
+		                                                           closeBtnText, className, idFieldName, isEdit, options);
 		dialog.setModal(true);
 		dialog.setData(node);
 		

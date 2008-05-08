@@ -329,13 +329,16 @@ public class IdHashMapper implements IdMapperIFace
             Integer   newId = null;
             Statement stmtNew = newConn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE,ResultSet.CONCUR_READ_ONLY);
             ResultSet rs      = stmtNew.executeQuery("select NewID from "+mapTableName+" where OldID = " + oldId);
-            if (rs.first())
+            if (rs.next())
             {
                 newId = rs.getInt(1);
 
             } else
             {
-                if (showLogErrors) log.error("********** Couldn't find old index ["+oldId+"] for "+mapTableName);
+                if (showLogErrors) 
+                    {
+                    log.error("********** Couldn't find old index ["+oldId+"] for "+mapTableName);
+                    }
                 rs.close();
                 return null;
             }

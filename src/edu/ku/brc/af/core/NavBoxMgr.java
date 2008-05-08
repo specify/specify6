@@ -60,7 +60,7 @@ public class NavBoxMgr extends JPanel
     protected NavBoxMgr()
     {
        setLayout(layout);
-       setBackground(Color.WHITE); // XXX PREF ??
+       setBackground(getBGColor()); // XXX PREF ??
        
        trash = Trash.getInstance();
        
@@ -97,6 +97,14 @@ public class NavBoxMgr extends JPanel
              }
        };
        addMouseListener(mouseListener);
+    }
+    
+    /**
+     * @return the background color for the Side bar
+     */
+    public static Color getBGColor()
+    {
+        return Color.WHITE;//new Color(247,247,247);
     }
     
     /**

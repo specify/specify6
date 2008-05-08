@@ -15,6 +15,7 @@
 package edu.ku.brc.af.prefs;
 
 import java.awt.BorderLayout;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collections;
@@ -59,6 +60,9 @@ public class AppPrefsEditor extends JPanel implements TableModelListener, ListSe
     protected JButton            removeBtn;
     protected JButton            addBtn;
     
+    /**
+     * @param isRemote
+     */
     public AppPrefsEditor(final boolean isRemote)
     {
         appPrefs = isRemote ? AppPreferences.getRemote(): AppPreferences.getLocalPrefs();         
@@ -73,13 +77,16 @@ public class AppPrefsEditor extends JPanel implements TableModelListener, ListSe
         
     }
     
+    /**
+     * 
+     */
     protected void createUI()
     {
         model = new PropertyTableModel(items);
         table = new JTable(model);
         table.getSelectionModel().addListSelectionListener(this);
        
-        add(new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER), BorderLayout.NORTH);
+        add(new JScrollPane(table, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER), BorderLayout.CENTER);
         
         table.setRowSelectionAllowed(true);
         table.setColumnSelectionAllowed(false);
@@ -138,7 +145,13 @@ public class AppPrefsEditor extends JPanel implements TableModelListener, ListSe
         String newKey = "New Item" + items.size(); //$NON-NLS-1$
         items.add(newKey);
         model.fireChange();
-        table.repaint();
+        
+        // Scroll To New Row
+        int row = items.size()-1;
+        Rectangle rect = table.getCellRect(row, 0, true);
+        table.scrollRectToVisible(rect);
+        table.clearSelection();
+        table.setRowSelectionInterval(row, row);
         appPrefs.setChanged(true);
         
         try
@@ -166,9 +179,11 @@ public class AppPrefsEditor extends JPanel implements TableModelListener, ListSe
         }
     }
     
+    //--------------------------------
+    // PropertyTableModel
+    //--------------------------------
     public class PropertyTableModel extends DefaultTableModel
     {
-        protected Vector<TableModelListener> listeners = new Vector<TableModelListener>();
         protected Vector<String> rowData = null;
         protected String[]       header  = {"Property", "Value"};
 
@@ -226,18 +241,6 @@ public class AppPrefsEditor extends JPanel implements TableModelListener, ListSe
             {
                 appPrefs.put(key, aValue.toString());
             }
-            
-            
-        }
-
-        public void addTableModelListener(TableModelListener l)
-        {
-            listeners.add(l);
-        }
-
-        public void removeTableModelListener(TableModelListener l)
-        {
-            listeners.remove(l);
         }
 
         public void fireChange()

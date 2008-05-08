@@ -23,8 +23,7 @@
     <icon name="Statistics"       file="Statistics32x32.png" sizes="all"/>
     <icon name="Pie_Chart"        file="PieChart32x32.png" sizes="all"/>
     <icon name="Bar_Chart"        file="BarGraph32x32.png" sizes="all"/>
-    <icon name="Record_Set"       file="bundle.png" sizes="all"/>
-    <icon name="Record_Set16"     file="bundle.png" sizes="16"/>
+    <icon name="Record_Set"       file="RecordSet32x32.png" sizes="all"/>
     <icon name="Series"           file="series.gif" sizes="all"/>
     <icon name="Query"            file="Query32x32.png" sizes="all"/>
     <icon name="MoreQueries"      file="MoreQueries32x32.png" sizes="all"/>

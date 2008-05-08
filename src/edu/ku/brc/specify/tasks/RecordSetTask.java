@@ -113,7 +113,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
         // Althought some system tables we may not want, they won't be searchable anyway.
         for (DBTableInfo ti : DBTableIdMgr.getInstance().getTables())
         {
-            ContextMgr.registerService(ti.getTitle(), ti.getTableId(), new CommandAction(RECORD_SET, SAVE_RECORDSET), this, RECORD_SET, "CreateRecordSetTT");    
+            ContextMgr.registerService(ti.getTitle(), ti.getTableId(), new CommandAction(RECORD_SET, SAVE_RECORDSET), this, RECORD_SET, getResourceString("CreateRecordSetTT"));    
         }
     }
 
@@ -158,7 +158,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
     {
         //NavBoxItemIFace nbi = addNavBoxItem(navBox, recordSet.getName(), name, new CommandAction(RECORD_SET, DELETE_CMD_ACT, recordSet), recordSet);
         
-        final RolloverCommand roc = (RolloverCommand)makeDnDNavBtn(navBox, recordSet.getName(), "Record_Set16", null, 
+        final RolloverCommand roc = (RolloverCommand)makeDnDNavBtn(navBox, recordSet.getName(), "Record_Set", null, 
                                                                    new CommandAction(RECORD_SET, DELETE_CMD_ACT, recordSet), 
                                                                    true, true);// true means make it draggable
         roc.setData(recordSet);

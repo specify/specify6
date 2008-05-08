@@ -253,8 +253,9 @@ public class BuildSampleDatabase
     protected SetupDialog        setupDlg  = null;
     protected boolean            hideFrame = false;
     
-    protected boolean            copyToUserDir      = true;
-    protected boolean            doShallowTaxonTree = false;
+    protected boolean            doAddQueries        = false;
+    protected boolean            copyToUserDir       = true;
+    protected boolean            doShallowTaxonTree  = false;
     protected List<CollectionChoice> selectedChoices = null;
     
     protected Random             rand = new Random(12345678L);
@@ -301,20 +302,23 @@ public class BuildSampleDatabase
     protected void standardQueries(final Vector<Object> dataObjects, 
                                    final Agent userAgent)
     {
-        //Byte greaterThan = SpQueryField.OperatorType.GREATERTHAN.getOrdinal();
-        //Byte lessThan    = SpQueryField.OperatorType.LESSTHAN.getOrdinal();
-        //Byte equals      = SpQueryField.OperatorType.EQUALS.getOrdinal();
-        Byte greq        = SpQueryField.OperatorType.GREATERTHANEQUALS.getOrdinal();
-        Byte lteq        = SpQueryField.OperatorType.LESSTHANEQUALS.getOrdinal();
-        
-        //Byte none        = SpQueryField.SortType.NONE.getOrdinal();
-        Byte asc         = SpQueryField.SortType.ASC.getOrdinal();
-        //Byte desc        = SpQueryField.SortType.DESC.getOrdinal();
-        
-        SpQuery query = createQuery("CO "+Collection.getCurrentCollection().getCollectionName(), "CollectionObject", 1, SpecifyUser.getCurrentUser(), userAgent);
-        createQueryField(query, (short)0, "catalogNumber", "Catalog Number", false, greq, lteq, "102", "103", asc, true, "1", 1);
-        query.setIsFavorite(true);
-        dataObjects.add(query);
+        if (doAddQueries)
+        {
+            //Byte greaterThan = SpQueryField.OperatorType.GREATERTHAN.getOrdinal();
+            //Byte lessThan    = SpQueryField.OperatorType.LESSTHAN.getOrdinal();
+            //Byte equals      = SpQueryField.OperatorType.EQUALS.getOrdinal();
+            Byte greq        = SpQueryField.OperatorType.GREATERTHANEQUALS.getOrdinal();
+            Byte lteq        = SpQueryField.OperatorType.LESSTHANEQUALS.getOrdinal();
+            
+            //Byte none        = SpQueryField.SortType.NONE.getOrdinal();
+            Byte asc         = SpQueryField.SortType.ASC.getOrdinal();
+            //Byte desc        = SpQueryField.SortType.DESC.getOrdinal();
+            
+            SpQuery query = createQuery("CO "+Collection.getCurrentCollection().getCollectionName(), "CollectionObject", 1, SpecifyUser.getCurrentUser(), userAgent);
+            createQueryField(query, (short)0, "catalogNumber", "Catalog Number", false, greq, lteq, "102", "103", asc, true, "1", 1);
+            query.setIsFavorite(true);
+            dataObjects.add(query);
+        }
     }
 
     /**
@@ -4892,7 +4896,7 @@ public class BuildSampleDatabase
         ////////////////////////////////
         
         // setup a template and its mapping items
-        String name = "Simple DataSet";
+        String name = discipline.getTitle() + " DataSet";
         WorkbenchTemplate wbTemplate = createWorkbenchTemplate(user, name, "These are the remarks");
         WorkbenchTemplateMappingItem wbtmi0 = createWorkbenchMappingItem("CollectionObject", 
                                                                         1, "fieldNumber", "Field Number", 25, 0, 0, wbTemplate);

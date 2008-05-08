@@ -33,7 +33,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -70,18 +69,15 @@ import edu.ku.brc.helpers.EMailHelper;
 import edu.ku.brc.helpers.Encryption;
 import edu.ku.brc.helpers.SwingWorker;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
-import edu.ku.brc.specify.datamodel.Accession;
 import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.ExchangeIn;
 import edu.ku.brc.specify.datamodel.ExchangeOut;
-import edu.ku.brc.specify.datamodel.Gift;
 import edu.ku.brc.specify.datamodel.InfoRequest;
 import edu.ku.brc.specify.datamodel.Loan;
 import edu.ku.brc.specify.datamodel.LoanPreparation;
 import edu.ku.brc.specify.datamodel.LoanReturnPreparation;
-import edu.ku.brc.specify.datamodel.Permit;
 import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.Shipment;
@@ -192,6 +188,7 @@ public class InteractionsTask extends BaseTask
         CommandDispatcher.register(DataEntryTask.DATA_ENTRY, this);
         CommandDispatcher.register(PreferencesDlg.PREFERENCES, this);
         
+        /*
         if (false)
         {
             // temporary
@@ -201,7 +198,7 @@ public class InteractionsTask extends BaseTask
             String OPEN_NEW_VIEW = DataEntryTask.OPEN_NEW_VIEW;
             
             //                                 name          table       lblKey    View         Type    Action      Icon         isOn
-            entries.add(new InteractionEntry("accession",   "accession",   null,  "Loan",        D,   OPEN_NEW_VIEW,    "Accession",   new int[] {Accession.getClassTableId()}));
+            entries.add(new InteractionEntry("accession",   "accession",   null,  "Accession",   D,   OPEN_NEW_VIEW,    "Accession",   new int[] {Accession.getClassTableId()}));
             entries.add(new InteractionEntry("permit",      "permit",      null,  "Permit",      D,   OPEN_NEW_VIEW,    "Permit",      new int[] {Permit.getClassTableId()}));
             entries.add(new InteractionEntry("loan",        "loan",        null,  "Loan",        I,   NEW_LOAN,         "Loan",        new int[] {Loan.getClassTableId(), CollectionObject.getClassTableId(), InfoRequest.getClassTableId()}));
             entries.add(new InteractionEntry("gift",        "gift",        null,  "Gift",        F,   NEW_GIFT,         "Gift",        new int[] {Gift.getClassTableId()}));
@@ -221,9 +218,9 @@ public class InteractionsTask extends BaseTask
                 ex.printStackTrace();
             }
         } else
-        {
+        {*/
             readEntries();
-        }
+        //}
     }
     
     /**

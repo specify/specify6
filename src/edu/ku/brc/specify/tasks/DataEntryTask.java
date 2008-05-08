@@ -43,7 +43,6 @@ import edu.ku.brc.af.core.NavBoxButton;
 import edu.ku.brc.af.core.NavBoxIFace;
 import edu.ku.brc.af.core.NavBoxItemIFace;
 import edu.ku.brc.af.core.NavBoxMgr;
-import edu.ku.brc.af.core.ServiceInfo;
 import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.TaskMgr;
@@ -108,8 +107,6 @@ public class DataEntryTask extends BaseTask
     protected static Hashtable<String, ImageIcon> iconForFormClass = new Hashtable<String, ImageIcon>();
 
     // Data Members
-    protected Hashtable<Integer, ServiceInfo> services = new Hashtable<Integer, ServiceInfo>();
-    
     protected Vector<NavBoxIFace> extendedNavBoxes = new Vector<NavBoxIFace>();
     protected NavBox              viewsNavBox      = null;
     protected NavBox              treeNavBox       = null;
@@ -159,11 +156,11 @@ public class DataEntryTask extends BaseTask
             navBoxes.add(treeNavBox);
             
             // Add Tree NavBoxes
-            createTreeEditNB((BaseTreeTask)TaskMgr.getTask(TaxonTreeTask.TAXON));
-            createTreeEditNB((BaseTreeTask)TaskMgr.getTask(GeographyTreeTask.GEOGRAPHY));
-            createTreeEditNB((BaseTreeTask)TaskMgr.getTask(LithoStratTreeTask.LITHO));
-            createTreeEditNB((BaseTreeTask)TaskMgr.getTask(GtpTreeTask.GTP));
-            createTreeEditNB((BaseTreeTask)TaskMgr.getTask(StorageTreeTask.STORAGE));
+            createTreeEditNB((BaseTreeTask<?,?,?>)TaskMgr.getTask(TaxonTreeTask.TAXON));
+            createTreeEditNB((BaseTreeTask<?,?,?>)TaskMgr.getTask(GeographyTreeTask.GEOGRAPHY));
+            createTreeEditNB((BaseTreeTask<?,?,?>)TaskMgr.getTask(LithoStratTreeTask.LITHO));
+            createTreeEditNB((BaseTreeTask<?,?,?>)TaskMgr.getTask(GtpTreeTask.GTP));
+            createTreeEditNB((BaseTreeTask<?,?,?>)TaskMgr.getTask(StorageTreeTask.STORAGE));
 
         }
         isShowDefault = true;
@@ -172,7 +169,7 @@ public class DataEntryTask extends BaseTask
     /**
      * @param treeTask
      */
-    private void createTreeEditNB(final BaseTreeTask treeTask)
+    private void createTreeEditNB(final BaseTreeTask<?,?,?> treeTask)
     {
         if (treeTask != null && treeTask.isTreeOnByDefault())
         {

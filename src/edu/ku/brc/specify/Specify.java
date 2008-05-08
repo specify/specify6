@@ -1023,32 +1023,6 @@ public class Specify extends JPanel implements DatabaseLoginListener
                         @SuppressWarnings("synthetic-access")
                         public void actionPerformed(ActionEvent ae)
                         {
-                            if (true)
-                            {
-                                DataProviderSessionIFace hibSession = null;
-                                try
-                                {
-                                    hibSession = DataProviderFactory.getInstance().createSession();
-                                    
-                                    List<?> list = hibSession.getDataList("SELECT sq.id, sq.name FROM SpQuery sq INNER JOIN sq.specifyUser spu WHERE spu.id = "+SpecifyUser.getCurrentUser().getId());
-                                    for (Object rowObj : list)
-                                    {
-                                        System.out.println(rowObj);
-                                    }
-                                    
-                                } catch (org.hibernate.exception.SQLGrammarException ex)
-                                {
-                                    log.error(ex);
-                                    
-                                } finally
-                                {
-                                    if (hibSession != null)
-                                    {
-                                        hibSession.close();
-                                    }
-                                }
-                                return;
-                            }
                             final CustomDialog dialog = new CustomDialog(topFrame, "Local Prefs", true, CustomDialog.OK_BTN, new AppPrefsEditor(false));
                             dialog.setOkLabel(UIRegistry.getResourceString("Close"));
                             dialog.pack();

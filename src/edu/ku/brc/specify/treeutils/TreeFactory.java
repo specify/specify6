@@ -26,7 +26,6 @@ import edu.ku.brc.specify.datamodel.TaxonTreeDefItem;
 import edu.ku.brc.specify.datamodel.TreeDefIface;
 import edu.ku.brc.specify.datamodel.TreeDefItemIface;
 import edu.ku.brc.specify.datamodel.Treeable;
-import edu.ku.brc.util.Pair;
 
 /**
  * A factory class for creating instances of the {@link Treeable}, {@link TreeDefIface}, and
@@ -443,37 +442,37 @@ public class TreeFactory
 	 * @param node a node of the class to be edited using the returned formset and view
 	 * @return a {@link edu.ku.brc.util.Pair<String,String>} containing the formset and view names
 	 */
-	public static Pair<String,String> getAppropriateFormsetAndViewNames(final Object node)
+	public static String getAppropriateViewName(final Object node)
 	{
 	    log.info("getAppropriateFormsetAndViewNames(Object): Replace this with a call to the table ID manager to get the appropriate form");
 		if( node instanceof Geography )
 		{
-			return new Pair<String,String>("Global","Geography");
+			return "Geography";
 		}
 
 		if( node instanceof GeologicTimePeriod )
 		{
-			return new Pair<String,String>("Global","GeologicTimePeriod");
+			return "GeologicTimePeriod";
 		}
 
         if( node instanceof LithoStrat )
         {
-            return new Pair<String,String>("Global","LithoStrat");
+            return "LithoStrat";
         }
         
 		if( node instanceof Storage )
 		{
-			return new Pair<String,String>("Global","Storage");
+			return "Storage";
 		}
 
         if( node instanceof Taxon )
         {
-            return new Pair<String,String>("Global","Taxon");
+            return "Taxon";
         }
         
 		if( node instanceof TreeDefIface<?,?,?>)
 		{
-			return new Pair<String,String>("Global","TreeDefEditor");
+			return "TreeDefEditor";
 		}
 		
         if( node instanceof GeographyTreeDefItem)
@@ -481,9 +480,9 @@ public class TreeFactory
             TreeDefItemIface<?,?,?> defItem = (TreeDefItemIface<?,?,?>)node;
             if (defItem.getParent() == null)
             {
-                return new Pair<String, String>("Global","RootGeographyTreeDefItem");
+                return "RootGeographyTreeDefItem";
             }
-            return new Pair<String, String>("Global","GeographyTreeDefItem");
+            return "GeographyTreeDefItem";
         }
         
         if( node instanceof GeologicTimePeriodTreeDefItem)
@@ -491,9 +490,9 @@ public class TreeFactory
             TreeDefItemIface<?,?,?> defItem = (TreeDefItemIface<?,?,?>)node;
             if (defItem.getParent() == null)
             {
-                return new Pair<String, String>("Global","RootGeologicTimePeriodTreeDefItem");
+                return "RootGeologicTimePeriodTreeDefItem";
             }
-            return new Pair<String, String>("Global","GeologicTimePeriodTreeDefItem");
+            return "GeologicTimePeriodTreeDefItem";
         }
         
         if( node instanceof LithoStratTreeDefItem)
@@ -501,9 +500,9 @@ public class TreeFactory
             TreeDefItemIface<?,?,?> defItem = (TreeDefItemIface<?,?,?>)node;
             if (defItem.getParent() == null)
             {
-                return new Pair<String, String>("Global","RootLithoStratTreeDefItem");
+                return "RootLithoStratTreeDefItem";
             }
-            return new Pair<String, String>("Global","LithoStratTreeDefItem");
+            return "LithoStratTreeDefItem";
         }
         
         if( node instanceof StorageTreeDefItem)
@@ -511,9 +510,9 @@ public class TreeFactory
             TreeDefItemIface<?,?,?> defItem = (TreeDefItemIface<?,?,?>)node;
             if (defItem.getParent() == null)
             {
-                return new Pair<String, String>("Global","RootStorageTreeDefItem");
+                return "RootStorageTreeDefItem";
             }
-            return new Pair<String, String>("Global","StorageTreeDefItem");
+            return "StorageTreeDefItem";
         }
         
         if( node instanceof TaxonTreeDefItem)
@@ -521,9 +520,9 @@ public class TreeFactory
             TreeDefItemIface<?,?,?> defItem = (TreeDefItemIface<?,?,?>)node;
             if (defItem.getParent() == null)
             {
-                return new Pair<String, String>("Global","RootTaxonTreeDefItem");
+                return "RootTaxonTreeDefItem";
             }
-            return new Pair<String, String>("Global","TaxonTreeDefItem");
+            return "TaxonTreeDefItem";
         }
         
 		return null;

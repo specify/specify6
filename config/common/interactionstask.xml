@@ -1,5 +1,5 @@
 <vector>
-  <entry name="accession" table="accession" view="Loan" type="Data_Entry" action="OpenNewView" icon="Accession" isonleft="true" order="0">
+  <entry name="accession" table="accession" view="Accession" type="Data_Entry" action="OpenNewView" icon="Accession" isonleft="true" order="0">
     <tableIds>
       <int>7</int>
     </tableIds>

@@ -104,13 +104,13 @@ public class NavBox extends JPanel implements NavBoxIFace
             itemsPanel.setLayout(new NavBoxLayoutManager(0, 0));
 
             itemsPanel.setBorder(null);
-            itemsPanel.setBackground(Color.WHITE);
+            itemsPanel.setBackground(NavBoxMgr.getBGColor());
             itemsPanel.setOpaque(true);
         }
         
         setBorder(BorderFactory.createEmptyBorder(22, 4, 4, 4));
         //setBorder(BorderFactory.createCompoundBorder(new CurvedBorder(new Color(160,160,160)), getBorder()));
-        setBackground(Color.WHITE);
+        setBackground(NavBoxMgr.getBGColor());
         setOpaque(true);
         
         if (scrollable)

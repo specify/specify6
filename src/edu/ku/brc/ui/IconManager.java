@@ -167,7 +167,7 @@ public class IconManager extends Component
             
         } catch (NullPointerException ex)
         {
-             log.error("Image at URL ["+url+"] couldn't be loaded.");
+             log.error("Image at URL ["+url+"] ["+iconName+"] ["+fileName+"] couldn't be loaded.");
         }
        
         return icon != null ? register(iconName, icon, url, id) : null;

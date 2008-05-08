@@ -67,7 +67,6 @@ import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.forms.BusinessRulesIFace;
 import edu.ku.brc.ui.forms.MultiView;
-import edu.ku.brc.util.Pair;
 
 /**
  *
@@ -427,10 +426,8 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         
         // TODO: double check these choices
         // gather all the info needed to create a form in a dialog
-        Pair<String,String> formsNames = TreeFactory.getAppropriateFormsetAndViewNames(defItem);
+        String viewName = TreeFactory.getAppropriateViewName(defItem);
         Frame parentFrame = (Frame)UIRegistry.get(UIRegistry.FRAME);
-        String viewSetName = formsNames.first;
-        String viewName = formsNames.second;
         String displayName = "NODE_EDIT_DISPLAY_NAME";
         boolean isEdit = true;
         String closeBtnText = (isEdit) ? getResourceString("Save") : getResourceString("Close");
@@ -441,7 +438,8 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         
         // create the form dialog
         String title = getResourceString("TreeDefEditDialogTitle");
-        ViewBasedDisplayDialog dialog = new ViewBasedDisplayDialog(parentFrame,viewSetName,viewName,displayName,title,closeBtnText,className,idFieldName,isEdit,options);
+        ViewBasedDisplayDialog dialog = new ViewBasedDisplayDialog(parentFrame, null, viewName, displayName, title, 
+                                                                   closeBtnText, className, idFieldName, isEdit, options);
         dialog.setModal(true);
         dialog.setData(defItem);
         dialog.preCreateUI();
@@ -686,10 +684,8 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
  
         // TODO: double check these choices
         // gather all the info needed to create a form in a dialog
-        Pair<String,String> formsNames = TreeFactory.getAppropriateFormsetAndViewNames(newItem);
+        String viewName = TreeFactory.getAppropriateViewName(newItem);
         Frame parentFrame = (Frame)UIRegistry.get(UIRegistry.FRAME);
-        String viewSetName = formsNames.first;
-        String viewName = formsNames.second;
         String displayName = "NODE_EDIT_DISPLAY_NAME";
         boolean isEdit = true;
         String closeBtnText = (isEdit) ? getResourceString("Save") : getResourceString("Close");
@@ -700,7 +696,8 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         
         // create the form dialog
         String title = getResourceString("TreeDefEditDialogTitle");
-        ViewBasedDisplayDialog dialog = new ViewBasedDisplayDialog(parentFrame,viewSetName,viewName,displayName,title,closeBtnText,className,idFieldName,isEdit,options);
+        ViewBasedDisplayDialog dialog = new ViewBasedDisplayDialog(parentFrame, null, viewName, displayName, title, 
+                                                                   closeBtnText, className, idFieldName, isEdit, options);
         dialog.setModal(true);
         dialog.setData(newItem);
         dialog.preCreateUI();
@@ -1078,10 +1075,8 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
 
         // TODO: double check these choices
         // gather all the info needed to create a form in a dialog
-        Pair<String,String> formsNames = TreeFactory.getAppropriateFormsetAndViewNames(treeDef);
+        String viewName = TreeFactory.getAppropriateViewName(treeDef);
         Frame   parentFrame  = (Frame)UIRegistry.get(UIRegistry.FRAME);
-        String  viewSetName  = formsNames.first;
-        String  viewName     = formsNames.second;
         String  displayName  = "NODE_EDIT_DISPLAY_NAME";
         boolean isEdit       = true;
         String  closeBtnText = (isEdit) ? getResourceString("Save") : getResourceString("Close");
@@ -1092,7 +1087,8 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
         
         // create the form dialog
         String title = getResourceString("TreeDefEditDialogTitle");
-        ViewBasedDisplayDialog dialog = new ViewBasedDisplayDialog(parentFrame,viewSetName,viewName,displayName,title,closeBtnText,className,idFieldName,isEdit,options);
+        ViewBasedDisplayDialog dialog = new ViewBasedDisplayDialog(parentFrame, null, viewName, displayName, title, 
+                                                                   closeBtnText, className, idFieldName, isEdit, options);
         dialog.setModal(true);
         dialog.setData(def);
         dialog.preCreateUI();

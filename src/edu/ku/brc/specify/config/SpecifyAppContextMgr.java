@@ -31,6 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import javax.swing.JDialog;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -379,33 +381,39 @@ public class SpecifyAppContextMgr extends AppContextMgr
                         log.error("Collection was null!");
                     }
     
-                    ToggleButtonChooserDlg<Collection> colDlg = new ToggleButtonChooserDlg<Collection>((Frame)UIRegistry.get(UIRegistry.FRAME),
-                                                                                                  UIRegistry.getResourceString("CHOOSE_COLLECTION_TITLE"), 
-                                                                                                  null,
-                                                                                                  list,
-                                                                                                  IconManager.getIcon("Collection"),
-                                                                                                  CustomDialog.OK_BTN, Type.RadioButton);
-                    colDlg.setSelectedIndex(selectColInx);
-                    colDlg.setModal(true);
-                    colDlg.setUseScrollPane(true);
-                    colDlg.createUI();
-                    colDlg.pack();
-                    Dimension size = colDlg.getSize();
-                    size.width  = Math.max(size.width, 300);
-                    if (size.height < 150)
-                    {
-                        size.height += 100;
-                    }
-                    colDlg.setSize(size);
+                    // For some reason the call to setDefaultLookAndFeelDecorated isn't working
+                    // so I put in the loop make sure they pick something.
+                    ToggleButtonChooserDlg<Collection> colDlg = null;
+                    do {
+                        
+                        JDialog.setDefaultLookAndFeelDecorated(false);
+                        colDlg = new ToggleButtonChooserDlg<Collection>((Frame)UIRegistry.get(UIRegistry.FRAME),
+                                                                          UIRegistry.getResourceString("CHOOSE_COLLECTION_TITLE"), 
+                                                                          null,
+                                                                          list,
+                                                                          IconManager.getIcon("Collection"),
+                                                                          CustomDialog.OK_BTN, Type.RadioButton);
+                        colDlg.setSelectedIndex(selectColInx);
+                        colDlg.setModal(true);
+                        colDlg.setUseScrollPane(true);
+                        colDlg.createUI();
+                        colDlg.pack();
+                        Dimension size = colDlg.getSize();
+                        size.width  = Math.max(size.width, 300);
+                        if (size.height < 150)
+                        {
+                            size.height += 100;
+                        }
+                        colDlg.setSize(size);
+                        
+                        UIHelper.centerWindow(colDlg);
+                        colDlg.setVisible(true);
+                        
+                    } while (colDlg.isCancelled());
                     
-                    UIHelper.centerWindow(colDlg);
-                    colDlg.setVisible(true);
-    
-                    if (!colDlg.isCancelled())
-                    {
-                        collection = colDlg.getSelectedObject();
-                    }
-                    
+                    collection = colDlg.getSelectedObject();
+                    JDialog.setDefaultLookAndFeelDecorated(true);
+
                 } else
                 {
                     // Accession / Registrar / Director may not be assigned to any Collection
@@ -928,13 +936,17 @@ public class SpecifyAppContextMgr extends AppContextMgr
             //---------------------------------------------------------
             // Common Views 
             //---------------------------------------------------------
-            dir = XMLHelper.getConfigDir("common");
-            if (dir.exists())
+            if (true)
             {
-                appResDir = createAppResourceDefFromDir("Common", dir);
-                appResDir.setTitle("Common");
-                appResDir.setUserType("Common");
-                
+                appResDir = getAppResDir(session, user, null, null, null, false, true);
+                dir = XMLHelper.getConfigDir("common");
+                if (dir.exists())
+                {
+                    String commonName = "Common";
+                    mergeAppResourceDirFromDiskDir(COMMONDIR, appResDir, commonName, dir);
+                    appResDir.setTitle(commonName);
+                    appResDir.setUserType(COMMONDIR);
+                }
                 spAppResourceList.add(appResDir);
                 spAppResourceHash.put(COMMONDIR, appResDir);
             }

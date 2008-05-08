@@ -16,13 +16,9 @@ package edu.ku.brc.af.tasks;
 
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
-import java.awt.BorderLayout;
-import java.awt.Image;
 import java.util.List;
 import java.util.Vector;
 
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import edu.ku.brc.af.core.MenuItemDesc;
@@ -30,7 +26,6 @@ import edu.ku.brc.af.core.SubPaneIFace;
 import edu.ku.brc.af.core.SubPaneMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.subpane.StatsPane;
-import edu.ku.brc.ui.GraphicsUtils;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.ToolBarDropDownBtn;
 
@@ -73,12 +68,9 @@ public class StartUpTask extends BaseTask
     /**
      * @return
      */
-    public static JPanel createSplashPanel()
+    public JPanel createSplashPanel()
     {
-        Image img = GraphicsUtils.getScaledImage(IconManager.getIcon("SpecifySplash"), 300, 500, true);
-        JPanel splashPanel = new JPanel(new BorderLayout());
-        splashPanel.add(new JLabel(new ImageIcon(img)), BorderLayout.CENTER);
-        return splashPanel;
+        return null;
     }
 
     /**
