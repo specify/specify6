@@ -13023,11 +13023,11 @@
       <item name="descriptionOfMaterial" type="java.lang.String">
         <names>
           <str language="de" country="" variant="">
-            <text>Description Of Material</text>
+            <text>Description</text>
             <version>0</version>
           </str>
           <str language="en" country="" variant="">
-            <text>Description Of Material</text>
+            <text>Description</text>
             <version>0</version>
           </str>
         </names>
@@ -24727,11 +24727,11 @@
       <item name="shipmentMethod" type="java.lang.String">
         <names>
           <str language="de" country="" variant="">
-            <text>Shipment Method</text>
+            <text>Method</text>
             <version>0</version>
           </str>
           <str language="en" country="" variant="">
-            <text>Shipment Method</text>
+            <text>Method</text>
             <version>0</version>
           </str>
         </names>

@@ -17,6 +17,7 @@ import java.awt.Frame;
 import java.awt.HeadlessException;
 import java.util.Vector;
 
+import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -30,12 +31,16 @@ import com.jgoodies.forms.builder.PanelBuilder;
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
+import edu.ku.brc.dbsupport.DBFieldInfo;
+import edu.ku.brc.dbsupport.DBTableChildIFace;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
+import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
@@ -58,6 +63,7 @@ public class AskForNumbersDlg extends CustomDialog
     protected String          fieldName;
     protected JTextArea       textArea;
     protected JTextArea       status;
+    protected JScrollPane     statusSP;
     protected StringBuilder   errorList = new StringBuilder();
     
     
@@ -88,21 +94,25 @@ public class AskForNumbersDlg extends CustomDialog
     {
         super.createUI();
         
-        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p,4px,p"));
+        PanelBuilder    pb = new PanelBuilder(new FormLayout("p,2px,f:p:g", "p,4px,f:p:g"));
         CellConstraints cc = new CellConstraints();
         
-        textArea = new JTextArea("", 5, 30);
-        status   = new JTextArea("", 3, 30);
+        textArea = UIHelper.createTextArea(5, 30);
+        status   = UIHelper.createTextArea(3, 30);
+        status.setEditable(false);
         
         JScrollPane sb = new JScrollPane(textArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        pb.add(new JLabel(getResourceString(labelKey), SwingConstants.RIGHT), cc.xy(1,1));
+        pb.add(UIHelper.createI18NLabel(labelKey, SwingConstants.RIGHT), cc.xy(1,1));
         pb.add(sb, cc.xy(3,1));
         
-        sb = new JScrollPane(status, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-        pb.add(sb, cc.xy(3,3));
+        statusSP = new JScrollPane(status, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        pb.add(statusSP, cc.xy(3,3));
+        statusSP.setVisible(false);
         
         contentPanel = pb.getPanel();
         mainPanel.add(contentPanel, BorderLayout.CENTER);
+        mainPanel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        pack();
     }
     
     /**
@@ -114,7 +124,9 @@ public class AskForNumbersDlg extends CustomDialog
         numbersList.clear();
         errorList.setLength(0);
         
-        UIFieldFormatterIFace formatter = DBTableIdMgr.getFieldFormatterFor(dataClass, fieldName);
+        DBTableInfo           ti        = DBTableIdMgr.getInstance().getByClassName(dataClass.getName());
+        DBFieldInfo           fi        = ti.getFieldByName(fieldName);
+        UIFieldFormatterIFace formatter = fi.getFormatter();
         
         boolean isOK = true;
         
@@ -128,12 +140,13 @@ public class AskForNumbersDlg extends CustomDialog
                 
                 for (String catNumStr : StringUtils.split(catNumbersStr, ','))
                 {
-                    String catNum = catNumStr.trim();
+                    String catNum      = catNumStr.trim();
+                    String catNumForDB = catNum;
                     if (formatter != null)
                     {
                         try
                         {
-                            catNum = (String)formatter.formatFromUI(catNum);
+                            catNumForDB = (String)formatter.formatFromUI(catNum);
                             
                         } catch (java.lang.NumberFormatException ex)
                         {
@@ -143,15 +156,18 @@ public class AskForNumbersDlg extends CustomDialog
                         }
                     }
                     
-                    if (StringUtils.isNotEmpty(catNum))
+                    if (StringUtils.isNotEmpty(catNumForDB))
                     {
-                        Integer colObjId = (Integer)session.getData("SELECT collectionObjectId FROM CollectionObject WHERE catalogNumber = '"+catNum+"'");
+                        Integer colObjId = (Integer)session.getData("SELECT id FROM "+ti.getClassName()+" WHERE "+fieldName+" = '"+catNumForDB+"'");
+                        
                         if (colObjId != null)
                         {
                             numbersList.add(colObjId);
                         } else
                         {
-                            errorList.append(getLocalizedMessage("AFN_NOTFND_ERROR", catNum));
+                            statusSP.setVisible(true);
+                            pack();
+                            errorList.append(getLocalizedMessage("AFN_NOTFND_ERROR", fi.getTitle(), catNum));
                             errorList.append("\n");
                             isOK = false;
                         }
