@@ -403,14 +403,16 @@ public class WorkbenchTask extends BaseTask
         roc.addDropDataFlavor(new DataFlavor(Workbench.class, "Report"));
        
         JPopupMenu popupMenu = new JPopupMenu();
-        UIHelper.createMenuItem(popupMenu, getResourceString("WB_EDIT_PROPS"), getResourceString("WB_EDIT_PROPS_MNEU"), null, true, new ActionListener() {
+        String title = "WB_EDIT_PROPS";
+        String mneu = "WB_EDIT_PROPS_MNEU";
+        UIHelper.createlocalizedMenuItem(popupMenu, title, mneu, null, true, new ActionListener() {
             public void actionPerformed(ActionEvent e)
             {
                 editWorkbenchProps(roc);
                 UsageTracker.incrUsageCount("WB.ShowWorkbenchProps");
             }
         });
-        UIHelper.createMenuItem(popupMenu, getResourceString("WB_EDIT_DATASET_MAPPING"), getResourceString("WB_EDIT_DATASET_MAPPING_MNEU"), null, true, new ActionListener() {
+        UIHelper.createlocalizedMenuItem(popupMenu, getResourceString("WB_EDIT_DATASET_MAPPING"), getResourceString("WB_EDIT_DATASET_MAPPING_MNEU"), null, true, new ActionListener() {
             @SuppressWarnings("synthetic-access")
             public void actionPerformed(ActionEvent e)
             {
@@ -425,7 +427,7 @@ public class WorkbenchTask extends BaseTask
 
         popupMenu.addSeparator();
         
-        UIHelper.createMenuItem(popupMenu, getResourceString("Delete"), getResourceString("DELETE_MNEU"), null, true, new ActionListener() {
+        UIHelper.createlocalizedMenuItem(popupMenu, getResourceString("Delete"), getResourceString("DELETE_MNEU"), null, true, new ActionListener() {
             @SuppressWarnings("synthetic-access")
             public void actionPerformed(ActionEvent e)
             {

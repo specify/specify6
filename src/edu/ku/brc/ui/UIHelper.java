@@ -899,7 +899,7 @@ public final class UIHelper
      * @param action the aciton
      * @return menu item
      */
-    public static JMenuItem createMenuItem(final JPopupMenu     popupMenu,
+    public static JMenuItem createlocalizedMenuItem(final JPopupMenu     popupMenu,
                                            final String         label,
                                            final String         mnemonic,
                                            final String         accessibleDescription,
