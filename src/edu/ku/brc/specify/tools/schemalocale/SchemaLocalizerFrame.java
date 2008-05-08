@@ -137,8 +137,13 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
         JMenuBar menuBar = new JMenuBar();
         setJMenuBar(menuBar);
         
-        JMenu fileMenu = UIHelper.createMenu(menuBar, "File", "F");
-        JMenuItem saveMenuItem = UIHelper.createMenuItem(fileMenu, "Save", "S", "", false, new ActionListener()
+        String title = "File";
+        String mneu = "F";
+        JMenu fileMenu = UIHelper.createLocalizedMenu(menuBar, title, mneu);
+        
+        title = "Save";
+        mneu = "S";
+        JMenuItem saveMenuItem = UIHelper.createLocalizedMenuItem(fileMenu, title, mneu, "", false, new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
             {
@@ -147,7 +152,9 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
         });
         saveMenuItem.setEnabled(false);
         
-        UIHelper.createMenuItem(fileMenu, "Export", "E", "", true, new ActionListener()
+        title = "Export";
+        mneu = "E";
+        UIHelper.createLocalizedMenuItem(fileMenu, title, mneu,  "", true, new ActionListener()
         {
             public void actionPerformed(ActionEvent e)
             {
@@ -155,11 +162,13 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
             }
         });
         
+        title = "Exit";
+        mneu = "x";
         if (!UIHelper.isMacOS())
         {
             fileMenu.addSeparator();
             
-            UIHelper.createMenuItem(fileMenu, "Exit", "x", "", true, new ActionListener()
+            UIHelper.createLocalizedMenuItem(fileMenu, title, mneu,  "", true, new ActionListener()
             {
                 public void actionPerformed(ActionEvent e)
                 {

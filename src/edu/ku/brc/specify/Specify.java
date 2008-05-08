@@ -163,7 +163,7 @@ import edu.ku.brc.util.thumbnails.Thumbnailer;
  * 
  * @author rods
  */
-@SuppressWarnings("serial")
+@SuppressWarnings("serial") //$NON-NLS-1$
 public class Specify extends JPanel implements DatabaseLoginListener
 {
     private static final boolean isRelease          = false;
@@ -196,10 +196,10 @@ public class Specify extends JPanel implements DatabaseLoginListener
 
     private boolean              isWorkbenchOnly     = false;
     
-    private String               appName             = "Specify";
-    private String               appVersion          = "6.0";
+    private String               appName             = "Specify"; //$NON-NLS-1$
+    private String               appVersion          = "6.0"; //$NON-NLS-1$
 
-    private String               appBuildVersion     = "200805061130 (SVN: 4000)";
+    private String               appBuildVersion     = "200805061130 (SVN: 4000)"; //$NON-NLS-1$
     
     protected static CacheManager cacheManager        = new CacheManager();
 
@@ -256,25 +256,25 @@ public class Specify extends JPanel implements DatabaseLoginListener
        
         // Set the default values
         int i = 0;
-        String[] classNames = {"Taxon", "Geography", "LithoStrat", "GeologicTimePeriod", "Storage"};
+        String[] classNames = {"Taxon", "Geography", "LithoStrat", "GeologicTimePeriod", "Storage"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
         int[]    ranks      = {140,     200,         200,           200,                 200};
         for (String className : classNames)
         {
-            remotePrefs.getColor("Treeeditor.TreeColColor1."+className, new Color(202, 238, 255), true);
-            remotePrefs.getColor("Treeeditor.TreeColColor2."+className, new Color(151, 221, 255), true);
-            remotePrefs.getInt("TreeEditor.Rank.Threshold."+className, ranks[i], true);
+            remotePrefs.getColor("Treeeditor.TreeColColor1."+className, new Color(202, 238, 255), true); //$NON-NLS-1$
+            remotePrefs.getColor("Treeeditor.TreeColColor2."+className, new Color(151, 221, 255), true); //$NON-NLS-1$
+            remotePrefs.getInt("TreeEditor.Rank.Threshold."+className, ranks[i], true); //$NON-NLS-1$
             i++;
         }
         
-        remotePrefs.getBoolean("TreeEditor.RestoreTreeExpansionState", true, true);
-        remotePrefs.getBoolean("google.earth.useorigheaders", true, true);
-        remotePrefs.getInt("SubPaneMgr.MaxPanes", 12, true);
+        remotePrefs.getBoolean("TreeEditor.RestoreTreeExpansionState", true, true); //$NON-NLS-1$
+        remotePrefs.getBoolean("google.earth.useorigheaders", true, true); //$NON-NLS-1$
+        remotePrefs.getInt("SubPaneMgr.MaxPanes", 12, true); //$NON-NLS-1$
         
         String ds = Discipline.getCurrentDiscipline().getName();
-        remotePrefs.getBoolean("Interactions.Using.Interactions."+ds, true, true);
-        remotePrefs.getBoolean("Interactions.Doing.Gifts."+ds, true, true);
-        remotePrefs.getBoolean("Interactions.Doing.Exchanges."+ds, Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.botany), true);
-        remotePrefs.getBoolean("Agent.Use.Variants."+ds, Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.botany), true);
+        remotePrefs.getBoolean("Interactions.Using.Interactions."+ds, true, true); //$NON-NLS-1$
+        remotePrefs.getBoolean("Interactions.Doing.Gifts."+ds, true, true); //$NON-NLS-1$
+        remotePrefs.getBoolean("Interactions.Doing.Exchanges."+ds, Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.botany), true); //$NON-NLS-1$
+        remotePrefs.getBoolean("Agent.Use.Variants."+ds, Discipline.isCurrentDiscipline(DisciplineType.STD_DISCIPLINES.botany), true); //$NON-NLS-1$
         
         try
         {
@@ -287,7 +287,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
      */
     public void startUp()
     {
-    	log.debug("StartUp");
+    	log.debug("StartUp"); //$NON-NLS-1$
         
         // Adjust Default Swing UI Default Resources (Color, Fonts, etc) per Platform
         UIHelper.adjustUIDefaults();
@@ -297,7 +297,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         // Insurance
         if (StringUtils.isEmpty(UIRegistry.getJavaDBPath()))
         {
-        	File userDataDir = new File(UIRegistry.getAppDataDir() + File.separator + "DerbyDatabases");
+        	File userDataDir = new File(UIRegistry.getAppDataDir() + File.separator + "DerbyDatabases"); //$NON-NLS-1$
             UIRegistry.setJavaDBDir(userDataDir.getAbsolutePath());
         }
         log.debug(UIRegistry.getJavaDBPath());
@@ -307,12 +307,12 @@ public class Specify extends JPanel implements DatabaseLoginListener
         File thumbnailDir = null;
         try
         {
-            thumbnailDir = XMLHelper.getConfigDir("thumbnail_generators.xml");
+            thumbnailDir = XMLHelper.getConfigDir("thumbnail_generators.xml"); //$NON-NLS-1$
             thumb.registerThumbnailers(thumbnailDir);
         }
         catch (Exception e1)
         {
-            throw new RuntimeException("Couldn't find thumbnailer xml ["+(thumbnailDir != null ? thumbnailDir.getAbsolutePath() : "")+"]");
+            throw new RuntimeException("Couldn't find thumbnailer xml ["+(thumbnailDir != null ? thumbnailDir.getAbsolutePath() : "")+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
         thumb.setQuality(.5f);
         thumb.setMaxHeight(128);
@@ -320,16 +320,16 @@ public class Specify extends JPanel implements DatabaseLoginListener
 
         AttachmentManagerIface attachMgr = null;
         
-        File location = UIRegistry.getAppDataSubDir("AttachmentStorage", true);
+        File location = UIRegistry.getAppDataSubDir("AttachmentStorage", true); //$NON-NLS-1$
         try
         {
             attachMgr = new FileStoreAttachmentManager(location);
         }
         catch (IOException e1)
         {
-            log.warn("Problems setting the FileStoreAttachmentManager at ["+location+"]");
+            log.warn("Problems setting the FileStoreAttachmentManager at ["+location+"]"); //$NON-NLS-1$ //$NON-NLS-2$
             // TODO RELEASE -  Instead of exiting we need to disable Attachements
-            throw new RuntimeException("Problems setting the FileStoreAttachmentManager at ["+location+"]");
+            throw new RuntimeException("Problems setting the FileStoreAttachmentManager at ["+location+"]"); //$NON-NLS-1$ //$NON-NLS-2$
         }
         
         AttachmentUtils.setAttachmentManager(attachMgr);
@@ -370,11 +370,11 @@ public class Specify extends JPanel implements DatabaseLoginListener
             log.debug("JavaDB Path: "+UIRegistry.getJavaDBPath());
         }*/
         
-        UsageTracker.incrUsageCount("RunCount");
+        UsageTracker.incrUsageCount("RunCount"); //$NON-NLS-1$
         
         UIHelper.attachUnhandledException();
 
-        FileCache.setDefaultPath(UIRegistry.getAppDataDir() + File.separator + "cache");
+        FileCache.setDefaultPath(UIRegistry.getAppDataDir() + File.separator + "cache"); //$NON-NLS-1$
 
         cacheManager.registerCache(UIRegistry.getLongTermFileCache());
         cacheManager.registerCache(UIRegistry.getShortTermFileCache());
@@ -411,18 +411,18 @@ public class Specify extends JPanel implements DatabaseLoginListener
 //        }
         
         // Setup base font AFTER setting Look and Feel
-        UIRegistry.setBaseFont((createLabel("")).getFont());
+        UIRegistry.setBaseFont((createLabel("")).getFont()); //$NON-NLS-1$
 
-        log.info("Creating Database configuration ");
+        log.info("Creating Database configuration "); //$NON-NLS-1$
 
         if (!isWorkbenchOnly)
         {
-            HibernateUtil.setListener("post-commit-update", new edu.ku.brc.specify.dbsupport.PostUpdateEventListener());
-            HibernateUtil.setListener("post-commit-insert", new edu.ku.brc.specify.dbsupport.PostInsertEventListener());
+            HibernateUtil.setListener("post-commit-update", new edu.ku.brc.specify.dbsupport.PostUpdateEventListener()); //$NON-NLS-1$
+            HibernateUtil.setListener("post-commit-insert", new edu.ku.brc.specify.dbsupport.PostInsertEventListener()); //$NON-NLS-1$
             // SInce Update get called when deleting an object there is no need to register this class.
             // The update deletes becuase first it removes the Lucene document and then goes to add it back in, but since the
             // the record is deleted it doesn't get added.
-            HibernateUtil.setListener("post-commit-delete", new edu.ku.brc.specify.dbsupport.PostDeleteEventListener());
+            HibernateUtil.setListener("post-commit-delete", new edu.ku.brc.specify.dbsupport.PostDeleteEventListener()); //$NON-NLS-1$
             //HibernateUtil.setListener("delete", new edu.ku.brc.specify.dbsupport.DeleteEventListener());
         }
         adjustLocaleFromPrefs();         
@@ -437,18 +437,18 @@ public class Specify extends JPanel implements DatabaseLoginListener
     protected void setUpSystemProperties()
     {
         // Name factories
-        System.setProperty(AppContextMgr.factoryName,                   "edu.ku.brc.specify.config.SpecifyAppContextMgr");      // Needed by AppContextMgr
-        System.setProperty(AppPreferences.factoryName,                  "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");         // Needed by AppReferences
-        System.setProperty("edu.ku.brc.ui.ViewBasedDialogFactoryIFace", "edu.ku.brc.specify.ui.DBObjDialogFactory");            // Needed By UIRegistry
-        System.setProperty("edu.ku.brc.ui.forms.DraggableRecordIdentifierFactory", "edu.ku.brc.specify.ui.SpecifyDraggableRecordIdentiferFactory"); // Needed By the Form System
-        System.setProperty("edu.ku.brc.dbsupport.AuditInterceptor",     "edu.ku.brc.specify.dbsupport.AuditInterceptor");       // Needed By the Form System for updating Lucene and logging transactions
-        System.setProperty("edu.ku.brc.dbsupport.DataProvider",         "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set
-        System.setProperty("edu.ku.brc.ui.db.PickListDBAdapterFactory", "edu.ku.brc.specify.ui.db.PickListDBAdapterFactory");   // Needed By the Auto Cosmplete UI
-        System.setProperty(CustomQueryFactory.factoryName,              "edu.ku.brc.specify.dbsupport.SpecifyCustomQueryFactory");
-        System.setProperty(UIFieldFormatterMgr.factoryName,             "edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr");           // Needed for CatalogNumberign
-        System.setProperty(QueryAdjusterForDomain.factoryName,          "edu.ku.brc.specify.dbsupport.SpecifyQueryAdjusterForDomain"); // Needed for ExpressSearch
-        System.setProperty(SchemaI18NService.factoryName,               "edu.ku.brc.specify.config.SpecifySchemaI18NService");         // Needed for Localization and Schema
-        System.setProperty(WebLinkMgr.factoryName,                      "edu.ku.brc.specify.config.SpecifyWebLinkMgr");                // Needed for WebLnkButton
+        System.setProperty(AppContextMgr.factoryName,                   "edu.ku.brc.specify.config.SpecifyAppContextMgr");      // Needed by AppContextMgr //$NON-NLS-1$
+        System.setProperty(AppPreferences.factoryName,                  "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");         // Needed by AppReferences //$NON-NLS-1$
+        System.setProperty("edu.ku.brc.ui.ViewBasedDialogFactoryIFace", "edu.ku.brc.specify.ui.DBObjDialogFactory");            // Needed By UIRegistry //$NON-NLS-1$ //$NON-NLS-2$
+        System.setProperty("edu.ku.brc.ui.forms.DraggableRecordIdentifierFactory", "edu.ku.brc.specify.ui.SpecifyDraggableRecordIdentiferFactory"); // Needed By the Form System //$NON-NLS-1$ //$NON-NLS-2$
+        System.setProperty("edu.ku.brc.dbsupport.AuditInterceptor",     "edu.ku.brc.specify.dbsupport.AuditInterceptor");       // Needed By the Form System for updating Lucene and logging transactions //$NON-NLS-1$ //$NON-NLS-2$
+        System.setProperty("edu.ku.brc.dbsupport.DataProvider",         "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set //$NON-NLS-1$ //$NON-NLS-2$
+        System.setProperty("edu.ku.brc.ui.db.PickListDBAdapterFactory", "edu.ku.brc.specify.ui.db.PickListDBAdapterFactory");   // Needed By the Auto Cosmplete UI //$NON-NLS-1$ //$NON-NLS-2$
+        System.setProperty(CustomQueryFactory.factoryName,              "edu.ku.brc.specify.dbsupport.SpecifyCustomQueryFactory"); //$NON-NLS-1$
+        System.setProperty(UIFieldFormatterMgr.factoryName,             "edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr");           // Needed for CatalogNumberign //$NON-NLS-1$
+        System.setProperty(QueryAdjusterForDomain.factoryName,          "edu.ku.brc.specify.dbsupport.SpecifyQueryAdjusterForDomain"); // Needed for ExpressSearch //$NON-NLS-1$
+        System.setProperty(SchemaI18NService.factoryName,               "edu.ku.brc.specify.config.SpecifySchemaI18NService");         // Needed for Localization and Schema //$NON-NLS-1$
+        System.setProperty(WebLinkMgr.factoryName,                      "edu.ku.brc.specify.config.SpecifyWebLinkMgr");                // Needed for WebLnkButton //$NON-NLS-1$
         
     }
 
@@ -523,7 +523,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         setPreferredSize(new Dimension(1024, 768)); // For demo
 
         topFrame = new JFrame(gc);
-        topFrame.setIconImage(IconManager.getImage("AppIcon").getImage());
+        topFrame.setIconImage(IconManager.getImage("AppIcon").getImage()); //$NON-NLS-1$
         //topFrame.setAlwaysOnTop(true);
         
         topFrame.setGlassPane(glassPane = GhostGlassPane.getInstance());
@@ -557,8 +557,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
 
         int[] sections = {5, 5};
         statusField = new JStatusBar(sections);
-        statusField.setErrorIcon(IconManager.getIcon("Error", IconManager.IconSize.Std16));
-        statusField.setWarningIcon(IconManager.getIcon("Warning", IconManager.IconSize.Std16));
+        statusField.setErrorIcon(IconManager.getIcon("Error", IconManager.IconSize.Std16)); //$NON-NLS-1$
+        statusField.setWarningIcon(IconManager.getIcon("Warning", IconManager.IconSize.Std16)); //$NON-NLS-1$
         UIRegistry.setStatusBar(statusField);
 
         add(statusField, BorderLayout.SOUTH);
@@ -572,14 +572,14 @@ public class Specify extends JPanel implements DatabaseLoginListener
         ImageIcon appImgIcon = null;
         if (StringUtils.isNotEmpty(imgEncoded))
         {
-            appImgIcon = GraphicsUtils.uudecodeImage("", imgEncoded);
+            appImgIcon = GraphicsUtils.uudecodeImage("", imgEncoded); //$NON-NLS-1$
             if (appImgIcon != null && appImgIcon.getIconWidth() == 32 && appImgIcon.getIconHeight() == 32)
             {
                 appIcon.setIcon(appImgIcon);
                 return;
             }
         }
-        appImgIcon = IconManager.getImage("AppIcon", IconManager.IconSize.Std32);
+        appImgIcon = IconManager.getImage("AppIcon", IconManager.IconSize.Std32); //$NON-NLS-1$
         appIcon.setIcon(appImgIcon);
     }
 
@@ -592,9 +592,9 @@ public class Specify extends JPanel implements DatabaseLoginListener
         JToolBar toolBar = new JToolBar();
         toolBar.setLayout(new ToolbarLayoutManager(2, 2));
         
-        appIcon = new JLabel("  ");
+        appIcon = new JLabel("  "); //$NON-NLS-1$
         
-        setAppIcon(AppPreferences.getRemote().get("ui.formatting.user_icon_image", null));
+        setAppIcon(AppPreferences.getRemote().get("ui.formatting.user_icon_image", null)); //$NON-NLS-1$
         toolBar.add(appIcon);
         
         appIcon.addMouseListener(new MouseAdapter() 
@@ -606,12 +606,12 @@ public class Specify extends JPanel implements DatabaseLoginListener
             }
         });
         
-        CommandDispatcher.register("Preferences", new CommandListener() {
+        CommandDispatcher.register("Preferences", new CommandListener() { //$NON-NLS-1$
             public void doCommand(CommandAction cmdAction)
             {
-                if (cmdAction.isAction("Updated"))
+                if (cmdAction.isAction("Updated")) //$NON-NLS-1$
                 {
-                    setAppIcon(AppPreferences.getRemote().get("ui.formatting.user_icon_image", null));
+                    setAppIcon(AppPreferences.getRemote().get("ui.formatting.user_icon_image", null)); //$NON-NLS-1$
                 }
             }
         });
@@ -630,7 +630,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         DataProviderSessionIFace session = null;
         try
         {
-            String sqlStr = "SELECT a.lastName,a.firstName FROM Agent a JOIN a.disciplines as d WHERE d.disciplineId = 1 AND  LOWER(lastName) LIKE 's%'  ORDER BY lastName ASC";
+            String sqlStr = "SELECT a.lastName,a.firstName FROM Agent a JOIN a.disciplines as d WHERE d.disciplineId = 1 AND  LOWER(lastName) LIKE 's%'  ORDER BY lastName ASC"; //$NON-NLS-1$
             session = DataProviderFactory.getInstance().createSession();
             Object  result     = session.getDataList(sqlStr);
             System.out.println(result);
@@ -656,16 +656,20 @@ public class Specify extends JPanel implements DatabaseLoginListener
         //--------------------------------------------------------------------
         //-- File Menu
         //--------------------------------------------------------------------
-        JMenu menu = UIHelper.createMenu(mb, "FileMenu", "FileMneu");
-        mi = UIHelper.createMenuItem(menu, "Login", "L", "Database Login", true, null);
+        JMenu menu = UIHelper.createLocalizedMenu(mb, "Specify.FILE_MENU", "Specify.FILE_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
+
+        String ttle = "Specify.LOGIN_MENU";//$NON-NLS-1$ 
+        String mneu = "Specify.LOGIN_MNEU";//$NON-NLS-1$ 
+        String desc = "Specify.LOGIN_DESC";//$NON-NLS-1$ 
+        mi = UIHelper.createLocalizedMenuItem(menu, ttle, mneu, desc, true, null); 
         mi.addActionListener(new ActionListener()
                 {
-                    @SuppressWarnings("synthetic-access")
+                    @SuppressWarnings("synthetic-access") //$NON-NLS-1$
                     public void actionPerformed(ActionEvent ae)
                     {
                         class DBListener implements DatabaseLoginListener
                         {
-                            @SuppressWarnings("synthetic-access")
+                            @SuppressWarnings("synthetic-access") //$NON-NLS-1$
                             public void loggedIn(final Window window, final String databaseNameArg, final String userNameArg)
                             {
                                 specifyApp.loggedIn(window, databaseNameArg, userNameArg);
@@ -704,8 +708,9 @@ public class Specify extends JPanel implements DatabaseLoginListener
         if (!isWorkbenchOnly)
         {
             // Add Menu for switching Collection
-            String title = getResourceString("CHANGE_COLLECTION");
-            changeCollectionMenuItem = UIHelper.createMenuItem(menu, title, getResourceString("CHANGE_COLL_MNEU"), title, false, null);
+            String title = "Specify.CHANGE_COLLECTION"; //$NON-NLS-1$
+            String mnu = "Specify.CHANGE_COLL_MNEU"; //$NON-NLS-1$
+            changeCollectionMenuItem = UIHelper.createLocalizedMenuItem(menu, title, mnu, title, false, null); 
             changeCollectionMenuItem.addActionListener(new ActionListener()
                     {
                         public void actionPerformed(ActionEvent ae)
@@ -724,7 +729,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
             
             
             menu.addMouseListener(new MouseAdapter() {
-                @SuppressWarnings("synthetic-access")
+                @SuppressWarnings("synthetic-access") //$NON-NLS-1$
                 @Override
                 public void mousePressed(MouseEvent e) {
                     changeCollectionMenuItem.setEnabled(((SpecifyAppContextMgr)AppContextMgr.getInstance()).getNumOfCollectionsForUser() > 1);
@@ -735,8 +740,9 @@ public class Specify extends JPanel implements DatabaseLoginListener
         if (UIHelper.getOSType() != UIHelper.OSTYPE.MacOSX)
         {
             menu.addSeparator();
-            String title = getResourceString("Exit");
-            mi = UIHelper.createMenuItem(menu, title, getResourceString("Exit_MNEU"), title, true, null);
+            String title = "Specify.EXIT"; //$NON-NLS-1$
+            String mnu = "Specify.Exit_MNEU"; //$NON-NLS-1$
+            mi = UIHelper.createLocalizedMenuItem(menu, title, mnu, title, true, null); 
             mi.addActionListener(new ActionListener()
                     {
                         public void actionPerformed(ActionEvent ae)
@@ -752,8 +758,9 @@ public class Specify extends JPanel implements DatabaseLoginListener
         if (UIHelper.getOSType() != UIHelper.OSTYPE.MacOSX)
         {
             menu.addSeparator();
-            String title = getResourceString("PREFERENCES");
-            mi = UIHelper.createMenuItem(menu, title, getResourceString("PREFERENCES_MNEU"), title, false, null);
+            String title = "Specify.PREFERENCES"; //$NON-NLS-1$
+            String mnu = "Specify.PREFERENCES_MNEU";//$NON-NLS-1$
+            mi = UIHelper.createLocalizedMenuItem(menu, title, mnu, title, false, null); 
             mi.addActionListener(new ActionListener()
                     {
                         public void actionPerformed(ActionEvent ae)
@@ -805,12 +812,12 @@ public class Specify extends JPanel implements DatabaseLoginListener
         //-- Data Menu
         //--------------------------------------------------------------------
         String title;
-        JMenu dataMenu = UIHelper.createMenu(mb, "DataMenu", "DataMneu");
+        JMenu dataMenu = UIHelper.createLocalizedMenu(mb, "Specify.DATA_MENU", "Specify.DATA_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
         ResultSetController.addMenuItems(dataMenu);
         dataMenu.addSeparator();
         
         // Save And New Menu Item
-        Action saveAndNewAction = new AbstractAction(getResourceString("SAVE_AND_NEW")) {
+        Action saveAndNewAction = new AbstractAction(getResourceString("Specify.SAVE_AND_NEW")) { //$NON-NLS-1$
             public void actionPerformed(ActionEvent e)
             {
                 SubPaneIFace sp = SubPaneMgr.getInstance().getCurrentSubPane();
@@ -831,12 +838,12 @@ public class Specify extends JPanel implements DatabaseLoginListener
         saveAndNewAction.setEnabled(false);
         JCheckBoxMenuItem saveAndNewCBMI = new JCheckBoxMenuItem(saveAndNewAction);
         dataMenu.add(saveAndNewCBMI);
-        UIRegistry.register("SaveAndNew", saveAndNewCBMI);
-        UIRegistry.registerAction("SaveAndNew", saveAndNewAction);
+        UIRegistry.register("SaveAndNew", saveAndNewCBMI); //$NON-NLS-1$
+        UIRegistry.registerAction("SaveAndNew", saveAndNewAction); //$NON-NLS-1$
         mb.add(dataMenu);
         
         // Configure Carry Forward
-        Action configCarryForwardAction = new AbstractAction(getResourceString("CONFIG_CARRY_FORWARD_MENU")) {
+        Action configCarryForwardAction = new AbstractAction(getResourceString("Specify.CONFIG_CARRY_FORWARD_MENU")) { //$NON-NLS-1$
             public void actionPerformed(ActionEvent e)
             {
                 SubPaneIFace sp = SubPaneMgr.getInstance().getCurrentSubPane();
@@ -857,13 +864,13 @@ public class Specify extends JPanel implements DatabaseLoginListener
         configCarryForwardAction.setEnabled(false);
         JMenuItem configCFWMI = new JMenuItem(configCarryForwardAction);
         dataMenu.add(configCFWMI);
-        UIRegistry.register("ConfigCarryForward", configCFWMI);
-        UIRegistry.registerAction("ConfigCarryForward", configCarryForwardAction);
+        UIRegistry.register("ConfigCarryForward", configCFWMI); //$NON-NLS-1$
+        UIRegistry.registerAction("ConfigCarryForward", configCarryForwardAction); //$NON-NLS-1$
         mb.add(dataMenu);
 
         //---------------------------------------
         // Carry Forward Menu Item (On / Off)
-        Action carryForwardAction = new AbstractAction(getResourceString("CARRY_FORWARD_CHECKED_MENU")) {
+        Action carryForwardAction = new AbstractAction(getResourceString("Specify.CARRY_FORWARD_CHECKED_MENU")) { //$NON-NLS-1$
             public void actionPerformed(ActionEvent e)
             {
                 SubPaneIFace sp = SubPaneMgr.getInstance().getCurrentSubPane();
@@ -885,24 +892,25 @@ public class Specify extends JPanel implements DatabaseLoginListener
         carryForwardAction.setEnabled(false);
         JCheckBoxMenuItem carryForwardCBMI = new JCheckBoxMenuItem(carryForwardAction);
         dataMenu.add(carryForwardCBMI);
-        UIRegistry.register("CarryForward", carryForwardCBMI);
-        UIRegistry.registerAction("CarryForward", carryForwardAction);
+        UIRegistry.register("CarryForward", carryForwardCBMI); //$NON-NLS-1$
+        UIRegistry.registerAction("CarryForward", carryForwardAction); //$NON-NLS-1$
         mb.add(dataMenu);
         
         if (!isWorkbenchOnly)
         {
-            menu = UIHelper.createMenu(mb, "ToolsMenu", "ToolsMneu");
+            menu = UIHelper.createLocalizedMenu(mb, "Specify.TOOLS_MENU", "Specify.TOOLS_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
             
-            menu = UIHelper.createMenu(mb, "AdvMenu", "AdvMneu");
+            menu = UIHelper.createLocalizedMenu(mb, "Specify.ADV_MENU", "Specify.ADV_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
             
             //--------------------------------------------------------------------
             //-- System Menu
             //--------------------------------------------------------------------
 
-            menu.add(UIHelper.createMenu(mb, "SystemMenu", "SystemMneu"));
+            menu.add(UIHelper.createLocalizedMenu(mb, "Specify.SYSTEM_MENU", "Specify.SYSTEM.MNEU")); //$NON-NLS-1$ //$NON-NLS-2$
             
-            title = getResourceString("SCHEMA_CONFIG");
-            mi = UIHelper.createMenuItem(menu, title, getResourceString("SCHEMA_CONFIG_MNU"), title, true, null);
+            title = "Specify.SCHEMA_CONFIG"; //$NON-NLS-1$
+            String mnu = "Specify.SCHEMA_CONFIG_MNU";  //$NON-NLS-1$
+            mi = UIHelper.createLocalizedMenuItem(menu, title, mnu, title, true, null);
             mi.addActionListener(new ActionListener()
                     {
                         public void actionPerformed(ActionEvent ae)
@@ -911,8 +919,9 @@ public class Specify extends JPanel implements DatabaseLoginListener
                         }
                     });
 
-            title = getResourceString("RIE_MENU");
-            mi = UIHelper.createMenuItem(menu, title, getResourceString("RIE_MNU"), title, true, null);
+            title = "Specify.RIE_MENU"; //$NON-NLS-1$
+            mnu = "Specify.RIE_MNU";  //$NON-NLS-1$
+            mi = UIHelper.createLocalizedMenuItem(menu, title, mnu, title, true, null); 
             mi.addActionListener(new ActionListener()
                     {
                         public void actionPerformed(ActionEvent ae)
@@ -920,14 +929,15 @@ public class Specify extends JPanel implements DatabaseLoginListener
                             doResourceImportExport();
                         }
                     });
-            title = getResourceString("WBSCHEMA_CONFIG");
-            mi = UIHelper.createMenuItem(menu, title, getResourceString("WBSCHEMA_CONFIG_MNU"), title, true, null);
+            title = "Specify.WBSCHEMA_CONFIG"; //$NON-NLS-1$
+            mnu = "Specify.WBSCHEMA_CONFIG_MNU";  //$NON-NLS-1$
+            mi = UIHelper.createLocalizedMenuItem(menu, title, mnu, title, true, null); 
             mi.addActionListener(new ActionListener()
                     {
                         public void actionPerformed(ActionEvent ae)
                         {
                             DBTableIdMgr schema = new DBTableIdMgr(false);
-                            schema.initialize(new File(XMLHelper.getConfigDirPath("specify_workbench_datamodel.xml")));
+                            schema.initialize(new File(XMLHelper.getConfigDirPath("specify_workbench_datamodel.xml"))); //$NON-NLS-1$
                             doSchemaConfig(SpLocaleContainer.WORKBENCH_SCHEMA, schema);
                         }
                     });
@@ -954,7 +964,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         //--------------------------------------------------------------------
         //-- Tab Menu
         //--------------------------------------------------------------------
-        menu = UIHelper.createMenu(mb, "TabsMenu", "TabsMneu");
+        menu = UIHelper.createLocalizedMenu(mb, "Specify.TABS_MENU", "Specify.TABS_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
         
         Action closeCurrent = new AbstractAction()
         {
@@ -963,19 +973,21 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 SubPaneMgr.getInstance().closeCurrent();
             }
         };
-        String ttl = getResourceString("SBP_CLOSE_CUR_MENU");
-        mi = UIHelper.createMenuItemWithAction(menu, ttl, getResourceString("SBP_CLOSE_CUR_MNEU"), ttl, true, closeCurrent);
-        UIRegistry.registerAction("CloseCurrent", closeCurrent);
+        String ttl = "Specify.SBP_CLOSE_CUR_MENU"; //$NON-NLS-1$
+        String mnu = "Specify.SBP_CLOSE_CUR_MNEU"; //$NON-NLS-1$
+        mi = UIHelper.createMenuItemWithAction(menu, ttl, mnu, ttl, true, closeCurrent); 
+        UIRegistry.registerAction("CloseCurrent", closeCurrent); //$NON-NLS-1$
 
-        ttl = getResourceString("SBP_CLOSE_ALL_MENU");
+        ttl = "Specify.SBP_CLOSE_ALL_MENU"; //$NON-NLS-1$
+        mnu = "Specify.SBP_CLOSE_ALL_MNEU"; //$NON-NLS-1$
         Action closeAll = new AbstractAction() {
             public void actionPerformed(ActionEvent ae)
             {
                 SubPaneMgr.getInstance().closeAll();
             }
         };
-        mi = UIHelper.createMenuItemWithAction(menu, ttl, getResourceString("SBP_CLOSE_ALL_MNEU"), ttl, true, closeAll);
-        UIRegistry.registerAction("CloseAll", closeAll);
+        mi = UIHelper.createMenuItemWithAction(menu, ttl, mnu, ttl, true, closeAll); 
+        UIRegistry.registerAction("CloseAll", closeAll); //$NON-NLS-1$
         
         Action closeAllBut = new AbstractAction() {
             public void actionPerformed(ActionEvent ae)
@@ -983,14 +995,15 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 SubPaneMgr.getInstance().closeAllExceptCurrent();
             }
         };
-        ttl = getResourceString("SBP_CLOSE_ALLBUT_MENU");
-        mi = UIHelper.createMenuItemWithAction(menu, ttl, getResourceString("SBP_CLOSE_ALLBUT_MNEU"), ttl, true, closeAllBut);
-        UIRegistry.registerAction("CloseAllBut", closeAllBut);
+        ttl = "Specify.SBP_CLOSE_ALLBUT_MENU"; //$NON-NLS-1$
+        mnu = "Specify.SBP_CLOSE_ALLBUT_MNEU"; //$NON-NLS-1$
+        mi = UIHelper.createMenuItemWithAction(menu, ttl, mnu, ttl, true, closeAllBut); 
+        UIRegistry.registerAction("CloseAllBut", closeAllBut); //$NON-NLS-1$
         
         menu.addSeparator();
         
         // Configure Task
-        Action configureToolAction = new AbstractAction(getResourceString("CONFIG_TASK_MENU")) {
+        Action configureToolAction = new AbstractAction(getResourceString("Specify.CONFIG_TASK_MENU")) { //$NON-NLS-1$
             public void actionPerformed(ActionEvent e)
             {
                 SubPaneIFace sp = SubPaneMgr.getInstance().getCurrentSubPane();
@@ -1007,8 +1020,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
         configureToolAction.setEnabled(false);
         JMenuItem configTaskMI = new JMenuItem(configureToolAction);
         menu.add(configTaskMI);
-        UIRegistry.register("ConfigureTask", configTaskMI);
-        UIRegistry.registerAction("ConfigureTask", configureToolAction);
+        UIRegistry.register("ConfigureTask", configTaskMI); //$NON-NLS-1$
+        UIRegistry.registerAction("ConfigureTask", configureToolAction); //$NON-NLS-1$
 
         //--------------------------------------------------------------------
         //-- Debug Menu
@@ -1016,39 +1029,50 @@ public class Specify extends JPanel implements DatabaseLoginListener
 
         if (!isRelease)
         {
-            menu = UIHelper.createMenu(mb, "DebugMenu", "DebugMneu");
-            mi = UIHelper.createMenuItem(menu, "Show Local Prefs", "L", "Show Local Prefs", true, null);
+            menu = UIHelper.createLocalizedMenu(mb, "Specify.DEBUG_MENU", "Specify.DEBUG_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
+            ttle =  "Specify.SHOW_LOC_PREFS";//$NON-NLS-1$ 
+            mneu = "Specify.SHOW_LOC_PREF_MNEU";//$NON-NLS-1$ 
+            desc = "Specify.SHOW_LOC_PREFS";//$NON-NLS-1$ 
+            mi = UIHelper.createLocalizedMenuItem(menu,ttle, mneu, desc, true, null); 
             mi.addActionListener(new ActionListener()
+            {
+                @SuppressWarnings("synthetic-access")//$NON-NLS-1$ 
+                public void actionPerformed(ActionEvent ae)
+                {
+                    String title = UIRegistry.getResourceString("Specify.LOCAL_PREFS"); //$NON-NLS-1$
+                    final CustomDialog dialog = new CustomDialog(topFrame, title, true, CustomDialog.OK_BTN, new AppPrefsEditor(false));
+                    String okLabel = UIRegistry.getResourceString("Specify.CLOSE"); //$NON-NLS-1$
+                    dialog.setOkLabel(okLabel);
+                    dialog.pack();
+                    UIHelper.centerAndShow(dialog);
+                    if (!dialog.isCancelled())
                     {
-                        @SuppressWarnings("synthetic-access")
-                        public void actionPerformed(ActionEvent ae)
+                        try
                         {
-                            final CustomDialog dialog = new CustomDialog(topFrame, "Local Prefs", true, CustomDialog.OK_BTN, new AppPrefsEditor(false));
-                            dialog.setOkLabel(UIRegistry.getResourceString("Close"));
-                            dialog.pack();
-                            UIHelper.centerAndShow(dialog);
-                            if (!dialog.isCancelled())
-                            {
-                                try
-                                {
-                                    AppPreferences.getLocalPrefs().flush();
-                                } catch (BackingStoreException ex)
-                                {
-                                    
-                                }
-                                CommandDispatcher.dispatch(new CommandAction("Preferences", "Changed", AppPreferences.getLocalPrefs()));
-                            }
+                            AppPreferences.getLocalPrefs().flush();
+                        } catch (BackingStoreException ex)
+                        {
+                            
                         }
-                    });
-    
-            mi = UIHelper.createMenuItem(menu, "Show Remote Prefs", "R", "Show Remote Prefs", true, null);
+                        CommandDispatcher.dispatch(new CommandAction("Preferences", "Changed", AppPreferences.getLocalPrefs()));
+                    }
+                }
+            });
+                            
+
+            ttle = "Specify.SHOW_REM_PREFS";//$NON-NLS-1$ 
+            mneu = "Specify.SHOW_REM_PREFS_MNEU";//$NON-NLS-1$ 
+            desc = "Specify.SHOW_REM_PREFS";//$NON-NLS-1$ 
+            mi = UIHelper.createLocalizedMenuItem(menu, ttle,mneu , desc, true, null); 
             mi.addActionListener(new ActionListener()
                     {
-                        @SuppressWarnings("synthetic-access")
+                        @SuppressWarnings("synthetic-access") //$NON-NLS-1$
                         public void actionPerformed(ActionEvent ae)
                         {
-                            final CustomDialog dialog = new CustomDialog(topFrame, "Remote Prefs", true, CustomDialog.OK_BTN, new AppPrefsEditor(true));
-                            dialog.setOkLabel(UIRegistry.getResourceString("Close"));
+                            String title = UIRegistry.getResourceString("Specify.REMOTE_PREFS"); //$NON-NLS-1$
+                            final CustomDialog dialog = new CustomDialog(topFrame, title, true, CustomDialog.OK_BTN, new AppPrefsEditor(true));
+                            String okLabel = getResourceString("Specify.CLOSE");//$NON-NLS-1$
+                            dialog.setOkLabel(okLabel); 
                             dialog.pack();
                             UIHelper.centerAndShow(dialog);
                             if (!dialog.isCancelled())
@@ -1060,15 +1084,15 @@ public class Specify extends JPanel implements DatabaseLoginListener
                                 {
                                     
                                 }
-                                CommandDispatcher.dispatch(new CommandAction("Preferences", "Changed", AppPreferences.getRemote()));
+                                CommandDispatcher.dispatch(new CommandAction("Preferences", "Changed", AppPreferences.getRemote())); //$NON-NLS-1$ //$NON-NLS-2$
                             }
                         }
                     });
     
             menu.addSeparator();
             
-            final String reloadViews = "reload_views";
-            JCheckBoxMenuItem cbMenuItem = new JCheckBoxMenuItem("Reload Views");
+            final String reloadViews = "reload_views"; //$NON-NLS-1$
+            JCheckBoxMenuItem cbMenuItem = new JCheckBoxMenuItem(getResourceString("Specify.RELOAD_VIEWS")); //$NON-NLS-1$
             menu.add(cbMenuItem);
             cbMenuItem.setSelected(AppPreferences.getLocalPrefs().getBoolean(reloadViews, false));
             cbMenuItem.addActionListener(new ActionListener() {
@@ -1079,8 +1103,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
                             ((JMenuItem)ae.getSource()).setSelected(isReload);
                         }});
     
-            final String reloadBackViews = "reload_backstop_views";
-            cbMenuItem = new JCheckBoxMenuItem("Reload Backstop Views");
+            final String reloadBackViews = "reload_backstop_views"; //$NON-NLS-1$
+            cbMenuItem = new JCheckBoxMenuItem(getResourceString("Specify.RELOAD_BACKSTOPVIEWS")); //$NON-NLS-1$
             menu.add(cbMenuItem);
             cbMenuItem.setSelected(AppPreferences.getLocalPrefs().getBoolean(reloadBackViews, false));
             cbMenuItem.addActionListener(new ActionListener() {
@@ -1091,8 +1115,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
                             ((JMenuItem)ae.getSource()).setSelected(isReload);
                         }});
     
-            final String verifyFields = "verify_field_names";
-            cbMenuItem = new JCheckBoxMenuItem("Verify Fields");
+            final String verifyFields = "verify_field_names"; //$NON-NLS-1$
+            cbMenuItem = new JCheckBoxMenuItem(getResourceString("Specify.VERIFY_FIELDS")); //$NON-NLS-1$
             menu.add(cbMenuItem);
             cbMenuItem.setSelected(AppPreferences.getLocalPrefs().getBoolean(verifyFields, false));
             cbMenuItem.addActionListener(new ActionListener() {
@@ -1104,7 +1128,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                             ViewLoader.setDoFieldVerification(isVerify);
                         }});
     
-            cbMenuItem = new JCheckBoxMenuItem("Show Form Debug");
+            cbMenuItem = new JCheckBoxMenuItem(getResourceString("Specify.SHOW_FORM_DEBUG")); //$NON-NLS-1$
             menu.add(cbMenuItem);
             cbMenuItem.setSelected(FormViewObj.isUseDebugForm());
             cbMenuItem.addActionListener(new ActionListener() {
@@ -1115,11 +1139,13 @@ public class Specify extends JPanel implements DatabaseLoginListener
                             ((JMenuItem)ae.getSource()).setSelected(useDebugForm);
                         }});
             menu.addSeparator();
-    
-            mi = UIHelper.createMenuItem(menu, "Config Loggers", "C", "Config Logger", true, null);
+            ttle = "Specify.CONFIG_LOGGERS";//$NON-NLS-1$ 
+            mneu = "Specify.CONFIG_LOGGERS_MNEU";//$NON-NLS-1$ 
+            desc = "Specify.CONFIG_LOGGER";//$NON-NLS-1$ 
+            mi = UIHelper.createLocalizedMenuItem(menu,ttle, mneu, desc, true, null); 
             mi.addActionListener(new ActionListener()
                     {
-                        @SuppressWarnings("synthetic-access")
+                        @SuppressWarnings("synthetic-access") //$NON-NLS-1$
                         public void actionPerformed(ActionEvent ae)
                         {
                             final LoggerDialog dialog = new LoggerDialog(topFrame);
@@ -1127,10 +1153,13 @@ public class Specify extends JPanel implements DatabaseLoginListener
                         }
                     });
             
-            mi = UIHelper.createMenuItem(menu, "Config Debug Loggers", "D", "Config Debug Logger", true, null);
+            ttle = "Specify.CONFIG_DEBUG_LOGGERS";//$NON-NLS-1$ 
+            mneu = "Specify.CONFIG_DEBUG_LOGGERS_MNEU";//$NON-NLS-1$ 
+            desc = "Specify.CONFIG_DEBUG_LOGGER";//$NON-NLS-1$ 
+            mi = UIHelper.createLocalizedMenuItem(menu, ttle , mneu, desc, true, null);  
             mi.addActionListener(new ActionListener()
                     {
-                        @SuppressWarnings("synthetic-access")
+                        @SuppressWarnings("synthetic-access") //$NON-NLS-1$
                         public void actionPerformed(ActionEvent ae)
                         {
                             DebugLoggerDialog dialog = new DebugLoggerDialog(topFrame);
@@ -1138,10 +1167,13 @@ public class Specify extends JPanel implements DatabaseLoginListener
                         }
                     });
             
-            mi = UIHelper.createMenuItem(menu, "Show Memory Stats", "h", "Show Memory Stats", true, null);
+            ttle = "Specify.SHOW_MEM_STATS";//$NON-NLS-1$ 
+            mneu = "Specify.SHOW_MEM_STATS_MNEU";//$NON-NLS-1$ 
+            desc = "Specify.SHOW_MEM_STATS";//$NON-NLS-1$ 
+            mi = UIHelper.createLocalizedMenuItem(menu, ttle , mneu, desc, true, null); 
             mi.addActionListener(new ActionListener()
                     {
-                        @SuppressWarnings("synthetic-access")
+                        @SuppressWarnings("synthetic-access") //$NON-NLS-1$
                         public void actionPerformed(ActionEvent ae)
                         {
                             System.gc();
@@ -1159,27 +1191,32 @@ public class Specify extends JPanel implements DatabaseLoginListener
                             // after garbage collection and decrease as new objects are created.
                             double heapFreeSize = Runtime.getRuntime().freeMemory() / meg;
                             
-                            UIRegistry.getStatusBar().setText(String.format("Heap Size: %7.2f    Max: %7.2f    Free: %7.2f   Used: %7.2f", heapSize, heapMaxSize, heapFreeSize, (heapSize - heapFreeSize)));
+                            UIRegistry.getStatusBar().setText(String.format("Heap Size: %7.2f    Max: %7.2f    Free: %7.2f   Used: %7.2f", heapSize, heapMaxSize, heapFreeSize, (heapSize - heapFreeSize))); //$NON-NLS-1$
                         }
                     });
 
             
-            JMenu prefsMenu = new JMenu("Prefs Import/Export");
+            JMenu prefsMenu = new JMenu(UIRegistry.getResourceString("Specify.PREFS_IMPORT_EXPORT")); //$NON-NLS-1$
             menu.add(prefsMenu);
-            mi = UIHelper.createMenuItem(prefsMenu, "Import", "I", "Import Prefs", true, null);
+            ttle = "Specify.IMPORT_MENU";//$NON-NLS-1$ 
+            mneu = "Specify.IMPORT_MNEU";//$NON-NLS-1$ 
+            desc = "Specify.IMPORT_PREFS";//$NON-NLS-1$ 
+            mi = UIHelper.createLocalizedMenuItem(prefsMenu, ttle , mneu, desc, true, null);
             mi.addActionListener(new ActionListener()
                     {
-                        @SuppressWarnings("synthetic-access")
+                        @SuppressWarnings("synthetic-access") //$NON-NLS-1$
                         public void actionPerformed(ActionEvent ae)
                         {
                             importPrefs();
                         }
                     });
-    
-            mi = UIHelper.createMenuItem(prefsMenu, "Export", "E", "Export Prefs", true, null);
+            ttle = "Specify.EXPORT_MENU";//$NON-NLS-1$ 
+            mneu = "Specify.EXPORT_MNEU";//$NON-NLS-1$ 
+            desc = "Specify.EXPORT_PREFS";//$NON-NLS-1$ 
+            mi = UIHelper.createLocalizedMenuItem(prefsMenu, ttle , mneu, desc, true, null);
             mi.addActionListener(new ActionListener()
                     {
-                        @SuppressWarnings("synthetic-access")
+                        @SuppressWarnings("synthetic-access") //$NON-NLS-1$
                         public void actionPerformed(ActionEvent ae)
                         {
                             exportPrefs();
@@ -1188,15 +1225,18 @@ public class Specify extends JPanel implements DatabaseLoginListener
 
         }
         
-        JMenu helpMenu = UIHelper.createMenu(mb, "Help", "HelpMneu");
-        HelpMgr.createHelpMenuItem(helpMenu, "Specify");
+        JMenu helpMenu = UIHelper.createLocalizedMenu(mb, "Specify.HELP_MENU", "Specify.HELP_MNEU"); //$NON-NLS-1$ //$NON-NLS-2$
+        HelpMgr.createHelpMenuItem(helpMenu, "Specify"); //$NON-NLS-1$
         helpMenu.addSeparator();
-                
-        mi = UIHelper.createMenuItem(helpMenu, getResourceString("LOG_SHOW_FILES"), getResourceString("LOG_SHOW_FILES_MNEU"), getResourceString("LOG_SHOW_FILES"), true, null);
+        
+        ttle = "Specify.LOG_SHOW_FILES";//$NON-NLS-1$ 
+        mneu = "Specify.LOG_SHOW_FILES_MNEU";//$NON-NLS-1$ 
+        desc = "Specify.LOG_SHOW_FILES";//$NON-NLS-1$      
+        mi = UIHelper.createLocalizedMenuItem(helpMenu, ttle , mneu, desc,  true, null);
         helpMenu.addSeparator();
         mi.addActionListener(new ActionListener()
         {
-            @SuppressWarnings("synthetic-access")
+            @SuppressWarnings("synthetic-access") //$NON-NLS-1$
             public void actionPerformed(ActionEvent ae)
             {
                 dumpSpecifyLogFile();
@@ -1205,7 +1245,10 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 
         if (UIHelper.getOSType() != UIHelper.OSTYPE.MacOSX)
         {
-            mi = UIHelper.createMenuItem(helpMenu, getResourceString("About"), getResourceString("AboutMneu"), getResourceString("About"), true, null);
+            ttle = "Specify.ABOUT";//$NON-NLS-1$ 
+            mneu = "Specify.ABOUTMNEU";//$NON-NLS-1$ 
+            desc = "Specify.ABOUT";//$NON-NLS-1$ 
+            mi = UIHelper.createLocalizedMenuItem(helpMenu,ttle , mneu, desc,  true, null); 
             mi.addActionListener(new ActionListener()
                     {
                         public void actionPerformed(ActionEvent ae)
@@ -1242,7 +1285,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     protected void doSchemaConfig(final Byte schemaType, final DBTableIdMgr tableMgr)
     {
         UIRegistry.getStatusBar().setIndeterminate(true);
-        UIRegistry.getStatusBar().setText(UIRegistry.getResourceString("LOADING_LOCALES"));
+        UIRegistry.getStatusBar().setText(getResourceString("Specify.LOADING_LOCALES")); //$NON-NLS-1$
         UIRegistry.getStatusBar().repaint();
         
         SwingWorker workerThread = new SwingWorker()
@@ -1257,7 +1300,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
             @Override
             public void finished()
             {
-                UIRegistry.getStatusBar().setText("");
+                UIRegistry.getStatusBar().setText(""); //$NON-NLS-1$
                 UIRegistry.getStatusBar().setIndeterminate(false);
                 
                 SchemaToolsDlg dlg = new SchemaToolsDlg((Frame)UIRegistry.getTopWindow(), schemaType, tableMgr);
@@ -1278,7 +1321,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     {
         JTextArea textArea = new JTextArea();
         
-        File logFile = new File(UIRegistry.getDefaultWorkingPath() + File.separator + (doError ? "error.log" : "specify.log"));
+        File logFile = new File(UIRegistry.getDefaultWorkingPath() + File.separator + (doError ? "error.log" : "specify.log")); //$NON-NLS-1$ //$NON-NLS-2$
         if (logFile.exists())
         {
             try
@@ -1288,7 +1331,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
             } catch (Exception ex) {}
         } else
         {
-            textArea.setText(doError ? getResourceString("LOG_NO_ERRORS") : getResourceString("LOG_EMPTY"));
+            textArea.setText(doError ? getResourceString("Specify.LOG_NO_ERRORS") : getResourceString("Specify.LOG_EMPTY")); //$NON-NLS-1$ //$NON-NLS-2$
         }
             
         return new JScrollPane(textArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
@@ -1300,7 +1343,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     protected void dumpSpecifyLogFile()
     {
         
-        File logFile = new File(UIRegistry.getDefaultWorkingPath() + File.separator + "specify.log");
+        File logFile = new File(UIRegistry.getDefaultWorkingPath() + File.separator + "specify.log"); //$NON-NLS-1$
         if (logFile.exists())
         {
             JTextArea textArea = new JTextArea();
@@ -1311,11 +1354,13 @@ public class Specify extends JPanel implements DatabaseLoginListener
             } catch (Exception ex) {}
             
             JTabbedPane tabPane = new JTabbedPane();
-            tabPane.add(getResourceString("Error"), getLogFilePanel(true));
-            tabPane.add("Specify", getLogFilePanel(false));
+            tabPane.add(getResourceString("Specify.ERROR"), getLogFilePanel(true)); //$NON-NLS-1$
+            tabPane.add("Specify", getLogFilePanel(false)); //$NON-NLS-1$
             
-            CustomDialog dialog = new CustomDialog((JFrame)UIRegistry.getTopWindow(), getResourceString("LOG_FILES_TITLE"), true, CustomDialog.OK_BTN, tabPane);
-            dialog.setOkLabel(getResourceString("Close"));
+            String title = getResourceString("Specify.LOG_FILES_TITLE");//$NON-NLS-1$
+            CustomDialog dialog = new CustomDialog((JFrame)UIRegistry.getTopWindow(), title, true, CustomDialog.OK_BTN, tabPane); 
+            String okLabel = getResourceString("Specify.CLOSE");//$NON-NLS-1$
+            dialog.setOkLabel(okLabel); 
             dialog.createUI();
             dialog.setSize(800, 600);
             UIHelper.centerWindow(dialog);
@@ -1338,21 +1383,23 @@ public class Specify extends JPanel implements DatabaseLoginListener
     protected void doAbout()
     {
         JPanel panel = new JPanel(new BorderLayout());
-        JLabel iconLabel = new JLabel(IconManager.getIcon("SpecifyLargeIcon"));
+        JLabel iconLabel = new JLabel(IconManager.getIcon("SpecifyLargeIcon")); //$NON-NLS-1$
         iconLabel.setBorder(BorderFactory.createEmptyBorder(2, 0, 2, 8));
         panel.add(iconLabel, BorderLayout.WEST);
-        panel.add(createLabel("<html>"+appName+" " + appVersion + 
-                "<br><br>Biodiversity Research Center<br>University of Kansas<br>Lawrence, KS  USA 66045<br><br>" + 
-                "www.specifysoftware.org<br>specify@ku.edu<br><br>" + 
-                "<p>The Specify Software Project is<br>"+
-                "funded by the Biological Databases<br>"+
-                "and Informatics Program of the<br>"+
-                "U.S. National Science Foundation <br>(Award DBI-0446544)</P><br>" +
-                "Build: " + appBuildVersion + "<br>Java Version: "+System.getProperty("java.version") +
-                "</html>"), BorderLayout.EAST);
+        panel.add(createLabel("<html>"+appName+" " + appVersion +  //$NON-NLS-1$ //$NON-NLS-2$
+                "<br><br>Biodiversity Research Center<br>University of Kansas<br>Lawrence, KS  USA 66045<br><br>" +  //$NON-NLS-1$
+                "www.specifysoftware.org<br>specify@ku.edu<br><br>" +  //$NON-NLS-1$
+                "<p>The Specify Software Project is<br>"+ //$NON-NLS-1$
+                "funded by the Biological Databases<br>"+ //$NON-NLS-1$
+                "and Informatics Program of the<br>"+ //$NON-NLS-1$
+                "U.S. National Science Foundation <br>(Award DBI-0446544)</P><br>" + //$NON-NLS-1$
+                "Build: " + appBuildVersion + "<br>Java Version: "+System.getProperty("java.version") + //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                "</html>"), BorderLayout.EAST); //$NON-NLS-1$
         panel.setBorder(BorderFactory.createEmptyBorder(6,6,0,6));
-        CustomDialog aboutDlg = new CustomDialog(topFrame, getResourceString("About") + " " +appName, true, CustomDialog.OK_BTN, panel);
-        aboutDlg.setOkLabel(getResourceString("Close"));
+        String title = getResourceString("Specify.ABOUT");//$NON-NLS-1$
+        CustomDialog aboutDlg = new CustomDialog(topFrame,  title + " " +appName, true, CustomDialog.OK_BTN, panel); //$NON-NLS-1$ 
+        String okLabel = getResourceString("Specify.CLOSE");//$NON-NLS-1$
+        aboutDlg.setOkLabel(okLabel); 
         UIHelper.centerAndShow(aboutDlg);
 
     }
@@ -1374,7 +1421,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
             okToShutdown = SubPaneMgr.getInstance().aboutToShutdown();
             if (okToShutdown)
             {
-        		log.info("Application shutdown");
+        		log.info("Application shutdown"); //$NON-NLS-1$
         
                 AppPreferences.shutdownLocalPrefs();
                 
@@ -1382,26 +1429,26 @@ public class Specify extends JPanel implements DatabaseLoginListener
         		try
         		{
         			UIRegistry.getLongTermFileCache().saveCacheMapping();
-        			log.info("Successfully saved long term cache mapping");
+        			log.info("Successfully saved long term cache mapping"); //$NON-NLS-1$
         		}
         		catch( IOException ioe )
         		{
-        			log.warn("Error while saving long term cache mapping.",ioe);
+        			log.warn("Error while saving long term cache mapping.",ioe); //$NON-NLS-1$
         		}
                 
                 // clear the contents of the short term cache
-                log.info("Clearing the short term cache");
+                log.info("Clearing the short term cache"); //$NON-NLS-1$
                 UIRegistry.getShortTermFileCache().clear();
         
                 // save the forms cache mapping info
                 try
                 {
                     UIRegistry.getFormsCache().saveCacheMapping();
-                    log.info("Successfully saved forms cache mapping");
+                    log.info("Successfully saved forms cache mapping"); //$NON-NLS-1$
                 }
                 catch( IOException ioe )
                 {
-                    log.warn("Error while saving forms cache mapping.",ioe);
+                    log.warn("Error while saving forms cache mapping.",ioe); //$NON-NLS-1$
                 }
                 
                 if (topFrame != null)
@@ -1431,7 +1478,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     public void showApp()
     {
         JFrame f = getFrame();
-        String title = appName + " " + appVersion + "  - " + appBuildVersion;
+        String title = appName + " " + appVersion + "  - " + appBuildVersion; //$NON-NLS-1$ //$NON-NLS-2$
         f.setTitle(title);
         f.getContentPane().add(this, BorderLayout.CENTER);
         f.pack();
@@ -1471,7 +1518,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         // do the following on the gui thread
         SwingUtilities.invokeLater(new SpecifyRunnable(this, s)
         {
-            @SuppressWarnings("synthetic-access")
+            @SuppressWarnings("synthetic-access") //$NON-NLS-1$
             @Override
             public void run()
             {
@@ -1485,14 +1532,14 @@ public class Specify extends JPanel implements DatabaseLoginListener
      */
     protected void setupUIControlSize(final AppPreferences appPRefs)
     {
-        String controlSize = AppPreferences.getRemote().get("ui.formatting.controlSizes", null);
+        String controlSize = AppPreferences.getRemote().get("ui.formatting.controlSizes", null); //$NON-NLS-1$
         if (StringUtils.isNotEmpty(controlSize))
         {
             try
             {
                 UIHelper.setControlSize(UIHelper.CONTROLSIZE.valueOf(controlSize));
                 UIHelper.setControlSize(UIRegistry.getStatusBar().getProgressBar());
-                UIRegistry.setBaseFont((createLabel("")).getFont());
+                UIRegistry.setBaseFont((createLabel("")).getFont()); //$NON-NLS-1$
                 
                 setupDefaultFonts();
                 
@@ -1507,8 +1554,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
     {
         //if (UIHelper.isMacOS())
         {
-            Font labelFont = (createLabel("")).getFont();
-            log.debug("****** "+labelFont);
+            Font labelFont = (createLabel("")).getFont(); //$NON-NLS-1$
+            log.debug("****** "+labelFont); //$NON-NLS-1$
             Font defaultFont;
             if (!UIHelper.isMacOS())
             {
@@ -1542,10 +1589,10 @@ public class Specify extends JPanel implements DatabaseLoginListener
                            final boolean startOver, 
                            final boolean firstTime)
     {
-        log.debug("restartApp");
+        log.debug("restartApp"); //$NON-NLS-1$
         if (dbLoginPanel != null)
         {
-            dbLoginPanel.getStatusBar().setText(getResourceString("InitializingApp"));
+            dbLoginPanel.getStatusBar().setText(getResourceString("Specify.INITIALIZING_APP")); //$NON-NLS-1$
         }
         
         AppPreferences.shutdownRemotePrefs();
@@ -1567,9 +1614,9 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 setupUIControlSize(AppPreferences.getRemote());
             }
             
-            String iconName = AppPreferences.getRemote().get("ui.formatting.disciplineicon", "CollectionObject");
+            String iconName = AppPreferences.getRemote().get("ui.formatting.disciplineicon", "CollectionObject"); //$NON-NLS-1$ //$NON-NLS-2$
             IconManager.aliasImages(iconName,             // Source
-                                    "collectionobject");  // Dest
+                                    "collectionobject");  // Dest //$NON-NLS-1$
             
             // XXX Get the current locale from prefs PREF
             
@@ -1622,15 +1669,15 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 
                 // TODO This is really bad because there is a Database Login with no Specify login
                 JOptionPane.showMessageDialog(null, 
-                                              getResourceString("LOGIN_USER_MISMATCH"), 
-                                              getResourceString("LOGIN_USER_MISMATCH_TITLE"), 
+                                              getResourceString("Specify.LOGIN_USER_MISMATCH"),  //$NON-NLS-1$
+                                              getResourceString("Specify.LOGIN_USER_MISMATCH_TITLE"),  //$NON-NLS-1$
                                               JOptionPane.ERROR_MESSAGE);
                 System.exit(0);
             }
         
         }
         
-        CommandDispatcher.dispatch(new CommandAction("App", "Restart", null));
+        CommandDispatcher.dispatch(new CommandAction("App", "Restart", null)); //$NON-NLS-1$ //$NON-NLS-2$
         
         if (dbLoginPanel != null)
         {
@@ -1647,7 +1694,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
     {
         JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        if (chooser.showDialog(null, "Select File or Directory") != JFileChooser.CANCEL_OPTION) // XXX I18N
+        String title = getResourceString("Specify.SELECT_FILE_OR_DIR");//$NON-NLS-1$
+        if (chooser.showDialog(null, title) != JFileChooser.CANCEL_OPTION) 
         {
             File destFile = chooser.getSelectedFile();
             
@@ -1670,7 +1718,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
             
         } else 
         {
-            throw new NoSuchElementException("The External File Repository needs a valid directory.");// XXX LOCALIZE
+            throw new NoSuchElementException("The External File Repository needs a valid directory."); //$NON-NLS-1$
         } 
     }
 
@@ -1685,13 +1733,14 @@ public class Specify extends JPanel implements DatabaseLoginListener
         {
             JFileChooser chooser = new JFileChooser();
             chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-            if (chooser.showDialog(null, "Select File or Directory") != JFileChooser.CANCEL_OPTION) // XXX I18N
+            String title = getResourceString("Specify.SELECT_FILE_OR_DIR");//$NON-NLS-1$
+            if (chooser.showDialog(null, title) != JFileChooser.CANCEL_OPTION)
             {
                 File destFile = chooser.getSelectedFile();
-                props.store(new FileOutputStream(destFile), "User Prefs");
+                props.store(new FileOutputStream(destFile), "User Prefs"); //$NON-NLS-1$
             } else 
             {
-                throw new NoSuchElementException("The External File Repository needs a valid directory.");// XXX I18N
+                throw new NoSuchElementException("The External File Repository needs a valid directory."); //$NON-NLS-1$
             } 
             
         } catch (Exception ex)
@@ -1709,7 +1758,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
      */
     public void loggedIn(final Window window, final String databaseNameArg, final String userNameArg)
     {
-        log.debug("loggedIn - database["+databaseNameArg+"] username["+ userNameArg +"]");
+        log.debug("loggedIn - database["+databaseNameArg+"] username["+ userNameArg +"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         boolean firstTime = this.databaseName == null;
         
         this.databaseName = databaseNameArg;
@@ -1809,7 +1858,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
      */
     protected void setDatabaseNameAndCollection()
     {
-        String dbName = databaseName + (Collection.getCurrentCollection() != null ? " : "+Collection.getCurrentCollection().getCollectionName() :"");
+        String dbName = databaseName + (Collection.getCurrentCollection() != null ? " : "+Collection.getCurrentCollection().getCollectionName() :""); //$NON-NLS-1$ //$NON-NLS-2$
         statusField.setSectionText(1, dbName);
   
     }
@@ -1827,11 +1876,11 @@ public class Specify extends JPanel implements DatabaseLoginListener
      */
     protected void adjustLocaleFromPrefs()
     {
-        String language = AppPreferences.getLocalPrefs().get("locale.lang", null);
+        String language = AppPreferences.getLocalPrefs().get("locale.lang", null); //$NON-NLS-1$
         if (language != null)
         {
-            String country  = AppPreferences.getLocalPrefs().get("locale.country", null);
-            String variant  = AppPreferences.getLocalPrefs().get("locale.var",     null);
+            String country  = AppPreferences.getLocalPrefs().get("locale.country", null); //$NON-NLS-1$
+            String variant  = AppPreferences.getLocalPrefs().get("locale.var",     null); //$NON-NLS-1$
             
             Locale prefLocale = new Locale(language, country, variant);
             
@@ -1841,7 +1890,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
         
         try
         {
-            ResourceBundle.getBundle("resources", Locale.getDefault());
+            ResourceBundle.getBundle("resources", Locale.getDefault()); //$NON-NLS-1$
             
         } catch (MissingResourceException ex)
         {
@@ -1938,22 +1987,22 @@ public class Specify extends JPanel implements DatabaseLoginListener
           return;
       }*/
       
-      log.debug("********* Current ["+(new File(".").getAbsolutePath())+"]");
+      log.debug("********* Current ["+(new File(".").getAbsolutePath())+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
       boolean doingConfig = false;
       // This is for Windows and Exe4J, turn the args into System Properties
 	  for (String s : args)
 	  {
-		  String[] pairs = s.split("=");
+		  String[] pairs = s.split("="); //$NON-NLS-1$
 		  if (pairs.length == 2)
 		  {
-			  log.debug("["+pairs[0]+"]["+pairs[1]+"]");
-              if (pairs[0].startsWith("-D"))
+			  log.debug("["+pairs[0]+"]["+pairs[1]+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+              if (pairs[0].startsWith("-D")) //$NON-NLS-1$
               {
 				  System.setProperty(pairs[0].substring(2, pairs[0].length()), pairs[1]);
 			  } 
 		  }
           
-          if (s.equals("-Dconfig"))
+          if (s.equals("-Dconfig")) //$NON-NLS-1$
           {
               doingConfig = true;
           }
@@ -1962,36 +2011,36 @@ public class Specify extends JPanel implements DatabaseLoginListener
 	  final boolean doConfig = doingConfig;
       
       // Now check the System Properties
-      String appDir = System.getProperty("appdir");
+      String appDir = System.getProperty("appdir"); //$NON-NLS-1$
       if (StringUtils.isNotEmpty(appDir))
       {
           UIRegistry.setDefaultWorkingPath(appDir);
       }
       
-      String appdatadir = System.getProperty("appdatadir");
+      String appdatadir = System.getProperty("appdatadir"); //$NON-NLS-1$
       if (StringUtils.isNotEmpty(appdatadir))
       {
           UIRegistry.setBaseAppDataDir(appdatadir);
       }
       
-      String javadbdir = System.getProperty("javadbdir");
+      String javadbdir = System.getProperty("javadbdir"); //$NON-NLS-1$
       if (StringUtils.isNotEmpty(javadbdir))
       {
           UIRegistry.setJavaDBDir(javadbdir);
       }
       
       SwingUtilities.invokeLater(new Runnable() {
-          @SuppressWarnings("synthetic-access")
+          @SuppressWarnings("synthetic-access") //$NON-NLS-1$
         public void run()
           {
     	      // Set App Name, MUST be done very first thing!
-              UIRegistry.setAppName("Specify"); 
+              UIRegistry.setAppName("Specify");  //$NON-NLS-1$
               
               // Then set this
         	  IconManager.setApplicationClass(Specify.class);
-              IconManager.loadIcons(XMLHelper.getConfigDir("icons_datamodel.xml"));
-              IconManager.loadIcons(XMLHelper.getConfigDir("icons_plugins.xml"));
-              IconManager.loadIcons(XMLHelper.getConfigDir("icons_disciplines.xml"));
+              IconManager.loadIcons(XMLHelper.getConfigDir("icons_datamodel.xml")); //$NON-NLS-1$
+              IconManager.loadIcons(XMLHelper.getConfigDir("icons_plugins.xml")); //$NON-NLS-1$
+              IconManager.loadIcons(XMLHelper.getConfigDir("icons_disciplines.xml")); //$NON-NLS-1$
               
               if (!isRelease)
               {
@@ -2022,7 +2071,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                       {
                           double percentageUsed = ((double) usedMemory) / maxMemory;
                           
-                          String msg = String.format("Percent Memory Used %6.2f of Max %d", new Object[] {(percentageUsed * 100.0), maxMemory});
+                          String msg = String.format("Percent Memory Used %6.2f of Max %d", new Object[] {(percentageUsed * 100.0), maxMemory}); //$NON-NLS-1$
                           setMessage(msg, false);
     
                       }
@@ -2031,7 +2080,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
                       {
                           double percentageUsed = ((double) usedMemory) / maxMemory;
                             
-                          String msg = String.format("Memory is Low! Percentage Used = %6.2f of Max %d", new Object[] {(percentageUsed * 100.0), maxMemory});
+                          String msg = String.format("Memory is Low! Percentage Used = %6.2f of Max %d", new Object[] {(percentageUsed * 100.0), maxMemory}); //$NON-NLS-1$
                           setMessage(msg, true);
                             
                           if (MemoryWarningSystem.getThresholdPercentage() < 0.8)
@@ -2064,17 +2113,17 @@ public class Specify extends JPanel implements DatabaseLoginListener
               }
               catch (Exception e)
               {
-                  log.error("Can't change L&F: ", e);
+                  log.error("Can't change L&F: ", e); //$NON-NLS-1$
               }
               
               
-              ImageIcon helpIcon = IconManager.getIcon("AppIcon",IconSize.Std16);
-              HelpMgr.initializeHelp("SpecifyHelp", helpIcon.getImage());
+              ImageIcon helpIcon = IconManager.getIcon("AppIcon",IconSize.Std16); //$NON-NLS-1$
+              HelpMgr.initializeHelp("SpecifyHelp", helpIcon.getImage()); //$NON-NLS-1$
               
               // Startup Specify
               Specify specify = new Specify();
               
-              RolloverCommand.setHoverImg(IconManager.getIcon("DropIndicator"));
+              RolloverCommand.setHoverImg(IconManager.getIcon("DropIndicator")); //$NON-NLS-1$
               
               if (doConfig)
               {

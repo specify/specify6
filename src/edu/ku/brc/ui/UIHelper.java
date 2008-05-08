@@ -809,7 +809,7 @@ public final class UIHelper
     public static JMenuBar getBasicMenuBar(final boolean includeCutCopyPaste)
     {
         JMenuBar menuBar = new JMenuBar();
-        JMenu fileMenu = createMenu(menuBar, getResourceString("FileMenu"), getResourceString("FileMneu"));
+        JMenu fileMenu = createLocalizedMenu(menuBar, getResourceString("FileMenu"), getResourceString("FileMneu"));
 
         if (oSType != OSTYPE.MacOSX)
         {
@@ -822,7 +822,7 @@ public final class UIHelper
 
         if (includeCutCopyPaste)
         {
-            JMenu editMenu = createMenu(menuBar, getResourceString("EditMenu"), getResourceString("EditMneu"));
+            JMenu editMenu = createLocalizedMenu(menuBar, getResourceString("EditMenu"), getResourceString("EditMneu"));
             editMenu.add(createMenu(getResourceString("CutMenu"), getResourceString("CutAccl").charAt(0), getResourceString("CutMneu")));
             editMenu.add(createMenu(getResourceString("CopyMenu"), KeyEvent.VK_C, getResourceString("CopyMneu")));
             editMenu.add(createMenu(getResourceString("PasteMenu"), KeyEvent.VK_V, getResourceString("PasteMneu")));
@@ -842,20 +842,22 @@ public final class UIHelper
      * @param action the aciton
      * @return menu item
      */
-    public static JMenuItem createMenuItem(final String         label,
-                                           final String         mnemonic,
-                                           final String         accessibleDescription,
-                                           final boolean        enabled,
-                                           final ActionListener al)
+    public static JMenuItem createLocalizedMenuItem(final String         label,
+                                                    final String         mnemonic,
+                                                    final String         accessibleDescription,
+                                                    final boolean        enabled,
+                                                    final ActionListener al)
     {
-        JMenuItem mi = new JMenuItem(label);
-        if (isNotEmpty(mnemonic))
+        JMenuItem mi = new JMenuItem(getResourceString(label));
+        String mnu = getResourceString(mnemonic);
+        String desc = getResourceString(accessibleDescription);
+        if (isNotEmpty(mnu))
         {
-            mi.setMnemonic(mnemonic.charAt(0));
+            mi.setMnemonic(mnu.charAt(0));
         }
-        if (isNotEmpty(accessibleDescription))
+        if (isNotEmpty(desc))
         {
-            mi.getAccessibleContext().setAccessibleDescription(accessibleDescription);
+            mi.getAccessibleContext().setAccessibleDescription(desc);
         }
         mi.addActionListener(al);
         mi.setEnabled(enabled);
@@ -872,14 +874,14 @@ public final class UIHelper
      * @param action the aciton
      * @return menu item
      */
-    public static JMenuItem createMenuItem(final JMenu          menu,
-                                           final String         label,
-                                           final String         mnemonic,
-                                           final String         accessibleDescription,
-                                           final boolean        enabled,
-                                           final ActionListener al)
+    public static JMenuItem createLocalizedMenuItem(final JMenu          menu,
+                                                    final String         label,
+                                                    final String         mnemonic,
+                                                    final String         accessibleDescription,
+                                                    final boolean        enabled,
+                                                    final ActionListener al)
     {
-        JMenuItem mi = createMenuItem(label, mnemonic, accessibleDescription, enabled, al);
+        JMenuItem mi = createLocalizedMenuItem(label, mnemonic, accessibleDescription, enabled, al);
         if (menu != null)
         {
             menu.add(mi);
@@ -904,7 +906,7 @@ public final class UIHelper
                                            final boolean        enabled,
                                            final ActionListener al)
     {
-        JMenuItem mi = createMenuItem(label, mnemonic, accessibleDescription, enabled, al);
+        JMenuItem mi = createLocalizedMenuItem(label, mnemonic, accessibleDescription, enabled, al);
         if (popupMenu != null)
         {
             popupMenu.add(mi);
@@ -975,7 +977,7 @@ public final class UIHelper
         {
             menu.add(mi);
         }
-        setMnemonic(mi, mnemonic);
+        setLocalizedMnemonic(mi, mnemonic);
         
         if (isNotEmpty(accessibleDescription))
         {
@@ -1013,7 +1015,7 @@ public final class UIHelper
         {
             menu.add(mi);
         }
-        setMnemonic(mi, mnemonic);
+        setLocalizedMnemonic(mi, mnemonic);
         if (isNotEmpty(accessibleDescription))
         {
             mi.getAccessibleContext().setAccessibleDescription(accessibleDescription);
@@ -1035,7 +1037,7 @@ public final class UIHelper
      * @param mneuKey the mneu key to be localized
      * @return returns a menu
      */
-    public static JMenu createMenu(final JMenuBar menuBar, final String labelKey, final String mneuKey)
+    public static JMenu createLocalizedMenu(final JMenuBar menuBar, final String labelKey, final String mneuKey)
     {
         JMenu menu = null;
         try
@@ -1043,7 +1045,7 @@ public final class UIHelper
             menu = menuBar.add(new JMenu(getResourceString(labelKey)));
             if (oSType != OSTYPE.MacOSX)
             {
-                setMnemonic(menu, mneuKey);
+                setLocalizedMnemonic(menu, mneuKey);
             }
         } catch (Exception ex)
         {
@@ -1058,7 +1060,7 @@ public final class UIHelper
      * @param btn the button
      * @param mnemonicKey the one char string.
      */
-    public static void setMnemonic(final AbstractButton btn, final String mnemonicKey)
+    public static void setLocalizedMnemonic(final AbstractButton btn, final String mnemonicKey)
     {
         if (StringUtils.isNotEmpty(mnemonicKey))
         {

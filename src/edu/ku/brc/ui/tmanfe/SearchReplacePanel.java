@@ -275,12 +275,12 @@ public class SearchReplacePanel extends JPanel
 
         nextButton = createButton(getResourceString("SS_SR_NEXT"));//, new ImageIcon(Specify.class.getResource("images/down.png")));
         nextButton.setEnabled(false);
-        UIHelper.setMnemonic(previousButton, "SS_SR_NEXT_MNEU");
+        UIHelper.setLocalizedMnemonic(previousButton, "SS_SR_NEXT_MNEU");
         nextButton.addActionListener(searchAction);
 
         previousButton = createButton(getResourceString("SS_SR_PREVIOUS"));//, new ImageIcon(Specify.class.getResource("images/up.png")));
         previousButton.setEnabled(false);
-        UIHelper.setMnemonic(previousButton, "SS_SR_PREVIOUS_MNEU");
+        UIHelper.setLocalizedMnemonic(previousButton, "SS_SR_PREVIOUS_MNEU");
 
         previousButton.addActionListener(searchAction);
 

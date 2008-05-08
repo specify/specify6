@@ -238,10 +238,18 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
         setContentPane(basePanel);
         
         JMenuBar  menuBar   = new JMenuBar();
-        JMenu     fileMenu  = UIHelper.createMenu(menuBar, "File", "FileMneu");
-        JMenuItem importImagesMI  = UIHelper.createMenuItem(fileMenu, getResourceString("WB_IMPORT_CARDS_TO_DATASET"), getResourceString("WB_IMPORT_CARDS_MNEU"), "", true, null);
         
-        closeMI = UIHelper.createMenuItem(fileMenu, getResourceString("Close"), getResourceString("CloseMneu"), "", true, null);
+        String title = "FileMenu"; 
+        String mneu = "FileMneu";
+        JMenu     fileMenu  = UIHelper.createLocalizedMenu(menuBar, title,  mneu);
+        title = "WB_IMPORT_CARDS_TO_DATASET";
+        mneu = "WB_IMPORT_CARDS_MNEU";
+        
+        JMenuItem importImagesMI  = UIHelper.createLocalizedMenuItem(fileMenu, title, mneu, "", true, null);
+        
+        title = "Close";
+        mneu = "CloseMneu";
+        closeMI = UIHelper.createLocalizedMenuItem(fileMenu, title, mneu,  "", true, null);
         closeMI.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
@@ -250,8 +258,9 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
             }
         });
         
-        viewMenu  = UIHelper.createMenu(menuBar, "View", "ViewMneu");
-        
+        title = "View";
+        mneu = "ViewMneu";
+        viewMenu  = UIHelper.createLocalizedMenu(menuBar, title, mneu);        
         reduceMI = UIHelper.createRadioButtonMenuItem(viewMenu, "WB_REDUCED_SIZE", "ReducedSizeMneu", "", true, null);
         reduceMI.setSelected(true);
         reduceMI.addActionListener(new ActionListener() {
@@ -335,10 +344,21 @@ public class ImageFrame extends JFrame implements PropertyChangeListener
             }
         };
         
-        imageMenu = UIHelper.createMenu(menuBar, "Image", "ImageMneu");
-        addMI     = UIHelper.createMenuItem(imageMenu, getResourceString("WB_ADD_IMG"), getResourceString("WB_ADD_IMG_MNEM"), "", true, addImg);
-        replaceMI = UIHelper.createMenuItem(imageMenu, getResourceString("WB_REPLACE_IMG"), getResourceString("WB_REPLACE_IMG_MNEU"), "", true, replaceImg);
-        deleteMI   = UIHelper.createMenuItem(imageMenu, getResourceString("WB_DEL_IMG_LINK"), getResourceString("WB_DEL_IMG_LINK_MNEU"), "", true, deleteImg);
+        title = "Image";
+        mneu = "ImageMneu";
+        imageMenu = UIHelper.createLocalizedMenu(menuBar, title, mneu);
+        
+        title = "WB_ADD_IMG";
+        mneu = "WB_ADD_IMG_MNEM";
+        addMI     = UIHelper.createLocalizedMenuItem(imageMenu, title, mneu, "", true, addImg);
+        
+        title = "WB_REPLACE_IMG";
+        mneu = "WB_REPLACE_IMG_MNEU";
+        replaceMI = UIHelper.createLocalizedMenuItem(imageMenu, title, mneu,  "", true, replaceImg);
+        
+        title = "WB_DEL_IMG_LINK";
+        mneu = "WB_DEL_IMG_LINK_MNEU";
+        deleteMI   = UIHelper.createLocalizedMenuItem(imageMenu, title, mneu, "", true, deleteImg);
         
         loadImgBtn.addActionListener(addImg);
         

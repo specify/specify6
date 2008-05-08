@@ -36,6 +36,7 @@ import edu.ku.brc.specify.tasks.subpane.SecurityAdminPane;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.UIHelper;
+import edu.ku.brc.ui.UIRegistry;
 
 /**
  * 
@@ -45,7 +46,7 @@ import edu.ku.brc.ui.UIHelper;
 public class SecurityAdminTask extends BaseTask
 {
     private static final Logger log            = Logger.getLogger(SecurityAdminTask.class);
-    public static final  String SECURITY_ADMIN = "SecurityAdmin";
+    public static final  String SECURITY_ADMIN = "SecurityAdmin"; //$NON-NLS-1$
     protected SubPaneIFace      starterPane    = null;
 
     public SecurityAdminTask()
@@ -87,11 +88,14 @@ public class SecurityAdminTask extends BaseTask
         
         // check whether user can see the security admin panel
         // other permissions will be checked when the panel is created 
-        if (!SpecifySecurityMgr.checkPermission("Task." + SECURITY_ADMIN, BasicSpPermission.view))
+        if (!SpecifySecurityMgr.checkPermission("Task." + SECURITY_ADMIN, BasicSpPermission.view)) //$NON-NLS-1$
         	return list;
 
         // else
-        JMenuItem mi = UIHelper.createMenuItem("Security Tools", "T", "", true, null); // I18N
+        String title = getResourceString("SecurityAdminTask.SECURITY_TOOLS_MENU"); //$NON-NLS-1$
+        String mneu = getResourceString("SecurityAdminTask.SECURITY_TOOLS_MNEU"); //$NON-NLS-1$
+        String desc = getResourceString("SecurityAdminTask.SECURITY_TOOLS_DESC"); //$NON-NLS-1$
+        JMenuItem mi = UIHelper.createLocalizedMenuItem(title, mneu, desc, true, null); // I18N
         mi.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
@@ -99,7 +103,8 @@ public class SecurityAdminTask extends BaseTask
                 SecurityAdminTask.this.requestContext();
             }
         });
-        list.add(new MenuItemDesc(mi, "AdvMenu/SystemMenu"));
+        String menuDesc = "AdvMenu/SystemMenu";
+        list.add(new MenuItemDesc(mi, menuDesc ));
         return list;
 
     }  
@@ -117,7 +122,7 @@ public class SecurityAdminTask extends BaseTask
     /* (non-Javadoc)
      * @see edu.ku.brc.af.tasks.BaseTask#doCommand(edu.ku.brc.ui.CommandAction)
      */
-    @SuppressWarnings("unchecked") 
+    @SuppressWarnings("unchecked")  //$NON-NLS-1$
     public void doCommand(CommandAction cmdAction)
     {
         if (cmdAction.isType(SECURITY_ADMIN))
@@ -128,6 +133,6 @@ public class SecurityAdminTask extends BaseTask
    
     private void processAdminCommands(CommandAction cmdAction)
     {
-        log.error("not implemented");        
+        log.error("not implemented");         //$NON-NLS-1$
     }
 }
