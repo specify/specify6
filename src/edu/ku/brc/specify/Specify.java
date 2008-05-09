@@ -37,7 +37,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.List;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.NoSuchElementException;
@@ -121,7 +120,6 @@ import edu.ku.brc.specify.datamodel.PermitAttachment;
 import edu.ku.brc.specify.datamodel.PreparationAttachment;
 import edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
-import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.TaxonAttachment;
 import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
 import edu.ku.brc.specify.tests.SpecifyAppPrefs;
@@ -199,7 +197,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     private String               appName             = "Specify"; //$NON-NLS-1$
     private String               appVersion          = "6.0"; //$NON-NLS-1$
 
-    private String               appBuildVersion     = "200805061130 (SVN: 4000)"; //$NON-NLS-1$
+    private String               appBuildVersion     = "200805091130 (SVN: 4024)"; //$NON-NLS-1$
     
     protected static CacheManager cacheManager        = new CacheManager();
 
@@ -1039,8 +1037,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 @SuppressWarnings("synthetic-access")//$NON-NLS-1$ 
                 public void actionPerformed(ActionEvent ae)
                 {
-                    String title = UIRegistry.getResourceString("Specify.LOCAL_PREFS"); //$NON-NLS-1$
-                    final CustomDialog dialog = new CustomDialog(topFrame, title, true, CustomDialog.OK_BTN, new AppPrefsEditor(false));
+                    String titleStr = UIRegistry.getResourceString("Specify.LOCAL_PREFS"); //$NON-NLS-1$
+                    final CustomDialog dialog = new CustomDialog(topFrame, titleStr, true, CustomDialog.OK_BTN, new AppPrefsEditor(false));
                     String okLabel = UIRegistry.getResourceString("Specify.CLOSE"); //$NON-NLS-1$
                     dialog.setOkLabel(okLabel);
                     dialog.pack();
@@ -1069,8 +1067,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
                         @SuppressWarnings("synthetic-access") //$NON-NLS-1$
                         public void actionPerformed(ActionEvent ae)
                         {
-                            String title = UIRegistry.getResourceString("Specify.REMOTE_PREFS"); //$NON-NLS-1$
-                            final CustomDialog dialog = new CustomDialog(topFrame, title, true, CustomDialog.OK_BTN, new AppPrefsEditor(true));
+                            String titleStr = UIRegistry.getResourceString("Specify.REMOTE_PREFS"); //$NON-NLS-1$
+                            final CustomDialog dialog = new CustomDialog(topFrame, titleStr, true, CustomDialog.OK_BTN, new AppPrefsEditor(true));
                             String okLabel = getResourceString("Specify.CLOSE");//$NON-NLS-1$
                             dialog.setOkLabel(okLabel); 
                             dialog.pack();

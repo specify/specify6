@@ -389,7 +389,8 @@ public class ConvertVerifier
                         "FROM determination INNER JOIN taxonname ON determination.TaxonNameID = taxonname.TaxonNameID " + 
                         "INNER JOIN collectionobjectcatalog ON collectionobjectcatalog.CollectionObjectCatalogID = determination.BiologicalObjectID " + 
                         "WHERE CatalogNumber = " + oldCatNum;
-        
+        //log.error("New SQL: "+newSQL);
+        //log.error("Old SQL: "+oldSQL);
         return compareRecords("Taxon", oldCatNum, newCatNum, oldSQL, newSQL);
     }
                          
@@ -529,8 +530,8 @@ public class ConvertVerifier
                   "INNER JOIN determination ON determination.BiologicalObjectID = collectionobject.CollectionObjectID " + 
                   "INNER JOIN agent ON determination.DeterminerID = agent.AgentID WHERE CatalogNumber = " + oldCatNum;
         
-         log.debug("New SQL: "+newSQL);
-         log.debug("Old SQL: "+oldSQL);
+         //log.debug("New SQL: "+newSQL);
+         //log.debug("Old SQL: "+oldSQL);
          
         return compareRecords("Determiner", oldCatNum, newCatNum, oldSQL, newSQL);
     }
@@ -542,12 +543,13 @@ public class ConvertVerifier
                   "WHERE CatalogNumber = '"+ newCatNum + "'";
 
          oldSQL = "SELECT agent.FirstName, agent.MiddleInitial, agent.LastName, agent.Name  " +
-                  "FROM collectionobjectcatalog INNER JOIN collectionobject ON collectionobjectcatalog.CollectionObjectCatalogID = collectionobject.CollectionObjectID " +
-                  "INNER JOIN determination ON determination.BiologicalObjectID = collectionobject.CollectionObjectID " + 
-                  "INNER JOIN agent ON determination.DeterminerID = agent.AgentID WHERE CatalogNumber = " + oldCatNum;
+                  "FROM collectionobjectcatalog INNER JOIN collectionobject ON collectionobjectcatalog.CollectionObjectCatalogID = collectionobject.DerivedFromID " +
+                  "INNER JOIN preparation ON collectionobject.CollectionObjectID = preparation.PhysicalObjectTypeID " +
+                  "INNER JOIN agent ON preparation.PreparedByID = agent.AgentID " +
+                  "WHERE CatalogNumber = " + oldCatNum;
         
-         log.error("New SQL: "+newSQL);
-         log.error("Old SQL: "+oldSQL);
+         //log.error("New SQL: "+newSQL);
+         //log.error("Old SQL: "+oldSQL);
         return compareRecords("Preparer", oldCatNum, newCatNum, oldSQL, newSQL);
     }
 
