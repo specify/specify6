@@ -412,7 +412,9 @@ public class WorkbenchTask extends BaseTask
                 UsageTracker.incrUsageCount("WB.ShowWorkbenchProps");
             }
         });
-        UIHelper.createlocalizedMenuItem(popupMenu, getResourceString("WB_EDIT_DATASET_MAPPING"), getResourceString("WB_EDIT_DATASET_MAPPING_MNEU"), null, true, new ActionListener() {
+        title = "WB_EDIT_DATASET_MAPPING";
+        mneu = "WB_EDIT_DATASET_MAPPING_MNEU";
+        UIHelper.createlocalizedMenuItem(popupMenu, title, mneu, null, true, new ActionListener() {
             @SuppressWarnings("synthetic-access")
             public void actionPerformed(ActionEvent e)
             {
@@ -426,8 +428,9 @@ public class WorkbenchTask extends BaseTask
         });
 
         popupMenu.addSeparator();
-        
-        UIHelper.createlocalizedMenuItem(popupMenu, getResourceString("Delete"), getResourceString("DELETE_MNEU"), null, true, new ActionListener() {
+        title = "Delete";
+        mneu = "DELETE_MNEU";
+        UIHelper.createlocalizedMenuItem(popupMenu, title, mneu, null, true, new ActionListener() {
             @SuppressWarnings("synthetic-access")
             public void actionPerformed(ActionEvent e)
             {

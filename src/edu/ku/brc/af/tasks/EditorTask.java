@@ -47,7 +47,7 @@ import edu.ku.brc.ui.forms.persist.ViewSetIFace;
  */
 public class EditorTask extends BaseTask
 {
-    public static final String EDITOR = "FORMEDITOR"; //$NON-NLS-1$
+    public static final String EDITOR = "FormEditor"; //$NON-NLS-1$
     
     protected ViewSetSelectorPanel viewSetSelectorPanel;
     protected JTree                tree          = null;
@@ -100,7 +100,7 @@ public class EditorTask extends BaseTask
     @Override
     public SubPaneIFace getStarterPane()
     {
-        SimpleDescPane pane = new SimpleDescPane(name, this, getResourceString("EditorTask.EDITOR")); //$NON-NLS-1$
+        SimpleDescPane pane = new SimpleDescPane(name, this, "Editor"); //$NON-NLS-1$
         
         
         pane.removeAll();

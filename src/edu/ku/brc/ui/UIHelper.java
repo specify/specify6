@@ -809,7 +809,9 @@ public final class UIHelper
     public static JMenuBar getBasicMenuBar(final boolean includeCutCopyPaste)
     {
         JMenuBar menuBar = new JMenuBar();
-        JMenu fileMenu = createLocalizedMenu(menuBar, getResourceString("FileMenu"), getResourceString("FileMneu"));
+        String title = "FileMenu";
+        String mneu = "FileMneu";
+        JMenu fileMenu = createLocalizedMenu(menuBar, title, mneu);
 
         if (oSType != OSTYPE.MacOSX)
         {
@@ -822,7 +824,9 @@ public final class UIHelper
 
         if (includeCutCopyPaste)
         {
-            JMenu editMenu = createLocalizedMenu(menuBar, getResourceString("EditMenu"), getResourceString("EditMneu"));
+        	title = "EditMenu";
+        	mneu = "EditMneu";
+            JMenu editMenu = createLocalizedMenu(menuBar, title, mneu);
             editMenu.add(createMenu(getResourceString("CutMenu"), getResourceString("CutAccl").charAt(0), getResourceString("CutMneu")));
             editMenu.add(createMenu(getResourceString("CopyMenu"), KeyEvent.VK_C, getResourceString("CopyMneu")));
             editMenu.add(createMenu(getResourceString("PasteMenu"), KeyEvent.VK_V, getResourceString("PasteMneu")));
@@ -849,14 +853,14 @@ public final class UIHelper
                                                     final ActionListener al)
     {
         JMenuItem mi = new JMenuItem(getResourceString(label));
-        String mnu = getResourceString(mnemonic);
-        String desc = getResourceString(accessibleDescription);
-        if (isNotEmpty(mnu))
+        if (isNotEmpty(mnemonic))
         {
+        	String mnu = getResourceString(mnemonic);
             mi.setMnemonic(mnu.charAt(0));
         }
-        if (isNotEmpty(desc))
+        if (isNotEmpty(accessibleDescription))
         {
+        	String desc = getResourceString(accessibleDescription);
             mi.getAccessibleContext().setAccessibleDescription(desc);
         }
         mi.addActionListener(al);

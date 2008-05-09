@@ -36,7 +36,6 @@ import edu.ku.brc.specify.tasks.subpane.SecurityAdminPane;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
 
 /**
  * 
@@ -92,9 +91,9 @@ public class SecurityAdminTask extends BaseTask
         	return list;
 
         // else
-        String title = getResourceString("SecurityAdminTask.SECURITY_TOOLS_MENU"); //$NON-NLS-1$
-        String mneu = getResourceString("SecurityAdminTask.SECURITY_TOOLS_MNEU"); //$NON-NLS-1$
-        String desc = getResourceString("SecurityAdminTask.SECURITY_TOOLS_DESC"); //$NON-NLS-1$
+        String title = "SecurityAdminTask.SECURITY_TOOLS_MENU"; //$NON-NLS-1$
+        String mneu = "SecurityAdminTask.SECURITY_TOOLS_MNEU"; //$NON-NLS-1$
+        String desc = "SecurityAdminTask.SECURITY_TOOLS_DESC"; //$NON-NLS-1$
         JMenuItem mi = UIHelper.createLocalizedMenuItem(title, mneu, desc, true, null); // I18N
         mi.addActionListener(new ActionListener()
         {

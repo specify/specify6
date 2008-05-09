@@ -973,13 +973,13 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 SubPaneMgr.getInstance().closeCurrent();
             }
         };
-        String ttl = "Specify.SBP_CLOSE_CUR_MENU"; //$NON-NLS-1$
-        String mnu = "Specify.SBP_CLOSE_CUR_MNEU"; //$NON-NLS-1$
+        String ttl = UIRegistry.getResourceString("Specify.SBP_CLOSE_CUR_MENU"); 
+        String mnu = UIRegistry.getResourceString("Specify.SBP_CLOSE_CUR_MNEU"); 
         mi = UIHelper.createMenuItemWithAction(menu, ttl, mnu, ttl, true, closeCurrent); 
         UIRegistry.registerAction("CloseCurrent", closeCurrent); //$NON-NLS-1$
 
-        ttl = "Specify.SBP_CLOSE_ALL_MENU"; //$NON-NLS-1$
-        mnu = "Specify.SBP_CLOSE_ALL_MNEU"; //$NON-NLS-1$
+        ttl = UIRegistry.getResourceString("Specify.SBP_CLOSE_ALL_MENU"); 
+        mnu = UIRegistry.getResourceString("Specify.SBP_CLOSE_ALL_MNEU"); 
         Action closeAll = new AbstractAction() {
             public void actionPerformed(ActionEvent ae)
             {
@@ -995,8 +995,8 @@ public class Specify extends JPanel implements DatabaseLoginListener
                 SubPaneMgr.getInstance().closeAllExceptCurrent();
             }
         };
-        ttl = "Specify.SBP_CLOSE_ALLBUT_MENU"; //$NON-NLS-1$
-        mnu = "Specify.SBP_CLOSE_ALLBUT_MNEU"; //$NON-NLS-1$
+        ttl = UIRegistry.getResourceString("Specify.SBP_CLOSE_ALLBUT_MENU"); 
+        mnu = UIRegistry.getResourceString("Specify.SBP_CLOSE_ALLBUT_MNEU"); 
         mi = UIHelper.createMenuItemWithAction(menu, ttl, mnu, ttl, true, closeAllBut); 
         UIRegistry.registerAction("CloseAllBut", closeAllBut); //$NON-NLS-1$
         

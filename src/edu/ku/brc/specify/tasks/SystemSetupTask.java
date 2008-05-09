@@ -614,8 +614,8 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
     {
         Vector<MenuItemDesc> list = new Vector<MenuItemDesc>();
         
-        String title = "System Tools"; 
-        String mneu = "S"; 
+        String title = "SystemSetupTask.SYS_TOOLS_MENU"; 
+        String mneu = "SystemSetupTask.SYS_TOOLS_MNEU"; 
         String desc = ""; 
         
         JMenuItem mi = UIHelper.createLocalizedMenuItem(title, mneu, desc, true, null);

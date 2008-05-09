@@ -388,7 +388,7 @@ public class SpecifyAppContextMgr extends AppContextMgr
                         
                         JDialog.setDefaultLookAndFeelDecorated(false);
                         colDlg = new ToggleButtonChooserDlg<Collection>((Frame)UIRegistry.get(UIRegistry.FRAME),
-                                                                          UIRegistry.getResourceString("CHOOSE_COLLECTION_TITLE"), 
+                                                                          "CHOOSE_COLLECTION_TITLE", 
                                                                           null,
                                                                           list,
                                                                           IconManager.getIcon("Collection"),
