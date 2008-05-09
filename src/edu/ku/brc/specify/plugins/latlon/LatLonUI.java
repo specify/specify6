@@ -97,6 +97,7 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
     protected JLabel             typeLabel   = null;
     protected boolean            isViewMode  = false;
     protected int                currentInx  = -1;
+    protected BorderedRadioButton[] botBtns  = null;
     
     protected Locality           locality;
     protected LatLonUIIFace[]    panels;
@@ -131,7 +132,7 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
     
     /**
      * Creates the UI.
-     * @param locality the locality object (can be null)
+     * @param localityCEP the locality object (can be null)
      */
     protected void createEditUI()
     {
@@ -238,7 +239,7 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
         BorderedRadioButton.setSelectedBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
         BorderedRadioButton.setUnselectedBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
         ButtonGroup btnGroup = new ButtonGroup();
-        BorderedRadioButton[] botBtns = new BorderedRadioButton[typeNames.length];
+        botBtns = new BorderedRadioButton[typeNames.length];
         for (int i=0;i<botBtns.length;i++)
         {
             BorderedRadioButton rb = new BorderedRadioButton(IconManager.getIcon(typeNames[i], IconManager.IconSize.Std16));
@@ -270,6 +271,26 @@ public class LatLonUI extends JPanel implements GetSetValueIFace, UIPluginable, 
         builder.add(topPane.getPanel(), cc.xy(1, 1));
         builder.add(cardPanel,          cc.xy(1, 3));
 
+    }
+    
+    public void setEnabled(final boolean enabled)
+    {
+        super.setEnabled(enabled);
+        
+        formatSelector.setEnabled(enabled);
+        
+        for (LatLonUIIFace ll : panels)
+        {
+            ll.setEnabled(enabled);
+        }
+        
+        if (botBtns != null)
+        {
+            for (BorderedRadioButton brb : botBtns)
+            {
+                brb.setEnabled(enabled);
+            }
+        }
     }
     
     /**

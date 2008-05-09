@@ -29,75 +29,81 @@ public interface LatLonUIIFace
     /**
      * Creates and initializes the UI.
      */
-    public void init();
+    public abstract void init();
     
     /**
      * Sets whether it is in "view" mode or "edit" mode.
      * @param isViewMode t/f
      */
-    public void setViewMode(boolean isViewMode);
+    public abstract void setViewMode(boolean isViewMode);
     
     /**
      * Sest the Latitude and Longitude.
      * @param latitude the lat
      * @param longitude the lon
      */
-    public void set(final BigDecimal latitude, final BigDecimal longitude);
+    public abstract void set(final BigDecimal latitude, final BigDecimal longitude);
     
     /**
      * Gets the data from the controls. 
      */
-    public void getDataFromUI();
+    public abstract void getDataFromUI();
     
     /**
      * @return the latitude
      */
-    public BigDecimal getLatitude();
+    public abstract BigDecimal getLatitude();
     
     /**
      * @return
      */
-    public String getLatitudeDir();
+    public abstract String getLatitudeDir();
     
     /**
      * @return the longitude
      */
-    public BigDecimal getLongitude();
+    public abstract BigDecimal getLongitude();
     
     /**
      * @return the char for the direction
      */
-    public String getLongitudeDir();
+    public abstract String getLongitudeDir();
     
     /**
      * @return
      */
-    public boolean hasChanged();
+    public abstract boolean hasChanged();
     
     /**
      * @param hasChanged
      */
-    public void setHasChanged(boolean hasChanged);
+    public abstract void setHasChanged(boolean hasChanged);
     
     /**
      * @param isRequired
      */
-    public void setIsRequired(boolean isRequired);
+    public abstract void setIsRequired(boolean isRequired);
     
     /**
      * @param changeListener
      */
-    public void setChangeListener(final ChangeListener changeListener);
+    public abstract void setChangeListener(final ChangeListener changeListener);
     
     /**
      * @return
      */
-    public ErrorType validateState();
+    public abstract ErrorType validateState();
+    
+    /**
+     * Enables or Disabled the UI.
+     * @param enabled true to enable the UI
+     */
+    public abstract void setEnabled(boolean enabled);
     
     /**
      * 
      */
-    public void cleanUp();
+    public abstract void cleanUp();
     
   
 }

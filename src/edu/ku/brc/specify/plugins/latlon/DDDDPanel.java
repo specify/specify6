@@ -20,6 +20,7 @@ import java.util.Vector;
 
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -71,6 +72,8 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
     protected JComboBox      longitudeDir;
     protected JTextField     latitudeDirTxt;
     protected JTextField     longitudeDirTxt;
+    protected JLabel         latLabel;
+    protected JLabel         lonLabel;
     
     protected boolean        hasChanged = false;
     protected boolean        isRequired = false;
@@ -94,6 +97,33 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
         {
             eastWest = new String[] {getResourceString(EAST_WEST[0]), getResourceString(EAST_WEST[1])};
         }
+    }
+    
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#setEnabled(boolean)
+     */
+    public void setEnabled(final boolean enabled)
+    {
+        super.setEnabled(enabled);
+        
+        if (latitudeDir != null)
+        {
+            latitudeDir.setEnabled(enabled);
+            longitudeDir.setEnabled(enabled);
+        }
+        if (latitudeDirTxt != null)
+        {
+            latitudeDirTxt.setEnabled(enabled);
+            longitudeDirTxt.setEnabled(enabled);
+        }
+        
+        for (ValFormattedTextFieldSingle vtfs : textFields)
+        {
+            vtfs.setEnabled(enabled);
+        }
+        
+        latLabel.setEnabled(enabled);
+        lonLabel.setEnabled(enabled);
     }
     
     /**
@@ -147,11 +177,11 @@ public class DDDDPanel extends JPanel implements LatLonUIIFace, DataChangeListen
             lonDir = longitudeDir;
         }
 
-        builder.add(createLabel("Latitude:", SwingConstants.RIGHT), cc.xy(1, 1)); // I18N
+        builder.add(latLabel = createLabel("Latitude:", SwingConstants.RIGHT), cc.xy(1, 1)); // I18N
         builder.add(latitudeDD, cc.xy(3, 1));
         builder.add(latDir, cc.xy(cbxIndex, 1));
         
-        builder.add(createLabel("Longitude:", SwingConstants.RIGHT), cc.xy(1, 3)); // I18N
+        builder.add(lonLabel = createLabel("Longitude:", SwingConstants.RIGHT), cc.xy(1, 3)); // I18N
         builder.add(longitudeDD, cc.xy(3, 3));
         builder.add(lonDir, cc.xy(cbxIndex, 3));
      
