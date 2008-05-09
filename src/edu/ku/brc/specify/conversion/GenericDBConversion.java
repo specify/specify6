@@ -1917,6 +1917,8 @@ public class GenericDBConversion
         localSession.close(); // OK
         
         curDivisionID = division.getDivisionId();
+        
+        Division.setCurrentDivision(division);
 
         DataBuilder.setSession(cacheSession);
         // return true;

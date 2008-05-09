@@ -72,6 +72,8 @@ public class Division extends DataModelObjBase implements java.io.Serializable
      protected Set<TreatmentEvent>      treatmentEvents;
      protected Set<Accession>           accessions;
      protected Set<RepositoryAgreement> repositoryAgreements;
+     
+     protected static Division          currentDivision = null;
 
     // Constructors
 
@@ -487,6 +489,22 @@ public class Division extends DataModelObjBase implements java.io.Serializable
     public String toString()
     {
         return getIdentityTitle();
+    }
+
+    /**
+     * @return the currentDivision
+     */
+    public static Division getCurrentDivision()
+    {
+        return currentDivision;
+    }
+
+    /**
+     * @param currentDivision the currentDivision to set
+     */
+    public static void setCurrentDivision(Division currentDivision)
+    {
+        Division.currentDivision = currentDivision;
     }
 
  }

@@ -45,6 +45,7 @@ import edu.ku.brc.specify.datamodel.Agent;
 import edu.ku.brc.specify.datamodel.Collection;
 import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.Discipline;
+import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.PrepType;
@@ -461,7 +462,7 @@ public class SpecifyDBConverter
         try
         {
         	GenericDBConversion.setShouldCreateMapTables(startfromScratch);
-            GenericDBConversion.setShouldDeleteMapTables(false);
+            GenericDBConversion.setShouldDeleteMapTables(true);
             
             frame.setOverall(0, 19);
             SwingUtilities.invokeLater(new Runnable() {
@@ -568,7 +569,7 @@ public class SpecifyDBConverter
                     {
                         DataBuilder.getSession().beginTransaction();
                         
-                        BasicSQLUtils.deleteAllRecordsFromTable(newConn, "usergroup", BasicSQLUtils.myDestinationServerType);
+                        //BasicSQLUtils.deleteAllRecordsFromTable(newConn, "usergroup", BasicSQLUtils.myDestinationServerType);
                         BasicSQLUtils.deleteAllRecordsFromTable(newConn, "specifyuser", BasicSQLUtils.myDestinationServerType);
                         //SpPrincipal userGroup = DataBuilder.createUserGroup("admin2");
                         
@@ -577,9 +578,9 @@ public class SpecifyDBConverter
                         criteria.add(Restrictions.eq("firstName", firstName));
                         
                         
-                        List<?> list      = criteria.list();
+                        List<?> list = criteria.list();
                         if (list != null && list.size() == 1)
-                        {
+                        { 
                             userAgent = (Agent)list.get(0);
                         } else
                         {
@@ -589,6 +590,8 @@ public class SpecifyDBConverter
                         specifyUser = DataBuilder.createSpecifyUser(username, email, password, userType);
                         specifyUser.addReference(userAgent, "agents");
                         
+                        userAgent.setDivision(Division.getCurrentDivision());
+                        DataBuilder.getSession().saveOrUpdate(userAgent);
                         DataBuilder.getSession().getTransaction().commit();
                         
                     } else
