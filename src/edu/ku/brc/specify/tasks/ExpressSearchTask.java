@@ -328,6 +328,13 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                         //log.debug("**************> " +table.getTableName() );
                         startSearchJPA(esrPane, table, searchTerm);
                     }
+                    
+                    // Check to see if any queries got started.
+                    if (queryList.size() == 0)
+                    {
+                        completionUIHelper(null);
+                    }
+                    
                 } else
                 {
                     searchTextArg.getToolkit().beep();
@@ -926,8 +933,12 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     protected synchronized void completionUIHelper(final CustomQueryIFace customQuery)
     {
 
-        queryList.remove(customQuery);
-        queryCountDone++;
+        if (customQuery != null)
+        {
+            queryList.remove(customQuery);
+            queryCountDone++;
+        }
+        
         UIRegistry.getStatusBar().setValue(EXPRESSSEARCH, queryCountDone);
         
         //System.err.println(customQuery.hashCode()+"  "+queryList.size());
