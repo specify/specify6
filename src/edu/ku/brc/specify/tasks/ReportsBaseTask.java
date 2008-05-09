@@ -19,8 +19,6 @@ import it.businesslogic.ireport.gui.MainFrame;
 
 import java.awt.Frame;
 import java.awt.datatransfer.DataFlavor;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -30,14 +28,11 @@ import java.util.Vector;
 import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 
 import net.sf.jasperreports.engine.JRDataSource;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.dom4j.Element;
-import org.dom4j.tree.FlyweightCDATA;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
@@ -58,7 +53,6 @@ import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
 import edu.ku.brc.dbsupport.RecordSetIFace;
 import edu.ku.brc.dbsupport.RecordSetItemIFace;
-import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
 import edu.ku.brc.specify.datamodel.RecordSet;
 import edu.ku.brc.specify.datamodel.SpAppResource;
@@ -1003,7 +997,7 @@ public class ReportsBaseTask extends BaseTask
                 {
                     UIRegistry.getStatusBar().setText("");
                     //UIRegistry.getStatusBar().setVisible(false);
-                    UIRegistry.getStatusBar().setIndeterminate(false);
+                    UIRegistry.getStatusBar().setProgressDone(REPORTS);
                     UIRegistry.forceTopFrameRepaint();
                 }
             }

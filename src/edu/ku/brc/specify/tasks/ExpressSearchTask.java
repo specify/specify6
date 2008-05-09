@@ -124,7 +124,10 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     
     protected Vector<SQLExecutionProcessor> sqlProcessorList = new Vector<SQLExecutionProcessor>();
     protected boolean                       sqlHasResults    = false;
-    protected int                           sqlResultsCount  = 0;
+    protected Vector<CustomQueryIFace>      queryList        = new Vector<CustomQueryIFace>();
+    protected int                           queryCount       = 0;
+    protected int                           queryCountDone   = 0;
+    
     
     protected ESResultsSubPane              queryResultsPane = null;
     protected SIQueryForIdResults           searchWarningsResults = null;
@@ -252,18 +255,19 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
      * @param searchTerm the search term for the search
      * @return the JPAQuery
      */
-    protected static JPAQuery startSearchJPA(final ExpressSearchResultsPaneIFace esrPane,
-                                             final SearchTableConfig searchTableConfig,
-                                             final String            searchTerm)
+    protected synchronized JPAQuery startSearchJPA(final ExpressSearchResultsPaneIFace esrPane,
+                                                   final SearchTableConfig searchTableConfig,
+                                                   final String            searchTerm)
     {
         JPAQuery jpaQuery = null;
         String sqlStr = searchTableConfig.getSQL(searchTerm, true, true);
         if (sqlStr != null)
         {
-            instance.sqlResultsCount++;
-
-            jpaQuery = new JPAQuery(sqlStr, instance);
+            jpaQuery = new JPAQuery(sqlStr, this);
             jpaQuery.setData(new Object[] {searchTableConfig, esrPane, searchTerm});
+            queryList.add(jpaQuery);
+            queryCount++;
+            UIRegistry.getStatusBar().setProgressRange(EXPRESSSEARCH, 0, queryCount, queryCountDone);
             if (esrPane.doQueriesSynchronously())
             {
                 jpaQuery.execute();
@@ -279,21 +283,21 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
      * Performs the express search and returns the results to the ExpressSearchResultsPaneIFace.
      * If the control is null then it will use the string.
      *
-     * @param searchText the Text Control that contains the search string (can be null)
+     * @param searchTextArg the Text Control that contains the search string (can be null)
      * @param searchTextStr the Text Control that contains the search string (can be null)
-     * @param badSearchColor the color to set the control if no results (can be null if searchText is null)
+     * @param badSearchColorArg the color to set the control if no results (can be null if searchText is null)
      * @param tables ExpressResultsTableInfo hash
      * @param esrPane the pane that the results will be set into
      * @return true if results were found, false if not results
      */
-    public static void doQuery(final JTextField searchText,
-                               final String     searchTextStr,
-                               final Color      badSearchColor,
-                               final ExpressSearchResultsPaneIFace esrPane)
+    public synchronized void doQuery(final JTextField searchTextArg,
+                                     final String     searchTextStr,
+                                     final Color      badSearchColorArg,
+                                     final ExpressSearchResultsPaneIFace esrPane)
     {
-        instance.searchWarningsResults = null;
+        searchWarningsResults = null;
         
-        String searchTerm = (searchText != null ? searchTerm = searchText.getText() : searchTextStr).toLowerCase();
+        String searchTerm = (searchTextArg != null ? searchTerm = searchTextArg.getText() : searchTextStr).toLowerCase();
 
         //boolean hasResults = true;
         if (searchTerm != null && searchTerm.length() > 0)
@@ -305,32 +309,28 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
 
                 if (config.getTables().size() > 0)
                 {
-                    instance.sqlHasResults    = false;
-                    instance.sqlResultsCount  = 0;
-                    
-                    if (instance.searchText != null)
+                    sqlHasResults    = false;
+                    if (searchTextArg != null)
                     {
-                        instance.searchText.setEnabled(false);
+                        searchTextArg.setEnabled(false);
                     }                    
-                    if (instance.searchBtn != null)
+                    if (searchBtn != null)
                     {
-                        instance.searchBtn.setEnabled(false);
-                    }
-                    if (UIRegistry.getStatusBar() != null)
-                    {
-                        UIRegistry.getStatusBar().setIndeterminate(true);
+                        searchBtn.setEnabled(false);
                     }
     
-                    Vector<JPAQuery> queryList = new Vector<JPAQuery>();
+                    queryList.clear(); // Just in case
+                    queryCount     = 0;
+                    queryCountDone = 0;
                     
                     for (SearchTableConfig table : config.getTables())
                     {
                         //log.debug("**************> " +table.getTableName() );
-                        queryList.add(startSearchJPA(esrPane, table, searchTerm));
+                        startSearchJPA(esrPane, table, searchTerm);
                     }
                 } else
                 {
-                    searchText.getToolkit().beep();
+                    searchTextArg.getToolkit().beep();
                 }
                 
             } else
@@ -354,13 +354,13 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
      * @param joinIdToTableInfoHash
      * @param resultsForJoinsHash the related results table
      */
-    protected static void collectResults(final SearchConfig           config,
-                                         final String                 tableId,
-                                         final String                 searchTerm,
-                                         final ResultSet              resultSet,
-                                         final Integer                id,
-                                         final Hashtable<String, List<ExpressResultsTableInfo>> joinIdToTableInfoHash,
-                                         final Hashtable<String, QueryForIdResultsSQL>          resultsForJoinsHash)
+    protected void collectResults(final SearchConfig           config,
+                                  final String                 tableId,
+                                  final String                 searchTerm,
+                                  final ResultSet              resultSet,
+                                  final Integer                id,
+                                  final Hashtable<String, List<ExpressResultsTableInfo>> joinIdToTableInfoHash,
+                                  final Hashtable<String, QueryForIdResultsSQL>          resultsForJoinsHash)
     {
         try
         {
@@ -439,9 +439,9 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
      * @param resultsMap the primary result tables
      * @param resultsForJoinsMap the related results table
      */
-    protected static void displayResults(final ExpressSearchResultsPaneIFace           esrPane,
-                                         final QueryForIdResultsIFace                  queryResults,
-                                         final Hashtable<String, QueryForIdResultsSQL> resultsForJoinsMap)
+    protected void displayResults(final ExpressSearchResultsPaneIFace           esrPane,
+                                  final QueryForIdResultsIFace                  queryResults,
+                                  final Hashtable<String, QueryForIdResultsSQL> resultsForJoinsMap)
     {
         // For Debug Only
         if (false && resultsForJoinsMap != null)
@@ -465,7 +465,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
             }
         }
         
-        if (queryResults.getRecIds().size() > 0)//|| tableInfo.getNumIndexes() > 0)
+        if (queryResults.getRecIds().size() > 0)
         {
             esrPane.addSearchResults(queryResults);
         }
@@ -694,7 +694,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                     JStatusBar statusBar = UIRegistry.getStatusBar();
                     if (statusBar != null)
                     {
-                        statusBar.setIndeterminate(false);
+                        statusBar.setProgressDone(EXPRESSSEARCH);
                     }
                 }
             });
@@ -853,7 +853,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                             cnt++;
                         } while(resultSet.next());
                         
-                        System.err.println("SQLExecutionProcessor: "+cnt);
+                        //System.err.println("SQLExecutionProcessor: "+cnt);
                         
                         if (cnt >= RESULTS_THRESHOLD)
                         {
@@ -923,14 +923,15 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     //-- CustomQueryListener Interface
     //-------------------------------------------------------------------------
     
-    protected synchronized void completionUIHelper(final boolean decrement)
+    protected synchronized void completionUIHelper(final CustomQueryIFace customQuery)
     {
-        if (decrement)
-        {
-            instance.sqlResultsCount--;
-        }
+
+        queryList.remove(customQuery);
+        queryCountDone++;
+        UIRegistry.getStatusBar().setValue(EXPRESSSEARCH, queryCountDone);
         
-        if (instance.sqlResultsCount < 1)
+        //System.err.println(customQuery.hashCode()+"  "+queryList.size());
+        if (queryList.size() == 0)
         {
             if (searchText != null)
             {
@@ -957,18 +958,18 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
      * @see edu.ku.brc.dbsupport.CustomQueryListener#exectionDone(edu.ku.brc.dbsupport.CustomQuery)
      */
     //@Override
-    public void exectionDone(final CustomQueryIFace customQuery)
+    public synchronized void exectionDone(final CustomQueryIFace customQuery)
     {
-        boolean addPane = false;
+        boolean  addPane  = false;
         JPAQuery jpaQuery = (JPAQuery)customQuery;
-        List<?> list      = jpaQuery.getDataObjects();
+        List<?>  list     = jpaQuery.getDataObjects();
+        
         if (!sqlHasResults)
         {
             sqlHasResults = !jpaQuery.isInError() && list != null && list.size() > 0;
             addPane = sqlHasResults;
+            //System.err.println("AddPane: "+addPane+"  Err "+jpaQuery.isInError()+"  "+(list != null && list.size() > 0));
         }
-        
-        completionUIHelper(false);
         
         if (list != null)
         {
@@ -1031,16 +1032,17 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
             log.error("List was null and cant't be");
         }
         
-        completionUIHelper(true);
+        completionUIHelper(customQuery);
     }
 
     /* (non-Javadoc)
      * @see edu.ku.brc.dbsupport.CustomQueryListener#executionError(edu.ku.brc.dbsupport.CustomQuery)
      */
     //@Override
-    public void executionError(final CustomQueryIFace customQuery)
+    public synchronized void executionError(final CustomQueryIFace customQuery)
     {
-        completionUIHelper(true);
+        log.error("Error running query!");
+        completionUIHelper(customQuery);
     }
     
     //-------------------------------------------------------------------------
@@ -1132,7 +1134,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
     {
         if (UIRegistry.getStatusBar() != null)
         {
-            UIRegistry.getStatusBar().setIndeterminate(false);
+            UIRegistry.getStatusBar().setProgressDone(EXPRESSSEARCH);
             if (cmdAction.getData() instanceof JPAQuery)
             {
                 QueryForIdResultsIFace   results = (QueryForIdResultsIFace)cmdAction.getProperty("QueryForIdResultsIFace");

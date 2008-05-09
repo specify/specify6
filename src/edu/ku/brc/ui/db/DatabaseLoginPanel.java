@@ -689,7 +689,7 @@ public class DatabaseLoginPanel extends JPanel
         log.debug("preparing to save");
         save();
 
-        statusBar.setIndeterminate(true);
+        statusBar.setIndeterminate(getClass().getName(), true);
         enableUI(false);
 
         setMessage(String.format(getResourceString("LoggingIn"), new Object[] { getDatabaseName() }), false);
@@ -789,7 +789,7 @@ public class DatabaseLoginPanel extends JPanel
                 }
 
                 isLoggingIn = false;
-                statusBar.setIndeterminate(false);
+                statusBar.setProgressDone(getClass().getName());
 
                 enableUI(true);
 

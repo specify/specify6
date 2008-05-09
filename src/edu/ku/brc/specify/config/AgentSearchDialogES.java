@@ -236,7 +236,7 @@ public class AgentSearchDialogES extends JDialog implements ActionListener, Expr
         if (isNotEmpty(searchTerm))
         {
             contentPanel.removeAll();
-            ExpressSearchTask.doQuery(searchText, null, badSearchColor, this);
+            //ExpressSearchTask.doQuery(searchText, null, badSearchColor, this);
         }
     }
 

@@ -26,6 +26,8 @@ import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Hashtable;
+import java.util.Vector;
 
 import javax.swing.Icon;
 import javax.swing.JLabel;
@@ -33,6 +35,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
@@ -67,6 +70,11 @@ public class JStatusBar extends JPanel
     protected Icon         warningIcon = null;
     
     protected Exception lastException = null;
+    
+    protected Vector<ProgressItem>            prgItemsRecycler = new Vector<ProgressItem>();
+    protected Vector<ProgressItem>            prgItems         = new Vector<ProgressItem>();
+    protected Hashtable<String, ProgressItem> prgHash          = new Hashtable<String, ProgressItem>();
+    
 
     /**
      * Default Constructor.
@@ -236,14 +244,66 @@ public class JStatusBar extends JPanel
         statusLabel.setIcon(warningIcon);
         this.lastException = null;
     }
+    
+    /**
+     * @param name
+     * @return
+     */
+    protected synchronized ProgressItem getProgressItem(final String name)
+    {
+        ProgressItem item = prgHash.get(name);
+        if (item == null)
+        {
+            if (prgItemsRecycler.size() == 0)
+            {
+                item = new ProgressItem(name);
+            } else
+            {
+                item = prgItemsRecycler.remove(0);
+                item.setName(name);
+            }
+            item.clear();
+            prgHash.put(name, item);
+            prgItems.add(item);
+        }
+        return item;
+    }
+    
+    /**
+     * @param name
+     */
+    protected synchronized void progressDone(final String name)
+    {
+        ProgressItem item = prgHash.get(name);
+        if (item != null)
+        {
+            prgHash.remove(name);
+            prgItems.remove(item);
+            prgItemsRecycler.add(item);
+            
+            if (prgItems.size() > 0)
+            {
+                updateProgress(prgItems.get(0));
+            }
+        }
+    }
+    
+    /**
+     * @param item
+     * @return
+     */
+    protected boolean isCurrent(final ProgressItem item)
+    {
+        return prgItems.size() > 0 && prgItems.get(0) == item;
+    }
 
     /**
      * Sets the progressbar as being indeterminate and sets the visibility to true
      * @param isIndeterminate whether it should be shown and set to be Indeterminate
      */
-    public void setIndeterminate(final boolean isIndeterminate)
+    public synchronized void setIndeterminate(final String name, final boolean isIndeterminate)
     {
-        setIndeterminate(isIndeterminate, false);
+        setIndeterminate(name, isIndeterminate, false);
     }
     
     /**
@@ -251,16 +311,149 @@ public class JStatusBar extends JPanel
      * @param isIndeterminate whether it should be shown and set to be Indeterminate
      * @param usePlatformLnF some platforms have special UI for Indeterminate progress bars (Mac)
      */
-    public void setIndeterminate(final boolean isIndeterminate, final boolean usePlatformLnF)
+    public synchronized void setIndeterminate(final String name, 
+                                              final boolean isIndeterminate, 
+                                              final boolean usePlatformLnF)
     {
-        if (UIHelper.isMacOS())
+        final ProgressItem item = getProgressItem(name);
+        item.setIndeterminate(isIndeterminate);
+        item.setUsePlatformUI(usePlatformLnF);
+        updateProgress(item);
+    }
+    
+    public synchronized void incrementRange(final String name)
+    {
+        if (prgHash.get(name) == null)
         {
-            progressBar.putClientProperty("JProgressBar.style", isIndeterminate ? "circular" : null);
+            setProgressRange(name, 0, 1, 0);
+            
+        } else
+        {
+            ProgressItem item = getProgressItem(name);
+            item.setMax(item.getMax()+1);
+            updateProgress(item);    
         }
         
-        progressBar.setIndeterminate(isIndeterminate);
-        progressBar.setVisible(isIndeterminate);
-        validate();
+    }
+    
+    public synchronized void incrementValue(final String name)
+    {
+        if (prgHash.get(name) == null)
+        {
+            setProgressRange(name, 0, 1);
+            
+        } 
+        
+        ProgressItem item = getProgressItem(name);
+        item.setValue(item.getValue()+1);
+        updateProgress(item);    
+    }
+    
+    /**
+     * Sets the progressbar as being indeterminate and sets the visibility to true
+     * @param isIndeterminate whether it should be shown and set to be Indeterminate
+     * @param usePlatformLnF some platforms have special UI for Indeterminate progress bars (Mac)
+     */
+    public synchronized void setProgressDone(final String name)
+    {
+        final ProgressItem item = getProgressItem(name);
+        item.clear();
+        item.setIndStatusChanged(true);
+        
+        updateProgress(item);
+        
+        prgHash.remove(name);
+        prgItems.remove(item);
+        prgItemsRecycler.add(item);
+    }
+    
+    /**
+     * @param item
+     */
+    protected void updateProgress(final ProgressItem item)
+    {
+        if (isCurrent(item))
+        {
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run()
+                {
+                    if (item.isIndStatusChanged())
+                    {
+                        if (UIHelper.isMacOS())
+                        {
+                            progressBar.putClientProperty("JProgressBar.style", item.isUsePlatformUI() ? "circular" : null);
+                        }
+                        progressBar.setIndeterminate(item.isIndeterminate());
+                    }
+                    
+                    if (!item.isIndeterminate() && item.hasRange())
+                    {
+                        progressBar.setMinimum(item.getMin());
+                        progressBar.setMaximum(item.getMax());
+                        progressBar.setValue(item.getValue());
+                        
+                        if (item.getMax() == item.getValue())
+                        {
+                            setProgressDone(item.getName());
+                            return;
+                        }
+                    }
+                    
+                    if (progressBar.isVisible())
+                    {
+                        if (!item.isIndeterminate() && !item.hasRange())
+                        {
+                            progressBar.setVisible(false);
+                            JStatusBar.this.validate();
+                        }
+                        
+                    } else
+                    {
+                        if (item.isIndeterminate() || item.hasRange())
+                        {
+                            progressBar.setVisible(true);
+                            JStatusBar.this.validate();
+                        }
+                    }
+                }
+            });
+        }
+    }
+    
+    /**
+     * Set the min, max on the GUI thread.
+     * @param min min value
+     * @param max max value
+     */
+    public synchronized void setProgressRange(final String name, final int min, final int max)
+    {
+        setProgressRange(name, min, max, min);
+    }
+    
+    /**
+     * Set the min, max on the GUI thread.
+     * @param min min value
+     * @param max max value
+     * @param value initial value
+     */
+    public synchronized void setProgressRange(final String name, final int min, final int max, final int value)
+    {
+        ProgressItem item = getProgressItem(name);
+        item.setProgressRange(min, max, value);
+        updateProgress(item);
+    }
+
+    /**
+     * Set the min, max on the GUI thread.
+     * @param min min value
+     * @param max max value
+     * @param value initial value
+     */
+    public synchronized void setValue(final String name, final int value)
+    {
+        final ProgressItem item = getProgressItem(name);
+        item.setValue(value);
+        updateProgress(item);
     }
 
     /**
@@ -272,7 +465,179 @@ public class JStatusBar extends JPanel
         return progressBar;
     }
 
-    public class MyBevelBorder extends BevelBorder
+    
+    //-------------------------------------------------------
+    //
+    //-------------------------------------------------------
+    public class ProgressItem
+    {
+        private String  name;
+        private int     min;
+        private int     max;
+        private int     value;
+        private boolean isIndeterminate  = false;
+        private boolean usePlatformUI    = false;
+        private boolean indStatusChanged = false;
+        
+        /**
+         * 
+         */
+        public ProgressItem(final String name)
+        {
+            this.name = name;
+        }
+
+        /**
+         * @param indStatusChanged the indStatusChanged to set
+         */
+        public void setIndStatusChanged(boolean indStatusChanged)
+        {
+            this.indStatusChanged = indStatusChanged;
+        }
+
+        /**
+         * @return the name
+         */
+        public String getName()
+        {
+            return name;
+        }
+
+        /**
+         * @param name the name to set
+         */
+        public void setName(String name)
+        {
+            this.name = name;
+        }
+
+        /**
+         * 
+         */
+        public void clear()
+        {
+            min = max = value = 0;
+            indStatusChanged = false;
+            isIndeterminate  = false;
+        }
+        
+        public boolean hasRange()
+        {
+            return min != 0 || max != 0;
+        }
+        
+        /**
+         * @return the isIndeterminate
+         */
+        public boolean isIndeterminate()
+        {
+            return isIndeterminate;
+        }
+
+        /**
+         * @param isIndeterminate the isIndeterminate to set
+         */
+        public void setIndeterminate(boolean isIndeterminate)
+        {
+            indStatusChanged = this.isIndeterminate != isIndeterminate;
+            this.isIndeterminate = isIndeterminate;
+        }
+        
+        /**
+         * @return the indStatusChanged
+         */
+        public boolean isIndStatusChanged()
+        {
+            return indStatusChanged;
+        }
+
+        /**
+         * @return the usePlatformUI
+         */
+        public boolean isUsePlatformUI()
+        {
+            return usePlatformUI;
+        }
+
+        /**
+         * @param usePlatformUI the usePlatformUI to set
+         */
+        public void setUsePlatformUI(boolean usePlatformUI)
+        {
+            this.usePlatformUI = usePlatformUI;
+        }
+
+        /**
+         * Set the min, max on the GUI thread.
+         * @param min min value
+         * @param max max value
+         * @param value initial value
+         */
+        public void setProgressRange(final int min, final int max)
+        {
+            setProgressRange(min, max, min);
+        }
+        
+        /**
+         * Set the min, max on the GUI thread.
+         * @param minArg min value
+         * @param maxArg max value
+         * @param valueArg initial value
+         */
+        public void setProgressRange(final int minArg, final int maxArg, final int valueArg)
+        {
+            this.min   = minArg;
+            this.max   = maxArg;
+            this.value = valueArg;
+            
+            setIndeterminate(false);
+        }
+        
+        /**
+         * @return the value
+         */
+        public int getValue()
+        {
+            return value;
+        }
+
+        /**
+         * @param value the value to set
+         */
+        public void setValue(int value)
+        {
+            this.value = value;
+        }
+
+        /**
+         * @return the min
+         */
+        public int getMin()
+        {
+            return min;
+        }
+
+        /**
+         * @return the max
+         */
+        public int getMax()
+        {
+            return max;
+        }
+
+        /**
+         * @param max the max to set
+         */
+        public void setMax(int max)
+        {
+            this.max = max;
+        }
+    }
+    
+    //-------------------------------------------------------
+    //
+    //-------------------------------------------------------
+    private class MyBevelBorder extends BevelBorder
     {
         public MyBevelBorder()
         {

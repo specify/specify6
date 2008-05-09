@@ -614,11 +614,11 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
     {
         Vector<MenuItemDesc> list = new Vector<MenuItemDesc>();
         
-        String title = "SystemSetupTask.SYS_TOOLS_MENU"; 
+        String titleArg = "SystemSetupTask.SYS_TOOLS_MENU"; 
         String mneu = "SystemSetupTask.SYS_TOOLS_MNEU"; 
         String desc = ""; 
         
-        JMenuItem mi = UIHelper.createLocalizedMenuItem(title, mneu, desc, true, null);
+        JMenuItem mi = UIHelper.createLocalizedMenuItem(titleArg, mneu, desc, true, null);
         mi.addActionListener(new ActionListener()
         {
             public void actionPerformed(ActionEvent ae)
@@ -702,7 +702,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
             if (data instanceof Integer)
             {
                 final Integer id = (Integer) data;
-                UIRegistry.getStatusBar().setIndeterminate(true);
+                UIRegistry.getStatusBar().setIndeterminate(SYSTEMSETUPTASK, true);
                 final SwingWorker worker = new SwingWorker()
                 {
                     public Object construct()
@@ -733,7 +733,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
                     //Runs on the event-dispatching thread.
                     public void finished()
                     {
-                        UIRegistry.getStatusBar().setIndeterminate(false);
+                        UIRegistry.getStatusBar().setProgressDone(SYSTEMSETUPTASK);
                         
                     }
                 };
@@ -782,7 +782,7 @@ public class SystemSetupTask extends BaseTask implements FormPaneAdjusterIFace, 
      */
     public void doDeleteDataObj(Object dataObj, DataProviderSessionIFace session, final boolean doDelete)
     {
-        UIRegistry.getStatusBar().setIndeterminate(false);
+        UIRegistry.getStatusBar().setProgressDone(SYSTEMSETUPTASK);
         
         if (dataObj instanceof PickList)
         {

@@ -874,7 +874,7 @@ public class InteractionsTask extends BaseTask
                         public Object construct()
                         {
                             JStatusBar statusBar = UIRegistry.getStatusBar();
-                            statusBar.setIndeterminate(true);
+                            statusBar.setIndeterminate(INTERACTIONS, true);
                             statusBar.setText(getResourceString("CreatingLoan"));
                             
                             Loan loan = new Loan();
@@ -936,7 +936,7 @@ public class InteractionsTask extends BaseTask
                         public void finished()
                         {
                             JStatusBar statusBar = UIRegistry.getStatusBar();
-                            statusBar.setIndeterminate(false);
+                            statusBar.setProgressDone(INTERACTIONS);
                             statusBar.setText("");
                         }
                     };
@@ -1282,7 +1282,7 @@ public class InteractionsTask extends BaseTask
             public Object construct()
             {
                 JStatusBar statusBar = UIRegistry.getStatusBar();
-                statusBar.setIndeterminate(true);
+                statusBar.setIndeterminate(INTERACTIONS, true);
                 statusBar.setText(getResourceString("ReturningLoanItems"));
                 
                 DataProviderSessionIFace session = null;
@@ -1349,7 +1349,7 @@ public class InteractionsTask extends BaseTask
             public void finished()
             {
                 JStatusBar statusBar = UIRegistry.getStatusBar();
-                statusBar.setIndeterminate(false);
+                statusBar.setProgressDone(INTERACTIONS);
                 statusBar.setText("");
                 multiView.setData(loan);
             }

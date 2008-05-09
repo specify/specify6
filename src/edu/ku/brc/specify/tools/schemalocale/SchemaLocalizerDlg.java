@@ -196,7 +196,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
         enabledDlgBtns(false);
         
         UIRegistry.getStatusBar().setText(getResourceString("SL_SAVING_SCHEMA_LOC"));
-        UIRegistry.getStatusBar().setIndeterminate(true);
+        UIRegistry.getStatusBar().setIndeterminate(getClass().getSimpleName(), true);
         
         SwingWorker workerThread = new SwingWorker()
         {
@@ -216,7 +216,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
             public void finished()
             {
                 enabledDlgBtns(true);
-                UIRegistry.getStatusBar().setIndeterminate(false);
+                UIRegistry.getStatusBar().setProgressDone(getClass().getSimpleName());
                 UIRegistry.getStatusBar().setText("");
                 finishedSaving();
             }
@@ -399,7 +399,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     {
         enabledDlgBtns(false);
         
-        UIRegistry.getStatusBar().setIndeterminate(true);
+        UIRegistry.getStatusBar().setIndeterminate(getClass().getSimpleName(), true);
         UIRegistry.getStatusBar().setText(UIRegistry.getResourceString("LOADING_SCHEMA"));
         
         SwingWorker workerThread = new SwingWorker()
@@ -416,7 +416,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
                     if (list.get(0) != null && list.get(0) instanceof Integer)
                     {
                         total = (Integer)list.get(0);
-                        UIRegistry.getStatusBar().setIndeterminate(false);
+                        UIRegistry.getStatusBar().setProgressDone(getClass().getSimpleName());
                         UIRegistry.getStatusBar().getProgressBar().setVisible(true);
                     }
                     
@@ -464,7 +464,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
             public void finished()
             {
                 enabledDlgBtns(true);
-                UIRegistry.getStatusBar().setIndeterminate(false);
+                UIRegistry.getStatusBar().setProgressDone(getClass().getSimpleName());
                 UIRegistry.getStatusBar().setText("");
                 schemaLocPanel.getContainerList().setEnabled(true);
             }

@@ -2305,7 +2305,7 @@ public class FormViewObj implements Viewable,
                 
             } else
             {
-                UIRegistry.getStatusBar().setIndeterminate(true);
+                UIRegistry.getStatusBar().setIndeterminate(getClass().getSimpleName(), true);
                 final SwingWorker worker = new SwingWorker()
                 {
                     public Object construct()
@@ -2317,7 +2317,7 @@ public class FormViewObj implements Viewable,
                     //Runs on the event-dispatching thread.
                     public void finished()
                     {
-                        UIRegistry.getStatusBar().setIndeterminate(false);
+                        UIRegistry.getStatusBar().setProgressDone(getClass().getSimpleName());
                         if (session != null)
                         {
                             session.close();

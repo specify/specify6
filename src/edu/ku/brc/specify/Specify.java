@@ -1284,7 +1284,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
      */
     protected void doSchemaConfig(final Byte schemaType, final DBTableIdMgr tableMgr)
     {
-        UIRegistry.getStatusBar().setIndeterminate(true);
+        UIRegistry.getStatusBar().setIndeterminate(appName, true);
         UIRegistry.getStatusBar().setText(getResourceString("Specify.LOADING_LOCALES")); //$NON-NLS-1$
         UIRegistry.getStatusBar().repaint();
         
@@ -1301,7 +1301,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
             public void finished()
             {
                 UIRegistry.getStatusBar().setText(""); //$NON-NLS-1$
-                UIRegistry.getStatusBar().setIndeterminate(false);
+                UIRegistry.getStatusBar().setProgressDone(appName);
                 
                 SchemaToolsDlg dlg = new SchemaToolsDlg((Frame)UIRegistry.getTopWindow(), schemaType, tableMgr);
                 dlg.setVisible(true);

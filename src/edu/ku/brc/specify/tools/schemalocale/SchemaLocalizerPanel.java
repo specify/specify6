@@ -87,7 +87,7 @@ import edu.ku.brc.util.ComparatorByStringRepresentation;
 public class SchemaLocalizerPanel extends LocalizerBasePanel implements PropertyChangeListener
 {
     private static final Logger log = Logger.getLogger(SchemaLocalizerPanel.class);
-            
+    
     protected LocalizableIOIFace localizableIO = null;
     
     protected DBTableInfo tableInfo = null;
@@ -379,7 +379,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         		// set combo selection to formatter selected in dialog
         		if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
         		{
-        			DataObjSwitchFormatter format = dlg.getSelectedFormatter();
+        			//DataObjSwitchFormatter format = dlg.getSelectedFormatter();
         			
         			// TODO: assign selected obj formatter as the default for current table 
         			
@@ -407,7 +407,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         		// set combo selection to formatter selected in dialog
         		if (dlg.getBtnPressed() == CustomDialog.OK_BTN)
         		{
-        			DataObjAggregator agg = dlg.getSelectedAggregator();
+        			//DataObjAggregator agg = dlg.getSelectedAggregator();
         			
         			// TODO: assign selected aggregator as the default for current table 
         			
@@ -603,7 +603,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
         {
             listener.propertyChange(new PropertyChangeEvent(this, "copyStart", null, null));
         }
-        UIRegistry.getStatusBar().setIndeterminate(true);
+        UIRegistry.getStatusBar().setIndeterminate(getClass().getSimpleName(), true);
         
         SwingWorker workerThread = new SwingWorker()
         {
@@ -628,7 +628,7 @@ public class SchemaLocalizerPanel extends LocalizerBasePanel implements Property
                 {
                     listener.propertyChange(new PropertyChangeEvent(this, "copyEnd", null, null));
                 }
-                UIRegistry.getStatusBar().setIndeterminate(false);
+                UIRegistry.getStatusBar().setProgressDone(getClass().getSimpleName());
             }
         };
         

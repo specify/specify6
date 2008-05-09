@@ -46,6 +46,7 @@ import edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace;
 import edu.ku.brc.ui.CommandAction;
 import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.DateWrapper;
+import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.ERTICaptionInfo;
 import edu.ku.brc.ui.db.QueryForIdResultsIFace;
 import edu.ku.brc.ui.forms.DataObjectSettable;
@@ -127,6 +128,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
     protected void startDataAquisition(final boolean doSequentially)
     {
         //System.out.println("\n"+results.getTitle()+" " +results.isHQL());
+        UIRegistry.getStatusBar().incrementRange(getClass().getSimpleName());
         
         if (results.isHQL())
         {
@@ -485,6 +487,9 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
     //@SuppressWarnings("null")
     public synchronized void exectionDone(final SQLExecutionProcessor process, final ResultSet resultSet)
     {
+        
+        UIRegistry.getStatusBar().incrementValue(getClass().getSimpleName());
+        
         List<ERTICaptionInfo> captions = results.getVisibleCaptionInfo();
         
         // This can do one of two things:
@@ -795,7 +800,7 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
     //@Override
     public synchronized void executionError(SQLExecutionProcessor process, Exception ex)
     {
-        // TODO Auto-generated method stub
+        UIRegistry.getStatusBar().incrementValue(getClass().getSimpleName());
         
     }
 
@@ -805,6 +810,8 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
     //@Override
     public void exectionDone(final CustomQueryIFace customQuery)
     {
+        UIRegistry.getStatusBar().incrementValue(getClass().getSimpleName());
+        
         JPAQuery jpaQuery = (JPAQuery)customQuery;
         List<?> list      = jpaQuery.getDataObjects();
         List<ERTICaptionInfo> captions = results.getVisibleCaptionInfo();
@@ -889,6 +896,6 @@ public class ResultSetTableModel extends AbstractTableModel implements SQLExecut
     //@Override
     public void executionError(CustomQueryIFace customQuery)
     {
-        // NO OP
+        UIRegistry.getStatusBar().incrementValue(getClass().getSimpleName());
     }
 }

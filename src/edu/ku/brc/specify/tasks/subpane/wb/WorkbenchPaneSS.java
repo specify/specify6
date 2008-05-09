@@ -1588,7 +1588,7 @@ public class WorkbenchPaneSS extends BaseSubPane
                 }
                 JStatusBar statusBar = UIRegistry.getStatusBar();
                 statusBar.setErrorMessage(errorMsg,e);
-                statusBar.setIndeterminate(false);
+                statusBar.setProgressDone(WorkbenchTask.WORKBENCH);
                 showMapBtn.setEnabled(true);
                 log.error("Exception while grabbing map from service", e);
             }
@@ -1604,7 +1604,7 @@ public class WorkbenchPaneSS extends BaseSubPane
         mapper.getMap(mapperListener);
         
         JStatusBar statusBar = UIRegistry.getStatusBar();
-        statusBar.setIndeterminate(true);
+        statusBar.setIndeterminate(WorkbenchTask.WORKBENCH, true);
         statusBar.setText(getResourceString("WB_CREATINGMAP"));
     }
     
@@ -1615,7 +1615,7 @@ public class WorkbenchPaneSS extends BaseSubPane
     protected void mapImageReceived(final Icon map)
     {
         JStatusBar statusBar = UIRegistry.getStatusBar();
-        statusBar.setIndeterminate(false);
+        statusBar.setProgressDone(WorkbenchTask.WORKBENCH);
         statusBar.setText("");
 
         if (map != null)
