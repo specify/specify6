@@ -34,8 +34,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 
-import javax.swing.SwingUtilities;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.hibernate.Query;
@@ -71,6 +69,7 @@ import edu.ku.brc.ui.UIRegistry;
 public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFace, PropertyChangeListener
 {
     private static final Logger log = Logger.getLogger(SchemaLocalizerDlg.class);
+    private static String SCHEMALOCDLG = "SchemaLocalizerDlg";
     
     protected Byte                                         schemaType;
     protected DBTableIdMgr                                 tableMgr;
@@ -196,7 +195,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
         enabledDlgBtns(false);
         
         UIRegistry.getStatusBar().setText(getResourceString("SL_SAVING_SCHEMA_LOC"));
-        UIRegistry.getStatusBar().setIndeterminate(getClass().getSimpleName(), true);
+        UIRegistry.getStatusBar().setIndeterminate(SCHEMALOCDLG, true);
         
         SwingWorker workerThread = new SwingWorker()
         {
@@ -216,7 +215,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
             public void finished()
             {
                 enabledDlgBtns(true);
-                UIRegistry.getStatusBar().setProgressDone(getClass().getSimpleName());
+                UIRegistry.getStatusBar().setProgressDone(SCHEMALOCDLG);
                 UIRegistry.getStatusBar().setText("");
                 finishedSaving();
             }
@@ -399,7 +398,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
     {
         enabledDlgBtns(false);
         
-        UIRegistry.getStatusBar().setIndeterminate(getClass().getSimpleName(), true);
+        UIRegistry.getStatusBar().setIndeterminate(SCHEMALOCDLG, true);
         UIRegistry.getStatusBar().setText(UIRegistry.getResourceString("LOADING_SCHEMA"));
         
         SwingWorker workerThread = new SwingWorker()
@@ -412,27 +411,24 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
                 {
                     session = DataProviderFactory.getInstance().createSession();
                     List<?> list = session.getDataList("SELECT count(disciplineId) FROM SpLocaleContainer WHERE disciplineId = "+Discipline.getCurrentDiscipline().getDisciplineId());
-                    double total = -1.0;
+                    //double total = -1.0;
                     if (list.get(0) != null && list.get(0) instanceof Integer)
                     {
-                        total = (Integer)list.get(0);
-                        UIRegistry.getStatusBar().setProgressDone(getClass().getSimpleName());
-                        UIRegistry.getStatusBar().getProgressBar().setVisible(true);
+                        int total = (Integer)list.get(0);
+                        //UIRegistry.getStatusBar().setProgressDone(SCHEMALOCDLG);
+                        //UIRegistry.getStatusBar().getProgressBar().setVisible(true);
+                        UIRegistry.getStatusBar().setProgressRange(SCHEMALOCDLG, 0, total);
+                    } else
+                    {
+                        UIRegistry.getStatusBar().setProgressDone(SCHEMALOCDLG);
                     }
                     
-                    double cnt = 0;
+                    int cnt = 0;
                     list = session.getDataList("FROM SpLocaleContainer WHERE disciplineId = "+Discipline.getCurrentDiscipline().getDisciplineId());
                     for (Object containerObj : list)
                     {
-                        final int percent = (int)(cnt / total * 100.0);
-                        SwingUtilities.invokeLater(new Runnable() {
-                            public void run()
-                            {
-                                UIRegistry.getStatusBar().getProgressBar().setValue(percent);                                
-                            }
-                            
-                        });
-                        cnt++;
+                        UIRegistry.getStatusBar().setValue(SCHEMALOCDLG, cnt++);
+                        
                         SpLocaleContainer container = (SpLocaleContainer)containerObj;
                         tables.add(container);
                         tableHash.put(container.getId().intValue(), container);
@@ -464,7 +460,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
             public void finished()
             {
                 enabledDlgBtns(true);
-                UIRegistry.getStatusBar().setProgressDone(getClass().getSimpleName());
+                UIRegistry.getStatusBar().setProgressDone(SCHEMALOCDLG);
                 UIRegistry.getStatusBar().setText("");
                 schemaLocPanel.getContainerList().setEnabled(true);
             }
@@ -746,8 +742,7 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
      */
     public void copyLocale(Locale srcLocale, Locale dstLocale)
     {
-        UIRegistry.getStatusBar().getProgressBar().setMinimum(0);
-        UIRegistry.getStatusBar().getProgressBar().setMaximum(getContainerDisplayItems().size());
+        UIRegistry.getStatusBar().setProgressRange(SCHEMALOCDLG, 0, getContainerDisplayItems().size());
 
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         try
@@ -772,8 +767,12 @@ public class SchemaLocalizerDlg extends CustomDialog implements LocalizableIOIFa
         } catch (Exception ex)
         {
             ex.printStackTrace();
+        } finally
+        {
+            session.close();
+            UIRegistry.getStatusBar().setProgressDone(SCHEMALOCDLG);
         }
-        session.close();
+        
     }
 
     /* (non-Javadoc)
