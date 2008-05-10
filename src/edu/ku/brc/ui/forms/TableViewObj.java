@@ -313,9 +313,13 @@ public class TableViewObj implements Viewable,
                 {
                     if (isEditting)
                     {
-                        editButton   = UIHelper.createButton("EditForm", getResourceString("EditRecord"), IconManager.IconSize.Std16, true);
-                        newButton    = UIHelper.createButton("CreateObj", getResourceString("NewRecord"), IconManager.IconSize.Std16, true);
-                        deleteButton = UIHelper.createButton("DeleteRecord", getResourceString("DeleteRecord"), IconManager.IconSize.Std16, true);
+                        String edtTTStr = ResultSetController.createTooltip("EditRecordTT",   view.getObjTitle());
+                        String newTTStr = ResultSetController.createTooltip("NewRecordTT",    view.getObjTitle());
+                        String delTTStr = ResultSetController.createTooltip("RemoveRecordTT", view.getObjTitle());
+                        
+                        editButton   = UIHelper.createButton("EditForm", edtTTStr, IconManager.IconSize.Std16, true);
+                        newButton    = UIHelper.createButton("CreateObj", newTTStr, IconManager.IconSize.Std16, true);
+                        deleteButton = UIHelper.createButton("DeleteRecord", delTTStr, IconManager.IconSize.Std16, true);
                         
                         editButton.addActionListener(new ActionListener() {
                             public void actionPerformed(ActionEvent e)
