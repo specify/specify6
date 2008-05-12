@@ -25,6 +25,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.sql.Connection;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,6 +53,7 @@ import edu.ku.brc.af.core.TaskMgr;
 import edu.ku.brc.af.core.ToolBarItemDesc;
 import edu.ku.brc.af.tasks.BaseTask;
 import edu.ku.brc.af.tasks.subpane.SimpleDescPane;
+import edu.ku.brc.dbsupport.DBConnection;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -344,21 +347,44 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
      */
     protected void deleteRecordSet(final RecordSetIFace recordSet)
     {
-        // delete from database
-        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
-        session.attach(recordSet);
+        // Deleting this manually because the RecordSet may not be loaded (with Hibernate)
+        // and the items are loaded EAGER, and there is not reason to take all the time (and memory)
+        // to load them all just to delete them.
+        // So doing this manually with JDBC is the faster way.
+        Connection connection      = null;
+        Statement  updateStatement = null;
         try
         {
-            session.beginTransaction();
-            session.delete(recordSet);
-            session.commit();
+            connection = DBConnection.getInstance().createConnection();
+            String deleteRS  = "DELETE FROM recordset WHERE RecordSetID = " + recordSet.getRecordSetId();
+            String deleteRSI = "DELETE FROM recordsetitem WHERE RecordSetID = " + recordSet.getRecordSetId();
+            updateStatement = connection.createStatement();
+            updateStatement.executeUpdate(deleteRSI);
+            updateStatement.executeUpdate(deleteRS);
+            updateStatement.clearBatch();
+            updateStatement.close();
             
         } catch (Exception ex)
         {
             ex.printStackTrace();
-            log.error(ex);
+            
+        } finally
+        {
+            try
+            {
+                if (updateStatement != null)
+                {
+                    updateStatement.close();
+                }
+                if (connection != null)
+                {
+                    connection.close();
+                }
+            } catch (Exception e)
+            {
+                e.printStackTrace();
+            }
         }
-        session.close();
     }
 
     /**
