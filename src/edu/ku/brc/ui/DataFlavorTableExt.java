@@ -105,6 +105,17 @@ public class DataFlavorTableExt extends DataFlavor
         // TODO Auto-generated constructor stub
     }
     
+    /**
+     * @return the tableIds
+     */
+    public Vector<Integer> getTableIds()
+    {
+        return tableIds;
+    }
+
+    /**
+     * @param ids
+     */
     public void addTableIds(final int[] ids)
     {
         for (int id : ids)
