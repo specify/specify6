@@ -403,7 +403,6 @@ public class GhostGlassPane extends JPanel
                 if (dropActionable instanceof RolloverCommand)
                 {
                     RolloverCommand rc = (RolloverCommand)dropActionable;
-                    System.out.println(">>>>> "+rc.getTitle()+"  "+isActive);
                     rc.repaint();
                 }
             }
