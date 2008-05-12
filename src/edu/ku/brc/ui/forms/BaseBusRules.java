@@ -296,7 +296,7 @@ public class BaseBusRules implements BusinessRulesIFace
                                                              final Integer...ids)
     {
         Integer count = getCount(stmt, tableName, columnName, ids);
-        return count != null && count > 0;
+        return count != null && count == 0;
     }
     
     /**
@@ -309,6 +309,7 @@ public class BaseBusRules implements BusinessRulesIFace
     {
         Connection conn = null;
         Statement  stmt = null;
+        int x = 0;
         try
         {
             conn = DBConnection.getInstance().createConnection();
