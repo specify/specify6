@@ -177,6 +177,7 @@ public class RecordSetTask extends BaseTask implements PropertyChangeListener
         }
         
         roc.addDragDataFlavor(new DataFlavorTableExt(RecordSetTask.class, "RECORD_SET", recordSet.getDbTableId()));
+        roc.addDropDataFlavor(new DataFlavorTableExt(RecordSetTask.class, "RECORD_SET", recordSet.getDbTableId()));
         
         addDraggableDataFlavors(nbi);
         addDroppableDataFlavors(nbi);
