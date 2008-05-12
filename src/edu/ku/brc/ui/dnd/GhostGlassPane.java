@@ -312,24 +312,42 @@ public class GhostGlassPane extends JPanel
         List<DataFlavor> dragList = dragActionable.getDragDataFlavors();
         if (DEBUG)
         {
-            System.out.println("\n\n*********** ["+((RolloverCommand)dragActionable).getTitle()+"] ["+(dropActionable instanceof RolloverCommand ? (((RolloverCommand)dropActionable).getTitle()) : dropActionable.getClass().getSimpleName())+"] ********");
+            String dragTitle = dragActionable instanceof RolloverCommand ? ((RolloverCommand)dragActionable).getTitle() : dragActionable.getClass().getSimpleName();
+            String dropTitle = dropActionable instanceof RolloverCommand ? (((RolloverCommand)dropActionable).getTitle()) : dropActionable.getClass().getSimpleName();
+            System.out.println("\n\n*********** Drag["+dragTitle+"]  Drop["+dropTitle+"] ******** Num Drag Fl["+dragList.size()+"]");
             for (DataFlavor dragFlavor : dragList)
             {
-                System.out.println("["+dragFlavor.getHumanPresentableName()+"]");
+                System.out.print("DragFlavor["+dragFlavor.getHumanPresentableName()+"] iof DataFlavorTableExt: "+(dragFlavor instanceof DataFlavorTableExt)+" ");
+                if (dragFlavor instanceof DataFlavorTableExt)
+                {
+                    for (Integer id : ((DataFlavorTableExt)dragFlavor).getTableIds())
+                    {
+                        System.out.print(id+" ");
+                    }
+                }
+                System.out.println();
             }
-            System.out.println("\n\ndropActionable "+dropActionable);
+            System.out.println("***********\n\ndropActionable "+dropActionable);
         }
         if (dragList != null)
         {
             for (DataFlavor dragFlavor : dragList)
             {
-                if (DEBUG) System.out.println("------ dragFlavor "+dragFlavor.getHumanPresentableName()+" ----------");
+                if (DEBUG) System.out.println("------ dragFlavor "+dragFlavor.getHumanPresentableName()+" ---------- Num Drop Flavs: "+dropActionable.getDropDataFlavors().size());
                 for (DataFlavor dropFlavor : dropActionable.getDropDataFlavors())
                 {
                     if (DEBUG) 
                     {
                         System.out.print("Drag["+dragFlavor.getHumanPresentableName()+"] drop["+dropFlavor.getHumanPresentableName()+"] ");
-                        System.out.println("Drag iof DFTE ["+(dragFlavor instanceof DataFlavorTableExt)+"] drop iof DFTE ["+(dropFlavor instanceof DataFlavorTableExt)+"]");
+                        System.out.print("Drag iof DFTE ["+(dragFlavor instanceof DataFlavorTableExt)+"] drop iof DFTE ["+(dropFlavor instanceof DataFlavorTableExt)+"] ");
+                        if (dropFlavor instanceof DataFlavorTableExt)
+                        {
+                            for (Integer id : ((DataFlavorTableExt)dropFlavor).getTableIds())
+                            {
+                                System.out.print(id+" ");
+                            }
+                        }
+                        System.out.println();
                     }
                     /*if (!(dragFlavor instanceof DataFlavorTableExt) && !(dropFlavor instanceof DataFlavorTableExt))
                     {
@@ -380,7 +398,14 @@ public class GhostGlassPane extends JPanel
         {
             if (dragActionable != dropActionable)
             {
-                dropActionable.setActive(isDropOK(dragActionable, dropActionable));
+                boolean isActive = isDropOK(dragActionable, dropActionable);
+                dropActionable.setActive(isActive);
+                if (dropActionable instanceof RolloverCommand)
+                {
+                    RolloverCommand rc = (RolloverCommand)dropActionable;
+                    System.out.println(">>>>> "+rc.getTitle()+"  "+isActive);
+                    rc.repaint();
+                }
             }
         }
     }
