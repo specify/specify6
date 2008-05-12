@@ -56,7 +56,7 @@ public class AutoCompletion extends PlainDocument
         {
             public void actionPerformed(ActionEvent e)
             {
-                System.out.println("actionPerformed " + selecting);
+                //System.out.println("actionPerformed " + selecting);
                 if (!selecting && comboBox.getSelectedIndex() != -1)
                 {
                     highlightCompletedText(0);
@@ -67,7 +67,7 @@ public class AutoCompletion extends PlainDocument
         {
             public void propertyChange(PropertyChangeEvent e)
             {
-                System.out.println("propertyChange");
+                //System.out.println("propertyChange");
                 if (e.getPropertyName().equals("editor"))
                 {
                     configureEditor((ComboBoxEditor) e.getNewValue());
@@ -84,7 +84,7 @@ public class AutoCompletion extends PlainDocument
         {
             public void keyPressed(KeyEvent e)
             {
-                System.out.println("\nkeyPressed");
+                //System.out.println("\nkeyPressed");
 
                 if (!comboBox.isPopupVisible() && comboBox.isDisplayable() && editor.getText().length() == 0)
                 {
@@ -101,7 +101,7 @@ public class AutoCompletion extends PlainDocument
 
                     // ignore delete key
                     case KeyEvent.VK_ENTER:
-                        System.out.println("VK_ENTER " + comboBox.getSelectedIndex());
+                        //System.out.println("VK_ENTER " + comboBox.getSelectedIndex());
                         if (canAdd && comboBox.getSelectedIndex() == -1)
                         {
                             if (autoCompModel != null)
@@ -128,26 +128,26 @@ public class AutoCompletion extends PlainDocument
                         } else
                         {
                             cnt++;
-                            System.out.println(cnt + " DOWN - Current Index: "+comboBox.getSelectedIndex());
+                            //System.out.println(cnt + " DOWN - Current Index: "+comboBox.getSelectedIndex());
                             if (comboBox.getSelectedIndex() < comboBox.getModel().getSize() - 1)
                             {
-                                System.out.println("  Setting Index: "+(comboBox.getSelectedIndex()+1));
+                                //System.out.println("  Setting Index: "+(comboBox.getSelectedIndex()+1));
                                 doShowPopUp = true;
                                 final int newIndex = comboBox.getSelectedIndex() + 1;
                                 SwingUtilities.invokeLater(new Runnable() {
                                     public void run()
                                     {
                                         comboBox.setSelectedIndex(newIndex);
-                                        System.out.println("  Current Index: "+(comboBox.getSelectedIndex())+"  "+comboBox.getSelectedItem());
+                                        //System.out.println("  Current Index: "+(comboBox.getSelectedIndex())+"  "+comboBox.getSelectedItem());
                                         final Object newText = comboBox.getModel().getElementAt(newIndex);
-                                        System.out.println(newText.hashCode() +" "+newText.toString().hashCode());
+                                        //System.out.println(newText.hashCode() +" "+newText.toString().hashCode());
                                         if (editor != null)
                                         {
-                                            System.out.println(newText);
+                                            //System.out.println(newText);
                                             //editor.setText(newText.toString());
                                             setText(new String(newText.toString()));
                                         }
-                                        System.out.println("  Current Index: "+(comboBox.getSelectedIndex()));
+                                        //System.out.println("  Current Index: "+(comboBox.getSelectedIndex()));
                                     }
                                     
                                 });
@@ -160,32 +160,32 @@ public class AutoCompletion extends PlainDocument
                     case KeyEvent.VK_UP:
                         if (!comboBox.isPopupVisible() && comboBox.isDisplayable())
                         {
-                            System.out.println("XXXXXX");
+                            //System.out.println("XXXXXX");
                             comboBox.setPopupVisible(true);
                             e.consume();
                         } else
                         {
                             cnt++;
-                            System.out.println(cnt + " UP - Current Index: "+comboBox.getSelectedIndex());
+                            //System.out.println(cnt + " UP - Current Index: "+comboBox.getSelectedIndex());
                             if (comboBox.getSelectedIndex() > 0)
                             {
-                                System.out.println("  Setting Index: "+(comboBox.getSelectedIndex()-1));
+                                //System.out.println("  Setting Index: "+(comboBox.getSelectedIndex()-1));
                                 doShowPopUp = true;
                                 final int newIndex = comboBox.getSelectedIndex() - 1;
                                 SwingUtilities.invokeLater(new Runnable() {
                                     public void run()
                                     {
                                         comboBox.setSelectedIndex(newIndex);
-                                        System.out.println("  Current Index: "+(comboBox.getSelectedIndex())+"  "+comboBox.getSelectedItem());
+                                        //System.out.println("  Current Index: "+(comboBox.getSelectedIndex())+"  "+comboBox.getSelectedItem());
                                         final Object newText = comboBox.getModel().getElementAt(newIndex);
-                                        System.out.println(newText.hashCode() +" "+newText.toString().hashCode());
+                                        //System.out.println(newText.hashCode() +" "+newText.toString().hashCode());
                                         if (editor != null)
                                         {
-                                            System.out.println(newText);
+                                            //System.out.println(newText);
                                             //editor.setText(newText.toString());
                                             setText(new String(newText.toString()));
                                         }
-                                        System.out.println("  Current Index: "+(comboBox.getSelectedIndex()));
+                                        //System.out.println("  Current Index: "+(comboBox.getSelectedIndex()));
                                     }
                                     
                                 });
@@ -310,7 +310,7 @@ public class AutoCompletion extends PlainDocument
     {
         int offs = offset;
         
-        System.out.println("insertString");
+        //System.out.println("insertString");
         
         // return immediately when selecting an item
         if (selecting)
@@ -318,10 +318,10 @@ public class AutoCompletion extends PlainDocument
             return;
         }
         
-        System.out.println("offs["+offs+"]["+comboBox.getSelectedIndex()+"]["+str+"][ canAdd["+canAdd+"]");
+        //System.out.println("offs["+offs+"]["+comboBox.getSelectedIndex()+"]["+str+"][ canAdd["+canAdd+"]");
         /*if ((!canAdd || (offs > 0 && comboBox.getSelectedIndex() > -1)) && !comboBox.isPopupVisible() && comboBox.isDisplayable())
         {
-            System.out.println(offs+" ******** setPopupVisible(true)");
+            //System.out.println(offs+" ******** setPopupVisible(true)");
             comboBox.setPopupVisible(true);
         }*/
         
@@ -335,7 +335,7 @@ public class AutoCompletion extends PlainDocument
             item = lookupItem(getText(0, getLength()));
             if (item != null)
             {
-                System.out.println("insertString - Selecting item["+item+"]");
+                //System.out.println("insertString - Selecting item["+item+"]");
                 setSelectedItem(item);
                 setText(item.toString());
                 
@@ -344,7 +344,7 @@ public class AutoCompletion extends PlainDocument
                 
                 /*if (doShowPopUp && !comboBox.isPopupVisible() && comboBox.isDisplayable())
                 {
-                    System.out.println("***********************");
+                    //System.out.println("***********************");
                     SwingUtilities.invokeLater(new Runnable()
                     {
                         public void run()
@@ -358,7 +358,7 @@ public class AutoCompletion extends PlainDocument
             } else
             {
                 setSelectedIndex(-1);
-                System.out.println("Selecting item[-1]");
+                //System.out.println("Selecting item[-1]");
                 if (editor != null && !canAdd)
                 {
                     editor.setText("");
@@ -422,7 +422,7 @@ public class AutoCompletion extends PlainDocument
 
     private void setSelectedItem(Object item)
     {
-        System.out.println("****** setSelectedItem "+item);
+        //System.out.println("****** setSelectedItem "+item);
         selecting = true;
         model.setSelectedItem(item);
         selecting = false;
@@ -430,7 +430,7 @@ public class AutoCompletion extends PlainDocument
 
     private void setSelectedIndex(final int index)
     {
-        System.out.println("****** setSelectedIndex "+index);
+        //System.out.println("****** setSelectedIndex "+index);
         selecting = true;
         comboBox.setSelectedIndex(index);
         selecting = false;
@@ -438,7 +438,7 @@ public class AutoCompletion extends PlainDocument
 
     private Object lookupItem(String pattern)
     {
-        System.out.println("------------ lookupItem ["+pattern+"]----------------");
+        //System.out.println("------------ lookupItem ["+pattern+"]----------------");
         Object selectedItem = model.getSelectedItem();
         // only search for a different item if the currently selected does not match
         if (selectedItem != null && startsWithIgnoreCase(selectedItem.toString(), pattern))

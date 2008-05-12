@@ -1034,34 +1034,43 @@ public class ValComboBoxFromQuery extends JPanel implements UIValidatable,
         //log.debug(e != null ? ((JMenuItem)e.getSource()).getText() : "null");
         if (e != null)
         {
-            String itemLabel = null;
-            if (e.getSource() instanceof JMenuItem)
+            if (e.getSource() instanceof TextFieldWithQuery)
             {
-                itemLabel = ((JMenuItem)e.getSource()).getText().toString();
-                this.dataObj = null;
-                getValue();
-                refreshUIFromData(true);
-                
-            } else if (e.getSource() instanceof JList)
-            {
-                JList listBox = (JList)e.getSource(); 
-                if (listBox.getSelectedIndex() > -1)
+                if (((TextFieldWithQuery)e.getSource()).getTextField().getText().length() == 0)
                 {
-                    itemLabel = listBox.getSelectedValue().toString();
+                    dataObj = null;
+                }
+            } else
+            {
+                String itemLabel = null;
+                if (e.getSource() instanceof JMenuItem)
+                {
+                    itemLabel = ((JMenuItem)e.getSource()).getText().toString();
                     this.dataObj = null;
-                } else
+                    getValue();
+                    refreshUIFromData(true);
+                    
+                } else if (e.getSource() instanceof JList)
                 {
+                    JList listBox = (JList)e.getSource(); 
+                    if (listBox.getSelectedIndex() > -1)
+                    {
+                        itemLabel = listBox.getSelectedValue().toString();
+                        this.dataObj = null;
+                    } else
+                    {
+                        return;
+                    }
+                }
+                
+                if (itemLabel != null && itemLabel.equals(UIRegistry.getResourceString("TFWQ_ADD_LABEL")))
+                {
+                    if (defaultNewAction != null)
+                    {
+                        defaultNewAction.actionPerformed(null);
+                    }
                     return;
                 }
-            }
-            
-            if (itemLabel != null && itemLabel.equals(UIRegistry.getResourceString("TFWQ_ADD_LABEL")))
-            {
-                if (defaultNewAction != null)
-                {
-                    defaultNewAction.actionPerformed(null);
-                }
-                return;
             }
         }
         
