@@ -31,7 +31,6 @@ import org.dom4j.Element;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.ui.UIHelper;
-import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.db.ERTICaptionInfo;
 
 /**

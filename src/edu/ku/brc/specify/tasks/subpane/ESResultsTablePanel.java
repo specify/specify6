@@ -702,20 +702,21 @@ public class ESResultsTablePanel extends JPanel implements ESResultsTablePanelIF
     }
 
     /* (non-Javadoc)
-     * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
-     */
-    //@Override
-    /* (non-Javadoc)
      * @see edu.ku.brc.specify.tasks.subpane.ESResultsTablePanelIFace#propertyChange(java.beans.PropertyChangeEvent)
      */
     public void propertyChange(final PropertyChangeEvent evt)
     {
         rowCount = (Integer)evt.getNewValue();
-        setTitleBar();
         
         if (rowCount > 0)
         {
-            esrPane.addTable(this);
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run()
+                {
+                    setTitleBar();
+                    esrPane.addTable(ESResultsTablePanel.this);
+                }
+            });
         }
     }
 

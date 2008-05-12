@@ -161,8 +161,6 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
     {
         if (results instanceof SIQueryForIdResults)
         {
-            int x = 0;
-            x++;
             @SuppressWarnings("unused")
             ESResultsTablePanel resultsTable = new ESResultsTablePanel(this, results, results.shouldInstallServices(), results.isExpanded())
             {
@@ -259,15 +257,9 @@ public class ESResultsSubPane extends BaseSubPane implements ExpressSearchResult
             contentPanel.add(explainPanel);
         }            
             
-        final JPanel panel = this;
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run()
-            {
-                panel.validate();
-                panel.repaint();
-                expTblRes.getUIComponent().repaint();
-            }
-        });
+        validate();
+        repaint();
+        expTblRes.getUIComponent().repaint();
     }
     
     /* (non-Javadoc)
