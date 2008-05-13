@@ -338,7 +338,7 @@ public class GhostGlassPane extends JPanel
                 {
                     if (DEBUG) 
                     {
-                        System.out.print("Drag["+dragFlavor.getHumanPresentableName()+"] drop["+dropFlavor.getHumanPresentableName()+"] ");
+                        System.out.println("Drag["+dragFlavor.getHumanPresentableName()+"] drop["+dropFlavor.getHumanPresentableName()+"] Can DROP["+dragFlavor.equals(dropFlavor)+"]");
                         System.out.print("Drag iof DFTE ["+(dragFlavor instanceof DataFlavorTableExt)+"] drop iof DFTE ["+(dropFlavor instanceof DataFlavorTableExt)+"] ");
                         if (dropFlavor instanceof DataFlavorTableExt)
                         {
@@ -363,7 +363,7 @@ public class GhostGlassPane extends JPanel
                     {
                         if (DEBUG) 
                         {
-                            System.out.print("Drag iof DFTE ["+(dragFlavor instanceof DataFlavorTableExt)+"] drop iof DFTE ["+(dropFlavor instanceof DataFlavorTableExt)+"] ");
+                            System.out.println("Drag iof DFTE ["+(dragFlavor instanceof DataFlavorTableExt)+"] drop iof DFTE ["+(dropFlavor instanceof DataFlavorTableExt)+"] ");
                             System.out.println("Drag["+dragFlavor.getHumanPresentableName()+"] drop["+dropFlavor.getHumanPresentableName()+"]");
                             System.out.println("!!! Drop is OK");
                         }
@@ -403,7 +403,12 @@ public class GhostGlassPane extends JPanel
                 if (dropActionable instanceof RolloverCommand)
                 {
                     RolloverCommand rc = (RolloverCommand)dropActionable;
+                    //System.out.println(">>>>> "+rc.getTitle()+"  "+isActive);
                     rc.repaint();
+                } else
+                {
+                    int x = 0;
+                    x++;
                 }
             }
         }

@@ -269,7 +269,7 @@ public class TreeFactory
         
         if (clazz.equals(Storage.class))
         {
-            return "SELECT count(*) FROM CollectionObject AS co INNER JOIN co.preparations AS prep INNER JOIN prep.storage as sto WHERE sto.id="+Integer.toString(id);
+            return "SELECT count(DISTINCT co.id) FROM CollectionObject AS co INNER JOIN co.preparations AS prep INNER JOIN prep.storage as sto WHERE sto.id="+Integer.toString(id);
         }
         
         if (clazz.equals(LithoStrat.class))
@@ -339,17 +339,17 @@ public class TreeFactory
         } else if (clazz.equals(Storage.class))
         {
             // HQL
-            sb.append("SELECT count(*) FROM CollectionObject AS co INNER JOIN co.preparations AS prep INNER JOIN prep.storage as loc WHERE prep.collectionMemberId = COLMEMID AND loc.id = %d");
+            sb.append("SELECT count(DISTINCT co.id) FROM CollectionObject AS co INNER JOIN co.preparations AS prep INNER JOIN prep.storage as loc WHERE prep.collectionMemberId = COLMEMID AND loc.id = %d");
             
         } else if (clazz.equals(GeologicTimePeriod.class))
         {
             // HQL
-            sb.append("SELECT count(*) FROM CollectionObject AS co INNER JOIN co.paleoContext AS pc INNER JOIN pc.chronosStrat as gtp WHERE pc.collectionMemberId = COLMEMID AND gtp.id = %d");
+            sb.append("SELECT count(DISTINCT co.id) FROM CollectionObject AS co INNER JOIN co.paleoContext AS pc INNER JOIN pc.chronosStrat as gtp WHERE pc.collectionMemberId = COLMEMID AND gtp.id = %d");
             
         } else if (clazz.equals(LithoStrat.class))
         {
             // HQL
-            sb.append("SELECT count(*) FROM CollectionObject AS co INNER JOIN co.paleoContext AS pc INNER JOIN pc.lithoStrat as ls WHERE pc.collectionMemberId = COLMEMID AND ls.id = %d");
+            sb.append("SELECT count(DISTINCT co.id) FROM CollectionObject AS co INNER JOIN co.paleoContext AS pc INNER JOIN pc.lithoStrat as ls WHERE pc.collectionMemberId = COLMEMID AND ls.id = %d");
             
         }
         

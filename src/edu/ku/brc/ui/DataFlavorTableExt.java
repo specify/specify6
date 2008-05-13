@@ -196,7 +196,10 @@ public class DataFlavorTableExt extends DataFlavor
             }
             return false;
             
-        } else if (tableIds == null)
+        } 
+        // 05/13/07 - rods - Commeneted our check to enable things to pass thru 
+        // where the drop doesn't have any tables defined but the drag might
+        //else if (tableIds == null)
         {
             return getHumanPresentableName().equals(that.getHumanPresentableName());
             
@@ -211,7 +214,7 @@ public class DataFlavorTableExt extends DataFlavor
 //                }
 //            }
 //        }
-        return false;
+        //return false;
     }
     
     

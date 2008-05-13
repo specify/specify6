@@ -84,13 +84,16 @@ public class TreePrefs extends GenericPrefsPanel
             geoFiller.fill("2", session, GeographyTreeDef.getCurrentGeographyTreeDef(), Geography.class);
             fillers.put(Geography.class, geoFiller);
             
-            DefModelFiller<LithoStrat, LithoStratTreeDef, LithoStratTreeDefItem> lithoFiller = new DefModelFiller<LithoStrat, LithoStratTreeDef, LithoStratTreeDefItem>();
-            lithoFiller.fill("3", session, LithoStratTreeDef.getCurrentLithoStratTreeDef(), LithoStrat.class);
-            fillers.put(LithoStrat.class, lithoFiller);
+                DefModelFiller<LithoStrat, LithoStratTreeDef, LithoStratTreeDefItem> lithoFiller = new DefModelFiller<LithoStrat, LithoStratTreeDef, LithoStratTreeDefItem>();
+                lithoFiller.fill("3", session, LithoStratTreeDef.getCurrentLithoStratTreeDef(), LithoStrat.class);
+                fillers.put(LithoStrat.class, lithoFiller);
             
-            DefModelFiller<GeologicTimePeriod, GeologicTimePeriodTreeDef, GeologicTimePeriodTreeDefItem> gtpFiller = new DefModelFiller<GeologicTimePeriod, GeologicTimePeriodTreeDef, GeologicTimePeriodTreeDefItem>();
-            gtpFiller.fill("4", session, GeologicTimePeriodTreeDef.getCurrentGeologicTimePeriodTreeDef(), GeologicTimePeriod.class);
-            fillers.put(GeologicTimePeriod.class, gtpFiller);
+            if (GeologicTimePeriodTreeDef.getCurrentGeologicTimePeriodTreeDef() != null)
+            {
+                DefModelFiller<GeologicTimePeriod, GeologicTimePeriodTreeDef, GeologicTimePeriodTreeDefItem> gtpFiller = new DefModelFiller<GeologicTimePeriod, GeologicTimePeriodTreeDef, GeologicTimePeriodTreeDefItem>();
+                gtpFiller.fill("4", session, GeologicTimePeriodTreeDef.getCurrentGeologicTimePeriodTreeDef(), GeologicTimePeriod.class);
+                fillers.put(GeologicTimePeriod.class, gtpFiller);
+            }
             
             DefModelFiller<Storage, StorageTreeDef, StorageTreeDefItem> storageFiller = new DefModelFiller<Storage, StorageTreeDef, StorageTreeDefItem>();
             storageFiller.fill("5", session, StorageTreeDef.getCurrentStorageTreeDef(), Storage.class);
@@ -150,19 +153,31 @@ public class TreePrefs extends GenericPrefsPanel
             // TODO Auto-generated constructor stub
         }
         
-        public void fill(final String id,
+        /**
+         * @param fillerId
+         * @param session
+         * @param tdi
+         * @param fillerClass
+         */
+        public void fill(final String fillerId,
                          final DataProviderSessionIFace session, 
                          final TreeDefIface<T,D,I> tdi,
-                         final Class<?> clazz)
+                         final Class<?> fillerClass)
         {
-            this.id    = id;
-            this.clazz = clazz;
+            this.id    = fillerId;
+            this.clazz = fillerClass;
             
-            ValComboBox taxonCBX = (ValComboBox)form.getCompById(id);
+            ValComboBox cbx = (ValComboBox)form.getCompById(fillerId);
+            if (tdi == null)
+            {
+                cbx.setEnabled(false);
+                return;
+            }
+            
             DefaultComboBoxModel model = new DefaultComboBoxModel();
-            taxonCBX.getComboBox().setModel(model);
+            cbx.getComboBox().setModel(model);
             
-            int rankId = AppPreferences.getRemote().getInt(PREF_NAME+clazz.getSimpleName(), 0);
+            int rankId = AppPreferences.getRemote().getInt(PREF_NAME+fillerClass.getSimpleName(), 0);
 
             session.attach(tdi);
             Vector<TreeDefItemIface<T,D,I>> list = new Vector<TreeDefItemIface<T,D,I>>(tdi.getTreeDefItems());
@@ -189,7 +204,7 @@ public class TreePrefs extends GenericPrefsPanel
             }
             if (inx > -1)
             {
-                taxonCBX.getComboBox().setSelectedIndex(inx);
+                cbx.getComboBox().setSelectedIndex(inx);
             }
         }
         

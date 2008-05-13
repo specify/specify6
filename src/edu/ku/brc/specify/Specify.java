@@ -42,6 +42,7 @@ import java.util.MissingResourceException;
 import java.util.NoSuchElementException;
 import java.util.Properties;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.prefs.BackingStoreException;
 
 import javax.swing.AbstractAction;
@@ -106,10 +107,12 @@ import edu.ku.brc.specify.datamodel.AgentAttachment;
 import edu.ku.brc.specify.datamodel.Attachment;
 import edu.ku.brc.specify.datamodel.CollectingEventAttachment;
 import edu.ku.brc.specify.datamodel.Collection;
+import edu.ku.brc.specify.datamodel.CollectionObject;
 import edu.ku.brc.specify.datamodel.CollectionObjectAttachment;
 import edu.ku.brc.specify.datamodel.ConservDescriptionAttachment;
 import edu.ku.brc.specify.datamodel.ConservEventAttachment;
 import edu.ku.brc.specify.datamodel.DNASequenceAttachment;
+import edu.ku.brc.specify.datamodel.Determination;
 import edu.ku.brc.specify.datamodel.Discipline;
 import edu.ku.brc.specify.datamodel.FieldNotebookAttachment;
 import edu.ku.brc.specify.datamodel.FieldNotebookPageAttachment;
@@ -117,9 +120,12 @@ import edu.ku.brc.specify.datamodel.FieldNotebookPageSetAttachment;
 import edu.ku.brc.specify.datamodel.LoanAttachment;
 import edu.ku.brc.specify.datamodel.LocalityAttachment;
 import edu.ku.brc.specify.datamodel.PermitAttachment;
+import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.PreparationAttachment;
 import edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment;
 import edu.ku.brc.specify.datamodel.SpLocaleContainer;
+import edu.ku.brc.specify.datamodel.Storage;
+import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonAttachment;
 import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
 import edu.ku.brc.specify.tests.SpecifyAppPrefs;
@@ -1220,6 +1226,19 @@ public class Specify extends JPanel implements DatabaseLoginListener
                             exportPrefs();
                         }
                     });
+            
+            ttle = "Associate Storage Items";//$NON-NLS-1$ 
+            mneu = "A";//$NON-NLS-1$ 
+            desc = "";//$NON-NLS-1$ 
+            mi = UIHelper.createLocalizedMenuItem(menu, ttle,mneu , desc, true, null); 
+            mi.addActionListener(new ActionListener()
+                    {
+                        @SuppressWarnings("synthetic-access") //$NON-NLS-1$
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            associateStorageItems();
+                        }
+                    });
 
         }
         
@@ -1256,6 +1275,99 @@ public class Specify extends JPanel implements DatabaseLoginListener
                     });
         }
         return mb;
+    }
+    
+    public Storage getStorageItem(final DataProviderSessionIFace session,
+                                  final String path, 
+                                  final Storage parentArg)
+    {
+        Storage parent = parentArg;
+        String nodeStr = StringUtils.substringBefore(path, "/");
+        String pathStr = StringUtils.substringAfter(path, "/");
+        if (parent == null)
+        {
+            parent = session.getData(Storage.class, "name", nodeStr, DataProviderSessionIFace.CompareType.Equals);
+            if (StringUtils.isNotEmpty(pathStr))
+            {
+                return getStorageItem(session, pathStr, parent);
+            }
+            return parent;
+        }
+        
+        for (Storage node : parent.getChildren())
+        {
+            System.out.println("["+node.getName()+"]["+nodeStr+"]");
+            if (node.getName().equals(nodeStr))
+            {
+                if (StringUtils.isNotEmpty(pathStr))
+                {
+                    return getStorageItem(session, pathStr, node);
+                }
+                return node;
+            }
+        }
+        return null;
+    }
+    
+    protected void addCOToStorage(final DataProviderSessionIFace session,
+                                  final Storage storage, 
+                                  final CollectionObject co) throws Exception
+    {
+        if (co != null && storage != null)
+        {
+            Set<Preparation> preps = storage.getPreparations();
+            for (Preparation prep : co.getPreparations())
+            {
+                preps.add(prep);
+                prep.setStorage(storage);
+                session.saveOrUpdate(prep);
+            }
+            session.saveOrUpdate(co);
+        }
+    }
+    
+    protected void associateStorageItems()
+    {
+        DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+        Storage storage = getStorageItem(session, "Dyche Hall/Basement/Storage Room #1/Shelf A1", null);
+        
+        try
+        {
+            Taxon taxon = session.getData(Taxon.class, "fullName", "Ammocrypta clara", DataProviderSessionIFace.CompareType.Equals);
+            session.beginTransaction();
+            if (taxon != null)
+            {
+                for (Determination deter : taxon.getDeterminations())
+                {
+                    addCOToStorage(session, storage, deter.getCollectionObject());
+                }
+            }
+            session.commit();
+            
+            storage = getStorageItem(session, "Dyche Hall/Basement/Storage Room #1/Shelf A2", null);
+            taxon = session.getData(Taxon.class, "fullName", "Ammocrypta beanii", DataProviderSessionIFace.CompareType.Equals);
+            session.beginTransaction();
+            if (taxon != null)
+            {
+                for (Determination deter : taxon.getDeterminations())
+                {
+                    addCOToStorage(session, storage, deter.getCollectionObject());
+                }
+            }
+            session.commit();
+            
+            
+            /*
+            CollectionObject co = session.getData(CollectionObject.class, "catalogNumber", "000029831", DataProviderSessionIFace.CompareType.Equals);
+            
+            */
+        } catch (Exception ex)
+        {
+            session.rollback();
+            ex.printStackTrace();
+        }
+        
+        session.close();
     }
     
     /**
