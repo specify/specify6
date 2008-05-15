@@ -97,7 +97,7 @@ public class CatByPrev10YearsCustomQuery implements CustomQueryIFace
 
         for (int i=0;i<10;i++)
         {
-            String sql = QueryAdjusterForDomain.getInstance().adjustSQL("SELECT count(*) FROM collectionobject WHERE CollecionMemberID = COLMEMID AND CatalogedDate < '"+(year)+"-01-01' and CatalogedDate > '"+(year-10)+"-12-31'; ");
+            String sql = QueryAdjusterForDomain.getInstance().adjustSQL("SELECT count(*) FROM collectionobject WHERE CollecionMemberID = COLMEMID AND YEAR(CatalogedDate) = "+year);
             ndbrc = new QueryResultsContainer(sql);
             ndbrc.add(new QueryResultsDataObj(createTitle(year, inc)));
             ndbrc.add(new QueryResultsDataObj(1, 1));

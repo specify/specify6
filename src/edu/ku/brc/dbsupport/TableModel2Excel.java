@@ -246,7 +246,8 @@ public class TableModel2Excel
                 {
                     //add the date to the header cell
                     strBuilder.append("<td align=center>"); //$NON-NLS-1$
-                    strBuilder.append(tableModel.getValueAt(rownum, cellnum).toString());
+                    Object data = tableModel.getValueAt(rownum, cellnum);
+                    strBuilder.append(data != null ? data.toString() : "&nbsp;");
                     strBuilder.append("</td>"); //$NON-NLS-1$
                 }
                 strBuilder.append("</tr>\n"); //$NON-NLS-1$

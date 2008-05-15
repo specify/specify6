@@ -377,7 +377,7 @@ public class Storage extends DataModelObjBase implements Serializable, Treeable<
     }
 
     @OneToMany(mappedBy = "storage")
-    @Cascade( {CascadeType.ALL} )
+    @Cascade( {CascadeType.MERGE, CascadeType.LOCK} )
     public Set<Preparation> getPreparations()
     {
         return this.preparations;
@@ -389,7 +389,7 @@ public class Storage extends DataModelObjBase implements Serializable, Treeable<
     }
 
     @OneToMany(mappedBy = "storage")
-    @Cascade( {CascadeType.ALL} )
+    @Cascade( {CascadeType.MERGE, CascadeType.LOCK} )
     public Set<Container> getContainers()
     {
         return this.containers;

@@ -61,9 +61,9 @@
       </bar>
     </stat>
 
-    <stat name="Items Cataloged Last 5 Years" display="Bar Chart">
+    <stat name="ItemsCatalogedLast10Years" display="Bar Chart">
        <chartinfo>
-         <title>Items Cataloged Last 5 Years</title>
+         <title>Items Cataloged Last 10 Years</title>
          <xaxis>Years</xaxis>
          <yaxis>Number of Specimens</yaxis>
        </chartinfo>
@@ -79,7 +79,7 @@
       <sql type="custom" name="CatByPrev10YearsCustomQuery"/>
     </stat>
 
-    <stat name="Percentage Grow Last 5 Years" display="Bar Chart">
+    <stat name="PercentageGrowLast5Years" display="Bar Chart">
        <chartinfo>
          <title>Percentage Grow Last 5 Years</title>
          <xaxis>Years</xaxis>

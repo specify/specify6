@@ -71,6 +71,9 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 import com.jgoodies.looks.plastic.PlasticLookAndFeel;
 import com.jgoodies.looks.plastic.theme.ExperienceBlue;
 
@@ -102,6 +105,7 @@ import edu.ku.brc.specify.config.DisciplineType;
 import edu.ku.brc.specify.config.LoggerDialog;
 import edu.ku.brc.specify.config.ResourceImportExportDlg;
 import edu.ku.brc.specify.config.SpecifyAppContextMgr;
+import edu.ku.brc.specify.conversion.SpecifyDBConverter;
 import edu.ku.brc.specify.datamodel.AccessionAttachment;
 import edu.ku.brc.specify.datamodel.AgentAttachment;
 import edu.ku.brc.specify.datamodel.Attachment;
@@ -146,12 +150,16 @@ import edu.ku.brc.ui.UIRegistry;
 import edu.ku.brc.ui.IconManager.IconSize;
 import edu.ku.brc.ui.db.DatabaseLoginListener;
 import edu.ku.brc.ui.db.DatabaseLoginPanel;
+import edu.ku.brc.ui.db.ViewBasedDisplayDialog;
+import edu.ku.brc.ui.db.ViewBasedDisplayPanel;
 import edu.ku.brc.ui.dnd.GhostGlassPane;
 import edu.ku.brc.ui.forms.FormViewObj;
 import edu.ku.brc.ui.forms.MultiView;
 import edu.ku.brc.ui.forms.ResultSetController;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
 import edu.ku.brc.ui.forms.persist.ViewLoader;
+import edu.ku.brc.ui.forms.validation.TypeSearchForQueryFactory;
+import edu.ku.brc.ui.forms.validation.ValComboBoxFromQuery;
 import edu.ku.brc.ui.weblink.WebLinkMgr;
 import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
@@ -1326,8 +1334,20 @@ public class Specify extends JPanel implements DatabaseLoginListener
         }
     }
     
+    /**
+     * 
+     */
     protected void associateStorageItems()
     {
+        
+        if (true)
+        {
+            showStorageHelperDlg();
+            return;
+        }
+        
+        SpecifyDBConverter.addStorageTreeFomrXML();
+        
         DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
         Storage storage = getStorageItem(session, "Dyche Hall/Basement/Storage Room #1/Shelf A1", null);
         
@@ -1368,6 +1388,80 @@ public class Specify extends JPanel implements DatabaseLoginListener
         }
         
         session.close();
+    }
+    
+    /**
+     * @param taxon
+     * @param storage
+     */
+    protected void associate(final Taxon taxon, final Storage storage)
+    {
+        if (taxon != null && storage != null)
+        {
+            DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
+            try
+            {
+                session.attach(taxon);
+                session.attach(storage);
+                
+                session.beginTransaction();
+                if (taxon != null)
+                {
+                    for (Determination deter : taxon.getDeterminations())
+                    {
+                        addCOToStorage(session, storage, deter.getCollectionObject());
+                    }
+                }
+                session.commit();
+                
+            } catch (Exception ex)
+            {
+                session.rollback();
+                ex.printStackTrace();
+            }
+            
+            session.close();
+        }
+    }
+    
+    /**
+     * 
+     */
+    protected void showStorageHelperDlg()
+    {
+        
+        //ViewBasedDisplayPanel panel = new ViewBasedDisplayPanel(null, null, "StorageAssignment", null, null, null, true, false, null, null, 0);
+        
+        int btnOpts = 0;
+        //btnOpts |= cellField.getPropertyAsBoolean("editbtn", true) ? ValComboBoxFromQuery.CREATE_EDIT_BTN : 0;
+        //btnOpts |= cellField.getPropertyAsBoolean("newbtn", true) ? ValComboBoxFromQuery.CREATE_NEW_BTN : 0;
+        //btnOpts |= cellField.getPropertyAsBoolean("searchbtn", true) ? ValComboBoxFromQuery.CREATE_SEARCH_BTN : 0;
+        
+        ValComboBoxFromQuery taxonCBX = TypeSearchForQueryFactory.createValComboBoxFromQuery("Taxon", btnOpts, null);
+        taxonCBX.setRequired(true);
+        
+        ValComboBoxFromQuery storageCBX = TypeSearchForQueryFactory.createValComboBoxFromQuery("Storage", btnOpts, null);
+        storageCBX.setRequired(true);
+        //cbx.setSearchDlgName("TaxonSearch");
+        //cbx.setDisplayDlgName("Taxon");
+
+        PanelBuilder pb = new PanelBuilder(new FormLayout("p,2px,p", "p,4px,p"));
+        CellConstraints cc = new CellConstraints();
+        pb.add(UIHelper.createI18NLabel("Taxon"), cc.xy(1, 1));
+        pb.add(taxonCBX, cc.xy(3, 1));
+        
+        pb.add(UIHelper.createI18NLabel("Storage"), cc.xy(1, 3));
+        pb.add(storageCBX, cc.xy(3, 3));
+        
+        pb.setDefaultDialogBorder();
+        CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getMostRecentWindow(), "", true, pb.getPanel());
+        dlg.setVisible(true);
+        
+        if (dlg.isCancelled())
+        {
+            associate((Taxon)taxonCBX.getValue(), (Storage)storageCBX.getValue());
+        }
+        
     }
     
     /**

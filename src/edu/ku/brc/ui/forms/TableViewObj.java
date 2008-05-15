@@ -89,6 +89,9 @@ import edu.ku.brc.ui.db.PickListDBAdapterIFace;
 import edu.ku.brc.ui.db.PickListItemIFace;
 import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
+import edu.ku.brc.ui.forms.formatters.UIFormatterDlg;
 import edu.ku.brc.ui.forms.persist.AltViewIFace;
 import edu.ku.brc.ui.forms.persist.FormCellField;
 import edu.ku.brc.ui.forms.persist.FormCellFieldIFace;
@@ -2121,6 +2124,7 @@ public class TableViewObj implements Viewable,
                 if (colInfo.getFormCell() instanceof FormCellFieldIFace)
                 {
                     FormCellFieldIFace fcf = (FormCellFieldIFace)colInfo.getFormCell();
+                    String uiFmt = fcf.getUIFieldFormatterName();
                     if (fcf.getDspUIType() == FormCellFieldIFace.FieldType.textpl)
                     {
                         PickListDBAdapterIFace adapter = colInfo.getAdaptor();
@@ -2139,6 +2143,13 @@ public class TableViewObj implements Viewable,
                             }
                         }
                         return getPickListValue(adapter, dataVal);
+                    } else if (uiFmt != null)
+                    {
+                        UIFieldFormatterIFace fmt = UIFieldFormatterMgr.getFormatter(uiFmt);
+                        if (fmt != null)
+                        {
+                            dataVal = fmt.formatToUI(dataVal);
+                        }
                     }
                 }
                 return dataVal;

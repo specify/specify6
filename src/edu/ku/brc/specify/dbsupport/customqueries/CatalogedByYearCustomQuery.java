@@ -85,14 +85,14 @@ public class CatalogedByYearCustomQuery implements CustomQueryIFace
      */
     public List<QueryResultsContainerIFace> getQueryDefinition()
     {
-        int numYears = 5;
+        int numYears = 10;
         
         Vector<QueryResultsContainerIFace> list = new Vector<QueryResultsContainerIFace>();
         Calendar now = Calendar.getInstance();
         int year = now.get(Calendar.YEAR) - 1;
         for (int yr=year-numYears+1;yr<=year;yr++)
         {
-            String sql = QueryAdjusterForDomain.getInstance().adjustSQL("SELECT count(*) FROM collectionobject WHERE CollectionMemberID = COLMEMID AND TimestampCreated < '"+yr+"-01-01' AND TimestampCreated > '"+(yr-1)+"-12-31'");
+            String sql = QueryAdjusterForDomain.getInstance().adjustSQL("SELECT count(*) FROM collectionobject WHERE CollectionMemberID = COLMEMID AND YEAR(CatalogedDate) = "+yr);
             QueryResultsContainer ndbrc = new QueryResultsContainer(sql);
             ndbrc.add(new QueryResultsDataObj(Integer.toString(yr)));
             ndbrc.add(new QueryResultsDataObj(1, 1));

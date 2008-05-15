@@ -49,6 +49,7 @@ import edu.ku.brc.specify.datamodel.Division;
 import edu.ku.brc.specify.datamodel.GeographyTreeDef;
 import edu.ku.brc.specify.datamodel.GeologicTimePeriodTreeDef;
 import edu.ku.brc.specify.datamodel.PrepType;
+import edu.ku.brc.specify.datamodel.Preparation;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.datamodel.Storage;
 import edu.ku.brc.specify.datamodel.StorageTreeDef;
@@ -503,7 +504,7 @@ public class SpecifyDBConverter
                 
                 if (false)
                 {
-                    addStorageTreeFomrXML(newConn);
+                    addStorageTreeFomrXML();
                     return;
                 }
                 
@@ -1068,15 +1069,12 @@ public class SpecifyDBConverter
     /**
      * 
      */
-    public static void addStorageTreeFomrXML(final Connection newConn)
+    public static void addStorageTreeFomrXML()
     {
         BuildSampleDatabase bsd = new BuildSampleDatabase();
         Session tmpSession = HibernateUtil.getNewSession();
         bsd.setSession(tmpSession);
         
-        //BasicSQLUtils.deleteAllRecordsFromTable(newConn, "storage", BasicSQLUtils.myDestinationServerType);
-        //BasicSQLUtils.deleteAllRecordsFromTable(newConn, "storagetreedefitem", BasicSQLUtils.myDestinationServerType);
-
         Transaction    trans = null;
         try
         {
@@ -1090,10 +1088,23 @@ public class SpecifyDBConverter
                     for (Storage s : new Vector<Storage>(item.getTreeEntries()))
                     {
                         item.getTreeEntries().remove(s);
+                        for (Preparation p : s.getPreparations())
+                        {
+                            p.setStorage(null);
+                            tmpSession.saveOrUpdate(p);
+                        }
+                        s.getPreparations().clear();
                         tmpSession.delete(s);
                     }
-                    tmpSession.delete(item);
+                }
+                trans.commit();
+                tmpSession.flush();
+                
+                trans = tmpSession.beginTransaction();
+                for (StorageTreeDefItem item : new Vector<StorageTreeDefItem>(std.getTreeDefItems()))
+                {
                     std.getTreeDefItems().remove(item);
+                    tmpSession.delete(item);
                 }
                 trans.commit();
                 tmpSession.flush();

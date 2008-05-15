@@ -1551,7 +1551,7 @@ public class InteractionsTask extends BaseTask
                 }
             }
             
-        } else if (cmdAction.isAction("CreateInfoRequest") && cmdAction.getData() instanceof RecordSet)
+        } else if (cmdAction.isAction(INFO_REQ_MESSAGE) && cmdAction.getData() instanceof RecordSet)
         {
             Object data = cmdAction.getData();
             if (data instanceof RecordSet)
