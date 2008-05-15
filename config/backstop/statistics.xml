@@ -8,7 +8,7 @@
         <yaxis>Number of Specimens</yaxis>
       </chartinfo>
       <sql type="text">
-          <![CDATA[select tn,count(tx) as namecnt from (select DT.TaxonId, taxon.TaxonID as tx, taxon.Name as tn from taxon,determination as DT WHERE DT.CollectionMemberID = COLMEMID AND DT.TaxonId = taxon.TaxonID) as newTable group by tx order by namecnt DESC]]>
+          <![CDATA[select tn,count(tx) as namecnt from (select DT.TaxonId, taxon.TaxonID as tx, taxon.FullName as tn from taxon,determination as DT WHERE DT.CollectionMemberID = COLMEMID AND DT.TaxonId = taxon.TaxonID) as newTable group by tx order by namecnt DESC]]>
       </sql>
       <slice>
         <desc row="1" col="1"/>
