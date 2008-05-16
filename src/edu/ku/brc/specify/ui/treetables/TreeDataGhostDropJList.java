@@ -6,6 +6,9 @@
  */
 package edu.ku.brc.specify.ui.treetables;
 
+import java.awt.Dimension;
+import java.awt.Graphics;
+
 import javax.swing.ListModel;
 
 import edu.ku.brc.ui.DragDropCallback;
@@ -94,4 +97,20 @@ public class TreeDataGhostDropJList extends DragDropJList
 			super.setSelectedIndex(index);
 		}
 	}
+
+    /* (non-Javadoc)
+     * @see javax.swing.JComponent#paint(java.awt.Graphics)
+     */
+    @Override
+    public void paint(Graphics g)
+    {
+        super.paint(g);
+        
+        int       count = getModel().getSize();
+        Dimension size  = getSize();
+        TreeViewerNodeRenderer ren = (TreeViewerNodeRenderer)getCellRenderer();
+        int       currPaintHeight  = getFixedCellHeight() * count;
+        ren.getNodeUI().drawBackgroundColors(g, currPaintHeight, size.height-currPaintHeight);
+    }
+	
 }

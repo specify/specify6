@@ -110,6 +110,14 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
     }
     
     /**
+     * @return the nodeUI
+     */
+    public TreeNodeUI getNodeUI()
+    {
+        return nodeUI;
+    }
+
+    /**
      * @param renderTooltip
      */
     public void setRenderTooltip(boolean renderTooltip)
@@ -477,7 +485,7 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
 //            }
         }
         
-        private void drawBackgroundColors(Graphics g)
+        public void drawBackgroundColors(Graphics g)
         {
             Color orig = g.getColor();
             int cellHeight = list.getFixedCellHeight();
@@ -488,6 +496,27 @@ public class TreeViewerNodeRenderer implements ListCellRenderer, ListDataListene
                 Pair<Integer,Integer> startEnd = getColumnBoundsForRank(rank);
                 g.setColor(bgs[i%2]);
                 g.fillRect(startEnd.first,0,startEnd.second-startEnd.first,cellHeight);
+                ++i;
+            }
+            
+            g.setColor(orig);
+        }
+        
+        /**
+         * Draw in background color tiled and alternating. Pass in the start and end height.
+         * @param g the graphics to be drawn into
+         * @param yStart the starting height 
+         * @param yEnd the ending height
+         */
+        public void drawBackgroundColors(Graphics g, int yStart, int yEnd)
+        {
+            Color orig = g.getColor();
+            int i = 0;
+            for( Integer rank: model.getVisibleRanks() )
+            {
+                Pair<Integer,Integer> startEnd = getColumnBoundsForRank(rank);
+                g.setColor(bgs[i%2]);
+                g.fillRect(startEnd.first, yStart, startEnd.second-startEnd.first, yEnd);
                 ++i;
             }
             
