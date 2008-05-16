@@ -131,6 +131,19 @@ public class SubViewBtn extends JPanel implements GetSetValueIFace
             {
                 baseLabel = tableInfo.getTitle();
                 icon = IconManager.getIcon(StringUtils.isNotEmpty(iconName) ? iconName : tableInfo.getName(), IconManager.IconSize.NonStd);
+                if (frameTitle == null)
+                {
+                    frameTitle = baseLabel;
+                }
+            }
+        }
+        
+        if (frameTitle == null)
+        {
+            DBTableInfo tableInfo = DBTableIdMgr.getInstance().getByClassName(classToCreate != null ? classToCreate.getName() : view.getClassName());
+            if (tableInfo != null)
+            {
+                frameTitle = tableInfo.getTitle();
             }
         }
         
