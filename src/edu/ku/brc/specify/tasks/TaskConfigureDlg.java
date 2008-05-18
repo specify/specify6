@@ -258,11 +258,18 @@ public class TaskConfigureDlg extends CustomDialog
         if (index > -1)
         {
             TaskConfigItemIFace item = (TaskConfigItemIFace)((DefaultListModel)list.getModel()).get(index);
-            removedItems.add(item);
-            ((DefaultListModel)list.getModel()).remove(index);
-            setHasChanged(true);
-            list.repaint();
-            
+            if (item != null)
+            {
+                if (removedItems == null)
+                {
+                    removedItems = new Vector<TaskConfigItemIFace>();
+                }
+                
+                removedItems.add(item);
+                ((DefaultListModel)list.getModel()).remove(index);
+                setHasChanged(true);
+                list.repaint();
+            }
         }
     }
 
