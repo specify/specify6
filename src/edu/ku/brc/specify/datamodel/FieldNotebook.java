@@ -247,7 +247,7 @@ public class FieldNotebook extends DisciplineMember
      * @return the pageSets
      */
     @OneToMany(cascade = {}, fetch = FetchType.LAZY, mappedBy = "fieldNotebook")
-    @Cascade( { CascadeType.SAVE_UPDATE, CascadeType.MERGE, CascadeType.LOCK })
+    @Cascade( { CascadeType.ALL})
     public Set<FieldNotebookPageSet> getPageSets()
     {
         return pageSets;
