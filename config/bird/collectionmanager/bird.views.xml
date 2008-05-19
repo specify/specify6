@@ -119,7 +119,7 @@
     			</row>
 
     			<row>
-    			    <cell type="subview" viewname="Determination" id="6" name="determinations" colspan="12" rows="5" initialize="noscrollbars=true;bgcolor=145,130,145;border=line;bordercolor=75,50,50;"/>
+    			    <cell type="subview" viewname="Determination" id="6" name="determinations" colspan="12" rows="5" initialize="noscrollbars=true;border=line;bordercolor=150,150,150;"/>
     			</row>
     		    <row>
     		        <cell type="separator" label="Collecting Event" colspan="12" collapse="collectingEvent"/>
