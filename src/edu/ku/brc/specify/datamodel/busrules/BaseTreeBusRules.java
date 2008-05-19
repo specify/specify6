@@ -402,7 +402,7 @@ public abstract class BaseTreeBusRules<T extends Treeable<T,D,I>,
         final ValComboBoxFromQuery acceptedParentWidget = (ValComboBoxFromQuery)formViewObj.getControlByName("acceptedParent");
         if (acceptedCheckBox != null && acceptedParentWidget != null)
         {
-            acceptedParentWidget.setEnabled(!acceptedCheckBox.isSelected());
+            acceptedParentWidget.setEnabled(!acceptedCheckBox.isSelected() && acceptedCheckBox.isEnabled());
             if (acceptedCheckBox.isSelected())
             {
                 acceptedParentWidget.setValue(null, null);
