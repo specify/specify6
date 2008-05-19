@@ -12,6 +12,7 @@ package edu.ku.brc.specify.tasks.subpane.qb;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 import net.sf.jasperreports.engine.JRException;
@@ -37,10 +38,25 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
 {
     protected static final Logger log = Logger.getLogger(QBJRDataSource.class);
 
+    /**
+     * hql that produces the data.
+     */
     protected final String hql;
+    /**
+     * name-value list of parameters for the hql query.
+     */
     protected final List<Pair<String, Object>> params;
-    protected List<?> results;
+    /**
+     * stores size of the data set.
+     */
+    protected final AtomicInteger resultSetSize = new AtomicInteger();
+    /**
+     * column values for the current record.
+     */
     protected Object[] rowVals = null;
+    /**
+     * iterator of records in the data source.
+     */
     protected final AtomicReference<Iterator<?>> rows = new AtomicReference<Iterator<?>>(null);
     
     /* (non-Javadoc)
@@ -49,7 +65,13 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
     @Override
     public Object getFieldValue(JRField arg0) throws JRException
     {
-        //XXX Bad Code Alert!
+        //XXX - what if user-defined 'resultsetsize' field exists???
+    	if (arg0.getName().equalsIgnoreCase("resultsetsize"))
+        {
+        	return String.valueOf(resultSetSize);  //currently returned as a string for convenience.
+        }
+    	
+    	//XXX Bad Code Alert!
         while (rows.get() == null) { 
             /*wait till done executing the query. (forever and ever??)
              * Do we know that exectionDone and executionError will be called on different threads?
@@ -89,7 +111,8 @@ public class QBJRDataSource extends QBJRDataSourceBase implements CustomQueryLis
     //@Override
     public void exectionDone(CustomQueryIFace customQuery)
     {
-        rows.set(((JPAQuery)customQuery).getDataObjects().iterator());
+        resultSetSize.set(((JPAQuery)customQuery).getDataObjects().size()); 
+    	rows.set(((JPAQuery)customQuery).getDataObjects().iterator());
     }
 
     /* (non-Javadoc)

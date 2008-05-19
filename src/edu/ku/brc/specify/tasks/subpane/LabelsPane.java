@@ -19,6 +19,8 @@ import static edu.ku.brc.ui.UIHelper.createLabel;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +36,7 @@ import javax.swing.SwingUtilities;
 import net.sf.jasperreports.engine.JRDataSource;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
+import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperPrint;
 import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.fill.AsynchronousFillHandle;
@@ -376,6 +379,50 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
         closeSession();
     }
 
+    /**
+     * @author timo
+     *
+     *cheap hack for SPNCH demo. keeping it around for debugging.
+     */
+    protected class JRViewerPrintHackForSPNHCBDayQueryLinuxOnly extends JRViewer
+    {
+        protected final JasperPrint jp;
+        
+        JRViewerPrintHackForSPNHCBDayQueryLinuxOnly(final JasperPrint print)
+        {
+            super(print);
+            jp = print;
+            ActionListener[] lists = btnPrint.getActionListeners();
+            for (int l = 0; l < lists.length; l++)
+            {
+                btnPrint.removeActionListener(lists[l]);
+            }
+            this.btnPrint.addActionListener(new ActionListener()
+            {
+
+                /* (non-Javadoc)
+                 * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
+                 */
+                @Override
+                public void actionPerformed(ActionEvent e)
+                {
+                    try
+                    {
+                        JasperExportManager.exportReportToPdfFile(jp, "/home/timo/hbd.pdf");
+                        Runtime.getRuntime().exec("lp -P1 /home/timo/hbd.pdf");
+                    }
+                    catch (Exception ex)
+                    {
+                        setLabelText(getResourceString("JasperReportCreatingViewer"));
+                        //log.error(ex);
+                        ex.printStackTrace();
+                    }
+                }
+                
+            });
+        }
+    }
+
     /* (non-Javadoc)
      * @see net.sf.jasperreports.engine.fill.AsynchronousFilllListener#reportFinished(net.sf.jasperreports.engine.JasperPrint)
      */
@@ -386,7 +433,12 @@ public class LabelsPane extends BaseSubPane implements AsynchronousFilllListener
             removeAll();
             label = null;
 
-            JRViewer jasperViewer = new JRViewer(print);
+            JRViewer jasperViewer = new JRViewer(print);  
+            
+            //this vile hack for SPNHC demo may be useful for debugging...
+//            JRViewer jasperViewer = new JRViewerPrintHackForSPNHCBDayQueryLinuxOnly(print);            
+            //... end vile hack
+            
             add(jasperViewer, BorderLayout.CENTER);
 
             UIRegistry.forceTopFrameRepaint();

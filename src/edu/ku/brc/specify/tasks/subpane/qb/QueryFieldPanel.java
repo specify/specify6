@@ -352,7 +352,7 @@ public class QueryFieldPanel extends JPanel
         {
             return !operatorCBX.getSelectedItem().equals(SpQueryField.OperatorType.getString(SpQueryField.OperatorType.DONTCARE.getOrdinal()));
         }
-        return StringUtils.isNotEmpty(criteria.getText());
+        return StringUtils.isNotEmpty(criteria.getText().trim());
     }
     
     /**
@@ -539,7 +539,7 @@ public class QueryFieldPanel extends JPanel
     {
         if (hasCriteria())
         {
-            Object[] criteriaStrs = parseCriteria(criteria.getText());
+            Object[] criteriaStrs = parseCriteria(criteria.getText().trim());
             String criteriaFormula = "";
             String operStr = operatorCBX.getSelectedItem().toString();
             if (!(criteriaStrs[0] instanceof String))

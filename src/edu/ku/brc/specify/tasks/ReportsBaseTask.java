@@ -1112,7 +1112,7 @@ public class ReportsBaseTask extends BaseTask
         
         if (toRun != null)
         {
-            QueryBldrPane.runReport(toRun, "XXX", rs);
+            QueryBldrPane.runReport(toRun, toRun.getName(), rs);
         }
     }
     

@@ -41,7 +41,6 @@ import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
 import edu.ku.brc.specify.tasks.ReportsBaseTask;
-import edu.ku.brc.specify.tasks.ReportsTask;
 import edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceConnection;
 import edu.ku.brc.ui.ChooseFromListDlg;
 import edu.ku.brc.ui.CommandAction;
@@ -185,6 +184,23 @@ public class MainFrameSpecify extends MainFrame
             ByteArrayOutputStream xmlOut = new ByteArrayOutputStream();
             ReportWriter rw = new ReportWriter(rep);
             rw.writeToOutputStream(xmlOut);
+            
+            //ugly way to 'import' a .jrxml file as a resource...
+//            try
+//            {
+//                File outEx = new File("/home/timo/outDump.jrxml");
+//                outEx.createNewFile();
+//                //FileUtils.writeByteArrayToFile(outEx, xmlOut.toByteArray());
+//            	File dyb = new File("/home/timo/BirthdayReport2.jrxml");
+//            	byte[] lines = FileUtils.readFileToByteArray(dyb);
+//            	FileUtils.writeByteArrayToFile(outEx, lines);
+//            	xmlOut.write(lines);
+//            } catch (Exception e)
+//            {
+//            	throw new RuntimeException(e);
+//            }
+            //... end ugly import
+            
             DataProviderSessionIFace session = DataProviderFactory.getInstance().createSession();
             try
             {
@@ -228,7 +244,8 @@ public class MainFrameSpecify extends MainFrame
      */
     private AppResourceIFace getAppResForFrame(final JReportFrame jrf)
     {
-        AppResourceIFace result = (AppContextMgr.getInstance().getResourceFromDir("Collection", jrf.getName()));
+    	//XXX - hard-coded for 'Collection' directory.
+    	AppResourceIFace result = (AppContextMgr.getInstance().getResourceFromDir("Collection", jrf.getReport().getName()));
         if (result != null)
             return result;
         return createAppResForFrame(jrf);

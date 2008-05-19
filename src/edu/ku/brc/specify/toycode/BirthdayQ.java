@@ -63,13 +63,13 @@ public class BirthdayQ
             
             int minKey;
             
-            //minKey = 7444624;
-            stmt = gbifConn.createStatement();
-            rs = stmt.executeQuery("select min(id) from gbifCache.raw_occurrence_record");
-            rs.next();
-            minKey = rs.getInt(1);
-            rs.close();
-            stmt.close();
+            minKey = 94705801;
+//            stmt = gbifConn.createStatement();
+//            rs = stmt.executeQuery("select min(id) from gbifCache.raw_occurrence_record");
+//            rs.next();
+//            minKey = rs.getInt(1);
+//            rs.close();
+//            stmt.close();
             
             stmt = gbifConn.createStatement();
             rs = stmt.executeQuery("select max(id) from gbifCache.raw_occurrence_record");
@@ -92,7 +92,15 @@ public class BirthdayQ
                 if (rs.isBeforeFirst())
                 {
                     rs.next();
-                    int year = rs.getInt(Year);
+                    int year;
+                    try
+                    {
+                    	year = rs.getInt(Year);
+                    }
+                    catch (SQLException ex)
+                    {
+                    	year = 0;
+                    }
                     if (year > 1915)
                     {
                         inserter = spConn.createStatement();

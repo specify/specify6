@@ -26,7 +26,13 @@ import edu.ku.brc.ui.db.ERTICaptionInfo;
  */
 public class QBLiveJRDataSource extends QBJRDataSourceBase
 {
+    /**
+     * pre-computed 'live' data.
+     */
     protected final ResultSetTableModel data;
+    /**
+     * index of current row in data.
+     */
     protected int row = -1;
     
     /**
@@ -45,7 +51,11 @@ public class QBLiveJRDataSource extends QBJRDataSourceBase
     @Override
     public Object getFieldValue(JRField arg0) throws JRException
     {
-        // TODO Auto-generated method stub
+        //XXX - what if user-defined 'resultsetsize' field exists???
+        if (arg0.getName().equalsIgnoreCase("resultsetsize"))
+        {
+        	return String.valueOf(data.getRowCount()); //currently returned as a string for convenience.
+        }
         int fldIdx = getFldIdx(arg0.getName());
         if (fldIdx < 0)
             return null;
