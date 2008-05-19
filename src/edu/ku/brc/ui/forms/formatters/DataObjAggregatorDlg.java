@@ -401,8 +401,10 @@ public class DataObjAggregatorDlg extends CustomDialog {
     /*
      * Populates the dialog controls with data from a given formatter
      */
-    protected void fillWithObjAggregator(DataObjAggregator agg)
+    protected void fillWithObjAggregator(final DataObjAggregator aggArg)
     {
+        DataObjAggregator agg = aggArg;
+        
     	newAggregator = false;
     	if (agg == null)
     	{
@@ -429,6 +431,9 @@ public class DataObjAggregatorDlg extends CustomDialog {
     	updateUIEnabled();
     }
     
+    /**
+     * 
+     */
     private void addAggregatorListMouseListener()
     {
     	MouseAdapter mAdp = new MouseAdapter()
@@ -447,6 +452,9 @@ public class DataObjAggregatorDlg extends CustomDialog {
     	aggragatorList.addMouseListener(mAdp);
     }
     
+	/**
+	 * 
+	 */
 	private void addAggregatorListSelectionListener() 
 	{
 		if (aggregatorListSL == null)
@@ -485,7 +493,10 @@ public class DataObjAggregatorDlg extends CustomDialog {
         aggragatorList.addListSelectionListener(aggregatorListSL);
 	}
 
-	protected void setSelectedFormat(DataObjAggregator agg)
+	/**
+	 * @param agg the aggregator
+	 */
+	protected void setSelectedFormat(final DataObjAggregator agg)
 	{
 		// remove listeners from editor fields so that we don't end up in a cycle
 		removeEditorListeners();
@@ -525,7 +536,7 @@ public class DataObjAggregatorDlg extends CustomDialog {
 
 		// if new value cannot be found among those listed, then it's a new one
 		DefaultListModel listModel = (DefaultListModel) aggragatorList.getModel();
-		Enumeration elements = listModel.elements();
+		Enumeration<?> elements = listModel.elements();
 		int i = 0;
 		int index = -1;
 		while (elements.hasMoreElements())

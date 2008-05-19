@@ -123,6 +123,9 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
         return formatsHashtable.get(value);
     }
     
+    /**
+     * @return
+     */
     public Collection<DataObjDataFieldFormatIFace> getFormatters()
     {
     	if (isSingle)
@@ -260,6 +263,25 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
         throw new RuntimeException("This method cannot be called on this type of object["+name+"]["+dataObj.getClass().getSimpleName()+"]");
     }
 
+    /**
+     * @param name
+     */
+    public void setName(String name) 
+    {
+        this.name = name;
+    }
+
+    /**
+     * @param fieldName
+     */
+    public void setFieldName(String fieldName) 
+    {
+        this.fieldName = fieldName;
+    }
+
+    /**
+     * 
+     */
     public void setTableAndFieldInfo()
     {
     	if (StringUtils.isNotEmpty(fieldName))
@@ -275,7 +297,9 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
     	} 
     	// else 
     	if (formatsHashtable.size() == 0)
+    	{
     		return;
+    	}
     	
     	for (DataObjDataFieldFormatIFace format : formatsHashtable.values())
     	{
@@ -283,6 +307,9 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
     	}
     }
 
+    /**
+     * @param sb
+     */
     public void toXML(StringBuilder sb)
     {
         sb.append("  <format");
@@ -342,11 +369,4 @@ public class DataObjSwitchFormatter implements Comparable<DataObjSwitchFormatter
         return name.compareTo(o.name);
     }
 
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	public void setFieldName(String fieldName) {
-		this.fieldName = fieldName;
-	}
 }

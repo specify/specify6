@@ -154,7 +154,10 @@ public class DataObjDataField {
 		this.fieldInfo = fieldInfo;
 	}
 	
-	public void setTableAndFieldInfo(DBTableInfo tableInfo)
+	/**
+	 * @param tableInfo
+	 */
+	public void setTableAndFieldInfo(final DBTableInfo tableInfo)
 	{
 		setTableInfo(tableInfo);
 

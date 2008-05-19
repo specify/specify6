@@ -397,6 +397,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
             } catch (ArrayIndexOutOfBoundsException ex)
             {
                 log.error(ex);
+                ex.printStackTrace();
             }
             
             panes.remove(pane.getPaneName());
@@ -430,7 +431,8 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
                 subPane.shutdown();
                 try
                 {
-                    if (indexOfComponent(pane.getUIComponent()) != -1)
+                    int inx = indexOfComponent(pane.getUIComponent());
+                    if (inx != -1 && inx < getComponentCount())
                     {
                         this.remove(pane.getUIComponent());
                     }
@@ -438,6 +440,7 @@ public class SubPaneMgr extends ExtendedTabbedPane implements ChangeListener
                 } catch (ArrayIndexOutOfBoundsException ex)
                 {
                     log.error(ex);
+                    ex.printStackTrace();
                 }
             }
         }

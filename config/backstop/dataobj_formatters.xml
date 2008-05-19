@@ -555,7 +555,152 @@
                     ending="" 
                     format="Collector" 
                     default="true"
-                    orderfieldname="orderNumber"/>   
+                    orderfieldname="orderNumber"/>
+                    
+        <aggregator name="AccessionAttachment"
+                    class="edu.ku.brc.specify.datamodel.AccessionAttachment" 
+                    separator="; " 
+                    count="" 
+                    ending="" 
+                    format="identity" 
+                    default="true"
+                    orderfieldname="ordinal"/>
+                    
+        <aggregator name="AgentAttachment"
+                    class="edu.ku.brc.specify.datamodel.AgentAttachment" 
+                    separator="; " 
+                    count="" 
+                    ending="" 
+                    format="identity" 
+                    default="true"
+                    orderfieldname="ordinal"/>
+                    
+        <aggregator name="CollectionObjectAttachment"
+                    class="edu.ku.brc.specify.datamodel.CollectionObjectAttachment" 
+                    separator="; " 
+                    count="" 
+                    ending="" 
+                    format="identity" 
+                    default="true"
+                    orderfieldname="ordinal"/>
+                    
+        <aggregator name="CollectingEventAttachment"
+                    class="edu.ku.brc.specify.datamodel.CollectingEventAttachment" 
+                    separator="; " 
+                    count="" 
+                    ending="" 
+                    format="identity" 
+                    default="true"
+                    orderfieldname="ordinal"/>   
+                    
+        <aggregator name="ConservDescriptionAttachment"
+                    class="edu.ku.brc.specify.datamodel.ConservDescriptionAttachment" 
+                    separator="; " 
+                    count="" 
+                    ending="" 
+                    format="identity" 
+                    default="true"
+                    orderfieldname="ordinal"/>   
+                    
+        <aggregator name="ConservEventAttachment"
+                    class="edu.ku.brc.specify.datamodel.ConservEventAttachment" 
+                    separator="; " 
+                    count="" 
+                    ending="" 
+                    format="identity" 
+                    default="true"
+                    orderfieldname="ordinal"/>   
+                    
+        <aggregator name="DNASequenceAttachment"
+                    class="edu.ku.brc.specify.datamodel.DNASequenceAttachment" 
+                    separator="; " 
+                    count="" 
+                    ending="" 
+                    format="identity" 
+                    default="true"
+                    orderfieldname="ordinal"/>   
+                    
+        <aggregator name="FieldNotebookAttachment"
+                    class="edu.ku.brc.specify.datamodel.FieldNotebookAttachment" 
+                    separator="; " 
+                    count="" 
+                    ending="" 
+                    format="identity" 
+                    default="true"
+                    orderfieldname="ordinal"/>   
+                    
+        <aggregator name="FieldNotebookPageAttachment"
+                    class="edu.ku.brc.specify.datamodel.FieldNotebookPageAttachment" 
+                    separator="; " 
+                    count="" 
+                    ending="" 
+                    format="identity" 
+                    default="true"
+                    orderfieldname="ordinal"/>   
+                    
+        <aggregator name="FieldNotebookPageSetAttachment"
+                    class="edu.ku.brc.specify.datamodel.FieldNotebookPageSetAttachment" 
+                    separator="; " 
+                    count="" 
+                    ending="" 
+                    format="identity" 
+                    default="true"
+                    orderfieldname="ordinal"/>   
+                    
+        <aggregator name="LoanAttachment"
+                    class="edu.ku.brc.specify.datamodel.LoanAttachment" 
+                    separator="; " 
+                    count="" 
+                    ending="" 
+                    format="identity" 
+                    default="true"
+                    orderfieldname="ordinal"/>   
+                    
+        <aggregator name="LocalityAttachment"
+                    class="edu.ku.brc.specify.datamodel.LocalityAttachment" 
+                    separator="; " 
+                    count="" 
+                    ending="" 
+                    format="identity" 
+                    default="true"
+                    orderfieldname="ordinal"/>   
+                    
+        <aggregator name="PermitAttachment"
+                    class="edu.ku.brc.specify.datamodel.PermitAttachment" 
+                    separator="; " 
+                    count="" 
+                    ending="" 
+                    format="identity" 
+                    default="true"
+                    orderfieldname="ordinal"/>
+                    
+        <aggregator name="PreparationAttachment"
+                    class="edu.ku.brc.specify.datamodel.PreparationAttachment" 
+                    separator="; " 
+                    count="" 
+                    ending="" 
+                    format="identity" 
+                    default="true"
+                    orderfieldname="ordinal"/>   
+                    
+        <aggregator name="RepositoryAgreementAttachment"
+                    class="edu.ku.brc.specify.datamodel.RepositoryAgreementAttachment" 
+                    separator="; " 
+                    count="" 
+                    ending="" 
+                    format="identity" 
+                    default="true"
+                    orderfieldname="ordinal"/>   
+                      
+        <aggregator name="TaxonAttachment"
+                    class="edu.ku.brc.specify.datamodel.TaxonAttachment" 
+                    separator="; " 
+                    count="" 
+                    ending="" 
+                    format="identity" 
+                    default="true"
+                    orderfieldname="ordinal"/>   
+                       
     </aggregators>
     
      

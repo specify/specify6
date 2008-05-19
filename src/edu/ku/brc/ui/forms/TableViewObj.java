@@ -72,6 +72,7 @@ import edu.ku.brc.af.prefs.AppPrefsCache;
 import edu.ku.brc.af.prefs.AppPrefsChangeEvent;
 import edu.ku.brc.af.prefs.AppPrefsChangeListener;
 import edu.ku.brc.dbsupport.DBRelationshipInfo;
+import edu.ku.brc.dbsupport.DBTableChildIFace;
 import edu.ku.brc.dbsupport.DBTableIdMgr;
 import edu.ku.brc.dbsupport.DBTableInfo;
 import edu.ku.brc.dbsupport.DataProviderFactory;
@@ -91,7 +92,6 @@ import edu.ku.brc.ui.db.ViewBasedDisplayIFace;
 import edu.ku.brc.ui.forms.formatters.DataObjFieldFormatMgr;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterIFace;
 import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
-import edu.ku.brc.ui.forms.formatters.UIFormatterDlg;
 import edu.ku.brc.ui.forms.persist.AltViewIFace;
 import edu.ku.brc.ui.forms.persist.FormCellField;
 import edu.ku.brc.ui.forms.persist.FormCellFieldIFace;
@@ -1406,8 +1406,6 @@ public class TableViewObj implements Viewable,
                 colInfo = new ColumnInfo(getParentClassName(), formCellLabel, fullCompName, null, null);
                 controlsById.put(fullCompName, colInfo);
             }
-            colInfo.setLabel(formCellLabel.getLabel());
-            
         }
      }
     
@@ -1565,7 +1563,6 @@ public class TableViewObj implements Viewable,
                 if (colInfo == null)
                 {
                     colInfo = new ColumnInfo(getParentClassName(), subFormCell, fullCompName, null, null);
-                    colInfo.setLabel(subFormCell.getDescription());
                     controlsById.put(fullId, colInfo); 
                 }
                 columnList.add(colInfo);
@@ -1843,11 +1840,37 @@ public class TableViewObj implements Viewable,
         {
             if (formCell instanceof FormCellLabelIFace)
             {
-                this.formCell = null;
+                this.formCell      = null;
                 this.formCellLabel = (FormCellLabelIFace)formCell;
+                this.label         = ((FormCellLabelIFace)formCell).getLabel();
+                
             } else
             {
-                this.formCell      = formCell;
+                this.formCell  = formCell;
+                if (formCell instanceof FormCellFieldIFace)
+                {
+                    label = ((FormCellFieldIFace)formCell).getLabel();
+                    
+                } else if (formCell instanceof FormCellSubView)
+                {
+                    FormCellSubView subViewDef = (FormCellSubView)formCell;
+                    DBTableInfo ti = DBTableIdMgr.getInstance().getByClassName(subViewDef.getClassDesc());
+                    if (ti != null)
+                    {
+                        label = ti.getTitle();
+                    } else
+                    {
+                        ti = DBTableIdMgr.getInstance().getByClassName(parentClassName);
+                        if (ti != null)
+                        {
+                            DBTableChildIFace childInfo = ti.getItemByName(subViewDef.getName());
+                            if (childInfo != null)
+                            {
+                                label = childInfo.getTitle();
+                            }
+                        }
+                    }
+                }
                 this.formCellLabel = null;
             }
             this.parentClassName = parentClassName;
@@ -2036,7 +2059,7 @@ public class TableViewObj implements Viewable,
             if (columnList != null)
             {
                 String label = columnList.get(column).getLabel();
-                return label != null ? label : "";
+                return label != null ? label : "xx";
             }
             log.error("columnList should not be null!");
             return "N/A";

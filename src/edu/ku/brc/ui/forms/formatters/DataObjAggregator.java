@@ -39,6 +39,7 @@ public class DataObjAggregator
     protected String          ending;
     protected String          formatName;
     protected String          orderFieldName;
+    protected boolean         useIdentity;
     
     public DataObjAggregator()
     {
@@ -60,8 +61,10 @@ public class DataObjAggregator
         this.separator      = separator;
         this.count          = count;
         this.ending         = ending;
-        this.formatName     = formatName;
+        
         this.orderFieldName = orderFieldName;
+        
+        setFormatName(formatName); // sets boolean also
     }
 
     public boolean isDefault()
@@ -100,6 +103,14 @@ public class DataObjAggregator
     }
 
     /**
+     * @return the useIdentity
+     */
+    public boolean useIdentity()
+    {
+        return useIdentity;
+    }
+
+    /**
      * @return the orderFieldName
      */
     public String getOrderFieldName()
@@ -107,46 +118,55 @@ public class DataObjAggregator
         return orderFieldName;
     }
 
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-    public void setDataClass(Class<?> dataClass) {
-		this.dataClass = dataClass;
-	}
+	public void setName(String name)
+    {
+        this.name = name;
+    }
 
-	public void setDefault(boolean isDefault) {
-		this.isDefault = isDefault;
-	}
+    public void setDataClass(Class<?> dataClass)
+    {
+        this.dataClass = dataClass;
+    }
 
-	public void setSeparator(String separator) {
-		this.separator = separator;
-	}
+    public void setDefault(boolean isDefault)
+    {
+        this.isDefault = isDefault;
+    }
 
-	public void setCount(Integer count) {
-		this.count = count;
-	}
+    public void setSeparator(String separator)
+    {
+        this.separator = separator;
+    }
 
-	public void setEnding(String ending) {
-		this.ending = ending;
-	}
+    public void setCount(Integer count)
+    {
+        this.count = count;
+    }
 
-	public void setFormatName(String formatName) {
-		this.formatName = formatName;
-	}
+    public void setEnding(String ending)
+    {
+        this.ending = ending;
+    }
 
-	public void setOrderFieldName(String orderFieldName) {
-		this.orderFieldName = orderFieldName;
-	}
+    public void setFormatName(String formatName)
+    {
+        this.formatName  = formatName;
+        this.useIdentity = formatName.equals("identity");
+    }
+
+    public void setOrderFieldName(String orderFieldName)
+    {
+        this.orderFieldName = orderFieldName;
+    }
 
 	public String toString()
 	{
-		String countStr = "";
+		//String countStr = "";
 		String orderStr = "";
-		if (count != null)
-		{
-			countStr = ""; // XXX: what does count mean?
-		}
+		//if (count != null)
+		//{
+		//	countStr = ""; // XXX: what does count mean?
+		//}
 		if (StringUtils.isNotEmpty(orderFieldName))
 		{
 			orderStr = " (sorted by " + orderFieldName + ")";

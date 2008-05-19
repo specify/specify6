@@ -41,6 +41,7 @@ import edu.ku.brc.helpers.XMLHelper;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.forms.DataObjectGettable;
 import edu.ku.brc.ui.forms.DataObjectGettableFactory;
+import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.ui.forms.FormHelper;
 
 
@@ -709,7 +710,14 @@ public class DataObjFieldFormatMgr
                     {
                         aggStr.append(agg.getSeparator());
                     }
-                    aggStr.append(formatInternal(getInstance().getDataFormatter(obj, agg.getFormatName()), obj));
+                    
+                    if (agg.useIdentity() && obj instanceof FormDataObjIFace)
+                    {
+                        aggStr.append(((FormDataObjIFace)obj).getIdentityTitle());
+                    } else
+                    {
+                        aggStr.append(formatInternal(getInstance().getDataFormatter(obj, agg.getFormatName()), obj));
+                    }
                     
                     if (agg.getCount() != null && count < agg.getCount())
                     {
