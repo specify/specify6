@@ -315,7 +315,7 @@ public class JStatusBar extends JPanel
                                               final boolean isIndeterminate, 
                                               final boolean usePlatformLnF)
     {
-        final ProgressItem item = getProgressItem(name);
+        ProgressItem item = getProgressItem(name);
         item.setIndeterminate(isIndeterminate);
         item.setUsePlatformUI(usePlatformLnF);
         updateProgress(item);
@@ -356,7 +356,7 @@ public class JStatusBar extends JPanel
      */
     public synchronized void setProgressDone(final String name)
     {
-        final ProgressItem item = getProgressItem(name);
+        ProgressItem item = getProgressItem(name);
         item.clear();
         item.setIndStatusChanged(true);
         
