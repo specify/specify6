@@ -67,11 +67,11 @@
             <desc><![CDATA[The Collection Object form.]]></desc>
             <enableRules/>
             
-            <columnDef>110px,2px,p,2px,100px,2px,p,2px,p,2px,p,2px,p,2px,p,p:g,p,p</columnDef>
+            <columnDef>110px,2px,p,2px,100px,2px,p,2px,p,2px,p,2px,p,2px,p,p:g,p,p:g</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
             <rows>
                 <row>
-                    <cell type="label" label="Botany" icon="CollectionObject" recordobj="true" colspan="16"/>
+                    <cell type="label" label="Botany" icon="CollectionObject" recordobj="true" colspan="18"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="1"/>
@@ -95,14 +95,14 @@
                     <!-- <cell type="field" id="5" name="this" uitype="plugin" initialize="name=PartialDateUI;dateField=catalogedDate;dateTypeField=text1" default="today"/> -->
                 </row>
                 <row>
-                    <cell type="separator" label="Determination" collapse="determinations" colspan="16"/>
+                    <cell type="separator" label="Determination" collapse="determinations" colspan="18"/>
                 </row>
                 
                 <row>
-                    <cell type="subview" viewname="Determination" id="6" name="determinations" colspan="16" rows="5"/>
+                    <cell type="subview" viewname="Determination" id="6" name="determinations" colspan="18" rows="5"/>
                 </row>
                 <row>
-                    <cell type="separator" label=" " colspan="16"/>
+                    <cell type="separator" label=" " colspan="18"/>
                 </row>
                 <row>
                     <cell type="label" labelfor="20" label="Phenology"/>
@@ -110,32 +110,32 @@
                 </row>
                 <row>
                     <cell type="label" labelfor="18" label="Specimen\nDescription"/>
-                    <cell type="field" id="18" name="description" uitype="textarea" rows="3" colspan="14"/>
+                    <cell type="field" id="18" name="description" uitype="textarea" rows="3" colspan="16"/>
                 </row>
                 <row>
-                    <cell type="separator" label="Collecting Event" colspan="16" collapse="collectingEvent"/>
+                    <cell type="separator" label="Collecting Event" colspan="18" collapse="collectingEvent"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="CollectingEventSub" name="collectingEvent" id="17" colspan="16"/>
+                    <cell type="subview" viewname="CollectingEventSub" name="collectingEvent" id="17" colspan="18"/>
                 </row>
                 <!--   <row>
                     <cell type="field" id="7" name="collectingEvent.locality" uitype="querycbx" initialize="name=Locality;title=Locality" colspan="12"/>
                     </row>  -->	
                 <row>
-                    <cell type="separator" label="Preparations" collapse="preparations" colspan="16"/>
+                    <cell type="separator" label="Preparations" collapse="preparations" colspan="18"/>
                 </row>
                 <row>
-                    <cell type="subview" viewname="Preparation" id="8" name="preparations" defaulttype="table" colspan="16"/>
+                    <cell type="subview" viewname="Preparation" id="8" name="preparations" defaulttype="table" colspan="18"/>
                 </row>
                 <row>
-			  <cell type="separator" label="Attachments" colspan="12"/>
+                    <cell type="separator" label="Attachments" colspan="18"/>
                 </row>
                 
                 <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectionObjectAttachments" colspan="16" initialize="btn=true;icon=CollectionObjectAttachment"/>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectionObjectAttachments" colspan="18" initialize="btn=true;icon=CollectionObjectAttachment"/>
                 </row>
                 <row>
-                    <cell type="separator" label="" colspan="16"/>
+                    <cell type="separator" label="" colspan="18"/>
                 </row>
                 
                 <row>
