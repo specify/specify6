@@ -175,6 +175,7 @@ public class FormViewObj implements Viewable,
     protected static ColorWrapper           viewFieldColor  = null;
     protected static CellConstraints        cc              = new CellConstraints();
     protected static boolean                useDebugForm    = false;
+    protected static final String           SHORT_CLASSNAME = "FormViewObj";
 
     // Data Members
     protected DataProviderSessionIFace      session        = null;
@@ -2305,7 +2306,7 @@ public class FormViewObj implements Viewable,
                 
             } else
             {
-                UIRegistry.getStatusBar().setIndeterminate(getClass().getSimpleName(), true);
+                UIRegistry.getStatusBar().setIndeterminate(SHORT_CLASSNAME, true);
                 final SwingWorker worker = new SwingWorker()
                 {
                     public Object construct()
@@ -2317,7 +2318,7 @@ public class FormViewObj implements Viewable,
                     //Runs on the event-dispatching thread.
                     public void finished()
                     {
-                        UIRegistry.getStatusBar().setProgressDone(getClass().getSimpleName());
+                        UIRegistry.getStatusBar().setProgressDone(SHORT_CLASSNAME);
                         if (session != null)
                         {
                             session.close();
@@ -2480,7 +2481,7 @@ public class FormViewObj implements Viewable,
                 recoverFromStaleObject("DELETE_DATA_STALE");
             }
             
-            log.debug("Session Flushed["+session.hashCode()+"]");
+            log.debug("Session Flushed["+(session != null ? session.hashCode() : "no session")+"]");
 
             if (doClearObj)
             {
@@ -3546,7 +3547,7 @@ public class FormViewObj implements Viewable,
             labelFI.getComp().setEnabled(true);
         }
 
-        // Enable the formn controls
+        // Enable the form controls
         for (FVOFieldInfo compFI : controlsById.values())
         {
             compFI.setEnabled(true);
@@ -3679,12 +3680,17 @@ public class FormViewObj implements Viewable,
             // Disable all the form controls and set their values to NULL
             for (FVOFieldInfo fieldInfo : controlsById.values())
             {
+                if (fieldInfo.getName().equals("acceptedParent"))
+                {
+                    int x= 0;
+                    x++;
+                }
                 fieldInfo.getComp().setEnabled(false);
                 
                 if (fieldInfo.isOfType(FormCellIFace.CellType.field))
                 {
                     setDataIntoUIComp(fieldInfo.getComp(), null, null);
-                    //log.debug("Setting ["+fieldInfo.getName()+"] to enabled=false");
+                    log.debug("Setting ["+fieldInfo.getName()+"] to enabled=false");
 
                 } else if (fieldInfo.isOfType(FormCellIFace.CellType.subview))
                 {
