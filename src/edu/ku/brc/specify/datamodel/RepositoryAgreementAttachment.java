@@ -188,6 +188,19 @@ public class RepositoryAgreementAttachment extends DataModelObjBase implements O
         setRepositoryAgreement(object);
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
+     */
+    @Override
+    @Transient
+    public String getIdentityTitle()
+    {
+         return Attachment.getIdentityTitle(this);
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#toString()
+     */
     @Override
     public String toString()
     {

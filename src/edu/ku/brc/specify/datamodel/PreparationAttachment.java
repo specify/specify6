@@ -42,11 +42,11 @@ public class PreparationAttachment extends CollectionMember implements ObjectAtt
                                                                        Serializable,
                                                                        Comparable<PreparationAttachment>
 {
-    protected Integer    preparationAttachmentId;
-    protected Preparation     preparation;
-    protected Attachment attachment;
-    protected Integer    ordinal;
-    protected String     remarks;
+    protected Integer      preparationAttachmentId;
+    protected Preparation  preparation;
+    protected Attachment   attachment;
+    protected Integer      ordinal;
+    protected String       remarks;
     
     public PreparationAttachment()
     {
@@ -192,6 +192,19 @@ public class PreparationAttachment extends CollectionMember implements ObjectAtt
         setPreparation(object);
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
+     */
+    @Override
+    @Transient
+    public String getIdentityTitle()
+    {
+         return Attachment.getIdentityTitle(this);
+    }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#toString()
+     */
     @Override
     public String toString()
     {

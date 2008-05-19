@@ -131,7 +131,20 @@ public class DNASequenceAttachment extends DataModelObjBase implements ObjectAtt
     {
         setOrdinal(order);
     }
-
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
+     */
+    @Override
+    @Transient
+    public String getIdentityTitle()
+    {
+         return Attachment.getIdentityTitle(this);
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getDataClass()
+     */
     @Override
     @Transient
     public Class<?> getDataClass()

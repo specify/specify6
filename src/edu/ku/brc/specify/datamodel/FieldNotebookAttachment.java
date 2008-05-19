@@ -141,6 +141,16 @@ public class FieldNotebookAttachment extends DataModelObjBase implements ObjectA
         setFieldNotebook(object);
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
+     */
+    @Override
+    @Transient
+    public String getIdentityTitle()
+    {
+         return Attachment.getIdentityTitle(this);
+    }
+    
     @Transient
     @Override
     public Class<?> getDataClass()

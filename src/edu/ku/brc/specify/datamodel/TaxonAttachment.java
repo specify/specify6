@@ -188,12 +188,23 @@ public class TaxonAttachment extends DataModelObjBase implements ObjectAttachmen
         setTaxon(object);
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
+     */
+    @Override
+    @Transient
+    public String getIdentityTitle()
+    {
+         return Attachment.getIdentityTitle(this);
+    }
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#toString()
+     */
     @Override
     public String toString()
     {
-        String aString = (attachment != null) ? attachment.getIdentityTitle() : "NULL Attachment";
-        String oString = (getObject() != null) ? getObject().getIdentityTitle() : "NULL Object Reference";
-        return aString + " : " + oString;
+        return Attachment.getIdentityTitle(this);
     }
 
     /* (non-Javadoc)

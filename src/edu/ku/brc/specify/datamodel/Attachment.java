@@ -25,10 +25,13 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Index;
 
+import edu.ku.brc.ui.forms.FormDataObjIFace;
 import edu.ku.brc.util.AttachmentManagerIface;
 import edu.ku.brc.util.AttachmentUtils;
 import edu.ku.brc.util.thumbnails.Thumbnailer;
@@ -607,5 +610,34 @@ public class Attachment extends DataModelObjBase implements Serializable
         attachmentMgr.storeAttachmentFile(this, origFile, thumbFile);
         
         this.storeFile = false;
+    }
+    
+    /**
+     * @param objAttachment
+     * @return
+     */
+    public static String getIdentityTitle(final ObjectAttachmentIFace<?> objAttachment)
+    {
+         if (objAttachment != null)
+         {
+             Attachment attachment = objAttachment.getAttachment();
+             if (attachment != null)
+             {
+                 String title = attachment.getTitle();
+                 if (StringUtils.isNotEmpty(title))
+                 {
+                     return title;
+                 }
+                 
+                 String fileName = attachment.getOrigFilename();
+                 fileName = FilenameUtils.getName(fileName);
+                 if (StringUtils.isNotEmpty(fileName))
+                 {
+                     return fileName;
+                 }
+             }
+         }
+         
+         return ((FormDataObjIFace)objAttachment).getIdentityTitle();
     }
 }

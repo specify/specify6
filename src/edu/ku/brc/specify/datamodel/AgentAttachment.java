@@ -186,17 +186,20 @@ public class AgentAttachment extends DataModelObjBase implements ObjectAttachmen
         setAgent(object);
     }
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.DataModelObjBase#getIdentityTitle()
+     */
     @Override
     @Transient
     public String getIdentityTitle()
     {
-        return toString();
+         return Attachment.getIdentityTitle(this);
     }
 
     @Override
     public String toString()
     {
-        return (attachment != null) ? attachment.getIdentityTitle() : super.toString();
+        return Attachment.getIdentityTitle(this);
     }
     
     /* (non-Javadoc)

@@ -9,16 +9,49 @@ package edu.ku.brc.specify.datamodel;
 
 /**
  * @author jstewart
+ * 
  * @code_status Alpha
  */
 public interface ObjectAttachmentIFace <T extends DataModelObjBase>
 {
-    public T getObject();
-    public void setObject(T object);
-    public Attachment getAttachment();
-    public void setAttachment(Attachment attachment);
-    public Integer getOrdinal();
-    public void setOrdinal(Integer ordinal);
-    public String getRemarks();
-    public void setRemarks(String remarks);
+    /**
+     * @return
+     */
+    public abstract T getObject();
+    
+    /**
+     * @param object
+     */
+    public abstract void setObject(T object);
+    
+    /**
+     * @return
+     */
+    public abstract Attachment getAttachment();
+    
+    /**
+     * @param attachment
+     */
+    public abstract void setAttachment(Attachment attachment);
+    
+    /**
+     * @return
+     */
+    public abstract Integer getOrdinal();
+    
+    /**
+     * @param ordinal
+     */
+    public abstract void setOrdinal(Integer ordinal);
+    
+    /**
+     * @return
+     */
+    public abstract String getRemarks();
+    
+    /**
+     * @param remarks
+     */
+    public abstract void setRemarks(String remarks);
+    
 }
