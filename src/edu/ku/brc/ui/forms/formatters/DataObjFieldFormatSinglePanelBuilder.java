@@ -229,7 +229,7 @@ public class DataObjFieldFormatSinglePanelBuilder extends DataObjFieldFormatPane
 		
 		// if new value cannot be found among those listed, then it's a new one
 		DefaultListModel listModel = (DefaultListModel) formatList.getModel();
-		Enumeration elements = listModel.elements();
+		Enumeration<?> elements = listModel.elements();
 		int i = 0;
 		int index = -1;
 		while (elements.hasMoreElements())

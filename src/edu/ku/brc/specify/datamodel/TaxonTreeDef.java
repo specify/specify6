@@ -300,4 +300,12 @@ public class TaxonTreeDef extends BaseTreeDef<Taxon, TaxonTreeDef, TaxonTreeDefI
     }
     
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.TreeDefIface#getSynonymizedLevel()
+     */
+    @Transient
+    public int getSynonymizedLevel()
+    {
+        return TaxonTreeDef.SPECIES;
+    }
 }

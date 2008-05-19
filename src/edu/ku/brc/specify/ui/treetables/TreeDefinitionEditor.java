@@ -27,7 +27,6 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -498,7 +497,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                     catch (StaleObjectException e1)
                     {
                         // another user or process has changed the data "underneath" us
-                        JOptionPane.showMessageDialog(null, getResourceString("UPDATE_DATA_STALE"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); 
+                        UIRegistry.showLocalizedError("UPDATE_DATA_STALE");
                         if (session != null)
                         {
                             session.close();
@@ -533,7 +532,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                     catch (Exception e)
                     {
                         success = false;
-                        JOptionPane.showMessageDialog(null, getResourceString("UNRECOVERABLE_DB_ERROR"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); 
+                        UIRegistry.showLocalizedError("UNRECOVERABLE_DB_ERROR");
 
                         log.error("Error while saving node changes.  Rolling back transaction.", e);
                         session.rollback();
@@ -785,7 +784,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                     catch (Exception e)
                     {
                         success = false;
-                        JOptionPane.showMessageDialog(null, getResourceString("UNRECOVERABLE_DB_ERROR"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); 
+                        UIRegistry.showLocalizedError("UNRECOVERABLE_DB_ERROR");
 
                         log.error("Error while saving node changes.  Rolling back transaction.", e);
                         session.rollback();
@@ -924,7 +923,8 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                 catch (StaleObjectException e1)
                 {
                     // another user or process has changed the data "underneath" us
-                    JOptionPane.showMessageDialog(null, getResourceString("UPDATE_DATA_STALE"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); 
+                    UIRegistry.showLocalizedError("UPDATE_DATA_STALE");
+
                     if (session != null)
                     {
                         session.close();
@@ -997,7 +997,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                 catch (Exception e)
                 {
                     success = false;
-                    JOptionPane.showMessageDialog(null, getResourceString("UNRECOVERABLE_DB_ERROR"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); 
+                    UIRegistry.showLocalizedError("UNRECOVERABLE_DB_ERROR");
 
                     log.error("Error while saving node changes.  Rolling back transaction.", e);
                     session.rollback();
@@ -1117,7 +1117,8 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                     catch (StaleObjectException e1)
                     {
                         // another user or process has changed the data "underneath" us
-                        JOptionPane.showMessageDialog(null, getResourceString("UPDATE_DATA_STALE"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); 
+                        UIRegistry.showLocalizedError("UPDATE_DATA_STALE");
+
                         if (session != null)
                         {
                             session.close();
@@ -1152,7 +1153,7 @@ public class TreeDefinitionEditor <T extends Treeable<T,D,I>,
                     catch (Exception e)
                     {
                         success = false;
-                        JOptionPane.showMessageDialog(null, getResourceString("UNRECOVERABLE_DB_ERROR"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); 
+                        UIRegistry.showLocalizedError("UNRECOVERABLE_DB_ERROR");
 
                         log.error("Error while saving node changes.  Rolling back transaction.", e);
                         session.rollback();

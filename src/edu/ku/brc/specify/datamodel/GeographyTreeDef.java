@@ -260,7 +260,16 @@ public class GeographyTreeDef extends BaseTreeDef<Geography, GeographyTreeDef, G
 		}
 		return null;
 	}
-	
+    
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.TreeDefIface#getSynonymizedLevel()
+     */
+    @Transient
+    public int getSynonymizedLevel()
+    {
+        return -1;
+    }
+    
 //	/**
 //	 * Returns the <code>TreeDefinitionItemIface</code> object associated with the called
 //	 * <code>TreeDefinitionIface</code> object and having the given name.

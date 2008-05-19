@@ -567,6 +567,9 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
 		return descendants;
 	}
 	
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.Treeable#getAllAncestors()
+     */
     @Transient
 	public List<LithoStrat> getAllAncestors()
 	{
@@ -581,6 +584,9 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
 		return ancestors;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.datamodel.Treeable#isDescendantOf(edu.ku.brc.specify.datamodel.Treeable)
+	 */
 	public boolean isDescendantOf(LithoStrat node)
 	{
 		if( node==null )
@@ -601,6 +607,9 @@ public class LithoStrat extends DataModelObjBase implements java.io.Serializable
 		return false;
 	}
     
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.Treeable#getComparator()
+     */
     @Transient
     public Comparator<? super LithoStrat> getComparator()
     {

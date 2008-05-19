@@ -78,6 +78,9 @@ public interface Treeable<N extends Treeable<N,D,I>,
 	 */
 	public static final int REVERSE = -1;
 
+	/**
+	 * 
+	 */
 	public void initialize();
 	
 	/**
@@ -107,13 +110,26 @@ public interface Treeable<N extends Treeable<N,D,I>,
 	 */
 	public void setParent(N parent);
 	
+	/**
+	 * @return
+	 */
 	public Set<N> getChildren();
 	
+	/**
+	 * @param children
+	 */
 	public void setChildren( Set<N> children );
 	
+	/**
+	 * @param child
+	 */
 	public void addChild( N child );
 
+	/**
+	 * @param child
+	 */
 	public void removeChild( N child );
+	
 	/**
 	 * @return the node number as determined by a depth-first traversal of the containing tree
 	 */

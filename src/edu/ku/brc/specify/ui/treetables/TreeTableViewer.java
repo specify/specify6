@@ -6,7 +6,7 @@
  */
 package edu.ku.brc.specify.ui.treetables;
 
-import static edu.ku.brc.ui.UIHelper.createLabel;
+import static edu.ku.brc.ui.UIHelper.*;
 import static edu.ku.brc.ui.UIRegistry.getResourceString;
 
 import java.awt.BorderLayout;
@@ -16,7 +16,6 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Point;
 import java.awt.Toolkit;
-import java.awt.dnd.DnDConstants;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -36,6 +35,7 @@ import java.util.concurrent.Executors;
 import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.Action;
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.Icon;
@@ -47,6 +47,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
 import javax.swing.KeyStroke;
 import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
@@ -56,6 +57,10 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import org.apache.log4j.Logger;
+
+import com.jgoodies.forms.builder.PanelBuilder;
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import edu.ku.brc.af.core.Taskable;
 import edu.ku.brc.af.prefs.AppPreferences;
@@ -75,6 +80,7 @@ import edu.ku.brc.specify.treeutils.TreeDataService;
 import edu.ku.brc.specify.treeutils.TreeDataServiceFactory;
 import edu.ku.brc.specify.treeutils.TreeFactory;
 import edu.ku.brc.specify.treeutils.TreeHelper;
+import edu.ku.brc.ui.CustomDialog;
 import edu.ku.brc.ui.DragDropCallback;
 import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.JStatusBar;
@@ -113,6 +119,8 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	
 	private static final boolean debugFind = false;
 	
+	private enum NODE_DROPTYPE {MOVE_NODE, SYNONIMIZE_NODE, CANCEL_DROP};
+	
 	/** Status message display widget. */
 	protected JStatusBar statusBar;
 	
@@ -145,7 +153,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     protected TreeNodePopupMenu popupMenu;
     
     protected boolean busy;
-    protected String busyReason;
+    protected String  busyReason;
     
     protected List<AbstractButton> allButtons;
     
@@ -1626,7 +1634,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                     catch (StaleObjectException e1)
                     {
                         // another user or process has changed the data "underneath" us
-                        JOptionPane.showMessageDialog(null, getResourceString("UPDATE_DATA_STALE"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); 
+                        UIRegistry.showLocalizedError("UPDATE_DATA_STALE");
                         if (session != null)
                         {
                             session.close();
@@ -1661,7 +1669,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
                     catch (Exception e)
                     {
                         success = false;
-                        JOptionPane.showMessageDialog(null, getResourceString("UNRECOVERABLE_DB_ERROR"), getResourceString("Error"), JOptionPane.ERROR_MESSAGE); 
+                        UIRegistry.showLocalizedError("UNRECOVERABLE_DB_ERROR");
 
                         log.error("Error while saving node changes.  Rolling back transaction.", e);
                         session.rollback();
@@ -1905,6 +1913,126 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
     {
         return isEditMode;
     }
+    
+    /**
+     * @param draggedRecord
+     * @param droppedRecord
+     * @return
+     */
+    private NODE_DROPTYPE askForDropAction(final T        draggedRecord,
+                                           final T        droppedOnRecord,
+                                           final TreeNode droppedOnNode, 
+                                           final TreeNode draggedNode)
+    {
+        boolean isSynonymizeOK = isSynonymizeOK(droppedOnNode, draggedNode, treeDef.getSynonymizedLevel());
+        boolean isMoveOK      = TreeHelper.canChildBeReparentedToNode(draggedNode.getRank(), droppedOnNode.getRank(), treeDef);
+        
+        if (treeDef.getSynonymizedLevel() == -1)
+        {
+            return NODE_DROPTYPE.MOVE_NODE;
+        }
+        
+        if (false)
+        {
+            int numOptions = 1 + (isSynonymizeOK ? 1 : 0) + (isMoveOK ? 1 : 0);
+            
+            Object[] options = new Object[numOptions];
+            numOptions = 0;
+            
+            int dlgOption = JOptionPane.CANCEL_OPTION;
+            if (isSynonymizeOK)
+            {
+                options[numOptions++] = getResourceString("TreeTableView.SYNONIMIZE_NODE");
+                dlgOption = JOptionPane.OK_CANCEL_OPTION;
+            }
+            
+            if (isMoveOK)
+            {
+                options[numOptions++] = getResourceString("TreeTableView.MOVE_NODE");
+                dlgOption = JOptionPane.YES_NO_CANCEL_OPTION;
+            }
+            
+            options[numOptions++] = getResourceString("Cancel");
+            
+            String msg = UIRegistry.getLocalizedMessage("TreeTableView.NODE_MSG", draggedRecord.getFullName(), droppedOnRecord.getFullName());
+            int userChoice = JOptionPane.showOptionDialog(UIRegistry.getTopWindow(), 
+                                                         msg, 
+                                                         getResourceString("TreeTableView.NODE_ACTION_TITLE"), 
+                                                         dlgOption,
+                                                         JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+            
+            if (userChoice == JOptionPane.YES_OPTION || userChoice == JOptionPane.OK_OPTION)
+            {
+                return NODE_DROPTYPE.SYNONIMIZE_NODE;
+            }
+            
+            if (userChoice == JOptionPane.NO_OPTION)
+            {
+                return NODE_DROPTYPE.MOVE_NODE;
+            }
+        } else
+        {
+            int numOptions = 2 + (isSynonymizeOK ? 1 : 0) + (isMoveOK ? 1 : 0);
+
+            String msg = UIRegistry.getLocalizedMessage("TreeTableView.NODE_MSG", draggedRecord.getFullName(), droppedOnRecord.getFullName());
+            
+            JTextArea ta = createTextArea();
+            ta.setEditable(false);
+            ta.setText(msg);
+            JScrollPane sp = new JScrollPane(ta, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            sp.setBorder(BorderFactory.createEmptyBorder());
+            
+            CellConstraints cc = new CellConstraints();
+            PanelBuilder    pb = new PanelBuilder(new FormLayout("f:p:g", "p,2px,f:p:g"));
+            //pb.add(createLabel(getResourceString("TreeTableView.NODE_ACTION")), cc.xy(1,1));
+            pb.add(sp, cc.xy(1,3));
+            pb.setDefaultDialogBorder();
+            
+            sp.setBackground(pb.getPanel().getBackground());
+            ta.setOpaque(false);
+            sp.getViewport().setBackground(pb.getPanel().getBackground());
+            
+            CustomDialog dlg = new CustomDialog((Frame)UIRegistry.getTopWindow(), 
+                                                getResourceString("TreeTableView.NODE_ACTION_TITLE"),
+                                                true,
+                                                numOptions == 4 ? CustomDialog.OKCANCELAPPLYHELP : CustomDialog.OKCANCELHELP,
+                                                pb.getPanel());
+            if (isSynonymizeOK)
+            {
+                dlg.setOkLabel(getResourceString("TreeTableView.SYNONIMIZE_NODE"));
+            }
+            
+            if (isMoveOK)
+            {
+                if (isSynonymizeOK)
+                {
+                    dlg.setApplyLabel(getResourceString("TreeTableView.MOVE_NODE"));                 
+                } else
+                {
+                    dlg.setOkLabel(getResourceString("TreeTableView.MOVE_NODE"));
+                }
+            }
+            
+            dlg.setVisible(true);
+            
+            if (!dlg.isCancelled())
+            {
+                int btn = dlg.getBtnPressed();
+                if (isSynonymizeOK)
+                {
+                    if (isMoveOK)
+                    {
+                        return btn == CustomDialog.OK_BTN ? NODE_DROPTYPE.SYNONIMIZE_NODE : NODE_DROPTYPE.MOVE_NODE;
+                    }
+                    
+                    return NODE_DROPTYPE.SYNONIMIZE_NODE;
+                }
+                return NODE_DROPTYPE.MOVE_NODE;
+            }
+        }
+        
+        return NODE_DROPTYPE.CANCEL_DROP;
+    }
 
     /**
 	 * Reparents <code>dragged</code> to <code>droppedOn</code> by calling
@@ -1932,13 +2060,15 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			log.warn("Ignoring drag and drop of unhandled types of objects");
 			return false;
 		}
-
+		
         TreeNode draggedNode   = (TreeNode)dragged;
         TreeNode droppedOnNode = (TreeNode)droppedOn;
         T        draggedRecord = getRecordForNode(draggedNode);
         T        droppedRecord = getRecordForNode(droppedOnNode);
 
-		if ( dropAction == DnDConstants.ACTION_COPY || dropAction == DnDConstants.ACTION_NONE )
+        NODE_DROPTYPE nodeDropAction = askForDropAction(draggedRecord, droppedRecord, droppedOnNode, draggedNode);
+
+		if (nodeDropAction == NODE_DROPTYPE.SYNONIMIZE_NODE)
 		{
 			log.info("User requested new link be created between " + draggedNode.getName() + " and " + droppedOnNode.getName());
             
@@ -1990,7 +2120,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 			}
 			return true;
 		}
-		else if ( dropAction == DnDConstants.ACTION_MOVE )
+		else if (nodeDropAction == NODE_DROPTYPE.MOVE_NODE)
 		{
 			T child = draggedRecord;
 			T newParent = droppedRecord;
@@ -2037,6 +2167,41 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		return false;
 	}
 	
+	/**
+	 * Checks to see if the dragged node can be synonymized with the dropped on node.
+	 * @param droppedOnNode the destination
+	 * @param draggedNode the source
+	 * @return true if it can be
+	 */
+	private boolean isSynonymizeOK(final TreeNode droppedOnNode, 
+	                              final TreeNode draggedNode,
+	                              final int      rankLevel)
+	{
+	    if (droppedOnNode.getAcceptedParentId() == null)
+        {
+	        int draggedRankId = draggedNode.getRank();
+	        int droppedRankId = droppedOnNode.getRank();
+	        //System.out.println("draggedRankId "+draggedRankId+"  droppedRankId "+droppedRankId+"  rankLevel "+rankLevel);
+	        
+	        if (draggedRankId >= droppedRankId)
+	        {
+    	        if (rankLevel == -1 || 
+    	            (draggedRankId >= rankLevel && droppedRankId >= rankLevel))
+    	        {
+                    boolean descendant = listModel.isDescendantOfNode(droppedOnNode, draggedNode);
+                    if (!descendant)
+                    {
+                        // check the other way as well
+                        descendant = listModel.isDescendantOfNode(draggedNode, droppedOnNode);
+                    }
+                    //log.debug("Synonymization request IS acceptable.");
+                    return !descendant;
+    	        }
+            } 
+        }
+	    return false;
+	}
+	
     /* (non-Javadoc)
 	 * @see edu.ku.brc.ui.DragDropCallback#dropAcceptable(java.lang.Object, java.lang.Object, int)
 	 */
@@ -2045,88 +2210,66 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 	{
 		if (dragged == droppedOn)
 		{
+		    listModel.setDropLocationNode(null);
+	        setStatusBarText(null);
+	        repaint();
 			return false;
 		}
 
-        //log.debug("dropAcceptable setting drop storage to " + droppedOn);
-		String dropActionText = null;
-		switch (dropAction)
-		{
-		case DnDConstants.ACTION_COPY:
-			dropActionText = "COPY";
-			break;
-		case DnDConstants.ACTION_LINK:
-			dropActionText = "LINK";
-			break;
-		case DnDConstants.ACTION_MOVE:
-			dropActionText = "MOVE";
-			break;
-		case DnDConstants.ACTION_NONE:
-			dropActionText = "NONE";
-			break;
-		}
-		log.debug(dragged + " is being dragged over " + droppedOn + " with action " + dropActionText);
+		//log.debug(dragged + " is being dragged over " + droppedOn);
 		
 		repaint(); // this schedules a repaint
 		
-		if (dropAction == DnDConstants.ACTION_COPY  || dropAction == DnDConstants.ACTION_NONE)
+		//log.debug("determining if request to synonymize node " + dragged + " to node " + droppedOn + " is acceptable");
+        // this is a request to make a node relationship (e.g. synonym on a Taxon record)
+		if ( !(dragged instanceof TreeNode && droppedOn instanceof TreeNode))
 		{
-			//log.debug("determining if request to synonymize node " + dragged + " to node " + droppedOn + " is acceptable");
-            // this is a request to make a node relationship (e.g. synonym on a Taxon record)
-			if ( !(dragged instanceof TreeNode && droppedOn instanceof TreeNode))
-			{
-				//log.debug("Synonymization request IS NOT acceptable.  One or both objects are not TreeNodes.");
-			    listModel.setDropLocationNode(null);
-				return false;
-			}
-			
-			TreeNode droppedOnNode = (TreeNode)droppedOn;
-            TreeNode draggedNode   = (TreeNode)dragged;
-			
-			if (droppedOnNode.getAcceptedParentId() == null)
-			{
-                boolean descendant = listModel.isDescendantOfNode(droppedOnNode, draggedNode);
-                if (!descendant)
-                {
-                    // check the other way as well
-                    descendant = listModel.isDescendantOfNode(draggedNode, droppedOnNode);
-                }
-				//log.debug("Synonymization request IS acceptable.");
-                listModel.setDropLocationNode(descendant ? null : droppedOn);
-				return !descendant;
-			}
-			//log.debug("Synonymization request IS NOT acceptable.  Drop target is not an accepted name.");
-			listModel.setDropLocationNode(null);
+			//log.debug("Synonymization request IS NOT acceptable.  One or both objects are not TreeNodes.");
+		    listModel.setDropLocationNode(null);
+		    setStatusBarText(null);
 			return false;
 		}
-		else if (dropAction == DnDConstants.ACTION_MOVE)
+		
+		TreeNode droppedOnNode = (TreeNode)droppedOn;
+        TreeNode draggedNode   = (TreeNode)dragged;
+		
+        boolean isNodeDiff = listModel.getDropLocationNode() != droppedOnNode;
+        
+        listModel.setDropLocationNode(null);
+        
+        String msg = "";
+        
+        // Check to see if it can be Synonmized
+        boolean isOK = isSynonymizeOK(droppedOnNode, draggedNode, treeDef.getSynonymizedLevel());
+		if (isOK)
 		{
-            // this is a request to reparent a node
-			//log.debug("determining if request to reparent node " + dragged + " to node " + droppedOn + " is acceptable");
-			if ( !(dragged instanceof TreeNode && droppedOn instanceof TreeNode) )
-			{
-            	//log.debug("Reparent request IS NOT acceptable.  One or both objects are not TreeNodes.");
-			    listModel.setDropLocationNode(null);
-				return false;
-			}
-			
-            TreeNode draggedNode = (TreeNode)dragged;
-            TreeNode droppedOnNode = (TreeNode)droppedOn;
+		    listModel.setDropLocationNode(droppedOn);
+		    if (isNodeDiff)
+            {
+		        msg = getResourceString("TreeViewer.SYN_IS_OK");
+            }
+		}
+		//log.debug("Synonymization request IS NOT acceptable.  Drop target is not an accepted name.");
 
-			if ( !TreeHelper.canChildBeReparentedToNode(draggedNode.getRank(),droppedOnNode.getRank(),treeDef) )
-			{
-            	//log.debug("Reparent request IS NOT acceptable.");
-			    listModel.setDropLocationNode(null);
-				return false;
-			}
+		// Check to see if it can be moved
+		if (TreeHelper.canChildBeReparentedToNode(draggedNode.getRank(), droppedOnNode.getRank(), treeDef))
+		{
         	//log.debug("Reparent request IS acceptable.");
-			listModel.setDropLocationNode(droppedOn);
-			return true;
+    		listModel.setDropLocationNode(droppedOn);
+    		isOK = true;
+    		
+    		if (isNodeDiff)
+    		{
+    		    msg += (msg.length() > 0 ? ", " : "") + getResourceString("TreeViewer.MOVE_IS_OK");
+    		}
 		}
 		
-    	log.debug("DnD action (" + dropActionText + ") is not handled.");
-    	listModel.setDropLocationNode(null);
-		return false;
+		if (isNodeDiff)
+		{
+		    UIRegistry.getStatusBar().setText(isOK ? msg : "");
+		}
+		
+		return isOK;
 	}
 
 	/* (non-Javadoc)
@@ -2234,7 +2377,7 @@ public class TreeTableViewer <T extends Treeable<T,D,I>,
 		TreeDataGhostDropJList list = (TreeDataGhostDropJList)e.getSource();
 		Point p = e.getPoint();
 		int index = list.locationToIndex(p);
-		if (index==-1)
+		if (index == -1)
 		{
 			return;
 		}

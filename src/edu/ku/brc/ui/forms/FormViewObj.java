@@ -3680,11 +3680,6 @@ public class FormViewObj implements Viewable,
             // Disable all the form controls and set their values to NULL
             for (FVOFieldInfo fieldInfo : controlsById.values())
             {
-                if (fieldInfo.getName().equals("acceptedParent"))
-                {
-                    int x= 0;
-                    x++;
-                }
                 fieldInfo.getComp().setEnabled(false);
                 
                 if (fieldInfo.isOfType(FormCellIFace.CellType.field))

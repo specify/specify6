@@ -320,6 +320,15 @@ public class StorageTreeDef extends BaseTreeDef<Storage, StorageTreeDef, Storage
 	}
     
     /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.TreeDefIface#getSynonymizedLevel()
+     */
+    @Transient
+    public int getSynonymizedLevel()
+    {
+        return -1;
+    }
+    
+    /* (non-Javadoc)
      * @see edu.ku.brc.ui.forms.FormDataObjIFace#getTableId()
      */
     @Override

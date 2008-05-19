@@ -1074,6 +1074,9 @@ public class Taxon extends DataModelObjBase implements AttachmentOwnerIFace<Taxo
 		return ancestorsList;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.datamodel.Treeable#isDescendantOf(edu.ku.brc.specify.datamodel.Treeable)
+	 */
 	public boolean isDescendantOf(Taxon node)
 	{
 		if( node==null )

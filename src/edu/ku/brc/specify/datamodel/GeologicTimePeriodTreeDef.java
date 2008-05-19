@@ -184,18 +184,14 @@ public class GeologicTimePeriodTreeDef extends BaseTreeDef<GeologicTimePeriod, G
 		this.disciplines = disciplines;
 	}
     
-    public void addDiscipline( Discipline ct )
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.TreeDefIface#getSynonymizedLevel()
+     */
+    @Transient
+    public int getSynonymizedLevel()
     {
-        this.disciplines.add(ct);
-        ct.setGeologicTimePeriodTreeDef(this);
+        return -1;
     }
-    
-    public void removeDiscipline( Discipline ct )
-    {
-        this.disciplines.remove(ct);
-        ct.setGeologicTimePeriodTreeDef(null);
-    }
-
 
 	/**
 	 * 

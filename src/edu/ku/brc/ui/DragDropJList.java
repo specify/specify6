@@ -181,7 +181,7 @@ public class DragDropJList extends JList implements DragSourceListener,
 	 */
 	public void dragOver(DropTargetDragEvent dtde)
 	{
-        log.debug("processing dragOver notification");
+        //log.debug("processing dragOver notification");
         
 		if( shouldAccept(dtde) )
 		{
@@ -233,7 +233,7 @@ public class DragDropJList extends JList implements DragSourceListener,
 	 */
 	protected boolean shouldAccept(DropTargetDragEvent dtde)
 	{
-        log.debug("determining if drop is acceptable");
+        //log.debug("determining if drop is acceptable");
 
 		Point loc = dtde.getLocation();
 		int index = locationToIndex(loc);
@@ -251,7 +251,8 @@ public class DragDropJList extends JList implements DragSourceListener,
 		if (droppedOn == dragged)
 		{
 		    setDragCursor(false, dtde.getDropAction());
-		    return false;
+		    //UIRegistry.getStatusBar().setText("");
+		    //return false;
 		}
 		
 		if( dragDropCallback.dropAcceptable(dragged,droppedOn,dtde.getDropAction()) )
@@ -295,6 +296,7 @@ public class DragDropJList extends JList implements DragSourceListener,
             dragDropCallback.dragDropEnded(false);
 			dropped = false;
 		}
+		setDragCursor(false, dtde.getDropAction());
 		dtde.dropComplete(dropped);
 	}
 	

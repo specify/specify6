@@ -247,7 +247,7 @@ public class SchemaLocalizerFrame extends LocalizableBaseApp
     {
         if (schemaLocPanel.hasChanged())
         {
-            int rv = JOptionPane.showConfirmDialog(this, "Save changes?", "Save Changes", JOptionPane.YES_NO_OPTION);
+            int rv = JOptionPane.showConfirmDialog(this, "Save changes?", "Save Changes", JOptionPane.YES_NO_OPTION); // I18N
             if (rv == JOptionPane.YES_OPTION)
             {
                 write();

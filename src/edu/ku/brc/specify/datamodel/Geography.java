@@ -64,7 +64,8 @@ import edu.ku.brc.specify.treeutils.TreeOrderSiblingComparator;
     {   @Index (name="GeoNameIDX", columnNames={"Name"}),
         @Index (name="GeoFullNameIDX", columnNames={"FullName"})
     })
-public class Geography extends DataModelObjBase implements java.io.Serializable, Treeable<Geography,GeographyTreeDef,GeographyTreeDefItem>{
+public class Geography extends DataModelObjBase implements java.io.Serializable, Treeable<Geography,GeographyTreeDef,GeographyTreeDefItem>
+{
 
     /**
      * A <code>Logger</code> object used for all log messages eminating from
@@ -764,6 +765,9 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 		return descendants;
 	}
 	
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.Treeable#getAllAncestors()
+     */
     @Transient
 	public List<Geography> getAllAncestors()
 	{
@@ -778,6 +782,9 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 		return ancestors;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.ku.brc.specify.datamodel.Treeable#isDescendantOf(edu.ku.brc.specify.datamodel.Treeable)
+	 */
 	public boolean isDescendantOf(Geography node)
 	{
 		if( node==null )
@@ -798,6 +805,9 @@ public class Geography extends DataModelObjBase implements java.io.Serializable,
 		return false;
 	}
 	
+    /* (non-Javadoc)
+     * @see edu.ku.brc.specify.datamodel.Treeable#getComparator()
+     */
     @Transient
 	public Comparator<? super Geography> getComparator()
 	{
