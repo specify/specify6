@@ -32,4 +32,4 @@ echo $SPECIFY_HOME
 
 JAVA_HOME=${EXEDIR}/jre
 
-java -Xmx512m -classpath "$SPECIFY_CLASSPATH:$CLASSPATH" -Dappdir=$SPECIFY_HOME/Specify -Dappdatadir=$SPECIFY_HOME -Djavadbdir=$SPECIFY_HOME/DerbyDatabases   edu.ku.brc.specify.tools.IReportSpecify.MainFrameSpecify "$@"
+java -Xmx512m -classpath "$SPECIFY_CLASSPATH:$CLASSPATH" -Dappdir=$SPECIFY_HOME/Specify -Dappdatadir=$SPECIFY_HOME -Djavadbdir=$SPECIFY_HOME/DerbyDatabases   edu.ku.brc.specify.tools.ireportspecify.MainFrameSpecify "$@"
