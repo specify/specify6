@@ -859,7 +859,7 @@
 		<chmod file="${dist-linux}/specifyschema.sh" perm="u+rx"/>
 
 		<copy file="${packaging}/linux/ireportlaunch.sh" todir="${dist-linux}/." />
-		<chmod file="${dist-linux}/specify.sh" perm="u+rx"/>
+		<chmod file="${dist-linux}/ireportlaunch" perm="u+rx"/>
 
 		<!-- Demo Files -->
 		<copy file="demo_files/workbench/FishCollectingTrip.csv" todir="${dist-linux}/examples" />
