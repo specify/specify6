@@ -1396,11 +1396,32 @@ public final class UIHelper
                                              final boolean useDialog,
                                              final DatabaseLoginListener listener)
     {     
+        return doLogin(doAutoLogin, doAutoClose, useDialog, listener, null);
+    }
+    
+    /**
+     * Tries to do the login, if doAutoLogin is set to true it will try without displaying a dialog
+     * and if the login fails then it will display the dialog
+     * @param doAutoLogin whether to try to utomatically log the user in
+     * @param doAutoClose hwther it should automatically close the window when it is logged in successfully
+     * @param useDialog use a Dialog or a Frame
+     * @param listener a listener for when it is logged in or fails
+     */
+    public static DatabaseLoginPanel doLogin(final boolean doAutoLogin,
+                                             final boolean doAutoClose,
+                                             final boolean useDialog,
+                                             final DatabaseLoginListener listener,
+                                             final String nonSpecifyAppName)
+    {     
         boolean doAutoLoginNow = doAutoLogin && AppPreferences.getLocalPrefs().getBoolean("login.autologin", false);
         
         if (useDialog)
         {
             JDialog.setDefaultLookAndFeelDecorated(false); 
+            if (nonSpecifyAppName != null)
+            {
+                log.warn("Ignoring nonSpecifyAppName parameter.");
+            }
             DatabaseLoginDlg dlg = new DatabaseLoginDlg((Frame)UIRegistry.getTopWindow(), listener);
             JDialog.setDefaultLookAndFeelDecorated(true); 
             dlg.setDoAutoLogin(doAutoLoginNow);
@@ -1442,8 +1463,17 @@ public final class UIHelper
         }
         JFrame.setDefaultLookAndFeelDecorated(false);
 
-        JFrame frame = new JFrame(getResourceString("LOGINTITLE"));
-        DatabaseLoginPanel panel = new DatabaseLoginPanel(new DBListener(frame, listener, doAutoClose), false);
+        JFrame frame = new JFrame(nonSpecifyAppName == null ? getResourceString("LOGINTITLE") 
+                : String.format(getResourceString("Launcher"), nonSpecifyAppName));
+        DatabaseLoginPanel panel;
+        if (nonSpecifyAppName != null)
+        {
+            panel = new DatabaseLoginPanel(new DBListener(frame, listener, doAutoClose), false, nonSpecifyAppName);
+        }
+        else
+        {
+            panel = new DatabaseLoginPanel(new DBListener(frame, listener, doAutoClose), false);
+        }
         
         panel.setAutoClose(doAutoClose);
         panel.setWindow(frame);

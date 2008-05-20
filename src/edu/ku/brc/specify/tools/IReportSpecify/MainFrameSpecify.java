@@ -18,6 +18,7 @@ import it.businesslogic.ireport.gui.ReportPropertiesFrame;
 import java.awt.Frame;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
@@ -33,21 +34,27 @@ import org.apache.log4j.Logger;
 
 import edu.ku.brc.af.core.AppContextMgr;
 import edu.ku.brc.af.core.AppResourceIFace;
+import edu.ku.brc.af.core.SchemaI18NService;
+import edu.ku.brc.af.core.expresssearch.QueryAdjusterForDomain;
+import edu.ku.brc.af.prefs.AppPreferences;
+import edu.ku.brc.dbsupport.CustomQueryFactory;
 import edu.ku.brc.dbsupport.DataProviderFactory;
 import edu.ku.brc.dbsupport.DataProviderSessionIFace;
+import edu.ku.brc.dbsupport.HibernateUtil;
 import edu.ku.brc.helpers.XMLHelper;
+import edu.ku.brc.specify.Specify;
 import edu.ku.brc.specify.datamodel.SpAppResource;
 import edu.ku.brc.specify.datamodel.SpQuery;
 import edu.ku.brc.specify.datamodel.SpReport;
 import edu.ku.brc.specify.datamodel.SpecifyUser;
-import edu.ku.brc.specify.tasks.ReportsBaseTask;
 import edu.ku.brc.specify.tasks.subpane.qb.QBJRDataSourceConnection;
 import edu.ku.brc.ui.ChooseFromListDlg;
-import edu.ku.brc.ui.CommandAction;
-import edu.ku.brc.ui.CommandDispatcher;
 import edu.ku.brc.ui.CustomDialog;
+import edu.ku.brc.ui.IconManager;
 import edu.ku.brc.ui.UIHelper;
 import edu.ku.brc.ui.UIRegistry;
+import edu.ku.brc.ui.forms.formatters.UIFieldFormatterMgr;
+import edu.ku.brc.ui.weblink.WebLinkMgr;
 
 /**
  * @author timbo
@@ -68,11 +75,11 @@ public class MainFrameSpecify extends MainFrame
      * @param args -
      *            parameters to configure iReport mainframe
      */
-    public MainFrameSpecify(Map<?,?> args)
+    public MainFrameSpecify(Map<?,?> args, boolean noExit, boolean embedded)
     {
         super(args);
-        setNoExit(true);
-        setEmbeddedIreport(true);
+        setNoExit(noExit);
+        setEmbeddedIreport(embedded);
     }
 
     public void refreshSpQBConnections()
@@ -150,15 +157,15 @@ public class MainFrameSpecify extends MainFrame
     /**
      * @return default map for specify iReport implementation
      */
-    public static Map<String, String> getArgs()
+    public static Map<String, String> getDefaultArgs()
     {
         Map<String, String> map = new HashMap<String, String>();
         //Don't really need to worry about these args when using in-house iReport.jar
         
-        map.put("config-file", XMLHelper.getConfigDirPath("ireportconfig.xml"));
+        //map.put("config-file", XMLHelper.getConfigDirPath("ireportconfig.xml"));
         // "noPlaf" prevents iReport from setting it's preferred theme. Don't think we need to worry
         //about the theme since laf changes should be prevented by settings in ireportconfig.xml
-        map.put("noPlaf", "true");
+        //map.put("noPlaf", "true");
         return map;
     }
 
@@ -227,7 +234,8 @@ public class MainFrameSpecify extends MainFrame
             {
                 session.close();
             }
-            CommandDispatcher.dispatch(new CommandAction(ReportsBaseTask.REPORTS, ReportsBaseTask.REFRESH, null));
+            //skip command dispatch now that iReport is being run as separate application.
+            //CommandDispatcher.dispatch(new CommandAction(ReportsBaseTask.REPORTS, ReportsBaseTask.REFRESH, null));
         }
         else
         {
@@ -548,5 +556,78 @@ public class MainFrameSpecify extends MainFrame
             return true;
         }
         return false;
+    }
+        
+    /**
+     * @param args
+     */
+    public static void main(String[] args)
+    {
+        String appDir = System.getProperty("appdir"); //$NON-NLS-1$
+        if (StringUtils.isNotEmpty(appDir))
+        {
+            UIRegistry.setDefaultWorkingPath(appDir);
+        }
+        
+        String appdatadir = System.getProperty("appdatadir"); //$NON-NLS-1$
+        if (StringUtils.isNotEmpty(appdatadir))
+        {
+            UIRegistry.setBaseAppDataDir(appdatadir);
+        }
+        
+        String javadbdir = System.getProperty("javadbdir"); //$NON-NLS-1$
+        if (StringUtils.isNotEmpty(javadbdir))
+        {
+            UIRegistry.setJavaDBDir(javadbdir);
+        }
+
+        // Set App Name, MUST be done very first thing!
+        UIRegistry.setAppName("iReportLauncher");  //$NON-NLS-1$
+        //UIRegistry.setAppName("Specify");  //$NON-NLS-1$
+        
+        // Then set this
+        IconManager.setApplicationClass(Specify.class);
+        IconManager.loadIcons(XMLHelper.getConfigDir("icons_datamodel.xml")); //$NON-NLS-1$
+        IconManager.loadIcons(XMLHelper.getConfigDir("icons_plugins.xml")); //$NON-NLS-1$
+        IconManager.loadIcons(XMLHelper.getConfigDir("icons_disciplines.xml")); //$NON-NLS-1$
+
+        
+        
+        System.setProperty(AppContextMgr.factoryName,                   "edu.ku.brc.specify.config.SpecifyAppContextMgr");      // Needed by AppContextMgr //$NON-NLS-1$
+        System.setProperty(AppPreferences.factoryName,                  "edu.ku.brc.specify.config.AppPrefsDBIOIImpl");         // Needed by AppReferences //$NON-NLS-1$
+        System.setProperty("edu.ku.brc.ui.ViewBasedDialogFactoryIFace", "edu.ku.brc.specify.ui.DBObjDialogFactory");            // Needed By UIRegistry //$NON-NLS-1$ //$NON-NLS-2$
+        System.setProperty("edu.ku.brc.ui.forms.DraggableRecordIdentifierFactory", "edu.ku.brc.specify.ui.SpecifyDraggableRecordIdentiferFactory"); // Needed By the Form System //$NON-NLS-1$ //$NON-NLS-2$
+        System.setProperty("edu.ku.brc.dbsupport.AuditInterceptor",     "edu.ku.brc.specify.dbsupport.AuditInterceptor");       // Needed By the Form System for updating Lucene and logging transactions //$NON-NLS-1$ //$NON-NLS-2$
+        System.setProperty("edu.ku.brc.dbsupport.DataProvider",         "edu.ku.brc.specify.dbsupport.HibernateDataProvider");  // Needed By the Form System and any Data Get/Set //$NON-NLS-1$ //$NON-NLS-2$
+        System.setProperty("edu.ku.brc.ui.db.PickListDBAdapterFactory", "edu.ku.brc.specify.ui.db.PickListDBAdapterFactory");   // Needed By the Auto Cosmplete UI //$NON-NLS-1$ //$NON-NLS-2$
+        System.setProperty(CustomQueryFactory.factoryName,              "edu.ku.brc.specify.dbsupport.SpecifyCustomQueryFactory"); //$NON-NLS-1$
+        System.setProperty(UIFieldFormatterMgr.factoryName,             "edu.ku.brc.specify.ui.SpecifyUIFieldFormatterMgr");           // Needed for CatalogNumberign //$NON-NLS-1$
+        System.setProperty(QueryAdjusterForDomain.factoryName,          "edu.ku.brc.specify.dbsupport.SpecifyQueryAdjusterForDomain"); // Needed for ExpressSearch //$NON-NLS-1$
+        System.setProperty(SchemaI18NService.factoryName,               "edu.ku.brc.specify.config.SpecifySchemaI18NService");         // Needed for Localization and Schema //$NON-NLS-1$
+        System.setProperty(WebLinkMgr.factoryName,                      "edu.ku.brc.specify.config.SpecifyWebLinkMgr");                // Needed for WebLnkButton //$NON-NLS-1$
+        
+        
+        if (StringUtils.isEmpty(UIRegistry.getJavaDBPath()))
+        {
+            File userDataDir = new File(UIRegistry.getAppDataDir() + File.separator + "DerbyDatabases"); //$NON-NLS-1$
+            UIRegistry.setJavaDBDir(userDataDir.getAbsolutePath());
+        }
+        log.debug(UIRegistry.getJavaDBPath());
+
+        AppPreferences localPrefs = AppPreferences.getLocalPrefs();
+        localPrefs.setDirPath(UIRegistry.getAppDataDir());
+
+            HibernateUtil.setListener("post-commit-update", new edu.ku.brc.specify.dbsupport.PostUpdateEventListener()); //$NON-NLS-1$
+            HibernateUtil.setListener("post-commit-insert", new edu.ku.brc.specify.dbsupport.PostInsertEventListener()); //$NON-NLS-1$
+            // SInce Update get called when deleting an object there is no need to register this class.
+            // The update deletes becuase first it removes the Lucene document and then goes to add it back in, but since the
+            // the record is deleted it doesn't get added.
+            HibernateUtil.setListener("post-commit-delete", new edu.ku.brc.specify.dbsupport.PostDeleteEventListener()); //$NON-NLS-1$
+            //HibernateUtil.setListener("delete", new edu.ku.brc.specify.dbsupport.DeleteEventListener());
+        
+        UIHelper.doLogin(true, false, false, new IReportLauncher(), "iReport"); // true means do auto login if it can, second bool means use dialog instead of frame
+        
+        localPrefs.load();
+
     }
 }

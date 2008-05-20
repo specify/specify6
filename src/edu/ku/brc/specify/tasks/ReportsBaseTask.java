@@ -975,7 +975,7 @@ public class ReportsBaseTask extends BaseTask
                         MainFrame.reportClassLoader.rescanLibDirectory();
                         Thread.currentThread().setContextClassLoader(MainFrame.reportClassLoader);
                         updateIReportConfig();
-                        iReportMainFrame = new MainFrameSpecify(MainFrameSpecify.getArgs());
+                        iReportMainFrame = new MainFrameSpecify(MainFrameSpecify.getDefaultArgs(), true, true);
                     }
                     iReportMainFrame.refreshSpQBConnections();
                     if (repRes != null)

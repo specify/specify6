@@ -140,6 +140,10 @@ public class DatabaseLoginPanel extends JPanel
     protected long                       loginAccumTime = 0;
     protected ProgressWorker             progressWorker = null;
 
+    //non-Specify log-in stuff
+    protected boolean                    isSpecifyApp   = true; //false if logging in when starting iReport or other app.
+    protected String                     nonSpecifyAppName;
+    
     /**
      * Constructor that has the form created from the view system
      * @param dbListener listener to the panel (usually the frame or dialog)
@@ -154,6 +158,21 @@ public class DatabaseLoginPanel extends JPanel
 
     }
     
+    /**
+     * Constructor that has the form created from the view system
+     * @param dbListener listener to the panel (usually the frame or dialog)
+     * @param isDlg whether the parent is a dialog (false mean JFrame)
+     * @param isSpecifyApp whether Specify or another application is using the login.
+     */
+    public DatabaseLoginPanel(final DatabaseLoginListener dbListener,  final boolean isDlg, final String nonSpecifyAppName)
+    {
+        log.debug("constructor with jaas");
+        this.dbListener = dbListener;
+        this.jaasContext = new JaasContext(); 
+        this.isSpecifyApp = false;
+        this.nonSpecifyAppName = nonSpecifyAppName;
+        createUI(isDlg);
+    }
 
     /**
      * Sets a window to be resized for extra options
@@ -445,12 +464,26 @@ public class DatabaseLoginPanel extends JPanel
         formBuilder.add(extraPanelBlder.getPanel(), cc.xywh(1, y, 3, 1));
 
         PanelBuilder outerPanel = new PanelBuilder(new FormLayout("p,3dlu,p:g", "p,2dlu,p,2dlu,p"), this);
-        JLabel icon = new JLabel(IconManager.getIcon("SpecifyLargeIcon"));
-        icon.setBorder(BorderFactory.createEmptyBorder(2, 10, 2, 2));
+        JLabel icon; 
+        if (isSpecifyApp)
+        {
+            icon = new JLabel(IconManager.getIcon("SpecifyLargeIcon"));
+        }
+        else
+        {
+            icon = null;
+        }
+        if (icon != null)
+        {
+            icon.setBorder(BorderFactory.createEmptyBorder(2, 10, 2, 2));
+        }
 
         formBuilder.getPanel().setBorder(BorderFactory.createEmptyBorder(2, 5, 0, 5));
 
-        outerPanel.add(icon, cc.xy(1, 1));
+        if (icon != null)
+        {
+            outerPanel.add(icon, cc.xy(1, 1));
+        }
         outerPanel.add(formBuilder.getPanel(), cc.xy(3, 1));
         outerPanel.add(ButtonBarFactory.buildOKCancelHelpBar(loginBtn, cancelBtn, helpBtn), cc.xywh(1, 3, 3, 1));
         outerPanel.add(statusBar, cc.xywh(1, 5, 3, 1));
@@ -692,6 +725,7 @@ public class DatabaseLoginPanel extends JPanel
         statusBar.setIndeterminate(getClass().getName(), true);
         enableUI(false);
 
+        
         setMessage(String.format(getResourceString("LoggingIn"), new Object[] { getDatabaseName() }), false);
 
         String basePrefName = getDatabaseName() + "." + getUserName() + ".";
@@ -733,7 +767,25 @@ public class DatabaseLoginPanel extends JPanel
                 isLoggedIn &= jaasLogin();
 
                 if (isLoggedIn)
-                {
+                {                    
+                    if (!isSpecifyApp)
+                    {
+                        SwingUtilities.invokeLater(new Runnable(){
+
+                            /* (non-Javadoc)
+                             * @see java.lang.Runnable#run()
+                             */
+                            //@Override
+                            public void run()
+                            {
+                                //Not exactly true yet, but make sure users know that this is NOT Specify starting up. 
+                                setMessage(String.format(getResourceString("Starting"), new Object[] { nonSpecifyAppName }), false);
+                            }
+                            
+                        });
+                        
+                    }
+                    
                     DatabaseDriverInfo drvInfo = dbDrivers.get(dbDriverCBX.getSelectedIndex());
                     if (drvInfo != null)
                     {
