@@ -87,11 +87,11 @@
             <desc><![CDATA[The Collection Object form.]]></desc>
             <enableRules/>
 
-            <columnDef>90px,2px,p,2px,100px,2px,p,2px,p,2px,p,p:g,p,p</columnDef>
+            <columnDef>105px,2px,p,2px,100px,2px,p,2px,p,2px,p,p,p:g,15px</columnDef>
             <rowDef auto="true" cell="p" sep="2px"/>
     		<rows>
     		    <row>
-    		        <cell type="label" label="Bird" icon="CollectionObject" recordobj="true" colspan="12"/>
+    		        <cell type="label" label="Bird" icon="CollectionObject" recordobj="true" colspan="13"/>
     		    </row>
     			<row>
     			    <cell type="label" labelfor="1"/>
@@ -115,39 +115,43 @@
     		        <cell type="field" id="5" name="catalogedDate" uitype="formattedtext" uifieldformatter="Date" default="today"/>
     		    </row>
      			<row>
-    				<cell type="separator" label="Determination" collapse="determinations" colspan="12"/>
+    				<cell type="separator" label="Determination" collapse="determinations" colspan="13"/>
     			</row>
 
     			<row>
-    			    <cell type="subview" viewname="Determination" id="6" name="determinations" colspan="12" rows="5" initialize="noscrollbars=true;border=line;bordercolor=150,150,150;"/>
+    			    <cell type="subview" viewname="Determination" id="6" name="determinations" colspan="13" rows="5" initialize="noscrollbars=true;bgcolor=245,245,245;border=line;bordercolor=169,169,169;"/>
     			</row>
+    		    <row></row>
     		    <row>
-    		        <cell type="separator" label="Collecting Event" colspan="12" collapse="collectingEvent"/>
+    		        <cell type="separator" label="Collecting Event" colspan="13" collapse="collectingEvent"/>
     		    </row>
     		    <row>
-    		        <cell type="subview" id="26" name="collectingEvent" viewname="CollectingEventSub" colspan="12"/>
+    		        <cell type="subview" id="26" name="collectingEvent" viewname="CollectingEventSub" colspan="13" initialize="noscrollbars=true;bgcolor=245,245,245;border=line;bordercolor=169,169,169;"/>
     		    </row>
-    		    
+    		    <row></row><row></row><row></row>
     			<row>
-    			    <cell type="separator" label="Preparations" collapse="preparations" colspan="12"/>
+    			    <cell type="separator" label="Preparations" collapse="preparations" colspan="13"/>
     			</row>
     			<row>
-    			    <cell type="subview" viewname="Preparation" id="8" name="preparations" defaulttype="table" colspan="12"/>
+    			    <cell type="subview" viewname="Preparation" id="8" name="preparations" defaulttype="table" colspan="13" initialize="noscrollbars=true;bgcolor=245,245,245;border=line;bordercolor=169,169,169;"/>
     			</row>
+    		    <row></row><row></row><row></row>
     		    <row>
-    		        <cell type="separator" label="Attributes" collapse="collectionObjectAttribute" colspan="12"/>
+    		        <cell type="separator" label="Attributes" collapse="collectionObjectAttribute" colspan="13"/>
     		    </row>
     		    <row>
-    		        <cell type="subview" viewname="BirdAttributes" id="19" name="collectionObjectAttribute" colspan="12"/>
+    		        <cell type="subview" viewname="BirdAttributes" id="19" name="collectionObjectAttribute" colspan="13" initialize="noscrollbars=true;bgcolor=245,245,245;border=line;bordercolor=169,169,169;"/>
     		    </row>
+    		    <row></row><row></row><row></row>
 	          <row>
-			  <cell type="separator" label="Attachments" colspan="12"/>
+			  <cell type="separator" label="Attachments" colspan="13"/>
                 </row>
     		    <row>
-                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectionObjectAttachments" colspan="12" initialize="btn=true;icon=CollectionObjectAttachment"/>
-                </row>
+                    <cell type="subview" id="attachments" viewname="ObjectAttachment" name="collectionObjectAttachments" colspan="13" initialize="btn=true;icon=CollectionObjectAttachment"/>
+    		    </row>
+    		    <row></row><row></row><row></row>
     			<row>
-    				<cell type="separator" label="" colspan="12"/>
+    				<cell type="separator" label="" colspan="13"/>
     			</row>
     			
     			<row>
