@@ -439,7 +439,7 @@
         <isHidden>false</isHidden>
         <version>0</version>
       </item>
-      <item name="accessionNumber" format="accessionNumber.1" isUIFormatter="true">
+      <item name="accessionNumber" format="AccessionNumber" isUIFormatter="true">
         <names>
           <str language="en">
             <text>Accession Number</text>
