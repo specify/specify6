@@ -40,6 +40,7 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
 {
     protected static final int QBQIdRHQLTblId = -123;
     
+    protected QueryBldrPane queryBuilder = null;
     protected List<Pair<String, Object>> params;
     protected String title;
     protected int    tableId;
@@ -68,12 +69,14 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
                                   final String    iconName,
                                   final int       tableId,
                                   final String    searchTerm,
-                                  final List<?>   listOfIds)
+                                  final List<?>   listOfIds,
+                                  final QueryBldrPane queryBuilder)
     {
         super(null, bannerColor, searchTerm, listOfIds);
         this.title    = title;
         this.tableId  = tableId;
         this.iconName = iconName;
+        this.queryBuilder = queryBuilder;
     }
     
     /**
@@ -204,4 +207,19 @@ public class QBQueryForIdResultsHQL extends QueryForIdResultsHQL implements Serv
     {
         this.params = params;
     }
+
+    /* (non-Javadoc)
+     * @see edu.ku.brc.af.core.expresssearch.QueryForIdResultsHQL#cleanUp()
+     */
+    @Override
+    public void complete()
+    {
+        if (queryBuilder != null)
+        {
+            queryBuilder.resultsComplete();
+        }
+        super.complete();
+    }
+    
+    
 }

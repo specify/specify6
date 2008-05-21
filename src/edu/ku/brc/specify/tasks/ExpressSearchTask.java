@@ -1183,7 +1183,7 @@ public class ExpressSearchTask extends BaseTask implements CommandListener, SQLE
                             SubPaneMgr.getInstance().removePane(queryResultsPane, false);
                         }
                     }
-                    
+                    results.complete();
                     if (isError)
                     {
                         UIRegistry.getStatusBar().setErrorMessage(getResourceString("QB_RUN_ERROR"));

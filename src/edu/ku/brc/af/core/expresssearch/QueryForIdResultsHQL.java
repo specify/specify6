@@ -346,5 +346,14 @@ public class QueryForIdResultsHQL implements QueryForIdResultsIFace
         return null;
     }
 
+    /* (non-Javadoc)
+     * @see edu.ku.brc.ui.db.QueryForIdResultsIFace#complete()
+     */
+    //@Override
+    public void complete()
+    {
+        // nothing to do
+    }
+
     
 }

@@ -39,6 +39,7 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
@@ -174,6 +175,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
     protected JButton                       orderUpBtn  = null;
     protected JButton                       orderDwnBtn = null;
     protected boolean                       doOrdering  = false;
+    
+    protected final AtomicBoolean canSearch = new AtomicBoolean(true);
     
     /**
      * Constructor.
@@ -353,7 +356,11 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         {
             public void actionPerformed(ActionEvent ae)
             {
-                doSearch((TableQRI)tableList.getSelectedValue(), distinctChk.isSelected());
+                if (canSearch.get())
+                {
+                    canSearch.set(false);
+                    doSearch((TableQRI)tableList.getSelectedValue(), distinctChk.isSelected());
+                }
             }
         });
         
@@ -1064,6 +1071,10 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
         }
     }
     
+    public void resultsComplete()
+    {
+        canSearch.set(true);
+    }
     /**
      * @param queryFieldItemsArg
      * @param sql
@@ -1084,7 +1095,8 @@ public class QueryBldrPane extends BaseSubPane implements QueryFieldPanelContain
                 //rootTable.getTableInfo().getTableId(), // table id
                 tblId,
                 "", // search term
-                list);
+                list,
+                this);
         
         qri.setSQL(sql);
         qri.setParams(params);

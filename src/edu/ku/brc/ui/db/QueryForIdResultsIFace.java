@@ -150,4 +150,9 @@ public interface QueryForIdResultsIFace
      * @returns a list of <name, value> pairs describing parameters.
      */
     public abstract List<Pair<String, Object>> getParams();
+    
+    /**
+     * Take any necessary steps when search has completed and results have been processed. 
+     */
+    public abstract void complete();
 }
