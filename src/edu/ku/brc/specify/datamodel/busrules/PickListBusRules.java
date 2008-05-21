@@ -331,37 +331,43 @@ public class PickListBusRules extends BaseBusRules
             ValSpinner  sizeLimitSp    = (ValSpinner)formViewObj.getControlByName("sizeLimit");
             
             int typeIndex = pickList.getType();
-            typesCBX.getComboBox().setSelectedIndex(typeIndex);
+            if (typesCBX != null && typesCBX.getComboBox() != null)
+            {
+                if (typesCBX.getComboBox().getModel().getSize() > 0)
+                {
+                    typesCBX.getComboBox().setSelectedIndex(typeIndex);
+                }
 
-            String tableName = pickList.getTableName();
-            if (StringUtils.isNotEmpty(tableName))
-            {
-                tablesCBX.getComboBox().setSelectedIndex(getIndexInModel(tablesCBX, tableName));
-                
-                String fieldName = pickList.getFieldName();
-                if (StringUtils.isNotEmpty(fieldName))
+                String tableName = pickList.getTableName();
+                if (StringUtils.isNotEmpty(tableName))
                 {
-                    fieldsCBX.getComboBox().setSelectedIndex(getIndexInModel(fieldsCBX, fieldName));
+                    tablesCBX.getComboBox().setSelectedIndex(getIndexInModel(tablesCBX, tableName));
+                    
+                    String fieldName = pickList.getFieldName();
+                    if (StringUtils.isNotEmpty(fieldName))
+                    {
+                        fieldsCBX.getComboBox().setSelectedIndex(getIndexInModel(fieldsCBX, fieldName));
+                    }
+                    
+                    String formatter = pickList.getFormatter();
+                    if (StringUtils.isNotEmpty(formatter))
+                    {
+                        formatterCBX.getComboBox().setSelectedIndex(getIndexInModel(formatterCBX, formatter));
+                    }
                 }
                 
-                String formatter = pickList.getFormatter();
-                if (StringUtils.isNotEmpty(formatter))
+                if (pickList.getSizeLimit() == -1)
                 {
-                    formatterCBX.getComboBox().setSelectedIndex(getIndexInModel(formatterCBX, formatter));
+                    sizeLimitSp.setEnabled(false);
+                    sizeLimitSp.setValue(sizeLimitSp.getMinValue());
+                    
+                } else
+                {
+                    sizeLimitSp.setEnabled(typeIndex == 0);
                 }
-            }
-            
-            if (pickList.getSizeLimit() == -1)
-            {
-                sizeLimitSp.setEnabled(false);
-                sizeLimitSp.setValue(sizeLimitSp.getMinValue());
                 
-            } else
-            {
-                sizeLimitSp.setEnabled(typeIndex == 0);
+                typeSelected(formViewObj);
             }
-            
-            typeSelected(formViewObj);
         }
     }
 

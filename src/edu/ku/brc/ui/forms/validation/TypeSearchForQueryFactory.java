@@ -40,7 +40,8 @@ public class TypeSearchForQueryFactory
     // Static Data Members
     private static final Logger log = Logger.getLogger(TypeSearchForQueryFactory.class);
     
-    protected static TypeSearchForQueryFactory instance = new TypeSearchForQueryFactory();
+    protected static TypeSearchForQueryFactory instance   = new TypeSearchForQueryFactory();
+    protected static boolean                   doingLocal = false;
     
     // Data Members
     protected Hashtable<String, TypeSearchInfo> hash = new Hashtable<String, TypeSearchInfo>();
@@ -50,7 +51,19 @@ public class TypeSearchForQueryFactory
      */
     protected TypeSearchForQueryFactory()
     {
-        load();
+        
+    }
+    
+    /**
+     * @return the DOM
+     */
+    protected Element getDOM()
+    {
+        if (doingLocal)
+        {
+            return XMLHelper.readDOMFromConfigDir("backstop/typesearch_def.xml");
+        }
+        return AppContextMgr.getInstance().getResourceAsDOM("TypeSearches");
     }
     
     /**
@@ -60,44 +73,47 @@ public class TypeSearchForQueryFactory
     public void load()
     {
 
-        try
+        if (hash.size() == 0)
         {
-            Element root  = AppContextMgr.getInstance().getResourceAsDOM("TypeSearches");
-            if (root != null)
+            try
             {
-                List<?> typeSearches = root.selectNodes("/typesearches/typesearch");
-                for (Object fObj : typeSearches)
+                Element root = getDOM();
+                if (root != null)
                 {
-                    Element tsElement = (Element)fObj;
-                    String name = tsElement.attributeValue("name");
-                    if (StringUtils.isNotBlank(name))
+                    List<?> typeSearches = root.selectNodes("/typesearches/typesearch");
+                    for (Object fObj : typeSearches)
                     {
-                        TypeSearchInfo tsi = new TypeSearchInfo(XMLHelper.getAttr(tsElement, "tableid", -1),
-                                                                tsElement.attributeValue("displaycols"),
-                                                                tsElement.attributeValue("searchfield"),
-                                                                XMLHelper.getAttr(tsElement, "format", null),
-                                                                XMLHelper.getAttr(tsElement, "uifieldformatter", null),
-                                                                tsElement.attributeValue("dataobjformatter"));
-                        hash.put(name, tsi);
-                        
-                        String sqlTemplate = tsElement.getTextTrim();
-                        if (StringUtils.isNotEmpty(sqlTemplate))
+                        Element tsElement = (Element)fObj;
+                        String name = tsElement.attributeValue("name");
+                        if (StringUtils.isNotBlank(name))
                         {
-                            tsi.setSqlTemplate(sqlTemplate);
+                            TypeSearchInfo tsi = new TypeSearchInfo(XMLHelper.getAttr(tsElement, "tableid", -1),
+                                                                    tsElement.attributeValue("displaycols"),
+                                                                    tsElement.attributeValue("searchfield"),
+                                                                    XMLHelper.getAttr(tsElement, "format", null),
+                                                                    XMLHelper.getAttr(tsElement, "uifieldformatter", null),
+                                                                    tsElement.attributeValue("dataobjformatter"));
+                            hash.put(name, tsi);
+                            
+                            String sqlTemplate = tsElement.getTextTrim();
+                            if (StringUtils.isNotEmpty(sqlTemplate))
+                            {
+                                tsi.setSqlTemplate(sqlTemplate);
+                            }
+                        } else
+                        {
+                            log.error("TypeSearchInfo element is missing or has a blank name!");
                         }
-                    } else
-                    {
-                        log.error("TypeSearchInfo element is missing or has a blank name!");
                     }
+                } else
+                {
+                    log.debug("Couldn't open typesearch_def.xml");
                 }
-            } else
+            } catch (Exception ex)
             {
-                log.debug("Couldn't open typesearch_def.xml");
+                ex.printStackTrace();
+                log.error(ex);
             }
-        } catch (Exception ex)
-        {
-            ex.printStackTrace();
-            log.error(ex);
         }
     }
 
@@ -110,6 +126,8 @@ public class TypeSearchForQueryFactory
     public static TextFieldWithInfo getTextFieldWithInfo(final String name,
                                                          final String dataObjFormatterNameArg)
     {
+        instance.load();
+        
         TypeSearchInfo typeSearchInfo = instance.hash.get(name);
         if (typeSearchInfo != null)
         {
@@ -140,8 +158,10 @@ public class TypeSearchForQueryFactory
      * @param name the name of the formatter to use
      * @return the name of the formatter
      */
-    public static String etDataObjFormatterName(final String name)
+    public static String getDataObjFormatterName(final String name)
     {
+        instance.load();
+        
         TypeSearchInfo typeSearchInfo = instance.hash.get(name);
         if (typeSearchInfo != null)
         {
@@ -162,6 +182,8 @@ public class TypeSearchForQueryFactory
                                                                   final int btnOpts,
                                                                   final String dataObjFormatterNameArg)
     {
+        instance.load();
+        
         TypeSearchInfo typeSearchInfo = instance.hash.get(name);
         if (typeSearchInfo != null)
         {
@@ -191,6 +213,14 @@ public class TypeSearchForQueryFactory
         throw new RuntimeException("Couldn't create ValComboBoxFromQuery by name["+name+"]");
     }
 
+    /**
+     * @param doingLocal the doingLocal to set
+     */
+    public static void setDoingLocal(boolean doingLocal)
+    {
+        TypeSearchForQueryFactory.doingLocal = doingLocal;
+    }
+    
     //-----------------------------------------------------
     //-- Inner Classes
     //-----------------------------------------------------
@@ -273,6 +303,4 @@ public class TypeSearchForQueryFactory
         }
         
     }
-
-
 }

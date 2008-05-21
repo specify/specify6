@@ -46,44 +46,45 @@ public class LoanShipmentBusRules extends BaseBusRules
         {
             if (formViewObj.getDataObj() instanceof Shipment)
             {
-                
-                //MultiView mvParent   = formViewObj.getMVParent();
-                MultiView loanMV     = formViewObj.getMVParent().getMultiViewParent();
-                FormViewObj loanFVO  = loanMV.getCurrentViewAsFormViewObj();
-                
-                Shipment  shipment   = (Shipment)formViewObj.getDataObj();
-                Loan      loan       = shipment.getLoan();
-                
-                //boolean   isNewObj = MultiView.isOptionOn(mvParent.getOptions(), MultiView.IS_NEW_OBJECT);
-                //boolean   isEdit   = mvParent.isEditable();
-                
-                if (StringUtils.isEmpty(shipment.getShipmentNumber()))
+                MultiView loanMV = formViewObj.getMVParent().getMultiViewParent();
+                if (loanMV != null)
                 {
-                    shipment.setShipmentNumber(loan.getLoanNumber());
-                }
-                //System.err.println(loan.getLoanNumber());
-                
-                Component comp = loanFVO.getControlByName("loanNumber");
-                if (comp != null)
-                {
-                    String loanNum = comp instanceof ValFormattedTextField ? ((ValFormattedTextField)comp).getText() : ((JTextField)comp).getText();
+                    FormViewObj loanFVO  = loanMV.getCurrentViewAsFormViewObj();
                     
-                    comp = formViewObj.getControlByName("shipmentNumber");
-                    if (comp instanceof JTextField)
+                    Shipment  shipment   = (Shipment)formViewObj.getDataObj();
+                    Loan      loan       = shipment.getLoan();
+                    
+                    //boolean   isNewObj = MultiView.isOptionOn(mvParent.getOptions(), MultiView.IS_NEW_OBJECT);
+                    //boolean   isEdit   = mvParent.isEditable();
+                    
+                    if (StringUtils.isEmpty(shipment.getShipmentNumber()))
                     {
-                        JTextField tf = (JTextField)comp;
-                        if (StringUtils.isEmpty(tf.getText()))
+                        shipment.setShipmentNumber(loan.getLoanNumber());
+                    }
+                    //System.err.println(loan.getLoanNumber());
+                    
+                    Component comp = loanFVO.getControlByName("loanNumber");
+                    if (comp != null)
+                    {
+                        String loanNum = comp instanceof ValFormattedTextField ? ((ValFormattedTextField)comp).getText() : ((JTextField)comp).getText();
+                        
+                        comp = formViewObj.getControlByName("shipmentNumber");
+                        if (comp instanceof JTextField)
                         {
-                            tf.setText(loanNum);
+                            JTextField tf = (JTextField)comp;
+                            if (StringUtils.isEmpty(tf.getText()))
+                            {
+                                tf.setText(loanNum);
+                            }
+                        } else
+                        {
+                            log.error("Couldn't find UI control 'shipmentNumber' on the Loan Form");
                         }
+                        
                     } else
                     {
-                        log.error("Couldn't find UI control 'shipmentNumber' on the Loan Form");
+                        log.error("Couldn't find UI control 'loanNumber' on the Loan Form");
                     }
-                    
-                } else
-                {
-                    log.error("Couldn't find UI control 'loanNumber' on the Loan Form");
                 }
             }
         }

@@ -85,8 +85,9 @@ public class RepositoryAgreementBusRules extends AttachmentOwnerBaseBusRules
     @Override
     public boolean shouldCreateSubViewData(String fieldName)
     {
-        return fieldName.equals("repositoryAgreementAgents") ||
-               fieldName.equals("repositoryAgreementAuthorizations");
+        //return fieldName.equals("repositoryAgreementAgents") ||
+        //       fieldName.equals("repositoryAgreementAuthorizations");
+        return false;
     }
 
     /* (non-Javadoc)

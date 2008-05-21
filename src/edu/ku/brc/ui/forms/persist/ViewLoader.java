@@ -772,7 +772,7 @@ public class ViewLoader
                                 {
                                     dspUITypeStr = getAttr(cellElement, "dspuitype", "textfieldinfo");
                                     
-                                    String fmtName = TypeSearchForQueryFactory.etDataObjFormatterName(properties.getProperty("name"));
+                                    String fmtName = TypeSearchForQueryFactory.getDataObjFormatterName(properties.getProperty("name"));
                                     if (isEmpty(formatName) && isNotEmpty(fmtName))
                                     {
                                         formatName = fmtName;

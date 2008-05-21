@@ -136,17 +136,20 @@ public class IconViewObj implements Viewable
         
         if (isEditing)
         {
-            parentValidator = mvParent.getMultiViewParent().getCurrentValidator();
-            
-            // We need a form validator that always says it's valid
-            validator = new FormValidator(null)
+            if (mvParent.getMultiViewParent() != null)
             {
-                @Override
-                public boolean isFormValid()
+                parentValidator = mvParent.getMultiViewParent().getCurrentValidator();
+                
+                // We need a form validator that always says it's valid
+                validator = new FormValidator(null)
                 {
-                    return true;
-                }
-            };
+                    @Override
+                    public boolean isFormValid()
+                    {
+                        return true;
+                    }
+                };
+            }
         }
         
         try
@@ -277,8 +280,12 @@ public class IconViewObj implements Viewable
             x += 2;
             builder.add(delBtn, cc.xy(x, 1));
             x += 2;
-            builder.add(validationInfoBtn, cc.xy(x, 1));
-            x += 2;
+            
+            if (validationInfoBtn != null) // is null when genrating form images
+            {
+                builder.add(validationInfoBtn, cc.xy(x, 1));
+                x += 2;
+            }
 
         } else
         {
@@ -723,9 +730,12 @@ public class IconViewObj implements Viewable
         if (this.orderableDataClass)
         {
             Vector<Orderable> sortedDataObjects = new Vector<Orderable>();
-            for (Object o: dataObjects)
+            for (Object obj : dataObjects)
             {
-                sortedDataObjects.add((Orderable)o);
+                if (obj instanceof Orderable)
+                {
+                    sortedDataObjects.add((Orderable)obj);
+                }
             }
             Collections.sort(sortedDataObjects, new OrderableComparator());
             

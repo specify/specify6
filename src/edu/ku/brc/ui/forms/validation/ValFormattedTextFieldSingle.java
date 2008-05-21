@@ -297,6 +297,11 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
         }
 
 
+        if (getText().equals("05/19/3007"))
+        {
+            int x = 0;
+            x++;
+        }
         if (!isNew && valState == UIValidatable.ErrorType.Error && isEnabled())
         {
             Graphics2D g2d = (Graphics2D)g;
@@ -529,9 +534,14 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
                 
             } else
             {
-                    if (!document.isIgnoreLenForValidation())
+                if (!document.isIgnoreLenForValidation())
                 {
                     valState = data.length() != requiredLength ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
+                    // Only validate against the formatter if the it is the right length
+                    if (valState == UIValidatable.ErrorType.Valid)
+                    {
+                        valState = formatter.isValid(data) ? UIValidatable.ErrorType.Valid : UIValidatable.ErrorType.Error;
+                    }
                 } else
                 {
                     valState = UIValidatable.ErrorType.Valid;
@@ -559,7 +569,7 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
             //System.err.println("isMinMaxOK - min["+minValue+"] v["+val+"] max["+maxValue+"]");
             if (minValue != null && maxValue != null)
             {
-                boolean  ok = !(val.doubleValue() > maxValue.doubleValue() || val.doubleValue() < minValue.doubleValue());
+                //boolean  ok = !(val.doubleValue() > maxValue.doubleValue() || val.doubleValue() < minValue.doubleValue());
                 //System.err.println("isMinMaxOK - ok["+ok+"]");
                 return !(val.doubleValue() > maxValue.doubleValue() || val.doubleValue() < minValue.doubleValue());
             }
@@ -776,20 +786,29 @@ public class ValFormattedTextFieldSingle extends JTextField implements UIValidat
     // DocumentListener
     //--------------------------------------------------------
 
+    private void changed()
+    {
+        isChanged = true;
+        if (getText().length() == formatter.getLength())
+        {
+            setState(formatter.isValid(getText()) ? UIValidatable.ErrorType.Valid : UIValidatable.ErrorType.Error);
+            repaint();
+        }
+    }
 
     public void changedUpdate(DocumentEvent e)
     {
-        isChanged = true;
+        changed();
     }
 
     public void insertUpdate(DocumentEvent e)
     {
-        isChanged = true;
+        changed();
     }
 
     public void removeUpdate(DocumentEvent e)
     {
-        isChanged = true;
+        changed();
     }
 
 

@@ -1146,6 +1146,31 @@ public class SpecifyAppContextMgr extends AppContextMgr
         return new Vector<ViewIFace>(viewHash.values());
     }
 
+    /**
+     * @return all unique views (also returns internal views)
+     */
+    public List<ViewIFace> getEntirelyAllViews()
+    {
+        Hashtable<String, ViewIFace> viewHash = new Hashtable<String, ViewIFace>();
+        
+        for (SpAppResourceDir appResDir : spAppResourceList)
+        {
+            for (ViewSetIFace vs : getViewSetList(appResDir))
+            {
+                Hashtable<String, ViewIFace> vsHash = vs.getViews();
+                for (ViewIFace view : vsHash.values())
+                {
+                    if (viewHash.get(view.getName()) == null)
+                    {
+                        viewHash.put(view.getName(), view);
+                    }
+                }
+            }
+        }
+        
+        return new Vector<ViewIFace>(viewHash.values());
+    }
+
     /* (non-Javadoc)
      * @see edu.ku.brc.af.core.AppContextMgr#getView(java.lang.String)
      */

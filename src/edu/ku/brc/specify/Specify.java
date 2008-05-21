@@ -133,6 +133,7 @@ import edu.ku.brc.specify.datamodel.Taxon;
 import edu.ku.brc.specify.datamodel.TaxonAttachment;
 import edu.ku.brc.specify.tasks.subpane.JasperReportsCache;
 import edu.ku.brc.specify.tests.SpecifyAppPrefs;
+import edu.ku.brc.specify.tools.FormDisplayer;
 import edu.ku.brc.specify.tools.schemalocale.SchemaToolsDlg;
 import edu.ku.brc.specify.ui.HelpMgr;
 import edu.ku.brc.ui.CommandAction;
@@ -446,7 +447,7 @@ public class Specify extends JPanel implements DatabaseLoginListener
     /**
      * Setup all the System properties. This names all the needed factories. 
      */
-    protected void setUpSystemProperties()
+    public static void setUpSystemProperties()
     {
         // Name factories
         System.setProperty(AppContextMgr.factoryName,                   "edu.ku.brc.specify.config.SpecifyAppContextMgr");      // Needed by AppContextMgr //$NON-NLS-1$
@@ -1178,6 +1179,35 @@ public class Specify extends JPanel implements DatabaseLoginListener
                             UIHelper.centerAndShow(dialog);
                         }
                     });
+            
+            menu.addSeparator();
+            ttle = "Specify.CREATE_FORM_IMAGES";//$NON-NLS-1$ 
+            mneu = "Specify.CREATE_FORM_IMAGES_MNEU";//$NON-NLS-1$ 
+            desc = "Specify.CREATE_FORM_IMAGES";//$NON-NLS-1$ 
+            mi = UIHelper.createLocalizedMenuItem(menu, ttle , mneu, desc, true, null);  
+            mi.addActionListener(new ActionListener()
+                    {
+                        @SuppressWarnings("synthetic-access") //$NON-NLS-1$
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            FormDisplayer fd = new FormDisplayer();
+                            fd.generateFormImages();
+                        }
+                    });
+            ttle = "Specify.CREATE_FORM_LIST";//$NON-NLS-1$ 
+            mneu = "Specify.CREATE_FORM_LIST_MNEU";//$NON-NLS-1$ 
+            desc = "Specify.CREATE_FORM_LIST";//$NON-NLS-1$ 
+            mi = UIHelper.createLocalizedMenuItem(menu, ttle , mneu, desc, true, null);  
+            mi.addActionListener(new ActionListener()
+                    {
+                        @SuppressWarnings("synthetic-access") //$NON-NLS-1$
+                        public void actionPerformed(ActionEvent ae)
+                        {
+                            FormDisplayer fd = new FormDisplayer();
+                            fd.createViewListing(UIRegistry.getUserHomeDir());
+                        }
+                    });
+            menu.addSeparator();
             
             ttle = "Specify.SHOW_MEM_STATS";//$NON-NLS-1$ 
             mneu = "Specify.SHOW_MEM_STATS_MNEU";//$NON-NLS-1$ 

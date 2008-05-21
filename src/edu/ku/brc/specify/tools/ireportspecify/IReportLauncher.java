@@ -42,7 +42,6 @@ public class IReportLauncher implements DatabaseLoginListener
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.DatabaseLoginListener#cancelled()
      */
-    @Override
     public void cancelled()
     {
         System.exit(0);
@@ -51,7 +50,6 @@ public class IReportLauncher implements DatabaseLoginListener
     /* (non-Javadoc)
      * @see edu.ku.brc.ui.db.DatabaseLoginListener#loggedIn(java.awt.Window, java.lang.String, java.lang.String)
      */
-    @Override
     public void loggedIn(Window window, String databaseName, String userName)
     {
         System.out.println("Yup. You logged in.");

@@ -1660,8 +1660,6 @@ public class FormViewObj implements Viewable,
         {
             carryFwdDataObj = oldDataObj;
         }
-
-
         
         if (formValidator != null && formValidator.hasChanged())
         {
@@ -1788,6 +1786,9 @@ public class FormViewObj implements Viewable,
                 }
             });
             
+        } else
+        {
+            focusFirstFormControl();
         }
 
         if (selectorCBX != null)
@@ -2855,7 +2856,9 @@ public class FormViewObj implements Viewable,
             return fi.getComp();
         }
         // else
-        throw new RuntimeException("Couldn't find FieldInfo for ID["+id+"]");
+        //throw new RuntimeException("Couldn't find FieldInfo for ID["+id+"]");
+        log.error("Couldn't find FieldInfo for ID["+id+"]");
+        return null;
     }
 
     /* (non-Javadoc)
@@ -3685,7 +3688,7 @@ public class FormViewObj implements Viewable,
                 if (fieldInfo.isOfType(FormCellIFace.CellType.field))
                 {
                     setDataIntoUIComp(fieldInfo.getComp(), null, null);
-                    log.debug("Setting ["+fieldInfo.getName()+"] to enabled=false");
+                    //log.debug("Setting ["+fieldInfo.getName()+"] to enabled=false");
 
                 } else if (fieldInfo.isOfType(FormCellIFace.CellType.subview))
                 {

@@ -46,8 +46,9 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
 {
     public enum PartialDateEnum {None, Full, Month, Year}
     public enum FormatterType   {generic, date, numeric} // all lower case to follow convention in uiformatters.xml
-
     //private static final Logger log = Logger.getLogger(UIFieldFormatter.class);
+
+    public static int[]            daysInMon = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}; 
 
     protected String               fieldName;
     protected String               name;
@@ -609,6 +610,95 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
     }
     
     /**
+     * @param year
+     * @return
+     */
+    protected static boolean isLeapYear(final int year)
+    {
+        if (year % 4 == 0)
+        {
+            if (year % 100 == 0)
+            {
+                if (year % 400 == 0)
+                {
+                    return true;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+    
+    /**
+     * @param formatter
+     * @param text
+     * @return
+     */
+    private static boolean isDateValid(final UIFieldFormatterIFace formatter, final String text)
+    {
+        UIFieldFormatterField month = null;
+        UIFieldFormatterField day   = null;
+        UIFieldFormatterField year  = null;
+        
+        int monthInx = 0;
+        int dayInx   = 0;
+        int yearInx  = 0;
+        int inx      = 0;
+        
+        for (UIFieldFormatterField field : formatter.getFields())
+        {
+            if (month == null && field.getValue().equals("MM"))
+            {
+                month    = field;
+                monthInx = inx;
+                
+            } else if (day == null && field.getValue().equals("DD"))
+            {
+                day    = field;
+                dayInx = inx;
+                
+            } else if (year == null && field.getValue().equals("YYYY"))
+            {
+                year    = field;
+                yearInx = inx;
+            }
+            inx += field.getSize();
+        }
+        
+        int yearVal = -1;
+        if (year != null)
+        {
+            String val     = text.substring(yearInx, yearInx+year.getSize());
+            yearVal = Integer.parseInt(val);
+            if (yearVal == 0 || yearVal > 2500)
+            {
+                return false;
+            }
+        }
+        
+        if (month != null)
+        {
+            String val    = text.substring(monthInx, monthInx+month.getSize());
+            int    monVal = Integer.parseInt(val);
+            if (monVal < 1 || monVal > 31)
+            {
+                return false;
+            }
+            
+            daysInMon[1] = isLeapYear(yearVal) ? 29 : 28;
+            
+            val    = text.substring(dayInx, dayInx+day.getSize());
+            int    dayVal = Integer.parseInt(val);
+            
+            if (dayVal < 1 || dayVal > daysInMon[monVal-1])
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    /**
      * Validates with any formatter that has fields defined and an inputed string
      * @param formatter the formatter 
      * @param text the text to be validated.
@@ -622,43 +712,51 @@ public class UIFieldFormatter implements UIFieldFormatterIFace
             int len    = formatter.getLength();
             if (txtLen == len)
             {
+                if (formatter.isDate())
+                {
+                    return isDateValid(formatter, text);
+                }
+                
                 int inx    = 0;
                 int pos    = 0;
                 for (UIFieldFormatterField field : formatter.getFields())
                 {
                     if (pos < txtLen)
                     {
-                        //numeric, alphanumeric, alpha, separator, year
-                        String val = text.substring(pos, Math.min(pos+field.getSize(), txtLen));
-                        switch (field.getType())
+                        if (!field.isIncrementer())
                         {
-                            case numeric:
-                                if (!StringUtils.isNumeric(val))
-                                {
-                                    return false;
-                                }
-                                break;
-                                
-                            case alphanumeric:
-                                if (!isAlphanumeric(val))
-                                {
-                                    return false;
-                                }
-                                break;
-                                
-                            case alpha:
-                                if (!isAlpha(val))
-                                {
-                                    return false;
-                                }
-                                break;
-                                
-                            case separator:
-                                if (!val.equals(field.getValue()))
-                                {
-                                    return false;
-                                }
-                                break;
+                            //numeric, alphanumeric, alpha, separator, year
+                            String val = text.substring(pos, Math.min(pos+field.getSize(), txtLen));
+                            switch (field.getType())
+                            {
+                                case numeric:
+                                    if (!StringUtils.isNumeric(val))
+                                    {
+                                        return false;
+                                    }
+                                    break;
+                                    
+                                case alphanumeric:
+                                    if (!isAlphanumeric(val))
+                                    {
+                                        return false;
+                                    }
+                                    break;
+                                    
+                                case alpha:
+                                    if (!isAlpha(val))
+                                    {
+                                        return false;
+                                    }
+                                    break;
+                                    
+                                case separator:
+                                    if (!val.equals(field.getValue()))
+                                    {
+                                        return false;
+                                    }
+                                    break;
+                            }
                         }
                     } else
                     {

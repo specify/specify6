@@ -772,6 +772,12 @@ public class ValFormattedTextField extends JPanel implements UIValidatable,
             } else
             {
                 valState = data.length() != requiredLength ? UIValidatable.ErrorType.Error : UIValidatable.ErrorType.Valid;
+                // Only validate against the formatter if the it is the right length
+                if (valState == UIValidatable.ErrorType.Valid)
+                {
+                    valState = formatter.isValid(data) ? UIValidatable.ErrorType.Valid : UIValidatable.ErrorType.Error;
+                }
+
             }
         } else
         {

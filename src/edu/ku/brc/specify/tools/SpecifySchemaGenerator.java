@@ -56,7 +56,7 @@ public class SpecifySchemaGenerator
         log.debug("generateSchema userName:" + userName);
         log.debug("generateSchema password:" + password);
         boolean isDerby     = dbdriverInfo.getName().equals("Derby");
-        boolean isSQLServer = dbdriverInfo.getName().equals("SQLServer");
+        //boolean isSQLServer = dbdriverInfo.getName().equals("SQLServer");
         
         // Get the Create OR the Open String
         // Note: Derby local databases have a different connection string for creating verses opening.

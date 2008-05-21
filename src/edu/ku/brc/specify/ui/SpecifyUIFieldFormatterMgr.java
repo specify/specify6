@@ -124,7 +124,7 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr
     {
         if (StringUtils.isNotEmpty(name) && (name.equals("CatalogNumber") || name.equals("CatalogNumberNumeric")))
         {
-            CatalogNumberingScheme cns = Collection.getCurrentCollection().getCatalogNumberingScheme();
+            CatalogNumberingScheme cns = Collection.getCurrentCollection() != null ? Collection.getCurrentCollection().getCatalogNumberingScheme() : null;
             if (cns != null)
             {
                 if (cns.getIsNumericOnly())
@@ -139,7 +139,7 @@ public class SpecifyUIFieldFormatterMgr extends UIFieldFormatterMgr
                 }*/
             } else
             {
-                log.error("The CatalogNumberingScheme is null for the current Collection ["+Collection.getCurrentCollection().getCollectionName()+"] and should be!");
+                log.error("The CatalogNumberingScheme is null for the current Collection ["+(Collection.getCurrentCollection() != null ? Collection.getCurrentCollection().getCollectionName() : "null") +"] and should be!");
             }
         }
         return super.getFormatterInternal(name);

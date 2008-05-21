@@ -221,7 +221,7 @@ public class GeoCoordBGMProvider implements GeoCoordServiceProviderIFace
                     }
                     
                     // ask the user if they want to review the results
-                    String message = String.format(getResourceString("GeoCoordBGMProvider.BGM_VIEW_RESULTS_CONFIRM"), String.valueOf(numRecordsWithResults));
+                    String message = String.format(getResourceString("GeoCoordBGMProvider.BGM_VIEW_RESULTS_CONFIRM"), String.valueOf(numRecordsWithResults));//$NON-NLS-1$
                     int userChoice = JOptionPane.showConfirmDialog(UIRegistry.getTopWindow(), message,
                             getResourceString("GeoCoordBGMProvider.CONTINUE"), JOptionPane.YES_NO_OPTION);//$NON-NLS-1$
                     

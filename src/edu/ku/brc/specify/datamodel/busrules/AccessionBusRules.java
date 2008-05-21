@@ -85,8 +85,9 @@ public class AccessionBusRules extends AttachmentOwnerBaseBusRules
     @Override
     public boolean shouldCreateSubViewData(String fieldName)
     {
-        return fieldName.equals("accessionAgents") ||
-               fieldName.equals("accessionAuthorizations");
+        //return fieldName.equals("accessionAgents") ||
+        //       fieldName.equals("accessionAuthorizations");
+        return false;
     }
 
     /* (non-Javadoc)
